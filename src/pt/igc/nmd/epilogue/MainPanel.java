@@ -39,7 +39,7 @@ public class MainPanel extends JFrame {
 	public void setupMainPanel() {
 		startPanel = new StartPanel();
 		hexagonsPanel = new HexagonsPanel();
-		inputPanel = new InputPanel();
+		//inputPanel = new InputPanel();
 
 		getContentPane().setPreferredSize(new Dimension(1100, 600));
 		// contentPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY,2));
@@ -56,10 +56,12 @@ public class MainPanel extends JFrame {
 		});
 
 		startPanel.setBounds(0, 0, 500, 40);
+		hexagonsPanel.setBounds(0, 60, 500, 500);
+		
 		getContentPane().setLayout(null);
 		getContentPane().add(startPanel);
 		getContentPane().add(hexagonsPanel);
-		getContentPane().add(inputPanel);
+		//getContentPane().add(inputPanel);
 
 		// Adding overall ScrollPane
 		JScrollPane scrollPane = new JScrollPane(getContentPane());
@@ -71,5 +73,7 @@ public class MainPanel extends JFrame {
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
+	
+
 
 }

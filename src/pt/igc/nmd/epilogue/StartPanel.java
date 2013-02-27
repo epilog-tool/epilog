@@ -88,10 +88,10 @@ public class StartPanel extends JPanel {
 		
 		
 		
-		System.out.print("restasdrt");
+		
 		restartButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.print("restart");
+				
 				//repaint();
 
 //				if (MainPanelDescription.RollOverPanel != null)
@@ -107,7 +107,7 @@ public class StartPanel extends JPanel {
 		modelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				askModel();
-				//teste.exp();
+			
 
 			}
 
@@ -125,12 +125,12 @@ public class StartPanel extends JPanel {
 	}
 	
 	public static int getGridWidth() {
-		// sanityCheckDimension(userDefinedWidth);
+
 		return Integer.parseInt(userDefinedWidth.getText());
 	}
 
 	public static int getGridHeight() {
-		// sanityCheckDimension(userDefinedHeight);
+
 		return Integer.parseInt(userDefinedHeight.getText());
 	}
 
@@ -149,7 +149,7 @@ public class StartPanel extends JPanel {
 			loadModel();
 			//contentPanel.removeAll();
 			//setupMainPanel();
-			//teste.exp();
+
 
 		}
 	}
