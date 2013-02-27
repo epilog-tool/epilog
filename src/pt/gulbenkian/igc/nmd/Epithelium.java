@@ -4,8 +4,8 @@ import org.colomoto.logicalmodel.LogicalModel;
 
 public interface Epithelium {
 
-	public LogicalModel getModel();
-	public void setModel(LogicalModel logicalModel);
+	public LogicalModel getUnitaryModel();
+	public void setUnitaryModel(LogicalModel logicalModel);
+	public LogicalModel getComposedModel();
 	
-
 }

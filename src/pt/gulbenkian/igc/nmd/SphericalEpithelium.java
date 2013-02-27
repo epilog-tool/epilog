@@ -6,7 +6,8 @@ public class SphericalEpithelium implements Epithelium {
 
 	private int width = 0;
 	private int height = 0;
-	private LogicalModel model = null;
+	private LogicalModel unitaryModel = null;
+	private LogicalModel composedModel = null;
 
 	public SphericalEpithelium(int width, int height) {
 		this.width = width;
@@ -14,37 +15,19 @@ public class SphericalEpithelium implements Epithelium {
 	}
 
 	@Override
-	public void setModel(LogicalModel model) {
-		this.model = model;
+	public void setUnitaryModel(LogicalModel model) {
+		this.unitaryModel = model;
 	}
 
 	@Override
-	public LogicalModel getModel() {
-		return this.model;
+	public LogicalModel getUnitaryModel() {
+		return this.unitaryModel;
 	}
 
-//	public boolean neighbours(int xPosition, int yPosition, int maxNeighbors,
-//			int minNeighbours, int gene, int expressionLevel) {
-//		int count = 0;
-//
-//		for (int i = 0; i < NeighboursDEF.lenght(); i = i + 1) {
-//			if (xPosition % 2 == 0) {
-//				int xPositionNeighbour = xPosition + NeighboursDEFx[0][i];
-//				int yPositionNeighbour = yPosition + NeighboursDEFy[i];
-//			}
-//
-//			else if (xPosition % 2 != 0) {
-//				int xPositionNeighbour = xPosition + NeighboursDEFx[1][i];
-//				int yPositionNeighbour = yPosition + NeighboursDEFy[i];
-//			}
-//			if (SpericalEpithelium.getExpression(xPositionNeighbour,
-//					yPositionNeighbour, gene) == expressionLevel)
-//				count = count + 1;
-//
-//		}
-//		if (count >= minNeighbours && count <= maxNeighbors)
-//			return true;
-//		else
-//			return false;
-//	}
+	@Override
+	public LogicalModel getComposedModel() {
+		return null;
+	}
+
+
 }

@@ -14,6 +14,7 @@ import org.colomoto.logicalmodel.NodeInfo;
  * @author Nuno D. Mendes
  */
 public class IntegrationFunctionMapping {
+	
 	private HashMap<NodeInfo, RegulatoryIntegration> mapping = new HashMap<NodeInfo, RegulatoryIntegration>();
 
 	public IntegrationFunctionMapping() {
@@ -54,4 +55,8 @@ public class IntegrationFunctionMapping {
 		return integration.getProperComponents();
 	}
 
+	public boolean isMapped(NodeInfo node){
+		return this.mapping.containsKey(node);
+	}
+	
 }

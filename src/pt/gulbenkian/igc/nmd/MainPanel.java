@@ -4,11 +4,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -18,53 +18,85 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
-import org.ginsim.servicegui.tool.composition.integrationgrammar.IntegrationFunctionSpecification;
-import org.ginsim.servicegui.tool.composition.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
 
-import composition.integrationgrammar.IntegrationGrammarLexer;
-import composition.integrationgrammar.IntegrationGrammarParser;
-import composition.RegulatoryIntegration;
+import composition.IntegrationFunctionMapping;
+import composition.Topology;
 
-public class MainPanel extends JFrame {
+public class MainPanel extends JFrame implements CompositionDialog,
+		SimulationDialog {
 
 	/**
 	 * 
 	 */
+
 	private static final long serialVersionUID = -685430043793074531L;
 
-	private static int DEFAULT_WIDTH = 5;
-	private static int DEFAULT_HEIGHT = 5;
+	private static int DEFAULT_WIDTH = 6;
+	private static int DEFAULT_HEIGHT = 6;
 	private static JTextField userDefinedWidth = new JTextField();
 	private static JTextField userDefinedHeight = new JTextField();
 	public Color colors[] = { Color.orange, Color.green, Color.blue,
 			Color.pink, Color.yellow, Color.magenta, Color.cyan, Color.red,
 			Color.LIGHT_GRAY, Color.black };
 	private JFileChooser fc = new JFileChooser();
-
-	static DrawPolygon hexagonsPanel = null;
+	public static JCheckBox nodeBox[];
+	public ColorButton colorChooser[];
+	public static DrawPolygon hexagonsPanel = null;
 	static JPanel contentPanel = new JPanel();
 	static MapColorPanel buttonPanel = null;
-
-	private JLabel selectedFilenameLabel = new JLabel();
-
+	public static int numberOfNodes;
+	public List<NodeInfo> listNodes;
+	private static JLabel selectedFilenameLabel = new JLabel();
 	private Epithelium epithelium = new SphericalEpithelium(DEFAULT_WIDTH,
 			DEFAULT_HEIGHT);
+	public MainPanel mainPanel = this;
+
+	public JTextField initialState[];
+	public static LogicalModel model = null;
+
+	public static ArrayList<Integer> initialStateArray = null;
+	public static ArrayList<Integer> userDefinedInitialState = new ArrayList<Integer>();
 
 	public void initialize() throws Exception {
 
 		UIManager.setLookAndFeel(UIManager
 				.getCrossPlatformLookAndFeelClassName());
 
+		userDefinedWidth.setHorizontalAlignment(JTextField.CENTER);
+		userDefinedHeight.setHorizontalAlignment(JTextField.CENTER);
 		userDefinedWidth.setText("" + DEFAULT_WIDTH);
 		userDefinedHeight.setText("" + DEFAULT_HEIGHT);
+
+		userDefinedWidth.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent arg0) {
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				sanityCheckDimension(userDefinedWidth);
+			}
+		});
+
+		userDefinedHeight.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent arg0) {
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				sanityCheckDimension(userDefinedHeight);
+			}
+		});
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -88,25 +120,60 @@ public class MainPanel extends JFrame {
 		if (logicalModel == null)
 			return;
 
-		epithelium.setModel(logicalModel);
+		epithelium.setUnitaryModel(logicalModel);
 		getButtonPanel();
 
 	}
 
 	public static int getGridWidth() {
-		String widthString = userDefinedWidth.getText();
-		int x = Integer.parseInt(widthString);
-		if (x % 2 != 0)
-			x = x + 1;
-		return x;
+		// sanityCheckDimension(userDefinedWidth);
+		return Integer.parseInt(userDefinedWidth.getText());
 	}
 
 	public static int getGridHeight() {
-		String heightString = userDefinedHeight.getText();
-		int x = Integer.parseInt(heightString);
-		if (x % 2 != 0)
-			x = x + 1;
-		return x;
+		// sanityCheckDimension(userDefinedHeight);
+		return Integer.parseInt(userDefinedHeight.getText());
+	}
+
+	private void sanityCheckDimension(JTextField userDefined) {
+		String dimString = userDefined.getText();
+		int w = Integer.parseInt(dimString);
+		w = (w % 2 == 0) ? w : w + 1;
+		userDefined.setText("" + w);
+	}
+
+	public void setmodel(LogicalModel chosenmodel) {
+		model = chosenmodel;
+	}
+
+	public static LogicalModel getmodel() {
+		return model;
+	}
+
+	public void setInitialState(ArrayList<Integer> userDefinedInitialState2) {
+		initialStateArray = userDefinedInitialState2;
+
+	}
+
+	public static ArrayList<Integer> getInitialState() {
+		return initialStateArray;
+	}
+
+	public void setupInitialState(int NodeIndex) {
+		LogicalModel model = epithelium.getUnitaryModel();
+		setmodel(model);
+		listNodes = model.getNodeOrder();
+		userDefinedInitialState = new ArrayList<Integer>();
+
+		if (!listNodes.get(NodeIndex).isInput()) {
+			initialState[NodeIndex] = new JTextField("0");
+			initialState[NodeIndex].setBounds(60, 10 + NodeIndex * 60, 20, 30);
+			buttonPanel.add(initialState[NodeIndex]);
+
+			userDefinedInitialState.add(Integer
+					.parseInt(initialState[NodeIndex].getText()));
+
+		}
 	}
 
 	public MapColorPanel getButtonPanel() {
@@ -116,39 +183,67 @@ public class MainPanel extends JFrame {
 		MainPanel.buttonPanel.setBackground(Color.white);
 		MainPanel.buttonPanel.setLayout(null);
 
-		final LogicalModel model = epithelium.getModel();
-
+		LogicalModel model = epithelium.getUnitaryModel();
+		setmodel(model);
 
 		if (model != null) {
 			MainPanelDescription.setupOptionsRunPanel();
 			MainPanelDescription.setupOptionsStartPanel();
+			MainPanelDescription.setupRollOverPanel();
+			MainPanelDescription.setupIterationNumberPanel();
 
-			List<NodeInfo> listNodes = model.getNodeOrder();
+			listNodes = model.getNodeOrder();
+			userDefinedInitialState = new ArrayList<Integer>();
 
-			for (NodeInfo node : listNodes) {
-				final int position = listNodes.indexOf(node);
+			nodeBox = new JCheckBox[listNodes.size()];
+			initialState = new JTextField[listNodes.size()];
 
-				JCheckBox nodeBox = new JCheckBox(node.getNodeID());
-				nodeBox.setBackground(Color.white);
-				nodeBox.setBounds(10, 10 + position * 60, 50, 30);
-				final ColorButton colorChooser = new ColorButton(
-						MainPanel.buttonPanel);
-				colorChooser.setBounds(60, 10 + position * 60, 30, 30);
-				colorChooser.setBackground(colors[position]);
+			colorChooser = new ColorButton[listNodes.size()];
+			hexagonsPanel.initializeCellGenes(listNodes.size());
+			final int size = listNodes.size();
+
+			for (int i = 0; i < listNodes.size(); i++) {
+
+				nodeBox[i] = new JCheckBox(listNodes.get(i).getNodeID());
+				nodeBox[i].setBackground(Color.white);
+				nodeBox[i].setBounds(10, 10 + i * 60, 50, 30);
+
+				setupInitialState(i);
+
+				final JCheckBox checkbox = nodeBox[i];
+
+				nodeBox[i].addActionListener(new ActionListener() {
+
+					public void actionPerformed(ActionEvent event) {
+
+						if (checkbox.isSelected())
+							hexagonsPanel.countSelected++;
+						else
+							hexagonsPanel.countSelected--;
+						hexagonsPanel.initializeCellGenes(size);
+						hexagonsPanel.paintComponent(hexagonsPanel
+								.getGraphics());
+
+					}
+
+				});
+
+				colorChooser[i] = new ColorButton(MainPanel.buttonPanel,
+						hexagonsPanel);
+				colorChooser[i].setBounds(90, 10 + i * 60, 20, 30);
+				colorChooser[i].setBackground(colors[i]);
 				JComboBox comboBox = null;
-				buttonPanel.add(nodeBox);
-				buttonPanel.add(colorChooser);
-				//nodeBox.addItemListener(this);
-				
+				buttonPanel.add(nodeBox[i]);
 
-				final String nodeId = listNodes.get(position).getNodeID();
+				buttonPanel.add(colorChooser[i]);
+
+				final String nodeId = listNodes.get(i).getNodeID();
 				// String SBMLpath = ;
-				final int maxId = listNodes.get(position).getMax();
+				final int maxId = listNodes.get(i).getMax();
 
-				if (node.isInput()) {
+				if (listNodes.get(i).isInput()) {
 					comboBox = new JComboBox();
-
-					comboBox.setBounds(100, 10 + position * 60, 120, 30);
+					comboBox.setBounds(130, 10 + i * 60, 120, 30);
 					comboBox.addItem("Select input");
 					comboBox.addItem(InputOption
 							.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));
@@ -158,9 +253,9 @@ public class MainPanel extends JFrame {
 
 					final JPanel jpanel = new JPanel();
 					jpanel.setBackground(Color.white);
-					jpanel.setBounds(230, 10 + position * 60, 300, 60);
+					jpanel.setBounds(250, 10 + i * 60, 300, 60);
 					jpanel.setLayout(null);
-
+					final ColorButton colorChooserBtn = colorChooser[i];
 					comboBox.addActionListener(new ActionListener() {
 
 						@Override
@@ -177,39 +272,43 @@ public class MainPanel extends JFrame {
 								case ENVIRONMENTAL_INPUT: {
 
 									JButton btnDraw = new JButton("Draw");
-									btnDraw.setBounds(0, 0, 100, 30);
+									btnDraw.setBounds(10, 0, 100, 30);
 									btnDraw.removeActionListener(null);
 									btnDraw.addActionListener(new ActionListener() {
 										public void actionPerformed(
 												ActionEvent e) {
-											final Map map=	new Map(getGridWidth(),
+											final Map map = new Map(
+													getGridWidth(),
 													getGridHeight(),
-													colorChooser
-													.getBackground(),
-													nodeId, maxId);
+													colorChooserBtn
+															.getBackground(),
+													nodeId, maxId, mainPanel);
 											map.initialize();
 											map.initializeCells(map.cells);
 											map.panelLights.removeAll();
-											JButton btnAll=new JButton("Mark All");
-											JButton btnClearAll=new JButton("Clear All");
-											btnAll.setBounds(0,0,100,30);
-											btnClearAll.setBounds(0,110,100,30);
+											JButton btnAll = new JButton(
+													"Mark All");
+											JButton btnClearAll = new JButton(
+													"Clear All");
+											btnAll.setBounds(0, 0, 100, 20);
+											btnClearAll.setBounds(0, 110, 100,
+													30);
 											btnAll.addActionListener(new ActionListener() {
 												public void actionPerformed(
-														ActionEvent e){
+														ActionEvent e) {
 													map.markAllCells(map.cells);
 
 												}
 											});
 
-											btnClearAll.addActionListener(new ActionListener() {
-												public void actionPerformed(
-														ActionEvent e){
-													map.clearAllCells(map.cells);
+											btnClearAll
+													.addActionListener(new ActionListener() {
+														public void actionPerformed(
+																ActionEvent e) {
+															map.clearAllCells(map.cells);
 
-												}
-											});
-
+														}
+													});
 
 											map.panelLights.add(btnAll);
 											map.panelLights.add(btnClearAll);
@@ -217,59 +316,61 @@ public class MainPanel extends JFrame {
 									});
 
 									JButton btnLoad = new JButton("Load");
-									btnLoad.setBounds(110, 0, 100, 30);
+									btnLoad.setBounds(120, 0, 100, 30);
 									btnLoad.addActionListener(new ActionListener() {
 										public void actionPerformed(
 												ActionEvent e) {
 											JFileChooser fc = new JFileChooser();
-
 											fc.setDialogTitle("Choose file");
 											int open = fc.showOpenDialog(null);
 											if (open == 0) {
 												File file = fc
 														.getSelectedFile();
-
-												System.out.println(colorChooser
-														.getBackground());
+												System.out
+														.println(colorChooserBtn
+																.getBackground());
 												final Map map = new Map(
 														getGridWidth(),
 														getGridHeight(),
-														colorChooser
-														.getBackground(),
-														nodeId, maxId);
-												final ArrayList<ArrayList<Cell>> cells = DrawPolygon.getMappedCells(file
+														colorChooserBtn
+																.getBackground(),
+														nodeId, maxId,
+														mainPanel);
+												final ArrayList<ArrayList<Cell>> cells = DrawPolygonM.getMappedCells(file
 														.getAbsolutePath());
-												map.MapPanel.cells=cells;
-												map.cells=cells;
+												map.MapPanel.cells = cells;
+												map.cells = cells;
+
 												map.initialize();
 												map.panelLights.removeAll();
-												JButton btnAll=new JButton("Mark All");
-												JButton btnClearAll=new JButton("Clear All");
-												btnAll.setBounds(0,0,100,30);
-												btnClearAll.setBounds(0,110,100,30);
+												JButton btnAll = new JButton(
+														"Mark All");
+												JButton btnClearAll = new JButton(
+														"Clear All");
+												btnAll.setBounds(0, 0, 100, 30);
+												btnClearAll.setBounds(0, 110,
+														100, 30);
 												btnAll.addActionListener(new ActionListener() {
 													public void actionPerformed(
-															ActionEvent e){
+															ActionEvent e) {
 														map.markAllCells(map.cells);
 
 													}
 												});
 
-												btnClearAll.addActionListener(new ActionListener() {
-													public void actionPerformed(
-															ActionEvent e){
-														map.clearAllCells(map.cells);
+												btnClearAll
+														.addActionListener(new ActionListener() {
+															public void actionPerformed(
+																	ActionEvent e) {
+																map.clearAllCells(map.cells);
 
-													}
-												});
-
+															}
+														});
 
 												map.panelLights.add(btnAll);
-												map.panelLights.add(btnClearAll);
-
-
+												map.panelLights
+														.add(btnClearAll);
 											}
-
 										}
 									});
 
@@ -284,18 +385,17 @@ public class MainPanel extends JFrame {
 
 								}
 
-								break;
-								
+									break;
+
 								case INTEGRATION_INPUT: {
 
 									final JTextField textFormula = new JTextField();
-									textFormula.setBounds(0, 0, 150, 30);
+									textFormula.setBounds(10, 0, 150, 30);
 									jpanel.removeAll();
 									jpanel.add(textFormula);
 									jpanel.revalidate();
 									jpanel.repaint();
 									buttonPanel.add(jpanel);
-
 									buttonPanel.revalidate();
 									buttonPanel.repaint();
 
@@ -306,19 +406,30 @@ public class MainPanel extends JFrame {
 														ActionEvent e) {
 													String logicalFunction = textFormula
 															.getText();
+													String[] result = logicalFunction
+															.split(";");
+
+													System.out
+															.println(result[0]);
+													System.out
+															.println(result[1]);
 													try {
-														IntegrationExpression expression = expressionCreator(logicalFunction);
-														//RegulatoryIntegration (expression, model);
+
+														// ANTLRDemo.Aeval(result);
+														ANTLRDemo
+																.teste(result[0]);
 													} catch (Exception e1) {
-														// TODO Auto-generated catch block
+														// TODO Auto-generated
+														// catch block
 														e1.printStackTrace();
 													}
-													
 												}
 											});
-									
-						
-									//RegulatoryIntegration (example, model);
+
+									// IntegrationFunctionSpecification.IntegrationExpression
+									// expression = null;
+
+									// RegulatoryIntegration (example, model);
 								}
 									break;
 								default: {
@@ -337,18 +448,11 @@ public class MainPanel extends JFrame {
 					});
 				}
 			}
+			setInitialState(userDefinedInitialState);
+
 		}
 
 		return buttonPanel;
-	}
-	
-	public static IntegrationExpression expressionCreator(String logicalFunction) throws Exception {
-		ANTLRStringStream in = new ANTLRStringStream(logicalFunction);
-		IntegrationGrammarLexer lexer = new IntegrationGrammarLexer(in);
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		IntegrationGrammarParser parser = new IntegrationGrammarParser(tokens);
-		return parser.eval();
-		
 	}
 
 	private enum InputOption {
@@ -380,10 +484,11 @@ public class MainPanel extends JFrame {
 
 	public void setupMainPanel() {
 
+		setSize(1100, 600);
 		contentPanel.setPreferredSize(new Dimension(1100, 600));
 		// contentPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY,2));
 		contentPanel.setBackground(Color.white);
-		this.setResizable(false);
+		this.setResizable(true);
 
 		userDefinedHeight.setColumns(20);
 		userDefinedWidth.setColumns(20);
@@ -393,7 +498,6 @@ public class MainPanel extends JFrame {
 
 		contentPanel.add(userDefinedWidth);
 		contentPanel.add(userDefinedHeight);
-		
 
 		JButton btnClose = new JButton("Close");
 		btnClose.setBounds(900, 500, 100, 30);
@@ -424,15 +528,17 @@ public class MainPanel extends JFrame {
 				MainPanelDescription.cleanButtonPanel();
 				MainPanelDescription.cleanOptionsRunPanel();
 				MainPanelDescription.cleanOptionsStartPanel();
+				MainPanelDescription.cleanIterationNumberPanel();
+				repaint();
+
+				if (MainPanelDescription.RollOverPanel != null)
+					MainPanelDescription.cleanRollOverPanel();
+				selectedFilenameLabel.setText("");
 			}
 		});
 
 		contentPanel.add(btnRestart);
-		//HashSet<Integer> a = Topology.groupNeighbors(14, 2);
-		HashSet<Integer> a  = Topology.neighborsOneDistanceAway(14);
-		//System.out.println("Here we are"+a);
-		//Topology.testNeighbors(14, 1);
-		
+
 		JButton btnModel = new JButton("Model");
 		btnModel.setBounds(230, 13, 100, 30);
 
@@ -442,6 +548,7 @@ public class MainPanel extends JFrame {
 		btnModel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				askModel();
+				teste.exp();
 
 			}
 
@@ -451,11 +558,9 @@ public class MainPanel extends JFrame {
 
 		setContentPane(contentPanel);
 		pack();
-
-		// setLocationByPlatform(true);
 		setVisible(true);
 		setLocationRelativeTo(null);
-		
+
 	}
 
 	private void askModel() {
@@ -466,9 +571,45 @@ public class MainPanel extends JFrame {
 			loadModel();
 			contentPanel.removeAll();
 			setupMainPanel();
+			teste.exp();
 
 		}
 	}
 
-	
+	@Override
+	public byte[] getInitialUnitaryValues() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public byte[] getEnvironmentalValues() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SimulationType getSimulationType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Topology getTopology() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IntegrationFunctionMapping getMapping() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LogicalModel getUnitaryModel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

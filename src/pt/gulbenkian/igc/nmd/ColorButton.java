@@ -17,10 +17,12 @@ public class ColorButton extends JButton {
 	private static final long serialVersionUID = 1L;
 	public ColorFrame frame;
 	public MapColorPanel panel;
+	public DrawPolygon dPanel;
 
-	public ColorButton(MapColorPanel panel) {
+	public ColorButton(MapColorPanel panel,DrawPolygon dPanel) {
 		this.panel = panel;
-		frame = new ColorFrame(this);
+		this.dPanel=dPanel;
+		frame = new ColorFrame(this,this.dPanel);
 
 		this.initialize();
 
@@ -32,6 +34,7 @@ public class ColorButton extends JButton {
 			public void actionPerformed(ActionEvent e) {
 
 				frame.initialize();
+				
 
 			}
 		});

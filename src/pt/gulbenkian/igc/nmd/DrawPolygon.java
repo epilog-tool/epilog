@@ -43,6 +43,9 @@ public class DrawPolygon extends JPanel {
 	private Color background = Color.WHITE;
 	private MapColorPanel mpanel = null;
 	private MainPanel mainPanel = null;
+	public ArrayList<ArrayList<CellGenes>> cellGenes;
+	public int countSelected = 0;
+	public ArrayList<ArrayList<Cell>> cells = new ArrayList<ArrayList<Cell>>();
 
 	public DrawPolygon(MainPanel frame) {
 
@@ -51,6 +54,7 @@ public class DrawPolygon extends JPanel {
 		this.setPreferredSize(new Dimension(500, 500));
 		this.mainPanel.setTitle("Hexagons");
 		this.mainPanel.setBackground(Color.cyan);
+		this.cellGenes = new ArrayList<ArrayList<CellGenes>>();
 		Container contentPane = this.mainPanel.getContentPane();
 		contentPane.add(this);
 
@@ -113,35 +117,42 @@ public class DrawPolygon extends JPanel {
 	}
 
 	public void paintComponent(Graphics g) {
-		int width = 0, height = 0, max = 0;
 
-		this.getMainPanel();
-		width = MainPanel.getGridWidth();
-		this.getMainPanel();
-		height = MainPanel.getGridHeight();
-		max = Math.max(width, height);
+		int XX = 0, YY = 0, max = 0;
+		try {
+			XX = mainPanel.getGridWidth();
+			YY = mainPanel.getGridHeight();
+			max = Math.max(XX, YY);
 
+		} catch (NumberFormatException e) {
+			System.out
+					.println("java.lang.NumberFormatException: For input string: ''");
 
-		double pxHeight = 0.0;
+		} catch (Exception e) {
 
-		if (width > 0 && height > 0) {
-			if (height == max) {
+			e.printStackTrace();
+		}
 
-				pxHeight = 500 / max;
-				pxHeight = (500 - 1 * pxHeight) / (max);
-				radius = pxHeight / Math.sqrt(3.0);
+		if (XX > 0 && YY > 0) {
+
+			if (YY == max) {
+
+				height = 500 / max;
+				height = (500 - 1 * height) / (max);
+				radius = height / Math.sqrt(3.0);
+
 			}
 
 			else {
-				radius = (500 / width) / 2;
-				pxHeight = radius * Math.sqrt(3.0);
+				radius = (500 / XX) / 2;
+
+				height = radius * Math.sqrt(3.0);
 			}
 
 			double x = 0, y = 0, centerX = radius, centerY = 0;
 
-			super.paintComponent(g);
-
-			for (int k = 0; k < width; k++) {
+			for (int k = 0; k < XX; k++) {
+				g.setColor(Color.black);
 				if (k == 0)
 					centerX = radius;
 				else
@@ -150,20 +161,74 @@ public class DrawPolygon extends JPanel {
 					centerY = radius * Math.sqrt(3.0) / 2;// h
 				else
 					centerY = radius * Math.sqrt(3.0);// h+h/2
-				for (int j = 0; j < height; j++) {
+				for (int j = 0; j < YY; j++) {
 
-					Polygon polygon = new Polygon();
+					Polygon polygon2 = new Polygon();
 
 					for (int i = 0; i < 6; i++) {
 
 						x = centerX + radius * Math.cos(i * 2 * Math.PI / 6);
 						y = centerY + radius * Math.sin(i * 2 * Math.PI / 6);
-						polygon.addPoint((int) (x), (int) (y));
+						polygon2.addPoint((int) (x), (int) (y));
 
 					}
 
-					g.drawPolygon(polygon);
-					// System.out.println(centerY);
+					if (cells.size() > 0 && mainPanel.nodeBox != null
+							&& countSelected > 0 && cells.get(k).get(j).G0 == 1) {
+
+						int red = 0, green = 0, blue = 0;
+
+						for (int i = 0; i < mainPanel.nodeBox.length; i++) {
+							if (mainPanel.nodeBox[i].isSelected()) {
+								red = red
+										+ mainPanel.colorChooser[i]
+												.getBackground().getRed();
+								green = green
+										+ mainPanel.colorChooser[i]
+												.getBackground().getGreen();
+								blue = blue
+										+ mainPanel.colorChooser[i]
+												.getBackground().getBlue();
+								for (int m = 0; m < mainPanel.getGridWidth(); m++) {
+									for (int l = 0; l < mainPanel
+											.getGridHeight(); l++) {
+										if (!mainPanel.listNodes.get(i)
+												.isInput())
+											cellGenes.get(m).get(l).Genes[i] = 1;
+										else
+											cellGenes.get(m).get(l).Genes[i] = 0;
+									}
+								}
+								System.out.println("SELECTED "
+										+ mainPanel.colorChooser[i]
+												.getBackground().getRed());
+							} else {
+								for (int m = 0; m < mainPanel.getGridWidth(); m++) {
+									for (int l = 0; l < mainPanel
+											.getGridHeight(); l++) {
+										cellGenes.get(m).get(l).Genes[i] = 0;
+									}
+								}
+							}
+
+						}
+						red = red / countSelected;
+						green = green / countSelected;
+						blue = blue / countSelected;
+
+						System.out.println(red);
+						g.setColor(new Color(red, green, blue));
+						g.fillPolygon(polygon2);
+						g.setColor(Color.black);
+						g.drawPolygon(polygon2);
+
+					} else {
+						g.setColor(Color.white);
+						g.fillPolygon(polygon2);
+						g.setColor(Color.black);
+						g.drawPolygon(polygon2);
+
+					}
 
 					if (k % 2 == 0)
 						centerY = (j + 1 + 0.5) * radius * Math.sqrt(3.0);
@@ -172,11 +237,7 @@ public class DrawPolygon extends JPanel {
 
 				}
 
-				// System.out.println(centerX);
-
 			}
-			// System.out.println("count "+count+ " h "+radius*Math.sqrt(3.0)+
-			// " Y "+centerY+" "+(500-radius*Math.sqrt(3.0))+" nh "+numberHex);
 		} else {
 			System.out.println("XX e YY têm que ser maiores do que zero");
 
@@ -204,9 +265,8 @@ public class DrawPolygon extends JPanel {
 
 			// ---------
 
-			final ColorButton l = new ColorButton(panel);
+			final ColorButton l = new ColorButton(panel, this);
 			JComboBox jc1 = new JComboBox();
-
 
 			j.setBackground(Color.white);
 			j.setBounds(10, 10 + pos * 60, 50, 30);
@@ -235,40 +295,10 @@ public class DrawPolygon extends JPanel {
 							JButton btnDraw = new JButton("Draw");
 							btnDraw.setBounds(0, 0, 100, 30);
 							background = l.getBackground();
-							// btnDraw.addActionListener(new ActionListener() {
-							// public void actionPerformed(ActionEvent e) {
-							// new Map(textFX.getText(), textFY.getText(),
-							// l.getBackground(), SBMLpath,
-							// nodeId, maxId).initialize();
-							//
-							// }
-							// });
 
 							JButton btnLoad = new JButton("Load");
 							btnLoad.setBounds(110, 0, 100, 30);
 							background = l.getBackground();
-//							btnLoad.addActionListener(new ActionListener() {
-//								public void actionPerformed(ActionEvent e) {
-//									JFileChooser fc = new JFileChooser();
-//
-//									fc.setDialogTitle("Choose file");
-//									int open = fc.showOpenDialog(null);
-//									if (open == 0) {
-//										File file = fc.getSelectedFile();
-//
-//										System.out.println(l.getBackground());
-//										Map map = new Map(textFX.getText(),
-//												textFY.getText(), l
-//														.getBackground(),
-//												SBMLpath, nodeId, maxId);
-//										final ArrayList<ArrayList<Cell>> cells = getMappedCells(file
-//												.getAbsolutePath());
-//										map.initialize(cells);
-//
-//									}
-//
-//								}
-//							});
 
 							mpanel.revalidate();
 							mpanel.repaint();
@@ -314,14 +344,14 @@ public class DrawPolygon extends JPanel {
 		}
 
 		try {
-			XX = MainPanel.getGridWidth();
-			YY = MainPanel.getGridHeight();
+			XX = mainPanel.getGridWidth();
+			YY = mainPanel.getGridHeight();
 			max = Math.max(XX, YY);
 			System.out.println("max " + max);
 			System.out.println("XX " + XX);
 		} catch (NumberFormatException e) {
 			System.out
-					.println("java.lang.NumberFormatException: For input string: ''");
+					.println(e);
 
 		} catch (Exception e) {
 
@@ -377,25 +407,14 @@ public class DrawPolygon extends JPanel {
 
 					g.setColor(Color.black);
 					g.drawPolygon(polygon2);
-					// System.out.println(centerY);
-					/*
-					 * if(cells.get(k).get(j).G0==0){ g.setColor(Color.blue);
-					 * g.fillPolygon(polygon2);
-					 * 
-					 * }
-					 */
+
 					if (k % 2 == 0)
 						centerY = (j + 1 + 0.5) * radius * Math.sqrt(3.0);
 					else
 						centerY = (j + 2) * radius * Math.sqrt(3.0);
 
 				}
-
-				// System.out.println(centerX);
-
 			}
-			// System.out.println("count "+count+ " h "+radius*Math.sqrt(3.0)+
-			// " Y "+centerY+" "+(500-radius*Math.sqrt(3.0))+" nh "+numberHex);
 		} else {
 			System.out.println("XX e YY têm que ser maiores do que zero");
 
@@ -408,28 +427,19 @@ public class DrawPolygon extends JPanel {
 		return ((selected.length == 0) ? "null" : (String) selected[0]);
 	}
 
-	public static ArrayList<ArrayList<Cell>> getMappedCells(String file_name) {
-		ArrayList<ArrayList<Cell>> cells = new ArrayList<ArrayList<Cell>>();
+	public void initializeCellGenes(int size) {
+		cellGenes = new ArrayList<ArrayList<CellGenes>>();
 
-		try {
-			ObjectOutputStream oos = new ObjectOutputStream(
-					new FileOutputStream(file_name, true));
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
-					file_name));
+		for (int i = 0; i < mainPanel.getGridWidth(); i++) {
 
-			cells = (ArrayList<ArrayList<Cell>>) ois.readObject();
-		} catch (FileNotFoundException e) { // TODO Auto-generated catch block
-
-		} catch (IOException e) { // TODO Auto-generated catch block
-
-		} catch (ClassNotFoundException e) { // TODO Auto-generated catch block
+			cellGenes.add(new ArrayList<CellGenes>());
+			for (int j = 0; j < mainPanel.getGridHeight(); j++) {
+				cellGenes.get(i).add(new CellGenes(size));
+				// System.out.println("size "+cellGenes.get(i).size());
+			}
 
 		}
 
-		finally {
-			return cells;
-
-		}
 	}
 
 }

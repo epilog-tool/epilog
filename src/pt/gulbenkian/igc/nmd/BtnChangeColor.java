@@ -37,6 +37,7 @@ public class BtnChangeColor extends JButton {
 					cb.panel.mapcolor=clr;
 					cb.panel.revalidate();
 					cb.panel.paint(cb.panel.getGraphics());
+					cb.dPanel.paintComponent(cb.dPanel.getGraphics());
 					
 					
 					

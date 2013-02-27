@@ -28,6 +28,7 @@ import javax.swing.JPanel;
 
 public class ColorFrame extends JFrame {
 
+
 	/**
 	 * 
 	 */
@@ -49,8 +50,9 @@ public class ColorFrame extends JFrame {
 	public BtnChangeColor btt12;
 	public JButton buttonOk = new JButton("Ok");
 	public JButton buttonCancel = new JButton("Cancel");
+	public DrawPolygon dPanel;
 
-	public ColorFrame(ColorButton colorb) {
+	public ColorFrame(ColorButton colorb,DrawPolygon dPanel) {
 
 		Color brown = new Color(165, 42, 42);
 		Color oliveGreen = new Color(128, 128, 0);
@@ -85,6 +87,7 @@ public class ColorFrame extends JFrame {
 		btt11.initialize();
 		btt12 = new BtnChangeColor(colorb, thistle);
 		btt12.initialize();
+		this.dPanel=dPanel;
 	}
 
 	public void initialize() {
@@ -135,11 +138,6 @@ public class ColorFrame extends JFrame {
 				dispose();
 			}
 		});
-
-		// buttonCancel.setBounds(120, 180, 80, 30);
-		// contentPane.add(buttonCancel);
-
-		//System.out.println("teste");
 
 	}
 

@@ -31,10 +31,12 @@ public class Map extends JFrame {
 	public String nodeId;
 	public static int maxId;
 	public int count;
-	private JButton newbtn;
+	//private JButton newbtn;
 	public static JPanel panelLights;
+	public static MainPanel mainPanel;
 
-	public Map(int x, int y, final Color color, String nodeId, int maxId) {
+	public Map(int x, int y, final Color color, String nodeId, int maxId,
+			MainPanel mainPanel) {
 		super("Map");
 		setLayout(null);
 		this.color = color;
@@ -44,10 +46,11 @@ public class Map extends JFrame {
 		this.endX = 0;
 		this.endY = 0;
 		this.nodeId = nodeId;
-		this.maxId = 5;
+		this.maxId = maxId;
 		this.count = 0;
+		this.mainPanel = mainPanel;
 
-		MapPanel = new DrawPolygonM(this, x, y, nodeId, maxId);
+		MapPanel = new DrawPolygonM(this, x, y, nodeId, maxId, this.mainPanel);
 		contentPane.setBackground(Color.white);
 
 		MapPanel.setLayout(null);
@@ -73,9 +76,14 @@ public class Map extends JFrame {
 		JButton buttonClose = new JButton("Close");
 		buttonClose.setBounds(410, 500, 100, 30);
 		MapPanel.add(buttonClose);
+		final MainPanel Mainpanel = mainPanel;
 		buttonClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
+				Mainpanel.hexagonsPanel.cells = cells;
+				Mainpanel.hexagonsPanel.paintComponent(Mainpanel.hexagonsPanel
+						.getGraphics());
+
 			}
 		});
 		btnSave.addActionListener(new ActionListener() {
@@ -91,8 +99,7 @@ public class Map extends JFrame {
 					System.out.println(file.getAbsolutePath());
 
 					try {
-
-						// MapPanel.repaint();
+						//MapPanel.repaint();
 						FileOutputStream fos = new FileOutputStream(file
 								.getAbsolutePath());
 
@@ -124,12 +131,12 @@ public class Map extends JFrame {
 		setLocationRelativeTo(null);
 	}
 
-	private int toggleCell(int i, int j) {
-		if (cells.get(i).get(j).G0 == 1)
-			return 0;
-		else
-			return 1;
-	}
+//	private int toggleCell(int i, int j) {
+//		if (cells.get(i).get(j).G0 == 1)
+//			return 0;
+//		else
+//			return 1;
+//	}
 
 	public void initialize() {
 
@@ -166,13 +173,12 @@ public class Map extends JFrame {
 					j = (int) (ind_jt - i % 2 + deltaj);
 				}
 
-				System.out.println("i " + i + ", j " + j + " "
-						+ MainPanel.getGridWidth());
+				//System.out.println("i " + i + ", j " + j + " "+ MainPanel.getGridWidth());
 
 				// The mouse is over a cell that belongs to the grid
 
-				if (i < MainPanel.getGridWidth()
-						&& j < MainPanel.getGridHeight() && i >= 0 && j >= 0) {
+				if (i < mainPanel.getGridWidth()
+						&& j < mainPanel.getGridHeight() && i >= 0 && j >= 0) {
 					DrawPolygonM.drawHexagon((int) i, (int) j,
 							MapPanel.getGraphics(), color);
 					System.out.println(cells.get(i).get(j).G0);
@@ -255,12 +261,12 @@ public class Map extends JFrame {
 				}
 
 				System.out.println("i " + i + ", j " + j + " "
-						+ MainPanel.getGridWidth());
+						+ mainPanel.getGridWidth());
 
 				// The mouse is over a cell that belongs to the grid
 
-				if (i < MainPanel.getGridWidth()
-						&& j < MainPanel.getGridHeight() && i >= 0 && j >= 0) {
+				if (i < mainPanel.getGridWidth()
+						&& j < mainPanel.getGridHeight() && i >= 0 && j >= 0) {
 
 					MarkCell(cells.get(i).get(j), i, j, color);
 
@@ -286,10 +292,10 @@ public class Map extends JFrame {
 	public void initializeCells(ArrayList<ArrayList<Cell>> cells) {
 		// adicionar try catch para textFx e fy
 
-		for (int i = 0; i < MainPanel.getGridWidth(); i++) {
+		for (int i = 0; i < mainPanel.getGridWidth(); i++) {
 
 			cells.add(new ArrayList<Cell>());
-			for (int j = 0; j < MainPanel.getGridHeight(); j++) {
+			for (int j = 0; j < mainPanel.getGridHeight(); j++) {
 				int G0 = 0;
 				cells.get(i).add(new Cell(G0));
 			}
@@ -313,10 +319,8 @@ public class Map extends JFrame {
 		else if (c.G0 > maxId) {
 			System.out.println(c.G0);
 			c.G0 = 0;
-			c.color1 = Color.white;
 			System.out.println(c.G0);
 			MapPanel.clearHexagon(i, j, MapPanel.getGraphics());
-
 		} else {
 			Color nColor = c.color1;
 			// c.color1 = c.color1
@@ -325,7 +329,7 @@ public class Map extends JFrame {
 			float hsbVals[] = Color.RGBtoHSB(c.color1.getRed(),
 					c.color1.getGreen(), c.color1.getBlue(), null);
 			c.color1 = Color.getHSBColor(hsbVals[0], hsbVals[1],
-					0.8f * hsbVals[2]);
+					0.91f * hsbVals[2]);
 
 			MapPanel.drawHexagon(i, j, MapPanel.getGraphics(), c.color1);
 			c.G0++;
@@ -337,12 +341,10 @@ public class Map extends JFrame {
 	public void clearAllCells(ArrayList<ArrayList<Cell>> cells) {
 		// adicionar try catch para textFx e fy
 
-		for (int i = 0; i < MainPanel.getGridWidth(); i++) {
-			for (int j = 0; j < MainPanel.getGridHeight(); j++) {
-
+		for (int i = 0; i < mainPanel.getGridWidth(); i++) {
+			for (int j = 0; j < mainPanel.getGridHeight(); j++) {
 				MapPanel.clearHexagon(i, j, MapPanel.getGraphics());
 				cells.get(i).get(j).G0 = 0;
-				cells.get(i).get(j).color1 = Color.white;
 
 			}
 
@@ -353,8 +355,8 @@ public class Map extends JFrame {
 	public void markAllCells(ArrayList<ArrayList<Cell>> cells) {
 		// adicionar try catch para textFx e fy
 		clearAllCells(cells);
-		for (int i = 0; i < MainPanel.getGridWidth(); i++) {
-			for (int j = 0; j < MainPanel.getGridHeight(); j++) {
+		for (int i = 0; i < mainPanel.getGridWidth(); i++) {
+			for (int j = 0; j < mainPanel.getGridHeight(); j++) {
 
 				MarkCell(cells.get(i).get(j), i, j, color);
 
