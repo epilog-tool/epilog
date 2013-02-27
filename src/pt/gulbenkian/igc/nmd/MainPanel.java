@@ -1,6 +1,7 @@
 package pt.gulbenkian.igc.nmd;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,27 +43,35 @@ public class MainPanel extends JFrame implements CompositionDialog,
 	private static int DEFAULT_HEIGHT = 6;
 	private static JTextField userDefinedWidth = new JTextField();
 	private static JTextField userDefinedHeight = new JTextField();
+	private static JLabel selectedFilenameLabel = new JLabel();
+	private JFileChooser fc = new JFileChooser();
+	public static LogicalModel model = null;
+	
+	
 	public Color colors[] = { Color.orange, Color.green, Color.blue,
 			Color.pink, Color.yellow, Color.magenta, Color.cyan, Color.red,
 			Color.LIGHT_GRAY, Color.black };
-	private JFileChooser fc = new JFileChooser();
 	public static JCheckBox nodeBox[];
 	public ColorButton colorChooser[];
-	public static DrawPolygon hexagonsPanel = null;
-	static JPanel contentPanel = new JPanel();
 	static MapColorPanel buttonPanel = null;
 	public static int numberOfNodes;
 	public List<NodeInfo> listNodes;
-	private static JLabel selectedFilenameLabel = new JLabel();
+	public JTextField initialState[];
+		public static ArrayList<Integer> initialStateArray = null;
+	public static ArrayList<Integer> userDefinedInitialState = new ArrayList<Integer>();	
+	
+	public static DrawPolygon hexagonsPanel = null;
+	
+	static Container contentPanel = new JPanel();
+	
+	
+
+	
 	private Epithelium epithelium = new SphericalEpithelium(DEFAULT_WIDTH,
 			DEFAULT_HEIGHT);
 	public MainPanel mainPanel = this;
 
-	public JTextField initialState[];
-	public static LogicalModel model = null;
 
-	public static ArrayList<Integer> initialStateArray = null;
-	public static ArrayList<Integer> userDefinedInitialState = new ArrayList<Integer>();
 
 	public void initialize() throws Exception {
 
@@ -178,10 +187,10 @@ public class MainPanel extends JFrame implements CompositionDialog,
 
 	public MapColorPanel getButtonPanel() {
 
-		MainPanel.buttonPanel = new MapColorPanel(Color.white);
-		MainPanel.buttonPanel.setBounds(530, 130, 500, 500);
-		MainPanel.buttonPanel.setBackground(Color.white);
-		MainPanel.buttonPanel.setLayout(null);
+		buttonPanel = new MapColorPanel(Color.white);
+		buttonPanel.setBounds(530, 130, 500, 500);
+		buttonPanel.setBackground(Color.white);
+		buttonPanel.setLayout(null);
 
 		LogicalModel model = epithelium.getUnitaryModel();
 		setmodel(model);
@@ -483,6 +492,8 @@ public class MainPanel extends JFrame implements CompositionDialog,
 	}
 
 	public void setupMainPanel() {
+		
+		contentPanel = getContentPane();
 
 		setSize(1100, 600);
 		contentPanel.setPreferredSize(new Dimension(1100, 600));
@@ -556,6 +567,12 @@ public class MainPanel extends JFrame implements CompositionDialog,
 
 		contentPanel.add(btnModel);
 
+		
+		// Adding overall ScrollPane
+		JScrollPane scrollPane = new JScrollPane(getContentPane());
+		setContentPane(scrollPane);
+		
+		
 		setContentPane(contentPanel);
 		pack();
 		setVisible(true);
