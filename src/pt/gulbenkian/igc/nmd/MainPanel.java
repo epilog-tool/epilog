@@ -521,7 +521,7 @@ public class MainPanel extends JFrame implements CompositionDialog,
 
 		hexagonsPanel = new DrawPolygon(this);
 		// hexagonsPanel.setBorder(BorderFactory.createLineBorder(Color.blue,5));
-		// hexagonsPanel.setBackground(Color.cyan);
+		
 		hexagonsPanel.setBounds(10, 50, 500, 500);
 
 		contentPanel.setLayout(null);

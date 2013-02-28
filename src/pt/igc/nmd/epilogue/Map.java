@@ -1,4 +1,4 @@
-package pt.gulbenkian.igc.nmd;
+package pt.igc.nmd.epilogue;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;

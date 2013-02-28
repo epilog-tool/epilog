@@ -107,8 +107,8 @@ public class DrawPolygonM extends JPanel {
 
 		int XX = 0, YY = 0, max = 0;
 		try {
-			XX = mainPanel.getGridWidth();
-			YY = mainPanel.getGridHeight();
+			XX = StartPanel.getGridWidth();
+			YY = StartPanel.getGridHeight();
 			max = Math.max(XX, YY);
 			System.out.println("max " + max);
 		} catch (NumberFormatException e) {

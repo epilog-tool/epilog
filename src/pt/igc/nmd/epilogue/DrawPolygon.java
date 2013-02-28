@@ -22,10 +22,13 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.colomoto.logicalmodel.NodeInfo;
+
+import pt.gulbenkian.igc.nmd.CellGenes;
 
 public class DrawPolygon extends JPanel {
 
@@ -36,30 +39,103 @@ public class DrawPolygon extends JPanel {
 
 	private double height = 0.0, radius = 0.0;
 
-	private Color colors[] = { Color.orange, Color.green, Color.blue,
-			Color.pink, Color.yellow, Color.magenta, Color.cyan, Color.red,
-			Color.LIGHT_GRAY, Color.black };
-
-	private Color background = Color.WHITE;
-	private MapColorPanel mpanel = null;
+	// private Color colors[] = { Color.orange, Color.green, Color.blue,
+	// Color.pink, Color.yellow, Color.magenta, Color.cyan, Color.red,
+	// Color.LIGHT_GRAY, Color.black };
+	public List<NodeInfo> listNodes;
+	// private Color background = Color.WHITE;
+	// private MapColorPanel mpanel = null;
 	private MainPanel mainPanel = null;
 	public ArrayList<ArrayList<CellGenes>> cellGenes;
 	public int countSelected = 0;
 	public ArrayList<ArrayList<Cell>> cells = new ArrayList<ArrayList<Cell>>();
 
-	public DrawPolygon(MainPanel frame) {
+	public DrawPolygon() {
 
-		this.mainPanel = frame;
-		this.setBackground(background);
 		this.setPreferredSize(new Dimension(500, 500));
-		frame.setBackground(Color.white);
 		this.cellGenes = new ArrayList<ArrayList<CellGenes>>();
-		Container contentPane = this.mainPanel.getContentPane();
-		contentPane.add(this);
 
 	}
 
+	public void paintComponent(Graphics g) {
 
+		int XX = 0, YY = 0, max = 0;
+		try {
+			XX = StartPanel.getGridWidth();
+			YY = StartPanel.getGridHeight();
+			max = Math.max(XX, YY);
+
+		} catch (NumberFormatException e) {
+			System.out
+					.println("java.lang.NumberFormatException: For input string: ''");
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+		if (XX > 0 && YY > 0) {
+
+			if (YY == max) {
+
+				height = 500 / max;
+				height = (500 - 1 * height) / (max);
+				radius = height / Math.sqrt(3.0);
+
+			}
+
+			else {
+				radius = (500 / XX) / 2;
+
+				height = radius * Math.sqrt(3.0);
+			}
+
+			double x = 0, y = 0, centerX = radius, centerY = 0;
+
+			for (int k = 0; k < XX; k++) {
+				g.setColor(Color.black);
+				if (k == 0)
+					centerX = radius;
+				else
+					centerX = (1.5 * radius * (k)) + radius;
+				if (k % 2 == 0)
+					centerY = radius * Math.sqrt(3.0) / 2;// h
+				else
+					centerY = radius * Math.sqrt(3.0);// h+h/2
+				for (int j = 0; j < YY; j++) {
+
+					Polygon polygon2 = new Polygon();
+
+					for (int i = 0; i < 6; i++) {
+
+						x = centerX + radius * Math.cos(i * 2 * Math.PI / 6);
+						y = centerY + radius * Math.sin(i * 2 * Math.PI / 6);
+						polygon2.addPoint((int) (x), (int) (y));
+
+					}
+
+					if (1 == 1) {
+						g.setColor(Color.white);
+						g.fillPolygon(polygon2);
+						g.setColor(Color.black);
+						g.drawPolygon(polygon2);
+
+					}
+
+					if (k % 2 == 0)
+						centerY = (j + 1 + 0.5) * radius * Math.sqrt(3.0);
+					else
+						centerY = (j + 2) * radius * Math.sqrt(3.0);
+
+				}
+
+			}
+		} else {
+			System.out.println("XX e YY têm que ser maiores do que zero");
+
+		}
+
+	}
 
 	public void drawHexagon(int i, int j, Graphics g) {
 		double centerX = 0, centerY = 0, x = 0, y = 0;
@@ -113,9 +189,8 @@ public class DrawPolygon extends JPanel {
 
 	}
 
-	
 	public void initializeCellGenes(int size) {
-		
+
 		cellGenes = new ArrayList<ArrayList<CellGenes>>();
 
 		for (int i = 0; i < StartPanel.getGridWidth(); i++) {
@@ -123,7 +198,7 @@ public class DrawPolygon extends JPanel {
 			cellGenes.add(new ArrayList<CellGenes>());
 			for (int j = 0; j < StartPanel.getGridHeight(); j++) {
 				cellGenes.get(i).add(new CellGenes(size));
-				 System.out.println("size "+cellGenes.get(i).size());
+				System.out.println("size " + cellGenes.get(i).size());
 			}
 
 		}

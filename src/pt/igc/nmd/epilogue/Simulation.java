@@ -1,4 +1,4 @@
-package pt.gulbenkian.igc.nmd;
+package pt.igc.nmd.epilogue;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;

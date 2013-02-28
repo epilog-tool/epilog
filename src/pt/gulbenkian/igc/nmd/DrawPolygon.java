@@ -52,7 +52,7 @@ public class DrawPolygon extends JPanel {
 		this.mainPanel = frame;
 		this.setBackground(background);
 		this.setPreferredSize(new Dimension(500, 500));
-		this.mainPanel.setTitle("Hexagons");
+	this.mainPanel.setTitle("Hexagons");
 		this.mainPanel.setBackground(Color.cyan);
 		this.cellGenes = new ArrayList<ArrayList<CellGenes>>();
 		Container contentPane = this.mainPanel.getContentPane();

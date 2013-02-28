@@ -1,7 +1,11 @@
 package pt.igc.nmd.epilogue;
 
-import javax.swing.JFrame;
+import java.awt.Color;
+
+
+
 import javax.swing.JPanel;
+
 
 public class HexagonsPanel extends JPanel {
 
@@ -12,7 +16,6 @@ public class HexagonsPanel extends JPanel {
 	public static DrawPolygon hexagonsPanel = null;
 	private MainPanel mainPanel = new MainPanel();
 
-	
 	public HexagonsPanel() {
 		init();
 
@@ -20,11 +23,20 @@ public class HexagonsPanel extends JPanel {
 
 	private JPanel init() {
 
-		hexagonsPanel = new DrawPolygon(mainPanel);
+		hexagonsPanel = new DrawPolygon();
 		// hexagonsPanel.setBorder(BorderFactory.createLineBorder(Color.blue,5));
-		// hexagonsPanel.setBackground(Color.cyan);
+		hexagonsPanel.setBackground(Color.red);
 
 		setLayout(null);
 		return hexagonsPanel;
+	}
+	
+	
+	public static void paintHexagons() {
+		MainPanel.hexagonsPanel.cellGenes.clear();
+		
+		DrawPolygon hexagonsPanel = MainPanel.hexagonsPanel;
+
+		hexagonsPanel.paintComponent(hexagonsPanel.getGraphics());
 	}
 }

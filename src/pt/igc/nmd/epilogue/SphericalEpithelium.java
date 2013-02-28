@@ -21,6 +21,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	@Override
 	public LogicalModel getUnitaryModel() {
+		System.out.println("getUnitaryModel()");
 		return this.unitaryModel;
 	}
 
