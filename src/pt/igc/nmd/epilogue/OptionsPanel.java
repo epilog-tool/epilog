@@ -18,23 +18,23 @@ public class OptionsPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private RollOver rollOver = null;
 	private RunStopButton runButton = null;
 	private JButton stepButton = null;
 	private IterationLabel iterationLabel = null;
+	
+	private MainPanel mainPanel;
 
-	public OptionsPanel() {
+	public OptionsPanel(MainPanel mainPanel) {
+		this.mainPanel=mainPanel;
 		init();
 	}
 
 	private JPanel init() {
 
-		rollOver = new RollOver();
 		runButton= new RunStopButton();
 		stepButton = new JButton("Step");
 		iterationLabel = new IterationLabel();
-		
-		add(rollOver);
+
 		add(runButton);
 		
 		add(iterationLabel);

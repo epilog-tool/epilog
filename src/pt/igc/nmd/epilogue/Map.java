@@ -32,7 +32,7 @@ public class Map extends JFrame {
 	public String nodeId;
 	public static int maxId;
 	public int count;
-	// private JButton newbtn;
+
 	public static JPanel panelLights;
 	public static MainPanel mainPanel;
 
@@ -134,13 +134,6 @@ public class Map extends JFrame {
 		setLocationRelativeTo(null);
 	}
 
-	// private int toggleCell(int i, int j) {
-	// if (cells.get(i).get(j).G0 == 1)
-	// return 0;
-	// else
-	// return 1;
-	// }
-
 	public void initialize() {
 
 		MapPanel.paintComponent(MapPanel.getGraphics());
@@ -181,8 +174,9 @@ public class Map extends JFrame {
 
 				// The mouse is over a cell that belongs to the grid
 
-				if (i < mainPanel.getGridWidth()
-						&& j < mainPanel.getGridHeight() && i >= 0 && j >= 0) {
+				if (i < mainPanel.getTopology().getWidth()
+						&& j < mainPanel.getTopology().getHeight() && i >= 0
+						&& j >= 0) {
 					DrawPolygonM.drawHexagon((int) i, (int) j,
 							MapPanel.getGraphics(), color);
 					System.out.println(cells.get(i).get(j).G0);
@@ -265,12 +259,13 @@ public class Map extends JFrame {
 				}
 
 				System.out.println("i " + i + ", j " + j + " "
-						+ mainPanel.getGridWidth());
+						+ mainPanel.getTopology().getWidth());
 
 				// The mouse is over a cell that belongs to the grid
-
-				if (i < mainPanel.getGridWidth()
-						&& j < mainPanel.getGridHeight() && i >= 0 && j >= 0) {
+				System.out.println(mainPanel.getTopology().getWidth());
+				if (i < mainPanel.getTopology().getWidth()
+						&& j < mainPanel.getTopology().getHeight() && i >= 0
+						&& j >= 0) {
 
 					MarkCell(cells.get(i).get(j), i, j, color);
 
@@ -298,10 +293,10 @@ public class Map extends JFrame {
 	public void initializeCells(ArrayList<ArrayList<Cell>> cells) {
 		// adicionar try catch para textFx e fy
 
-		for (int i = 0; i < mainPanel.getGridWidth(); i++) {
+		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
 
 			cells.add(new ArrayList<Cell>());
-			for (int j = 0; j < mainPanel.getGridHeight(); j++) {
+			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
 				int G0 = 0;
 				cells.get(i).add(new Cell(G0));
 			}
@@ -315,17 +310,17 @@ public class Map extends JFrame {
 		if (c.G0 == 0) {
 			MapPanel.drawHexagon(i, j, MapPanel.getGraphics(), color);
 
-			// System.out.println(c.G0);
 			c.G0++;
 			c.color1 = color;
-			// System.out.println(c.color1);
+			//mainPanel.getSimulation().environmentCells.
 
 		}
 
 		else if (c.G0 >= maxId) {
-			// System.out.println(c.G0);
+		
 			c.G0 = 0;
-			// System.out.println(c.G0);
+		
+
 			MapPanel.clearHexagon(i, j, MapPanel.getGraphics());
 		} else {
 			Color nColor = c.color1;
@@ -347,8 +342,8 @@ public class Map extends JFrame {
 	public void clearAllCells(ArrayList<ArrayList<Cell>> cells) {
 		// adicionar try catch para textFx e fy
 
-		for (int i = 0; i < mainPanel.getGridWidth(); i++) {
-			for (int j = 0; j < mainPanel.getGridHeight(); j++) {
+		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
+			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
 				MapPanel.clearHexagon(i, j, MapPanel.getGraphics());
 				cells.get(i).get(j).G0 = 0;
 
@@ -361,8 +356,8 @@ public class Map extends JFrame {
 	public void markAllCells(ArrayList<ArrayList<Cell>> cells) {
 		// adicionar try catch para textFx e fy
 		clearAllCells(cells);
-		for (int i = 0; i < mainPanel.getGridWidth(); i++) {
-			for (int j = 0; j < mainPanel.getGridHeight(); j++) {
+		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
+			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
 
 				MarkCell(cells.get(i).get(j), i, j, color);
 
@@ -372,4 +367,40 @@ public class Map extends JFrame {
 
 	}
 
+	public static void MarkEnvCell(int i, int j) {
+
+		if (G0 == 0) {
+			MapPanel.drawHexagon(i, j, MapPanel.getGraphics());
+
+			G0++;
+	
+			//mainPanel.getSimulation().environmentCells.
+
+		}
+
+		else if (G0 >= maxId) {
+		
+			G0 = 0;
+		
+
+			MapPanel.clearHexagon(i, j, MapPanel.getGraphics());
+		} else {
+			
+			// c.color1 = c.color1
+			// .darker();
+
+			float hsbVals[] = Color.RGBtoHSB(c.color1.getRed(),
+					c.color1.getGreen(), c.color1.getBlue(), null);
+			c.color1 = Color.getHSBColor(hsbVals[0], hsbVals[1],
+					0.91f * hsbVals[2]);
+
+			MapPanel.drawHexagon(i, j, MapPanel.getGraphics(), c.color1);
+			c.G0++;
+
+		}
+
+	}
+	
+	
+	
 }

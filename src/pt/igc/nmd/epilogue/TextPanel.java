@@ -12,9 +12,12 @@ public class TextPanel extends JPanel{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private MainPanel mainPanel;
 	JButton textButton;
 	
-	public TextPanel(){
+	public TextPanel(MainPanel mainPanel){
+		this.mainPanel = mainPanel;
 		init();
 	}
 

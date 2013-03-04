@@ -17,14 +17,14 @@ public class BtnChangeColor extends JButton {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public  ColorButton cb;
-	public Color clr;
+	public  ColorButton colorButton;
+	public Color color;
 
 
 	public BtnChangeColor(ColorButton cb,Color c) {
 		super();
-		this.cb = cb;
-		this.clr=c;
+		this.colorButton = cb;
+		this.color=c;
 		this.setBackground(c);
 	}
 
@@ -33,14 +33,12 @@ public class BtnChangeColor extends JButton {
 	public void initialize(){
 			addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					cb.setBackground(clr);
-					cb.panel.mapcolor=clr;
-					cb.panel.revalidate();
-					cb.panel.paint(cb.panel.getGraphics());
-					cb.dPanel.paintComponent(cb.dPanel.getGraphics());
 					
-					
-					
+					colorButton.setBackground(color);
+					colorButton.panel.mapcolor=color;
+					colorButton.panel.revalidate();
+					colorButton.panel.paint(colorButton.panel.getGraphics());
+		
 				}
 			});
 			

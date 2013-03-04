@@ -9,10 +9,12 @@ import javax.swing.*;
 public class MapColorPanel extends JPanel {
 
 	public Color mapcolor;
+	
 
 	public MapColorPanel(Color mapcolor) {
 		super();
 		this.mapcolor = mapcolor;
+		
 	}
 
 }

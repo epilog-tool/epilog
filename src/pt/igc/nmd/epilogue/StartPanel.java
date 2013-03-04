@@ -1,5 +1,6 @@
 package pt.igc.nmd.epilogue;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -10,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -24,24 +26,27 @@ public class StartPanel extends JPanel {
 	/**
 	 * 
 	 */
+
 	private static final long serialVersionUID = 1L;
-	public static int DEFAULT_WIDTH = 6;
-	public static int DEFAULT_HEIGHT = 6;
 	private JButton restartButton;
 	private JButton modelButton;
+	
+	private JComboBox rollOver;
 	private static JTextField userDefinedWidth = new JTextField();
 	private static JTextField userDefinedHeight = new JTextField();
 	private JLabel selectedFilenameLabel;
 	private JFileChooser fc = new JFileChooser();
-	private Epithelium epithelium = new SphericalEpithelium(DEFAULT_WIDTH,
-			DEFAULT_HEIGHT);
 	public static LogicalModel model = null;
+	
 
-	private ComponentsPanel componentsPanel = new ComponentsPanel();
-	private MainPanel mainPanel = new MainPanel();
+	//private ComponentsPanel componentsPanel = new ComponentsPanel();
+	private MainPanel mainPanel = null;
 
-	public StartPanel() {
+	public StartPanel(MainPanel mainPanel) {
+		this.mainPanel=mainPanel;
 		init();
+		setWidth();
+		setHeight();
 
 	}
 
@@ -60,8 +65,8 @@ public class StartPanel extends JPanel {
 
 		userDefinedWidth.setHorizontalAlignment(JTextField.CENTER);
 		userDefinedHeight.setHorizontalAlignment(JTextField.CENTER);
-		userDefinedWidth.setText("" + DEFAULT_WIDTH);
-		userDefinedHeight.setText("" + DEFAULT_HEIGHT);
+		userDefinedWidth.setText("" + mainPanel.getTopology().getWidth());
+		userDefinedHeight.setText("" + mainPanel.getTopology().getHeight());
 
 		userDefinedWidth.addFocusListener(new FocusListener() {
 
@@ -90,7 +95,7 @@ public class StartPanel extends JPanel {
 		restartButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				HexagonsPanel.paintHexagons();
+				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel.getGraphics());
 				// MainPanelDescription.cleanButtonPanel();
 				// MainPanelDescription.cleanOptionsRunPanel();
 				// MainPanelDescription.cleanOptionsStartPanel();
@@ -115,24 +120,64 @@ public class StartPanel extends JPanel {
 
 		});
 
+		
+		
+		/* RollOver */
+		
+		rollOver = new JComboBox();
+		
+		rollOver.addItem("No Roll-Over");
+		rollOver.addItem("Vertical Roll-Over");
+		rollOver.addItem("Horizontal Roll-Over");
+		rollOver.setBackground(Color.white);
+
+		rollOver.addActionListener(new ActionListener() {
+
+			
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				JComboBox source = (JComboBox) event.getSource();
+				String optionString = (String) source.getSelectedItem();
+				setRollOver(optionString);
+				System.out.println(optionString);
+
+			}
+		});
+		
+		
 		setLayout(new FlowLayout());
 		add(userDefinedWidth);
 		add(userDefinedHeight);
 		add(restartButton);
 		add(modelButton);
 		add(selectedFilenameLabel);
+		add(rollOver);
+		
+		
+		
+		
+		
 		return this;
 	}
 
-	public static int getGridWidth() {
-
-		return Integer.parseInt(userDefinedWidth.getText());
+	static String roll;
+	public static void setRollOver(String rollOver) {
+		roll = rollOver;
 	}
-
-	public static int getGridHeight() {
-
-		return Integer.parseInt(userDefinedHeight.getText());
+	public static String getRollOver() {
+		return roll;
 	}
+	
+	
+//	public static int getGridWidth() {
+//
+//		return Integer.parseInt(userDefinedWidth.getText());
+//	}
+//
+//	public static int getGridHeight() {
+//
+//		return Integer.parseInt(userDefinedHeight.getText());
+//	}
 
 	private void sanityCheckDimension(JTextField userDefined) {
 		String dimString = userDefined.getText();
@@ -141,6 +186,26 @@ public class StartPanel extends JPanel {
 		userDefined.setText("" + w);
 	}
 
+
+	private void setHeight()
+	{
+		mainPanel.getTopology().setHeight(Integer.parseInt(userDefinedHeight.getText()));
+
+
+	}
+
+
+	private void setWidth()
+	{
+
+		mainPanel.getTopology().setWidth(Integer.parseInt(userDefinedWidth.getText()));
+
+
+	}
+
+
+
+
 	private void askModel() {
 
 		fc.setDialogTitle("Choose file");
@@ -148,11 +213,10 @@ public class StartPanel extends JPanel {
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			selectedFilenameLabel.setText(fc.getSelectedFile().getName());
 			loadModel();
-			mainPanel.getContentPane().remove(componentsPanel);
+			//mainPanel.getContentPane().remove(componentsPanel);
 			//componentsPanel = new ComponentsPanel();
 			// componentsPanel.setBounds(500, 310, 500, 250);
 			// mainPanel.getContentPane().add(componentsPanel);
-			 mainPanel.repaint();
 			// contentPanel.removeAll();
 			// setupMainPanel();
 
@@ -175,8 +239,17 @@ public class StartPanel extends JPanel {
 		if (logicalModel == null)
 			return;
 
-		epithelium.setUnitaryModel(logicalModel);
-
+		mainPanel.getEpithelium().setUnitaryModel(logicalModel);
+		
+		mainPanel.componentsPanel.init();
+		mainPanel.componentsPanel.setVisible(true);
+		mainPanel.optionsPanel.setVisible(true);
+		mainPanel.textPanel.setVisible(true);
+				
+		//
+		if(mainPanel.componentsPanel!=null)
+			System.out.println("NOT NULL");
+		
 		setUnitaryModel(logicalModel);
 
 	}
