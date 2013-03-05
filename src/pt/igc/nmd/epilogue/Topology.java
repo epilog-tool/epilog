@@ -4,15 +4,15 @@ public class Topology {
 	
 	public int width;
 	public int height;
-	public static int DEFAULT_WIDTH = 6;
-	public static int DEFAULT_HEIGHT = 6;
+//	public int DEFAULT_WIDTH = 6;
+//	public int DEFAULT_HEIGHT = 6;
 	
 	
-	public Topology() {
-		super();
-		this.width =DEFAULT_WIDTH;
-		this.height = DEFAULT_HEIGHT;
-	}
+//	public Topology() {
+//		super();
+//		this.width =DEFAULT_WIDTH;
+//		this.height = DEFAULT_HEIGHT;
+//	}
 	
 	public Topology(int width, int height) {
 		super();

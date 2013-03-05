@@ -16,6 +16,7 @@ import javax.swing.UIManager;
 import org.colomoto.logicalmodel.LogicalModel;
 
 
+
 public class MainPanel extends JFrame {
 
 	/**
@@ -24,7 +25,7 @@ public class MainPanel extends JFrame {
 	private SphericalEpithelium epithelium ;
 	private StartPanel startPanel = null;
 	public static DrawPolygon hexagonsPanel = null;
-	public TextPanel textPanel = null;
+	public TextPanel textPanel;
 	public ComponentsPanel componentsPanel = null;
 	public OptionsPanel optionsPanel = null;
 	public Topology topology;
@@ -36,14 +37,11 @@ public class MainPanel extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	
-//	private Epithelium epithelium = new SphericalEpithelium(DEFAULT_WIDTH,
-//			DEFAULT_HEIGHT);
-
 	
 	public MainPanel(){
 		
 		
-		this.topology = new Topology();
+		this.topology = new Topology(6,6);
 		this.epithelium = new SphericalEpithelium(this.topology);
 		this.simulation = new Simulation(this.epithelium);
 	}
@@ -94,7 +92,7 @@ public class MainPanel extends JFrame {
 
 		//CLOSE button
 		JButton btnClose = new JButton("Close");
-		btnClose.setBounds(910, 5, 100, 25);
+		btnClose.setBounds(850, 5, 100, 25);
 		btnClose.setBackground(Color.red);
 		getContentPane().add(btnClose);
 		btnClose.addActionListener(new ActionListener() {
@@ -112,7 +110,7 @@ public class MainPanel extends JFrame {
 		optionsPanel.setBounds(500,0,500,40);
 		optionsPanel.setVisible(false);
 	
-		LogicalModel model = getUnitaryModel();
+		//LogicalModel model = getUnitaryModel();
 		
 		getContentPane().setLayout(null);
 		getContentPane().add(startPanel);
@@ -142,4 +140,6 @@ public class MainPanel extends JFrame {
 	}
 
 
+	
+	
 }

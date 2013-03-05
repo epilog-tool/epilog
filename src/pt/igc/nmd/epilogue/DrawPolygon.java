@@ -28,7 +28,6 @@ import javax.swing.JTextField;
 
 import org.colomoto.logicalmodel.NodeInfo;
 
-
 public class DrawPolygon extends JPanel {
 
 	/**
@@ -50,7 +49,7 @@ public class DrawPolygon extends JPanel {
 	public ArrayList<ArrayList<Cell>> cells = new ArrayList<ArrayList<Cell>>();
 
 	public DrawPolygon(MainPanel mainPanel) {
-this.mainPanel=mainPanel;
+		this.mainPanel = mainPanel;
 		this.setPreferredSize(new Dimension(500, 500));
 		this.cellGenes = new ArrayList<ArrayList<CellGenes>>();
 
@@ -60,8 +59,9 @@ this.mainPanel=mainPanel;
 
 		int XX = 0, YY = 0, max = 0;
 		try {
-			XX = mainPanel.getTopology().getWidth();
-			YY = mainPanel.getTopology().getHeight();
+			XX = this.mainPanel.getTopology().getWidth();
+			YY = this.mainPanel.getTopology().getHeight();
+
 			max = Math.max(XX, YY);
 
 		} catch (NumberFormatException e) {
@@ -113,25 +113,24 @@ this.mainPanel=mainPanel;
 
 					}
 
-					
-					
-					if (cells.size()==0) {
+					if (cells.size() == 0) {
 						g.setColor(Color.white);
 						g.fillPolygon(polygon2);
 						g.setColor(Color.black);
 						g.drawPolygon(polygon2);
 
 					}
-					
-					else if (cells!=null&&cells.size()>0&&cells.get(k).get(j).color1.getRGB()!= Color.white.getRGB()) {
+
+					else if (cells != null
+							&& cells.size() > 0
+							&& cells.get(k).get(j).color1.getRGB() != Color.white
+									.getRGB()) {
 						g.setColor(Color.pink);
 						g.fillPolygon(polygon2);
 						g.setColor(Color.black);
 						g.drawPolygon(polygon2);
 
 					}
-					
-					
 
 					if (k % 2 == 0)
 						centerY = (j + 1 + 0.5) * radius * Math.sqrt(3.0);
