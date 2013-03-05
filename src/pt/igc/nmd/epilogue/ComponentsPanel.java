@@ -24,24 +24,27 @@ public class ComponentsPanel extends MapColorPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	private LogicalModel model = null;
+	private MainPanel mainPanel;
+	private Epithelium epithelium;
+	public static DrawPolygon hexagonsPanel;
+
+	// Nodes Information
+	public static int numberOfNodes;
+	public static List<NodeInfo> listNodes;
 	public Color colors[] = { Color.orange, Color.green, Color.blue,
 			Color.pink, Color.yellow, Color.magenta, Color.cyan, Color.red,
 			Color.LIGHT_GRAY, Color.black };
-	public static JCheckBox nodeBox[];
-	public static ColorButton colorChooser[];
-	static MapColorPanel buttonPanel;
-	public static int numberOfNodes;
-	public static List<NodeInfo> listNodes;
-	public JTextField initialState[];
-	public static ArrayList<Integer> initialStateArray = null;
-	public static ArrayList<Integer> userDefinedInitialState = new ArrayList<Integer>();
-	public static DrawPolygon hexagonsPanel;
-	private Epithelium epithelium;
+	public JCheckBox nodeBox[];
+	public ColorButton colorChooser[];
+	public MapColorPanel buttonPanel;
 
-	LogicalModel model = null;
-	private MainPanel mainPanel;
-
-	JButton componentsButton;
+	// Initial State Definitions
+	// public static ArrayList<Integer> initialStateArray = null;
+	// public static ArrayList<Integer> userDefinedInitialState = new
+	// ArrayList<Integer>();
+	public JComboBox initialStatePerComponent;
 
 	public ComponentsPanel(MainPanel mainPanel, Color color) {
 		super(color);
@@ -58,30 +61,40 @@ public class ComponentsPanel extends MapColorPanel {
 
 			listNodes = model.getNodeOrder();
 			nodeBox = new JCheckBox[listNodes.size()];
+
 			colorChooser = new ColorButton[listNodes.size()];
 			hexagonsPanel.initializeCellGenes(listNodes.size());
 			final int size = listNodes.size();
 
 			for (int i = 0; i < listNodes.size(); i++) {
-				
+
+				final int maxId = listNodes.get(i).getMax();
+				final String nodeId = listNodes.get(i).getNodeID();
+
 				nodeBox[i] = new JCheckBox(listNodes.get(i).getNodeID());
 				nodeBox[i].setBackground(Color.white);
-				nodeBox[i].setBounds(10, 10 + i * 60, 50, 30);
+				nodeBox[i].setBounds(0, 10 + i * 60, 50, 30);
+
+				initialStatePerComponent = new JComboBox();
+				initialStatePerComponent.setBounds(50, 10 + i * 60, 40, 30);
+				for (int maxValue = 0; maxValue < maxId + 1; maxValue++) {
+					initialStatePerComponent.addItem(maxValue);
+				}
 
 				final JCheckBox checkbox = nodeBox[i];
-				final String nodeID=listNodes.get(i).getNodeID();
-				
+				final String nodeID = listNodes.get(i).getNodeID();
+
 				mainPanel.getEpithelium().setActiveComponents(nodeID, false);
-				
+
 				nodeBox[i].addActionListener(new ActionListener() {
 
 					public void actionPerformed(ActionEvent event) {
 
-						if (checkbox.isSelected()){
-							mainPanel.getEpithelium().setActiveComponents(nodeID, true);
+						if (checkbox.isSelected()) {
+							mainPanel.getEpithelium().setActiveComponents(
+									nodeID, true);
 							hexagonsPanel.countSelected++;
-						}
-						else
+						} else
 							hexagonsPanel.countSelected--;
 						hexagonsPanel.initializeCellGenes(size);
 						hexagonsPanel.paintComponent(hexagonsPanel
@@ -92,36 +105,36 @@ public class ComponentsPanel extends MapColorPanel {
 				});
 
 				colorChooser[i] = new ColorButton(this, hexagonsPanel);
-				colorChooser[i].setBounds(90, 10 + i * 60, 20, 30);
+				colorChooser[i].setBounds(95, 10 + i * 60, 20, 30);
 				colorChooser[i].setBackground(colors[i]);
-				
-				mainPanel.getEpithelium().setColor(listNodes.get(i).getNodeID(), colors[i]);
-				
-				JComboBox comboBox = null;
-				add(nodeBox[i]);
 
+				mainPanel.getEpithelium().setColor(
+						listNodes.get(i).getNodeID(), colors[i]);
+
+				add(nodeBox[i]);
+				add(initialStatePerComponent);
 				add(colorChooser[i]);
 
-				final String nodeId = listNodes.get(i).getNodeID();
-				// String SBMLpath = ;
-				final int maxId = listNodes.get(i).getMax();
+				JComboBox inputComboChooser = null;
 
 				if (listNodes.get(i).isInput()) {
-					comboBox = new JComboBox();
-					comboBox.setBounds(130, 10 + i * 60, 120, 30);
-					comboBox.addItem("Select input");
-					comboBox.addItem(InputOption
-							.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));
-					comboBox.addItem(InputOption
-							.getDescriptionString(InputOption.INTEGRATION_INPUT));
-					add(comboBox);
+					inputComboChooser = new JComboBox();
+					inputComboChooser.setBounds(130, 10 + i * 60, 120, 30);
+					inputComboChooser.addItem("Select input");
+					inputComboChooser
+							.addItem(InputOption
+									.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));
+					inputComboChooser
+							.addItem(InputOption
+									.getDescriptionString(InputOption.INTEGRATION_INPUT));
+					add(inputComboChooser);
 
 					final JPanel jpanel = new JPanel();
 					jpanel.setBackground(Color.white);
 					jpanel.setBounds(250, 10 + i * 60, 300, 60);
 					jpanel.setLayout(null);
 					final ColorButton colorChooserBtn = colorChooser[i];
-					comboBox.addActionListener(new ActionListener() {
+					inputComboChooser.addActionListener(new ActionListener() {
 
 						@Override
 						public void actionPerformed(ActionEvent event) {
@@ -142,9 +155,10 @@ public class ComponentsPanel extends MapColorPanel {
 									btnDraw.addActionListener(new ActionListener() {
 										public void actionPerformed(
 												ActionEvent e) {
-											final Map map = new Map(mainPanel.getTopology()
-													.getWidth(), mainPanel.getTopology()
-													.getHeight(),
+											final Map map = new Map(mainPanel
+													.getTopology().getWidth(),
+													mainPanel.getTopology()
+															.getHeight(),
 													colorChooserBtn
 															.getBackground(),
 													nodeId, maxId, mainPanel);
@@ -197,7 +211,7 @@ public class ComponentsPanel extends MapColorPanel {
 												final Map map = new Map(
 														mainPanel.getTopology()
 																.getWidth(),
-																mainPanel.getTopology()
+														mainPanel.getTopology()
 																.getHeight(),
 														colorChooserBtn
 																.getBackground(),
