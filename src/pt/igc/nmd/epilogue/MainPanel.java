@@ -27,7 +27,6 @@ public class MainPanel extends JFrame {
 	public static DrawPolygon hexagonsPanel = null;
 	public TextPanel textPanel;
 	public ComponentsPanel componentsPanel = null;
-	public OptionsPanel optionsPanel = null;
 	public Topology topology;
 	public Simulation simulation;
 	
@@ -82,7 +81,6 @@ public class MainPanel extends JFrame {
 		hexagonsPanel = new DrawPolygon(this);
 		hexagonsPanel.setBackground(Color.red);
 		componentsPanel = new ComponentsPanel(this, Color.white);
-		optionsPanel = new OptionsPanel(this);
 		textPanel = new TextPanel(this);
 
 		getContentPane().setPreferredSize(new Dimension(1100, 600));
@@ -90,25 +88,15 @@ public class MainPanel extends JFrame {
 		getContentPane().setBackground(Color.white);
 		this.setResizable(true);
 
-		//CLOSE button
-		JButton btnClose = new JButton("Close");
-		btnClose.setBounds(850, 5, 100, 25);
-		btnClose.setBackground(Color.red);
-		getContentPane().add(btnClose);
-		btnClose.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
+
 		// Distribute Panels
-		startPanel.setBounds(0, 0, 500, 40);
-		hexagonsPanel.setBounds(0, 60, 500, 500);
+		startPanel.setBounds(0, 0, 1100, 40);
+		hexagonsPanel.setBounds(20, 60, 500, 500);
 		textPanel.setBounds(500, 60, 500, 250);
 		textPanel.setVisible(false);
 		componentsPanel.setBounds(500, 310, 500, 250);
 		componentsPanel.setVisible(false);
-		optionsPanel.setBounds(500,0,500,40);
-		optionsPanel.setVisible(false);
+
 	
 		//LogicalModel model = getUnitaryModel();
 		
@@ -119,7 +107,7 @@ public class MainPanel extends JFrame {
 		
 		getContentPane().add(textPanel);
 		getContentPane().add(componentsPanel);
-		getContentPane().add(optionsPanel);
+
 		
 		repaint();
 		

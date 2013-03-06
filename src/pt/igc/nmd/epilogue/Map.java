@@ -60,24 +60,24 @@ public class Map extends JFrame {
 
 		// Expression Level
 		JLabel buttonExpression = new JLabel("Expression Level");
-		buttonExpression.setBounds(10, 500, 200, 30);
+		buttonExpression.setBounds(10, 500, 200, 25);
 		MapPanel.add(buttonExpression);
 		panelLights = new JPanel();
 		panelLights.setBounds(10, 540, 200, 40);
 		panelLights.setBackground(Color.white);
 		MapPanel.add(panelLights);
 		JComboBox expressionLevels = new JComboBox();
-		expressionLevels.setBounds(120, 500, 70, 30);
+		expressionLevels.setBounds(120, 500, 70, 25);
 		for (int i = 1; i <= this.maxId; i++) {
 			expressionLevels.addItem(i);
 		}
 		MapPanel.add(expressionLevels);
 
 		JButton btnSave = new JButton("Save");
-		btnSave.setBounds(300, 500, 100, 30);
+		btnSave.setBounds(300, 500, 100, 25);
 		MapPanel.add(btnSave);
 		JButton buttonClose = new JButton("Close");
-		buttonClose.setBounds(410, 500, 100, 30);
+		buttonClose.setBounds(410, 500, 100, 25);
 		MapPanel.add(buttonClose);
 		final MainPanel Mainpanel = mainPanel;
 		buttonClose.addActionListener(new ActionListener() {

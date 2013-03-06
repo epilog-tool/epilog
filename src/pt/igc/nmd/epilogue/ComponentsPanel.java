@@ -73,14 +73,16 @@ public class ComponentsPanel extends MapColorPanel {
 
 				nodeBox[i] = new JCheckBox(listNodes.get(i).getNodeID());
 				nodeBox[i].setBackground(Color.white);
-				nodeBox[i].setBounds(0, i*40, 50, 25);
+				nodeBox[i].setBounds(0, i * 40, 50, 25);
 
-				initialStatePerComponent = new JComboBox();
-				initialStatePerComponent.setBounds(50, i*40, 40, 25);
-				for (int maxValue = 0; maxValue < maxId + 1; maxValue++) {
-					initialStatePerComponent.addItem(maxValue);
+				if (!listNodes.get(i).isInput()) {
+					initialStatePerComponent = new JComboBox();
+					initialStatePerComponent.setBounds(50, i * 40, 40, 25);
+					for (int maxValue = 0; maxValue < maxId + 1; maxValue++) {
+						initialStatePerComponent.addItem(maxValue);
+					}
+					add(initialStatePerComponent);
 				}
-
 				final JCheckBox checkbox = nodeBox[i];
 				final String nodeID = listNodes.get(i).getNodeID();
 
@@ -105,21 +107,21 @@ public class ComponentsPanel extends MapColorPanel {
 				});
 
 				colorChooser[i] = new ColorButton(this, hexagonsPanel);
-				colorChooser[i].setBounds(95,  i*40, 20, 25);
+				colorChooser[i].setBounds(95, i * 40, 20, 25);
 				colorChooser[i].setBackground(colors[i]);
 
 				mainPanel.getEpithelium().setColor(
 						listNodes.get(i).getNodeID(), colors[i]);
 
 				add(nodeBox[i]);
-				add(initialStatePerComponent);
+				
 				add(colorChooser[i]);
 
 				JComboBox inputComboChooser = null;
 
 				if (listNodes.get(i).isInput()) {
 					inputComboChooser = new JComboBox();
-					inputComboChooser.setBounds(130, i*40, 120, 25);
+					inputComboChooser.setBounds(130, i * 40, 120, 25);
 					inputComboChooser.addItem("Select input");
 					inputComboChooser
 							.addItem(InputOption
@@ -131,7 +133,7 @@ public class ComponentsPanel extends MapColorPanel {
 
 					final JPanel jpanel = new JPanel();
 					jpanel.setBackground(Color.white);
-					jpanel.setBounds(250,  i*40, 300, 60);
+					jpanel.setBounds(250, i * 40, 300, 60);
 					jpanel.setLayout(null);
 					final ColorButton colorChooserBtn = colorChooser[i];
 					inputComboChooser.addActionListener(new ActionListener() {
@@ -150,7 +152,7 @@ public class ComponentsPanel extends MapColorPanel {
 								case ENVIRONMENTAL_INPUT: {
 
 									JButton btnDraw = new JButton("Draw");
-									btnDraw.setBounds(10, 0, 100, 30);
+									btnDraw.setBounds(10, 0, 100, 25);
 									btnDraw.removeActionListener(null);
 									btnDraw.addActionListener(new ActionListener() {
 										public void actionPerformed(
@@ -171,7 +173,7 @@ public class ComponentsPanel extends MapColorPanel {
 													"Clear All");
 											btnAll.setBounds(0, 0, 100, 20);
 											btnClearAll.setBounds(0, 110, 100,
-													30);
+													25);
 											btnAll.addActionListener(new ActionListener() {
 												public void actionPerformed(
 														ActionEvent e) {
@@ -195,7 +197,7 @@ public class ComponentsPanel extends MapColorPanel {
 									});
 
 									JButton btnLoad = new JButton("Load");
-									btnLoad.setBounds(120, 0, 100, 30);
+									btnLoad.setBounds(120, 0, 100, 25);
 									btnLoad.addActionListener(new ActionListener() {
 										public void actionPerformed(
 												ActionEvent e) {
@@ -228,7 +230,7 @@ public class ComponentsPanel extends MapColorPanel {
 														"Mark All");
 												JButton btnClearAll = new JButton(
 														"Clear All");
-												btnAll.setBounds(0, 0, 100, 30);
+												btnAll.setBounds(0, 0, 100, 25);
 												btnClearAll.setBounds(0, 110,
 														100, 30);
 												btnAll.addActionListener(new ActionListener() {
@@ -271,7 +273,7 @@ public class ComponentsPanel extends MapColorPanel {
 								case INTEGRATION_INPUT: {
 
 									final JTextField textFormula = new JTextField();
-									textFormula.setBounds(10, 0, 150, 30);
+									textFormula.setBounds(10, 0, 150, 25);
 									jpanel.removeAll();
 									jpanel.add(textFormula);
 									jpanel.revalidate();

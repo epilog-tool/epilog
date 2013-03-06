@@ -30,6 +30,10 @@ public class StartPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JButton restartButton;
 	private JButton modelButton;
+	private RunStopButton runButton = null;
+	private JButton stepButton = null;
+	private IterationLabel iterationLabel = null;
+	JLabel labelFilename = new JLabel();
 
 	private JComboBox rollOver;
 	private static JTextField userDefinedWidth = new JTextField();
@@ -101,7 +105,7 @@ public class StartPanel extends JPanel {
 						.getGraphics());
 				mainPanel.getContentPane().repaint();
 
-				mainPanel.optionsPanel.setVisible(false);
+
 				mainPanel.componentsPanel.setVisible(false);
 				mainPanel.textPanel.setVisible(false);
 				selectedFilenameLabel.setText("");
@@ -142,13 +146,67 @@ public class StartPanel extends JPanel {
 			}
 		});
 
+		//CLOSE button
+		JButton btnClose = new JButton("Close");
+		btnClose.setBounds(850, 5, 100, 25);
+		btnClose.setBackground(Color.red);
+		add(btnClose);
+		btnClose.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mainPanel.dispose();
+			}
+		});
+		
+		/* Options*/
+		
+		runButton= new RunStopButton();
+		stepButton = new JButton("Step");
+		iterationLabel = new IterationLabel();
+
+		add(runButton);
+		
+		add(iterationLabel);
+		
+		//Step Button
+		stepButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//Simulation.step();
+			System.out.println("step");
+			}
+		});
+		add(stepButton);
+		
+		stepButton.setVisible(false);
+		runButton.setVisible(false);
+		iterationLabel.setVisible(false);
+		
 		setLayout(new FlowLayout());
+		
+		JLabel setWidth = new JLabel();
+		JLabel setHeight = new JLabel();
+		
+		
+		setWidth.setText("Grid Width: ");
+		setHeight.setText("Grid Height: ");
+		labelFilename.setText("Filename: ");
+		labelFilename.setVisible(false);
+		
+		
+		add(setWidth);
 		add(userDefinedWidth);
+		add(setHeight);
 		add(userDefinedHeight);
-		add(restartButton);
-		add(modelButton);
-		add(selectedFilenameLabel);
 		add(rollOver);
+		
+		add(modelButton);
+		add(labelFilename);
+		add(selectedFilenameLabel);
+		add(runButton);
+		add(stepButton);
+		add(iterationLabel);
+		add(restartButton);
+		add(btnClose);
+		
 
 		return this;
 	}
@@ -216,8 +274,11 @@ public class StartPanel extends JPanel {
 		mainPanel.componentsPanel.init();
 		mainPanel.getContentPane().repaint();
 		mainPanel.componentsPanel.setVisible(true);
-		mainPanel.optionsPanel.setVisible(true);
 		mainPanel.textPanel.setVisible(true);
+		labelFilename.setVisible(true);
+		stepButton.setVisible(true);
+		runButton.setVisible(true);
+		stepButton.setVisible(true);
 
 		setUnitaryModel(logicalModel);
 
