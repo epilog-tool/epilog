@@ -30,6 +30,7 @@ public class StartPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JButton restartButton;
 	private JButton modelButton;
+	private JButton perturbationButton;
 	private RunStopButton runButton = null;
 	private JButton stepButton = null;
 	private IterationLabel iterationLabel = null;
@@ -109,6 +110,13 @@ public class StartPanel extends JPanel {
 				mainPanel.componentsPanel.setVisible(false);
 				mainPanel.textPanel.setVisible(false);
 				selectedFilenameLabel.setText("");
+				mainPanel.componentsPanel.setVisible(false);
+				mainPanel.textPanel.setVisible(false);
+				labelFilename.setVisible(false);
+				stepButton.setVisible(false);
+				runButton.setVisible(false);
+				stepButton.setVisible(false);
+				perturbationButton.setVisible(false);
 
 			}
 		});
@@ -162,6 +170,7 @@ public class StartPanel extends JPanel {
 		runButton= new RunStopButton();
 		stepButton = new JButton("Step");
 		iterationLabel = new IterationLabel();
+		perturbationButton = new JButton("Mutants");
 
 		add(runButton);
 		
@@ -179,17 +188,21 @@ public class StartPanel extends JPanel {
 		stepButton.setVisible(false);
 		runButton.setVisible(false);
 		iterationLabel.setVisible(false);
+		perturbationButton.setVisible(false);
 		
 		setLayout(new FlowLayout());
 		
 		JLabel setWidth = new JLabel();
 		JLabel setHeight = new JLabel();
+		JLabel emptySpaceLabel = new JLabel();
 		
+		emptySpaceLabel.setText("              ");
 		
 		setWidth.setText("Grid Width: ");
 		setHeight.setText("Grid Height: ");
 		labelFilename.setText("Filename: ");
 		labelFilename.setVisible(false);
+		
 		
 		
 		add(setWidth);
@@ -204,6 +217,8 @@ public class StartPanel extends JPanel {
 		add(runButton);
 		add(stepButton);
 		add(iterationLabel);
+		add(perturbationButton); 
+		add(emptySpaceLabel);
 		add(restartButton);
 		add(btnClose);
 		
@@ -279,7 +294,8 @@ public class StartPanel extends JPanel {
 		stepButton.setVisible(true);
 		runButton.setVisible(true);
 		stepButton.setVisible(true);
-
+		perturbationButton.setVisible(true);
+		
 		setUnitaryModel(logicalModel);
 
 	}
