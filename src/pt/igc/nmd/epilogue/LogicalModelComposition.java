@@ -15,33 +15,31 @@ import org.colomoto.mddlib.MDDVariable;
 import org.colomoto.mddlib.MDDVariableFactory;
 import org.colomoto.mddlib.PathSearcher;
 import org.colomoto.mddlib.operators.MDDBaseOperators;
-import org.ginsim.service.tool.composition.Topology;
+//import org.ginsim.service.tool.composition.Topology;
 
 import composition.IntegrationFunctionMapping;
 
+//import composition.IntegrationFunctionMapping;
+
 public class LogicalModelComposition {
 
-	private Topology topology = null;
+	private MainPanel mainPanel;
 	private IntegrationFunctionMapping mapping = null;
-	private LogicalModel unitaryModel = null;
 	private LogicalModel composedModel = null;
 	private Map<SimpleEntry<NodeInfo, Integer>, NodeInfo> old2New = new HashMap<SimpleEntry<NodeInfo, Integer>, NodeInfo>();
 	private Map<NodeInfo, SimpleEntry<NodeInfo, Integer>> new2Old = new HashMap<NodeInfo, SimpleEntry<NodeInfo, Integer>>();
 	private Map<Integer, List<NodeInfo>> instanceNodes = new HashMap<Integer, List<NodeInfo>>();
 
-	public LogicalModelComposition(LogicalModel model, Topology topology,
-			IntegrationFunctionMapping mapping) {
-		this.topology = topology;
-		this.unitaryModel = model;
-		this.mapping = mapping;
-	}
+	// public LogicalModelComposition(LogicalModel model, Topology topology,
+	// IntegrationFunctionMapping mapping) {
+	// this.topology = topology;
+	// this.unitaryModel = model;
+	// this.mapping = mapping;
+	// }
 
-	public LogicalModel getUnitaryModel() {
-		return this.unitaryModel;
-	}
+	public LogicalModelComposition(MainPanel mainPanel) {
+		this.mainPanel = mainPanel;
 
-	public Topology getTopology() {
-		return this.topology;
 	}
 
 	public IntegrationFunctionMapping getMapping() {
@@ -57,11 +55,11 @@ public class LogicalModelComposition {
 		byte max = 0;
 
 		// Creates all new NodeInfos for all instances
-		for (int i = 0; i < getTopology().getNumberInstances(); i++) {
-			for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
+		for (int i = 0; i < mainPanel.getTopology().getNumberInstances(); i++) {
+			for (NodeInfo node : mainPanel.getEpithelium().getUnitaryModel().getNodeOrder()) {
 				NodeInfo newNode = new NodeInfo(computeNewName(
 						node.getNodeID(), i), node.getMax());
-				newNode.setInput(node.isInput() && !getMapping().isMapped(node));
+				//newNode.setInput(node.isInput() && !getMapping().isMapped(node));
 				nodeOrder.add(newNode);
 				if (newNode.getMax() > max)
 					max = newNode.getMax();
@@ -100,12 +98,12 @@ public class LogicalModelComposition {
 			if (oldNode.isInput())
 				continue;
 
-			PathSearcher searcher = new PathSearcher(getUnitaryModel()
+			PathSearcher searcher = new PathSearcher(mainPanel.getEpithelium().getUnitaryModel()
 					.getMDDManager(), 1, oldNode.getMax());
 
 			int path[] = searcher.getPath();
-			int okMDDs[] = getUnitaryModel().getLogicalFunctions();
-			int nodeIndex = getUnitaryModel().getNodeOrder().indexOf(oldNode);
+			int okMDDs[] = mainPanel.getEpithelium().getUnitaryModel().getLogicalFunctions();
+			int nodeIndex = mainPanel.getEpithelium().getUnitaryModel().getNodeOrder().indexOf(oldNode);
 			searcher.setNode(okMDDs[nodeIndex]);
 
 			for (int value : searcher) {
@@ -115,7 +113,7 @@ public class LogicalModelComposition {
 				for (int j = 0; j < newPath.length; j++)
 					newPath[j] = -1;
 				for (int j = 0; j < path.length; j++) {
-					NodeInfo currentOldNode = getUnitaryModel().getNodeOrder()
+					NodeInfo currentOldNode = mainPanel.getEpithelium().getUnitaryModel().getNodeOrder()
 							.get(j);
 					NodeInfo currentNewNode = this.old2New
 							.get(new SimpleEntry<NodeInfo, Integer>(
@@ -138,28 +136,28 @@ public class LogicalModelComposition {
 
 	}
 
-	// public static void components(){
-	//
-	// numberInstances = MainPanel.getGridHeight()*MainPanel.getGridWidth();
-	// model = MainPanel.getmodel();
-	// System.out.println(model);
-	// model.getNodeOrder();
-	//
-	// for (int instance=0; instance<numberInstances; instance = instance+1){
-	// for (int node = 0; node<model.getNodeOrder().size(); node = node+1){
-	// String newname =
-	// computeNewName(model.getNodeOrder().get(node).getNodeID(), instance);
-	// int maxValue = model.getNodeOrder(node)
-	// if (model.getNodeOrder().get(node).isInput()){
-	//
-	// }
-	// System.out.println(newname);
-	// }
+	 public void components(){
+	
+	 int numberInstances = mainPanel.getTopology().getNumberInstances();
+	 LogicalModel model = mainPanel.getEpithelium().getUnitaryModel();
+	 System.out.println(model);
+	 model.getNodeOrder();
+	
+	 for (int instance=0; instance<numberInstances; instance = instance+1){
+	 for (int node = 0; node<model.getNodeOrder().size(); node = node+1){
+	 String newname =
+	 computeNewName(model.getNodeOrder().get(node).getNodeID(), instance);
+	// int maxValue = listNodes.;
+	 if (model.getNodeOrder().get(node).isInput()){
+	
+	 }
+	 System.out.println(newname);
+	 }
 
-	// }
+	 }
 
-	//
-	// }
+	
+	 }
 
 	/**
 	 * 
@@ -167,7 +165,7 @@ public class LogicalModelComposition {
 	 * @param moduleId
 	 * @return newName
 	 */
-	private static String computeNewName(String original, int moduleId) {
+	public String computeNewName(String original, int moduleId) {
 		// moduleId starts at 1, as all iterations begin at 0, we add 1 here
 		// (NUNO)
 		return original + "_" + (moduleId + 1);

@@ -51,9 +51,12 @@ public class ColorFrame extends JFrame {
 	public JButton buttonOk = new JButton("Ok");
 	public JButton buttonCancel = new JButton("Cancel");
 	public DrawPolygon dPanel;
+	private String nodeID;
 
-	public ColorFrame(ColorButton colorb,DrawPolygon dPanel) {
-
+	//public ColorFrame(ColorButton colorb,DrawPolygon dPanel, String nodeID) {
+	public ColorFrame(ColorButton colorb, String nodeID) {
+		this.nodeID = nodeID;
+		
 		Color brown = new Color(165, 42, 42);
 		Color oliveGreen = new Color(128, 128, 0);
 		Color thistle = new Color(216, 191, 216);
@@ -62,32 +65,32 @@ public class ColorFrame extends JFrame {
 		Color antiqueWhite = new Color(250, 235, 215);
 
 		contentPane = new JPanel();
-		btt1 = new BtnChangeColor(colorb, Color.yellow);
+		btt1 = new BtnChangeColor(colorb, Color.yellow,nodeID);
 		btt1.initialize();
-		btt2 = new BtnChangeColor(colorb, darkOrange);
+		btt2 = new BtnChangeColor(colorb, darkOrange,nodeID);
 		btt2.initialize();
-		btt3 = new BtnChangeColor(colorb, Color.green);
+		btt3 = new BtnChangeColor(colorb, Color.green,nodeID);
 		btt3.initialize();
-		btt4 = new BtnChangeColor(colorb, Color.cyan);
+		btt4 = new BtnChangeColor(colorb, Color.cyan,nodeID);
 		btt4.initialize();
-		btt5 = new BtnChangeColor(colorb, Color.magenta);
+		btt5 = new BtnChangeColor(colorb, Color.magenta,nodeID);
 		btt5.initialize();
-		btt6 = new BtnChangeColor(colorb, antiqueWhite);
+		btt6 = new BtnChangeColor(colorb, antiqueWhite,nodeID);
 		btt6.initialize();
-		btt7 = new BtnChangeColor(colorb, Color.red);
+		btt7 = new BtnChangeColor(colorb, Color.red,nodeID);
 		btt7.initialize();
-		btt8 = new BtnChangeColor(colorb, Color.blue);
+		btt8 = new BtnChangeColor(colorb, Color.blue,nodeID);
 		btt8.initialize();
-		btt9 = new BtnChangeColor(colorb, Color.black);
+		btt9 = new BtnChangeColor(colorb, Color.black,nodeID);
 		btt9.initialize();
 
-		btt10 = new BtnChangeColor(colorb, brown);
+		btt10 = new BtnChangeColor(colorb, brown,nodeID);
 		btt10.initialize();
-		btt11 = new BtnChangeColor(colorb, oliveGreen);
+		btt11 = new BtnChangeColor(colorb, oliveGreen,nodeID);
 		btt11.initialize();
-		btt12 = new BtnChangeColor(colorb, thistle);
+		btt12 = new BtnChangeColor(colorb, thistle,nodeID);
 		btt12.initialize();
-		this.dPanel=dPanel;
+		//this.dPanel=dPanel;
 	}
 
 	public void initialize() {

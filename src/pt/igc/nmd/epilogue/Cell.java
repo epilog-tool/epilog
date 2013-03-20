@@ -13,13 +13,13 @@ public class Cell implements Serializable {
 	public Color color1;
 
 
+
 	public Cell(int g0) {
 		super();
 		this.G0 = g0;
 		this.color1 = Color.white;
-
+		
 	}
-
 
 
 }

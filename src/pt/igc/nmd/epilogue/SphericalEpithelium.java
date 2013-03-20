@@ -11,9 +11,14 @@ public class SphericalEpithelium implements Epithelium {
 	private int height;
 	private LogicalModel unitaryModel = null;
 	private LogicalModel composedModel = null;
-	public Hashtable<String, Color> node2Color;
-	public Hashtable<String, Boolean> activeComponents;
+	private Hashtable<String, Color> node2Color;
+	private Hashtable<String, Boolean> activeComponents;
 	private Topology topology;
+	private Hashtable<String, Integer> initialState;
+	private Hashtable<String, Integer> composedInitialState;
+	
+	
+	
 
 	public SphericalEpithelium(Topology topology) {
 		this.width = 0;
@@ -21,6 +26,8 @@ public class SphericalEpithelium implements Epithelium {
 		this.topology = topology;
 		node2Color = new Hashtable<String, Color>();
 		activeComponents = new Hashtable<String, Boolean>();
+		initialState = new Hashtable<String, Integer>();
+		 composedInitialState= new Hashtable<String, Integer>();
 	}
 
 	
@@ -50,11 +57,25 @@ public class SphericalEpithelium implements Epithelium {
 	}
 	
 
-	public Hashtable<String, Boolean> getActiveComponents() {
+	public Hashtable<String, Boolean> getComponentsDisplayOn() {
 		return this.activeComponents;
 	}
 	public void setActiveComponents(String nodeID, Boolean bool) {
 		this.activeComponents.put(nodeID, bool);
 	}
 	
+	public void setInitialState(String nodeID, Integer initialStateValue){
+		this.initialState.put(nodeID, initialStateValue);
+	}
+	
+	public int getInitialState(String nodeID){
+		return (int) this.initialState.get(nodeID);
+	}
+
+	public void setComposedInitialState(String composedNodeID, int ComposedInitialState){
+		this.composedInitialState.put(composedNodeID, ComposedInitialState);
+	}
+	public Hashtable<String,Integer> getComposedInitialState(){
+		return this.composedInitialState;
+	}
 }

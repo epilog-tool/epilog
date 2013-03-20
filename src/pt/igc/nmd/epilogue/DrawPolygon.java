@@ -1,30 +1,18 @@
 package pt.igc.nmd.epilogue;
 
 import java.awt.Color;
-import java.awt.Container;
+
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.ItemSelectable;
+
 import java.awt.Polygon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+
+
 
 import org.colomoto.logicalmodel.NodeInfo;
 
@@ -113,7 +101,7 @@ public class DrawPolygon extends JPanel {
 
 					}
 
-					if (cells.size() == 0) {
+					if (mainPanel.getSimulation().getIterationNumber()==0) {
 						g.setColor(Color.white);
 						g.fillPolygon(polygon2);
 						g.setColor(Color.black);
@@ -121,10 +109,7 @@ public class DrawPolygon extends JPanel {
 
 					}
 
-					else if (cells != null
-							&& cells.size() > 0
-							&& cells.get(k).get(j).color1.getRGB() != Color.white
-									.getRGB()) {
+					else {
 						g.setColor(Color.pink);
 						g.fillPolygon(polygon2);
 						g.setColor(Color.black);
@@ -142,9 +127,7 @@ public class DrawPolygon extends JPanel {
 			}
 		} else {
 			System.out.println("XX e YY têm que ser maiores do que zero");
-
 		}
-
 	}
 
 	public void drawHexagon(int i, int j, Graphics g) {
@@ -166,9 +149,7 @@ public class DrawPolygon extends JPanel {
 			x = centerX + radius * Math.cos(k * 2 * Math.PI / 6);
 			y = centerY + radius * Math.sin(k * 2 * Math.PI / 6);
 			polygon.addPoint((int) (x), (int) (y));
-
 		}
-
 		g.fillPolygon(polygon);
 	}
 
@@ -208,7 +189,7 @@ public class DrawPolygon extends JPanel {
 			cellGenes.add(new ArrayList<CellGenes>());
 			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
 				cellGenes.get(i).add(new CellGenes(size));
-				System.out.println("size " + cellGenes.get(i).size());
+				
 			}
 
 		}

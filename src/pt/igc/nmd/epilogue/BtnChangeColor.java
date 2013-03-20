@@ -19,13 +19,15 @@ public class BtnChangeColor extends JButton {
 	private static final long serialVersionUID = 1L;
 	public  ColorButton colorButton;
 	public Color color;
+	private String nodeID;
 
 
-	public BtnChangeColor(ColorButton cb,Color c) {
+	public BtnChangeColor(ColorButton cb,Color c, String nodeID) {
 		super();
 		this.colorButton = cb;
 		this.color=c;
 		this.setBackground(c);
+		this.nodeID = nodeID;
 	}
 
 	
@@ -38,6 +40,9 @@ public class BtnChangeColor extends JButton {
 					colorButton.panel.mapcolor=color;
 					colorButton.panel.revalidate();
 					colorButton.panel.paint(colorButton.panel.getGraphics());
+					colorButton.panel.mainPanel.getEpithelium().setColor(nodeID, color);
+					
+
 		
 				}
 			});
