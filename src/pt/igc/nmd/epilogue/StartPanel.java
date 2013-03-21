@@ -70,6 +70,10 @@ public class StartPanel extends JPanel {
 		restartButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainPanel.getSimulation().resetIterationNumber();
+				iterationNumber.setText(""
+						+ mainPanel.getSimulation().getIterationNumber());
+				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
+						.getGraphics());
 			}
 		});
 
@@ -83,12 +87,14 @@ public class StartPanel extends JPanel {
 
 		closeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model = null;
-				mainPanel.hexagonsPanel.cellGenes.clear();
+		
+				mainPanel.getSimulation().resetIterationNumber();
+				iterationNumber.setText(""
+						+ mainPanel.getSimulation().getIterationNumber());
 				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
 						.getGraphics());
-				mainPanel.getContentPane().repaint();
-
+				
+				
 				mainPanel.componentsPanel.setVisible(false);
 				mainPanel.watcherPanel.setVisible(false);
 				selectedFilenameLabel.setText("");
@@ -158,7 +164,9 @@ public class StartPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				askModel();
 				mainPanel.getContentPane().repaint();
-
+				mainPanel.getSimulation().resetIterationNumber();
+				iterationNumber.setText(""
+						+ mainPanel.getSimulation().getIterationNumber());
 			}
 
 		});
@@ -202,6 +210,17 @@ public class StartPanel extends JPanel {
 			}
 		});
 
+		// Run Button
+		runButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// Simulation.step();
+
+				mainPanel.getSimulation().run();
+				iterationNumber.setText(""
+						+ mainPanel.getSimulation().getIterationNumber());
+			}
+		});
+		
 		stepButton.setVisible(false);
 		runButton.setVisible(false);
 		iterationLabel.setVisible(false);

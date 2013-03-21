@@ -103,6 +103,9 @@ public class DrawPolygon extends JPanel {
 
 					if (mainPanel.getSimulation().getIterationNumber()==0) {
 						g.setColor(Color.white);
+						
+				
+						
 						g.fillPolygon(polygon2);
 						g.setColor(Color.black);
 						g.drawPolygon(polygon2);
@@ -158,7 +161,96 @@ public class DrawPolygon extends JPanel {
 		g.drawPolygon(polygon);
 	}
 
+	public void clearAllCells(Graphics g) {
 
+		int XX = 0, YY = 0, max = 0;
+		try {
+			XX = this.mainPanel.getTopology().getWidth();
+			YY = this.mainPanel.getTopology().getHeight();
+
+			max = Math.max(XX, YY);
+
+		} catch (NumberFormatException e) {
+			System.out
+					.println("java.lang.NumberFormatException: For input string: ''");
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+		if (XX > 0 && YY > 0) {
+
+			if (YY == max) {
+
+				height = 500 / max;
+				height = (500 - 1 * height) / (max);
+				radius = height / Math.sqrt(3.0);
+
+			}
+
+			else {
+				radius = (500 / XX) / 2;
+
+				height = radius * Math.sqrt(3.0);
+			}
+
+			double x = 0, y = 0, centerX = radius, centerY = 0;
+
+			for (int k = 0; k < XX; k++) {
+				g.setColor(Color.black);
+				if (k == 0)
+					centerX = radius;
+				else
+					centerX = (1.5 * radius * (k)) + radius;
+				if (k % 2 == 0)
+					centerY = radius * Math.sqrt(3.0) / 2;// h
+				else
+					centerY = radius * Math.sqrt(3.0);// h+h/2
+				for (int j = 0; j < YY; j++) {
+
+					Polygon polygon2 = new Polygon();
+
+					for (int i = 0; i < 6; i++) {
+
+						x = centerX + radius * Math.cos(i * 2 * Math.PI / 6);
+						y = centerY + radius * Math.sin(i * 2 * Math.PI / 6);
+						polygon2.addPoint((int) (x), (int) (y));
+
+					}
+
+					if (mainPanel.getSimulation().getIterationNumber()==0) {
+						g.setColor(Color.white);
+						
+				
+						
+						g.fillPolygon(polygon2);
+						g.setColor(Color.black);
+						g.drawPolygon(polygon2);
+				}
+
+					else {
+						g.setColor(Color.white);
+						
+						
+						g.fillPolygon(polygon2);
+						g.setColor(Color.black);
+						g.drawPolygon(polygon2);
+
+					}
+
+					if (k % 2 == 0)
+						centerY = (j + 1 + 0.5) * radius * Math.sqrt(3.0);
+					else
+						centerY = (j + 2) * radius * Math.sqrt(3.0);
+
+				}
+
+			}
+		} else {
+			System.out.println("XX e YY têm que ser maiores do que zero");
+		}
+	}
 
 	public void initializeCellGenes(int size) {
 

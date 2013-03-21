@@ -49,7 +49,7 @@ public class Simulation {
 		byte[] currentState;
 		do {
 			currentState = this.state;
-			// fillHexagons();
+			fillHexagons();
 			step();
 		} while (hasChanged(currentState, this.state));
 	}
@@ -74,7 +74,9 @@ public class Simulation {
 
 			}
 			this.iterationNumber++;
-			fillhexagons();
+			fillHexagons();
+			mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
+					.getGraphics());
 		} else {
 
 			for (NodeInfo node : composedModel.getNodeOrder()) {
@@ -83,19 +85,22 @@ public class Simulation {
 
 				byte current = this.state[index];
 				byte target = composedModel.getTargetValue(index, this.state);
+			
 				byte next = 0;
 				if (current != 0 | target != 0) {
 					next = (byte) (current + ((target - current) / (target + current)));
 				}
 				this.state[index] = next;
 				node2State.put(node.getNodeID(), (int) next);
-				System.out.println(node + " " + current + " " + target + " "
+				System.out.println(node.getMax() + " " +node.isInput()+ " "+node+ " " + current + " " + target + " "
 						+ next);
 			}
 			this.iterationNumber++;
 		}
-		fillhexagons();
-		System.out.println(this.state);
+		fillHexagons();
+		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
+				.getGraphics());
+
 	}
 
 	public int getIterationNumber() {
@@ -140,7 +145,7 @@ public class Simulation {
 		return this.composedInitialState;
 	}
 
-	public void fillhexagons() {
+	public void fillHexagons() {
 
 		int row;
 		int column;
@@ -155,8 +160,6 @@ public class Simulation {
 			for (String key : mainPanel.getEpithelium()
 					.getComponentsDisplayOn().keySet()) {
 
-				this.color = Color(row, column);
-				// System.out.println(this.color);
 				mainPanel.hexagonsPanel.drawHexagon(row, column,
 						mainPanel.hexagonsPanel.getGraphics());
 			}
@@ -181,7 +184,6 @@ public class Simulation {
 						.computeNewName(a2,
 								mainPanel.getTopology().coords2instance(i, j));
 				int value = node2State.get(key);
-				System.out.println(value);
 
 				int maxValue = mainPanel.getEpithelium().getUnitaryModel()
 						.getNodeOrder().get(node2Int.get(a2)).getMax();
@@ -192,9 +194,9 @@ public class Simulation {
 					this.color = mainPanel.getEpithelium().getColors().get(a2);
 					this.color = ColorBrightness(color, value);
 
-					red = (red * color.getRed()) / 255;
-					green = (green * color.getGreen()) / 255;
-					blue = (blue * color.getBlue()) / 255;
+					red = (red + color.getRed())/2;
+					green =( green + color.getGreen())/2;
+					blue = (blue + color.getBlue())/2;
 					this.color = new Color(red, green, blue);
 				}
 
@@ -222,4 +224,10 @@ public class Simulation {
 
 	}
 
+public void resetComposedInitialState(){
+	for(String node: this.composedInitialState.keySet()){
+		this.composedInitialState.put(node, 0);
+	}
+}
+	
 }

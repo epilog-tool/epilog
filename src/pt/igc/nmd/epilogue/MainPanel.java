@@ -66,9 +66,7 @@ public class MainPanel extends JFrame {
 	 * 
 	 */
 	
-	public SphericalEpithelium getEpithelium(){
-		
-		
+	public SphericalEpithelium getEpithelium(){	
 		return this.epithelium;
 		
 	}

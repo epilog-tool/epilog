@@ -536,7 +536,6 @@ public class InitialConditions extends JFrame {
 
 					setInitialState(i, j);
 
-					// fillhexagons();
 				}
 
 			}
@@ -750,9 +749,9 @@ public class InitialConditions extends JFrame {
 					color = mainPanel.getEpithelium().getColors().get(a2);
 					color = ColorBrightness(color, value);
 
-					red = (red * color.getRed()) / 255;
-					green = (green * color.getGreen()) / 255;
-					blue = (blue * color.getBlue()) / 255;
+					red = (red + color.getRed())/2;
+					green =( green + color.getGreen())/2;
+					blue = (blue + color.getBlue())/2;
 					color = new Color(red, green, blue);
 				}
 
@@ -794,9 +793,9 @@ public class InitialConditions extends JFrame {
 					color = mainPanel.getEpithelium().getColors().get(a2);
 					color = ColorBrightness(color, value);
 
-					red = (red * color.getRed()) / 255;
-					green = (green * color.getGreen()) / 255;
-					blue = (blue * color.getBlue()) / 255;
+					red = (red + color.getRed())/2;
+					green =( green + color.getGreen())/2;
+					blue = (blue + color.getBlue())/2;
 					color = new Color(red, green, blue);
 				}
 

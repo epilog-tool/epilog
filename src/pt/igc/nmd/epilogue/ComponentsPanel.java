@@ -81,14 +81,13 @@ public class ComponentsPanel extends MapColorPanel {
 						if (checkbox.isSelected()) {
 							mainPanel.getEpithelium().setActiveComponents(
 									nodeID, true);
-
-							hexagonsPanel.countSelected++;
+							mainPanel.hexagonsPanel.repaint();
 						} else
 							mainPanel.getEpithelium().setActiveComponents(
 									nodeID, false);
-							hexagonsPanel.countSelected--;
-						hexagonsPanel.initializeCellGenes(size);
-						hexagonsPanel.paintComponent(hexagonsPanel
+							
+//						hexagonsPanel.initializeCellGenes(size);
+					hexagonsPanel.paintComponent(hexagonsPanel
 								.getGraphics());
 
 					}

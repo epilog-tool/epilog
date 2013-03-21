@@ -47,25 +47,33 @@ public class LogicalModelComposition {
 	}
 
 	public LogicalModel createComposedModel() {
+		
+		
 		if (composedModel != null)
 			return composedModel;
-
+		
 		List<NodeInfo> nodeOrder = new ArrayList<NodeInfo>();
 
 		byte max = 0;
 
 		// Creates all new NodeInfos for all instances
 		for (int i = 0; i < mainPanel.getTopology().getNumberInstances(); i++) {
-			for (NodeInfo node : mainPanel.getEpithelium().getUnitaryModel().getNodeOrder()) {
+			
+			for (NodeInfo node : mainPanel.getEpithelium().getUnitaryModel()
+					.getNodeOrder()) {
 				NodeInfo newNode = new NodeInfo(computeNewName(
 						node.getNodeID(), i), node.getMax());
-				//newNode.setInput(node.isInput() && !getMapping().isMapped(node));
+				newNode.setInput(node.isInput());
+				
+				// newNode.setInput(node.isInput() &&
+				// !getMapping().isMapped(node));
 				nodeOrder.add(newNode);
 				if (newNode.getMax() > max)
 					max = newNode.getMax();
 
 				this.new2Old.put(newNode, new SimpleEntry<NodeInfo, Integer>(
 						node, new Integer(i)));
+				
 				if (this.instanceNodes.get(new Integer(i)) == null)
 					this.instanceNodes.put(new Integer(i),
 							new ArrayList<NodeInfo>());
@@ -95,15 +103,21 @@ public class LogicalModelComposition {
 			// if old node was an input, it will not be handled here
 			NodeInfo oldNode = this.new2Old.get(node).getKey();
 			Integer instance = this.new2Old.get(node).getValue();
+			System.out.println("ewr");
+			System.out.print(oldNode);
+			if (oldNode.isInput())
+				System.out.print(oldNode);
 			if (oldNode.isInput())
 				continue;
 
-			PathSearcher searcher = new PathSearcher(mainPanel.getEpithelium().getUnitaryModel()
-					.getMDDManager(), 1, oldNode.getMax());
+			PathSearcher searcher = new PathSearcher(mainPanel.getEpithelium()
+					.getUnitaryModel().getMDDManager(), 1, oldNode.getMax());
 
 			int path[] = searcher.getPath();
-			int okMDDs[] = mainPanel.getEpithelium().getUnitaryModel().getLogicalFunctions();
-			int nodeIndex = mainPanel.getEpithelium().getUnitaryModel().getNodeOrder().indexOf(oldNode);
+			int okMDDs[] = mainPanel.getEpithelium().getUnitaryModel()
+					.getLogicalFunctions();
+			int nodeIndex = mainPanel.getEpithelium().getUnitaryModel()
+					.getNodeOrder().indexOf(oldNode);
 			searcher.setNode(okMDDs[nodeIndex]);
 
 			for (int value : searcher) {
@@ -113,8 +127,8 @@ public class LogicalModelComposition {
 				for (int j = 0; j < newPath.length; j++)
 					newPath[j] = -1;
 				for (int j = 0; j < path.length; j++) {
-					NodeInfo currentOldNode = mainPanel.getEpithelium().getUnitaryModel().getNodeOrder()
-							.get(j);
+					NodeInfo currentOldNode = mainPanel.getEpithelium()
+							.getUnitaryModel().getNodeOrder().get(j);
 					NodeInfo currentNewNode = this.old2New
 							.get(new SimpleEntry<NodeInfo, Integer>(
 									currentOldNode, instance));
@@ -136,28 +150,27 @@ public class LogicalModelComposition {
 
 	}
 
-	 public void components(){
-	
-	 int numberInstances = mainPanel.getTopology().getNumberInstances();
-	 LogicalModel model = mainPanel.getEpithelium().getUnitaryModel();
-	 System.out.println(model);
-	 model.getNodeOrder();
-	
-	 for (int instance=0; instance<numberInstances; instance = instance+1){
-	 for (int node = 0; node<model.getNodeOrder().size(); node = node+1){
-	 String newname =
-	 computeNewName(model.getNodeOrder().get(node).getNodeID(), instance);
-	// int maxValue = listNodes.;
-	 if (model.getNodeOrder().get(node).isInput()){
-	
-	 }
-	 System.out.println(newname);
-	 }
+	public void components() {
 
-	 }
+		int numberInstances = mainPanel.getTopology().getNumberInstances();
+		LogicalModel model = mainPanel.getEpithelium().getUnitaryModel();
 
-	
-	 }
+		model.getNodeOrder();
+
+		for (int instance = 0; instance < numberInstances; instance = instance + 1) {
+			for (int node = 0; node < model.getNodeOrder().size(); node = node + 1) {
+				String newname = computeNewName(model.getNodeOrder().get(node)
+						.getNodeID(), instance);
+
+				if (model.getNodeOrder().get(node).isInput()) {
+
+				}
+				System.out.println(newname);
+			}
+
+		}
+
+	}
 
 	/**
 	 * 
