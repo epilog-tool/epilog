@@ -45,7 +45,7 @@ public class MainPanel extends JFrame {
 		
 		this.topology = new Topology(5,5);
 		this.epithelium = new SphericalEpithelium(this.topology);
-		this.simulation = new Simulation(this.epithelium);
+		this.simulation = new Simulation(this);
 		this.logicalModelComposition = new LogicalModelComposition(this);
 	}
 	

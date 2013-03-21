@@ -59,15 +59,20 @@ public class StartPanel extends JPanel {
 
 	private JPanel init() {
 
+		// Close and Quit buttons
+
 		restartButton = new JButton("Restart");
 		modelButton = new JButton("Model");
 		closeButton = new JButton("Close");
 
 		JButton quitButton = new JButton("Quit");
 
-		// CLOSE button
+		restartButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mainPanel.getSimulation().resetIterationNumber();
+			}
+		});
 
-		// btnClose.setBounds(700, 5, 100, 25);
 		quitButton.setBackground(Color.red);
 		add(quitButton);
 		quitButton.addActionListener(new ActionListener() {
@@ -75,6 +80,33 @@ public class StartPanel extends JPanel {
 				mainPanel.dispose();
 			}
 		});
+
+		closeButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				model = null;
+				mainPanel.hexagonsPanel.cellGenes.clear();
+				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
+						.getGraphics());
+				mainPanel.getContentPane().repaint();
+
+				mainPanel.componentsPanel.setVisible(false);
+				mainPanel.watcherPanel.setVisible(false);
+				selectedFilenameLabel.setText("");
+				mainPanel.componentsPanel.setVisible(false);
+				mainPanel.watcherPanel.setVisible(false);
+				labelFilename.setVisible(false);
+				stepButton.setVisible(false);
+				runButton.setVisible(false);
+				stepButton.setVisible(false);
+				initialConditionsButton.setVisible(false);
+				iterationLabel.setVisible(false);
+				iterationNumber.setVisible(false);
+				restartButton.setVisible(false);
+
+			}
+		});
+
+		// Dimensions
 
 		selectedFilenameLabel = new JLabel();
 
@@ -116,30 +148,7 @@ public class StartPanel extends JPanel {
 			}
 		});
 
-		closeButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				model = null;
-				mainPanel.hexagonsPanel.cellGenes.clear();
-				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
-						.getGraphics());
-				mainPanel.getContentPane().repaint();
-
-				mainPanel.componentsPanel.setVisible(false);
-				mainPanel.watcherPanel.setVisible(false);
-				selectedFilenameLabel.setText("");
-				mainPanel.componentsPanel.setVisible(false);
-				mainPanel.watcherPanel.setVisible(false);
-				labelFilename.setVisible(false);
-				stepButton.setVisible(false);
-				runButton.setVisible(false);
-				stepButton.setVisible(false);
-				initialConditionsButton.setVisible(false);
-				iterationLabel.setVisible(false);
-				iterationNumber.setVisible(false);
-				restartButton.setVisible(false);
-
-			}
-		});
+		// Model
 
 		modelButton.setBounds(230, 13, 100, 30);
 
@@ -187,6 +196,9 @@ public class StartPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				// Simulation.step();
 				System.out.println("step");
+				mainPanel.getSimulation().step();
+				iterationNumber.setText(""
+						+ mainPanel.getSimulation().getIterationNumber());
 			}
 		});
 
@@ -206,7 +218,8 @@ public class StartPanel extends JPanel {
 		setWidth.setText("Width: ");
 		setHeight.setText("Height: ");
 		labelFilename.setText("Filename: ");
-		iterationNumber.setText("0");
+		iterationNumber.setText(""
+				+ mainPanel.getSimulation().getIterationNumber());
 		iterationNumber.setVisible(false);
 		labelFilename.setVisible(false);
 		iterationLabel.setText("Iteration:");

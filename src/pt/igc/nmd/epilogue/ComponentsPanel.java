@@ -77,7 +77,7 @@ public class ComponentsPanel extends MapColorPanel {
 				nodeBox[i].addActionListener(new ActionListener() {
 
 					public void actionPerformed(ActionEvent event) {
-						System.out.println(mainPanel.getEpithelium().getComponentsDisplayOn());
+						//System.out.println(mainPanel.getEpithelium().getComponentsDisplayOn());
 						if (checkbox.isSelected()) {
 							mainPanel.getEpithelium().setActiveComponents(
 									nodeID, true);
@@ -98,10 +98,7 @@ public class ComponentsPanel extends MapColorPanel {
 				});
 
 				
-				
-				
-				// colorChooser[i] = new ColorButton(this,
-				// hexagonsPanel,listNodes.get(i).getNodeID());
+		
 				colorChooser[i] = new ColorButton(this, listNodes.get(i)
 						.getNodeID());
 				colorChooser[i].setBounds(50, i * 40, 20, 25);
