@@ -48,7 +48,6 @@ public class InitialConditions extends JFrame {
 	private int endX;
 	private int endY;
 
-	private int count;
 
 	private MainPanel mainPanel;
 	private LogicalModel model;
@@ -67,7 +66,6 @@ public class InitialConditions extends JFrame {
 			Color.LIGHT_GRAY, Color.black };
 	private JCheckBox nodeBox[];
 	private ArrayList<ColorButton> colorChooser;
-	private MapColorPanel buttonPanel;
 	private JComboBox[] initialStatePerComponent;
 
 	private Hashtable<JComboBox, String> Jcombo2String;
@@ -388,7 +386,6 @@ public class InitialConditions extends JFrame {
 		this.endX = 0;
 		this.endY = 0;
 
-		this.count = 0;
 		MapPanel = new DrawPolygonM(this, this.mainPanel);
 
 		MapPanel.setLayout(null);
@@ -420,14 +417,20 @@ public class InitialConditions extends JFrame {
 		setVisible(true);
 		setLocationRelativeTo(null);
 
-		initializeInitialStates();
+		//initializeInitialStates();
+		if (!mainPanel.getSimulation().getHasInitiated()){
+			mainPanel.getSimulation().initializeInitialStates();	
+			mainPanel.getSimulation().setHasInitiated(true);
+			System.out.println("aqui!  initialconditions424");
+		}
+		
+		
 	}
 
 	private void fireInitialStateChange(JComboBox combo) {
 
 		mainPanel.getSimulation().setInitialState(Jcombo2String.get(combo),
 				(Integer) combo.getSelectedItem());
-		// System.out.println((Integer) combo.getSelectedItem());
 	}
 
 	public void setComponentDisplay(String NodeID, boolean b) {
@@ -448,53 +451,21 @@ public class InitialConditions extends JFrame {
 			column = mainPanel.getTopology().instance2Column(i,
 					mainPanel.getTopology().getHeight());
 
-			for (String key : componentDisplay.keySet()) {
-				// if (componentDisplay.get(key)) {
-				// int value = mainPanel
-				// .getEpithelium()
-				// .getComposedInitialState()
-				// .get(mainPanel.getLogicalModelComposition()
-				// .computeNewName(
-				// key,
-				// mainPanel.getTopology()
-				// .coords2instance(row,
-				// column)));
-				//
-				// int maxValue = listNodes.get(node2Int.get(key)).getMax();
-				// float as = (float) value / (float) maxValue;
-				//
-				// color = mainPanel.getEpithelium().getColors().get(key);
-				//
-				// float hsbVals[] = color.RGBtoHSB(color.getRed(),
-				// color.getGreen(), color.getBlue(), null);
-				//
-				// color = Color.getHSBColor(hsbVals[0], hsbVals[1], (1 -
-				// as)
-				// * hsbVals[2]);
-				//
-				// }
 				color = Color(row, column);
 				MapPanel.drawHexagon(row, column, MapPanel.getGraphics(), color);
-			}
+
 
 		}
 	}
 
 	public void close() {
 		dispose();
-		// this.mainPanel.hexagonsPanel.cells = cells;
-		// this.mainPanel.hexagonsPanel
-		// .paintComponent(this.mainPanel.hexagonsPanel.getGraphics());
-		// mainPanel.repaint();
-		// mainPanel.componentsPanel.repaint();
-		// mainPanel.getContentPane().repaint();
-
 	}
 
 	public void initialize() {
 
 		MapPanel.paintComponent(MapPanel.getGraphics());
-
+		
 		MapPanel.addMouseMotionListener(new MouseMotionListener() {
 
 			@Override
@@ -657,23 +628,23 @@ public class InitialConditions extends JFrame {
 
 	}
 
-	public void initializeInitialStates() {
-
-		Set<String> a = mainPanel.getSimulation().getNode2Int().keySet();
-		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
-			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
-				for (String a2 : a) {
-					mainPanel.getSimulation().setComposedInitialState(
-							mainPanel.getLogicalModelComposition()
-									.computeNewName(
-											a2,
-											mainPanel.getTopology()
-													.coords2instance(i, j)),
-							(byte) 0);
-				}
-			}
-		}
-	}
+//	public void initializeInitialStates() {
+//
+//		Set<String> a = mainPanel.getSimulation().getNode2Int().keySet();
+//		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
+//			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
+//				for (String a2 : a) {
+//					mainPanel.getSimulation().setComposedInitialState(
+//							mainPanel.getLogicalModelComposition()
+//									.computeNewName(
+//											a2,
+//											mainPanel.getTopology()
+//													.coords2instance(i, j)),
+//							(byte) 0);
+//				}
+//			}
+//		}
+//	}
 
 	public void getInitialState(int i, int j) {
 		Set<String> a = mainPanel.getSimulation().getNode2Int().keySet();
@@ -693,20 +664,7 @@ public class InitialConditions extends JFrame {
 											a2,
 											mainPanel.getTopology()
 													.coords2instance(i, j))));
-			// System.out.println(a2
-			// + " "
-			// + mainPanel.getTopology().coords2instance(i, j)
-			// + " "
-			// + a2
-			// + " "
-			// + mainPanel
-			// .getSimulation()
-			// .getComposedInitialState()
-			// .get(mainPanel.getLogicalModelComposition()
-			// .computeNewName(
-			// a2,
-			// mainPanel.getTopology()
-			// .coords2instance(i, j))));
+
 
 		}
 	}
@@ -721,6 +679,7 @@ public class InitialConditions extends JFrame {
 								a2,
 								mainPanel.getTopology().coords2instance(i, j)),
 						(byte) mainPanel.getSimulation().getInitialState(a2));
+				
 
 			}
 
@@ -749,9 +708,9 @@ public class InitialConditions extends JFrame {
 					color = mainPanel.getEpithelium().getColors().get(a2);
 					color = ColorBrightness(color, value);
 
-					red = (red + color.getRed())/2;
-					green =( green + color.getGreen())/2;
-					blue = (blue + color.getBlue())/2;
+					red = (red + color.getRed()) / 2;
+					green = (green + color.getGreen()) / 2;
+					blue = (blue + color.getBlue()) / 2;
 					color = new Color(red, green, blue);
 				}
 
@@ -793,9 +752,9 @@ public class InitialConditions extends JFrame {
 					color = mainPanel.getEpithelium().getColors().get(a2);
 					color = ColorBrightness(color, value);
 
-					red = (red + color.getRed())/2;
-					green =( green + color.getGreen())/2;
-					blue = (blue + color.getBlue())/2;
+					red = (red + color.getRed()) / 2;
+					green = (green + color.getGreen()) / 2;
+					blue = (blue + color.getBlue()) / 2;
 					color = new Color(red, green, blue);
 				}
 
@@ -814,10 +773,10 @@ public class InitialConditions extends JFrame {
 		if (value > 0) {
 
 			for (int j = 2; j <= value; j++) {
-				color = color.brighter();
+				color = color.darker();
 			}
 		} else if (value == 0) {
-			color = color.white;
+			color = Color.white;
 		}
 		return color;
 
@@ -842,8 +801,8 @@ public class InitialConditions extends JFrame {
 
 		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
 			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
-				initializeInitialStates();
-				MapPanel.drawHexagon(i, j, MapPanel.getGraphics(), color.white);
+				mainPanel.getSimulation().initializeInitialStates();
+				MapPanel.drawHexagon(i, j, MapPanel.getGraphics(), Color.white);
 
 			}
 		}

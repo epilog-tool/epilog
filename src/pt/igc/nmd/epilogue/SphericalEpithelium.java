@@ -7,10 +7,8 @@ import org.colomoto.logicalmodel.LogicalModel;
 
 public class SphericalEpithelium implements Epithelium {
 
-	private int width;
-	private int height;
+
 	private LogicalModel unitaryModel = null;
-	private LogicalModel composedModel = null;
 	private Hashtable<String, Color> node2Color;
 	private Hashtable<String, Boolean> activeComponents;
 	private Topology topology;
@@ -20,8 +18,7 @@ public class SphericalEpithelium implements Epithelium {
 	
 
 	public SphericalEpithelium(Topology topology) {
-		this.width = 0;
-		this.height = 0;
+
 		this.topology = topology;
 		node2Color = new Hashtable<String, Color>();
 		activeComponents = new Hashtable<String, Boolean>();

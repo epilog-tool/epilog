@@ -5,8 +5,14 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -28,12 +34,14 @@ public class StartPanel extends JPanel {
 	 */
 
 	private static final long serialVersionUID = 1L;
-	private JButton restartButton;
+	
 	private JButton closeButton;
 	private JButton modelButton;
 	private JButton initialConditionsButton;
-	private RunStopButton runButton;
+	private JButton restartButton;
+	private JButton runButton;
 	private JButton stepButton;
+	private JButton quitButton;
 	private IterationLabel iterationLabel;
 
 	JLabel labelFilename = new JLabel();
@@ -61,21 +69,11 @@ public class StartPanel extends JPanel {
 
 		// Close and Quit buttons
 
-		restartButton = new JButton("Restart");
+		
 		modelButton = new JButton("Model");
 		closeButton = new JButton("Close");
 
-		JButton quitButton = new JButton("Quit");
-
-		restartButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				mainPanel.getSimulation().resetIterationNumber();
-				iterationNumber.setText(""
-						+ mainPanel.getSimulation().getIterationNumber());
-				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
-						.getGraphics());
-			}
-		});
+		quitButton = new JButton("Quit");
 
 		quitButton.setBackground(Color.red);
 		add(quitButton);
@@ -85,15 +83,17 @@ public class StartPanel extends JPanel {
 			}
 		});
 
+		closeButton.setVisible(false);
 		closeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+		
 				mainPanel.getSimulation().resetIterationNumber();
 				iterationNumber.setText(""
 						+ mainPanel.getSimulation().getIterationNumber());
 				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
 						.getGraphics());
-
+				mainPanel.getSimulation().setHasInitiated(false);
+				
 				mainPanel.componentsPanel.setVisible(false);
 				mainPanel.watcherPanel.setVisible(false);
 				selectedFilenameLabel.setText("");
@@ -107,9 +107,22 @@ public class StartPanel extends JPanel {
 				iterationLabel.setVisible(false);
 				iterationNumber.setVisible(false);
 				restartButton.setVisible(false);
+				closeButton.setVisible(false);
 
 			}
 		});
+		
+		restartButton = new JButton("Restart");
+		restartButton.setVisible(false);
+		restartButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mainPanel.getSimulation().resetIterationNumber();
+				iterationNumber.setText(""
+						+ mainPanel.getSimulation().getIterationNumber());
+				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
+						.getGraphics());
+				
+			}	});
 
 		// Dimensions
 
@@ -152,10 +165,53 @@ public class StartPanel extends JPanel {
 				setHeight();
 			}
 		});
+		
+		//To make sure that the height is updated
+		addMouseListener (new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				sanityCheckDimension(userDefinedWidth);
+				sanityCheckDimension(userDefinedHeight);
+				setWidth();
+				setHeight();
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				sanityCheckDimension(userDefinedWidth);
+				sanityCheckDimension(userDefinedHeight);
+				setWidth();
+				setHeight();
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 
 		// Model
 
 		modelButton.setBounds(230, 13, 100, 30);
+		
 
 		selectedFilenameLabel.setBounds(335, 13, 100, 30);
 
@@ -166,7 +222,10 @@ public class StartPanel extends JPanel {
 				mainPanel.getSimulation().resetIterationNumber();
 				iterationNumber.setText(""
 						+ mainPanel.getSimulation().getIterationNumber());
+				closeButton.setVisible(true);
 			}
+			
+			
 
 		});
 
@@ -202,7 +261,7 @@ public class StartPanel extends JPanel {
 		stepButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Simulation.step();
-
+				System.out.println("step");
 				mainPanel.getSimulation().step();
 				iterationNumber.setText(""
 						+ mainPanel.getSimulation().getIterationNumber());
@@ -219,7 +278,7 @@ public class StartPanel extends JPanel {
 						+ mainPanel.getSimulation().getIterationNumber());
 			}
 		});
-
+		
 		stepButton.setVisible(false);
 		runButton.setVisible(false);
 		iterationLabel.setVisible(false);
@@ -242,6 +301,7 @@ public class StartPanel extends JPanel {
 		labelFilename.setVisible(false);
 		iterationLabel.setText("Iteration:");
 		iterationLabel.setVisible(false);
+		
 
 		add(setWidth);
 		add(userDefinedWidth);

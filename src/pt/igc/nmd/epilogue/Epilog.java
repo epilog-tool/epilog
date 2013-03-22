@@ -5,5 +5,5 @@ public class Epilog {
 
 		new MainPanel().initialize();
 
-}
+	}
 }
