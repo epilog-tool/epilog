@@ -87,14 +87,13 @@ public class StartPanel extends JPanel {
 
 		closeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-		
+
 				mainPanel.getSimulation().resetIterationNumber();
 				iterationNumber.setText(""
 						+ mainPanel.getSimulation().getIterationNumber());
 				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
 						.getGraphics());
-				
-				
+
 				mainPanel.componentsPanel.setVisible(false);
 				mainPanel.watcherPanel.setVisible(false);
 				selectedFilenameLabel.setText("");
@@ -203,7 +202,7 @@ public class StartPanel extends JPanel {
 		stepButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Simulation.step();
-				System.out.println("step");
+
 				mainPanel.getSimulation().step();
 				iterationNumber.setText(""
 						+ mainPanel.getSimulation().getIterationNumber());
@@ -220,7 +219,7 @@ public class StartPanel extends JPanel {
 						+ mainPanel.getSimulation().getIterationNumber());
 			}
 		});
-		
+
 		stepButton.setVisible(false);
 		runButton.setVisible(false);
 		iterationLabel.setVisible(false);

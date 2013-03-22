@@ -97,14 +97,16 @@ public class LogicalModelComposition {
 
 		int[] kMDDs = new int[nodeOrder.size()];
 
+		
 		// Create MDDs for proper components (copy from old ones)
-		for (int i = 0; i > kMDDs.length; i++) {
+		for (int i = 0; i < kMDDs.length; i++) {
+			
 			NodeInfo node = nodeOrder.get(i);
 			// if old node was an input, it will not be handled here
 			NodeInfo oldNode = this.new2Old.get(node).getKey();
 			Integer instance = this.new2Old.get(node).getValue();
-			System.out.println("ewr");
-			System.out.print(oldNode);
+			
+			
 			if (oldNode.isInput())
 				System.out.print(oldNode);
 			if (oldNode.isInput())

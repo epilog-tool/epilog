@@ -92,8 +92,8 @@ public class Simulation {
 				}
 				this.state[index] = next;
 				node2State.put(node.getNodeID(), (int) next);
-				System.out.println(node.getMax() + " " +node.isInput()+ " "+node+ " " + current + " " + target + " "
-						+ next);
+//				System.out.println(node.getMax() + " " +node.isInput()+ " "+node+ " " + current + " " + target + " "
+//						+ next);
 			}
 			this.iterationNumber++;
 		}
