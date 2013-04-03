@@ -15,9 +15,11 @@ import org.colomoto.mddlib.MDDVariable;
 import org.colomoto.mddlib.MDDVariableFactory;
 import org.colomoto.mddlib.PathSearcher;
 import org.colomoto.mddlib.operators.MDDBaseOperators;
+import org.ginsim.servicegui.tool.composition.integrationgrammar.IntegrationFunctionSpecification.IntegrationAtom;
 //import org.ginsim.service.tool.composition.Topology;
 
 import composition.IntegrationFunctionMapping;
+import composition.RegulatoryIntegration;
 
 //import composition.IntegrationFunctionMapping;
 
@@ -30,11 +32,12 @@ public class LogicalModelComposition {
 	private Map<NodeInfo, SimpleEntry<NodeInfo, Integer>> new2Old = new HashMap<NodeInfo, SimpleEntry<NodeInfo, Integer>>();
 	private Map<Integer, List<NodeInfo>> instanceNodes = new HashMap<Integer, List<NodeInfo>>();
 
+	
 	// public LogicalModelComposition(LogicalModel model, Topology topology,
 	// IntegrationFunctionMapping mapping) {
 	// this.topology = topology;
 	// this.unitaryModel = model;
-	// this.mapping = mapping;
+	 //this.mapping = mapping;
 	// }
 
 	public LogicalModelComposition(MainPanel mainPanel) {
@@ -45,12 +48,22 @@ public class LogicalModelComposition {
 	public IntegrationFunctionMapping getMapping() {
 		return this.mapping;
 	}
+	
+	public void setMapping(IntegrationFunctionMapping mapping) {
+		this.mapping = mapping;
+	}
 
 	public LogicalModel createComposedModel() {
 		if (composedModel != null)
 			return composedModel;
 
 		List<NodeInfo> nodeOrder = new ArrayList<NodeInfo>();
+//		//TESTE
+//		
+//		IntegrationAtom aux = new IntegrationAtom("HB", (byte) 1,(int) 0,(int)  6);
+//		RegulatoryIntegration a = new RegulatoryIntegration(aux, mainPanel.getEpithelium().getUnitaryModel());
+//		mapping.addMapping(nodeOrder.get(1), a);
+//		System.out.println(mapping.isMapped(nodeOrder.get(1)));
 
 		byte max = 0;
 
@@ -61,8 +74,7 @@ public class LogicalModelComposition {
 				NodeInfo newNode = new NodeInfo(computeNewName(
 						node.getNodeID(), i), node.getMax());
 				newNode.setInput(node.isInput());
-				// newNode.setInput(node.isInput() &&
-				// !getMapping().isMapped(node));
+				// newNode.setInput(node.isInput() &&	!getMapping().isMapped(node));
 				nodeOrder.add(newNode);
 				if (newNode.getMax() > max)
 					max = newNode.getMax();
@@ -92,7 +104,7 @@ public class LogicalModelComposition {
 		int[] kMDDs = new int[nodeOrder.size()];
 
 		// Create MDDs for proper components (copy from old ones)
-		// for (int i = 0; i < kMDDs.length; i++) {
+		
 		for (int i = 0; i < kMDDs.length; i++) {
 			NodeInfo node = nodeOrder.get(i);
 			// if old node was an input, it will not be handled here
@@ -172,5 +184,11 @@ public class LogicalModelComposition {
 			}
 		}
 		return mddPath;
+	}
+
+	public void resetComposedModel() {
+		composedModel = null;
+		// TODO Auto-generated method stub
+		
 	}
 }

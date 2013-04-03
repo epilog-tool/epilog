@@ -47,19 +47,19 @@ public class InitialConditions extends JFrame {
 	private int startY;
 	private int endX;
 	private int endY;
-
+	private JComboBox rollOver;
 
 	private MainPanel mainPanel;
 	private LogicalModel model;
 
 	private JPanel properComponentsPanel;
-	private JPanel envInputsPanel;
+	private JPanel inputsPanel;
 	private JPanel perturbationsPanel;
 	private JPanel optionsPanel;
 	private DrawPolygonM MapPanel;
 
 	// Nodes Information
-	private int numberOfNodes;
+
 	private List<NodeInfo> listNodes;
 	private Color colors[] = { Color.orange, Color.green, Color.blue,
 			Color.pink, Color.yellow, Color.magenta, Color.cyan, Color.red,
@@ -68,14 +68,16 @@ public class InitialConditions extends JFrame {
 	private ArrayList<ColorButton> colorChooser;
 	private JComboBox[] initialStatePerComponent;
 
-	private Hashtable<JComboBox, String> Jcombo2String;
-	private Hashtable<JCheckBox, String> Jcheck2String;
+	private Hashtable<JComboBox, NodeInfo> Jcombo2Node;
+	private Hashtable<JCheckBox, NodeInfo> Jcheck2Node;
 
-	private Hashtable<String, Boolean> componentDisplay;
+	private Hashtable<NodeInfo, Boolean> componentDisplay;
 
 	/*
 	 * 
 	 */
+	
+
 
 	public InitialConditions(MainPanel mainPanel) {
 
@@ -92,38 +94,38 @@ public class InitialConditions extends JFrame {
 		setTitle("Initial Conditions");
 
 		TitledBorder titleProperComponents;
-		TitledBorder titleEnvInputs;
+		TitledBorder titleInputs;
 		TitledBorder titlePerturbation;
 		titleProperComponents = BorderFactory
 				.createTitledBorder("Proper Components");
-		titleEnvInputs = BorderFactory.createTitledBorder("Environment Inputs");
+		titleInputs = BorderFactory.createTitledBorder("Inputs");
 		titlePerturbation = BorderFactory.createTitledBorder("Perturbation");
 
 		properComponentsPanel = new JPanel();
-		envInputsPanel = new JPanel();
+		inputsPanel = new JPanel();
 		perturbationsPanel = new JPanel();
 		optionsPanel = new JPanel();
 
 		properComponentsPanel.setBounds(500, 0, 180, 200);
-		envInputsPanel.setBounds(500, 250, 180, 100);
+		inputsPanel.setBounds(500, 250, 180, 100);
 		perturbationsPanel.setBounds(500, 400, 180, 100);
 
 		optionsPanel.setBounds(0, 600, 700, 100);
 
 		properComponentsPanel.setBackground(Color.white);
-		envInputsPanel.setBackground(Color.white);
+		inputsPanel.setBackground(Color.white);
 		optionsPanel.setBackground(Color.white);
 		perturbationsPanel.setBackground(Color.white);
 
 		properComponentsPanel.setBorder(titleProperComponents);
-		envInputsPanel.setBorder(titleEnvInputs);
+		inputsPanel.setBorder(titleInputs);
 		perturbationsPanel.setBorder(titlePerturbation);
 
 		properComponentsPanel.setLayout(null);
-		envInputsPanel.setLayout(null);
+		inputsPanel.setLayout(null);
 		perturbationsPanel.setLayout(null);
 
-		/* ProperComponents and envInput panel */
+		/* ProperComponents and Input panel */
 
 		listNodes = model.getNodeOrder();
 
@@ -131,111 +133,89 @@ public class InitialConditions extends JFrame {
 		initialStatePerComponent = new JComboBox[listNodes.size()];
 
 		colorChooser = new ArrayList<ColorButton>();
-		Jcombo2String = new Hashtable<JComboBox, String>();
-		Jcheck2String = new Hashtable<JCheckBox, String>();
+		Jcombo2Node = new Hashtable<JComboBox, NodeInfo>();
+		Jcheck2Node = new Hashtable<JCheckBox, NodeInfo>();
 
-		componentDisplay = new Hashtable<String, Boolean>();
+		componentDisplay = new Hashtable<NodeInfo, Boolean>();
 
 		int inputCount = 0;
 		int properCount = 0;
 
 		for (int i = 0; i < listNodes.size(); i++) {
 
-			if (mainPanel.componentsPanel.isEnv.get(listNodes.get(i)
-					.getNodeID())) {
+			if (mainPanel.componentsPanel.isEnv.get(listNodes.get(i))) {
 
 				nodeBox[i] = new JCheckBox(listNodes.get(i).getNodeID());
 				nodeBox[i].setBackground(Color.white);
 				nodeBox[i].setBounds(10, 30 + inputCount * 40, 50, 25);
-				Jcheck2String.put(nodeBox[i], listNodes.get(i).getNodeID());
-				componentDisplay.put(listNodes.get(i).getNodeID(), false);
+				Jcheck2Node.put(nodeBox[i], listNodes.get(i));
+				componentDisplay.put(listNodes.get(i), false);
 
 				nodeBox[i].addActionListener(new ActionListener() {
-
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
 						JCheckBox src = (JCheckBox) arg0.getSource();
-
-						setComponentDisplay(Jcheck2String.get(src),
+						setComponentDisplay(Jcheck2Node.get(src),
 								src.isSelected());
 						fillhexagons();
 					}
-
 				});
 
-				mainPanel.getSimulation().setNode2Int(
-						listNodes.get(i).getNodeID(), i);
+				mainPanel.getSimulation().setNode2Int(listNodes.get(i), i);
 
 				initialStatePerComponent[i] = new JComboBox();
 				initialStatePerComponent[i].setBounds(60, 30 + inputCount * 40,
 						40, 25);
-
 				for (int maxValue = 0; maxValue < listNodes.get(i).getMax() + 1; maxValue++) {
 					initialStatePerComponent[i].addItem(maxValue);
 				}
-
-				Jcombo2String.put(initialStatePerComponent[i], listNodes.get(i)
-						.getNodeID());
-
+				Jcombo2Node.put(initialStatePerComponent[i], listNodes.get(i));
+				
 				mainPanel.getSimulation().setInitialState(
-						Jcombo2String.get(initialStatePerComponent[i]), 0);
-
+						Jcombo2Node.get(initialStatePerComponent[i]), 0);
+				
 				initialStatePerComponent[i]
 						.addActionListener(new ActionListener() {
-
 							@Override
 							public void actionPerformed(ActionEvent arg0) {
 								JComboBox src = (JComboBox) arg0.getSource();
-
 								// TODO Auto-generated method stub
 								fireInitialStateChange(src);
 							}
-
 						});
 
 				colorChooser.add(new ColorButton(mainPanel.componentsPanel,
-						listNodes.get(i).getNodeID()));
+						listNodes.get(i)));
 				colorChooser.get(i).setBackground(
 						mainPanel.getEpithelium().getColors()
-								.get(listNodes.get(i).getNodeID()));
+								.get(listNodes.get(i)));
 				colorChooser.get(i)
 						.setBounds(120, 30 + inputCount * 40, 40, 25);
-				envInputsPanel.add(nodeBox[i]);
-				envInputsPanel.add(initialStatePerComponent[i]);
-				envInputsPanel.add(colorChooser.get(i));
+				inputsPanel.add(nodeBox[i]);
+				inputsPanel.add(initialStatePerComponent[i]);
+				inputsPanel.add(colorChooser.get(i));
 				inputCount = inputCount + 1;
 
-				// TODO ACTION LISTENERS PARA AS CORES E PARA OS MAXIMOS
-
-				// Color initialConditionsColor =
-				// initialConditionsColor(listNodes.get(i).getNodeID(),
-				// initialStateValue);
 
 			} else if (!listNodes.get(i).isInput()) {
-
 				nodeBox[i] = new JCheckBox(listNodes.get(i).getNodeID());
 				nodeBox[i].setBackground(Color.white);
 				nodeBox[i].setBounds(10, 30 + properCount * 40, 50, 25);
-
-				Jcheck2String.put(nodeBox[i], listNodes.get(i).getNodeID());
-				componentDisplay.put(listNodes.get(i).getNodeID(), false);
+				Jcheck2Node.put(nodeBox[i], listNodes.get(i));
+				componentDisplay.put(listNodes.get(i), false);
 
 				nodeBox[i].addActionListener(new ActionListener() {
-
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
 						JCheckBox src = (JCheckBox) arg0.getSource();
-
-						setComponentDisplay(Jcheck2String.get(src),
+					setComponentDisplay(Jcheck2Node.get(src),
 								src.isSelected());
-
-						fillhexagons();
+					fillhexagons();
 					}
 
 				});
 
-				mainPanel.getSimulation().setNode2Int(
-						listNodes.get(i).getNodeID(), i);
+				mainPanel.getSimulation().setNode2Int(listNodes.get(i), i);
 				initialStatePerComponent[i] = new JComboBox();
 				initialStatePerComponent[i].setBounds(60,
 						30 + properCount * 40, 40, 25);
@@ -243,11 +223,10 @@ public class InitialConditions extends JFrame {
 					initialStatePerComponent[i].addItem(maxValue);
 				}
 
-				Jcombo2String.put(initialStatePerComponent[i], listNodes.get(i)
-						.getNodeID());
+				Jcombo2Node.put(initialStatePerComponent[i], listNodes.get(i));
 
 				mainPanel.getSimulation().setInitialState(
-						Jcombo2String.get(initialStatePerComponent[i]), 0);
+						Jcombo2Node.get(initialStatePerComponent[i]), 0);
 
 				initialStatePerComponent[i]
 						.addActionListener(new ActionListener() {
@@ -262,10 +241,10 @@ public class InitialConditions extends JFrame {
 						});
 
 				colorChooser.add(new ColorButton(mainPanel.componentsPanel,
-						listNodes.get(i).getNodeID()));
+						listNodes.get(i)));
 				colorChooser.get(i).setBackground(
 						mainPanel.getEpithelium().getColors()
-								.get(listNodes.get(i).getNodeID()));
+								.get(listNodes.get(i)));
 				colorChooser.get(i).setBounds(120, 30 + properCount * 40, 40,
 						25);
 				properComponentsPanel.add(initialStatePerComponent[i]);
@@ -313,12 +292,6 @@ public class InitialConditions extends JFrame {
 		JButton buttonSave = new JButton("Save");
 		JButton buttonClose = new JButton("Close");
 		JButton buttonFill = new JButton("Fill");
-
-		optionsPanel.add(buttonMarkAll);
-		optionsPanel.add(buttonClearAll);
-		optionsPanel.add(buttonFill);
-		optionsPanel.add(buttonSave);
-		optionsPanel.add(buttonClose);
 
 		buttonFill.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -380,6 +353,33 @@ public class InitialConditions extends JFrame {
 
 		});
 
+		/* RollOver */
+
+		rollOver = new JComboBox();
+
+		rollOver.addItem("No Roll-Over");
+		rollOver.addItem("Vertical Roll-Over");
+		rollOver.addItem("Horizontal Roll-Over");
+		String aux = (String) rollOver.getSelectedItem();
+		mainPanel.getTopology().setRollOver(aux);
+		rollOver.setBackground(Color.white);
+
+		rollOver.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				JComboBox source = (JComboBox) event.getSource();
+				String optionString = (String) source.getSelectedItem();
+				fireRollOverChange(optionString);
+			}
+		});
+		optionsPanel.add(rollOver);
+		optionsPanel.add(buttonMarkAll);
+		optionsPanel.add(buttonClearAll);
+		optionsPanel.add(buttonFill);
+		optionsPanel.add(buttonSave);
+		optionsPanel.add(buttonClose);
+
 		/* Hexagon Grid */
 		this.startX = 0;
 		this.startY = 0;
@@ -408,7 +408,7 @@ public class InitialConditions extends JFrame {
 		/* Add stuff to the final panel */
 		getContentPane().add(MapPanel);
 		getContentPane().add(properComponentsPanel);
-		getContentPane().add(envInputsPanel);
+		getContentPane().add(inputsPanel);
 		getContentPane().add(perturbationsPanel);
 		getContentPane().add(optionsPanel);
 
@@ -417,24 +417,27 @@ public class InitialConditions extends JFrame {
 		setVisible(true);
 		setLocationRelativeTo(null);
 
-		//initializeInitialStates();
-		if (!mainPanel.getSimulation().getHasInitiated()){
-			mainPanel.getSimulation().initializeInitialStates();	
-			mainPanel.getSimulation().setHasInitiated(true);
-			System.out.println("aqui!  initialconditions424");
-		}
-		
-		
+		// initializeInitialStates();
+//		if (!mainPanel.getSimulation().getHasInitiated()) {
+//			mainPanel.getSimulation().initializeInitialStates();
+//			mainPanel.getSimulation().setHasInitiated(true);
+//
+//		}
+
 	}
 
 	private void fireInitialStateChange(JComboBox combo) {
 
-		mainPanel.getSimulation().setInitialState(Jcombo2String.get(combo),
+		mainPanel.getSimulation().setInitialState(Jcombo2Node.get(combo),
 				(Integer) combo.getSelectedItem());
 	}
 
-	public void setComponentDisplay(String NodeID, boolean b) {
-		componentDisplay.put(NodeID, b);
+	private void fireRollOverChange(String optionString) {
+		mainPanel.getTopology().setRollOver(optionString);
+	}
+
+	public void setComponentDisplay(NodeInfo nodeInfo, boolean b) {
+		componentDisplay.put(nodeInfo, b);
 	}
 
 	public void fillhexagons() {
@@ -446,26 +449,27 @@ public class InitialConditions extends JFrame {
 
 		for (int i = 0; i < mainPanel.getTopology().getNumberInstances(); i++) {
 
-			row = mainPanel.getTopology().instance2Row(i,
+			row = mainPanel.getTopology().instance2i(i,
 					mainPanel.getTopology().getWidth());
-			column = mainPanel.getTopology().instance2Column(i,
+			column = mainPanel.getTopology().instance2j(i,
 					mainPanel.getTopology().getHeight());
 
-				color = Color(row, column);
-				MapPanel.drawHexagon(row, column, MapPanel.getGraphics(), color);
-
-
+			color = Color(row, column);
+			MapPanel.drawHexagon(row, column, MapPanel.getGraphics(), color);
 		}
 	}
 
 	public void close() {
+		mainPanel.componentsPanel.repaint();
+		mainPanel.componentsPanel.revalidate();
+		
 		dispose();
 	}
 
 	public void initialize() {
 
 		MapPanel.paintComponent(MapPanel.getGraphics());
-		
+
 		MapPanel.addMouseMotionListener(new MouseMotionListener() {
 
 			@Override
@@ -578,7 +582,6 @@ public class InitialConditions extends JFrame {
 				MapPanel.setBackground(Color.white);
 				endX = arg0.getX();
 				endY = arg0.getX();
-
 			}
 
 			@Override
@@ -620,71 +623,61 @@ public class InitialConditions extends JFrame {
 					setInitialState(i, j);
 					MapPanel.drawHexagon(i, j, MapPanel.getGraphics(), color);
 
+					// int instance = mainPanel.getTopology()
+					// .coords2Instance(i, j);
+					//
+					// // System.out.println(instance);
+					// for (int h : mainPanel.getTopology().groupNeighbors(
+					// instance, 4)) {
+					//
+					// int m = mainPanel.getTopology().instance2i(h,
+					// mainPanel.getTopology().getWidth());
+					// int n = mainPanel.getTopology().instance2j(h,
+					// mainPanel.getTopology().getWidth());
+					//
+					// MapPanel.drawHexagon(m, n, MapPanel.getGraphics(),
+					// color);
+					// }
 				}
-
 			}
-
 		});
-
 	}
 
-//	public void initializeInitialStates() {
-//
-//		Set<String> a = mainPanel.getSimulation().getNode2Int().keySet();
-//		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
-//			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
-//				for (String a2 : a) {
-//					mainPanel.getSimulation().setComposedInitialState(
-//							mainPanel.getLogicalModelComposition()
-//									.computeNewName(
-//											a2,
-//											mainPanel.getTopology()
-//													.coords2instance(i, j)),
-//							(byte) 0);
-//				}
-//			}
-//		}
-//	}
-
 	public void getInitialState(int i, int j) {
-		Set<String> a = mainPanel.getSimulation().getNode2Int().keySet();
-		for (String a2 : a) {
-
-			textArea.append(a2
-					+ " "
-					+ mainPanel.getTopology().coords2instance(i, j)
-					+ " "
-					+ a2
-					+ " "
-					+ mainPanel
-							.getSimulation()
-							.getComposedInitialState()
-							.get(mainPanel.getLogicalModelComposition()
-									.computeNewName(
-											a2,
-											mainPanel.getTopology()
-													.coords2instance(i, j))));
-
-
-		}
+		Set<NodeInfo> a = mainPanel.getSimulation().getNode2Int().keySet();
+		// for (NodeInfo a2 : a) {
+		//
+		// textArea.append(a2
+		// + " "
+		// + mainPanel.getTopology().coords2Instance(i, j)
+		// + " "
+		// + a2
+		// + " "
+		// + mainPanel
+		// .getSimulation()
+		// .getComposedInitialState()
+		// .get(mainPanel.getLogicalModelComposition()
+		// .computeNewName(
+		// a2.getNodeID(),
+		// mainPanel.getTopology()
+		// .coords2Instance(i, j))));
+		// }
 	}
 
 	public void setInitialState(int i, int j) {
-		Set<String> a = mainPanel.getSimulation().getNode2Int().keySet();
-		for (String a2 : a) {
+		Set<NodeInfo> a = mainPanel.getSimulation().getNode2Int().keySet();
+		
+		int instance = mainPanel.getTopology().coords2Instance(i, j);
+		for (NodeInfo a2 : a) {
+
 			if (componentDisplay.get(a2)) {
 
-				mainPanel.getSimulation().setComposedInitialState(
-						mainPanel.getLogicalModelComposition().computeNewName(
-								a2,
-								mainPanel.getTopology().coords2instance(i, j)),
+				mainPanel.getGrid().setGrid(instance, a2,
 						(byte) mainPanel.getSimulation().getInitialState(a2));
 				
 
 			}
-
 		}
-
 	}
 
 	public Color Color() {
@@ -694,15 +687,11 @@ public class InitialConditions extends JFrame {
 		int blue = 255;
 		color = new Color(red, green, blue);
 
-		Set<String> a = componentDisplay.keySet();
+		Set<NodeInfo> a = componentDisplay.keySet();
 
-		for (String a2 : a) {
+		for (NodeInfo a2 : a) {
 			if (componentDisplay.get(a2)) {
 				int value = mainPanel.getSimulation().getInitialState(a2);
-				int maxValue = listNodes.get(
-						mainPanel.getSimulation().getNode2Int().get(a2))
-						.getMax();
-				float as = (float) value / (float) maxValue;
 
 				if (value > 0) {
 					color = mainPanel.getEpithelium().getColors().get(a2);
@@ -717,12 +706,10 @@ public class InitialConditions extends JFrame {
 				else if (value == 0) {
 					color = new Color(red, green, blue);
 				}
-
 			}
-
 		}
-
 		return color;
+
 	}
 
 	public Color Color(int i, int j) {
@@ -732,21 +719,14 @@ public class InitialConditions extends JFrame {
 		int blue = 255;
 		color = new Color(red, green, blue);
 
-		Set<String> a = componentDisplay.keySet();
+		Set<NodeInfo> a = componentDisplay.keySet();
 
-		for (String a2 : a) {
+		int instance = mainPanel.getTopology().coords2Instance(i, j);
+
+		for (NodeInfo a2 : a) {
 			if (componentDisplay.get(a2)) {
 
-				String key = mainPanel.getLogicalModelComposition()
-						.computeNewName(a2,
-								mainPanel.getTopology().coords2instance(i, j));
-				int value = mainPanel.getSimulation().getComposedInitialState()
-						.get(key);
-
-				int maxValue = listNodes.get(
-						mainPanel.getSimulation().getNode2Int().get(a2))
-						.getMax();
-				float as = (float) value / (float) maxValue;
+				int value = mainPanel.getGrid().getGrid().get(instance).get(a2);
 
 				if (value > 0) {
 					color = mainPanel.getEpithelium().getColors().get(a2);
@@ -756,20 +736,16 @@ public class InitialConditions extends JFrame {
 					green = (green + color.getGreen()) / 2;
 					blue = (blue + color.getBlue()) / 2;
 					color = new Color(red, green, blue);
-				}
-
-				else if (value == 0) {
+				} else if (value == 0) {
 					color = new Color(red, green, blue);
 				}
-
 			}
-
 		}
-
 		return color;
+
 	}
 
-	public Color ColorBrightness(Color color, float value) {
+	public Color ColorBrightness(Color color, int value) {
 		if (value > 0) {
 
 			for (int j = 2; j <= value; j++) {
@@ -798,12 +774,11 @@ public class InitialConditions extends JFrame {
 
 	public void clearAllCells() {
 		// adicionar try catch para textFx e fy
-
+		mainPanel.getGrid().initializeGrid();
 		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
 			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
-				mainPanel.getSimulation().initializeInitialStates();
+				//mainPanel.getSimulation().initializeInitialStates();
 				MapPanel.drawHexagon(i, j, MapPanel.getGraphics(), Color.white);
-
 			}
 		}
 	}
@@ -813,11 +788,20 @@ public class InitialConditions extends JFrame {
 		// clearAllCells(cells);
 		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
 			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
-
 				setInitialState(i, j);
 				MapPanel.drawHexagon(i, j, MapPanel.getGraphics(), Color());
 			}
 		}
 	}
 
+//	private void resetInitialConditions(){
+//		mainPanel.getSimulation().resetIterationNumber();
+//		JCheckBox nodeBox[]=null;
+//		Jcombo2Node=null;
+//		Jcheck2Node=null;
+//		initialStatePerComponent=null;
+//		colorChooser=null;
+//		listNodes=null;
+//	}
+	
 }

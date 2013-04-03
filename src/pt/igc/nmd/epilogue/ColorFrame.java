@@ -26,6 +26,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import org.colomoto.logicalmodel.NodeInfo;
+
 public class ColorFrame extends JFrame {
 
 
@@ -51,11 +53,11 @@ public class ColorFrame extends JFrame {
 	public JButton buttonOk = new JButton("Ok");
 	public JButton buttonCancel = new JButton("Cancel");
 	public DrawPolygon dPanel;
-	private String nodeID;
+	private NodeInfo node;
 
 	//public ColorFrame(ColorButton colorb,DrawPolygon dPanel, String nodeID) {
-	public ColorFrame(ColorButton colorb, String nodeID) {
-		this.nodeID = nodeID;
+	public ColorFrame(ColorButton colorb, NodeInfo node) {
+		this.node = node;
 		
 		Color brown = new Color(165, 42, 42);
 		Color oliveGreen = new Color(128, 128, 0);
@@ -65,30 +67,30 @@ public class ColorFrame extends JFrame {
 		Color antiqueWhite = new Color(250, 235, 215);
 
 		contentPane = new JPanel();
-		btt1 = new BtnChangeColor(colorb, Color.yellow,nodeID);
+		btt1 = new BtnChangeColor(colorb, Color.yellow,node);
 		btt1.initialize();
-		btt2 = new BtnChangeColor(colorb, darkOrange,nodeID);
+		btt2 = new BtnChangeColor(colorb, darkOrange,node);
 		btt2.initialize();
-		btt3 = new BtnChangeColor(colorb, Color.green,nodeID);
+		btt3 = new BtnChangeColor(colorb, Color.green,node);
 		btt3.initialize();
-		btt4 = new BtnChangeColor(colorb, Color.cyan,nodeID);
+		btt4 = new BtnChangeColor(colorb, Color.cyan,node);
 		btt4.initialize();
-		btt5 = new BtnChangeColor(colorb, Color.magenta,nodeID);
+		btt5 = new BtnChangeColor(colorb, Color.magenta,node);
 		btt5.initialize();
-		btt6 = new BtnChangeColor(colorb, antiqueWhite,nodeID);
+		btt6 = new BtnChangeColor(colorb, antiqueWhite,node);
 		btt6.initialize();
-		btt7 = new BtnChangeColor(colorb, Color.red,nodeID);
+		btt7 = new BtnChangeColor(colorb, Color.red,node);
 		btt7.initialize();
-		btt8 = new BtnChangeColor(colorb, Color.blue,nodeID);
+		btt8 = new BtnChangeColor(colorb, Color.blue,node);
 		btt8.initialize();
-		btt9 = new BtnChangeColor(colorb, Color.black,nodeID);
+		btt9 = new BtnChangeColor(colorb, Color.black,node);
 		btt9.initialize();
 
-		btt10 = new BtnChangeColor(colorb, brown,nodeID);
+		btt10 = new BtnChangeColor(colorb, brown,node);
 		btt10.initialize();
-		btt11 = new BtnChangeColor(colorb, oliveGreen,nodeID);
+		btt11 = new BtnChangeColor(colorb, oliveGreen,node);
 		btt11.initialize();
-		btt12 = new BtnChangeColor(colorb, thistle,nodeID);
+		btt12 = new BtnChangeColor(colorb, thistle,node);
 		btt12.initialize();
 		//this.dPanel=dPanel;
 	}

@@ -24,7 +24,7 @@ public class DrawPolygonM extends JPanel {
 	private static final long serialVersionUID = 1L;
 	public double height;
 	public double width;
-	public static double radius = 0.0;
+	public double radius = 0.0;
 	public ArrayList<ArrayList<Cell>> cells = new ArrayList<ArrayList<Cell>>();
 	public ArrayList<ArrayList<CellGenes>> cellGenes;
 	public int startX;
@@ -197,6 +197,7 @@ public class DrawPolygonM extends JPanel {
 		}
 	}
 
+	
 	public static ArrayList<ArrayList<Cell>> getMappedCells(String file_name) {
 		ArrayList<ArrayList<Cell>> cells = new ArrayList<ArrayList<Cell>>();
 

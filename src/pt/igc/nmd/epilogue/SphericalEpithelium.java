@@ -4,13 +4,14 @@ import java.awt.Color;
 import java.util.Hashtable;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.colomoto.logicalmodel.NodeInfo;
 
 public class SphericalEpithelium implements Epithelium {
 
 
 	private LogicalModel unitaryModel = null;
-	private Hashtable<String, Color> node2Color;
-	private Hashtable<String, Boolean> activeComponents;
+	private Hashtable<NodeInfo, Color> node2Color;
+	private Hashtable<NodeInfo, Boolean> activeComponents;
 	private Topology topology;
 
 	
@@ -20,8 +21,8 @@ public class SphericalEpithelium implements Epithelium {
 	public SphericalEpithelium(Topology topology) {
 
 		this.topology = topology;
-		node2Color = new Hashtable<String, Color>();
-		activeComponents = new Hashtable<String, Boolean>();
+		node2Color = new Hashtable<NodeInfo, Color>();
+		activeComponents = new Hashtable<NodeInfo, Boolean>();
 
 	}
 
@@ -44,19 +45,19 @@ public class SphericalEpithelium implements Epithelium {
 		return null;
 	}
 
-	public Hashtable<String, Color> getColors() {
+	public Hashtable<NodeInfo, Color> getColors() {
 		return this.node2Color;
 	}
-	public void setColor(String nodeID, Color color) {
-		this.node2Color.put(nodeID, color);
+	public void setColor(NodeInfo node, Color color) {
+		this.node2Color.put(node, color);
 	}
 	
 
-	public Hashtable<String, Boolean> getComponentsDisplayOn() {
+	public Hashtable<NodeInfo, Boolean> getComponentsDisplayOn() {
 		return this.activeComponents;
 	}
-	public void setActiveComponents(String nodeID, Boolean bool) {
-		this.activeComponents.put(nodeID, bool);
+	public void setActiveComponents(NodeInfo node, Boolean bool) {
+		this.activeComponents.put(node, bool);
 	}
 	
 

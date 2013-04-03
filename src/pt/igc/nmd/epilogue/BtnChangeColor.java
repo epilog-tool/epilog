@@ -10,6 +10,8 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
+import org.colomoto.logicalmodel.NodeInfo;
+
 
 public class BtnChangeColor extends JButton {
 	
@@ -19,15 +21,15 @@ public class BtnChangeColor extends JButton {
 	private static final long serialVersionUID = 1L;
 	public  ColorButton colorButton;
 	public Color color;
-	private String nodeID;
+	private NodeInfo node;
 
 
-	public BtnChangeColor(ColorButton cb,Color c, String nodeID) {
+	public BtnChangeColor(ColorButton cb,Color c, NodeInfo node) {
 		super();
 		this.colorButton = cb;
 		this.color=c;
 		this.setBackground(c);
-		this.nodeID = nodeID;
+		this.node = node;
 	}
 
 	
@@ -40,7 +42,7 @@ public class BtnChangeColor extends JButton {
 					colorButton.panel.mapcolor=color;
 					colorButton.panel.revalidate();
 					colorButton.panel.paint(colorButton.panel.getGraphics());
-					colorButton.panel.mainPanel.getEpithelium().setColor(nodeID, color);
+					colorButton.panel.mainPanel.getEpithelium().setColor(node, color);
 					
 
 		

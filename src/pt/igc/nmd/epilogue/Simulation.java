@@ -3,151 +3,162 @@ package pt.igc.nmd.epilogue;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Set;
+
+import javax.swing.BorderFactory;
+import javax.swing.border.TitledBorder;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 
 public class Simulation {
 
-	private int iterationNumber = 0;
+	private int iterationNumber = 1;
 	private LogicalModel composedModel = null;
 	private byte[] state = null;
+	byte[] currentState = null;
 	private MainPanel mainPanel;
-	private Hashtable<String, Integer> node2State;
-	private Hashtable<String, Integer> initialState;
-	private Hashtable<String, Integer> composedInitialState;
-	private Hashtable<String, Integer> node2Int;
+	private Hashtable<NodeInfo, Integer> initialState;
+	private Hashtable<String, Byte> composedState = null;
+	private Hashtable<NodeInfo, Integer> node2Int;
+	private Hashtable<String, NodeInfo> string2OldNode;
 	private Color color;
 	private boolean hasStarted;
+	private boolean stableStateFound;
 
 	public Simulation(MainPanel mainPanel) {
 		color = Color.white;
 		this.mainPanel = mainPanel;
 		this.state = null;
 		this.composedModel = null;
-		this.initialState = new Hashtable<String, Integer>();
-		this.composedInitialState = new Hashtable<String, Integer>();
-		this.node2Int = new Hashtable<String, Integer>();
-		this.node2State = new Hashtable<String, Integer>();
+		this.initialState = new Hashtable<NodeInfo, Integer>();
+		this.composedState = new Hashtable<String, Byte>();
+		this.node2Int = new Hashtable<NodeInfo, Integer>();
+		this.string2OldNode = new Hashtable<String, NodeInfo>();
 		this.hasStarted = false;
+		this.stableStateFound = false;
+
 	}
 
-	public void setNode2Int(String nodeID, Integer index) {
-		this.node2Int.put(nodeID, index);
+	public void setNode2Int(NodeInfo node, Integer index) {
+		this.node2Int.put(node, index);
 	}
 
-	public Hashtable<String, Integer> getNode2Int() {
+	public Hashtable<NodeInfo, Integer> getNode2Int() {
 		return this.node2Int;
 	}
 
 	public void run() {
-		byte[] currentState;
-		do {
+		resetIterationNumber();
+		this.stableStateFound = false;
+		while (!this.stableStateFound) {
 			step();
-			currentState = this.state;
-			fillHexagons();
-			 System.out.println(hasChanged(currentState, this.state)) ;
-		} while (hasChanged(currentState, this.state));
+		}
 	}
-	
-	public void setHasInitiated(boolean b){
-		this.hasStarted=b;
+
+	public void setHasInitiated(boolean b) {
+		this.hasStarted = b;
 	}
-	
-	public boolean getHasInitiated(){
+
+	public boolean getHasInitiated() {
 		return this.hasStarted;
 	}
 
 	public void step() {
 		
-		if (!mainPanel.getSimulation().getHasInitiated()){
-			mainPanel.getSimulation().initializeInitialStates();	
-			mainPanel.getSimulation().setHasInitiated(true);
-			System.out.println("estou aqui");
-		}
+		this.stableStateFound = false;
 		testmethod();
-		composedModel = mainPanel.getLogicalModelComposition()
-				.createComposedModel();
-		
+		System.out.println(iterationNumber);
+		mainPanel.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
+				.createEmptyBorder());
+		TitledBorder titleInitialConditions;
+		titleInitialConditions = BorderFactory
+				.createTitledBorder("Simulation Iteration: " + iterationNumber);
+		mainPanel.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
 
-		if (iterationNumber == 0) {
+		for (NodeInfo node : composedModel.getNodeOrder()) {
 
-			this.state = new byte[composedModel.getNodeOrder().size()];
-
-			int i = 0;
-			for (NodeInfo node : mainPanel.getLogicalModelComposition()
-					.createComposedModel().getNodeOrder()) {
-
-				this.state[i] = composedInitialState.get("" + node).byteValue();
-				node2State.put(node.getNodeID(),
-						composedInitialState.get("" + node));
-				i++;
-
-			}
-			this.iterationNumber++;
-			fillHexagons();
-			mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
-					.getGraphics());
-		} else {
-
-			for (NodeInfo node : composedModel.getNodeOrder()) {
-
-				int index = composedModel.getNodeOrder().indexOf(node);
-				
-				byte next = 0;
-				byte target;
-				byte current;
-
-				current = this.state[index];
-				target = composedModel.getTargetValue(index, this.state);
-				
-				
-				if (current != 0 | target != 0) {
-					next = (byte) (current + ((target - current) / (target + current)));
-				}
-
-				this.state[index] = next;
-				node2State.put(node.getNodeID(), (int) next);
-				System.out.println(node +" "+ index+" "+node.getMax() + " " +node.isInput()+ " " + current + " " + target + " "
-						+ next);
-				//System.out.println(next);
-				
-			}
-			this.iterationNumber++;
-			
+			int index = composedModel.getNodeOrder().indexOf(node);
+			this.state[index] = composedState.get(node.getNodeID());
 		}
+
+		boolean stableStateFound_aux = true;
+		for (NodeInfo node : composedModel.getNodeOrder()) {
+
+			int index = composedModel.getNodeOrder().indexOf(node);
+
+			byte next = 0;
+			byte target;
+			byte current;
+
+			current = this.state[index];
+			target = composedModel.getTargetValue(index, this.state);
+
+			if (current != 0 | target != 0) {
+				next = (byte) (current + ((target - current) / (target + current)));
+			}
+
+			this.state[index] = next;
+			setComposedState(node.getNodeID(), next);
+			// System.out.println(node +" "+ index+" "+node.getMax() + " "
+			// +node.isInput()+ " " + current + " " + target + " "
+			// + next);
+
+			if (current != next) {
+				stableStateFound_aux = false;
+			}
+
+		}
+		if (stableStateFound_aux) {
+			this.stableStateFound = true;
+
+		}
+
 		fillHexagons();
 		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
 				.getGraphics());
+		this.iterationNumber++;
 
 	}
 
+	public boolean hasStableStateFound() {
+		return this.stableStateFound;
+	}
 
-	public void initializeInitialStates() {
+	public void initializeSimulation() {
 
-		Set<String> a = mainPanel.getSimulation().getNode2Int().keySet();
-		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
-			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
-				for (String a2 : a) {
-					mainPanel.getSimulation().setComposedInitialState(
-							mainPanel.getLogicalModelComposition()
-									.computeNewName(
-											a2,
-											mainPanel.getTopology()
-													.coords2instance(i, j)),
-							(byte) 0);
-				}
+		composedModel = mainPanel.getLogicalModelComposition()
+				.createComposedModel();
+		this.state = new byte[composedModel.getNodeOrder().size()];
+		setHasInitiated(true);
+
+		List<NodeInfo> a = mainPanel.getEpithelium().getUnitaryModel()
+				.getNodeOrder();
+
+		for (int instance = 0; instance < mainPanel.getTopology()
+				.getNumberInstances(); instance++) {
+
+			for (NodeInfo a2 : a) {
+				setComposedState(mainPanel.getLogicalModelComposition()
+						.computeNewName(a2.getNodeID(), instance), mainPanel
+						.getGrid().getGrid().get(instance).get(a2));
+				string2OldNode.put(mainPanel.getLogicalModelComposition()
+						.computeNewName(a2.getNodeID(), instance), a2);
 			}
 		}
+
+		fillHexagons();
+		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
+				.getGraphics());
 	}
-	
+
 	public int getIterationNumber() {
 		return this.iterationNumber;
 	}
 
 	public void resetIterationNumber() {
-		this.iterationNumber = 0;
+		this.iterationNumber = 1;
 	}
 
 	public byte[] getCurrentState() {
@@ -156,32 +167,69 @@ public class Simulation {
 
 	private boolean hasChanged(byte[] previous, byte[] current) {
 		if (previous.length != current.length)
+
 			return true;
 
-		for (int i = 0; i < previous.length; i++)
-			if (previous[i] != current[i])
+		for (int i = 0; i < previous.length; i++) {
+			if (previous[i] != current[i]) {
+
 				return true;
+			}
+		}
 
 		return false;
 
 	}
 
-	public void setInitialState(String nodeID, Integer initialStateValue) {
-		this.initialState.put(nodeID, initialStateValue);
+	public void setInitialState(NodeInfo nodeInfo, Integer initialStateValue) {
+		this.initialState.put(nodeInfo, initialStateValue);
 	}
 
-	public int getInitialState(String nodeID) {
-		return (int) this.initialState.get(nodeID);
+	public int getInitialState(NodeInfo a2) {
+		return (int) this.initialState.get(a2);
 	}
 
-	public void setComposedInitialState(String composedNodeID,
-			int ComposedInitialState) {
-		this.composedInitialState.put(composedNodeID, ComposedInitialState);
+	public void setComposedState(String composedNodeID, byte ComposedState) {
+		this.composedState.put(composedNodeID, ComposedState);
 
 	}
 
-	public Hashtable<String, Integer> getComposedInitialState() {
-		return this.composedInitialState;
+	public Hashtable<String, Byte> getComposedState() {
+		return this.composedState;
+	}
+
+	public Color ColorInitial(int i, int j) {
+
+		int red = 255;
+		int green = 255;
+		int blue = 255;
+		color = new Color(red, green, blue);
+
+		Set<NodeInfo> a = mainPanel.getEpithelium().getComponentsDisplayOn()
+				.keySet();
+
+		int instance = mainPanel.getTopology().coords2Instance(i, j);
+
+		for (NodeInfo a2 : a) {
+			if (mainPanel.getEpithelium().getComponentsDisplayOn().get(a2)) {
+
+				int value = mainPanel.getGrid().getGrid().get(instance).get(a2);
+
+				if (value > 0) {
+					color = mainPanel.getEpithelium().getColors().get(a2);
+					color = ColorBrightness(color, value);
+
+					red = (red + color.getRed()) / 2;
+					green = (green + color.getGreen()) / 2;
+					blue = (blue + color.getBlue()) / 2;
+					color = new Color(red, green, blue);
+				} else if (value == 0) {
+					color = new Color(red, green, blue);
+				}
+			}
+		}
+		return color;
+
 	}
 
 	public void fillHexagons() {
@@ -191,12 +239,12 @@ public class Simulation {
 
 		for (int i = 0; i < mainPanel.getTopology().getNumberInstances(); i++) {
 
-			row = mainPanel.getTopology().instance2Row(i,
+			row = mainPanel.getTopology().instance2i(i,
 					mainPanel.getTopology().getWidth());
-			column = mainPanel.getTopology().instance2Column(i,
+			column = mainPanel.getTopology().instance2j(i,
 					mainPanel.getTopology().getHeight());
 
-			for (String key : mainPanel.getEpithelium()
+			for (NodeInfo node : mainPanel.getEpithelium()
 					.getComponentsDisplayOn().keySet()) {
 
 				mainPanel.hexagonsPanel.drawHexagon(row, column,
@@ -204,6 +252,7 @@ public class Simulation {
 			}
 
 		}
+
 	}
 
 	public Color Color(int i, int j) {
@@ -213,29 +262,29 @@ public class Simulation {
 		int blue = 255;
 		this.color = new Color(red, green, blue);
 
-		Set<String> a = mainPanel.getEpithelium().getComponentsDisplayOn()
+		int instance = mainPanel.getTopology().coords2Instance(i, j);
+
+		Set<NodeInfo> a = mainPanel.getEpithelium().getComponentsDisplayOn()
 				.keySet();
 
-		for (String a2 : a) {
+		for (NodeInfo a2 : a) {
 			if (mainPanel.getEpithelium().getComponentsDisplayOn().get(a2)) {
 
 				String key = mainPanel.getLogicalModelComposition()
-						.computeNewName(a2,
-								mainPanel.getTopology().coords2instance(i, j));
-				int value = node2State.get(key);
+						.computeNewName(a2.getNodeID(),
+								mainPanel.getTopology().coords2Instance(i, j));
 
-				int maxValue = mainPanel.getEpithelium().getUnitaryModel()
-						.getNodeOrder().get(node2Int.get(a2)).getMax();
+				int value = composedState.get(key);
 
-				float as = (float) value / (float) maxValue;
+				int maxValue = string2OldNode.get(key).getMax();
 
 				if (value > 0) {
 					this.color = mainPanel.getEpithelium().getColors().get(a2);
 					this.color = ColorBrightness(color, value);
 
-					red = (red + color.getRed())/2;
-					green =( green + color.getGreen())/2;
-					blue = (blue + color.getBlue())/2;
+					red = (red + color.getRed()) / 2;
+					green = (green + color.getGreen()) / 2;
+					blue = (blue + color.getBlue()) / 2;
 					this.color = new Color(red, green, blue);
 				}
 
@@ -263,50 +312,57 @@ public class Simulation {
 
 	}
 
-public void resetComposedInitialState(){
-	for(String node: this.composedInitialState.keySet()){
-		this.composedInitialState.put(node, 0);
+	public void resetComposedInitialState() {
+		for (String node : this.composedState.keySet()) {
+			this.composedState.put(node, (byte) 0);
+		}
 	}
-}
 
-public void testmethod(){
-	byte[] unitaryState;
-	
-	unitaryState =  new byte[mainPanel.getEpithelium().getUnitaryModel().getNodeOrder().size()];
-//	System.out.println("Current:");
-//	for (int i = 0;i<unitaryState.length;i++){
-//		unitaryState[i]=1;
-//		unitaryState[1]=0;
-//		System.out.print(unitaryState[i]);
-//	}
-//	
-//	System.out.println("Target:");
-//	for (int i = 0;i<unitaryState.length;i++){
-//		System.out.print(mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1, unitaryState));
-//		unitaryState[i]=mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1, unitaryState);
-//	}
-//	
-//	System.out.println("Current:");
-//	for (int i = 0;i<unitaryState.length;i++){
-//		System.out.print(unitaryState[i]);
-//
-//	}
-//	System.out.println("Target:");
-//	for (int i = 0;i<unitaryState.length;i++){
-//		System.out.print(mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1, unitaryState));
-//		unitaryState[i]=mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1, unitaryState);
-//	}
-//	
-//	System.out.println("Current:");
-//	for (int i = 0;i<unitaryState.length;i++){
-//		System.out.print(unitaryState[i]);
-//
-//	}
-//	System.out.println("Target:");
-//	for (int i = 0;i<unitaryState.length;i++){
-//		System.out.print(mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1, unitaryState));
-//		unitaryState[i]=mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1, unitaryState);
-//	}
-}
-	
+	public void testmethod() {
+		byte[] unitaryState;
+
+		unitaryState = new byte[mainPanel.getEpithelium().getUnitaryModel()
+				.getNodeOrder().size()];
+		// System.out.println("Current:");
+		// for (int i = 0;i<unitaryState.length;i++){
+		// unitaryState[i]=1;
+		// unitaryState[1]=0;
+		// System.out.print(unitaryState[i]);
+		// }
+		//
+		// System.out.println("Target:");
+		// for (int i = 0;i<unitaryState.length;i++){
+		// System.out.print(mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1,
+		// unitaryState));
+		// unitaryState[i]=mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1,
+		// unitaryState);
+		// }
+		//
+		// System.out.println("Current:");
+		// for (int i = 0;i<unitaryState.length;i++){
+		// System.out.print(unitaryState[i]);
+		//
+		// }
+		// System.out.println("Target:");
+		// for (int i = 0;i<unitaryState.length;i++){
+		// System.out.print(mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1,
+		// unitaryState));
+		// unitaryState[i]=mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1,
+		// unitaryState);
+		// }
+		//
+		// System.out.println("Current:");
+		// for (int i = 0;i<unitaryState.length;i++){
+		// System.out.print(unitaryState[i]);
+		//
+		// }
+		// System.out.println("Target:");
+		// for (int i = 0;i<unitaryState.length;i++){
+		// System.out.print(mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1,
+		// unitaryState));
+		// unitaryState[i]=mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1,
+		// unitaryState);
+		// }
+	}
+
 }

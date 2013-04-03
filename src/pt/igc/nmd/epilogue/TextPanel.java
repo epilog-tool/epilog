@@ -3,7 +3,6 @@ package pt.igc.nmd.epilogue;
 
 
 import javax.swing.JButton;
-
 import javax.swing.JPanel;
 
 public class TextPanel extends JPanel{
@@ -14,7 +13,7 @@ public class TextPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
 	
 	private MainPanel mainPanel;
-	JButton textButton;
+	private JButton textButton;
 	
 	public TextPanel(MainPanel mainPanel){
 		this.mainPanel = mainPanel;

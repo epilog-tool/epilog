@@ -15,7 +15,9 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Hashtable;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -23,18 +25,19 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 
 public class StartPanel extends JPanel {
 
 	/**
-	 * 
-	 */
+*
+*/
 
 	private static final long serialVersionUID = 1L;
-	
 	private JButton closeButton;
 	private JButton modelButton;
 	private JButton initialConditionsButton;
@@ -42,6 +45,7 @@ public class StartPanel extends JPanel {
 	private JButton runButton;
 	private JButton stepButton;
 	private JButton quitButton;
+	private JButton simulationButton;
 	private IterationLabel iterationLabel;
 
 	JLabel labelFilename = new JLabel();
@@ -53,6 +57,7 @@ public class StartPanel extends JPanel {
 	private JLabel selectedFilenameLabel;
 	private JFileChooser fc = new JFileChooser();
 	private LogicalModel model;
+	private Grid grid;
 
 	// private ComponentsPanel componentsPanel = new ComponentsPanel();
 	private MainPanel mainPanel = null;
@@ -69,7 +74,6 @@ public class StartPanel extends JPanel {
 
 		// Close and Quit buttons
 
-		
 		modelButton = new JButton("Model");
 		closeButton = new JButton("Close");
 
@@ -86,14 +90,12 @@ public class StartPanel extends JPanel {
 		closeButton.setVisible(false);
 		closeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-		
 				mainPanel.getSimulation().resetIterationNumber();
 				iterationNumber.setText(""
 						+ mainPanel.getSimulation().getIterationNumber());
 				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
 						.getGraphics());
 				mainPanel.getSimulation().setHasInitiated(false);
-				
 				mainPanel.componentsPanel.setVisible(false);
 				mainPanel.watcherPanel.setVisible(false);
 				selectedFilenameLabel.setText("");
@@ -104,25 +106,66 @@ public class StartPanel extends JPanel {
 				runButton.setVisible(false);
 				stepButton.setVisible(false);
 				initialConditionsButton.setVisible(false);
-				iterationLabel.setVisible(false);
-				iterationNumber.setVisible(false);
+				initialConditionsButton.setEnabled(true);
+				simulationButton.setVisible(false);
+				// iterationLabel.setVisible(false);
+				// iterationNumber.setVisible(false);
 				restartButton.setVisible(false);
 				closeButton.setVisible(false);
+				TitledBorder titleInitialConditions;
+				titleInitialConditions = BorderFactory
+						.createTitledBorder("Initial Conditions");
+				mainPanel.auxiliaryHexagonsPanel
+						.setBorder(javax.swing.BorderFactory
+								.createEmptyBorder());
+				mainPanel.auxiliaryHexagonsPanel
+						.setBorder(titleInitialConditions);
+
+				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
+						.getGraphics());
+
+				titleInitialConditions = BorderFactory.createTitledBorder("");
+				mainPanel.auxiliaryHexagonsPanel
+						.setBorder(javax.swing.BorderFactory
+								.createEmptyBorder());
+				mainPanel.auxiliaryHexagonsPanel
+						.setBorder(titleInitialConditions);
 
 			}
 		});
-		
 		restartButton = new JButton("Restart");
 		restartButton.setVisible(false);
 		restartButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mainPanel.getSimulation().resetIterationNumber();
-				iterationNumber.setText(""
-						+ mainPanel.getSimulation().getIterationNumber());
-				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
-						.getGraphics());
 				
-			}	});
+				mainPanel.getSimulation().resetIterationNumber();
+
+				TitledBorder titleInitialConditions;
+				titleInitialConditions = BorderFactory.createTitledBorder("Initial Conditions");
+				mainPanel.auxiliaryHexagonsPanel
+						.setBorder(javax.swing.BorderFactory
+								.createEmptyBorder());
+				mainPanel.auxiliaryHexagonsPanel
+						.setBorder(titleInitialConditions);
+								
+				simulationButton.setVisible(true);
+				stepButton.setVisible(false);
+				runButton.setVisible(false);
+				stepButton.setEnabled(true);
+				runButton.setEnabled(true);
+				initialConditionsButton.setEnabled(true);
+				
+				mainPanel.getLogicalModelComposition().resetComposedModel();
+				mainPanel.getSimulation().initializeSimulation();
+				
+//				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
+//						.getGraphics());
+//				mainPanel.hexagonsPanel.repaint();
+//				mainPanel.getSimulation().fillHexagons();
+
+
+			}
+		});
 
 		// Dimensions
 
@@ -165,9 +208,8 @@ public class StartPanel extends JPanel {
 				setHeight();
 			}
 		});
-		
-		//To make sure that the height is updated
-		addMouseListener (new MouseListener(){
+		// To make sure that the height is updated
+		addMouseListener(new MouseListener() {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -175,7 +217,6 @@ public class StartPanel extends JPanel {
 				sanityCheckDimension(userDefinedHeight);
 				setWidth();
 				setHeight();
-				
 			}
 
 			@Override
@@ -185,33 +226,27 @@ public class StartPanel extends JPanel {
 				sanityCheckDimension(userDefinedHeight);
 				setWidth();
 				setHeight();
-				
 			}
 
 			@Override
 			public void mouseExited(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
 			}
 
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
 			}
-			
 		});
 
 		// Model
 
 		modelButton.setBounds(230, 13, 100, 30);
-		
 
 		selectedFilenameLabel.setBounds(335, 13, 100, 30);
 
@@ -222,67 +257,85 @@ public class StartPanel extends JPanel {
 				mainPanel.getSimulation().resetIterationNumber();
 				iterationNumber.setText(""
 						+ mainPanel.getSimulation().getIterationNumber());
-				closeButton.setVisible(true);
+
 			}
-			
-			
 
 		});
 
-		/* RollOver */
-
-		rollOver = new JComboBox();
-
-		rollOver.addItem("No Roll-Over");
-		rollOver.addItem("Vertical Roll-Over");
-		rollOver.addItem("Horizontal Roll-Over");
-		rollOver.setBackground(Color.white);
-
-		rollOver.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				JComboBox source = (JComboBox) event.getSource();
-				String optionString = (String) source.getSelectedItem();
-				setRollOver(optionString);
-				System.out.println(optionString);
-
-			}
-		});
+		// /* RollOver */
+		//
+		// rollOver = new JComboBox();
+		//
+		// rollOver.addItem("No Roll-Over");
+		// rollOver.addItem("Vertical Roll-Over");
+		// rollOver.addItem("Horizontal Roll-Over");
+		// String aux = (String) rollOver.getSelectedItem();
+		// mainPanel.getTopology().setRollOver(aux);
+		// rollOver.setBackground(Color.white);
+		//
+		// rollOver.addActionListener(new ActionListener() {
+		//
+		// @Override
+		// public void actionPerformed(ActionEvent event) {
+		// JComboBox source = (JComboBox) event.getSource();
+		// String optionString = (String) source.getSelectedItem();
+		// mainPanel.getTopology().setRollOver(optionString);
+		//
+		//
+		//
+		// }
+		// });
 
 		/* Options */
-
+		simulationButton = new JButton("Simulation");
 		runButton = new RunStopButton();
 		stepButton = new JButton("Step");
 		iterationLabel = new IterationLabel();
 		initialConditionsButton = new JButton("Initial Conditions");
 
+		simulationButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				mainPanel.auxiliaryHexagonsPanel
+						.setBorder(javax.swing.BorderFactory
+								.createEmptyBorder());
+				TitledBorder titleInitialConditions;
+				titleInitialConditions = BorderFactory
+						.createTitledBorder("Initial Conditions");
+				mainPanel.auxiliaryHexagonsPanel
+						.setBorder(titleInitialConditions);
+
+				simulationButton.setVisible(false);
+				stepButton.setVisible(true);
+				runButton.setVisible(true);
+				mainPanel.getSimulation().initializeSimulation();
+				initialConditionsButton.setEnabled(false);
+			}
+		});
 		// Step Button
 		stepButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Simulation.step();
-				System.out.println("step");
 				mainPanel.getSimulation().step();
-				iterationNumber.setText(""
-						+ mainPanel.getSimulation().getIterationNumber());
+				if (mainPanel.getSimulation().hasStableStateFound()) {
+					stepButton.setEnabled(false);
+					runButton.setEnabled(false);
+				}
 			}
 		});
 
 		// Run Button
 		runButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Simulation.step();
-
 				mainPanel.getSimulation().run();
-				iterationNumber.setText(""
-						+ mainPanel.getSimulation().getIterationNumber());
+				stepButton.setEnabled(false);
+				runButton.setEnabled(false);
 			}
 		});
-		
 		stepButton.setVisible(false);
 		runButton.setVisible(false);
 		iterationLabel.setVisible(false);
 		initialConditionsButton.setVisible(false);
+		simulationButton.setVisible(false);
 
 		setLayout(new FlowLayout());
 
@@ -301,13 +354,12 @@ public class StartPanel extends JPanel {
 		labelFilename.setVisible(false);
 		iterationLabel.setText("Iteration:");
 		iterationLabel.setVisible(false);
-		
 
 		add(setWidth);
 		add(userDefinedWidth);
 		add(setHeight);
 		add(userDefinedHeight);
-		add(rollOver);
+		// add(rollOver);
 
 		add(modelButton);
 
@@ -315,8 +367,9 @@ public class StartPanel extends JPanel {
 		add(selectedFilenameLabel);
 		add(runButton);
 		add(stepButton);
-		add(iterationLabel);
-		add(iterationNumber);
+		add(simulationButton);
+		// add(iterationLabel);
+		// add(iterationNumber);
 		add(initialConditionsButton);
 		add(emptySpaceLabel);
 		add(restartButton);
@@ -336,16 +389,6 @@ public class StartPanel extends JPanel {
 		});
 
 		return this;
-	}
-
-	static String roll;
-
-	public static void setRollOver(String rollOver) {
-		roll = rollOver;
-	}
-
-	public static String getRollOver() {
-		return roll;
 	}
 
 	private void sanityCheckDimension(JTextField userDefined) {
@@ -405,14 +448,30 @@ public class StartPanel extends JPanel {
 		mainPanel.watcherPanel.setVisible(true);
 		labelFilename.setVisible(true);
 		stepButton.setVisible(true);
-		runButton.setVisible(true);
-		stepButton.setVisible(true);
+		runButton.setVisible(false);
+		stepButton.setVisible(false);
+		simulationButton.setVisible(true);
 		initialConditionsButton.setVisible(true);
-		iterationLabel.setVisible(true);
-		iterationNumber.setVisible(true);
 		restartButton.setVisible(true);
-
+		closeButton.setVisible(true);
 		setUnitaryModel(logicalModel);
+		stepButton.setEnabled(true);
+		runButton.setEnabled(true);
+		
+
+		mainPanel.getGrid().initializeGrid();
+		mainPanel.getSimulation().fillHexagons();
+		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
+				.getGraphics());
+
+		mainPanel.getLogicalModelComposition().resetComposedModel();
+		mainPanel.getSimulation().setHasInitiated(false);
+		initialConditionsButton.setEnabled(true);
+		mainPanel.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
+				.createEmptyBorder());
+		TitledBorder titleInitialConditions;
+		titleInitialConditions = BorderFactory.createTitledBorder("");
+		mainPanel.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
 
 	}
 

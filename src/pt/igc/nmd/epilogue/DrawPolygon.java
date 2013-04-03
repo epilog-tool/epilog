@@ -101,7 +101,7 @@ public class DrawPolygon extends JPanel {
 
 					}
 
-					if (mainPanel.getSimulation().getIterationNumber()==0) {
+					if (!mainPanel.getSimulation().getHasInitiated()) {
 						g.setColor(Color.white);
 						
 				
@@ -154,7 +154,7 @@ public class DrawPolygon extends JPanel {
 			polygon.addPoint((int) (x), (int) (y));
 		}
 		
-		//g.setColor(mainPanel.getSimulation().Color(i,j));
+	
 		g.setColor(Color.white);
 		g.fillPolygon(polygon);
 		g.setColor(Color.black);
@@ -265,6 +265,40 @@ public class DrawPolygon extends JPanel {
 			}
 
 		}
+
+	}
+
+	public void drawHexagon(int i, int j, Graphics g, Color color) {
+		double centerX = 100, centerY = 0, x = 0, y = 0;
+
+		if (i % 2 == 0) {
+			centerX = (1.5 * radius * (i)) + radius;
+			centerY = (j) * radius * Math.sqrt(3.0) + radius * Math.sqrt(3.0)
+					/ 2;
+		} else {
+			centerX = (1.5 * radius * (i)) + radius;
+			centerY = (j) * radius * Math.sqrt(3.0) + radius * Math.sqrt(3.0);
+		}
+
+		Polygon polygon2 = new Polygon();
+
+		for (int k = 0; k < 6; k++) {
+
+			x = centerX + radius * Math.cos(k * 2 * Math.PI / 6);
+			y = centerY + radius * Math.sin(k * 2 * Math.PI / 6);
+			polygon2.addPoint((int) (x), (int) (y));
+
+		}
+		
+
+		// Este set color deve ser calculado pelo conjunto de cores assinalados
+		//Color color = initialConditionsColor(nodeBox, initialStatePerComponent );
+		
+		g.setColor(color);
+		
+		g.fillPolygon(polygon2);
+		g.setColor(Color.black);
+		g.drawPolygon(polygon2);
 
 	}
 

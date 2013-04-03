@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 
+import org.colomoto.logicalmodel.NodeInfo;
+
 import sun.tools.tree.Node;
 
 
@@ -20,15 +22,15 @@ public class ColorButton extends JButton {
 	public ColorFrame frame;
 	public ComponentsPanel panel;
 //	public DrawPolygon dPanel;
-	private String nodeID;
+	private NodeInfo node;
 
 	//public ColorButton(ComponentsPanel panel,DrawPolygon dPanel, String nodeID) {
-	public ColorButton(ComponentsPanel panel, String nodeID) {
+	public ColorButton(ComponentsPanel panel, NodeInfo node) {
 		this.panel = panel;
 //		this.dPanel=dPanel;
-		this.nodeID = nodeID;
+		this.node = node;
 //		frame = new ColorFrame(this,this.dPanel,this.nodeID);
-		frame = new ColorFrame(this,this.nodeID);
+		frame = new ColorFrame(this,this.node);
 		this.initialize();
 
 	}
@@ -39,7 +41,7 @@ public class ColorButton extends JButton {
 			public void actionPerformed(ActionEvent e) {
 
 				frame.initialize();
-				
+
 
 			}
 		});

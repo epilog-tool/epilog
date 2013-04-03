@@ -35,7 +35,8 @@ public class ComponentsPanel extends MapColorPanel {
 			Color.LIGHT_GRAY, Color.black };
 	private JCheckBox nodeBox[];
 	private ColorButton colorChooser[];
-	public Hashtable<String, Boolean> isEnv;
+	public Hashtable<NodeInfo, Boolean> isEnv;
+	private Hashtable<JCheckBox, NodeInfo> jcheckbox2Node;
 
 	public ComponentsPanel(MainPanel mainPanel, Color color) {
 		super(color);
@@ -44,7 +45,10 @@ public class ComponentsPanel extends MapColorPanel {
 	}
 
 	public void init() {
-		isEnv = new Hashtable<String, Boolean>();
+
+		jcheckbox2Node = new Hashtable<JCheckBox, NodeInfo>();
+
+		isEnv = new Hashtable<NodeInfo, Boolean>();
 		hexagonsPanel = this.mainPanel.hexagonsPanel;
 		setLayout(null);
 		setBackground(Color.white);
@@ -56,53 +60,49 @@ public class ComponentsPanel extends MapColorPanel {
 
 			colorChooser = new ColorButton[listNodes.size()];
 			hexagonsPanel.initializeCellGenes(listNodes.size());
-			final int size = listNodes.size();
 
 			for (int i = 0; i < listNodes.size(); i++) {
 
-				mainPanel.getEpithelium().setColor(
-						listNodes.get(i).getNodeID(), colors[i]);
+				mainPanel.getEpithelium().setColor(listNodes.get(i), colors[i]);
 
-				isEnv.put(listNodes.get(i).getNodeID(), false);
+				isEnv.put(listNodes.get(i), false);
 
 				nodeBox[i] = new JCheckBox(listNodes.get(i).getNodeID());
 				nodeBox[i].setBackground(Color.white);
 				nodeBox[i].setBounds(0, i * 40, 50, 25);
 
-				final JCheckBox checkbox = nodeBox[i];
-				final String nodeID = listNodes.get(i).getNodeID();
+				jcheckbox2Node.put(nodeBox[i], listNodes.get(i));
+				// System.out.println(jcheckbox2Node);
 
-				mainPanel.getEpithelium().setActiveComponents(nodeID, false);
+				final JCheckBox checkbox = nodeBox[i];
+				// final String nodeID = listNodes.get(i).getNodeID();
+
+				mainPanel.getEpithelium().setActiveComponents(listNodes.get(i),
+						false);
 
 				nodeBox[i].addActionListener(new ActionListener() {
 
 					public void actionPerformed(ActionEvent event) {
-						//System.out.println(mainPanel.getEpithelium().getComponentsDisplayOn());
+						JCheckBox src = (JCheckBox) event.getSource();
 						if (checkbox.isSelected()) {
-							mainPanel.getEpithelium().setActiveComponents(
-									nodeID, true);
-							mainPanel.hexagonsPanel.repaint();
-						} else
-							mainPanel.getEpithelium().setActiveComponents(
-									nodeID, false);
+							fireCheckBoxChange(true, src);
 							
-//						hexagonsPanel.initializeCellGenes(size);
-					hexagonsPanel.paintComponent(hexagonsPanel
+							mainPanel.hexagonsPanel.repaint();
+							mainPanel.getSimulation().fillHexagons();
+						} else
+							fireCheckBoxChange(false, src);
+
+						
+						hexagonsPanel.paintComponent(hexagonsPanel
 								.getGraphics());
 
 					}
-					
-					
-					
-				});
 
-				
-		
-				colorChooser[i] = new ColorButton(this, listNodes.get(i)
-						.getNodeID());
+				});
+				colorChooser[i] = new ColorButton(this, listNodes.get(i));
 				colorChooser[i].setBounds(50, i * 40, 20, 25);
 				colorChooser[i].setBackground(mainPanel.getEpithelium()
-						.getColors().get(listNodes.get(i).getNodeID()));
+						.getColors().get(listNodes.get(i)));
 
 				add(nodeBox[i]);
 				add(colorChooser[i]);
@@ -110,7 +110,7 @@ public class ComponentsPanel extends MapColorPanel {
 				JComboBox inputComboChooser = null;
 
 				if (listNodes.get(i).isInput()) {
-					isEnv.put(listNodes.get(i).getNodeID(), true);
+					isEnv.put(listNodes.get(i), true);
 					inputComboChooser = new JComboBox();
 					inputComboChooser.setBounds(95, i * 40, 120, 25);
 					inputComboChooser
@@ -141,14 +141,12 @@ public class ComponentsPanel extends MapColorPanel {
 							if (option != null) {
 								switch (option) {
 								case ENVIRONMENTAL_INPUT:
-									isEnv.put(listNodes.get(j).getNodeID(),
-											true);
+									isEnv.put(listNodes.get(j), true);
 
 									break;
 
 								case INTEGRATION_INPUT: {
-									isEnv.put(listNodes.get(j).getNodeID(),
-											false);
+									isEnv.put(listNodes.get(j), false);
 									final JTextField textFormula = new JTextField();
 									textFormula.setBounds(10, 0, 250, 25);
 									jpanel.removeAll();
@@ -169,10 +167,10 @@ public class ComponentsPanel extends MapColorPanel {
 													String[] result = logicalFunction
 															.split(";");
 
-													System.out
-															.println(result[0]);
-													System.out
-															.println(result[1]);
+													// System.out
+													// .println(result[0]);
+													// System.out
+													// .println(result[1]);
 													try {
 
 														// ANTLRDemo.Aeval(result);
@@ -185,7 +183,6 @@ public class ComponentsPanel extends MapColorPanel {
 													}
 												}
 											});
-
 
 								}
 									break;
@@ -206,8 +203,14 @@ public class ComponentsPanel extends MapColorPanel {
 				}
 			}
 
-
 		}
+
+	}
+
+	public void fireCheckBoxChange(Boolean bool, JCheckBox box) {
+
+		mainPanel.getEpithelium().setActiveComponents(jcheckbox2Node.get(box),
+				bool);
 
 	}
 
