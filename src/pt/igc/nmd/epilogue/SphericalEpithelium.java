@@ -10,6 +10,7 @@ public class SphericalEpithelium implements Epithelium {
 
 
 	private LogicalModel unitaryModel = null;
+	private LogicalModel composedModel = null;
 	private Hashtable<NodeInfo, Color> node2Color;
 	private Hashtable<NodeInfo, Boolean> activeComponents;
 	private Topology topology;
@@ -42,7 +43,10 @@ public class SphericalEpithelium implements Epithelium {
 
 	@Override
 	public LogicalModel getComposedModel() {
-		return null;
+		return this.composedModel;
+	}
+	public void setComposedModel(LogicalModel composedModel) {
+		this.composedModel = composedModel;
 	}
 
 	public Hashtable<NodeInfo, Color> getColors() {
@@ -58,6 +62,10 @@ public class SphericalEpithelium implements Epithelium {
 	}
 	public void setActiveComponents(NodeInfo node, Boolean bool) {
 		this.activeComponents.put(node, bool);
+	}
+
+	public Color getColor(NodeInfo node) {
+		return node2Color.get(node);
 	}
 	
 

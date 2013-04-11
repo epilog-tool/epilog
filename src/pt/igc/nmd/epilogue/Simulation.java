@@ -1,7 +1,6 @@
 package pt.igc.nmd.epilogue;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
@@ -20,7 +19,7 @@ public class Simulation {
 	byte[] currentState = null;
 	private MainPanel mainPanel;
 	private Hashtable<NodeInfo, Integer> initialState;
-	private Hashtable<String, Byte> composedState = null;
+	public Hashtable<String, Byte> composedState = null;
 	private Hashtable<NodeInfo, Integer> node2Int;
 	private Hashtable<String, NodeInfo> string2OldNode;
 	private Color color;
@@ -128,8 +127,14 @@ public class Simulation {
 
 	public void initializeSimulation() {
 
+		composedModel = mainPanel.getEpithelium().getComposedModel();
+		
+		if (composedModel==null| mainPanel.initialSetupHasChanged)
 		composedModel = mainPanel.getLogicalModelComposition()
 				.createComposedModel();
+		
+		mainPanel.setInitialSetupHasChanged(false);
+		
 		this.state = new byte[composedModel.getNodeOrder().size()];
 		setHasInitiated(true);
 
@@ -163,22 +168,6 @@ public class Simulation {
 
 	public byte[] getCurrentState() {
 		return this.state;
-	}
-
-	private boolean hasChanged(byte[] previous, byte[] current) {
-		if (previous.length != current.length)
-
-			return true;
-
-		for (int i = 0; i < previous.length; i++) {
-			if (previous[i] != current[i]) {
-
-				return true;
-			}
-		}
-
-		return false;
-
 	}
 
 	public void setInitialState(NodeInfo nodeInfo, Integer initialStateValue) {
@@ -262,8 +251,6 @@ public class Simulation {
 		int blue = 255;
 		this.color = new Color(red, green, blue);
 
-		int instance = mainPanel.getTopology().coords2Instance(i, j);
-
 		Set<NodeInfo> a = mainPanel.getEpithelium().getComponentsDisplayOn()
 				.keySet();
 
@@ -275,8 +262,6 @@ public class Simulation {
 								mainPanel.getTopology().coords2Instance(i, j));
 
 				int value = composedState.get(key);
-
-				int maxValue = string2OldNode.get(key).getMax();
 
 				if (value > 0) {
 					this.color = mainPanel.getEpithelium().getColors().get(a2);
@@ -319,10 +304,10 @@ public class Simulation {
 	}
 
 	public void testmethod() {
-		byte[] unitaryState;
+//		byte[] unitaryState;
 
-		unitaryState = new byte[mainPanel.getEpithelium().getUnitaryModel()
-				.getNodeOrder().size()];
+//		unitaryState = new byte[mainPanel.getEpithelium().getUnitaryModel()
+//				.getNodeOrder().size()];
 		// System.out.println("Current:");
 		// for (int i = 0;i<unitaryState.length;i++){
 		// unitaryState[i]=1;

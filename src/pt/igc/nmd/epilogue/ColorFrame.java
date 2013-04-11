@@ -53,11 +53,11 @@ public class ColorFrame extends JFrame {
 	public JButton buttonOk = new JButton("Ok");
 	public JButton buttonCancel = new JButton("Cancel");
 	public DrawPolygon dPanel;
-	private NodeInfo node;
+	//private NodeInfo node;
 
 	//public ColorFrame(ColorButton colorb,DrawPolygon dPanel, String nodeID) {
 	public ColorFrame(ColorButton colorb, NodeInfo node) {
-		this.node = node;
+		//this.node = node;
 		
 		Color brown = new Color(165, 42, 42);
 		Color oliveGreen = new Color(128, 128, 0);

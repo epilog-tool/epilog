@@ -1,18 +1,20 @@
 package pt.igc.nmd.epilogue;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Polygon;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-import javax.swing.*;
-
-//import org.colomoto.logicalmodel.NodeInfo;
-
 import java.util.ArrayList;
+
+import javax.swing.JPanel;
+//import org.colomoto.logicalmodel.NodeInfo;
 
 //import java.util.List;
 

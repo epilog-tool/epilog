@@ -13,7 +13,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
@@ -24,13 +23,16 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JTextArea;
-
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
 
+import org.antlr.runtime.RecognitionException;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
+
+import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification;
+import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
 
 public class InitialConditions extends JFrame {
 
@@ -67,31 +69,51 @@ public class InitialConditions extends JFrame {
 	private JCheckBox nodeBox[];
 	private ArrayList<ColorButton> colorChooser;
 	private JComboBox[] initialStatePerComponent;
+	private JComboBox[] inputComboChooser;
+
+	private JButton IntegrationFunctionButton;
 
 	private Hashtable<JComboBox, NodeInfo> Jcombo2Node;
 	private Hashtable<JCheckBox, NodeInfo> Jcheck2Node;
+	private Hashtable<JComboBox, NodeInfo> JcomboInput2Node;
+
+	private Hashtable<NodeInfo, JComboBox> node2Jcombo;
+	private Hashtable<NodeInfo, JCheckBox> node2Jcheck;
+	private Hashtable<NodeInfo, JComboBox> node2JcomboInput;
+
+	private Hashtable<ColorButton, NodeInfo> color2Node;
+	private Hashtable<NodeInfo, ColorButton> node2Color;
+
+	private Hashtable<NodeInfo, Boolean> node2IntInput;
 
 	private Hashtable<NodeInfo, Boolean> componentDisplay;
+
+	private Hashtable<Byte, IntegrationExpression> valueOfIntegrationFunction;
+
+	private Hashtable<NodeInfo, Boolean> integrationComponents;
+
+	private boolean fill;
 
 	/*
 	 * 
 	 */
-	
-
 
 	public InitialConditions(MainPanel mainPanel) {
 
-		super("Map");
+		super("Initial Conditions");
 		setLayout(null);
 
 		this.mainPanel = mainPanel;
 		this.model = this.mainPanel.getEpithelium().getUnitaryModel();
 
+		valueOfIntegrationFunction = new Hashtable<Byte, IntegrationExpression>();
+		integrationComponents = new Hashtable<NodeInfo, Boolean>();
+
 		mainPanel.getSimulation().resetIterationNumber();
 
-		getContentPane().setPreferredSize(new Dimension(700, 700));
+		getContentPane().setPreferredSize(new Dimension(900, 700));
 		getContentPane().setBackground(Color.white);
-		setTitle("Initial Conditions");
+		// setTitle("Initial Conditions");
 
 		TitledBorder titleProperComponents;
 		TitledBorder titleInputs;
@@ -106,9 +128,9 @@ public class InitialConditions extends JFrame {
 		perturbationsPanel = new JPanel();
 		optionsPanel = new JPanel();
 
-		properComponentsPanel.setBounds(500, 0, 180, 200);
-		inputsPanel.setBounds(500, 250, 180, 100);
-		perturbationsPanel.setBounds(500, 400, 180, 100);
+		properComponentsPanel.setBounds(500, 0, 280, 200);
+		inputsPanel.setBounds(500, 250, 280, 100);
+		perturbationsPanel.setBounds(500, 400, 280, 100);
 
 		optionsPanel.setBounds(0, 600, 700, 100);
 
@@ -131,24 +153,37 @@ public class InitialConditions extends JFrame {
 
 		nodeBox = new JCheckBox[listNodes.size()];
 		initialStatePerComponent = new JComboBox[listNodes.size()];
+		inputComboChooser = new JComboBox[listNodes.size()];
 
 		colorChooser = new ArrayList<ColorButton>();
 		Jcombo2Node = new Hashtable<JComboBox, NodeInfo>();
 		Jcheck2Node = new Hashtable<JCheckBox, NodeInfo>();
+		JcomboInput2Node = new Hashtable<JComboBox, NodeInfo>();
+
+		node2Jcombo = new Hashtable<NodeInfo, JComboBox>();
+		node2Jcheck = new Hashtable<NodeInfo, JCheckBox>();
+		node2JcomboInput = new Hashtable<NodeInfo, JComboBox>();
+
+		color2Node = new Hashtable<ColorButton, NodeInfo>();
+		node2Color = new Hashtable<NodeInfo, ColorButton>();
 
 		componentDisplay = new Hashtable<NodeInfo, Boolean>();
 
 		int inputCount = 0;
 		int properCount = 0;
 
-		for (int i = 0; i < listNodes.size(); i++) {
+		node2IntInput = new Hashtable<NodeInfo, Boolean>();
 
-			if (mainPanel.componentsPanel.isEnv.get(listNodes.get(i))) {
+		for (int i = 0; i < listNodes.size(); i++) {
+			node2IntInput.put(listNodes.get(i), false);
+
+			if (listNodes.get(i).isInput()) {
 
 				nodeBox[i] = new JCheckBox(listNodes.get(i).getNodeID());
 				nodeBox[i].setBackground(Color.white);
 				nodeBox[i].setBounds(10, 30 + inputCount * 40, 50, 25);
 				Jcheck2Node.put(nodeBox[i], listNodes.get(i));
+				node2Jcheck.put(listNodes.get(i), nodeBox[i]);
 				componentDisplay.put(listNodes.get(i), false);
 
 				nodeBox[i].addActionListener(new ActionListener() {
@@ -170,10 +205,11 @@ public class InitialConditions extends JFrame {
 					initialStatePerComponent[i].addItem(maxValue);
 				}
 				Jcombo2Node.put(initialStatePerComponent[i], listNodes.get(i));
-				
+				node2Jcombo.put(listNodes.get(i), initialStatePerComponent[i]);
+
 				mainPanel.getSimulation().setInitialState(
 						Jcombo2Node.get(initialStatePerComponent[i]), 0);
-				
+
 				initialStatePerComponent[i]
 						.addActionListener(new ActionListener() {
 							@Override
@@ -191,11 +227,75 @@ public class InitialConditions extends JFrame {
 								.get(listNodes.get(i)));
 				colorChooser.get(i)
 						.setBounds(120, 30 + inputCount * 40, 40, 25);
+
+				color2Node.put(colorChooser.get(i), listNodes.get(i));
+				node2Color.put(listNodes.get(i), colorChooser.get(i));
+
 				inputsPanel.add(nodeBox[i]);
 				inputsPanel.add(initialStatePerComponent[i]);
 				inputsPanel.add(colorChooser.get(i));
-				inputCount = inputCount + 1;
 
+				IntegrationFunctionButton = new JButton("Function");
+				IntegrationFunctionButton.setBounds(60, 30 + inputCount * 40,
+						100, 25);
+				inputsPanel.add(IntegrationFunctionButton);
+				IntegrationFunctionButton.setVisible(false);
+
+				IntegrationFunctionButton
+						.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								initializeIntegrationInterface();
+
+							}
+						});
+
+				inputComboChooser[i] = new JComboBox();
+
+				JcomboInput2Node.put(inputComboChooser[i], listNodes.get(i));
+
+				inputComboChooser[i].setBounds(180, 30 + inputCount * 40, 90,
+						25);
+				inputComboChooser[i].addItem(InputOption
+						.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));
+				inputComboChooser[i].addItem(InputOption
+						.getDescriptionString(InputOption.INTEGRATION_INPUT));
+				inputsPanel.add(inputComboChooser[i]);
+
+				inputComboChooser[i].addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent event) {
+						JComboBox source = (JComboBox) event.getSource();
+						String optionString = (String) source.getSelectedItem();
+
+						InputOption option = InputOption
+								.getOptionFromString(optionString);
+
+						if (option != null) {
+							switch (option) {
+							case ENVIRONMENTAL_INPUT:
+								setEnvOptions(source, true);
+								setInitialSetupHasChanged(true);
+								break;
+
+							case INTEGRATION_INPUT: {
+
+								setEnvOptions(source, false);
+								setInitialSetupHasChanged(true);
+
+							}
+								break;
+							default: {
+
+								repaint();
+							}
+								break;
+							}
+						}
+					}
+				});
+
+				inputCount = inputCount + 1;
 
 			} else if (!listNodes.get(i).isInput()) {
 				nodeBox[i] = new JCheckBox(listNodes.get(i).getNodeID());
@@ -208,11 +308,10 @@ public class InitialConditions extends JFrame {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
 						JCheckBox src = (JCheckBox) arg0.getSource();
-					setComponentDisplay(Jcheck2Node.get(src),
+						setComponentDisplay(Jcheck2Node.get(src),
 								src.isSelected());
-					fillhexagons();
+						fillhexagons();
 					}
-
 				});
 
 				mainPanel.getSimulation().setNode2Int(listNodes.get(i), i);
@@ -237,7 +336,6 @@ public class InitialConditions extends JFrame {
 								// TODO Auto-generated method stub
 								fireInitialStateChange(src);
 							}
-
 						});
 
 				colorChooser.add(new ColorButton(mainPanel.componentsPanel,
@@ -254,7 +352,13 @@ public class InitialConditions extends JFrame {
 			}
 		}
 
-		/* Perturbations panel */
+		/*
+		 * PerturbationsPanel : Here the perturbations are defined.
+		 * Perturbations at this point are performed by forcing a proper
+		 * component to assume an expression level, or a range of expression
+		 * values. Whenever a perturbation is performed the composed model has
+		 * to be recreated.
+		 */
 
 		final JComboBox perturbedComponent = new JComboBox();
 		final JComboBox perturbedExpression = new JComboBox();
@@ -270,16 +374,9 @@ public class InitialConditions extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-
-				// for (int maxValue = 0; maxValue < listNodes.get(i).getMax() +
-				// 1; maxValue++) {
-				// initialStatePerComponent.addItem(maxValue);
-
-				// }
+				setInitialSetupHasChanged(true);
 
 			}
-
 		});
 
 		perturbationsPanel.add(perturbedComponent);
@@ -293,9 +390,11 @@ public class InitialConditions extends JFrame {
 		JButton buttonClose = new JButton("Close");
 		JButton buttonFill = new JButton("Fill");
 
+		this.fill = false;
+
 		buttonFill.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				setFill(true);
 			}
 		});
 
@@ -348,9 +447,7 @@ public class InitialConditions extends JFrame {
 						e2.printStackTrace();
 					}
 				}
-
 			}
-
 		});
 
 		/* RollOver */
@@ -371,6 +468,8 @@ public class InitialConditions extends JFrame {
 				JComboBox source = (JComboBox) event.getSource();
 				String optionString = (String) source.getSelectedItem();
 				fireRollOverChange(optionString);
+				setInitialSetupHasChanged(true);
+
 			}
 		});
 		optionsPanel.add(rollOver);
@@ -390,7 +489,7 @@ public class InitialConditions extends JFrame {
 
 		MapPanel.setLayout(null);
 		MapPanel.setBounds(10, 10, 450, 500);
-		// MapPanel.setBackground(Color.white);
+
 		textArea = new JTextArea();
 		textArea.setEditable(false);
 
@@ -417,12 +516,37 @@ public class InitialConditions extends JFrame {
 		setVisible(true);
 		setLocationRelativeTo(null);
 
-		// initializeInitialStates();
-//		if (!mainPanel.getSimulation().getHasInitiated()) {
-//			mainPanel.getSimulation().initializeInitialStates();
-//			mainPanel.getSimulation().setHasInitiated(true);
-//
-//		}
+	}
+
+	protected void setInitialSetupHasChanged(boolean b) {
+		// TODO Auto-generated method stub
+		mainPanel.setInitialSetupHasChanged(b);
+	}
+
+	protected void initializeIntegrationInterface() {
+		new IntegrationFunctionInterface(this);
+
+	}
+
+	protected void setFill(boolean b) {
+		// TODO Auto-generated method stub
+		this.fill = b;
+	}
+
+	protected void setEnvOptions(JComboBox inputCombo, boolean bool) {
+		// TODO Auto-generated method stub
+		node2Jcheck.get(JcomboInput2Node.get(inputCombo)).setEnabled(bool);
+		node2Jcheck.get(JcomboInput2Node.get(inputCombo)).setSelected(bool);
+		componentDisplay.put(JcomboInput2Node.get(inputCombo), bool);
+		fillhexagons();
+
+		node2Jcombo.get(JcomboInput2Node.get(inputCombo)).setVisible(bool);
+		node2Color.get(JcomboInput2Node.get(inputCombo)).setVisible(bool);
+		IntegrationFunctionButton.setVisible(!bool);
+		node2IntInput.put(JcomboInput2Node.get(inputCombo), !bool);
+
+		mainPanel.integrationComponents.put(JcomboInput2Node.get(inputCombo),
+				bool);
 
 	}
 
@@ -460,9 +584,19 @@ public class InitialConditions extends JFrame {
 	}
 
 	public void close() {
-		mainPanel.componentsPanel.repaint();
-		mainPanel.componentsPanel.revalidate();
-		
+
+		mainPanel.refreshComponentsColors();
+
+		for (NodeInfo node : listNodes) {
+			if (node2IntInput.get(node)) {
+				for (int instance = 0; instance < mainPanel.getTopology()
+						.getNumberInstances(); instance++) {
+					mainPanel.getGrid().getGrid().get(instance)
+							.put(node, (byte) 0);
+				}
+			}
+		}
+
 		dispose();
 	}
 
@@ -502,15 +636,17 @@ public class InitialConditions extends JFrame {
 				}
 
 				// The mouse is over a cell that belongs to the grid
+				if (!fill) {
+					if (i < mainPanel.getTopology().getWidth()
+							&& j < mainPanel.getTopology().getHeight()
+							&& i >= 0 && j >= 0) {
+						color = Color();
+						MapPanel.drawHexagon(i, j, MapPanel.getGraphics(),
+								color);
 
-				if (i < mainPanel.getTopology().getWidth()
-						&& j < mainPanel.getTopology().getHeight() && i >= 0
-						&& j >= 0) {
-					color = Color();
-					MapPanel.drawHexagon(i, j, MapPanel.getGraphics(), color);
+						setInitialState(i, j);
 
-					setInitialState(i, j);
-
+					}
 				}
 
 			}
@@ -615,32 +751,54 @@ public class InitialConditions extends JFrame {
 				}
 
 				// The mouse is over a cell that belongs to the grid
+				if (!fill) {
+					if (i < mainPanel.getTopology().getWidth()
+							&& j < mainPanel.getTopology().getHeight()
+							&& i >= 0 && j >= 0) {
+						color = Color();
+						setInitialState(i, j);
+						MapPanel.drawHexagon(i, j, MapPanel.getGraphics(),
+								color);
+					}
+				} else if (fill) {
 
-				if (i < mainPanel.getTopology().getWidth()
-						&& j < mainPanel.getTopology().getHeight() && i >= 0
-						&& j >= 0) {
-					color = Color();
-					setInitialState(i, j);
-					MapPanel.drawHexagon(i, j, MapPanel.getGraphics(), color);
+					Fill(i, j);
 
-					// int instance = mainPanel.getTopology()
-					// .coords2Instance(i, j);
-					//
-					// // System.out.println(instance);
-					// for (int h : mainPanel.getTopology().groupNeighbors(
-					// instance, 4)) {
-					//
-					// int m = mainPanel.getTopology().instance2i(h,
-					// mainPanel.getTopology().getWidth());
-					// int n = mainPanel.getTopology().instance2j(h,
-					// mainPanel.getTopology().getWidth());
-					//
-					// MapPanel.drawHexagon(m, n, MapPanel.getGraphics(),
-					// color);
-					// }
 				}
 			}
 		});
+	}
+
+	public void Fill(int i, int j) {
+
+		// List[] neiList = new List[];
+		// if (i < mainPanel.getTopology().getWidth()
+		// && j < mainPanel.getTopology().getHeight()
+		// && i >= 0 && j >= 0) {
+		// color = Color();
+		// int instance = mainPanel.getTopology().coords2Instance(
+		// i, j);
+		//
+		// while (neiList!=[]){
+		// for (int h : mainPanel.getTopology().groupNeighbors(
+		// instance, 1)) {
+		//
+		// int m = mainPanel.getTopology().instance2i(h,
+		// mainPanel.getTopology().getWidth());
+		// int n = mainPanel.getTopology().instance2j(h,
+		// mainPanel.getTopology().getWidth());
+		//
+		// if (Color(m,n)=color.white){
+		// MapPanel.drawHexagon(m, n, MapPanel.getGraphics(),
+		// color);
+		//
+		// }
+		// }
+		//
+		// setFill(false);
+		//
+		// }
+		// }
 	}
 
 	public void getInitialState(int i, int j) {
@@ -666,7 +824,7 @@ public class InitialConditions extends JFrame {
 
 	public void setInitialState(int i, int j) {
 		Set<NodeInfo> a = mainPanel.getSimulation().getNode2Int().keySet();
-		
+
 		int instance = mainPanel.getTopology().coords2Instance(i, j);
 		for (NodeInfo a2 : a) {
 
@@ -674,7 +832,6 @@ public class InitialConditions extends JFrame {
 
 				mainPanel.getGrid().setGrid(instance, a2,
 						(byte) mainPanel.getSimulation().getInitialState(a2));
-				
 
 			}
 		}
@@ -777,7 +934,7 @@ public class InitialConditions extends JFrame {
 		mainPanel.getGrid().initializeGrid();
 		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
 			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
-				//mainPanel.getSimulation().initializeInitialStates();
+				// mainPanel.getSimulation().initializeInitialStates();
 				MapPanel.drawHexagon(i, j, MapPanel.getGraphics(), Color.white);
 			}
 		}
@@ -794,14 +951,56 @@ public class InitialConditions extends JFrame {
 		}
 	}
 
-//	private void resetInitialConditions(){
-//		mainPanel.getSimulation().resetIterationNumber();
-//		JCheckBox nodeBox[]=null;
-//		Jcombo2Node=null;
-//		Jcheck2Node=null;
-//		initialStatePerComponent=null;
-//		colorChooser=null;
-//		listNodes=null;
-//	}
-	
+	private enum InputOption {
+		ENVIRONMENTAL_INPUT, INTEGRATION_INPUT;
+
+		public static String getDescriptionString(InputOption option) {
+			switch (option) {
+			case ENVIRONMENTAL_INPUT:
+				return "Env input";
+			case INTEGRATION_INPUT:
+				return "Int input";
+			default:
+				return "";
+			}
+		}
+
+		public static InputOption getOptionFromString(String optionString) {
+			if (optionString.equals(InputOption
+					.getDescriptionString(ENVIRONMENTAL_INPUT)))
+				return ENVIRONMENTAL_INPUT;
+			else if (optionString.equals(InputOption
+					.getDescriptionString(INTEGRATION_INPUT)))
+				return INTEGRATION_INPUT;
+			else
+				return null;
+		}
+	}
+
+	public void setIntegrationFunction(
+			Hashtable<Byte, String> integrationFunctionStrings) {
+		mainPanel
+				.setIntegrationFunction(IntegrationValuedExpression(integrationFunctionStrings));
+	}
+
+	public Hashtable<Byte, IntegrationExpression> IntegrationValuedExpression(
+			Hashtable<Byte, String> integrationFunctionHash) {
+
+		IntegrationFunctionSpecification spec = new IntegrationFunctionSpecification();
+		IntegrationExpression expression = null;
+
+		for (byte targetValue : integrationFunctionHash.keySet()) {
+
+			try {
+				expression = spec.parse(integrationFunctionHash
+						.get(targetValue));
+			} catch (RecognitionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			valueOfIntegrationFunction.put(targetValue, expression);
+		}
+		return valueOfIntegrationFunction;
+	}
 }

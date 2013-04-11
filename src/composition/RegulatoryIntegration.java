@@ -7,12 +7,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.ginsim.servicegui.tool.composition.integrationgrammar.IntegrationFunctionSpecification;
-import org.ginsim.servicegui.tool.composition.integrationgrammar.IntegrationFunctionSpecification.IntegrationAtom;
-import org.ginsim.servicegui.tool.composition.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
-import org.ginsim.servicegui.tool.composition.integrationgrammar.IntegrationFunctionSpecification.IntegrationOperation;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
+
+import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification;
+import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationAtom;
+import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
+import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationOperation;
 
 /**
  * The integration function and proper components associated to an input

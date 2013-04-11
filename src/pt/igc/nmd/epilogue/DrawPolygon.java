@@ -6,6 +6,9 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 
 import java.awt.Polygon;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +26,8 @@ public class DrawPolygon extends JPanel {
 	 */
 	private static final long serialVersionUID = 6126822003689575762L;
 
-	private double height = 0.0, radius = 0.0;
-
-	// private Color colors[] = { Color.orange, Color.green, Color.blue,
-	// Color.pink, Color.yellow, Color.magenta, Color.cyan, Color.red,
-	// Color.LIGHT_GRAY, Color.black };
+	public double height = 0.0, radius = 0.0;
 	public List<NodeInfo> listNodes;
-	// private Color background = Color.WHITE;
-	// private MapColorPanel mpanel = null;
 	private MainPanel mainPanel;
 	public ArrayList<ArrayList<CellGenes>> cellGenes;
 	public int countSelected = 0;
@@ -40,9 +37,9 @@ public class DrawPolygon extends JPanel {
 		this.mainPanel = mainPanel;
 		this.setPreferredSize(new Dimension(500, 500));
 		this.cellGenes = new ArrayList<ArrayList<CellGenes>>();
-
 	}
 
+		
 	public void paintComponent(Graphics g) {
 
 		int XX = 0, YY = 0, max = 0;
@@ -301,5 +298,6 @@ public class DrawPolygon extends JPanel {
 		g.drawPolygon(polygon2);
 
 	}
-
+	
+	
 }

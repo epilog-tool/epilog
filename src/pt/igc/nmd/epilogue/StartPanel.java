@@ -5,30 +5,22 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 
 public class StartPanel extends JPanel {
@@ -46,18 +38,15 @@ public class StartPanel extends JPanel {
 	private JButton stepButton;
 	private JButton quitButton;
 	private JButton simulationButton;
-	private IterationLabel iterationLabel;
 
-	JLabel labelFilename = new JLabel();
-	JLabel iterationNumber = new JLabel();
+	private JLabel labelFilename = new JLabel();
+	private JLabel iterationNumber = new JLabel();
 
-	private JComboBox rollOver;
 	private static JTextField userDefinedWidth = new JTextField();
 	private static JTextField userDefinedHeight = new JTextField();
 	private JLabel selectedFilenameLabel;
 	private JFileChooser fc = new JFileChooser();
 	private LogicalModel model;
-	private Grid grid;
 
 	// private ComponentsPanel componentsPanel = new ComponentsPanel();
 	private MainPanel mainPanel = null;
@@ -72,46 +61,130 @@ public class StartPanel extends JPanel {
 
 	private JPanel init() {
 
-		// Close and Quit buttons
+		FlowLayout layout = new FlowLayout();
+		layout.setAlignment(FlowLayout.LEFT);
+		setLayout(new FlowLayout());
+
+		/*
+		 * Components definitions
+		 */
 
 		modelButton = new JButton("Model");
+		selectedFilenameLabel = new JLabel();
+		restartButton = new JButton("Restart");
 		closeButton = new JButton("Close");
-
 		quitButton = new JButton("Quit");
+		simulationButton = new JButton("Simulation");
+		initialConditionsButton = new JButton("Initial Conditions");
+		runButton = new RunStopButton();
+		stepButton = new JButton("Step");
+
+		JLabel setWidth = new JLabel();
+		JLabel setHeight = new JLabel();
+		JLabel emptySpaceLabel = new JLabel();
+
+		emptySpaceLabel.setText("    ");
+
+		setWidth.setText("Width: ");
+		setHeight.setText("Height: ");
+		labelFilename.setText("Filename: ");
+		iterationNumber.setText(""
+				+ mainPanel.getSimulation().getIterationNumber());
+
+		modelButton.setBounds(230, 13, 100, 30);
+		selectedFilenameLabel.setBounds(335, 13, 100, 30);
 
 		quitButton.setBackground(Color.red);
-		add(quitButton);
-		quitButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				mainPanel.dispose();
-			}
-		});
 
 		closeButton.setVisible(false);
+		stepButton.setVisible(false);
+		runButton.setVisible(false);
+		iterationNumber.setVisible(false);
+		labelFilename.setVisible(false);
+		initialConditionsButton.setVisible(false);
+		simulationButton.setVisible(false);
+
+		userDefinedWidth.setEnabled(true);
+		userDefinedHeight.setEnabled(true);
+
+		/*
+		 * Close Button: This button will close the current simulation and erase
+		 * the initial conditions. It is assumed that the simulation has changed
+		 * so that at the simulation a new composed model is created. The
+		 * following are also modified: 1) the border is removed 2) The
+		 * simulation will be reset to zero 3) The model name is changed to an
+		 * empty field 4) The components panel, watcher panel, step button, run
+		 * button, simulation button, restart button and close button are set
+		 * invisible 5) Initial Conditions button is enabled 6) The analytics
+		 * model is restarted 7) The Hexagons Panel is repainted
+		 */
+
 		closeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainPanel.getSimulation().resetIterationNumber();
-				iterationNumber.setText(""
-						+ mainPanel.getSimulation().getIterationNumber());
-				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
-						.getGraphics());
+
+				mainPanel.setInitialSetupHasChanged(true);
 				mainPanel.getSimulation().setHasInitiated(false);
-				mainPanel.componentsPanel.setVisible(false);
-				mainPanel.watcherPanel.setVisible(false);
+				mainPanel.restartAnalytics();
+
 				selectedFilenameLabel.setText("");
+
 				mainPanel.componentsPanel.setVisible(false);
 				mainPanel.watcherPanel.setVisible(false);
-				labelFilename.setVisible(false);
 				stepButton.setVisible(false);
 				runButton.setVisible(false);
-				stepButton.setVisible(false);
 				initialConditionsButton.setVisible(false);
-				initialConditionsButton.setEnabled(true);
 				simulationButton.setVisible(false);
-				// iterationLabel.setVisible(false);
-				// iterationNumber.setVisible(false);
 				restartButton.setVisible(false);
 				closeButton.setVisible(false);
+				// labelFilename.setVisible(false);
+
+				initialConditionsButton.setEnabled(true);
+
+				TitledBorder titleInitialConditions;
+				titleInitialConditions = BorderFactory.createTitledBorder("");
+				mainPanel.auxiliaryHexagonsPanel
+						.setBorder(javax.swing.BorderFactory
+								.createEmptyBorder());
+				mainPanel.auxiliaryHexagonsPanel
+						.setBorder(titleInitialConditions);
+
+				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
+						.getGraphics());
+
+			}
+		});
+
+		/*
+		 * Quit Button: This button closes the application. It also closes all opened windows.
+		 */
+
+		quitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mainPanel.dispose();
+				 System.exit(0);
+			}
+		});
+
+		/*
+		 * Restart Button: Initials conditions are not changed and the
+		 * simulation status is reset. The composed model is already created and
+		 * it is only updated if the user changed the integration input
+		 * definitions, grid dimentions or roll-over options.
+		 * 
+		 * After the Restart the following happens: 1) Reset the iteration
+		 * number 2) Title border resets to "Initial Conditions" 3) Simulation
+		 * Button is visible again 4) Step and Run buttons are enabled and
+		 * invisible 5) Grid Dimensions are enabled 6) Analytics Board is
+		 * restarted 7) Initial Conditions values are reloaded
+		 */
+
+		restartButton.setVisible(false);
+		restartButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				mainPanel.getSimulation().resetIterationNumber();
+
 				TitledBorder titleInitialConditions;
 				titleInitialConditions = BorderFactory
 						.createTitledBorder("Initial Conditions");
@@ -121,58 +194,30 @@ public class StartPanel extends JPanel {
 				mainPanel.auxiliaryHexagonsPanel
 						.setBorder(titleInitialConditions);
 
-				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
-						.getGraphics());
-
-				titleInitialConditions = BorderFactory.createTitledBorder("");
-				mainPanel.auxiliaryHexagonsPanel
-						.setBorder(javax.swing.BorderFactory
-								.createEmptyBorder());
-				mainPanel.auxiliaryHexagonsPanel
-						.setBorder(titleInitialConditions);
-
-			}
-		});
-		restartButton = new JButton("Restart");
-		restartButton.setVisible(false);
-		restartButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				mainPanel.getSimulation().resetIterationNumber();
-
-				TitledBorder titleInitialConditions;
-				titleInitialConditions = BorderFactory.createTitledBorder("Initial Conditions");
-				mainPanel.auxiliaryHexagonsPanel
-						.setBorder(javax.swing.BorderFactory
-								.createEmptyBorder());
-				mainPanel.auxiliaryHexagonsPanel
-						.setBorder(titleInitialConditions);
-								
 				simulationButton.setVisible(true);
 				stepButton.setVisible(false);
 				runButton.setVisible(false);
 				stepButton.setEnabled(true);
 				runButton.setEnabled(true);
 				initialConditionsButton.setEnabled(true);
-				
-				mainPanel.getLogicalModelComposition().resetComposedModel();
-				mainPanel.getSimulation().initializeSimulation();
-				
-//				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
-//						.getGraphics());
-//				mainPanel.hexagonsPanel.repaint();
-//				mainPanel.getSimulation().fillHexagons();
+				userDefinedWidth.setEnabled(true);
+				userDefinedHeight.setEnabled(true);
 
+				mainPanel.getSimulation().initializeSimulation();
+				mainPanel.restartAnalytics();
 
 			}
 		});
 
-		// Dimensions
-
-		selectedFilenameLabel = new JLabel();
-
-		FlowLayout layout = new FlowLayout();
-		layout.setAlignment(FlowLayout.LEFT);
+		/*
+		 * Grid Dimension: The number of rows and columns have to be even, so
+		 * even if the user writes an odd number, it is automatically corrected
+		 * to the next even number. Topology will hold the values. Whenever the
+		 * grid dimensions are changed the mainPanel is informed of that so that
+		 * the composed model can be recreated. It is Particularly important
+		 * when the user has already defined a composed model and then restarts
+		 * the simulation and decides to change the grid's dimensions.
+		 */
 
 		userDefinedWidth.setPreferredSize(new Dimension(34, 26));
 		userDefinedHeight.setPreferredSize(new Dimension(34, 26));
@@ -192,6 +237,7 @@ public class StartPanel extends JPanel {
 			public void focusLost(FocusEvent arg0) {
 				sanityCheckDimension(userDefinedWidth);
 				setWidth();
+				mainPanel.setInitialSetupHasChanged(true);
 
 			}
 		});
@@ -206,9 +252,10 @@ public class StartPanel extends JPanel {
 			public void focusLost(FocusEvent arg0) {
 				sanityCheckDimension(userDefinedHeight);
 				setHeight();
+				mainPanel.setInitialSetupHasChanged(true);
 			}
 		});
-		// To make sure that the height is updated
+
 		addMouseListener(new MouseListener() {
 
 			@Override
@@ -217,6 +264,7 @@ public class StartPanel extends JPanel {
 				sanityCheckDimension(userDefinedHeight);
 				setWidth();
 				setHeight();
+				mainPanel.setInitialSetupHasChanged(true);
 			}
 
 			@Override
@@ -226,6 +274,7 @@ public class StartPanel extends JPanel {
 				sanityCheckDimension(userDefinedHeight);
 				setWidth();
 				setHeight();
+				mainPanel.setInitialSetupHasChanged(true);
 			}
 
 			@Override
@@ -244,55 +293,32 @@ public class StartPanel extends JPanel {
 			}
 		});
 
-		// Model
-
-		modelButton.setBounds(230, 13, 100, 30);
-
-		selectedFilenameLabel.setBounds(335, 13, 100, 30);
+		/*
+		 * Model Loading: The model is loaded now from the SBML file. The
+		 * function askmodel performs all the operations
+		 */
 
 		modelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				askModel();
 				mainPanel.getContentPane().repaint();
 				mainPanel.getSimulation().resetIterationNumber();
-				iterationNumber.setText(""
-						+ mainPanel.getSimulation().getIterationNumber());
 
 			}
 
 		});
 
-		// /* RollOver */
-		//
-		// rollOver = new JComboBox();
-		//
-		// rollOver.addItem("No Roll-Over");
-		// rollOver.addItem("Vertical Roll-Over");
-		// rollOver.addItem("Horizontal Roll-Over");
-		// String aux = (String) rollOver.getSelectedItem();
-		// mainPanel.getTopology().setRollOver(aux);
-		// rollOver.setBackground(Color.white);
-		//
-		// rollOver.addActionListener(new ActionListener() {
-		//
-		// @Override
-		// public void actionPerformed(ActionEvent event) {
-		// JComboBox source = (JComboBox) event.getSource();
-		// String optionString = (String) source.getSelectedItem();
-		// mainPanel.getTopology().setRollOver(optionString);
-		//
-		//
-		//
-		// }
-		// });
-
-		/* Options */
-		simulationButton = new JButton("Simulation");
-		runButton = new RunStopButton();
-		stepButton = new JButton("Step");
-		iterationLabel = new IterationLabel();
-		initialConditionsButton = new JButton("Initial Conditions");
-
+		/*
+		 * SimulationButton: This Button will start the simulation. If there was
+		 * no setup of initial conditions then the option "no Roll-Over" and all
+		 * inputs as environment inputs with zero as expression levels. The
+		 * initial state is all zeros. After the Simulation is pressed the
+		 * hexagons panel is loaded with the initial conditions expression
+		 * values. The following are also changed: 1) the border is renamed to
+		 * "Initial Conditions" 2) Simulation Button is set to invisible 3) Step
+		 * and Run button are set as visible 4) Initial conditions button and
+		 * grid's dimensions are disabled and the user no longer can modify them
+		 */
 		simulationButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
@@ -310,9 +336,15 @@ public class StartPanel extends JPanel {
 				runButton.setVisible(true);
 				mainPanel.getSimulation().initializeSimulation();
 				initialConditionsButton.setEnabled(false);
+				userDefinedWidth.setEnabled(false);
+				userDefinedHeight.setEnabled(false);
+
 			}
 		});
-		// Step Button
+
+		/*
+		 * Step Button:
+		 */
 		stepButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainPanel.getSimulation().step();
@@ -323,7 +355,9 @@ public class StartPanel extends JPanel {
 			}
 		});
 
-		// Run Button
+		/*
+		 * Run Button:
+		 */
 		runButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainPanel.getSimulation().run();
@@ -331,52 +365,11 @@ public class StartPanel extends JPanel {
 				runButton.setEnabled(false);
 			}
 		});
-		stepButton.setVisible(false);
-		runButton.setVisible(false);
-		iterationLabel.setVisible(false);
-		initialConditionsButton.setVisible(false);
-		simulationButton.setVisible(false);
 
-		setLayout(new FlowLayout());
-
-		JLabel setWidth = new JLabel();
-		JLabel setHeight = new JLabel();
-		JLabel emptySpaceLabel = new JLabel();
-
-		emptySpaceLabel.setText("    ");
-
-		setWidth.setText("Width: ");
-		setHeight.setText("Height: ");
-		labelFilename.setText("Filename: ");
-		iterationNumber.setText(""
-				+ mainPanel.getSimulation().getIterationNumber());
-		iterationNumber.setVisible(false);
-		labelFilename.setVisible(false);
-		iterationLabel.setText("Iteration:");
-		iterationLabel.setVisible(false);
-
-		add(setWidth);
-		add(userDefinedWidth);
-		add(setHeight);
-		add(userDefinedHeight);
-		// add(rollOver);
-
-		add(modelButton);
-
-		add(labelFilename);
-		add(selectedFilenameLabel);
-		add(runButton);
-		add(stepButton);
-		add(simulationButton);
-		// add(iterationLabel);
-		// add(iterationNumber);
-		add(initialConditionsButton);
-		add(emptySpaceLabel);
-		add(restartButton);
-
-		add(closeButton);
-		add(quitButton);
-
+		/*
+		 * Initial Conditions Button:
+		 */
+		
 		initialConditionsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				final InitialConditions initialConditionsPanel = new InitialConditions(
@@ -388,6 +381,24 @@ public class StartPanel extends JPanel {
 			}
 		});
 
+		/*
+		 * Add Components to Panel
+		 */
+		add(setWidth);
+		add(userDefinedWidth);
+		add(setHeight);
+		add(userDefinedHeight);
+		add(modelButton);
+		add(labelFilename);
+		add(selectedFilenameLabel);
+		add(runButton);
+		add(stepButton);
+		add(simulationButton);
+		add(initialConditionsButton);
+		add(emptySpaceLabel);
+		add(restartButton);
+		add(closeButton);
+		add(quitButton);
 		return this;
 	}
 
@@ -457,7 +468,10 @@ public class StartPanel extends JPanel {
 		setUnitaryModel(logicalModel);
 		stepButton.setEnabled(true);
 		runButton.setEnabled(true);
-		
+		userDefinedWidth.setEnabled(true);
+		userDefinedHeight.setEnabled(true);
+
+		mainPanel.watcherPanel.init();
 
 		mainPanel.getGrid().initializeGrid();
 		mainPanel.getSimulation().fillHexagons();

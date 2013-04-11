@@ -8,10 +8,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
@@ -37,6 +34,7 @@ public class ComponentsPanel extends MapColorPanel {
 	private ColorButton colorChooser[];
 	public Hashtable<NodeInfo, Boolean> isEnv;
 	private Hashtable<JCheckBox, NodeInfo> jcheckbox2Node;
+	public Hashtable<NodeInfo, ColorButton> colorChooser2Node;
 
 	public ComponentsPanel(MainPanel mainPanel, Color color) {
 		super(color);
@@ -47,6 +45,7 @@ public class ComponentsPanel extends MapColorPanel {
 	public void init() {
 
 		jcheckbox2Node = new Hashtable<JCheckBox, NodeInfo>();
+		colorChooser2Node = new Hashtable<NodeInfo, ColorButton>();
 
 		isEnv = new Hashtable<NodeInfo, Boolean>();
 		hexagonsPanel = this.mainPanel.hexagonsPanel;
@@ -103,110 +102,25 @@ public class ComponentsPanel extends MapColorPanel {
 				colorChooser[i].setBounds(50, i * 40, 20, 25);
 				colorChooser[i].setBackground(mainPanel.getEpithelium()
 						.getColors().get(listNodes.get(i)));
+				colorChooser2Node.put(listNodes.get(i), colorChooser[i]);
 
 				add(nodeBox[i]);
 				add(colorChooser[i]);
-
-				JComboBox inputComboChooser = null;
-
-				if (listNodes.get(i).isInput()) {
-					isEnv.put(listNodes.get(i), true);
-					inputComboChooser = new JComboBox();
-					inputComboChooser.setBounds(95, i * 40, 120, 25);
-					inputComboChooser
-							.addItem(InputOption
-									.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));
-					inputComboChooser
-							.addItem(InputOption
-									.getDescriptionString(InputOption.INTEGRATION_INPUT));
-					add(inputComboChooser);
-
-					final JPanel jpanel = new JPanel();
-					jpanel.setBackground(Color.white);
-					jpanel.setBounds(215, i * 40, 300, 60);
-					jpanel.setLayout(null);
-					// final ColorButton colorChooserBtn = colorChooser[i];
-					final int j = i;
-					inputComboChooser.addActionListener(new ActionListener() {
-
-						@Override
-						public void actionPerformed(ActionEvent event) {
-							JComboBox source = (JComboBox) event.getSource();
-							String optionString = (String) source
-									.getSelectedItem();
-
-							InputOption option = InputOption
-									.getOptionFromString(optionString);
-
-							if (option != null) {
-								switch (option) {
-								case ENVIRONMENTAL_INPUT:
-									isEnv.put(listNodes.get(j), true);
-
-									break;
-
-								case INTEGRATION_INPUT: {
-									isEnv.put(listNodes.get(j), false);
-									final JTextField textFormula = new JTextField();
-									textFormula.setBounds(10, 0, 250, 25);
-									jpanel.removeAll();
-									jpanel.add(textFormula);
-									jpanel.revalidate();
-									jpanel.repaint();
-									add(jpanel);
-									revalidate();
-									repaint();
-
-									textFormula
-											.addActionListener(new ActionListener() {
-												@Override
-												public void actionPerformed(
-														ActionEvent e) {
-													String logicalFunction = textFormula
-															.getText();
-													String[] result = logicalFunction
-															.split(";");
-
-													// System.out
-													// .println(result[0]);
-													// System.out
-													// .println(result[1]);
-													try {
-
-														// ANTLRDemo.Aeval(result);
-														ANTLRDemo
-																.teste(result[0]);
-													} catch (Exception e1) {
-														// TODO Auto-generated
-														// catch block
-														e1.printStackTrace();
-													}
-												}
-											});
-
-								}
-									break;
-								default: {
-									jpanel.removeAll();
-									jpanel.revalidate();
-									jpanel.repaint();
-									add(jpanel);
-									revalidate();
-									repaint();
-								}
-									break;
-								}
-							}
-						}
-
-					});
-				}
+				
+//				Color color = colorChooser[i].panel.mainPanel.getEpithelium().getColor(node);
+//				colorChooser[i].setBackground(color);
+//				colorChooser[i].panel.mapcolor=color;
+//				colorChooser[i].panel.revalidate();
+//				colorChooser[i].panel.paint(colorButton.panel.getGraphics());
 			}
 
 		}
 
 	}
 
+
+	
+	
 	public void fireCheckBoxChange(Boolean bool, JCheckBox box) {
 
 		mainPanel.getEpithelium().setActiveComponents(jcheckbox2Node.get(box),
@@ -214,30 +128,5 @@ public class ComponentsPanel extends MapColorPanel {
 
 	}
 
-	private enum InputOption {
-		ENVIRONMENTAL_INPUT, INTEGRATION_INPUT;
 
-		public static String getDescriptionString(InputOption option) {
-			switch (option) {
-			case ENVIRONMENTAL_INPUT:
-				return "Env input";
-			case INTEGRATION_INPUT:
-				return "Int input";
-			default:
-				return "";
-			}
-		}
-
-		public static InputOption getOptionFromString(String optionString) {
-			if (optionString.equals(InputOption
-					.getDescriptionString(ENVIRONMENTAL_INPUT)))
-				return ENVIRONMENTAL_INPUT;
-			else if (optionString.equals(InputOption
-					.getDescriptionString(INTEGRATION_INPUT)))
-				return INTEGRATION_INPUT;
-			else
-				return null;
-
-		}
-	}
 }

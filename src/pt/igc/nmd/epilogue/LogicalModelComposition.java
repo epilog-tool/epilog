@@ -15,11 +15,15 @@ import org.colomoto.mddlib.MDDVariable;
 import org.colomoto.mddlib.MDDVariableFactory;
 import org.colomoto.mddlib.PathSearcher;
 import org.colomoto.mddlib.operators.MDDBaseOperators;
-import org.ginsim.servicegui.tool.composition.integrationgrammar.IntegrationFunctionSpecification.IntegrationAtom;
-//import org.ginsim.service.tool.composition.Topology;
+
+import pt.igc.nmd.epilogue.integrationgrammar.CompositionContext;
+import pt.igc.nmd.epilogue.integrationgrammar.CompositionContextImpl;
+import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionClause;
+import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionClauseSet;
+import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionDNFFactory;
 
 import composition.IntegrationFunctionMapping;
-import composition.RegulatoryIntegration;
+//import org.ginsim.service.tool.composition.Topology;
 
 //import composition.IntegrationFunctionMapping;
 
@@ -28,16 +32,16 @@ public class LogicalModelComposition {
 	private MainPanel mainPanel;
 	private IntegrationFunctionMapping mapping = null;
 	private LogicalModel composedModel = null;
-	private Map<SimpleEntry<NodeInfo, Integer>, NodeInfo> old2New = new HashMap<SimpleEntry<NodeInfo, Integer>, NodeInfo>();
-	private Map<NodeInfo, SimpleEntry<NodeInfo, Integer>> new2Old = new HashMap<NodeInfo, SimpleEntry<NodeInfo, Integer>>();
+	private Map<Map.Entry<NodeInfo, Integer>, NodeInfo> old2New = new HashMap<Map.Entry<NodeInfo, Integer>, NodeInfo>();
+	private Map<Map.Entry<String, Integer>, NodeInfo> oldString2New = new HashMap<Map.Entry<String, Integer>, NodeInfo>();
+	private Map<NodeInfo, Map.Entry<NodeInfo, Integer>> new2Old = new HashMap<NodeInfo, Map.Entry<NodeInfo, Integer>>();
 	private Map<Integer, List<NodeInfo>> instanceNodes = new HashMap<Integer, List<NodeInfo>>();
 
-	
 	// public LogicalModelComposition(LogicalModel model, Topology topology,
 	// IntegrationFunctionMapping mapping) {
 	// this.topology = topology;
 	// this.unitaryModel = model;
-	 //this.mapping = mapping;
+	// this.mapping = mapping;
 	// }
 
 	public LogicalModelComposition(MainPanel mainPanel) {
@@ -48,7 +52,7 @@ public class LogicalModelComposition {
 	public IntegrationFunctionMapping getMapping() {
 		return this.mapping;
 	}
-	
+
 	public void setMapping(IntegrationFunctionMapping mapping) {
 		this.mapping = mapping;
 	}
@@ -58,12 +62,6 @@ public class LogicalModelComposition {
 			return composedModel;
 
 		List<NodeInfo> nodeOrder = new ArrayList<NodeInfo>();
-//		//TESTE
-//		
-//		IntegrationAtom aux = new IntegrationAtom("HB", (byte) 1,(int) 0,(int)  6);
-//		RegulatoryIntegration a = new RegulatoryIntegration(aux, mainPanel.getEpithelium().getUnitaryModel());
-//		mapping.addMapping(nodeOrder.get(1), a);
-//		System.out.println(mapping.isMapped(nodeOrder.get(1)));
 
 		byte max = 0;
 
@@ -74,7 +72,8 @@ public class LogicalModelComposition {
 				NodeInfo newNode = new NodeInfo(computeNewName(
 						node.getNodeID(), i), node.getMax());
 				newNode.setInput(node.isInput());
-				// newNode.setInput(node.isInput() &&	!getMapping().isMapped(node));
+				// newNode.setInput(node.isInput() &&
+				// !getMapping().isMapped(node));
 				nodeOrder.add(newNode);
 				if (newNode.getMax() > max)
 					max = newNode.getMax();
@@ -88,8 +87,16 @@ public class LogicalModelComposition {
 				this.instanceNodes.get(new Integer(i)).add(newNode);
 				this.old2New.put(new SimpleEntry<NodeInfo, Integer>(node,
 						new Integer(i)), newNode);
+				this.oldString2New.put(
+						new SimpleEntry<String, Integer>(node.getNodeID(),
+								new Integer(i)), newNode);
 			}
 		}
+
+		// Create Composition Context
+
+		CompositionContext context = new CompositionContextImpl(
+				mainPanel.getTopology(), nodeOrder, this.oldString2New);
 
 		// Create MDD variables
 		MDDVariableFactory mvf = new MDDVariableFactory();
@@ -104,14 +111,13 @@ public class LogicalModelComposition {
 		int[] kMDDs = new int[nodeOrder.size()];
 
 		// Create MDDs for proper components (copy from old ones)
-		
+
 		for (int i = 0; i < kMDDs.length; i++) {
+			System.err.println("Processing node with index " + i);
 			NodeInfo node = nodeOrder.get(i);
-			// if old node was an input, it will not be handled here
+
 			NodeInfo oldNode = this.new2Old.get(node).getKey();
 			Integer instance = this.new2Old.get(node).getValue();
-//			if (oldNode.isInput())
-//				continue;
 
 			PathSearcher searcher = new PathSearcher(mainPanel.getEpithelium()
 					.getUnitaryModel().getMDDManager(), 1, oldNode.getMax());
@@ -139,15 +145,16 @@ public class LogicalModelComposition {
 
 				}
 
-//				int pathMDD;
-//				if (this.new2Old.get(node).getKey().isInput()) {
-//					value = mainPanel.getSimulation().getInitialState(this.new2Old.get(node).getKey().getNodeID());
-//					pathMDD = buildPathMDD(ddmanager, newPath, value);
-//				} else {
-//
-//					pathMDD = buildPathMDD(ddmanager, newPath, value);
-//				}
-				
+				// int pathMDD;
+				// if (this.new2Old.get(node).getKey().isInput()) {
+				// value =
+				// mainPanel.getSimulation().getInitialState(this.new2Old.get(node).getKey().getNodeID());
+				// pathMDD = buildPathMDD(ddmanager, newPath, value);
+				// } else {
+				//
+				// pathMDD = buildPathMDD(ddmanager, newPath, value);
+				// }
+
 				int pathMDD = buildPathMDD(ddmanager, newPath, value);
 				kMDDs[i] = MDDBaseOperators.OR.combine(ddmanager, kMDDs[i],
 						pathMDD);
@@ -155,8 +162,44 @@ public class LogicalModelComposition {
 		}
 
 		// Create MDDs for integration components
+		
+		ArrayList<String> integrationComponents= mainPanel.getIntegrationComponents();
+		
+		for (String oldeNodeIdIntegrationComponent: integrationComponents) {
 
+			System.out.println(mainPanel.getIntegrationFunction());
+			for (byte targetValue : mainPanel.getIntegrationFunction().keySet()) {
+
+				// expression =
+				// mainPanel.getIntegrationFunction().get(targetValue);
+
+				for (int i = 0; i < mainPanel.getTopology()
+						.getNumberInstances(); i++) {
+					IntegrationFunctionDNFFactory factory = new IntegrationFunctionDNFFactory(
+							context);
+					IntegrationFunctionClauseSet clauseSet = factory
+							.getClauseSet(mainPanel.getIntegrationFunction()
+									.get(targetValue), i);
+					//
+					// System.err.println("FINAL for instance " + i + " :\n"
+					// + clauseSet.asString());
+
+					if (!clauseSet.isImpossible()) {
+						NodeInfo integrationComponent = this.oldString2New
+								.get(new SimpleEntry<String, Integer>(oldeNodeIdIntegrationComponent, i));
+						int index = nodeOrder.indexOf(integrationComponent);
+
+						buildIntegrationPaths(ddmanager, index, kMDDs, context,
+								clauseSet, targetValue);
+
+					}
+				}
+			}
+		}
 		composedModel = new LogicalModelImpl(nodeOrder, ddmanager, kMDDs);
+		mainPanel.getEpithelium().setComposedModel(composedModel);
+
+		// reduce by integration input components
 		return composedModel;
 
 	}
@@ -169,7 +212,7 @@ public class LogicalModelComposition {
 	 */
 	public String computeNewName(String original, int moduleId) {
 		// moduleId starts at 1, as all iterations begin at 0, we add 1 here
-		return original + "_" + (moduleId + 1);
+		return original + "_" + (moduleId);
 	}
 
 	private int buildPathMDD(MDDManager ddmanager, int[] state, int leaf) {
@@ -177,7 +220,7 @@ public class LogicalModelComposition {
 		int mddPath = leaf;
 		for (int i = ddVariables.length - 1; i >= 0; i--) {
 			int[] children = new int[ddVariables[i].nbval];
-			//System.out.println(ddVariables[i].nbval + " " + state[i]);
+			// System.out.println(ddVariables[i].nbval + " " + state[i]);
 			if (state[i] >= 0) {
 				children[state[i]] = mddPath;
 				mddPath = ddVariables[i].getNode(children);
@@ -189,6 +232,31 @@ public class LogicalModelComposition {
 	public void resetComposedModel() {
 		composedModel = null;
 		// TODO Auto-generated method stub
-		
+
 	}
+
+	public void buildIntegrationPaths(MDDManager ddmanager, int index,
+			int[] kMDDs, CompositionContext context,
+			IntegrationFunctionClauseSet clauseSet, byte targetValue) {
+
+		for (IntegrationFunctionClause myClause : clauseSet.getClauses()) {
+
+			byte[] clause = myClause.asByteArray(context);
+
+			// for (int w = 0; w < clause.length; w++)
+			// if (clause[w] != -1)
+			// System.err.print("(" + w + ") " + clause[w] + " ");
+			// System.err.println();
+			// System.err.println();
+
+			int[] path = new int[clause.length];
+			for (int z = 0; z < path.length; z++)
+				path[z] = (int) clause[z];
+
+			int pathMDD = buildPathMDD(ddmanager, path, targetValue);
+			kMDDs[index] = MDDBaseOperators.OR.combine(ddmanager, kMDDs[index],
+					pathMDD);
+		}
+	}
+
 }

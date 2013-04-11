@@ -1,10 +1,20 @@
 package pt.igc.nmd.epilogue;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Topology {
+
+	// private Set<Integer> neighbors = Collections.synchronizedSet(new
+	// HashSet<Integer>());;
+	// private Set<Integer> neighborsaux = Collections.synchronizedSet(new
+	// HashSet<Integer>());
+	static Set<Integer> neighbors1 = Collections
+			.synchronizedSet(new HashSet<Integer>());;
+	static Set<Integer> neighborsaux1 = Collections
+			.synchronizedSet(new HashSet<Integer>());
 
 	public int width;
 	public int height;
@@ -12,8 +22,6 @@ public class Topology {
 			{ -1, 1, 0, 0, 1, 1 } };
 	private int[] neighbors_y = { 0, 0, -1, 1, -1, 1 };
 	private String rollOver;
-	Set<Integer> neighbors;
-	Set<Integer> neighborsaux;
 
 	public Topology(int width, int height) {
 		super();
@@ -22,9 +30,9 @@ public class Topology {
 		this.width = width;
 		this.height = height;
 		this.rollOver = rollOver;
-		neighbors = new HashSet<Integer>();
-		neighborsaux = new HashSet<Integer>();
-
+		
+		// neighbors = Collections.synchronizedSet(new HashSet<Integer>());;
+		// neighborsaux = Collections.synchronizedSet(new HashSet<Integer>());;
 	}
 
 	public void setHeight(int height) {
@@ -222,7 +230,7 @@ public class Topology {
 
 		if (option == "Vertical Roll-Over")
 			neighbours = verticalRollOver(instance);
-		if (option == "No Roll-Over")
+		if (option == "No Roll-Over" | option==null)
 			neighbours = noRollOver(instance);
 		if (option == "Horizontal Roll-Over")
 			neighbours = horizontalRollOver(instance);
@@ -232,35 +240,35 @@ public class Topology {
 
 	public Set<Integer> nDistanceNeighbours(int instance, int distance) {
 
-		// Set<Integer> neighborsaux = new HashSet<Integer>();
-		// for (int k : oneDistanceNeighbours(instance)) {
-		// neighborsaux.add(k);}
-		//
-		// for (int h = 0; h < distance; h++) {
-		// System.out.print(h);
-		// for (int k : oneDistanceNeighbours(instance)) {
-		// neighborsaux.add(k);
-		// for (int l : oneDistanceNeighbours(k)) {
-		// if (l != instance) {
-		// neighborsaux.add(l);
-		// }
-		// }
-		// }
-		// }
-
-		System.out.println(neighbors);
+//		Set<Integer> neighbors = new HashSet<Integer>(neighbors1);
+//		Set<Integer> neighborsaux = new HashSet<Integer>(neighborsaux1);
+//
+		Set<Integer> neighbours = new HashSet<Integer>();
+		// System.out.println(neighbors1);
 		if (distance > 0) {
 			for (int k : oneDistanceNeighbours(instance)) {
-				neighborsaux.add(k);
-				neighbors.add(k);
-			}
 
-			for (int l : neighborsaux) {
-				nDistanceNeighbours(l, distance - 1);
+				neighbours.add(k);
 			}
-
 		}
-		return neighbors;
+//
+//			Iterator it = neighborsaux.iterator();
+//			while (it.hasNext()) {
+//				Integer item = (Integer) it.next();
+//				// System.out.println("item " + item);
+//				neighborsaux1.add(item);
+//				neighbors1.add(item);
+//
+//			}
+//
+//			Iterator it1 = neighborsaux.iterator();
+//			while (it1.hasNext()) {
+//				Integer item = (Integer) it1.next();
+//				nDistanceNeighbours(item, distance - 1);
+//			}
+//
+//		}
+		return neighbours;
 	}
 
 	public String getRollOver() {

@@ -8,7 +8,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import pt.gulbenkian.igc.nmd.MainPanel;
 
 
 public class RunStopButton extends JButton {

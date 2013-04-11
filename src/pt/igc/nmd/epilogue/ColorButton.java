@@ -10,8 +10,6 @@ import javax.swing.JButton;
 
 import org.colomoto.logicalmodel.NodeInfo;
 
-import sun.tools.tree.Node;
-
 
 public class ColorButton extends JButton {
 
