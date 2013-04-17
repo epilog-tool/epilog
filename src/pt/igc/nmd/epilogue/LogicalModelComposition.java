@@ -1,5 +1,8 @@
 package pt.igc.nmd.epilogue;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +12,8 @@ import java.util.Map;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.LogicalModelImpl;
 import org.colomoto.logicalmodel.NodeInfo;
+import org.colomoto.logicalmodel.io.ginml.LogicalModel2GINML;
+import org.colomoto.logicalmodel.tool.reduction.ModelReducer;
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.MDDManagerFactory;
 import org.colomoto.mddlib.MDDVariable;
@@ -37,13 +42,6 @@ public class LogicalModelComposition {
 	private Map<NodeInfo, Map.Entry<NodeInfo, Integer>> new2Old = new HashMap<NodeInfo, Map.Entry<NodeInfo, Integer>>();
 	private Map<Integer, List<NodeInfo>> instanceNodes = new HashMap<Integer, List<NodeInfo>>();
 
-	// public LogicalModelComposition(LogicalModel model, Topology topology,
-	// IntegrationFunctionMapping mapping) {
-	// this.topology = topology;
-	// this.unitaryModel = model;
-	// this.mapping = mapping;
-	// }
-
 	public LogicalModelComposition(MainPanel mainPanel) {
 		this.mainPanel = mainPanel;
 
@@ -58,10 +56,11 @@ public class LogicalModelComposition {
 	}
 
 	public LogicalModel createComposedModel() {
-		if (composedModel != null)
-			return composedModel;
+		// if (composedModel != null)
+		// return composedModel;
 
 		List<NodeInfo> nodeOrder = new ArrayList<NodeInfo>();
+		List<NodeInfo> newIntegrationNodes = new ArrayList<NodeInfo>();
 
 		byte max = 0;
 
@@ -71,9 +70,18 @@ public class LogicalModelComposition {
 					.getNodeOrder()) {
 				NodeInfo newNode = new NodeInfo(computeNewName(
 						node.getNodeID(), i), node.getMax());
-				newNode.setInput(node.isInput());
-				// newNode.setInput(node.isInput() &&
-				// !getMapping().isMapped(node));
+
+				// integration inputs are no longer inputs
+				if (node.isInput()
+						&& mainPanel.getIntegrationComponents().contains(
+								node.getNodeID())) {
+
+					newNode.setInput(false);
+					newIntegrationNodes.add(newNode);
+				} else {
+					newNode.setInput(node.isInput());
+				}
+
 				nodeOrder.add(newNode);
 				if (newNode.getMax() > max)
 					max = newNode.getMax();
@@ -113,8 +121,11 @@ public class LogicalModelComposition {
 		// Create MDDs for proper components (copy from old ones)
 
 		for (int i = 0; i < kMDDs.length; i++) {
-			System.err.println("Processing node with index " + i);
+			// System.err.println("Processing node with index " + i);
 			NodeInfo node = nodeOrder.get(i);
+			if (newIntegrationNodes.contains(node)) {
+				continue;
+			}
 
 			NodeInfo oldNode = this.new2Old.get(node).getKey();
 			Integer instance = this.new2Old.get(node).getValue();
@@ -145,16 +156,6 @@ public class LogicalModelComposition {
 
 				}
 
-				// int pathMDD;
-				// if (this.new2Old.get(node).getKey().isInput()) {
-				// value =
-				// mainPanel.getSimulation().getInitialState(this.new2Old.get(node).getKey().getNodeID());
-				// pathMDD = buildPathMDD(ddmanager, newPath, value);
-				// } else {
-				//
-				// pathMDD = buildPathMDD(ddmanager, newPath, value);
-				// }
-
 				int pathMDD = buildPathMDD(ddmanager, newPath, value);
 				kMDDs[i] = MDDBaseOperators.OR.combine(ddmanager, kMDDs[i],
 						pathMDD);
@@ -162,16 +163,14 @@ public class LogicalModelComposition {
 		}
 
 		// Create MDDs for integration components
-		
-		ArrayList<String> integrationComponents= mainPanel.getIntegrationComponents();
-		
-		for (String oldeNodeIdIntegrationComponent: integrationComponents) {
+
+		ArrayList<String> integrationComponents = mainPanel
+				.getIntegrationComponents();
+
+		for (String oldeNodeIdIntegrationComponent : integrationComponents) {
 
 			System.out.println(mainPanel.getIntegrationFunction());
 			for (byte targetValue : mainPanel.getIntegrationFunction().keySet()) {
-
-				// expression =
-				// mainPanel.getIntegrationFunction().get(targetValue);
 
 				for (int i = 0; i < mainPanel.getTopology()
 						.getNumberInstances(); i++) {
@@ -180,13 +179,14 @@ public class LogicalModelComposition {
 					IntegrationFunctionClauseSet clauseSet = factory
 							.getClauseSet(mainPanel.getIntegrationFunction()
 									.get(targetValue), i);
-					//
-					// System.err.println("FINAL for instance " + i + " :\n"
-					// + clauseSet.asString());
+
+					System.err.println("FINAL for instance " + i + " :\n"
+							+ clauseSet);
 
 					if (!clauseSet.isImpossible()) {
 						NodeInfo integrationComponent = this.oldString2New
-								.get(new SimpleEntry<String, Integer>(oldeNodeIdIntegrationComponent, i));
+								.get(new SimpleEntry<String, Integer>(
+										oldeNodeIdIntegrationComponent, i));
 						int index = nodeOrder.indexOf(integrationComponent);
 
 						buildIntegrationPaths(ddmanager, index, kMDDs, context,
@@ -197,9 +197,39 @@ public class LogicalModelComposition {
 			}
 		}
 		composedModel = new LogicalModelImpl(nodeOrder, ddmanager, kMDDs);
-		mainPanel.getEpithelium().setComposedModel(composedModel);
 
-		// reduce by integration input components
+		LogicalModel2GINML exporter = new LogicalModel2GINML(composedModel);
+		try {
+			exporter.export(new FileOutputStream("test_beforeReduction.ginml"));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// Perform reduction of integration components
+		ModelReducer reducer = new ModelReducer(composedModel);
+		for (NodeInfo integrationNode : newIntegrationNodes) {
+			System.err.println("Reducing " + integrationNode.getNodeID());
+			reducer.remove(nodeOrder.indexOf(integrationNode));
+		}
+
+		composedModel = reducer.getModel();
+
+		exporter = new LogicalModel2GINML(composedModel);
+		try {
+			exporter.export(new FileOutputStream("test_afterReduction.ginml"));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		mainPanel.getEpithelium().setComposedModel(composedModel);
 		return composedModel;
 
 	}
@@ -257,6 +287,15 @@ public class LogicalModelComposition {
 			kMDDs[index] = MDDBaseOperators.OR.combine(ddmanager, kMDDs[index],
 					pathMDD);
 		}
+	}
+
+	public void resetLogicalModelComposition() {
+		mapping = null;
+		composedModel = null;
+		old2New = new HashMap<Map.Entry<NodeInfo, Integer>, NodeInfo>();
+		oldString2New = new HashMap<Map.Entry<String, Integer>, NodeInfo>();
+		new2Old = new HashMap<NodeInfo, Map.Entry<NodeInfo, Integer>>();
+		instanceNodes = new HashMap<Integer, List<NodeInfo>>();
 	}
 
 }

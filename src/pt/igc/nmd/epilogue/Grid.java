@@ -7,7 +7,7 @@ import org.colomoto.logicalmodel.NodeInfo;
 
 public class Grid {
 
-	private Hashtable<NodeInfo, Integer> cell;
+
 	private Hashtable<Integer, Hashtable<NodeInfo, Byte>> grid;
 	private MainPanel mainPanel;
 	private LogicalModel model;
@@ -35,8 +35,7 @@ public class Grid {
 	}
 
 	public void setGrid(Integer instance, NodeInfo node, byte b) {
-//		System.out.println("instance no setGrid " + instance + " " + grid);
-//		System.out.println(grid.get(0));
+
 		this.grid.get(instance).put(node, b);
 
 	}

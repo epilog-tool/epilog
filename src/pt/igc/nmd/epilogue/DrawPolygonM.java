@@ -1,9 +1,11 @@
 package pt.igc.nmd.epilogue;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -33,10 +35,10 @@ public class DrawPolygonM extends JPanel {
 	public int startY;
 	public int endX;
 	public int endY;
-	public InitialConditions frame;
+	public SetupConditions frame;
 	public MainPanel mainPanel;
 
-	public DrawPolygonM(InitialConditions frame, MainPanel mainPanel) {
+	public DrawPolygonM(SetupConditions frame, MainPanel mainPanel) {
 		this.mainPanel = mainPanel;
 		width = mainPanel.getTopology().getWidth();
 		height = mainPanel.getTopology().getHeight();
@@ -52,6 +54,9 @@ public class DrawPolygonM extends JPanel {
 
 	public void drawHexagon(int i, int j, Graphics g, Color color) {
 		double centerX = 100, centerY = 0, x = 0, y = 0;
+//		Graphics2D g2 = (Graphics2D) g;
+//		BasicStroke stroke = new BasicStroke(1.0f);
+//		BasicStroke perturbedStroke = new BasicStroke(3.0f);
 
 		if (i % 2 == 0) {
 			centerX = (1.5 * radius * (i)) + radius;
@@ -71,16 +76,30 @@ public class DrawPolygonM extends JPanel {
 			polygon2.addPoint((int) (x), (int) (y));
 
 		}
-		
 
 		// Este set color deve ser calculado pelo conjunto de cores assinalados
-		//Color color = initialConditionsColor(nodeBox, initialStatePerComponent );
-		
+		// Color color = initialConditionsColor(nodeBox,
+		// initialStatePerComponent );
+
+		int instance = mainPanel.getTopology().coords2Instance(i, j);
+
+	
 		g.setColor(color);
+		if (!mainPanel.getMarkPerturbation()&&!mainPanel.getEpithelium().getPerturbedInstance(instance)||mainPanel.getClearPerturbation()){
+		//g2.setStroke(stroke);
+		mainPanel.getEpithelium().setPerturbedInstance(i,j,false);
+		
+		}
+		
+		if ((mainPanel.getMarkPerturbation()||mainPanel.getEpithelium().getPerturbedInstance(instance))&&!mainPanel.getClearPerturbation()){
+		//g2.setStroke(perturbedStroke);
+		mainPanel.getEpithelium().setPerturbedInstance(i,j,true);
+		}
 		
 		g.fillPolygon(polygon2);
 		g.setColor(Color.black);
 		g.drawPolygon(polygon2);
+		
 
 	}
 
@@ -114,7 +133,11 @@ public class DrawPolygonM extends JPanel {
 	}
 
 	public void paintComponent(Graphics g) {
-
+		
+		//Graphics2D g2 = (Graphics2D) g;
+		//BasicStroke stroke = new BasicStroke(1.0f);
+		//BasicStroke perturbedStroke = new BasicStroke(3.0f);
+		
 		int XX = 0, YY = 0, max = 0;
 		try {
 			XX = mainPanel.getTopology().getWidth();
@@ -174,7 +197,6 @@ public class DrawPolygonM extends JPanel {
 					if (cells.size() > 0
 							&& cells.get(k).get(j).color1.getRGB() != Color.white
 									.getRGB()) {
-						
 						g.setColor(Color.white);
 						g.fillPolygon(polygon2);
 						g.setColor(Color.black);
@@ -199,7 +221,6 @@ public class DrawPolygonM extends JPanel {
 		}
 	}
 
-	
 	public static ArrayList<ArrayList<Cell>> getMappedCells(String file_name) {
 		ArrayList<ArrayList<Cell>> cells = new ArrayList<ArrayList<Cell>>();
 
@@ -241,4 +262,7 @@ public class DrawPolygonM extends JPanel {
 		}
 
 	}
+
+
+	
 }

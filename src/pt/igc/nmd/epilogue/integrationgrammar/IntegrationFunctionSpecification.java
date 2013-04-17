@@ -62,7 +62,8 @@ public class IntegrationFunctionSpecification {
 		private byte threshold = 0;
 		private int minNeighbours = 0;
 		private int maxNeighbours = 0;
-		private int distance = 1;
+		private int minDistance = 1;
+		private int maxDistance = 1;
 
 		public IntegrationAtom(String componentName, byte threshold,
 				int minNeighbours, int maxNeighbours) {
@@ -70,7 +71,8 @@ public class IntegrationFunctionSpecification {
 			this.threshold = threshold;
 			this.minNeighbours = minNeighbours;
 			this.maxNeighbours = maxNeighbours;
-			this.distance = 1;
+			this.minDistance = 1;
+			this.maxDistance = 1;
 		}
 
 		public IntegrationAtom(String componentName, byte threshold,
@@ -79,7 +81,20 @@ public class IntegrationFunctionSpecification {
 			this.threshold = threshold;
 			this.minNeighbours = minNeighbours;
 			this.maxNeighbours = maxNeighbours;
-			this.distance = distance;
+			this.minDistance = distance;
+			this.maxDistance = distance;
+
+		}
+
+		public IntegrationAtom(String componentName, byte threshold,
+				int minNeighbours, int maxNeighbours, int minDistance,
+				int maxDistance) {
+			this.componentName = componentName;
+			this.threshold = threshold;
+			this.minNeighbours = minNeighbours;
+			this.maxNeighbours = maxNeighbours;
+			this.minDistance = minDistance;
+			this.maxDistance = maxDistance;
 
 		}
 
@@ -99,8 +114,12 @@ public class IntegrationFunctionSpecification {
 			return this.maxNeighbours;
 		}
 
-		public int getDistance() {
-			return this.distance;
+		public int getMinDistance() {
+			return this.minDistance;
+		}
+
+		public int getMaxDistance() {
+			return this.maxDistance;
 		}
 
 	}
@@ -146,7 +165,12 @@ public class IntegrationFunctionSpecification {
 	public static IntegrationExpression createAtom(String componentName,
 			String thresholdString, String minString, String maxString,
 			String distString) {
+
 		byte threshold;
+		int distance;
+		int minDistance;
+		int maxDistance;
+
 		if (thresholdString.equals("_"))
 			threshold = -1;
 		else
@@ -161,13 +185,34 @@ public class IntegrationFunctionSpecification {
 			max = -1;
 		else
 			max = Integer.parseInt(maxString);
-		int distance;
-		if (distString.equals("_"))
-			distance = 1;
-		else
-			distance = Integer.parseInt(distString);
 
-		return new IntegrationAtom(componentName, threshold, min, max, distance);
+		if (distString.equals("_")) {
+			minDistance = 1;
+			maxDistance = 1;
+		} else if (distString.contains(":")) {
+			String rangeStr[] = new String[2];
+			rangeStr = distString.split(":");
+
+			int range[] = new int[2];
+			range[0] = Integer.parseInt(rangeStr[0]);
+			range[1] = Integer.parseInt(rangeStr[1]);
+
+			if (range[0] <= range[1]) {
+				minDistance = range[0];
+				maxDistance = range[1];
+			} else {
+				minDistance = range[1];
+				maxDistance = range[0];
+			}
+
+		} else {
+			distance = Integer.parseInt(distString);
+			minDistance = distance;
+			maxDistance = distance;
+		}
+
+		return new IntegrationAtom(componentName, threshold, min, max,
+				minDistance, maxDistance);
 	}
 
 	public static IntegrationExpression createAtom(
@@ -187,8 +232,9 @@ public class IntegrationFunctionSpecification {
 
 	public IntegrationExpression parse(String specificationString)
 			throws RecognitionException {
-		
+
 		specificationString.replaceAll("\\s", "");
+
 		ANTLRStringStream in = new ANTLRStringStream(specificationString);
 		IntegrationGrammarLexer lexer = new IntegrationGrammarLexer(in);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);

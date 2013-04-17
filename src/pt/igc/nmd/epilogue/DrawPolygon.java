@@ -1,21 +1,13 @@
 package pt.igc.nmd.epilogue;
 
 import java.awt.Color;
-
 import java.awt.Dimension;
 import java.awt.Graphics;
-
 import java.awt.Polygon;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
-
-
 
 import org.colomoto.logicalmodel.NodeInfo;
 

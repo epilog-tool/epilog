@@ -65,16 +65,12 @@ public class Simulation {
 	}
 
 	public void step() {
-		
+
 		this.stableStateFound = false;
 		testmethod();
 		System.out.println(iterationNumber);
-		mainPanel.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
-				.createEmptyBorder());
-		TitledBorder titleInitialConditions;
-		titleInitialConditions = BorderFactory
-				.createTitledBorder("Simulation Iteration: " + iterationNumber);
-		mainPanel.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
+
+		mainPanel.setBorderHexagonsPanel(iterationNumber);
 
 		for (NodeInfo node : composedModel.getNodeOrder()) {
 
@@ -83,6 +79,8 @@ public class Simulation {
 		}
 
 		boolean stableStateFound_aux = true;
+
+		byte[] nextState = new byte[this.state.length];
 		for (NodeInfo node : composedModel.getNodeOrder()) {
 
 			int index = composedModel.getNodeOrder().indexOf(node);
@@ -94,11 +92,13 @@ public class Simulation {
 			current = this.state[index];
 			target = composedModel.getTargetValue(index, this.state);
 
-			if (current != 0 | target != 0) {
-				next = (byte) (current + ((target - current) / (target + current)));
-			}
+			if (current != target)
+				next = (byte) (current + ((target - current) / Math.abs(target
+						- current)));
+			else
+				next = target;
 
-			this.state[index] = next;
+			nextState[index] = next;
 			setComposedState(node.getNodeID(), next);
 			// System.out.println(node +" "+ index+" "+node.getMax() + " "
 			// +node.isInput()+ " " + current + " " + target + " "
@@ -111,13 +111,13 @@ public class Simulation {
 		}
 		if (stableStateFound_aux) {
 			this.stableStateFound = true;
-
 		}
 
 		fillHexagons();
 		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
 				.getGraphics());
 		this.iterationNumber++;
+		this.state = nextState;
 
 	}
 
@@ -127,15 +127,16 @@ public class Simulation {
 
 	public void initializeSimulation() {
 
-		composedModel = mainPanel.getEpithelium().getComposedModel();
-		
-		if (composedModel==null| mainPanel.initialSetupHasChanged)
-		composedModel = mainPanel.getLogicalModelComposition()
-				.createComposedModel();
-		
+		this.composedModel = mainPanel.getEpithelium().getComposedModel();
+
+		if (mainPanel.initialSetupHasChanged) {
+			composedModel = mainPanel.getLogicalModelComposition()
+					.createComposedModel();
+
+		}
 		mainPanel.setInitialSetupHasChanged(false);
-		
-		this.state = new byte[composedModel.getNodeOrder().size()];
+
+		this.state = new byte[this.composedModel.getNodeOrder().size()];
 		setHasInitiated(true);
 
 		List<NodeInfo> a = mainPanel.getEpithelium().getUnitaryModel()
@@ -178,8 +179,8 @@ public class Simulation {
 		return (int) this.initialState.get(a2);
 	}
 
-	public void setComposedState(String composedNodeID, byte ComposedState) {
-		this.composedState.put(composedNodeID, ComposedState);
+	public void setComposedState(String composedNodeID, byte composedState) {
+		this.composedState.put(composedNodeID, new Byte(composedState));
 
 	}
 
@@ -239,9 +240,7 @@ public class Simulation {
 				mainPanel.hexagonsPanel.drawHexagon(row, column,
 						mainPanel.hexagonsPanel.getGraphics());
 			}
-
 		}
-
 	}
 
 	public Color Color(int i, int j) {
@@ -276,11 +275,8 @@ public class Simulation {
 				else if (value == 0) {
 					this.color = new Color(red, green, blue);
 				}
-
 			}
-
 		}
-
 		return this.color;
 	}
 
@@ -294,7 +290,6 @@ public class Simulation {
 			this.color = Color.white;
 		}
 		return this.color;
-
 	}
 
 	public void resetComposedInitialState() {
@@ -304,10 +299,10 @@ public class Simulation {
 	}
 
 	public void testmethod() {
-//		byte[] unitaryState;
+		// byte[] unitaryState;
 
-//		unitaryState = new byte[mainPanel.getEpithelium().getUnitaryModel()
-//				.getNodeOrder().size()];
+		// unitaryState = new byte[mainPanel.getEpithelium().getUnitaryModel()
+		// .getNodeOrder().size()];
 		// System.out.println("Current:");
 		// for (int i = 0;i<unitaryState.length;i++){
 		// unitaryState[i]=1;

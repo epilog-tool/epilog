@@ -39,6 +39,10 @@ public class MainPanel extends JFrame {
 	private Hashtable<Byte, IntegrationExpression> integrationFunctionHash;
 	public Hashtable<NodeInfo, Boolean> integrationComponents;
 	public boolean initialSetupHasChanged;
+	public SetupConditions initialConditions;
+
+	private boolean markPerturbationControl;
+	private boolean clearPerturbationControl;
 
 	public MainPanel mainPanel = this;
 
@@ -46,13 +50,16 @@ public class MainPanel extends JFrame {
 
 	public MainPanel() {
 
-		this.topology = new Topology(20, 20);
+		this.topology = new Topology(10, 10);
 		this.epithelium = new SphericalEpithelium(this.topology);
 		this.simulation = new Simulation(this);
 		this.logicalModelComposition = new LogicalModelComposition(this);
 		this.grid = new Grid(this);
 		this.integrationFunctionHash = new Hashtable<Byte, IntegrationExpression>();
 		integrationComponents = new Hashtable<NodeInfo, Boolean>();
+		initialSetupHasChanged = false;
+		this.markPerturbationControl = false;
+		this.clearPerturbationControl = true;
 	}
 
 	public void initialize() throws Exception {
@@ -75,7 +82,8 @@ public class MainPanel extends JFrame {
 
 				double xt = arg0.getX() - ind_it * (1.5 * hexagonsPanel.radius);
 				double yt = ind_yts - ind_jt * (hexagonsPanel.height);
-				int i = 0, j = 0;
+				int i = 0;
+				int j = 0;
 				int deltaj = 0;
 
 				if (yt > hexagonsPanel.height / 2)
@@ -131,20 +139,24 @@ public class MainPanel extends JFrame {
 						&& j < mainPanel.getTopology().getHeight() && i >= 0
 						&& j >= 0) {
 					System.out.println(getEpithelium().getComposedModel());
-					if (getEpithelium().getComposedModel() != null){
-						
-						
+					if (getEpithelium().getComposedModel() != null) {
+
 						Hashtable<String, Byte> original = new Hashtable<String, Byte>();
 						int instance = topology.coords2Instance(i, j);
-						
-						for (NodeInfo node: epithelium.getUnitaryModel().getNodeOrder()){
-						String composedNodeID = logicalModelComposition.computeNewName(node.getNodeID(), instance);
-						
-						original.put(composedNodeID,simulation.composedState.get(composedNodeID));
+
+						for (NodeInfo node : epithelium.getUnitaryModel()
+								.getNodeOrder()) {
+							String composedNodeID = logicalModelComposition
+									.computeNewName(node.getNodeID(), instance);
+
+							original.put(composedNodeID,
+									simulation.composedState
+											.get(composedNodeID));
 						}
-						System.out.println("instance: " +instance + " -> " + " "+ original);
+						System.out.println("instance: " + instance + " -> "
+								+ " " + original);
 					}
-						System.out.println("mouse moved");
+					System.out.println("mouse moved");
 				}
 
 			}
@@ -152,11 +164,6 @@ public class MainPanel extends JFrame {
 		});
 
 	}
-
-	/*
-	 * 
-	 * START PANEL
-	 */
 
 	public SphericalEpithelium getEpithelium() {
 		return this.epithelium;
@@ -202,8 +209,6 @@ public class MainPanel extends JFrame {
 				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
 						"Arial", Font.ITALIC, 14), Color.black);
 
-		// title = BorderFactory.createTitledBorder("Value Analytics");
-		// watcherPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		watcherPanel.setBorder(title);
 		watcherPanel.setBounds(550, 60, 500, 200);
 		watcherPanel.setVisible(false);
@@ -297,7 +302,41 @@ public class MainPanel extends JFrame {
 
 	public void setInitialSetupHasChanged(boolean b) {
 		initialSetupHasChanged = b;
+	}
 
+	public void setBorderHexagonsPanel(int iterationNumber) {
+		mainPanel.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
+				.createEmptyBorder());
+		TitledBorder titleInitialConditions;
+		titleInitialConditions = BorderFactory
+				.createTitledBorder("Simulation Iteration: " + iterationNumber);
+		mainPanel.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
+	}
+
+	public void setBorderHexagonsPanel() {
+		mainPanel.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
+				.createEmptyBorder());
+		TitledBorder titleInitialConditions;
+		titleInitialConditions = BorderFactory
+				.createTitledBorder("Initial Conditions");
+		mainPanel.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
+
+	}
+
+	public void setMarkPerturbation(boolean b) {
+		this.markPerturbationControl = b;
+	}
+
+	public boolean getMarkPerturbation() {
+		return this.markPerturbationControl;
+	}
+
+	public void setClearPerturbation(boolean b) {
+		this.clearPerturbationControl = b;
+	}
+
+	public boolean getClearPerturbation() {
+		return this.clearPerturbationControl;
 	}
 
 }

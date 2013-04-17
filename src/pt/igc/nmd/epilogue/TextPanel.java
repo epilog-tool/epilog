@@ -1,21 +1,15 @@
 package pt.igc.nmd.epilogue;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.Rectangle;
 
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.colomoto.logicalmodel.LogicalModel;
 //import javax.swing.event.MouseInputAdapter;
 //import java.awt.*;
 //import java.awt.event.MouseEvent;
-
-import org.colomoto.logicalmodel.LogicalModel;
 
 
 
@@ -42,15 +36,12 @@ public class TextPanel extends JPanel {
 		init();
 	}
 
-	
-	
-	
 	public JPanel init() {
 		
 //		  MyListener myListener = new MyListener();
 //		    addMouseListener(myListener);
 //		    addMouseMotionListener(myListener);
-		
+		this.removeAll();
 		model = mainPanel.getEpithelium().getUnitaryModel();
 
 		FlowLayout layout = new FlowLayout();
@@ -74,12 +65,6 @@ public class TextPanel extends JPanel {
 				add(panels[i]);
 			}
 		}
-		
-		
-		
-		
-		
-		
 		return this;
 	}
 	

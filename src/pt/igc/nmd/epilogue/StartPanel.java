@@ -32,7 +32,7 @@ public class StartPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JButton closeButton;
 	private JButton modelButton;
-	private JButton initialConditionsButton;
+	private JButton setupConditionsButton;
 	private JButton restartButton;
 	private JButton runButton;
 	private JButton stepButton;
@@ -75,7 +75,7 @@ public class StartPanel extends JPanel {
 		closeButton = new JButton("Close");
 		quitButton = new JButton("Quit");
 		simulationButton = new JButton("Simulation");
-		initialConditionsButton = new JButton("Initial Conditions");
+		setupConditionsButton = new JButton("Setup Conditions");
 		runButton = new RunStopButton();
 		stepButton = new JButton("Step");
 
@@ -101,7 +101,7 @@ public class StartPanel extends JPanel {
 		runButton.setVisible(false);
 		iterationNumber.setVisible(false);
 		labelFilename.setVisible(false);
-		initialConditionsButton.setVisible(false);
+		setupConditionsButton.setVisible(false);
 		simulationButton.setVisible(false);
 
 		userDefinedWidth.setEnabled(true);
@@ -115,8 +115,10 @@ public class StartPanel extends JPanel {
 		 * simulation will be reset to zero 3) The model name is changed to an
 		 * empty field 4) The components panel, watcher panel, step button, run
 		 * button, simulation button, restart button and close button are set
-		 * invisible 5) Initial Conditions button is enabled 6) The analytics
-		 * model is restarted 7) The Hexagons Panel is repainted
+		 * invisible 5) Grids Dimension and the Initial Conditions button is
+		 * enabled 6) The analytics model is restarted 7) The hexagons Panel is
+		 * repainted 8) The Composed logical model and its variables are
+		 * initialized
 		 */
 
 		closeButton.addActionListener(new ActionListener() {
@@ -133,13 +135,15 @@ public class StartPanel extends JPanel {
 				mainPanel.watcherPanel.setVisible(false);
 				stepButton.setVisible(false);
 				runButton.setVisible(false);
-				initialConditionsButton.setVisible(false);
+				setupConditionsButton.setVisible(false);
 				simulationButton.setVisible(false);
 				restartButton.setVisible(false);
 				closeButton.setVisible(false);
 				// labelFilename.setVisible(false);
 
-				initialConditionsButton.setEnabled(true);
+				setupConditionsButton.setEnabled(true);
+				userDefinedWidth.setEnabled(true);
+				userDefinedHeight.setEnabled(true);
 
 				TitledBorder titleInitialConditions;
 				titleInitialConditions = BorderFactory.createTitledBorder("");
@@ -152,17 +156,21 @@ public class StartPanel extends JPanel {
 				mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
 						.getGraphics());
 
+				mainPanel.getLogicalModelComposition()
+						.resetLogicalModelComposition();
+
 			}
 		});
 
 		/*
-		 * Quit Button: This button closes the application. It also closes all opened windows.
+		 * Quit Button: This button closes the application. It also closes all
+		 * opened windows.
 		 */
 
 		quitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainPanel.dispose();
-				 System.exit(0);
+				System.exit(0);
 			}
 		});
 
@@ -170,7 +178,7 @@ public class StartPanel extends JPanel {
 		 * Restart Button: Initials conditions are not changed and the
 		 * simulation status is reset. The composed model is already created and
 		 * it is only updated if the user changed the integration input
-		 * definitions, grid dimentions or roll-over options.
+		 * definitions, grid dimensions or roll-over options.
 		 * 
 		 * After the Restart the following happens: 1) Reset the iteration
 		 * number 2) Title border resets to "Initial Conditions" 3) Simulation
@@ -184,22 +192,14 @@ public class StartPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 
 				mainPanel.getSimulation().resetIterationNumber();
-
-				TitledBorder titleInitialConditions;
-				titleInitialConditions = BorderFactory
-						.createTitledBorder("Initial Conditions");
-				mainPanel.auxiliaryHexagonsPanel
-						.setBorder(javax.swing.BorderFactory
-								.createEmptyBorder());
-				mainPanel.auxiliaryHexagonsPanel
-						.setBorder(titleInitialConditions);
+				mainPanel.setBorderHexagonsPanel();
 
 				simulationButton.setVisible(true);
 				stepButton.setVisible(false);
 				runButton.setVisible(false);
 				stepButton.setEnabled(true);
 				runButton.setEnabled(true);
-				initialConditionsButton.setEnabled(true);
+				setupConditionsButton.setEnabled(true);
 				userDefinedWidth.setEnabled(true);
 				userDefinedHeight.setEnabled(true);
 
@@ -214,9 +214,11 @@ public class StartPanel extends JPanel {
 		 * even if the user writes an odd number, it is automatically corrected
 		 * to the next even number. Topology will hold the values. Whenever the
 		 * grid dimensions are changed the mainPanel is informed of that so that
-		 * the composed model can be recreated. It is Particularly important
+		 * the composed model can be recreated. It is particularly important
 		 * when the user has already defined a composed model and then restarts
-		 * the simulation and decides to change the grid's dimensions.
+		 * the simulation and decides to change the grid's dimensions. If the
+		 * model was already loaded and the user change the grids dimensions
+		 * after a restart, then the grid has to reinitialize again.
 		 */
 
 		userDefinedWidth.setPreferredSize(new Dimension(34, 26));
@@ -238,6 +240,8 @@ public class StartPanel extends JPanel {
 				sanityCheckDimension(userDefinedWidth);
 				setWidth();
 				mainPanel.setInitialSetupHasChanged(true);
+				if (model != null)
+					mainPanel.getGrid().initializeGrid();
 
 			}
 		});
@@ -253,6 +257,9 @@ public class StartPanel extends JPanel {
 				sanityCheckDimension(userDefinedHeight);
 				setHeight();
 				mainPanel.setInitialSetupHasChanged(true);
+				if (model != null)
+					mainPanel.getGrid().initializeGrid();
+
 			}
 		});
 
@@ -264,7 +271,7 @@ public class StartPanel extends JPanel {
 				sanityCheckDimension(userDefinedHeight);
 				setWidth();
 				setHeight();
-				mainPanel.setInitialSetupHasChanged(true);
+
 			}
 
 			@Override
@@ -274,7 +281,7 @@ public class StartPanel extends JPanel {
 				sanityCheckDimension(userDefinedHeight);
 				setWidth();
 				setHeight();
-				mainPanel.setInitialSetupHasChanged(true);
+
 			}
 
 			@Override
@@ -335,7 +342,7 @@ public class StartPanel extends JPanel {
 				stepButton.setVisible(true);
 				runButton.setVisible(true);
 				mainPanel.getSimulation().initializeSimulation();
-				initialConditionsButton.setEnabled(false);
+				setupConditionsButton.setEnabled(false);
 				userDefinedWidth.setEnabled(false);
 				userDefinedHeight.setEnabled(false);
 
@@ -343,11 +350,14 @@ public class StartPanel extends JPanel {
 		});
 
 		/*
-		 * Step Button:
+		 * Step Button: Initiates a step-by-step simulation. It also repaints
+		 * the border of the hexagons panel with the iteration number and
+		 * disables the step and run button when it is over
 		 */
 		stepButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainPanel.getSimulation().step();
+
 				if (mainPanel.getSimulation().hasStableStateFound()) {
 					stepButton.setEnabled(false);
 					runButton.setEnabled(false);
@@ -369,10 +379,10 @@ public class StartPanel extends JPanel {
 		/*
 		 * Initial Conditions Button:
 		 */
-		
-		initialConditionsButton.addActionListener(new ActionListener() {
+
+		setupConditionsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				final InitialConditions initialConditionsPanel = new InitialConditions(
+				final SetupConditions initialConditionsPanel = new SetupConditions(
 						mainPanel);
 				initialConditionsPanel.initialize();
 				initialConditionsPanel
@@ -394,7 +404,7 @@ public class StartPanel extends JPanel {
 		add(runButton);
 		add(stepButton);
 		add(simulationButton);
-		add(initialConditionsButton);
+		add(setupConditionsButton);
 		add(emptySpaceLabel);
 		add(restartButton);
 		add(closeButton);
@@ -462,7 +472,7 @@ public class StartPanel extends JPanel {
 		runButton.setVisible(false);
 		stepButton.setVisible(false);
 		simulationButton.setVisible(true);
-		initialConditionsButton.setVisible(true);
+		setupConditionsButton.setVisible(true);
 		restartButton.setVisible(true);
 		closeButton.setVisible(true);
 		setUnitaryModel(logicalModel);
@@ -480,13 +490,12 @@ public class StartPanel extends JPanel {
 
 		mainPanel.getLogicalModelComposition().resetComposedModel();
 		mainPanel.getSimulation().setHasInitiated(false);
-		initialConditionsButton.setEnabled(true);
+		setupConditionsButton.setEnabled(true);
 		mainPanel.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
 				.createEmptyBorder());
 		TitledBorder titleInitialConditions;
 		titleInitialConditions = BorderFactory.createTitledBorder("");
 		mainPanel.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
-
 	}
 
 	public void setUnitaryModel(LogicalModel chosenmodel) {
