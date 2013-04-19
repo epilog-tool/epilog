@@ -1,5 +1,6 @@
 package pt.igc.nmd.epilogue;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -27,6 +28,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
@@ -64,7 +66,7 @@ public class SetupConditions extends JFrame {
 	private JPanel perturbationsPanel;
 	private JPanel optionsPanel;
 	private JPanel composedPanel;
-	
+
 	private JPanel line1;
 	private JPanel line2;
 	private DrawPolygonM MapPanel;
@@ -106,6 +108,8 @@ public class SetupConditions extends JFrame {
 
 	private NodeInfo selectedPerturbedComponent;
 
+	private Color backgroundColor;
+
 	/*
 	 * 
 	 */
@@ -118,7 +122,8 @@ public class SetupConditions extends JFrame {
 		this.mainPanel = mainPanel;
 		this.model = this.mainPanel.getEpithelium().getUnitaryModel();
 		this.fill = false;
-		
+		this.backgroundColor = new Color(0xD3D3D3);
+
 		composedModelActive = true;
 
 		FlowLayout layout = new FlowLayout();
@@ -145,8 +150,8 @@ public class SetupConditions extends JFrame {
 
 		mainPanel.getSimulation().resetIterationNumber();
 
-		getContentPane().setPreferredSize(new Dimension(900, 700));
-		getContentPane().setBackground(Color.white);
+		getContentPane().setPreferredSize(new Dimension(900, 600));
+		getContentPane().setBackground(backgroundColor);
 
 		TitledBorder titleProperComponents;
 		TitledBorder titleInputs;
@@ -156,37 +161,48 @@ public class SetupConditions extends JFrame {
 				.createTitledBorder("Proper Components");
 		titleInputs = BorderFactory.createTitledBorder("Inputs");
 		titlePerturbation = BorderFactory.createTitledBorder("Perturbations");
-//		titleComposedModelSetup = BorderFactory
-//				.createTitledBorder("Composed Model Setup");
-		
+		// titleComposedModelSetup = BorderFactory
+		// .createTitledBorder("Composed Model Setup");
+
 		LineBorder border = new LineBorder(Color.black, 1, true);
-		titleComposedModelSetup = new TitledBorder(border, "Composed Model Setup",
-				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
-						"Arial", Font.ITALIC, 14), Color.black);
+		titleComposedModelSetup = new TitledBorder(border,
+				"Composed Model Setup", TitledBorder.LEFT,
+				TitledBorder.DEFAULT_POSITION, new Font("Arial", Font.ITALIC,
+						14), Color.black);
 
 		properComponentsPanel = new JPanel();
 		inputsPanel = new JPanel();
 		perturbationsPanel = new JPanel();
 		line1 = new JPanel();
-		line2= new JPanel();
+		line2 = new JPanel();
 		optionsPanel = new JPanel();
 		composedPanel = new JPanel();
+
+		MapPanel = new DrawPolygonM(this, this.mainPanel);
+
 		composedPanel.setLayout(layout);
+		MapPanel.setLayout(null);
 
-		properComponentsPanel.setBounds(500, 0, 280, 200);
-		// inputsPanel.setBounds(500, 250, 280, 100);
-		// perturbationsPanel.setBounds(500, 400, 380, 100);
+		inputsPanel.setPreferredSize(new Dimension(410, 180));
+		perturbationsPanel.setPreferredSize(new Dimension(410, 100));
 
-		inputsPanel.setPreferredSize(new Dimension(370, 100));
-		perturbationsPanel.setPreferredSize(new Dimension(370, 100));
-		optionsPanel.setBounds(0, 600, 700, 100);
-		composedPanel.setBounds(470, 300, 400, 300);
+		properComponentsPanel.setBounds(455, 20, 430, 200);
+		composedPanel.setBounds(455, 230, 430, 350);
+		MapPanel.setBounds(20, 30, 400, 480);
+		optionsPanel.setBounds(20, 550, 400, 35);
+		line1.setBounds(20, 20, 280, 30);
+		line2.setBounds(20, 50, 280, 30);
 
-		properComponentsPanel.setBackground(Color.white);
-		inputsPanel.setBackground(Color.white);
-		optionsPanel.setBackground(Color.white);
-		perturbationsPanel.setBackground(Color.white);
-		composedPanel.setBackground(Color.white);
+		properComponentsPanel.setBackground(backgroundColor);
+		inputsPanel.setBackground(backgroundColor);
+		optionsPanel.setBackground(backgroundColor);
+		perturbationsPanel.setBackground(backgroundColor);
+		composedPanel.setBackground(backgroundColor);
+		MapPanel.setBackground(backgroundColor);
+		line1.setBackground(backgroundColor);
+		line2.setBackground(backgroundColor);
+
+		perturbationsPanel.setBackground(backgroundColor);
 
 		properComponentsPanel.setBorder(titleProperComponents);
 		inputsPanel.setBorder(titleInputs);
@@ -196,6 +212,8 @@ public class SetupConditions extends JFrame {
 		properComponentsPanel.setLayout(null);
 		inputsPanel.setLayout(null);
 		perturbationsPanel.setLayout(null);
+		line1.setLayout(layout);
+		line2.setLayout(layout);
 
 		/* ProperComponents and Input panel */
 
@@ -207,17 +225,27 @@ public class SetupConditions extends JFrame {
 
 		int inputCount = 0;
 		int properCount = 0;
-
-		System.out.println(listNodes);
+		int xOffset = 0;
+		int yOffset = 0;
+		int xOffsetInput = 0;
+		int yOffsetInput = 0;
 
 		for (int i = 0; i < listNodes.size(); i++) {
 			node2IntInput.put(listNodes.get(i), false);
 
 			if (listNodes.get(i).isInput()) {
+				
+				if (inputCount % 2 != 0)
+					xOffsetInput = 200;
+				else if (inputCount % 2 == 0) {
+					xOffsetInput = 0;
+					yOffsetInput = inputCount / 2 * 40;
+				}
 
 				nodeBox[i] = new JCheckBox(listNodes.get(i).getNodeID());
-				nodeBox[i].setBackground(Color.white);
-				nodeBox[i].setBounds(10, 30 + inputCount * 40, 50, 25);
+				nodeBox[i].setToolTipText(listNodes.get(i).getNodeID());
+				nodeBox[i].setBackground(backgroundColor);
+				nodeBox[i].setBounds(10+xOffsetInput, 20 + yOffsetInput, 70, 25);
 				Jcheck2Node.put(nodeBox[i], listNodes.get(i));
 				node2Jcheck.put(listNodes.get(i), nodeBox[i]);
 				componentDisplay.put(listNodes.get(i), false);
@@ -236,8 +264,7 @@ public class SetupConditions extends JFrame {
 				mainPanel.getSimulation().setNode2Int(listNodes.get(i), i);
 
 				initialStatePerComponent[i] = new JComboBox();
-				initialStatePerComponent[i].setBounds(60, 30 + inputCount * 40,
-						40, 25);
+				initialStatePerComponent[i].setBounds(85+xOffsetInput, 20 + yOffsetInput, 35, 25);
 				for (int maxValue = 0; maxValue < listNodes.get(i).getMax() + 1; maxValue++) {
 					initialStatePerComponent[i].addItem(maxValue);
 				}
@@ -263,7 +290,7 @@ public class SetupConditions extends JFrame {
 						mainPanel.getEpithelium().getColors()
 								.get(listNodes.get(i)));
 				colorChooser.get(i)
-						.setBounds(120, 30 + inputCount * 40, 40, 25);
+						.setBounds(125+xOffsetInput, 20 + yOffsetInput, 20, 25);
 
 				color2Node.put(colorChooser.get(i), listNodes.get(i));
 				node2Color.put(listNodes.get(i), colorChooser.get(i));
@@ -273,8 +300,9 @@ public class SetupConditions extends JFrame {
 				inputsPanel.add(colorChooser.get(i));
 
 				integrationFunctionButton = new JButton("Function");
-				integrationFunctionButton.setBounds(60, 30 + inputCount * 40,
-						100, 25);
+				integrationFunctionButton.setToolTipText("Integration Function");
+				integrationFunctionButton.setBounds(85+xOffsetInput, 20 + yOffsetInput,
+						65, 25);
 				inputsPanel.add(integrationFunctionButton);
 				integrationFunctionButton.setVisible(false);
 
@@ -295,7 +323,7 @@ public class SetupConditions extends JFrame {
 
 				JcomboInput2Node.put(inputComboChooser[i], listNodes.get(i));
 
-				inputComboChooser[i].setBounds(180, 30 + inputCount * 40, 90,
+				inputComboChooser[i].setBounds(155+xOffsetInput, 20 + yOffsetInput, 50,
 						25);
 				inputComboChooser[i].addItem(InputOption
 						.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));
@@ -340,10 +368,21 @@ public class SetupConditions extends JFrame {
 				inputCount = inputCount + 1;
 
 			} else if (!listNodes.get(i).isInput()) {
+
 				string2Node.put(listNodes.get(i).getNodeID(), listNodes.get(i));
 				nodeBox[i] = new JCheckBox(listNodes.get(i).getNodeID());
-				nodeBox[i].setBackground(Color.white);
-				nodeBox[i].setBounds(10, 30 + properCount * 40, 50, 25);
+				nodeBox[i].setToolTipText(listNodes.get(i).getNodeID());
+				nodeBox[i].setBackground(backgroundColor);
+				if (properCount % 3 == 2)
+					xOffset = 140;
+				else if (properCount % 3 == 1)
+					xOffset = 280;
+				else if (properCount % 3 == 0) {
+					xOffset = 0;
+					yOffset = properCount / 3 * 40;
+				}
+
+				nodeBox[i].setBounds(10 + xOffset, 30 + yOffset, 65, 25);
 				Jcheck2Node.put(nodeBox[i], listNodes.get(i));
 				componentDisplay.put(listNodes.get(i), false);
 
@@ -360,8 +399,8 @@ public class SetupConditions extends JFrame {
 
 				mainPanel.getSimulation().setNode2Int(listNodes.get(i), i);
 				initialStatePerComponent[i] = new JComboBox();
-				initialStatePerComponent[i].setBounds(60,
-						30 + properCount * 40, 40, 25);
+				initialStatePerComponent[i].setBounds(75 + xOffset,
+						30 + yOffset, 35, 25);
 				for (int maxValue = 0; maxValue < listNodes.get(i).getMax() + 1; maxValue++) {
 					initialStatePerComponent[i].addItem(maxValue);
 				}
@@ -387,7 +426,7 @@ public class SetupConditions extends JFrame {
 				colorChooser.get(i).setBackground(
 						mainPanel.getEpithelium().getColors()
 								.get(listNodes.get(i)));
-				colorChooser.get(i).setBounds(120, 30 + properCount * 40, 40,
+				colorChooser.get(i).setBounds(120 + xOffset, 30 + yOffset, 20,
 						25);
 				properComponentsPanel.add(initialStatePerComponent[i]);
 				properComponentsPanel.add(nodeBox[i]);
@@ -423,8 +462,8 @@ public class SetupConditions extends JFrame {
 		selectedPerturbedComponent = string2Node.get(perturbedComponent
 				.getSelectedItem());
 
-		//final JPanel line1 = new JPanel();
-		//JPanel line2 = new JPanel();
+		// final JPanel line1 = new JPanel();
+		// JPanel line2 = new JPanel();
 
 		JComboBox perturbedExpressionMin = getperturbedExpressionCombo();
 		JComboBox perturbedExpressionMax = getperturbedExpressionCombo();
@@ -444,7 +483,7 @@ public class SetupConditions extends JFrame {
 
 			}
 		});
-		System.out.println(perturbedExpressionMax.getSelectedItem() + "es");
+		// System.out.println(perturbedExpressionMax.getSelectedItem() + "es");
 
 		markPerturbation.addActionListener(new ActionListener() {
 			@Override
@@ -475,11 +514,6 @@ public class SetupConditions extends JFrame {
 
 			}
 		});
-
-		line1.setBounds(20, 20, 280, 30);
-		line2.setBounds(20, 50, 280, 30);
-		line1.setLayout(layout);
-		line2.setLayout(layout);
 
 		line1.add(markPerturbation);
 		line2.add(clearPerturbation);
@@ -574,23 +608,25 @@ public class SetupConditions extends JFrame {
 				}
 			}
 		});
-		
-		
+
 		/*
-		 * ComposedPanel : 
+		 * ComposedPanel : In the Composed Panel there are all the
+		 * functionalities relating to the creation or modification of the
+		 * composed model. Perturbations, Inputs definitions and Roll Over
+		 * Options
 		 */
 
 		JCheckBox composedPanelActive = new JCheckBox();
-		
+		composedPanelActive.setBackground(backgroundColor);
 		composedPanelActive.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				setComposedModelDisplay(!composedModelActive);
 			}
 		});
-		
+
 		composedPanel.add(composedPanelActive);
-		
+
 		/*
 		 * RollOver: This will allow the user to define if there is any
 		 * neighborhood relation between hexagons at the extremes (horizontal
@@ -606,7 +642,7 @@ public class SetupConditions extends JFrame {
 		rollOver.addItem("Horizontal Roll-Over");
 		String aux = (String) rollOver.getSelectedItem();
 		mainPanel.getTopology().setRollOver(aux);
-		rollOver.setBackground(Color.white);
+		// rollOver.setBackground(Color.white);
 
 		rollOver.addActionListener(new ActionListener() {
 
@@ -631,11 +667,6 @@ public class SetupConditions extends JFrame {
 		this.endX = 0;
 		this.endY = 0;
 
-		MapPanel = new DrawPolygonM(this, this.mainPanel);
-
-		MapPanel.setLayout(null);
-		MapPanel.setBounds(10, 10, 450, 500);
-
 		textArea = new JTextArea();
 		textArea.setEditable(false);
 
@@ -654,7 +685,6 @@ public class SetupConditions extends JFrame {
 		 * Add buttons to the options Panel
 		 */
 
-		optionsPanel.add(rollOver);
 		optionsPanel.add(buttonMarkAll);
 		optionsPanel.add(buttonClearAll);
 		optionsPanel.add(buttonFill);
@@ -668,12 +698,11 @@ public class SetupConditions extends JFrame {
 		getContentPane().add(MapPanel);
 		getContentPane().add(properComponentsPanel);
 
+		composedPanel.add(rollOver);
 		composedPanel.add(inputsPanel);
 		composedPanel.add(perturbationsPanel);
 
 		getContentPane().add(composedPanel);
-		// getContentPane().add(inputsPanel);
-		// getContentPane().add(perturbationsPanel);
 		getContentPane().add(optionsPanel);
 
 		pack();
@@ -684,13 +713,19 @@ public class SetupConditions extends JFrame {
 	}
 
 	protected void setComposedModelDisplay(boolean b) {
+		JCheckBox aux = new JCheckBox();
 		composedModelActive = b;
-			for (Component c: line1.getComponents())
+		for (Component c : line1.getComponents())
+			c.setEnabled(composedModelActive);
+		for (Component c : line2.getComponents())
+			c.setEnabled(composedModelActive);
+		for (Component c : inputsPanel.getComponents())
+			c.setEnabled(composedModelActive);
+		for (Component c : composedPanel.getComponents()) {
+			System.out.println(c.getClass());
+			if (c.getClass() != aux.getClass())
 				c.setEnabled(composedModelActive);
-			for (Component c: line2.getComponents())
-				c.setEnabled(composedModelActive);
-			for (Component c: inputsPanel.getComponents())
-				c.setEnabled(composedModelActive);
+		}
 	}
 
 	protected void clearAllPerturbations() {
@@ -746,7 +781,7 @@ public class SetupConditions extends JFrame {
 	protected void setSelectedPerturbedComponent(String selectedItem) {
 		// TODO Auto-generated method stub
 		this.selectedPerturbedComponent = string2Node.get(selectedItem);
-		System.out.println(this.selectedPerturbedComponent);
+		// System.out.println(this.selectedPerturbedComponent);
 	}
 
 	protected void setInitialSetupHasChanged(boolean b) {
@@ -877,12 +912,12 @@ public class SetupConditions extends JFrame {
 							&& j < mainPanel.getTopology().getHeight()
 							&& i >= 0 && j >= 0) {
 
-				//		if (!mainPanel.getMarkPerturbation()) {
-							color = Color();
-							MapPanel.drawHexagon(i, j, MapPanel.getGraphics(),
-									color);
-							setInitialState(i, j);
-				//		}
+						// if (!mainPanel.getMarkPerturbation()) {
+						color = Color();
+						MapPanel.drawHexagon(i, j, MapPanel.getGraphics(),
+								color);
+						setInitialState(i, j);
+						// }
 					}
 				}
 
@@ -1196,9 +1231,9 @@ public class SetupConditions extends JFrame {
 		public static String getDescriptionString(InputOption option) {
 			switch (option) {
 			case ENVIRONMENTAL_INPUT:
-				return "Env input";
+				return "Env";
 			case INTEGRATION_INPUT:
-				return "Int input";
+				return "Int";
 			default:
 				return "";
 			}
@@ -1264,4 +1299,9 @@ public class SetupConditions extends JFrame {
 		integrationComponents = new Hashtable<NodeInfo, Boolean>();
 		integrationFunctionButton2Node = new Hashtable<JButton, NodeInfo>();
 	}
+	
+
+//	public Hashtable<Byte, String> getIntegrationFunction() {
+//		return integrationFunctionStrings;
+//	}
 }

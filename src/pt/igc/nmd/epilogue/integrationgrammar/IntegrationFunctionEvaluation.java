@@ -3,8 +3,9 @@ package pt.igc.nmd.epilogue.integrationgrammar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.ginsim.core.graph.regulatorygraph.RegulatoryNode;
+import org.colomoto.logicalmodel.NodeInfo;
 
 import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationAtom;
 import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
@@ -23,19 +24,21 @@ public class IntegrationFunctionEvaluation {
 		this.context = context;
 	}
 
-	public boolean evaluate(Map<RegulatoryNode, List<Integer>> argumentValues) {
-		Map<String, RegulatoryNode> mapNameNode = new HashMap<String, RegulatoryNode>();
-		for (RegulatoryNode node : argumentValues.keySet())
-			mapNameNode.put(node.getNodeInfo().getNodeID(), node);
+	// Add more convenient expression evaluation procedure
+	public boolean evaluate(int instance,
+			Map<NodeInfo, List<Integer>> argumentValues) {
+		Map<String, NodeInfo> mapNameNode = new HashMap<String, NodeInfo>();
+		for (NodeInfo node : argumentValues.keySet())
+			mapNameNode.put(node.getNodeID(), node);
 
-		return traverseTreeEvaluate(argumentValues, mapNameNode, expression);
-
+		return traverseTreeEvaluate(instance, argumentValues, mapNameNode,
+				expression);
 	}
 
-	private boolean traverseTreeEvaluate(
-			Map<RegulatoryNode, List<Integer>> argumentValues,
-			Map<String, RegulatoryNode> mapNameNode,
-			IntegrationExpression expression) {
+	private boolean traverseTreeEvaluate(int instance,
+			Map<NodeInfo, List<Integer>> argumentValues,
+			Map<String, NodeInfo> mapNameNode, IntegrationExpression expression) {
+
 		boolean result = false;
 
 		if (expression instanceof IntegrationOperation) {
@@ -49,36 +52,38 @@ public class IntegrationFunctionEvaluation {
 			case AND:
 				result = true;
 				for (IntegrationExpression operand : listOperands)
-					if (!traverseTreeEvaluate(argumentValues, mapNameNode,
-							operand)) {
-						result = false;
-						break;
+					if (operand == null)
+						continue;
+					else if (!traverseTreeEvaluate(instance, argumentValues,
+							mapNameNode, operand)) {
+						return false;
 					}
 				break;
 			case OR:
 				result = false;
 				for (IntegrationExpression operand : listOperands)
-					if (traverseTreeEvaluate(argumentValues, mapNameNode,
-							operand)) {
-						result = true;
-						break;
+					if (operand == null)
+						continue;
+					else if (traverseTreeEvaluate(instance, argumentValues,
+							mapNameNode, operand)) {
+						return true;
 					}
 				break;
 			}
 		} else if (expression instanceof IntegrationNegation) {
-			return !traverseTreeEvaluate(argumentValues, mapNameNode,
+			return !traverseTreeEvaluate(instance, argumentValues, mapNameNode,
 					((IntegrationNegation) expression).getNegatedExpression());
 
 		} else if (expression instanceof IntegrationAtom) {
 			IntegrationAtom atom = (IntegrationAtom) expression;
 			String componentName = atom.getComponentName();
 
-			RegulatoryNode node = mapNameNode.get(componentName);
+			NodeInfo node = mapNameNode.get(componentName);
 			List<Integer> listValues = argumentValues.get(node);
 
 			byte threshold = atom.getThreshold();
 			if (threshold < 0)
-				threshold = node.getMaxValue();
+				threshold = node.getMax();
 
 			int min = atom.getMinNeighbours();
 			if (min < 0)
@@ -88,23 +93,34 @@ public class IntegrationFunctionEvaluation {
 			if (max < 0)
 				max = listValues.size();
 
-			// TODO: we have to deal with distance too
-
 			int habilitations = 0;
 
-			for (Integer value : listValues) {
+			Set<Integer> neighbours = context.getNeighbourIndices(instance,
+					atom.getMinDistance(), atom.getMaxDistance());
+
+			if (min > neighbours.size() || min > max) {
+				// condition is trivially impossible to satisfy
+				return false;
+			} else if (threshold == 0 && max < neighbours.size()) {
+				// condition is trivially impossible to satisfy
+				return false;
+			} else if (min == 0 && max == neighbours.size()) {
+				// condition is trivially tautological
+				return true;
+			} else if (threshold == 0 && max == neighbours.size()) {
+				// condition is trivially tautological
+				return true;
+			}
+
+			for (Integer value : listValues)
 				if (value.intValue() >= threshold)
 					habilitations++;
-			}
 
 			if (habilitations >= min && habilitations <= max)
 				return true;
 			else
 				return false;
-
 		}
-
 		return result;
 	}
-
 }

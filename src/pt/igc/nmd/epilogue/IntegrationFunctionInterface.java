@@ -27,13 +27,13 @@ public class IntegrationFunctionInterface extends JFrame {
 	private JButton closeIntegrationPanel;
 	private NodeInfo node;
 
-	private SetupConditions initialConditions;
+	private SetupConditions setupConditions;
 	private Hashtable<Byte, String> integrationFunctionStrings;
 
-	public IntegrationFunctionInterface(SetupConditions initialConditions,
+	public IntegrationFunctionInterface(SetupConditions setupConditions,
 			NodeInfo node) {
 		super("Insert Integration Function");
-		this.initialConditions = initialConditions;
+		this.setupConditions = setupConditions;
 		integrationFunctionStrings = new Hashtable<Byte, String>();
 
 		FlowLayout layout = new FlowLayout();
@@ -61,11 +61,15 @@ public class IntegrationFunctionInterface extends JFrame {
 			final JTextField functionTextField = new JTextField();
 
 			valueTextField.setText("" + targetValue);
+			
 
 			valueTextField.setPreferredSize(new Dimension(30, 24));
 			functionTextField.setPreferredSize(new Dimension(400, 24));
 			textFieldPanel.setPreferredSize(new Dimension(450, 30));
-
+			
+//			functionTextField.setText(setupConditions.getIntegrationFunction(integrationFunctionStrings).get(Byte.parseByte(valueTextField.getText())));
+//			System.out.println("integrationfunctioninterface" + setupConditions.getIntegrationFunction());
+			
 			textFieldPanel.add(valueTextField);
 			textFieldPanel.add(functionTextField);
 			functionTextField.addFocusListener(new FocusListener() {
@@ -101,11 +105,11 @@ public class IntegrationFunctionInterface extends JFrame {
 
 	protected void setIntegrationFunction(
 			Hashtable<Byte, String> integrationFunctionStrings2) {
-		initialConditions.setIntegrationFunction(integrationFunctionStrings);
+		setupConditions.setIntegrationFunction(integrationFunctionStrings);
 	}
 
 	private void setInitialSetupHasChanged(boolean b) {
-		initialConditions.setInitialSetupHasChanged(b);
+		setupConditions.setInitialSetupHasChanged(b);
 	}
 
 }

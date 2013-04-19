@@ -43,6 +43,7 @@ public class MainPanel extends JFrame {
 
 	private boolean markPerturbationControl;
 	private boolean clearPerturbationControl;
+	public Color backgroundColor;
 
 	public MainPanel mainPanel = this;
 
@@ -60,6 +61,7 @@ public class MainPanel extends JFrame {
 		initialSetupHasChanged = false;
 		this.markPerturbationControl = false;
 		this.clearPerturbationControl = true;
+		this.backgroundColor = new Color(0xD3D3D3);
 	}
 
 	public void initialize() throws Exception {
@@ -187,48 +189,66 @@ public class MainPanel extends JFrame {
 	}
 
 	public void setupMainPanel() {
+		
+		getContentPane().setPreferredSize(new Dimension(1200, 600));
+		getContentPane().setBackground(backgroundColor);
+		getContentPane().setLayout(null);
+		this.setResizable(true);
+		
 		startPanel = new StartPanel(this);
 		hexagonsPanel = new DrawPolygon(this);
 		componentsPanel = new ComponentsPanel(this, Color.white);
 		watcherPanel = new TextPanel(this);
 		auxiliaryHexagonsPanel = new JPanel();
 
-		getContentPane().setPreferredSize(new Dimension(1200, 600));
+		
 
-		getContentPane().setBackground(Color.white);
-		this.setResizable(true);
 
 		// Distribute Panels
 		startPanel.setBounds(0, 0, 1200, 40);
 		auxiliaryHexagonsPanel.setBounds(10, 60, 500, 550);
-		auxiliaryHexagonsPanel.setBackground(Color.white);
+		
 		hexagonsPanel.setBounds(10, 80, 500, 500);
+		watcherPanel.setBounds(550, 60, 500, 200);
+		componentsPanel.setBounds(550, 310, 500, 250);
 
 		LineBorder border = new LineBorder(Color.black, 1, true);
 		TitledBorder title = new TitledBorder(border, "Value Analytics",
 				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
 						"Arial", Font.ITALIC, 14), Color.black);
 
+		
+		
 		watcherPanel.setBorder(title);
-		watcherPanel.setBounds(550, 60, 500, 200);
-		watcherPanel.setVisible(false);
-		watcherPanel.setBackground(Color.white);
-		componentsPanel.setBounds(550, 310, 500, 250);
-		componentsPanel.setVisible(false);
-		UIManager.put("TitledBorder.border", new LineBorder(new Color(255, 255,
-				255), 1));
+		
+
+		UIManager.put("TitledBorder.border", new LineBorder(backgroundColor, 1));
 		TitledBorder titleInitialConditions;
 		titleInitialConditions = BorderFactory.createTitledBorder("");
 		auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
 				.createEmptyBorder());
 		auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
 		titleInitialConditions.setTitleColor(Color.black);
+		
+		
 		// LogicalModel model = getUnitaryModel();
 
-		getContentPane().setLayout(null);
-		getContentPane().add(startPanel);
+		
+		watcherPanel.setVisible(false);
+		componentsPanel.setVisible(false);
+		
+		watcherPanel.setBackground(backgroundColor);
+		auxiliaryHexagonsPanel.setBackground(backgroundColor);
+		startPanel.setBackground(Color.gray);
+		hexagonsPanel.setBackground(backgroundColor);
+		componentsPanel.setBackground(backgroundColor);
+
+		
+		
+		
 
 		auxiliaryHexagonsPanel.add(hexagonsPanel);
+		getContentPane().add(startPanel);
 		getContentPane().add(auxiliaryHexagonsPanel);
 		getContentPane().add(watcherPanel);
 		getContentPane().add(componentsPanel);

@@ -180,8 +180,8 @@ public class LogicalModelComposition {
 							.getClauseSet(mainPanel.getIntegrationFunction()
 									.get(targetValue), i);
 
-					System.err.println("FINAL for instance " + i + " :\n"
-							+ clauseSet);
+//					System.err.println("FINAL for instance " + i + " :\n"
+//							+ clauseSet);
 
 					if (!clauseSet.isImpossible()) {
 						NodeInfo integrationComponent = this.oldString2New
@@ -191,7 +191,7 @@ public class LogicalModelComposition {
 
 						buildIntegrationPaths(ddmanager, index, kMDDs, context,
 								clauseSet, targetValue);
-
+ 
 					}
 				}
 			}
@@ -212,22 +212,22 @@ public class LogicalModelComposition {
 		// Perform reduction of integration components
 		ModelReducer reducer = new ModelReducer(composedModel);
 		for (NodeInfo integrationNode : newIntegrationNodes) {
-			System.err.println("Reducing " + integrationNode.getNodeID());
+			//System.err.println("Reducing " + integrationNode.getNodeID());
 			reducer.remove(nodeOrder.indexOf(integrationNode));
 		}
 
 		composedModel = reducer.getModel();
 
 		exporter = new LogicalModel2GINML(composedModel);
-		try {
-			exporter.export(new FileOutputStream("test_afterReduction.ginml"));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			exporter.export(new FileOutputStream("test_afterReduction.ginml"));
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 		mainPanel.getEpithelium().setComposedModel(composedModel);
 		return composedModel;

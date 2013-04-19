@@ -205,6 +205,7 @@ public class StartPanel extends JPanel {
 
 				mainPanel.getSimulation().initializeSimulation();
 				mainPanel.restartAnalytics();
+				
 
 			}
 		});

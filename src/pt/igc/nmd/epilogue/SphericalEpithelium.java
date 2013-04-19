@@ -13,6 +13,7 @@ public class SphericalEpithelium implements Epithelium {
 	private Hashtable<NodeInfo, Color> node2Color;
 	private Hashtable<NodeInfo, Boolean> activeComponents;
 	private Hashtable<Integer, Boolean> perturbedInstances;
+	private Hashtable<Byte, String> integrationFunctionStrings;
 	private Topology topology;
 
 	public SphericalEpithelium(Topology topology) {
@@ -21,6 +22,7 @@ public class SphericalEpithelium implements Epithelium {
 		node2Color = new Hashtable<NodeInfo, Color>();
 		activeComponents = new Hashtable<NodeInfo, Boolean>();
 		perturbedInstances = new Hashtable<Integer, Boolean>();
+		integrationFunctionStrings = new Hashtable<Byte, String>();
 
 	}
 
