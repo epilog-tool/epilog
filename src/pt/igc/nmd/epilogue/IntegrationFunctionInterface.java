@@ -14,7 +14,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.antlr.runtime.RecognitionException;
 import org.colomoto.logicalmodel.NodeInfo;
+
+import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification;
+import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
 
 public class IntegrationFunctionInterface extends JFrame {
 
@@ -26,12 +30,13 @@ public class IntegrationFunctionInterface extends JFrame {
 	private JPanel integrationPanel;
 	private JButton closeIntegrationPanel;
 	private NodeInfo node;
-
 	private SetupConditions setupConditions;
 	private Hashtable<Byte, String> integrationFunctionStrings;
+	private SphericalEpithelium epithelium;
+	
 
-	public IntegrationFunctionInterface(SetupConditions setupConditions,
-			NodeInfo node) {
+	public IntegrationFunctionInterface(SphericalEpithelium epithelium, SetupConditions setupConditions,
+			final NodeInfo node) {
 		super("Insert Integration Function");
 		this.setupConditions = setupConditions;
 		integrationFunctionStrings = new Hashtable<Byte, String>();
@@ -97,15 +102,33 @@ public class IntegrationFunctionInterface extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 
 				dispose();
-				setIntegrationFunction(integrationFunctionStrings);
+				setIntegrationFunction(node, integrationFunctionStrings);
 			}
 		});
 		pack();
 	}
 
-	protected void setIntegrationFunction(
+	protected void setIntegrationFunction(NodeInfo node,
 			Hashtable<Byte, String> integrationFunctionStrings2) {
-		setupConditions.setIntegrationFunction(integrationFunctionStrings);
+
+			IntegrationFunctionSpecification spec = new IntegrationFunctionSpecification();
+			IntegrationExpression expression = null;
+			Hashtable<Byte, IntegrationExpression> valueOfIntegrationFunction = new Hashtable<Byte, IntegrationExpression>();
+
+			for (byte targetValue : integrationFunctionStrings2.keySet()) {
+
+				try {
+					expression = spec.parse(integrationFunctionStrings2
+							.get(targetValue));
+				} catch (RecognitionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				valueOfIntegrationFunction.put(targetValue, expression);
+			}
+		
+		epithelium.setIntegrationFunctions(node, valueOfIntegrationFunction);
 	}
 
 	private void setInitialSetupHasChanged(boolean b) {

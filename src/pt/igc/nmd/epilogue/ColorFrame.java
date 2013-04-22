@@ -141,6 +141,7 @@ public class ColorFrame extends JFrame {
 		buttonOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
+				repaint();
 			}
 		});
 

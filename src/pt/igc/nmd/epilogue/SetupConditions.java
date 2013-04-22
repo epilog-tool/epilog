@@ -1,11 +1,9 @@
 package pt.igc.nmd.epilogue;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -28,7 +26,6 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
@@ -48,6 +45,10 @@ public class SetupConditions extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	
+	private SphericalEpithelium epithelium;
+	private Topology topology;
+	
 	JTextArea textArea;
 
 	private Color color;
@@ -95,9 +96,13 @@ public class SetupConditions extends JFrame {
 	private Hashtable<NodeInfo, ColorButton> node2Color;
 	private Hashtable<NodeInfo, Boolean> node2IntInput;
 	private Hashtable<NodeInfo, Boolean> componentDisplay;
+
 	private Hashtable<Byte, IntegrationExpression> valueOfIntegrationFunction;
 	private Hashtable<NodeInfo, Boolean> integrationComponents;
 	private Hashtable<JButton, NodeInfo> integrationFunctionButton2Node;
+
+	private Hashtable<NodeInfo, Hashtable<Byte, IntegrationExpression>> integrationFunctions;
+
 	private Hashtable<String, NodeInfo> string2Node;
 	private Hashtable<NodeInfo, JButton> node2IntegrationFunctionButton;
 
@@ -114,13 +119,15 @@ public class SetupConditions extends JFrame {
 	 * 
 	 */
 
-	public SetupConditions(MainPanel mainPanel) {
+	public SetupConditions(SphericalEpithelium epithelium, Topology topology, MainPanel mainPanel) {
 
 		super("Setup Conditions");
 		setLayout(null);
 
 		this.mainPanel = mainPanel;
-		this.model = this.mainPanel.getEpithelium().getUnitaryModel();
+		this.epithelium = epithelium;
+		this.topology = topology;
+		this.model = epithelium.getUnitaryModel();
 		this.fill = false;
 		this.backgroundColor = new Color(0xD3D3D3);
 
@@ -147,6 +154,8 @@ public class SetupConditions extends JFrame {
 		string2Node = new Hashtable<String, NodeInfo>();
 		node2IntegrationFunctionButton = new Hashtable<NodeInfo, JButton>();
 		instanceReturnsPerturbation = new Hashtable<Integer, String>();
+		
+		 integrationFunctions = new Hashtable<NodeInfo, Hashtable<Byte, IntegrationExpression>>();
 
 		mainPanel.getSimulation().resetIterationNumber();
 
@@ -167,8 +176,7 @@ public class SetupConditions extends JFrame {
 		LineBorder border = new LineBorder(Color.black, 1, true);
 		titleComposedModelSetup = new TitledBorder(border,
 				"Composed Model Setup", TitledBorder.LEFT,
-				TitledBorder.DEFAULT_POSITION, new Font("Arial", Font.ITALIC,
-						14), Color.black);
+				TitledBorder.DEFAULT_POSITION);
 
 		properComponentsPanel = new JPanel();
 		inputsPanel = new JPanel();
@@ -249,6 +257,7 @@ public class SetupConditions extends JFrame {
 				Jcheck2Node.put(nodeBox[i], listNodes.get(i));
 				node2Jcheck.put(listNodes.get(i), nodeBox[i]);
 				componentDisplay.put(listNodes.get(i), false);
+				
 
 				nodeBox[i].addActionListener(new ActionListener() {
 					@Override
@@ -287,7 +296,7 @@ public class SetupConditions extends JFrame {
 				colorChooser.add(new ColorButton(mainPanel.componentsPanel,
 						listNodes.get(i)));
 				colorChooser.get(i).setBackground(
-						mainPanel.getEpithelium().getColors()
+						epithelium.getColors()
 								.get(listNodes.get(i)));
 				colorChooser.get(i)
 						.setBounds(125+xOffsetInput, 20 + yOffsetInput, 20, 25);
@@ -389,6 +398,7 @@ public class SetupConditions extends JFrame {
 				nodeBox[i].addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
+						fillhexagons();
 						setMarkPerturbation(!getMarkPerturbation());
 						JCheckBox src = (JCheckBox) arg0.getSource();
 						setComponentDisplay(Jcheck2Node.get(src),
@@ -428,6 +438,7 @@ public class SetupConditions extends JFrame {
 								.get(listNodes.get(i)));
 				colorChooser.get(i).setBounds(120 + xOffset, 30 + yOffset, 20,
 						25);
+			
 				properComponentsPanel.add(initialStatePerComponent[i]);
 				properComponentsPanel.add(nodeBox[i]);
 				properComponentsPanel.add(colorChooser.get(i));
@@ -641,7 +652,7 @@ public class SetupConditions extends JFrame {
 		rollOver.addItem("Vertical Roll-Over");
 		rollOver.addItem("Horizontal Roll-Over");
 		String aux = (String) rollOver.getSelectedItem();
-		mainPanel.getTopology().setRollOver(aux);
+		topology.setRollOver(aux);
 		// rollOver.setBackground(Color.white);
 
 		rollOver.addActionListener(new ActionListener() {
@@ -709,6 +720,7 @@ public class SetupConditions extends JFrame {
 		setLocationByPlatform(true);
 		setVisible(true);
 		setLocationRelativeTo(null);
+		
 
 	}
 
@@ -730,9 +742,9 @@ public class SetupConditions extends JFrame {
 
 	protected void clearAllPerturbations() {
 		// TODO Auto-generated method stub
-		for (int instance = 0; instance < mainPanel.getTopology()
+		for (int instance = 0; instance < topology
 				.getNumberInstances(); instance++) {
-			mainPanel.getEpithelium().setPerturbedInstance(instance, false);
+			epithelium.setPerturbedInstance(instance, false);
 		}
 	}
 
@@ -791,7 +803,7 @@ public class SetupConditions extends JFrame {
 
 	protected void initializeIntegrationInterface(JButton src) {
 		NodeInfo node = integrationFunctionButton2Node.get(src);
-		new IntegrationFunctionInterface(this, node);
+		new IntegrationFunctionInterface(this.epithelium, this, node);
 
 	}
 
@@ -825,7 +837,7 @@ public class SetupConditions extends JFrame {
 	}
 
 	private void fireRollOverChange(String optionString) {
-		mainPanel.getTopology().setRollOver(optionString);
+		topology.setRollOver(optionString);
 	}
 
 	public void setComponentDisplay(NodeInfo nodeInfo, boolean b) {
@@ -839,12 +851,12 @@ public class SetupConditions extends JFrame {
 		int row;
 		int column;
 
-		for (int i = 0; i < mainPanel.getTopology().getNumberInstances(); i++) {
+		for (int i = 0; i < topology.getNumberInstances(); i++) {
 
-			row = mainPanel.getTopology().instance2i(i,
-					mainPanel.getTopology().getWidth());
-			column = mainPanel.getTopology().instance2j(i,
-					mainPanel.getTopology().getHeight());
+			row = topology.instance2i(i,
+					topology.getWidth());
+			column = topology.instance2j(i,
+					topology.getHeight());
 
 			color = Color(row, column);
 			MapPanel.drawHexagon(row, column, MapPanel.getGraphics(), color);
@@ -857,7 +869,7 @@ public class SetupConditions extends JFrame {
 
 		for (NodeInfo node : listNodes) {
 			if (node2IntInput.get(node)) {
-				for (int instance = 0; instance < mainPanel.getTopology()
+				for (int instance = 0; instance < topology
 						.getNumberInstances(); instance++) {
 					mainPanel.getGrid().getGrid().get(instance)
 							.put(node, (byte) 0);
@@ -870,9 +882,10 @@ public class SetupConditions extends JFrame {
 
 	public void initialize() {
 
-		for (int i = 0; i < mainPanel.getTopology().getNumberInstances(); i++) {
-			mainPanel.getEpithelium().setPerturbedInstance(i, false);
+		for (int i = 0; i < topology.getNumberInstances(); i++) {
+			epithelium.setPerturbedInstance(i, false);
 		}
+		
 		MapPanel.paintComponent(MapPanel.getGraphics());
 
 		MapPanel.addMouseMotionListener(new MouseMotionListener() {
@@ -908,12 +921,13 @@ public class SetupConditions extends JFrame {
 
 				// The mouse is over a cell that belongs to the grid
 				if (!fill) {
-					if (i < mainPanel.getTopology().getWidth()
-							&& j < mainPanel.getTopology().getHeight()
+					if (i < topology.getWidth()
+							&& j < topology.getHeight()
 							&& i >= 0 && j >= 0) {
 
 						// if (!mainPanel.getMarkPerturbation()) {
-						color = Color();
+						
+						color = Color();    //HexagonColor
 						MapPanel.drawHexagon(i, j, MapPanel.getGraphics(),
 								color);
 						setInitialState(i, j);
@@ -951,8 +965,8 @@ public class SetupConditions extends JFrame {
 					i = (int) ind_it - 1;
 					j = (int) (ind_jt - i % 2 + deltaj);
 				}
-				if (i < mainPanel.getTopology().getWidth()
-						&& j < mainPanel.getTopology().getHeight() && i >= 0
+				if (i < topology.getWidth()
+						&& j < topology.getHeight() && i >= 0
 						&& j >= 0) {
 
 					getInitialState(i, j);
@@ -1024,8 +1038,8 @@ public class SetupConditions extends JFrame {
 
 				// The mouse is over a cell that belongs to the grid
 				if (!fill) {
-					if (i < mainPanel.getTopology().getWidth()
-							&& j < mainPanel.getTopology().getHeight()
+					if (i < topology.getWidth()
+							&& j < topology.getHeight()
 							&& i >= 0 && j >= 0) {
 						color = Color();
 						setInitialState(i, j);
@@ -1044,21 +1058,21 @@ public class SetupConditions extends JFrame {
 	public void Fill(int i, int j) {
 
 		// List[] neiList = new List[];
-		// if (i < mainPanel.getTopology().getWidth()
-		// && j < mainPanel.getTopology().getHeight()
+		// if (i < topology.getWidth()
+		// && j < topology.getHeight()
 		// && i >= 0 && j >= 0) {
 		// color = Color();
-		// int instance = mainPanel.getTopology().coords2Instance(
+		// int instance = topology.coords2Instance(
 		// i, j);
 		//
 		// while (neiList!=[]){
-		// for (int h : mainPanel.getTopology().groupNeighbors(
+		// for (int h : topology.groupNeighbors(
 		// instance, 1)) {
 		//
-		// int m = mainPanel.getTopology().instance2i(h,
-		// mainPanel.getTopology().getWidth());
-		// int n = mainPanel.getTopology().instance2j(h,
-		// mainPanel.getTopology().getWidth());
+		// int m = topology.instance2i(h,
+		// topology.getWidth());
+		// int n = topology.instance2j(h,
+		// topology.getWidth());
 		//
 		// if (Color(m,n)=color.white){
 		// MapPanel.drawHexagon(m, n, MapPanel.getGraphics(),
@@ -1079,7 +1093,7 @@ public class SetupConditions extends JFrame {
 		//
 		// textArea.append(a2
 		// + " "
-		// + mainPanel.getTopology().coords2Instance(i, j)
+		// + topology.coords2Instance(i, j)
 		// + " "
 		// + a2
 		// + " "
@@ -1089,16 +1103,16 @@ public class SetupConditions extends JFrame {
 		// .get(mainPanel.getLogicalModelComposition()
 		// .computeNewName(
 		// a2.getNodeID(),
-		// mainPanel.getTopology()
+		// topology
 		// .coords2Instance(i, j))));
 		// }
 	}
 
 	public void setInitialState(int i, int j) {
-		List<NodeInfo> a = mainPanel.getEpithelium().getUnitaryModel()
+		List<NodeInfo> a = epithelium.getUnitaryModel()
 				.getNodeOrder();
 
-		int instance = mainPanel.getTopology().coords2Instance(i, j);
+		int instance = topology.coords2Instance(i, j);
 		for (NodeInfo a2 : a) {
 
 			System.out.println(componentDisplay + " " + a2.getNodeID());
@@ -1125,7 +1139,7 @@ public class SetupConditions extends JFrame {
 				int value = mainPanel.getSimulation().getInitialState(a2);
 
 				if (value > 0) {
-					color = mainPanel.getEpithelium().getColors().get(a2);
+					color = epithelium.getColors().get(a2);
 					color = ColorBrightness(color, value);
 
 					red = (red + color.getRed()) / 2;
@@ -1152,7 +1166,7 @@ public class SetupConditions extends JFrame {
 
 		Set<NodeInfo> a = componentDisplay.keySet();
 
-		int instance = mainPanel.getTopology().coords2Instance(i, j);
+		int instance = topology.coords2Instance(i, j);
 
 		for (NodeInfo a2 : a) {
 			if (componentDisplay.get(a2)) {
@@ -1160,7 +1174,7 @@ public class SetupConditions extends JFrame {
 				int value = mainPanel.getGrid().getGrid().get(instance).get(a2);
 
 				if (value > 0) {
-					color = mainPanel.getEpithelium().getColors().get(a2);
+					color = epithelium.getColors().get(a2);
 					color = ColorBrightness(color, value);
 
 					red = (red + color.getRed()) / 2;
@@ -1193,10 +1207,10 @@ public class SetupConditions extends JFrame {
 		// adicionar try catch para textFx e fy
 
 		cells = new ArrayList<ArrayList<Cell>>();
-		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
+		for (int i = 0; i < topology.getWidth(); i++) {
 
 			cells.add(new ArrayList<Cell>());
-			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
+			for (int j = 0; j < topology.getHeight(); j++) {
 				int G0 = 0;
 				cells.get(i).add(new Cell(G0));
 			}
@@ -1206,8 +1220,8 @@ public class SetupConditions extends JFrame {
 	public void clearAllCells() {
 		// adicionar try catch para textFx e fy
 		mainPanel.getGrid().initializeGrid();
-		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
-			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
+		for (int i = 0; i < topology.getWidth(); i++) {
+			for (int j = 0; j < topology.getHeight(); j++) {
 				// mainPanel.getSimulation().initializeInitialStates();
 				MapPanel.drawHexagon(i, j, MapPanel.getGraphics(), Color.white);
 			}
@@ -1217,8 +1231,8 @@ public class SetupConditions extends JFrame {
 	public void markAllCells() {
 
 		// clearAllCells(cells);
-		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
-			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
+		for (int i = 0; i < topology.getWidth(); i++) {
+			for (int j = 0; j < topology.getHeight(); j++) {
 				setInitialState(i, j);
 				MapPanel.drawHexagon(i, j, MapPanel.getGraphics(), Color());
 			}
@@ -1299,9 +1313,8 @@ public class SetupConditions extends JFrame {
 		integrationComponents = new Hashtable<NodeInfo, Boolean>();
 		integrationFunctionButton2Node = new Hashtable<JButton, NodeInfo>();
 	}
-	
 
-//	public Hashtable<Byte, String> getIntegrationFunction() {
-//		return integrationFunctionStrings;
-//	}
+	// public Hashtable<Byte, String> getIntegrationFunction() {
+	// return integrationFunctionStrings;
+	// }
 }

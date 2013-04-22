@@ -6,6 +6,8 @@ import java.util.Hashtable;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 
+import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
+
 public class SphericalEpithelium implements Epithelium {
 
 	private LogicalModel unitaryModel = null;
@@ -13,7 +15,7 @@ public class SphericalEpithelium implements Epithelium {
 	private Hashtable<NodeInfo, Color> node2Color;
 	private Hashtable<NodeInfo, Boolean> activeComponents;
 	private Hashtable<Integer, Boolean> perturbedInstances;
-	private Hashtable<Byte, String> integrationFunctionStrings;
+	private Hashtable<NodeInfo, Hashtable<Byte, IntegrationExpression>> integrationFunctions;
 	private Topology topology;
 
 	public SphericalEpithelium(Topology topology) {
@@ -22,8 +24,13 @@ public class SphericalEpithelium implements Epithelium {
 		node2Color = new Hashtable<NodeInfo, Color>();
 		activeComponents = new Hashtable<NodeInfo, Boolean>();
 		perturbedInstances = new Hashtable<Integer, Boolean>();
-		integrationFunctionStrings = new Hashtable<Byte, String>();
+		integrationFunctions = new Hashtable<NodeInfo, Hashtable<Byte, IntegrationExpression>>();
 
+	}
+	public void setIntegrationFunctions(NodeInfo node, Hashtable<Byte, IntegrationExpression> functions){
+		Hashtable<Byte, IntegrationExpression> f = new Hashtable<Byte, IntegrationExpression>();
+		f = functions;
+		integrationFunctions.put(node, f);
 	}
 
 	public Topology getTopology() {

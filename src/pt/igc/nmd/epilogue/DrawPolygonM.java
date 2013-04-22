@@ -1,11 +1,9 @@
 package pt.igc.nmd.epilogue;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -37,23 +35,27 @@ public class DrawPolygonM extends JPanel {
 	public int endY;
 	public SetupConditions frame;
 	public MainPanel mainPanel;
+	private Color backgroundColor;
 
 	public DrawPolygonM(SetupConditions frame, MainPanel mainPanel) {
 		this.mainPanel = mainPanel;
 		width = mainPanel.getTopology().getWidth();
 		height = mainPanel.getTopology().getHeight();
-		this.setBackground(Color.white);
-		this.setPreferredSize(new Dimension(600, 700));
-		frame.setBackground(Color.white);
-
 		Container contentPane = frame.getContentPane();
 		this.frame = frame;
-		contentPane.add(this);
+		this.setPreferredSize(new Dimension(600, 700));
+		backgroundColor = mainPanel.backgroundColor;
+		//backgroundColor = Color.red;
+		setBackground(backgroundColor);
+		frame.setBackground(backgroundColor);
 
+		contentPane.add(this);
+		contentPane.setBackground(backgroundColor);
 	}
 
 	public void drawHexagon(int i, int j, Graphics g, Color color) {
 		double centerX = 100, centerY = 0, x = 0, y = 0;
+		
 //		Graphics2D g2 = (Graphics2D) g;
 //		BasicStroke stroke = new BasicStroke(1.0f);
 //		BasicStroke perturbedStroke = new BasicStroke(3.0f);
@@ -125,7 +127,7 @@ public class DrawPolygonM extends JPanel {
 
 		}
 
-		g.setColor(Color.white);
+	//	g.setColor(Color.red);
 		g.fillPolygon(polygon2);
 		g.setColor(Color.black);
 		g.drawPolygon(polygon2);
@@ -197,13 +199,13 @@ public class DrawPolygonM extends JPanel {
 					if (cells.size() > 0
 							&& cells.get(k).get(j).color1.getRGB() != Color.white
 									.getRGB()) {
-						g.setColor(Color.white);
+						g.setColor(Color.red);
 						g.fillPolygon(polygon2);
 						g.setColor(Color.black);
 						g.drawPolygon(polygon2);
 
 					} else {
-						g.setColor(Color.white);
+						g.setColor(Color.white); //HexagonColor. Keep white
 						g.fillPolygon(polygon2);
 						g.setColor(Color.black);
 						g.drawPolygon(polygon2);

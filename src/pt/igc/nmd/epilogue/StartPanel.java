@@ -50,12 +50,16 @@ public class StartPanel extends JPanel {
 
 	// private ComponentsPanel componentsPanel = new ComponentsPanel();
 	private MainPanel mainPanel = null;
+	private SphericalEpithelium epithelium;
+	private Topology topology;
 
 	public StartPanel(MainPanel mainPanel) {
 		this.mainPanel = mainPanel;
 		init();
 		setWidth();
 		setHeight();
+		this.topology = mainPanel.getTopology();
+		this.epithelium = mainPanel.getEpithelium();
 
 	}
 
@@ -87,7 +91,11 @@ public class StartPanel extends JPanel {
 
 		setWidth.setText("Width: ");
 		setHeight.setText("Height: ");
+		
+		setWidth.setForeground(Color.white);
+		setHeight.setForeground(Color.white);
 		labelFilename.setText("Filename: ");
+		labelFilename.setForeground(Color.white);
 		iterationNumber.setText(""
 				+ mainPanel.getSimulation().getIterationNumber());
 
@@ -130,6 +138,7 @@ public class StartPanel extends JPanel {
 				mainPanel.restartAnalytics();
 
 				selectedFilenameLabel.setText("");
+				
 
 				mainPanel.componentsPanel.setVisible(false);
 				mainPanel.watcherPanel.setVisible(false);
@@ -383,7 +392,7 @@ public class StartPanel extends JPanel {
 
 		setupConditionsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				final SetupConditions initialConditionsPanel = new SetupConditions(
+				final SetupConditions initialConditionsPanel = new SetupConditions(epithelium, topology,
 						mainPanel);
 				initialConditionsPanel.initialize();
 				initialConditionsPanel
@@ -440,6 +449,7 @@ public class StartPanel extends JPanel {
 
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			selectedFilenameLabel.setText(fc.getSelectedFile().getName());
+			selectedFilenameLabel.setForeground(Color.white);
 			loadModel();
 
 		}

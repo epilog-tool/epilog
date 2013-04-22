@@ -1,10 +1,14 @@
 package pt.igc.nmd.epilogue;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 
 import org.colomoto.logicalmodel.LogicalModel;
 //import javax.swing.event.MouseInputAdapter;
@@ -46,6 +50,16 @@ public class TextPanel extends JPanel {
 
 		FlowLayout layout = new FlowLayout();
 		layout.setAlignment(FlowLayout.TRAILING);
+		
+		LineBorder border = new LineBorder(Color.black, 1, true);
+		TitledBorder title = new TitledBorder(border, "Value Analytics",
+				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
+						"Arial", Font.ITALIC, 14), Color.black);
+
+		
+		
+		setBorder(title);
+		setPreferredSize(new Dimension(620, 350));
 
 		if (model != null) {
 			components = new JLabel[model.getNodeOrder().size()];
@@ -56,7 +70,7 @@ public class TextPanel extends JPanel {
 				components[i] = new JLabel(model.getNodeOrder().get(i)
 						.getNodeID());
 				panels[i] = new JPanel();
-				panels[i].setPreferredSize(new Dimension(450, 25));
+				panels[i].setPreferredSize(new Dimension(100, 25));
 				components[i] = new JLabel();
 
 				components[i].setText(model.getNodeOrder().get(i).getNodeID()

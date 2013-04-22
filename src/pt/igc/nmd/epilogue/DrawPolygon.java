@@ -24,11 +24,13 @@ public class DrawPolygon extends JPanel {
 	public ArrayList<ArrayList<CellGenes>> cellGenes;
 	public int countSelected = 0;
 	public ArrayList<ArrayList<Cell>> cells = new ArrayList<ArrayList<Cell>>();
+	private Color backgroundColor;
 
 	public DrawPolygon(MainPanel mainPanel) {
 		this.mainPanel = mainPanel;
 		this.setPreferredSize(new Dimension(500, 500));
 		this.cellGenes = new ArrayList<ArrayList<CellGenes>>();
+		this.backgroundColor = mainPanel.backgroundColor;
 	}
 
 		
@@ -91,10 +93,7 @@ public class DrawPolygon extends JPanel {
 					}
 
 					if (!mainPanel.getSimulation().getHasInitiated()) {
-						g.setColor(Color.white);
-						
-				
-						
+						g.setColor(Color.white); // Hexagons Color Kep white
 						g.fillPolygon(polygon2);
 						g.setColor(Color.black);
 						g.drawPolygon(polygon2);

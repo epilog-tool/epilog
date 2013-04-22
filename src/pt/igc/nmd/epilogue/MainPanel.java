@@ -208,19 +208,9 @@ public class MainPanel extends JFrame {
 		startPanel.setBounds(0, 0, 1200, 40);
 		auxiliaryHexagonsPanel.setBounds(10, 60, 500, 550);
 		
-		hexagonsPanel.setBounds(10, 80, 500, 500);
-		watcherPanel.setBounds(550, 60, 500, 200);
-		componentsPanel.setBounds(550, 310, 500, 250);
-
-		LineBorder border = new LineBorder(Color.black, 1, true);
-		TitledBorder title = new TitledBorder(border, "Value Analytics",
-				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
-						"Arial", Font.ITALIC, 14), Color.black);
-
-		
-		
-		watcherPanel.setBorder(title);
-		
+		hexagonsPanel.setBounds(10, 80, 400, 500);
+		watcherPanel.setBounds(535, 60, 630, 240);
+		componentsPanel.setBounds(530, 310, 650, 250);
 
 		UIManager.put("TitledBorder.border", new LineBorder(backgroundColor, 1));
 		TitledBorder titleInitialConditions;
