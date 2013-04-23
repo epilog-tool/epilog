@@ -140,7 +140,6 @@ public class MainPanel extends JFrame {
 				if (i < mainPanel.getTopology().getWidth()
 						&& j < mainPanel.getTopology().getHeight() && i >= 0
 						&& j >= 0) {
-					System.out.println(getEpithelium().getComposedModel());
 					if (getEpithelium().getComposedModel() != null) {
 
 						Hashtable<String, Byte> original = new Hashtable<String, Byte>();
@@ -151,14 +150,20 @@ public class MainPanel extends JFrame {
 							String composedNodeID = logicalModelComposition
 									.computeNewName(node.getNodeID(), instance);
 
-							original.put(composedNodeID,
+//							original.put(composedNodeID,
+//									simulation.composedState
+//											.get(composedNodeID));
+							
+							original.put(node.getNodeID(),
 									simulation.composedState
 											.get(composedNodeID));
+							
 						}
-						System.out.println("instance: " + instance + " -> "
-								+ " " + original);
+//						hexagonsPanel.setToolTipText("instance: " + instance + " -> "
+//								+ " " + original);
+						hexagonsPanel.setToolTipText(""+original);
 					}
-					System.out.println("mouse moved");
+					
 				}
 
 			}
