@@ -166,8 +166,7 @@ public class SetupConditions extends JFrame {
 		TitledBorder titleInputs;
 		TitledBorder titlePerturbation;
 		TitledBorder titleComposedModelSetup;
-		titleProperComponents = BorderFactory
-				.createTitledBorder("Proper Components");
+
 		titleInputs = BorderFactory.createTitledBorder("Inputs");
 		titlePerturbation = BorderFactory.createTitledBorder("Perturbations");
 		// titleComposedModelSetup = BorderFactory
@@ -177,6 +176,11 @@ public class SetupConditions extends JFrame {
 		titleComposedModelSetup = new TitledBorder(border,
 				"Composed Model Setup", TitledBorder.LEFT,
 				TitledBorder.DEFAULT_POSITION);
+		
+		titleProperComponents = new TitledBorder(border,
+				"Proper Components", TitledBorder.LEFT,
+				TitledBorder.DEFAULT_POSITION);
+		
 
 		properComponentsPanel = new JPanel();
 		inputsPanel = new JPanel();
@@ -196,7 +200,7 @@ public class SetupConditions extends JFrame {
 
 		properComponentsPanel.setBounds(455, 20, 430, 200);
 		composedPanel.setBounds(455, 230, 430, 350);
-		MapPanel.setBounds(20, 30, 400, 480);
+		MapPanel.setBounds(10, 30, 440, 500);
 		optionsPanel.setBounds(20, 550, 400, 35);
 		line1.setBounds(20, 20, 280, 30);
 		line2.setBounds(20, 50, 280, 30);
@@ -257,7 +261,6 @@ public class SetupConditions extends JFrame {
 				Jcheck2Node.put(nodeBox[i], listNodes.get(i));
 				node2Jcheck.put(listNodes.get(i), nodeBox[i]);
 				componentDisplay.put(listNodes.get(i), false);
-				
 
 				nodeBox[i].addActionListener(new ActionListener() {
 					@Override
@@ -398,7 +401,6 @@ public class SetupConditions extends JFrame {
 				nodeBox[i].addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						fillhexagons();
 						setMarkPerturbation(!getMarkPerturbation());
 						JCheckBox src = (JCheckBox) arg0.getSource();
 						setComponentDisplay(Jcheck2Node.get(src),
@@ -434,11 +436,10 @@ public class SetupConditions extends JFrame {
 				colorChooser.add(new ColorButton(mainPanel.componentsPanel,
 						listNodes.get(i)));
 				colorChooser.get(i).setBackground(
-						mainPanel.getEpithelium().getColors()
+						epithelium.getColors()
 								.get(listNodes.get(i)));
 				colorChooser.get(i).setBounds(120 + xOffset, 30 + yOffset, 20,
 						25);
-			
 				properComponentsPanel.add(initialStatePerComponent[i]);
 				properComponentsPanel.add(nodeBox[i]);
 				properComponentsPanel.add(colorChooser.get(i));
@@ -720,7 +721,6 @@ public class SetupConditions extends JFrame {
 		setLocationByPlatform(true);
 		setVisible(true);
 		setLocationRelativeTo(null);
-		
 
 	}
 
@@ -885,7 +885,6 @@ public class SetupConditions extends JFrame {
 		for (int i = 0; i < topology.getNumberInstances(); i++) {
 			epithelium.setPerturbedInstance(i, false);
 		}
-		
 		MapPanel.paintComponent(MapPanel.getGraphics());
 
 		MapPanel.addMouseMotionListener(new MouseMotionListener() {
@@ -926,8 +925,7 @@ public class SetupConditions extends JFrame {
 							&& i >= 0 && j >= 0) {
 
 						// if (!mainPanel.getMarkPerturbation()) {
-						
-						color = Color();    //HexagonColor
+						color = Color();
 						MapPanel.drawHexagon(i, j, MapPanel.getGraphics(),
 								color);
 						setInitialState(i, j);
@@ -1001,7 +999,7 @@ public class SetupConditions extends JFrame {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				MapPanel.setBackground(Color.white);
+	
 				endX = arg0.getX();
 				endY = arg0.getX();
 			}

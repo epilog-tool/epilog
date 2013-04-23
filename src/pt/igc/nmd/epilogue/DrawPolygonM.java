@@ -35,22 +35,22 @@ public class DrawPolygonM extends JPanel {
 	public int endY;
 	public SetupConditions frame;
 	public MainPanel mainPanel;
-	private Color backgroundColor;
+	//private Color backgroundColor;
 
 	public DrawPolygonM(SetupConditions frame, MainPanel mainPanel) {
 		this.mainPanel = mainPanel;
 		width = mainPanel.getTopology().getWidth();
 		height = mainPanel.getTopology().getHeight();
-		Container contentPane = frame.getContentPane();
-		this.frame = frame;
+		//Container contentPane = frame.getContentPane();
+		//this.frame = frame;
 		this.setPreferredSize(new Dimension(600, 700));
-		backgroundColor = mainPanel.backgroundColor;
+		//backgroundColor = mainPanel.backgroundColor;
 		//backgroundColor = Color.red;
-		setBackground(backgroundColor);
-		frame.setBackground(backgroundColor);
+		//setBackground(backgroundColor);
+		//frame.setBackground(backgroundColor);
 
-		contentPane.add(this);
-		contentPane.setBackground(backgroundColor);
+		//contentPane.add(this);
+		//contentPane.setBackground(backgroundColor);
 	}
 
 	public void drawHexagon(int i, int j, Graphics g, Color color) {
@@ -135,6 +135,7 @@ public class DrawPolygonM extends JPanel {
 	}
 
 	public void paintComponent(Graphics g) {
+	
 		
 		//Graphics2D g2 = (Graphics2D) g;
 		//BasicStroke stroke = new BasicStroke(1.0f);
@@ -196,21 +197,22 @@ public class DrawPolygonM extends JPanel {
 						polygon2.addPoint((int) (x), (int) (y));
 					}
 
-					if (cells.size() > 0
-							&& cells.get(k).get(j).color1.getRGB() != Color.white
-									.getRGB()) {
-						g.setColor(Color.red);
-						g.fillPolygon(polygon2);
-						g.setColor(Color.black);
-						g.drawPolygon(polygon2);
-
-					} else {
+//					if (cells.size() > 0
+//							&& cells.get(k).get(j).color1.getRGB() != Color.white
+//									.getRGB()) {
+//						g.setColor(Color.white);
+//						g.fillPolygon(polygon2);
+//						g.setColor(Color.black);
+//						g.drawPolygon(polygon2);
+//
+//					} else {
+						
 						g.setColor(Color.white); //HexagonColor. Keep white
 						g.fillPolygon(polygon2);
 						g.setColor(Color.black);
 						g.drawPolygon(polygon2);
 
-					}
+//					}
 
 					if (k % 2 == 0)
 						centerY = (j + 1 + 0.5) * radius * Math.sqrt(3.0);
