@@ -6,6 +6,9 @@ import java.util.Hashtable;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 
+import antlr.RecognitionException;
+
+import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification;
 import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
 
 public class SphericalEpithelium implements Epithelium {
@@ -15,7 +18,9 @@ public class SphericalEpithelium implements Epithelium {
 	private Hashtable<NodeInfo, Color> node2Color;
 	private Hashtable<NodeInfo, Boolean> activeComponents;
 	private Hashtable<Integer, Boolean> perturbedInstances;
-	private Hashtable<NodeInfo, Hashtable<Byte, IntegrationExpression>> integrationFunctions;
+
+	private Hashtable<NodeInfo, Hashtable<Byte, String>> integrationFunctionStrings;
+
 	private Topology topology;
 
 	public SphericalEpithelium(Topology topology) {
@@ -24,13 +29,23 @@ public class SphericalEpithelium implements Epithelium {
 		node2Color = new Hashtable<NodeInfo, Color>();
 		activeComponents = new Hashtable<NodeInfo, Boolean>();
 		perturbedInstances = new Hashtable<Integer, Boolean>();
-		integrationFunctions = new Hashtable<NodeInfo, Hashtable<Byte, IntegrationExpression>>();
+		this.integrationFunctionStrings = new Hashtable<NodeInfo, Hashtable<Byte, String>>();
 
 	}
-	public void setIntegrationFunctions(NodeInfo node, Hashtable<Byte, IntegrationExpression> functions){
-		Hashtable<Byte, IntegrationExpression> f = new Hashtable<Byte, IntegrationExpression>();
-		f = functions;
-		integrationFunctions.put(node, f);
+
+	public void setIntegrationFunctions(NodeInfo node,
+			Hashtable<Byte, String> integrationFunctions) {
+
+		if (this.integrationFunctionStrings.get(node) == null) 
+			this.integrationFunctionStrings.put(node,
+					new Hashtable<Byte, String>());
+			
+			for (Byte i = 1; i <= integrationFunctions.size(); i++)
+				this.integrationFunctionStrings.get(node).put(i,
+						integrationFunctions.get(i));
+		
+		System.out.println(integrationFunctionStrings);
+
 	}
 
 	public Topology getTopology() {
@@ -89,7 +104,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	public void setPerturbedInstance(int instance, boolean b) {
 		perturbedInstances.put(instance, b);
-		
+
 	}
 
 }

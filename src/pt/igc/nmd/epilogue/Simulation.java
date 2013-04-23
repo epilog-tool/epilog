@@ -1,10 +1,15 @@
 package pt.igc.nmd.epilogue;
 
 import java.awt.Color;
+import java.awt.Container;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.border.TitledBorder;
 
@@ -112,7 +117,7 @@ public class Simulation {
 		if (stableStateFound_aux) {
 			this.stableStateFound = true;
 		}
-
+		saveLastPic();
 		fillHexagons();
 		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
 				.getGraphics());
@@ -121,6 +126,18 @@ public class Simulation {
 
 	}
 
+	public void saveLastPic() {
+	Container c = mainPanel.hexagonsPanel;
+	BufferedImage im = new BufferedImage(c.getWidth(), c.getHeight(), BufferedImage.TYPE_INT_ARGB);
+	c.paint(im.getGraphics());
+	try {
+		ImageIO.write(im, "PNG", new File("shot.png"));
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+	
 	public boolean hasStableStateFound() {
 		return this.stableStateFound;
 	}

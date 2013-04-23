@@ -1,17 +1,25 @@
 package pt.igc.nmd.epilogue;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -41,6 +49,8 @@ public class MainPanel extends JFrame {
 	public boolean initialSetupHasChanged;
 	public SetupConditions initialConditions;
 
+	private JTabbedPane tabbedPane;
+
 	private boolean markPerturbationControl;
 	private boolean clearPerturbationControl;
 	public Color backgroundColor;
@@ -62,6 +72,7 @@ public class MainPanel extends JFrame {
 		this.markPerturbationControl = false;
 		this.clearPerturbationControl = true;
 		this.backgroundColor = new Color(0xD3D3D3);
+
 	}
 
 	public void initialize() throws Exception {
@@ -150,20 +161,21 @@ public class MainPanel extends JFrame {
 							String composedNodeID = logicalModelComposition
 									.computeNewName(node.getNodeID(), instance);
 
-//							original.put(composedNodeID,
-//									simulation.composedState
-//											.get(composedNodeID));
-							
+							// original.put(composedNodeID,
+							// simulation.composedState
+							// .get(composedNodeID));
+
 							original.put(node.getNodeID(),
 									simulation.composedState
 											.get(composedNodeID));
-							
+
 						}
-//						hexagonsPanel.setToolTipText("instance: " + instance + " -> "
-//								+ " " + original);
-						hexagonsPanel.setToolTipText(""+original);
+						// hexagonsPanel.setToolTipText("instance: " + instance
+						// + " -> "
+						// + " " + original);
+						hexagonsPanel.setToolTipText("" + original);
 					}
-					
+
 				}
 
 			}
@@ -194,58 +206,57 @@ public class MainPanel extends JFrame {
 	}
 
 	public void setupMainPanel() {
-		
+
 		getContentPane().setPreferredSize(new Dimension(1200, 600));
 		getContentPane().setBackground(backgroundColor);
 		getContentPane().setLayout(null);
 		this.setResizable(true);
 		
+		tabbedPane = new JTabbedPane();
 		startPanel = new StartPanel(this);
 		hexagonsPanel = new DrawPolygon(this);
 		componentsPanel = new ComponentsPanel(this, Color.white);
 		watcherPanel = new TextPanel(this);
 		auxiliaryHexagonsPanel = new JPanel();
 
-		
-
-
 		// Distribute Panels
 		startPanel.setBounds(0, 0, 1200, 40);
 		auxiliaryHexagonsPanel.setBounds(10, 60, 500, 550);
-		
-		hexagonsPanel.setBounds(10, 80, 400, 500);
-		watcherPanel.setBounds(535, 60, 630, 240);
-		componentsPanel.setBounds(530, 310, 650, 250);
 
-		UIManager.put("TitledBorder.border", new LineBorder(backgroundColor, 1));
+		hexagonsPanel.setBounds(10, 80, 400, 500);
+		tabbedPane.setBounds(535, 60, 630, 240);
+		componentsPanel.setBounds(530, 310, 650, 250);
+		
+		tabbedPane.addTab("Value Analytics", watcherPanel);
+		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
+		
+		tabbedPane.addTab("Initial Conditions", initialConditions);
+		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
+
+		UIManager
+				.put("TitledBorder.border", new LineBorder(backgroundColor, 1));
 		TitledBorder titleInitialConditions;
 		titleInitialConditions = BorderFactory.createTitledBorder("");
 		auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
 				.createEmptyBorder());
 		auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
 		titleInitialConditions.setTitleColor(Color.black);
-		
-		
+
 		// LogicalModel model = getUnitaryModel();
 
-		
 		watcherPanel.setVisible(false);
 		componentsPanel.setVisible(false);
-		
-		watcherPanel.setBackground(backgroundColor);
+
+		//watcherPanel.setBackground(backgroundColor);
 		auxiliaryHexagonsPanel.setBackground(backgroundColor);
 		startPanel.setBackground(Color.gray);
 		hexagonsPanel.setBackground(backgroundColor);
 		componentsPanel.setBackground(backgroundColor);
 
-		
-		
-		
-
 		auxiliaryHexagonsPanel.add(hexagonsPanel);
 		getContentPane().add(startPanel);
 		getContentPane().add(auxiliaryHexagonsPanel);
-		getContentPane().add(watcherPanel);
+		getContentPane().add(tabbedPane);
 		getContentPane().add(componentsPanel);
 
 		repaint();
@@ -253,12 +264,17 @@ public class MainPanel extends JFrame {
 		// Adding overall ScrollPane
 		JScrollPane scrollPane = new JScrollPane(getContentPane());
 		setContentPane(scrollPane);
+		
+		
+		
 
 		// House Keeping
 		pack();
 		setVisible(true);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
+	
 	}
 
 	public LogicalModel getUnitaryModel() {
@@ -278,22 +294,15 @@ public class MainPanel extends JFrame {
 
 	}
 
-	public void setIntegrationFunction(
-			Hashtable<Byte, IntegrationExpression> valueOfIntegrationFunction) {
-		this.integrationFunctionHash = valueOfIntegrationFunction;
-	}
 
-	public Hashtable<Byte, IntegrationExpression> getIntegrationFunction() {
-		// System.out.println(integrationFunctionHash);
-		return this.integrationFunctionHash;
-	}
+
 
 	public void restartAnalytics() {
 		// TODO Auto-generated method stub
 		watcherPanel.restartAnalytics();
 	}
 
-	public ArrayList<String> getIntegrationComponents() {
+	public ArrayList<NodeInfo> getIntegrationComponents() {
 
 		int i = 0;
 		for (NodeInfo node : integrationComponents.keySet()) {
@@ -302,11 +311,11 @@ public class MainPanel extends JFrame {
 			}
 
 		}
-		ArrayList<String> integrationStringComponents = new ArrayList<String>();
+		ArrayList<NodeInfo> integrationStringComponents = new ArrayList<NodeInfo>();
 
 		for (NodeInfo node : integrationComponents.keySet()) {
 			if (!integrationComponents.get(node)) {
-				integrationStringComponents.add(node.getNodeID());
+				integrationStringComponents.add(node);
 
 			}
 

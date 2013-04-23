@@ -1,6 +1,5 @@
 package pt.igc.nmd.epilogue;
 
-import java.awt.Color;
 
 public class CellGenes {
 	

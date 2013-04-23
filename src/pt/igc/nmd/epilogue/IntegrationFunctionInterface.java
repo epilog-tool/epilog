@@ -33,12 +33,12 @@ public class IntegrationFunctionInterface extends JFrame {
 	private SetupConditions setupConditions;
 	private Hashtable<Byte, String> integrationFunctionStrings;
 	private SphericalEpithelium epithelium;
-	
 
-	public IntegrationFunctionInterface(SphericalEpithelium epithelium, SetupConditions setupConditions,
-			final NodeInfo node) {
+	public IntegrationFunctionInterface(SphericalEpithelium epithelium,
+			SetupConditions setupConditions, final NodeInfo node) {
 		super("Insert Integration Function");
 		this.setupConditions = setupConditions;
+		this.epithelium = epithelium;
 		integrationFunctionStrings = new Hashtable<Byte, String>();
 
 		FlowLayout layout = new FlowLayout();
@@ -61,22 +61,31 @@ public class IntegrationFunctionInterface extends JFrame {
 		getContentPane().add(integrationPanel);
 
 		for (byte targetValue = 1; targetValue <= node.getMax(); targetValue++) {
+//			System.out.println("teste"+epithelium.getIntegrationFunctions().get(node)
+//					.get(targetValue));
 			JPanel textFieldPanel = new JPanel();
 			final JTextField valueTextField = new JTextField();
 			final JTextField functionTextField = new JTextField();
 
 			valueTextField.setText("" + targetValue);
 			
+	
+
+//				functionTextField.setText(""
+//						+ epithelium.getIntegrationFunctions().get(node)
+//								.get(targetValue));
 
 			valueTextField.setPreferredSize(new Dimension(30, 24));
 			functionTextField.setPreferredSize(new Dimension(400, 24));
 			textFieldPanel.setPreferredSize(new Dimension(450, 30));
-			
-//			functionTextField.setText(setupConditions.getIntegrationFunction(integrationFunctionStrings).get(Byte.parseByte(valueTextField.getText())));
-//			System.out.println("integrationfunctioninterface" + setupConditions.getIntegrationFunction());
-			
+
+			// functionTextField.setText(setupConditions.getIntegrationFunction(integrationFunctionStrings).get(Byte.parseByte(valueTextField.getText())));
+			// System.out.println("integrationfunctioninterface" +
+			// setupConditions.getIntegrationFunction());
+
 			textFieldPanel.add(valueTextField);
 			textFieldPanel.add(functionTextField);
+
 			functionTextField.addFocusListener(new FocusListener() {
 
 				@Override
@@ -108,27 +117,24 @@ public class IntegrationFunctionInterface extends JFrame {
 		pack();
 	}
 
-	protected void setIntegrationFunction(NodeInfo node,
-			Hashtable<Byte, String> integrationFunctionStrings2) {
+	public void setIntegrationFunction(NodeInfo node,
+			Hashtable<Byte, String> integrationFunctionStrings) {
 
-			IntegrationFunctionSpecification spec = new IntegrationFunctionSpecification();
-			IntegrationExpression expression = null;
-			Hashtable<Byte, IntegrationExpression> valueOfIntegrationFunction = new Hashtable<Byte, IntegrationExpression>();
+		/*
+		 * This function receives a node and the hashtable created from this
+		 * object. epithelium receives the information
+		 */
+		Hashtable<Byte, String> valueOfIntegrationFunction= new Hashtable<Byte, String>();
 
-			for (byte targetValue : integrationFunctionStrings2.keySet()) {
 
-				try {
-					expression = spec.parse(integrationFunctionStrings2
-							.get(targetValue));
-				} catch (RecognitionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				valueOfIntegrationFunction.put(targetValue, expression);
-			}
+		for (byte targetValue : integrationFunctionStrings.keySet()) {
 		
-		epithelium.setIntegrationFunctions(node, valueOfIntegrationFunction);
+			valueOfIntegrationFunction.put(targetValue, integrationFunctionStrings.get(targetValue));
+			
+		}
+
+		epithelium
+		.setIntegrationFunctions(node, valueOfIntegrationFunction);
 	}
 
 	private void setInitialSetupHasChanged(boolean b) {

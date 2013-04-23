@@ -45,10 +45,9 @@ public class SetupConditions extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	
 	private SphericalEpithelium epithelium;
 	private Topology topology;
-	
+
 	JTextArea textArea;
 
 	private Color color;
@@ -88,7 +87,6 @@ public class SetupConditions extends JFrame {
 	private Hashtable<JComboBox, NodeInfo> Jcombo2Node;
 	private Hashtable<JCheckBox, NodeInfo> Jcheck2Node;
 	private Hashtable<JComboBox, NodeInfo> JcomboInput2Node;
-
 	private Hashtable<NodeInfo, JComboBox> node2Jcombo;
 	private Hashtable<NodeInfo, JCheckBox> node2Jcheck;
 	private Hashtable<NodeInfo, JComboBox> node2JcomboInput;
@@ -96,16 +94,12 @@ public class SetupConditions extends JFrame {
 	private Hashtable<NodeInfo, ColorButton> node2Color;
 	private Hashtable<NodeInfo, Boolean> node2IntInput;
 	private Hashtable<NodeInfo, Boolean> componentDisplay;
-
 	private Hashtable<Byte, IntegrationExpression> valueOfIntegrationFunction;
 	private Hashtable<NodeInfo, Boolean> integrationComponents;
 	private Hashtable<JButton, NodeInfo> integrationFunctionButton2Node;
-
 	private Hashtable<NodeInfo, Hashtable<Byte, IntegrationExpression>> integrationFunctions;
-
 	private Hashtable<String, NodeInfo> string2Node;
 	private Hashtable<NodeInfo, JButton> node2IntegrationFunctionButton;
-
 	private Hashtable<Integer, String> instanceReturnsPerturbation;
 
 	private boolean fill;
@@ -119,7 +113,8 @@ public class SetupConditions extends JFrame {
 	 * 
 	 */
 
-	public SetupConditions(SphericalEpithelium epithelium, Topology topology, MainPanel mainPanel) {
+	public SetupConditions(SphericalEpithelium epithelium, Topology topology,
+			MainPanel mainPanel) {
 
 		super("Setup Conditions");
 		setLayout(null);
@@ -154,8 +149,8 @@ public class SetupConditions extends JFrame {
 		string2Node = new Hashtable<String, NodeInfo>();
 		node2IntegrationFunctionButton = new Hashtable<NodeInfo, JButton>();
 		instanceReturnsPerturbation = new Hashtable<Integer, String>();
-		
-		 integrationFunctions = new Hashtable<NodeInfo, Hashtable<Byte, IntegrationExpression>>();
+
+		integrationFunctions = new Hashtable<NodeInfo, Hashtable<Byte, IntegrationExpression>>();
 
 		mainPanel.getSimulation().resetIterationNumber();
 
@@ -176,11 +171,9 @@ public class SetupConditions extends JFrame {
 		titleComposedModelSetup = new TitledBorder(border,
 				"Composed Model Setup", TitledBorder.LEFT,
 				TitledBorder.DEFAULT_POSITION);
-		
-		titleProperComponents = new TitledBorder(border,
-				"Proper Components", TitledBorder.LEFT,
-				TitledBorder.DEFAULT_POSITION);
-		
+
+		titleProperComponents = new TitledBorder(border, "Proper Components",
+				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION);
 
 		properComponentsPanel = new JPanel();
 		inputsPanel = new JPanel();
@@ -246,7 +239,7 @@ public class SetupConditions extends JFrame {
 			node2IntInput.put(listNodes.get(i), false);
 
 			if (listNodes.get(i).isInput()) {
-				
+
 				if (inputCount % 2 != 0)
 					xOffsetInput = 200;
 				else if (inputCount % 2 == 0) {
@@ -257,7 +250,8 @@ public class SetupConditions extends JFrame {
 				nodeBox[i] = new JCheckBox(listNodes.get(i).getNodeID());
 				nodeBox[i].setToolTipText(listNodes.get(i).getNodeID());
 				nodeBox[i].setBackground(backgroundColor);
-				nodeBox[i].setBounds(10+xOffsetInput, 20 + yOffsetInput, 70, 25);
+				nodeBox[i].setBounds(10 + xOffsetInput, 20 + yOffsetInput, 70,
+						25);
 				Jcheck2Node.put(nodeBox[i], listNodes.get(i));
 				node2Jcheck.put(listNodes.get(i), nodeBox[i]);
 				componentDisplay.put(listNodes.get(i), false);
@@ -276,7 +270,8 @@ public class SetupConditions extends JFrame {
 				mainPanel.getSimulation().setNode2Int(listNodes.get(i), i);
 
 				initialStatePerComponent[i] = new JComboBox();
-				initialStatePerComponent[i].setBounds(85+xOffsetInput, 20 + yOffsetInput, 35, 25);
+				initialStatePerComponent[i].setBounds(85 + xOffsetInput,
+						20 + yOffsetInput, 35, 25);
 				for (int maxValue = 0; maxValue < listNodes.get(i).getMax() + 1; maxValue++) {
 					initialStatePerComponent[i].addItem(maxValue);
 				}
@@ -299,10 +294,9 @@ public class SetupConditions extends JFrame {
 				colorChooser.add(new ColorButton(mainPanel.componentsPanel,
 						listNodes.get(i)));
 				colorChooser.get(i).setBackground(
-						epithelium.getColors()
-								.get(listNodes.get(i)));
-				colorChooser.get(i)
-						.setBounds(125+xOffsetInput, 20 + yOffsetInput, 20, 25);
+						epithelium.getColors().get(listNodes.get(i)));
+				colorChooser.get(i).setBounds(125 + xOffsetInput,
+						20 + yOffsetInput, 20, 25);
 
 				color2Node.put(colorChooser.get(i), listNodes.get(i));
 				node2Color.put(listNodes.get(i), colorChooser.get(i));
@@ -312,9 +306,10 @@ public class SetupConditions extends JFrame {
 				inputsPanel.add(colorChooser.get(i));
 
 				integrationFunctionButton = new JButton("Function");
-				integrationFunctionButton.setToolTipText("Integration Function");
-				integrationFunctionButton.setBounds(85+xOffsetInput, 20 + yOffsetInput,
-						65, 25);
+				integrationFunctionButton
+						.setToolTipText("Integration Function");
+				integrationFunctionButton.setBounds(85 + xOffsetInput,
+						20 + yOffsetInput, 65, 25);
 				inputsPanel.add(integrationFunctionButton);
 				integrationFunctionButton.setVisible(false);
 
@@ -327,7 +322,6 @@ public class SetupConditions extends JFrame {
 							public void actionPerformed(ActionEvent arg0) {
 								JButton src = (JButton) arg0.getSource();
 								initializeIntegrationInterface(src);
-
 							}
 						});
 
@@ -335,8 +329,8 @@ public class SetupConditions extends JFrame {
 
 				JcomboInput2Node.put(inputComboChooser[i], listNodes.get(i));
 
-				inputComboChooser[i].setBounds(155+xOffsetInput, 20 + yOffsetInput, 50,
-						25);
+				inputComboChooser[i].setBounds(155 + xOffsetInput,
+						20 + yOffsetInput, 50, 25);
 				inputComboChooser[i].addItem(InputOption
 						.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));
 				inputComboChooser[i].addItem(InputOption
@@ -364,7 +358,6 @@ public class SetupConditions extends JFrame {
 
 								setEnvOptions(source, false);
 								setInitialSetupHasChanged(true);
-
 							}
 								break;
 							default: {
@@ -436,8 +429,7 @@ public class SetupConditions extends JFrame {
 				colorChooser.add(new ColorButton(mainPanel.componentsPanel,
 						listNodes.get(i)));
 				colorChooser.get(i).setBackground(
-						epithelium.getColors()
-								.get(listNodes.get(i)));
+						epithelium.getColors().get(listNodes.get(i)));
 				colorChooser.get(i).setBounds(120 + xOffset, 30 + yOffset, 20,
 						25);
 				properComponentsPanel.add(initialStatePerComponent[i]);
@@ -492,7 +484,6 @@ public class SetupConditions extends JFrame {
 				JComboBox src = (JComboBox) arg0.getSource();
 				setSelectedPerturbedComponent((String) src.getSelectedItem());
 				resetMinAndMaxCombo(line1);
-
 			}
 		});
 		// System.out.println(perturbedExpressionMax.getSelectedItem() + "es");
@@ -721,7 +712,6 @@ public class SetupConditions extends JFrame {
 		setLocationByPlatform(true);
 		setVisible(true);
 		setLocationRelativeTo(null);
-
 	}
 
 	protected void setComposedModelDisplay(boolean b) {
@@ -742,8 +732,7 @@ public class SetupConditions extends JFrame {
 
 	protected void clearAllPerturbations() {
 		// TODO Auto-generated method stub
-		for (int instance = 0; instance < topology
-				.getNumberInstances(); instance++) {
+		for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
 			epithelium.setPerturbedInstance(instance, false);
 		}
 	}
@@ -853,10 +842,8 @@ public class SetupConditions extends JFrame {
 
 		for (int i = 0; i < topology.getNumberInstances(); i++) {
 
-			row = topology.instance2i(i,
-					topology.getWidth());
-			column = topology.instance2j(i,
-					topology.getHeight());
+			row = topology.instance2i(i, topology.getWidth());
+			column = topology.instance2j(i, topology.getHeight());
 
 			color = Color(row, column);
 			MapPanel.drawHexagon(row, column, MapPanel.getGraphics(), color);
@@ -869,8 +856,7 @@ public class SetupConditions extends JFrame {
 
 		for (NodeInfo node : listNodes) {
 			if (node2IntInput.get(node)) {
-				for (int instance = 0; instance < topology
-						.getNumberInstances(); instance++) {
+				for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
 					mainPanel.getGrid().getGrid().get(instance)
 							.put(node, (byte) 0);
 				}
@@ -920,8 +906,7 @@ public class SetupConditions extends JFrame {
 
 				// The mouse is over a cell that belongs to the grid
 				if (!fill) {
-					if (i < topology.getWidth()
-							&& j < topology.getHeight()
+					if (i < topology.getWidth() && j < topology.getHeight()
 							&& i >= 0 && j >= 0) {
 
 						// if (!mainPanel.getMarkPerturbation()) {
@@ -932,7 +917,6 @@ public class SetupConditions extends JFrame {
 						// }
 					}
 				}
-
 			}
 
 			@Override
@@ -963,13 +947,11 @@ public class SetupConditions extends JFrame {
 					i = (int) ind_it - 1;
 					j = (int) (ind_jt - i % 2 + deltaj);
 				}
-				if (i < topology.getWidth()
-						&& j < topology.getHeight() && i >= 0
-						&& j >= 0) {
+				if (i < topology.getWidth() && j < topology.getHeight()
+						&& i >= 0 && j >= 0) {
 
 					getInitialState(i, j);
 				}
-
 			}
 		});
 
@@ -999,7 +981,7 @@ public class SetupConditions extends JFrame {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-	
+
 				endX = arg0.getX();
 				endY = arg0.getX();
 			}
@@ -1036,8 +1018,7 @@ public class SetupConditions extends JFrame {
 
 				// The mouse is over a cell that belongs to the grid
 				if (!fill) {
-					if (i < topology.getWidth()
-							&& j < topology.getHeight()
+					if (i < topology.getWidth() && j < topology.getHeight()
 							&& i >= 0 && j >= 0) {
 						color = Color();
 						setInitialState(i, j);
@@ -1107,8 +1088,7 @@ public class SetupConditions extends JFrame {
 	}
 
 	public void setInitialState(int i, int j) {
-		List<NodeInfo> a = epithelium.getUnitaryModel()
-				.getNodeOrder();
+		List<NodeInfo> a = epithelium.getUnitaryModel().getNodeOrder();
 
 		int instance = topology.coords2Instance(i, j);
 		for (NodeInfo a2 : a) {

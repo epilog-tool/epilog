@@ -318,6 +318,7 @@ public class StartPanel extends JPanel {
 		modelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				askModel();
+
 				mainPanel.getContentPane().repaint();
 				mainPanel.getSimulation().resetIterationNumber();
 

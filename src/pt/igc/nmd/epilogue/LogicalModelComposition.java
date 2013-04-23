@@ -164,20 +164,19 @@ public class LogicalModelComposition {
 
 		// Create MDDs for integration components
 
-		ArrayList<String> integrationComponents = mainPanel
+		ArrayList<NodeInfo> integrationComponents = mainPanel
 				.getIntegrationComponents();
 
-		for (String oldeNodeIdIntegrationComponent : integrationComponents) {
+		for (NodeInfo oldeNodeIdIntegrationComponent : integrationComponents) {
 
-			System.out.println(mainPanel.getIntegrationFunction());
-			for (byte targetValue : mainPanel.getIntegrationFunction().keySet()) {
+			for (byte targetValue : mainPanel.getEpithelium().getIntegrationFunctions(oldeNodeIdIntegrationComponent).keySet()) {
 
 				for (int i = 0; i < mainPanel.getTopology()
 						.getNumberInstances(); i++) {
 					IntegrationFunctionDNFFactory factory = new IntegrationFunctionDNFFactory(
 							context);
 					IntegrationFunctionClauseSet clauseSet = factory
-							.getClauseSet(mainPanel.getIntegrationFunction()
+							.getClauseSet(mainPanel.getIntegrationFunction(oldeNodeIdIntegrationComponent)
 									.get(targetValue), i);
 
 //					System.err.println("FINAL for instance " + i + " :\n"
