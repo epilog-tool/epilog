@@ -33,6 +33,26 @@ public class SphericalEpithelium implements Epithelium {
 
 	}
 
+	public Hashtable<Byte, String> getIntegrationFunctions(NodeInfo node){
+		return this.integrationFunctionStrings.get(node);
+	}
+	
+	public IntegrationExpression string2Expression (String integrationfunctionString){
+		
+		IntegrationFunctionSpecification spec = new IntegrationFunctionSpecification();
+		IntegrationExpression expression = null;
+		
+		try {
+			expression = spec.parse(integrationfunctionString);
+		} catch (org.antlr.runtime.RecognitionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return expression;
+		
+	}
+	
 	public void setIntegrationFunctions(NodeInfo node,
 			Hashtable<Byte, String> integrationFunctions) {
 

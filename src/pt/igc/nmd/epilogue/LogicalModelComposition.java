@@ -166,33 +166,47 @@ public class LogicalModelComposition {
 
 		ArrayList<NodeInfo> integrationComponents = mainPanel
 				.getIntegrationComponents();
+		
+		
 
 		for (NodeInfo oldeNodeIdIntegrationComponent : integrationComponents) {
 
-			for (byte targetValue : mainPanel.getEpithelium().getIntegrationFunctions(oldeNodeIdIntegrationComponent).keySet()) {
+			if (mainPanel.integrationComponents.get(oldeNodeIdIntegrationComponent)){
+			System.out.println(oldeNodeIdIntegrationComponent.getNodeID()+ " " +mainPanel.getEpithelium()
+					.getIntegrationFunctions(oldeNodeIdIntegrationComponent));
+
+			for (byte targetValue : mainPanel.getEpithelium()
+					.getIntegrationFunctions(oldeNodeIdIntegrationComponent)
+					.keySet()) {
 
 				for (int i = 0; i < mainPanel.getTopology()
 						.getNumberInstances(); i++) {
 					IntegrationFunctionDNFFactory factory = new IntegrationFunctionDNFFactory(
 							context);
-					IntegrationFunctionClauseSet clauseSet = factory
-							.getClauseSet(mainPanel.getIntegrationFunction(oldeNodeIdIntegrationComponent)
-									.get(targetValue), i);
 
-//					System.err.println("FINAL for instance " + i + " :\n"
-//							+ clauseSet);
+					String function = mainPanel
+							.getEpithelium()
+							.getIntegrationFunctions(
+									oldeNodeIdIntegrationComponent)
+							.get(targetValue);
+					IntegrationFunctionClauseSet clauseSet = factory
+							.getClauseSet(mainPanel.getEpithelium()
+									.string2Expression(function), i);
+
+					// System.err.println("FINAL for instance " + i + " :\n"
+					// + clauseSet);
 
 					if (!clauseSet.isImpossible()) {
 						NodeInfo integrationComponent = this.oldString2New
 								.get(new SimpleEntry<String, Integer>(
-										oldeNodeIdIntegrationComponent, i));
+										oldeNodeIdIntegrationComponent.getNodeID(), i));
 						int index = nodeOrder.indexOf(integrationComponent);
 
 						buildIntegrationPaths(ddmanager, index, kMDDs, context,
 								clauseSet, targetValue);
- 
+
 					}
-				}
+				}}
 			}
 		}
 		composedModel = new LogicalModelImpl(nodeOrder, ddmanager, kMDDs);
@@ -207,26 +221,26 @@ public class LogicalModelComposition {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		// Perform reduction of integration components
 		ModelReducer reducer = new ModelReducer(composedModel);
 		for (NodeInfo integrationNode : newIntegrationNodes) {
-			//System.err.println("Reducing " + integrationNode.getNodeID());
+			// System.err.println("Reducing " + integrationNode.getNodeID());
 			reducer.remove(nodeOrder.indexOf(integrationNode));
 		}
 
 		composedModel = reducer.getModel();
 
 		exporter = new LogicalModel2GINML(composedModel);
-//		try {
-//			exporter.export(new FileOutputStream("test_afterReduction.ginml"));
-//		} catch (FileNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		// try {
+		// exporter.export(new FileOutputStream("test_afterReduction.ginml"));
+		// } catch (FileNotFoundException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 
 		mainPanel.getEpithelium().setComposedModel(composedModel);
 		return composedModel;

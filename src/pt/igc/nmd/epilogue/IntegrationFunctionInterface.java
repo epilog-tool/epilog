@@ -61,27 +61,22 @@ public class IntegrationFunctionInterface extends JFrame {
 		getContentPane().add(integrationPanel);
 
 		for (byte targetValue = 1; targetValue <= node.getMax(); targetValue++) {
-//			System.out.println("teste"+epithelium.getIntegrationFunctions().get(node)
-//					.get(targetValue));
+			// System.out.println("teste"+epithelium.getIntegrationFunctions().get(node)
+			// .get(targetValue));
 			JPanel textFieldPanel = new JPanel();
 			final JTextField valueTextField = new JTextField();
 			final JTextField functionTextField = new JTextField();
 
 			valueTextField.setText("" + targetValue);
-			
-	
 
-//				functionTextField.setText(""
-//						+ epithelium.getIntegrationFunctions().get(node)
-//								.get(targetValue));
+			if (epithelium.getIntegrationFunctions(node) != null)
+				functionTextField.setText(""
+						+ epithelium.getIntegrationFunctions(node).get(
+								targetValue));
 
 			valueTextField.setPreferredSize(new Dimension(30, 24));
 			functionTextField.setPreferredSize(new Dimension(400, 24));
 			textFieldPanel.setPreferredSize(new Dimension(450, 30));
-
-			// functionTextField.setText(setupConditions.getIntegrationFunction(integrationFunctionStrings).get(Byte.parseByte(valueTextField.getText())));
-			// System.out.println("integrationfunctioninterface" +
-			// setupConditions.getIntegrationFunction());
 
 			textFieldPanel.add(valueTextField);
 			textFieldPanel.add(functionTextField);
@@ -124,17 +119,16 @@ public class IntegrationFunctionInterface extends JFrame {
 		 * This function receives a node and the hashtable created from this
 		 * object. epithelium receives the information
 		 */
-		Hashtable<Byte, String> valueOfIntegrationFunction= new Hashtable<Byte, String>();
-
+		Hashtable<Byte, String> valueOfIntegrationFunction = new Hashtable<Byte, String>();
 
 		for (byte targetValue : integrationFunctionStrings.keySet()) {
-		
-			valueOfIntegrationFunction.put(targetValue, integrationFunctionStrings.get(targetValue));
-			
+
+			valueOfIntegrationFunction.put(targetValue,
+					integrationFunctionStrings.get(targetValue));
+
 		}
 
-		epithelium
-		.setIntegrationFunctions(node, valueOfIntegrationFunction);
+		epithelium.setIntegrationFunctions(node, valueOfIntegrationFunction);
 	}
 
 	private void setInitialSetupHasChanged(boolean b) {

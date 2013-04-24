@@ -95,9 +95,10 @@ public class SetupConditions extends JFrame {
 	private Hashtable<NodeInfo, Boolean> node2IntInput;
 	private Hashtable<NodeInfo, Boolean> componentDisplay;
 	private Hashtable<Byte, IntegrationExpression> valueOfIntegrationFunction;
-	private Hashtable<NodeInfo, Boolean> integrationComponents;
+	// private Hashtable<NodeInfo, Boolean> integrationComponents;
 	private Hashtable<JButton, NodeInfo> integrationFunctionButton2Node;
-	private Hashtable<NodeInfo, Hashtable<Byte, IntegrationExpression>> integrationFunctions;
+	// private Hashtable<NodeInfo, Hashtable<Byte, IntegrationExpression>>
+	// integrationFunctions;
 	private Hashtable<String, NodeInfo> string2Node;
 	private Hashtable<NodeInfo, JButton> node2IntegrationFunctionButton;
 	private Hashtable<Integer, String> instanceReturnsPerturbation;
@@ -134,7 +135,7 @@ public class SetupConditions extends JFrame {
 		colorChooser = new ArrayList<ColorButton>();
 
 		valueOfIntegrationFunction = new Hashtable<Byte, IntegrationExpression>();
-		integrationComponents = new Hashtable<NodeInfo, Boolean>();
+		// integrationComponents = new Hashtable<NodeInfo, Boolean>();
 		Jcombo2Node = new Hashtable<JComboBox, NodeInfo>();
 		Jcheck2Node = new Hashtable<JCheckBox, NodeInfo>();
 		JcomboInput2Node = new Hashtable<JComboBox, NodeInfo>();
@@ -150,7 +151,8 @@ public class SetupConditions extends JFrame {
 		node2IntegrationFunctionButton = new Hashtable<NodeInfo, JButton>();
 		instanceReturnsPerturbation = new Hashtable<Integer, String>();
 
-		integrationFunctions = new Hashtable<NodeInfo, Hashtable<Byte, IntegrationExpression>>();
+		// integrationFunctions = new Hashtable<NodeInfo, Hashtable<Byte,
+		// IntegrationExpression>>();
 
 		mainPanel.getSimulation().resetIterationNumber();
 
@@ -240,6 +242,10 @@ public class SetupConditions extends JFrame {
 
 			if (listNodes.get(i).isInput()) {
 
+				if (mainPanel.integrationComponents.get(listNodes.get(i)) == null)
+					mainPanel.integrationComponents
+							.put(listNodes.get(i), false);
+
 				if (inputCount % 2 != 0)
 					xOffsetInput = 200;
 				else if (inputCount % 2 == 0) {
@@ -311,7 +317,6 @@ public class SetupConditions extends JFrame {
 				integrationFunctionButton.setBounds(85 + xOffsetInput,
 						20 + yOffsetInput, 65, 25);
 				inputsPanel.add(integrationFunctionButton);
-				integrationFunctionButton.setVisible(false);
 
 				integrationFunctionButton2Node.put(integrationFunctionButton,
 						listNodes.get(i));
@@ -331,10 +336,20 @@ public class SetupConditions extends JFrame {
 
 				inputComboChooser[i].setBounds(155 + xOffsetInput,
 						20 + yOffsetInput, 50, 25);
+				if (!mainPanel.integrationComponents.get(listNodes.get(i))){
 				inputComboChooser[i].addItem(InputOption
 						.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));
 				inputComboChooser[i].addItem(InputOption
-						.getDescriptionString(InputOption.INTEGRATION_INPUT));
+						.getDescriptionString(InputOption.INTEGRATION_INPUT));}
+				if (mainPanel.integrationComponents.get(listNodes.get(i))){
+					inputComboChooser[i].addItem(InputOption
+							.getDescriptionString(InputOption.INTEGRATION_INPUT));
+				inputComboChooser[i].addItem(InputOption
+						.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));}
+
+				
+				
+				
 				inputsPanel.add(inputComboChooser[i]);
 
 				inputComboChooser[i].addActionListener(new ActionListener() {
@@ -356,6 +371,7 @@ public class SetupConditions extends JFrame {
 
 							case INTEGRATION_INPUT: {
 
+								System.out.println("Changed to integration");
 								setEnvOptions(source, false);
 								setInitialSetupHasChanged(true);
 							}
@@ -371,6 +387,19 @@ public class SetupConditions extends JFrame {
 				});
 
 				inputCount = inputCount + 1;
+
+				System.out.println(mainPanel.integrationComponents
+						.get(listNodes.get(i)));
+				integrationFunctionButton
+						.setVisible(mainPanel.integrationComponents
+								.get(listNodes.get(i)));
+				nodeBox[i].setEnabled(!mainPanel.integrationComponents
+						.get(listNodes.get(i)));
+				initialStatePerComponent[i]
+						.setVisible(!mainPanel.integrationComponents
+								.get(listNodes.get(i)));
+				colorChooser.get(i).setVisible(
+						!mainPanel.integrationComponents.get(listNodes.get(i)));
 
 			} else if (!listNodes.get(i).isInput()) {
 
@@ -724,7 +753,7 @@ public class SetupConditions extends JFrame {
 		for (Component c : inputsPanel.getComponents())
 			c.setEnabled(composedModelActive);
 		for (Component c : composedPanel.getComponents()) {
-			System.out.println(c.getClass());
+			// System.out.println(c.getClass());
 			if (c.getClass() != aux.getClass())
 				c.setEnabled(composedModelActive);
 		}
@@ -739,7 +768,7 @@ public class SetupConditions extends JFrame {
 
 	public void setMarkPerturbation(boolean b) {
 		mainPanel.setMarkPerturbation(b);
-		System.out.println(mainPanel.getMarkPerturbation());
+		// System.out.println(mainPanel.getMarkPerturbation());
 	}
 
 	public boolean getMarkPerturbation() {
@@ -815,8 +844,9 @@ public class SetupConditions extends JFrame {
 		node2IntInput.put(JcomboInput2Node.get(inputCombo), !bool);
 
 		mainPanel.integrationComponents.put(JcomboInput2Node.get(inputCombo),
-				bool);
-
+				!bool);
+		System.out.println(mainPanel.integrationComponents.get(JcomboInput2Node
+				.get(inputCombo)));
 	}
 
 	private void fireInitialStateChange(JComboBox combo) {
@@ -1093,7 +1123,7 @@ public class SetupConditions extends JFrame {
 		int instance = topology.coords2Instance(i, j);
 		for (NodeInfo a2 : a) {
 
-			System.out.println(componentDisplay + " " + a2.getNodeID());
+			// System.out.println(componentDisplay + " " + a2.getNodeID());
 			if (componentDisplay.get(a2)) {
 
 				mainPanel.getGrid().setGrid(instance, a2,
@@ -1243,12 +1273,6 @@ public class SetupConditions extends JFrame {
 		}
 	}
 
-	public void setIntegrationFunction(
-			Hashtable<Byte, String> integrationFunctionStrings) {
-		mainPanel
-				.setIntegrationFunction(IntegrationValuedExpression(integrationFunctionStrings));
-	}
-
 	public Hashtable<Byte, IntegrationExpression> IntegrationValuedExpression(
 			Hashtable<Byte, String> integrationFunctionHash) {
 
@@ -1288,11 +1312,8 @@ public class SetupConditions extends JFrame {
 
 		valueOfIntegrationFunction = new Hashtable<Byte, IntegrationExpression>();
 
-		integrationComponents = new Hashtable<NodeInfo, Boolean>();
+		// integrationComponents = new Hashtable<NodeInfo, Boolean>();
 		integrationFunctionButton2Node = new Hashtable<JButton, NodeInfo>();
 	}
 
-	// public Hashtable<Byte, String> getIntegrationFunction() {
-	// return integrationFunctionStrings;
-	// }
 }

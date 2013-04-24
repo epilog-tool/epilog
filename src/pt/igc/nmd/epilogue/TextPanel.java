@@ -4,12 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
@@ -56,19 +51,17 @@ public class TextPanel extends JPanel {
 		FlowLayout layout = new FlowLayout();
 		layout.setAlignment(FlowLayout.TRAILING);
 		
-//		LineBorder border = new LineBorder(Color.black, 1, true);
-//		TitledBorder title = new TitledBorder(border, "Value Analytics",
-//				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
-//						"Arial", Font.ITALIC, 14), Color.black);
+		LineBorder border = new LineBorder(Color.black, 1, true);
+		TitledBorder title = new TitledBorder(border, "Value Analytics",
+				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
+						"Arial", Font.ITALIC, 14), Color.black);
 
 		
 		
-//		setBorder(title);
-		//setPreferredSize(new Dimension(620, 350));
-		//setPreferredSize(new Dimension(320, 240));
+		setBorder(title);
+		setPreferredSize(new Dimension(620, 350));
 
 		if (model != null) {
-			
 			components = new JLabel[model.getNodeOrder().size()];
 			panels = new JPanel[model.getNodeOrder().size()];
 
@@ -81,20 +74,11 @@ public class TextPanel extends JPanel {
 				components[i] = new JLabel();
 
 				components[i].setText(model.getNodeOrder().get(i).getNodeID()
-						+ ": ");
+						+ ": " + "0 - "+ model.getNodeOrder().get(i).getMax());
 				panels[i].add(components[i]);
 				add(panels[i]);
 			}
 		}
-		
-		BufferedImage img = null;
-		try {
-		    img = ImageIO.read(new File("shot.png"));
-		} catch (IOException e) {
-		}
-		JLabel picLabel = new JLabel(new ImageIcon(img));
-		picLabel.setPreferredSize(new Dimension(100, 25));
-		add(picLabel);
 		return this;
 	}
 	

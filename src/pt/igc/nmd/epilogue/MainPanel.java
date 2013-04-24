@@ -1,21 +1,14 @@
 package pt.igc.nmd.epilogue;
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -44,7 +37,6 @@ public class MainPanel extends JFrame {
 	public Simulation simulation;
 	public LogicalModelComposition logicalModelComposition;
 	public Grid grid;
-	private Hashtable<Byte, IntegrationExpression> integrationFunctionHash;
 	public Hashtable<NodeInfo, Boolean> integrationComponents;
 	public boolean initialSetupHasChanged;
 	public SetupConditions initialConditions;
@@ -66,7 +58,6 @@ public class MainPanel extends JFrame {
 		this.simulation = new Simulation(this);
 		this.logicalModelComposition = new LogicalModelComposition(this);
 		this.grid = new Grid(this);
-		this.integrationFunctionHash = new Hashtable<Byte, IntegrationExpression>();
 		integrationComponents = new Hashtable<NodeInfo, Boolean>();
 		initialSetupHasChanged = false;
 		this.markPerturbationControl = false;
@@ -293,8 +284,6 @@ public class MainPanel extends JFrame {
 		}
 
 	}
-
-
 
 
 	public void restartAnalytics() {
