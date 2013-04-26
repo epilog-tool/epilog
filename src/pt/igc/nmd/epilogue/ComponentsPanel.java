@@ -44,7 +44,7 @@ public class ComponentsPanel extends MapColorPanel {
 
 	private JPanel properComponents;
 	private JPanel inputComponents;
-	
+
 	private JPanel auxiliaryPanel[];
 
 	public ComponentsPanel(MainPanel mainPanel, Color color) {
@@ -135,17 +135,13 @@ public class ComponentsPanel extends MapColorPanel {
 
 						public void actionPerformed(ActionEvent event) {
 							JCheckBox src = (JCheckBox) event.getSource();
-							if (src.isSelected()) {
+							if (src.isSelected())
 								fireCheckBoxChange(true, src);
-
-								mainPanel.hexagonsPanel.repaint();
-								mainPanel.getSimulation().fillHexagons();
-							} else
+							else
 								fireCheckBoxChange(false, src);
 
 							hexagonsPanel.paintComponent(hexagonsPanel
 									.getGraphics());
-
 						}
 
 					});
@@ -173,8 +169,6 @@ public class ComponentsPanel extends MapColorPanel {
 
 					jcheckbox2Node.put(nodeBox[i], listNodes.get(i));
 
-
-
 					mainPanel.getEpithelium().setActiveComponents(
 							listNodes.get(i), false);
 
@@ -182,12 +176,9 @@ public class ComponentsPanel extends MapColorPanel {
 
 						public void actionPerformed(ActionEvent event) {
 							JCheckBox src = (JCheckBox) event.getSource();
-							if (src.isSelected()) {
+							if (src.isSelected())
 								fireCheckBoxChange(true, src);
-
-								mainPanel.hexagonsPanel.repaint();
-								mainPanel.getSimulation().fillHexagons();
-							} else
+							else
 								fireCheckBoxChange(false, src);
 
 							hexagonsPanel.paintComponent(hexagonsPanel
@@ -208,8 +199,7 @@ public class ComponentsPanel extends MapColorPanel {
 				}
 				add(properComponents);
 				add(inputComponents);
-				
-				
+
 			}
 		}
 

@@ -37,7 +37,7 @@ public class MainPanel extends JFrame {
 	public Simulation simulation;
 	public LogicalModelComposition logicalModelComposition;
 	public Grid grid;
-	public Hashtable<NodeInfo, Boolean> integrationComponents;
+	//public Hashtable<NodeInfo, Boolean> integrationComponents;
 	public boolean initialSetupHasChanged;
 	public SetupConditions initialConditions;
 
@@ -58,7 +58,7 @@ public class MainPanel extends JFrame {
 		this.simulation = new Simulation(this);
 		this.logicalModelComposition = new LogicalModelComposition(this);
 		this.grid = new Grid(this);
-		integrationComponents = new Hashtable<NodeInfo, Boolean>();
+		//integrationComponents = new Hashtable<NodeInfo, Boolean>();
 		initialSetupHasChanged = false;
 		this.markPerturbationControl = false;
 		this.clearPerturbationControl = true;
@@ -291,27 +291,26 @@ public class MainPanel extends JFrame {
 		watcherPanel.restartAnalytics();
 	}
 
-	public ArrayList<NodeInfo> getIntegrationComponents() {
-
-		int i = 0;
-		for (NodeInfo node : integrationComponents.keySet()) {
-			if (!integrationComponents.get(node)) {
-				i = i++;
-			}
-
-		}
-		ArrayList<NodeInfo> integrationStringComponents = new ArrayList<NodeInfo>();
-
-		for (NodeInfo node : integrationComponents.keySet()) {
-			if (!integrationComponents.get(node)) {
-				integrationStringComponents.add(node);
-
-			}
-
-		}
-		// TODO Auto-generated method stub
-		return integrationStringComponents;
-	}
+//	public ArrayList<NodeInfo> getIntegrationComponents() {
+//
+//		int i = 0;
+//		for (NodeInfo node : integrationComponents.keySet()) {
+//			if (!integrationComponents.get(node)) {
+//				i = i++;
+//			}
+//
+//		}
+//		ArrayList<NodeInfo> integrationStringComponents = new ArrayList<NodeInfo>();
+//
+//		for (NodeInfo node : integrationComponents.keySet()) {
+//			if (!integrationComponents.get(node)) {
+//				integrationStringComponents.add(node);
+//
+//			}
+//
+//		}
+//		return integrationStringComponents;
+//	}
 
 	public void setInitialSetupHasChanged(boolean b) {
 		initialSetupHasChanged = b;

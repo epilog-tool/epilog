@@ -28,8 +28,8 @@ public class CompositionContextImpl implements CompositionContext {
 	@Override
 	public Set<Integer> getNeighbourIndices(int instance, int minDistance,
 			int maxDistance) {
-		System.err.println("Calculating neighbours at range " + minDistance
-				+ ":" + maxDistance);
+//		System.err.println("Calculating neighbours at range " + minDistance
+//				+ ":" + maxDistance);
 
 		Set<Integer> results = topology.nDistanceNeighbours(instance,
 				maxDistance);
@@ -37,7 +37,7 @@ public class CompositionContextImpl implements CompositionContext {
 				minDistance - 1);
 
 		results.removeAll(frontier);
-		System.out.println(instance + " -> " + results);
+//		System.out.println(instance + " -> " + results);
 		return results;
 	}
 

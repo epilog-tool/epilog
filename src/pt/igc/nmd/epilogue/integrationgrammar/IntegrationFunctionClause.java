@@ -135,7 +135,7 @@ public class IntegrationFunctionClause {
 
 	}
 
-	public byte[] asByteArray(CompositionContext context) {
+	public byte[] toByteArray(CompositionContext context) {
 		int size = context.getLowLevelComponents().size();
 		byte[] clause = new byte[size];
 

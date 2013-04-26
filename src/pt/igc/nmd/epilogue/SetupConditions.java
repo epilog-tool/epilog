@@ -242,9 +242,10 @@ public class SetupConditions extends JFrame {
 
 			if (listNodes.get(i).isInput()) {
 
-				if (mainPanel.integrationComponents.get(listNodes.get(i)) == null)
-					mainPanel.integrationComponents
-							.put(listNodes.get(i), false);
+				if (mainPanel.getEpithelium().getIntegrationComponents()
+						.get(listNodes.get(i)) == null)
+					mainPanel.getEpithelium().setIntegrationComponents(
+							listNodes.get(i), false);
 
 				if (inputCount % 2 != 0)
 					xOffsetInput = 200;
@@ -336,20 +337,23 @@ public class SetupConditions extends JFrame {
 
 				inputComboChooser[i].setBounds(155 + xOffsetInput,
 						20 + yOffsetInput, 50, 25);
-				if (!mainPanel.integrationComponents.get(listNodes.get(i))){
-				inputComboChooser[i].addItem(InputOption
-						.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));
-				inputComboChooser[i].addItem(InputOption
-						.getDescriptionString(InputOption.INTEGRATION_INPUT));}
-				if (mainPanel.integrationComponents.get(listNodes.get(i))){
-					inputComboChooser[i].addItem(InputOption
-							.getDescriptionString(InputOption.INTEGRATION_INPUT));
-				inputComboChooser[i].addItem(InputOption
-						.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));}
+				if (!mainPanel.getEpithelium().getIntegrationComponents().get(listNodes.get(i))) {
+					inputComboChooser[i]
+							.addItem(InputOption
+									.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));
+					inputComboChooser[i]
+							.addItem(InputOption
+									.getDescriptionString(InputOption.INTEGRATION_INPUT));
+				}
+				if (mainPanel.getEpithelium().getIntegrationComponents().get(listNodes.get(i))) {
+					inputComboChooser[i]
+							.addItem(InputOption
+									.getDescriptionString(InputOption.INTEGRATION_INPUT));
+					inputComboChooser[i]
+							.addItem(InputOption
+									.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));
+				}
 
-				
-				
-				
 				inputsPanel.add(inputComboChooser[i]);
 
 				inputComboChooser[i].addActionListener(new ActionListener() {
@@ -371,7 +375,7 @@ public class SetupConditions extends JFrame {
 
 							case INTEGRATION_INPUT: {
 
-								System.out.println("Changed to integration");
+								//System.out.println("Changed to integration");
 								setEnvOptions(source, false);
 								setInitialSetupHasChanged(true);
 							}
@@ -388,18 +392,19 @@ public class SetupConditions extends JFrame {
 
 				inputCount = inputCount + 1;
 
-				System.out.println(mainPanel.integrationComponents
-						.get(listNodes.get(i)));
+//				System.out.println(mainPanel.getEpithelium().getIntegrationComponents()
+//						.get(listNodes.get(i)));
 				integrationFunctionButton
-						.setVisible(mainPanel.integrationComponents
+						.setVisible(mainPanel.getEpithelium().getIntegrationComponents()
 								.get(listNodes.get(i)));
-				nodeBox[i].setEnabled(!mainPanel.integrationComponents
+				nodeBox[i].setEnabled(!mainPanel.getEpithelium().getIntegrationComponents()
 						.get(listNodes.get(i)));
 				initialStatePerComponent[i]
-						.setVisible(!mainPanel.integrationComponents
+						.setVisible(!mainPanel.getEpithelium().getIntegrationComponents()
 								.get(listNodes.get(i)));
 				colorChooser.get(i).setVisible(
-						!mainPanel.integrationComponents.get(listNodes.get(i)));
+						!mainPanel.getEpithelium().getIntegrationComponents()
+						.get(listNodes.get(i)));
 
 			} else if (!listNodes.get(i).isInput()) {
 
@@ -843,10 +848,12 @@ public class SetupConditions extends JFrame {
 				.setVisible(!bool);
 		node2IntInput.put(JcomboInput2Node.get(inputCombo), !bool);
 
-		mainPanel.integrationComponents.put(JcomboInput2Node.get(inputCombo),
-				!bool);
-		System.out.println(mainPanel.integrationComponents.get(JcomboInput2Node
-				.get(inputCombo)));
+		mainPanel.getEpithelium().setIntegrationComponents(
+				JcomboInput2Node.get(inputCombo), !bool);
+//		System.out.println(JcomboInput2Node.get(inputCombo)
+//				+ " "
+//				+ mainPanel.getEpithelium().getIntegrationComponents()
+//						.get(JcomboInput2Node.get(inputCombo)));
 	}
 
 	private void fireInitialStateChange(JComboBox combo) {

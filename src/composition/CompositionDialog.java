@@ -47,20 +47,20 @@ public class CompositionDialog implements CompositionSpecificationDialog {
 	@Override
 	public Collection<Entry<NodeInfo, Integer>> getInfluencedModuleInputs(
 			NodeInfo proper, int moduleIndex) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
 	@Override
 	public Collection<Entry<NodeInfo, Integer>> getMappedToModuleArguments(
 			NodeInfo input, int moduleIndex) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
 	@Override
 	public List<NodeInfo> getNodeOrder() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 

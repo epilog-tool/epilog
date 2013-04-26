@@ -1,8 +1,5 @@
 package pt.igc.nmd.epilogue;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +9,6 @@ import java.util.Map;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.LogicalModelImpl;
 import org.colomoto.logicalmodel.NodeInfo;
-import org.colomoto.logicalmodel.io.ginml.LogicalModel2GINML;
 import org.colomoto.logicalmodel.tool.reduction.ModelReducer;
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.MDDManagerFactory;
@@ -23,9 +19,7 @@ import org.colomoto.mddlib.operators.MDDBaseOperators;
 
 import pt.igc.nmd.epilogue.integrationgrammar.CompositionContext;
 import pt.igc.nmd.epilogue.integrationgrammar.CompositionContextImpl;
-import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionClause;
-import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionClauseSet;
-import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionDNFFactory;
+import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionMDDFactory;
 
 import composition.IntegrationFunctionMapping;
 //import org.ginsim.service.tool.composition.Topology;
@@ -71,11 +65,15 @@ public class LogicalModelComposition {
 				NodeInfo newNode = new NodeInfo(computeNewName(
 						node.getNodeID(), i), node.getMax());
 
+//				System.out.println("Integration Components " + mainPanel.getEpithelium()
+//						.getIntegrationComponents());
+
 				// integration inputs are no longer inputs
 				if (node.isInput()
-						&& mainPanel.getIntegrationComponents().contains(
-								node.getNodeID())) {
+						&& mainPanel.getEpithelium().getIntegrationComponents()
+								.get(node)) {
 
+					//System.out.println("Old Integrative Node that is about to not be an input "+node.getNodeID());
 					newNode.setInput(false);
 					newIntegrationNodes.add(newNode);
 				} else {
@@ -83,6 +81,9 @@ public class LogicalModelComposition {
 				}
 
 				nodeOrder.add(newNode);
+				// System.err.println("Just created node " +
+				// newNode.getNodeID());
+
 				if (newNode.getMax() > max)
 					max = newNode.getMax();
 
@@ -153,10 +154,18 @@ public class LogicalModelComposition {
 							.get(new SimpleEntry<NodeInfo, Integer>(
 									currentOldNode, instance));
 					newPath[nodeOrder.indexOf(currentNewNode)] = path[j];
-
 				}
 
+				// System.err.println("Node " + oldNode.getNodeID() + "@"
+				// + instance + " takes value " + value + " when :");
+				// for (int p = 0; p < newPath.length; p++)
+				// if (newPath[p] != -1)
+				// System.err.print(nodeOrder.get(p).getNodeID() + "="
+				// + newPath[p] + " ");
+				// System.err.println();
+
 				int pathMDD = buildPathMDD(ddmanager, newPath, value);
+
 				kMDDs[i] = MDDBaseOperators.OR.combine(ddmanager, kMDDs[i],
 						pathMDD);
 			}
@@ -164,74 +173,96 @@ public class LogicalModelComposition {
 
 		// Create MDDs for integration components
 
-		ArrayList<NodeInfo> integrationComponents = mainPanel
-				.getIntegrationComponents();
-		
-		
+//		ArrayList<NodeInfo> integrationComponents = mainPanel.getEpithelium()
+//				.getIntegrationComponents().keys();
 
-		for (NodeInfo oldeNodeIdIntegrationComponent : integrationComponents) {
+		for (NodeInfo oldeNodeIdIntegrationComponent : mainPanel.getEpithelium()
+				.getIntegrationComponents().keySet()) {
 
-			if (mainPanel.integrationComponents.get(oldeNodeIdIntegrationComponent)){
-			System.out.println(oldeNodeIdIntegrationComponent.getNodeID()+ " " +mainPanel.getEpithelium()
-					.getIntegrationFunctions(oldeNodeIdIntegrationComponent));
+			if (mainPanel.getEpithelium().getIntegrationComponents()
+					.get(oldeNodeIdIntegrationComponent)) {
+				// System.out.println(oldeNodeIdIntegrationComponent.getNodeID()
+				// + " "
+				// + mainPanel.getEpithelium().getIntegrationFunctions(
+				// oldeNodeIdIntegrationComponent));
 
-			for (byte targetValue : mainPanel.getEpithelium()
-					.getIntegrationFunctions(oldeNodeIdIntegrationComponent)
-					.keySet()) {
+				for (byte targetValue : mainPanel
+						.getEpithelium()
+						.getIntegrationFunctions(oldeNodeIdIntegrationComponent)
+						.keySet()) {
 
-				for (int i = 0; i < mainPanel.getTopology()
-						.getNumberInstances(); i++) {
-					IntegrationFunctionDNFFactory factory = new IntegrationFunctionDNFFactory(
-							context);
+					for (int i = 0; i < mainPanel.getTopology()
+							.getNumberInstances(); i++) {
+						IntegrationFunctionMDDFactory factory = new IntegrationFunctionMDDFactory(
+								context, ddmanager);
 
-					String function = mainPanel
-							.getEpithelium()
-							.getIntegrationFunctions(
-									oldeNodeIdIntegrationComponent)
-							.get(targetValue);
-					IntegrationFunctionClauseSet clauseSet = factory
-							.getClauseSet(mainPanel.getEpithelium()
-									.string2Expression(function), i);
+						// System.err.println("Integration for "
+						// + oldeNodeIdIntegrationComponent.getNodeID()
+						// + ":" + targetValue + "@" + i);
 
-					// System.err.println("FINAL for instance " + i + " :\n"
-					// + clauseSet);
+						String function = mainPanel
+								.getEpithelium()
+								.getIntegrationFunctions(
+										oldeNodeIdIntegrationComponent)
+								.get(targetValue);
 
-					if (!clauseSet.isImpossible()) {
-						NodeInfo integrationComponent = this.oldString2New
-								.get(new SimpleEntry<String, Integer>(
-										oldeNodeIdIntegrationComponent.getNodeID(), i));
-						int index = nodeOrder.indexOf(integrationComponent);
+						int integrationMDD = factory
+								.getMDD(mainPanel.getEpithelium()
+										.string2Expression(function), i);
 
-						buildIntegrationPaths(ddmanager, index, kMDDs, context,
-								clauseSet, targetValue);
+						// get all Paths and build them for targetValue
+						PathSearcher searcher = new PathSearcher(ddmanager, 1,
+								oldeNodeIdIntegrationComponent.getMax());
 
+						int path[] = searcher.getPath();
+						searcher.setNode(integrationMDD);
+
+						for (int value : searcher) {
+							if (value == 0)
+								continue;
+
+							int pathMDD = buildPathMDD(ddmanager, path,
+									targetValue);
+							NodeInfo integrationComponent = this.oldString2New
+									.get(new SimpleEntry<String, Integer>(
+											oldeNodeIdIntegrationComponent
+													.getNodeID(), i));
+							int index = nodeOrder.indexOf(integrationComponent);
+							kMDDs[index] = MDDBaseOperators.OR.combine(
+									ddmanager, kMDDs[index], pathMDD);
+						}
 					}
-				}}
+				}
 			}
 		}
 		composedModel = new LogicalModelImpl(nodeOrder, ddmanager, kMDDs);
 
-		LogicalModel2GINML exporter = new LogicalModel2GINML(composedModel);
-		try {
-			exporter.export(new FileOutputStream("test_beforeReduction.ginml"));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// LogicalModel2GINML exporter = new LogicalModel2GINML(composedModel);
+		// try {
+		// exporter.export(new FileOutputStream("test_beforeReduction.ginml"));
+		// } catch (FileNotFoundException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 
 		// Perform reduction of integration components
 		ModelReducer reducer = new ModelReducer(composedModel);
+		System.err.println("New Integration Nodes: "+ newIntegrationNodes);
 		for (NodeInfo integrationNode : newIntegrationNodes) {
-			// System.err.println("Reducing " + integrationNode.getNodeID());
+//			System.err.println("Reducing " + integrationNode.getNodeID());
 			reducer.remove(nodeOrder.indexOf(integrationNode));
+			//System.out.println("Reduced: " + integrationNode.getNodeID());
 		}
 
 		composedModel = reducer.getModel();
+//		for (NodeInfo n : composedModel.getExtraComponents()) {
+//			System.out.println("XNode: " + n.getNodeID());
+//		}
 
-		exporter = new LogicalModel2GINML(composedModel);
+		// exporter = new LogicalModel2GINML(composedModel);
 		// try {
 		// exporter.export(new FileOutputStream("test_afterReduction.ginml"));
 		// } catch (FileNotFoundException e) {
@@ -275,31 +306,6 @@ public class LogicalModelComposition {
 	public void resetComposedModel() {
 		composedModel = null;
 		// TODO Auto-generated method stub
-
-	}
-
-	public void buildIntegrationPaths(MDDManager ddmanager, int index,
-			int[] kMDDs, CompositionContext context,
-			IntegrationFunctionClauseSet clauseSet, byte targetValue) {
-
-		for (IntegrationFunctionClause myClause : clauseSet.getClauses()) {
-
-			byte[] clause = myClause.asByteArray(context);
-
-			// for (int w = 0; w < clause.length; w++)
-			// if (clause[w] != -1)
-			// System.err.print("(" + w + ") " + clause[w] + " ");
-			// System.err.println();
-			// System.err.println();
-
-			int[] path = new int[clause.length];
-			for (int z = 0; z < path.length; z++)
-				path[z] = (int) clause[z];
-
-			int pathMDD = buildPathMDD(ddmanager, path, targetValue);
-			kMDDs[index] = MDDBaseOperators.OR.combine(ddmanager, kMDDs[index],
-					pathMDD);
-		}
 	}
 
 	public void resetLogicalModelComposition() {
