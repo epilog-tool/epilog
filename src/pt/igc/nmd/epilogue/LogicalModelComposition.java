@@ -1,5 +1,8 @@
 package pt.igc.nmd.epilogue;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +12,7 @@ import java.util.Map;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.LogicalModelImpl;
 import org.colomoto.logicalmodel.NodeInfo;
+import org.colomoto.logicalmodel.io.ginml.LogicalModel2GINML;
 import org.colomoto.logicalmodel.tool.reduction.ModelReducer;
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.MDDManagerFactory;
@@ -65,15 +69,15 @@ public class LogicalModelComposition {
 				NodeInfo newNode = new NodeInfo(computeNewName(
 						node.getNodeID(), i), node.getMax());
 
-//				System.out.println("Integration Components " + mainPanel.getEpithelium()
-//						.getIntegrationComponents());
+//				System.out.println(mainPanel.getEpithelium().getIntegrationComponents()
+//								.get(node));
 
 				// integration inputs are no longer inputs
 				if (node.isInput()
 						&& mainPanel.getEpithelium().getIntegrationComponents()
 								.get(node)) {
 
-					//System.out.println("Old Integrative Node that is about to not be an input "+node.getNodeID());
+//					System.out.println("Old Integrative Node that is about to not be an input "+node.getNodeID());
 					newNode.setInput(false);
 					newIntegrationNodes.add(newNode);
 				} else {
@@ -250,17 +254,13 @@ public class LogicalModelComposition {
 
 		// Perform reduction of integration components
 		ModelReducer reducer = new ModelReducer(composedModel);
-		System.err.println("New Integration Nodes: "+ newIntegrationNodes);
+		//System.err.println("New Integration Nodes: "+ newIntegrationNodes);
 		for (NodeInfo integrationNode : newIntegrationNodes) {
-//			System.err.println("Reducing " + integrationNode.getNodeID());
+			//System.err.println("Reducing " + integrationNode.getNodeID());
 			reducer.remove(nodeOrder.indexOf(integrationNode));
-			//System.out.println("Reduced: " + integrationNode.getNodeID());
 		}
 
 		composedModel = reducer.getModel();
-//		for (NodeInfo n : composedModel.getExtraComponents()) {
-//			System.out.println("XNode: " + n.getNodeID());
-//		}
 
 		// exporter = new LogicalModel2GINML(composedModel);
 		// try {

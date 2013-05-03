@@ -93,7 +93,7 @@ public class DrawPolygon extends JPanel {
 					}
 
 					if (!mainPanel.getSimulation().getHasInitiated()) {
-						g.setColor(Color.white); // Hexagons Color keep white white. Before Initialization
+						g.setColor(Color.white); // Hexagons Color Kep white
 						g.fillPolygon(polygon2);
 						g.setColor(Color.black);
 						g.drawPolygon(polygon2);

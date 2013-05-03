@@ -7,8 +7,6 @@ import java.util.Hashtable;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 
-import antlr.RecognitionException;
-
 import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification;
 import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
 
@@ -18,33 +16,62 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	private LogicalModel unitaryModel = null;
-	private LogicalModel composedModel = null;
+
+	public Color colors[] = { Color.orange, Color.green, Color.blue,
+			Color.pink, Color.yellow, Color.magenta, Color.cyan, Color.red,
+			Color.LIGHT_GRAY, Color.black };
+
+	private transient LogicalModel unitaryModel;
+	private transient LogicalModel composedModel;
 	private Hashtable<NodeInfo, Color> node2Color;
 	private Hashtable<NodeInfo, Boolean> activeComponents;
 	private Hashtable<Integer, Boolean> perturbedInstances;
 	private Hashtable<NodeInfo, Boolean> integrationComponents;
 	private Hashtable<NodeInfo, Hashtable<Byte, String>> integrationFunctionStrings;
 
+	private Hashtable<NodeInfo, Integer> initialState;
+
 	private Topology topology;
 
 	public SphericalEpithelium(Topology topology) {
 
 		this.topology = topology;
-		node2Color = new Hashtable<NodeInfo, Color>();
-		activeComponents = new Hashtable<NodeInfo, Boolean>();
-		perturbedInstances = new Hashtable<Integer, Boolean>();
+		this.node2Color = new Hashtable<NodeInfo, Color>();
+		this.activeComponents = new Hashtable<NodeInfo, Boolean>();
+		this.perturbedInstances = new Hashtable<Integer, Boolean>();
 		this.integrationFunctionStrings = new Hashtable<NodeInfo, Hashtable<Byte, String>>();
 		this.integrationComponents = new Hashtable<NodeInfo, Boolean>();
+		this.unitaryModel = unitaryModel;
+		this.initialState = new Hashtable<NodeInfo, Integer>();
+	}
 
+	public void setInitialState(NodeInfo nodeInfo, Integer initialStateValue) {
+		this.initialState.put(nodeInfo, initialStateValue);
+	}
+
+	public int getInitialState(NodeInfo a2) {
+		return (int) this.initialState.get(a2);
+	}
+
+	public void initializeColors() {
+		System.out.println("Unitary Model @initializeColors" + unitaryModel);
+		for (int i = 0; i < unitaryModel.getNodeOrder().size(); i++) {
+			int j = 0;
+			if (i < colors.length)
+				j = i;
+			else
+				j = colors.length - 1;
+
+			setColor(unitaryModel.getNodeOrder().get(i), colors[j]);
+			// System.out.println(colors[j]);
+		}
 	}
 
 	public void setIntegrationComponents(NodeInfo node, boolean b) {
 		this.integrationComponents.put(node, b);
 	}
-	
-	public Hashtable<NodeInfo, Boolean> getIntegrationComponents(){
+
+	public Hashtable<NodeInfo, Boolean> getIntegrationComponents() {
 		return this.integrationComponents;
 	}
 
@@ -120,6 +147,7 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 	}
 
 	public void setActiveComponents(NodeInfo node, Boolean bool) {
+		// System.out.println(this.activeComponents);
 		this.activeComponents.put(node, bool);
 	}
 

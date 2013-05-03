@@ -12,6 +12,13 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 
 public class Save {
+	
+	/*
+	 * what do I want to save: 1) Unitary model 2) Composed Model 3) initial
+	 * conditions 4) integration strings 5) integration inputs 6) environment
+	 * inputs states 7) Roll over options 8) Grid Dimensions 9) active inputs(?)
+	 * 10) sbml file name 11) colors associated with each compoenent 12)
+	 */
 
 	MainPanel mainPanel;
 	private JFileChooser fc = new JFileChooser();

@@ -4,13 +4,14 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -109,6 +110,8 @@ public class SetupConditions extends JFrame {
 	private NodeInfo selectedPerturbedComponent;
 
 	private Color backgroundColor;
+
+	private JTextField filename = new JTextField(), dir = new JTextField();
 
 	/*
 	 * 
@@ -285,7 +288,7 @@ public class SetupConditions extends JFrame {
 				Jcombo2Node.put(initialStatePerComponent[i], listNodes.get(i));
 				node2Jcombo.put(listNodes.get(i), initialStatePerComponent[i]);
 
-				mainPanel.getSimulation().setInitialState(
+				mainPanel.getEpithelium().setInitialState(
 						Jcombo2Node.get(initialStatePerComponent[i]), 0);
 
 				initialStatePerComponent[i]
@@ -337,7 +340,8 @@ public class SetupConditions extends JFrame {
 
 				inputComboChooser[i].setBounds(155 + xOffsetInput,
 						20 + yOffsetInput, 50, 25);
-				if (!mainPanel.getEpithelium().getIntegrationComponents().get(listNodes.get(i))) {
+				if (!mainPanel.getEpithelium().getIntegrationComponents()
+						.get(listNodes.get(i))) {
 					inputComboChooser[i]
 							.addItem(InputOption
 									.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));
@@ -345,7 +349,8 @@ public class SetupConditions extends JFrame {
 							.addItem(InputOption
 									.getDescriptionString(InputOption.INTEGRATION_INPUT));
 				}
-				if (mainPanel.getEpithelium().getIntegrationComponents().get(listNodes.get(i))) {
+				if (mainPanel.getEpithelium().getIntegrationComponents()
+						.get(listNodes.get(i))) {
 					inputComboChooser[i]
 							.addItem(InputOption
 									.getDescriptionString(InputOption.INTEGRATION_INPUT));
@@ -375,7 +380,7 @@ public class SetupConditions extends JFrame {
 
 							case INTEGRATION_INPUT: {
 
-								//System.out.println("Changed to integration");
+								// System.out.println("Changed to integration");
 								setEnvOptions(source, false);
 								setInitialSetupHasChanged(true);
 							}
@@ -392,19 +397,18 @@ public class SetupConditions extends JFrame {
 
 				inputCount = inputCount + 1;
 
-//				System.out.println(mainPanel.getEpithelium().getIntegrationComponents()
-//						.get(listNodes.get(i)));
-				integrationFunctionButton
-						.setVisible(mainPanel.getEpithelium().getIntegrationComponents()
-								.get(listNodes.get(i)));
-				nodeBox[i].setEnabled(!mainPanel.getEpithelium().getIntegrationComponents()
+				// System.out.println(mainPanel.getEpithelium()
+				// .getIntegrationComponents().get(listNodes.get(i)));
+				integrationFunctionButton.setVisible(mainPanel.getEpithelium()
+						.getIntegrationComponents().get(listNodes.get(i)));
+				nodeBox[i].setEnabled(!mainPanel.getEpithelium()
+						.getIntegrationComponents().get(listNodes.get(i)));
+				initialStatePerComponent[i].setVisible(!mainPanel
+						.getEpithelium().getIntegrationComponents()
 						.get(listNodes.get(i)));
-				initialStatePerComponent[i]
-						.setVisible(!mainPanel.getEpithelium().getIntegrationComponents()
-								.get(listNodes.get(i)));
 				colorChooser.get(i).setVisible(
 						!mainPanel.getEpithelium().getIntegrationComponents()
-						.get(listNodes.get(i)));
+								.get(listNodes.get(i)));
 
 			} else if (!listNodes.get(i).isInput()) {
 
@@ -446,7 +450,7 @@ public class SetupConditions extends JFrame {
 
 				Jcombo2Node.put(initialStatePerComponent[i], listNodes.get(i));
 
-				mainPanel.getSimulation().setInitialState(
+				mainPanel.getEpithelium().setInitialState(
 						Jcombo2Node.get(initialStatePerComponent[i]), 0);
 
 				initialStatePerComponent[i]
@@ -615,34 +619,8 @@ public class SetupConditions extends JFrame {
 		});
 		buttonSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser fc = new JFileChooser();
+				save();
 
-				int returnVal = fc.showSaveDialog(null);
-
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-
-					File file = fc.getSelectedFile(); // This grabs the File you
-					// typed
-					System.out.println(file.getAbsolutePath());
-
-					try {
-						MapPanel.repaint();
-						FileOutputStream fos = new FileOutputStream(file
-								.getAbsolutePath());
-
-						ObjectOutputStream oos = new ObjectOutputStream(fos);
-						oos.writeObject(cells);
-
-						oos.close();
-
-						System.out.println(file.getAbsolutePath() + " ");
-
-					} catch (IOException e2)
-
-					{
-						e2.printStackTrace();
-					}
-				}
 			}
 		});
 
@@ -748,6 +726,31 @@ public class SetupConditions extends JFrame {
 		setLocationRelativeTo(null);
 	}
 
+	public void save() {
+		JFileChooser fc = new JFileChooser();
+
+		
+		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
+
+			try {
+
+				FileOutputStream fos = new FileOutputStream(fc
+						.getSelectedFile().getAbsolutePath());
+
+				ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+				oos.writeObject(epithelium);
+				oos.close();
+//				System.out.println(fc.getSelectedFile().getName());
+//				System.out.println(epithelium);
+			} catch (IOException e) {
+
+				e.printStackTrace();
+			}
+		System.out.println("Unitary Model @save()" + epithelium.getUnitaryModel());
+
+	}
+
 	protected void setComposedModelDisplay(boolean b) {
 		JCheckBox aux = new JCheckBox();
 		composedModelActive = b;
@@ -850,15 +853,15 @@ public class SetupConditions extends JFrame {
 
 		mainPanel.getEpithelium().setIntegrationComponents(
 				JcomboInput2Node.get(inputCombo), !bool);
-//		System.out.println(JcomboInput2Node.get(inputCombo)
-//				+ " "
-//				+ mainPanel.getEpithelium().getIntegrationComponents()
-//						.get(JcomboInput2Node.get(inputCombo)));
+		// System.out.println(JcomboInput2Node.get(inputCombo)
+		// + " "
+		// + mainPanel.getEpithelium().getIntegrationComponents()
+		// .get(JcomboInput2Node.get(inputCombo)));
 	}
 
 	private void fireInitialStateChange(JComboBox combo) {
 
-		mainPanel.getSimulation().setInitialState(Jcombo2Node.get(combo),
+		mainPanel.getEpithelium().setInitialState(Jcombo2Node.get(combo),
 				(Integer) combo.getSelectedItem());
 	}
 
@@ -891,15 +894,17 @@ public class SetupConditions extends JFrame {
 
 		mainPanel.refreshComponentsColors();
 
-		for (NodeInfo node : listNodes) {
-			if (node2IntInput.get(node)) {
-				for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
-					mainPanel.getGrid().getGrid().get(instance)
-							.put(node, (byte) 0);
-				}
-			}
-		}
-
+		// for (NodeInfo node : listNodes) {
+		// if (node2IntInput.get(node)) {
+		// for (int instance = 0; instance < topology.getNumberInstances();
+		// instance++) {
+		// mainPanel.getGrid().getGrid().get(instance)
+		// .put(node, (byte) 0);
+		// }
+		// }
+		// }
+		mainPanel.componentsPanel.removeAll();
+		mainPanel.componentsPanel.init();
 		dispose();
 	}
 
@@ -997,36 +1002,6 @@ public class SetupConditions extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-
-				startX = arg0.getX();
-				startY = arg0.getX();
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
-				endX = arg0.getX();
-				endY = arg0.getX();
-			}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
 				int ind_it = (int) Math.floor((arg0.getX() / (1.5 * MapPanel.radius)));
 
 				double ind_yts = (arg0.getY() - (ind_it % 2) * MapPanel.height
@@ -1067,7 +1042,74 @@ public class SetupConditions extends JFrame {
 					Fill(i, j);
 
 				}
+
 			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				startX = arg0.getX();
+				startY = arg0.getX();
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+
+				endX = arg0.getX();
+				endY = arg0.getX();
+
+				int ind_it = (int) Math.floor((arg0.getX() / (1.5 * MapPanel.radius)));
+
+				int ind_yts = (int) (arg0.getY() - (ind_it % 2)
+						* MapPanel.height / 2);
+				int ind_jt = (int) Math.floor(ind_yts / (MapPanel.height));
+
+				int xt = (int) ((int) arg0.getX() - ind_it
+						* (1.5 * MapPanel.radius));
+				int yt = (int) (ind_yts - ind_jt * (MapPanel.height));
+				int i = 0, j = 0;
+				int deltaj = 0;
+
+				if (yt > MapPanel.height / 2)
+					deltaj = 1;
+				else
+					deltaj = 0;
+
+				if (xt > MapPanel.radius
+						* Math.abs(0.5 - (yt / MapPanel.height))) {
+					i = (int) ind_it;
+					j = (int) ind_jt;
+
+				} else {
+					i = (int) ind_it - 1;
+					j = (int) (ind_jt - i % 2 + deltaj);
+				}
+
+				Rectangle a = new Rectangle(startX - ind_it, startY - ind_jt,
+						Math.abs(endX - startX), Math.abs(endY - startY));
+
+				MapPanel.getGraphics().drawRect(startX - ind_it,
+						startY - ind_it, Math.abs(endX - startX),
+						Math.abs(endY - startY));
+
+				for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
+
+				}
+			}
+
 		});
 	}
 
@@ -1134,7 +1176,7 @@ public class SetupConditions extends JFrame {
 			if (componentDisplay.get(a2)) {
 
 				mainPanel.getGrid().setGrid(instance, a2,
-						(byte) mainPanel.getSimulation().getInitialState(a2));
+						(byte) mainPanel.getEpithelium().getInitialState(a2));
 
 			}
 		}
@@ -1151,7 +1193,7 @@ public class SetupConditions extends JFrame {
 
 		for (NodeInfo a2 : a) {
 			if (componentDisplay.get(a2)) {
-				int value = mainPanel.getSimulation().getInitialState(a2);
+				int value = mainPanel.getEpithelium().getInitialState(a2);
 
 				if (value > 0) {
 					color = epithelium.getColors().get(a2);

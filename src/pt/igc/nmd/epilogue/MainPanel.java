@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
@@ -17,10 +16,7 @@ import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
-
-import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
 
 public class MainPanel extends JFrame {
 
@@ -268,10 +264,10 @@ public class MainPanel extends JFrame {
 	
 	}
 
-	public LogicalModel getUnitaryModel() {
-		repaint();
-		return this.startPanel.getUnitaryModel();
-	}
+//	public LogicalModel getUnitaryModel() {
+//		repaint();
+//		return this.startPanel.getUnitaryModel();
+//	}
 
 	public void refreshComponentsColors() {
 		for (NodeInfo node : getEpithelium().getUnitaryModel().getNodeOrder()) {
@@ -280,7 +276,6 @@ public class MainPanel extends JFrame {
 			componentsPanel.colorChooser2Node.get(node).setBackground(color);
 			componentsPanel.colorChooser2Node.get(node).panel.mapcolor = color;
 			componentsPanel.colorChooser2Node.get(node).panel.revalidate();
-
 		}
 
 	}
@@ -309,6 +304,7 @@ public class MainPanel extends JFrame {
 //			}
 //
 //		}
+		// TODO Auto-generated method stub
 //		return integrationStringComponents;
 //	}
 

@@ -9,8 +9,14 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.beans.XMLEncoder;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -21,6 +27,7 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 
 public class StartPanel extends JPanel {
@@ -31,24 +38,24 @@ public class StartPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JButton closeButton;
-	private JButton modelButton;
+	private JButton loadModelButton;
 	private JButton setupConditionsButton;
 	private JButton restartButton;
 	private JButton runButton;
 	private JButton stepButton;
 	private JButton quitButton;
 	private JButton simulationButton;
+	private JButton loadConfigurations;
 
 	private JLabel labelFilename = new JLabel();
 	private JLabel iterationNumber = new JLabel();
-
+	private JLabel selectedFilenameLabel;
+	
 	private static JTextField userDefinedWidth = new JTextField();
 	private static JTextField userDefinedHeight = new JTextField();
-	private JLabel selectedFilenameLabel;
+	
+	
 	private JFileChooser fc = new JFileChooser();
-	private LogicalModel model;
-
-	// private ComponentsPanel componentsPanel = new ComponentsPanel();
 	private MainPanel mainPanel = null;
 	private SphericalEpithelium epithelium;
 	private Topology topology;
@@ -73,7 +80,7 @@ public class StartPanel extends JPanel {
 		 * Components definitions
 		 */
 
-		modelButton = new JButton("Model");
+		loadModelButton = new JButton("Load Model");
 		selectedFilenameLabel = new JLabel();
 		restartButton = new JButton("Restart");
 		closeButton = new JButton("Close");
@@ -82,6 +89,7 @@ public class StartPanel extends JPanel {
 		setupConditionsButton = new JButton("Setup Conditions");
 		runButton = new RunStopButton();
 		stepButton = new JButton("Step");
+		loadConfigurations = new JButton("Load Configurations");
 
 		JLabel setWidth = new JLabel();
 		JLabel setHeight = new JLabel();
@@ -91,7 +99,7 @@ public class StartPanel extends JPanel {
 
 		setWidth.setText("Width: ");
 		setHeight.setText("Height: ");
-		
+
 		setWidth.setForeground(Color.white);
 		setHeight.setForeground(Color.white);
 		labelFilename.setText("Filename: ");
@@ -99,7 +107,7 @@ public class StartPanel extends JPanel {
 		iterationNumber.setText(""
 				+ mainPanel.getSimulation().getIterationNumber());
 
-		modelButton.setBounds(230, 13, 100, 30);
+		loadModelButton.setBounds(230, 13, 100, 30);
 		selectedFilenameLabel.setBounds(335, 13, 100, 30);
 
 		quitButton.setBackground(Color.red);
@@ -138,7 +146,6 @@ public class StartPanel extends JPanel {
 				mainPanel.restartAnalytics();
 
 				selectedFilenameLabel.setText("");
-				
 
 				mainPanel.componentsPanel.setVisible(false);
 				mainPanel.watcherPanel.setVisible(false);
@@ -167,7 +174,7 @@ public class StartPanel extends JPanel {
 
 				mainPanel.getLogicalModelComposition()
 						.resetLogicalModelComposition();
-
+				integrationComponentsReset();
 			}
 		});
 
@@ -211,11 +218,8 @@ public class StartPanel extends JPanel {
 				setupConditionsButton.setEnabled(true);
 				userDefinedWidth.setEnabled(true);
 				userDefinedHeight.setEnabled(true);
-
 				mainPanel.getSimulation().initializeSimulation();
 				mainPanel.restartAnalytics();
-				
-
 			}
 		});
 
@@ -250,9 +254,8 @@ public class StartPanel extends JPanel {
 				sanityCheckDimension(userDefinedWidth);
 				setWidth();
 				mainPanel.setInitialSetupHasChanged(true);
-				if (model != null)
+				if (mainPanel.getEpithelium().getUnitaryModel() != null)
 					mainPanel.getGrid().initializeGrid();
-
 			}
 		});
 
@@ -267,9 +270,8 @@ public class StartPanel extends JPanel {
 				sanityCheckDimension(userDefinedHeight);
 				setHeight();
 				mainPanel.setInitialSetupHasChanged(true);
-				if (model != null)
+				if (mainPanel.getEpithelium().getUnitaryModel() != null)
 					mainPanel.getGrid().initializeGrid();
-
 			}
 		});
 
@@ -281,32 +283,28 @@ public class StartPanel extends JPanel {
 				sanityCheckDimension(userDefinedHeight);
 				setWidth();
 				setHeight();
-
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
-				// TODO Auto-generated method stub
+
 				sanityCheckDimension(userDefinedWidth);
 				sanityCheckDimension(userDefinedHeight);
 				setWidth();
 				setHeight();
-
 			}
 
 			@Override
 			public void mouseExited(MouseEvent arg0) {
-				// TODO Auto-generated method stub
 			}
 
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				// TODO Auto-generated method stub
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-				// TODO Auto-generated method stub
+
 			}
 		});
 
@@ -315,9 +313,19 @@ public class StartPanel extends JPanel {
 		 * function askmodel performs all the operations
 		 */
 
-		modelButton.addActionListener(new ActionListener() {
+		loadModelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				askModel();
+				mainPanel.getContentPane().repaint();
+				mainPanel.getSimulation().resetIterationNumber();
+
+			}
+
+		});
+
+		loadConfigurations.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				askConfigurations();
 				mainPanel.getContentPane().repaint();
 				mainPanel.getSimulation().resetIterationNumber();
 
@@ -389,15 +397,13 @@ public class StartPanel extends JPanel {
 		/*
 		 * Initial Conditions Button:
 		 */
-
 		setupConditionsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				final SetupConditions initialConditionsPanel = new SetupConditions(epithelium, topology,
-						mainPanel);
+				final SetupConditions initialConditionsPanel = new SetupConditions(
+						epithelium, topology, mainPanel);
 				initialConditionsPanel.initialize();
 				initialConditionsPanel
 						.initializeCells(initialConditionsPanel.cells);
-
 			}
 		});
 
@@ -408,7 +414,8 @@ public class StartPanel extends JPanel {
 		add(userDefinedWidth);
 		add(setHeight);
 		add(userDefinedHeight);
-		add(modelButton);
+		add(loadConfigurations);
+		add(loadModelButton);
 		add(labelFilename);
 		add(selectedFilenameLabel);
 		add(runButton);
@@ -430,17 +437,23 @@ public class StartPanel extends JPanel {
 		mainPanel.repaint();
 	}
 
+	private void integrationComponentsReset() {
+		for (NodeInfo node : mainPanel.getEpithelium().getUnitaryModel()
+				.getNodeOrder()) {
+			if (node.isInput())
+				mainPanel.getEpithelium().setIntegrationComponents(node, false);
+		}
+	}
+
 	private void setHeight() {
 		mainPanel.getTopology().setHeight(
 				Integer.parseInt(userDefinedHeight.getText()));
-
 	}
 
 	private void setWidth() {
 
 		mainPanel.getTopology().setWidth(
 				Integer.parseInt(userDefinedWidth.getText()));
-
 	}
 
 	private void askModel() {
@@ -451,8 +464,40 @@ public class StartPanel extends JPanel {
 			selectedFilenameLabel.setText(fc.getSelectedFile().getName());
 			selectedFilenameLabel.setForeground(Color.white);
 			loadModel();
+		}
+	}
+
+	private void askConfigurations() {
+
+		SphericalEpithelium epithelium = new SphericalEpithelium(topology);
+
+		fc.setDialogTitle("Choose file");
+
+		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			// selectedFilenameLabel.setText(fc.getSelectedFile().getName());
+			// selectedFilenameLabel.setForeground(Color.white);
+
+			try {
+//				ObjectOutputStream oos = new ObjectOutputStream(
+//						new FileOutputStream(fc.getSelectedFile()
+//								.getAbsolutePath(), true));
+				ObjectInputStream ois = new ObjectInputStream(
+						new FileInputStream(fc.getSelectedFile()
+								.getAbsolutePath()));
+
+				epithelium = (SphericalEpithelium) ois.readObject();
+
+			} catch (FileNotFoundException e) {
+
+			} catch (IOException e) {
+
+			} catch (ClassNotFoundException e) {
+
+			}
 
 		}
+
+		loadConfigurations();
 	}
 
 	private void loadModel() {
@@ -463,6 +508,12 @@ public class StartPanel extends JPanel {
 
 		try {
 			logicalModel = sbmlFormat.importFile(file);
+			
+//			FileOutputStream fos = new FileOutputStream("foo.dat");
+//			ObjectOutputStream oos = new ObjectOutputStream(fos);
+//			oos.writeObject(mainPanel.getEpithelium());
+		
+			
 		} catch (IOException e) {
 			System.err.println("Cannot import file " + file.getAbsolutePath()
 					+ ": " + e.getMessage());
@@ -472,7 +523,8 @@ public class StartPanel extends JPanel {
 			return;
 
 		mainPanel.getEpithelium().setUnitaryModel(logicalModel);
-
+		integrationComponentsReset();
+		mainPanel.getEpithelium().initializeColors();
 		mainPanel.componentsPanel.removeAll();
 		mainPanel.componentsPanel.init();
 		mainPanel.getContentPane().repaint();
@@ -486,7 +538,6 @@ public class StartPanel extends JPanel {
 		setupConditionsButton.setVisible(true);
 		restartButton.setVisible(true);
 		closeButton.setVisible(true);
-		setUnitaryModel(logicalModel);
 		stepButton.setEnabled(true);
 		runButton.setEnabled(true);
 		userDefinedWidth.setEnabled(true);
@@ -507,13 +558,69 @@ public class StartPanel extends JPanel {
 		TitledBorder titleInitialConditions;
 		titleInitialConditions = BorderFactory.createTitledBorder("");
 		mainPanel.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
+
 	}
 
-	public void setUnitaryModel(LogicalModel chosenmodel) {
-		model = chosenmodel;
+	private void loadConfigurations() {
+
+
+		System.out.println("Unitary Model @loadConfigurations" + epithelium.getUnitaryModel());
+		System.out.println("Height @loadConfigurations" + epithelium.getTopology().getHeight());
+		
+//		FileInputStream fis = null;
+//		try {
+//			fis = new FileInputStream("foo.bin");
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		  ObjectInputStream ois = null;
+//		try {
+//			ois = new ObjectInputStream(fis);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		  try {
+//			SphericalEpithelium aFoo = (SphericalEpithelium) ois.readObject();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		mainPanel.getEpithelium().initializeColors();
+		mainPanel.componentsPanel.removeAll();
+		mainPanel.componentsPanel.init();
+		mainPanel.getContentPane().repaint();
+		mainPanel.componentsPanel.setVisible(true);
+		mainPanel.watcherPanel.setVisible(true);
+
+		labelFilename.setVisible(true);
+		stepButton.setVisible(true);
+		runButton.setVisible(false);
+		stepButton.setVisible(false);
+		simulationButton.setVisible(true);
+		setupConditionsButton.setVisible(true);
+		restartButton.setVisible(true);
+		closeButton.setVisible(true);
+		stepButton.setEnabled(true);
+		runButton.setEnabled(true);
+		userDefinedWidth.setEnabled(true);
+		userDefinedHeight.setEnabled(true);
+
+		mainPanel.watcherPanel.init();
+		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
+				.getGraphics());
+		setupConditionsButton.setEnabled(true);
+		mainPanel.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
+				.createEmptyBorder());
+		TitledBorder titleInitialConditions;
+		titleInitialConditions = BorderFactory.createTitledBorder("");
+		mainPanel.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
+
 	}
 
-	public LogicalModel getUnitaryModel() {
-		return this.model;
-	}
 }

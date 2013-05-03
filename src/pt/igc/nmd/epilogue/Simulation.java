@@ -5,7 +5,6 @@ import java.awt.Container;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
@@ -24,9 +23,8 @@ public class Simulation {
 	private byte[] state = null;
 	byte[] currentState = null;
 	private MainPanel mainPanel;
-	private Hashtable<NodeInfo, Integer> initialState;
+	//private Hashtable<NodeInfo, Integer> initialState;
 	public Hashtable<String, Byte> composedState = null;
-	public Hashtable<String, Byte> extraComposedState = null;
 	private Hashtable<NodeInfo, Integer> node2Int;
 	private Hashtable<String, NodeInfo> string2OldNode;
 	private Color color;
@@ -38,9 +36,8 @@ public class Simulation {
 		this.mainPanel = mainPanel;
 		this.state = null;
 		this.composedModel = null;
-		this.initialState = new Hashtable<NodeInfo, Integer>();
+//		this.initialState = new Hashtable<NodeInfo, Integer>();
 		this.composedState = new Hashtable<String, Byte>();
-		this.extraComposedState = new Hashtable<String, Byte>();
 		this.node2Int = new Hashtable<NodeInfo, Integer>();
 		this.string2OldNode = new Hashtable<String, NodeInfo>();
 		this.hasStarted = false;
@@ -76,6 +73,8 @@ public class Simulation {
 
 		this.stableStateFound = false;
 		testmethod();
+		//System.out.println(iterationNumber);
+
 		mainPanel.setBorderHexagonsPanel(iterationNumber);
 
 		for (NodeInfo node : composedModel.getNodeOrder()) {
@@ -106,9 +105,9 @@ public class Simulation {
 
 			nextState[index] = next;
 			setComposedState(node.getNodeID(), next);
-			// System.out.println(node + " " + index + " " + node.getMax() + " "
-			// + node.isInput() + " " + current + " " + target + " "
-			// + next);
+//			System.out.println(node + " " + index + " " + node.getMax() + " "
+//					+ node.isInput() + " " + current + " " + target + " "
+//					+ next);
 
 			if (current != next) {
 				stableStateFound_aux = false;
@@ -118,24 +117,12 @@ public class Simulation {
 		if (stableStateFound_aux) {
 			this.stableStateFound = true;
 		}
-		this.state = nextState;
-
-		List<NodeInfo> extraNodeOrder = composedModel.getExtraComponents();
-		for (int k = 0; k < extraNodeOrder.size(); k++) {
-			if (!string2OldNode.get(extraNodeOrder.get(k).getNodeID())
-					.isInput())
-				// System.out.println(extraNodeOrder.get(k));
-				setExtraComposedState(extraNodeOrder.get(k).getNodeID(),
-						composedModel.getExtraValue(k, this.state));
-			// System.out.println("Node: " +extraNodeOrder.get(k).getNodeID() +
-			// "-> Value: " + composedModel.getExtraValue(k, this.state));
-		}
-
-		System.out.println(extraComposedState);
 		saveLastPic();
+		fillHexagons();
 		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
 				.getGraphics());
 		this.iterationNumber++;
+		this.state = nextState;
 
 	}
 
@@ -159,8 +146,6 @@ public class Simulation {
 	public void initializeSimulation() {
 
 		this.composedModel = mainPanel.getEpithelium().getComposedModel();
-		composedState = new Hashtable<String, Byte>();
-		extraComposedState = new Hashtable<String, Byte>();
 
 		if (mainPanel.initialSetupHasChanged) {
 			composedModel = mainPanel.getLogicalModelComposition()
@@ -204,30 +189,13 @@ public class Simulation {
 		return this.state;
 	}
 
-	public void setInitialState(NodeInfo nodeInfo, Integer initialStateValue) {
-		this.initialState.put(nodeInfo, initialStateValue);
-	}
-
-	public int getInitialState(NodeInfo a2) {
-		return (int) this.initialState.get(a2);
-	}
-
 	public void setComposedState(String composedNodeID, byte composedState) {
 		this.composedState.put(composedNodeID, new Byte(composedState));
 
 	}
 
-	public void setExtraComposedState(String composedNodeID, byte composedState) {
-		// System.out.println("Added extra component" + extraComposedState);
-		this.extraComposedState.put(composedNodeID, new Byte(composedState));
-	}
-
 	public Hashtable<String, Byte> getComposedState() {
 		return this.composedState;
-	}
-
-	public Hashtable<String, Byte> getExtraComposedState() {
-		return this.extraComposedState;
 	}
 
 	public Color ColorInitial(int i, int j) {
@@ -298,17 +266,11 @@ public class Simulation {
 		for (NodeInfo a2 : a) {
 			if (mainPanel.getEpithelium().getComponentsDisplayOn().get(a2)) {
 
-				// TO DO: Change from key to node
-
 				String key = mainPanel.getLogicalModelComposition()
 						.computeNewName(a2.getNodeID(),
 								mainPanel.getTopology().coords2Instance(i, j));
 
 				int value = composedState.get(key);
-				// System.out.println("node: " + key +"-> value: " + value);
-				if (extraComposedState.get(key) != null)
-					value = extraComposedState.get(key);
-				System.out.println("extraComposedState: " + key);
 
 				if (value > 0) {
 					this.color = mainPanel.getEpithelium().getColors().get(a2);
