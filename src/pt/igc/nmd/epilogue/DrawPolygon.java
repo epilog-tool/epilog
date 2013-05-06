@@ -21,16 +21,16 @@ public class DrawPolygon extends JPanel {
 	public double height = 0.0, radius = 0.0;
 	public List<NodeInfo> listNodes;
 	private MainPanel mainPanel;
-	public ArrayList<ArrayList<CellGenes>> cellGenes;
+	public List<List<CellGenes>> cellGenes;
 	public int countSelected = 0;
-	public ArrayList<ArrayList<Cell>> cells = new ArrayList<ArrayList<Cell>>();
-	private Color backgroundColor;
+	public List<List<Cell>> cells = new ArrayList<List<Cell>>();
+	// private Color backgroundColor;
 
 	public DrawPolygon(MainPanel mainPanel) {
 		this.mainPanel = mainPanel;
 		this.setPreferredSize(new Dimension(500, 500));
-		this.cellGenes = new ArrayList<ArrayList<CellGenes>>();
-		this.backgroundColor = mainPanel.backgroundColor;
+		this.cellGenes = new ArrayList<List<CellGenes>>();
+	//	this.backgroundColor = mainPanel.backgroundColor;
 	}
 
 		
@@ -100,7 +100,7 @@ public class DrawPolygon extends JPanel {
 				}
 
 					else {
-						g.setColor(mainPanel.getSimulation().Color(k,j));
+						g.setColor(mainPanel.getSimulation().getCoordinateCurrentColor(k,j));
 						
 						g.fillPolygon(polygon2);
 						g.setColor(Color.black);
@@ -117,7 +117,7 @@ public class DrawPolygon extends JPanel {
 
 			}
 		} else {
-			System.out.println("XX e YY tÍm que ser maiores do que zero");
+			System.out.println("XX e YY têm que ser maiores do que zero");
 		}
 	}
 
@@ -236,13 +236,13 @@ public class DrawPolygon extends JPanel {
 
 			}
 		} else {
-			System.out.println("XX e YY tÍm que ser maiores do que zero");
+			System.out.println("XX e YY têm que ser maiores do que zero");
 		}
 	}
 
 	public void initializeCellGenes(int size) {
 
-		cellGenes = new ArrayList<ArrayList<CellGenes>>();
+		cellGenes = new ArrayList<List<CellGenes>>();
 
 		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
 

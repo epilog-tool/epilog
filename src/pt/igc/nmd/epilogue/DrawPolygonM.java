@@ -1,17 +1,11 @@
 package pt.igc.nmd.epilogue;
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Polygon;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 //import org.colomoto.logicalmodel.NodeInfo;
@@ -27,8 +21,8 @@ public class DrawPolygonM extends JPanel {
 	public double height;
 	public double width;
 	public double radius = 0.0;
-	public ArrayList<ArrayList<Cell>> cells = new ArrayList<ArrayList<Cell>>();
-	public ArrayList<ArrayList<CellGenes>> cellGenes;
+	public List<List<Cell>> cells = new ArrayList<List<Cell>>();
+	public List<List<CellGenes>> cellGenes;
 	public int startX;
 	public int startY;
 	public int endX;
@@ -83,20 +77,20 @@ public class DrawPolygonM extends JPanel {
 		// Color color = initialConditionsColor(nodeBox,
 		// initialStatePerComponent );
 
-		int instance = mainPanel.getTopology().coords2Instance(i, j);
+		
 
 	
 		g.setColor(color);
-		if (!mainPanel.getMarkPerturbation()&&!mainPanel.getEpithelium().getPerturbedInstance(instance)||mainPanel.getClearPerturbation()){
-		//g2.setStroke(stroke);
-		mainPanel.getEpithelium().setPerturbedInstance(i,j,false);
-		
-		}
-		
-		if ((mainPanel.getMarkPerturbation()||mainPanel.getEpithelium().getPerturbedInstance(instance))&&!mainPanel.getClearPerturbation()){
-		//g2.setStroke(perturbedStroke);
-		mainPanel.getEpithelium().setPerturbedInstance(i,j,true);
-		}
+//		if (!mainPanel.getMarkPerturbation()&&!mainPanel.getEpithelium().getPerturbedInstance(instance)||mainPanel.getClearPerturbation()){
+//		//g2.setStroke(stroke);
+//		mainPanel.getEpithelium().setPerturbedInstance(i,j,false);
+//		
+//		}
+//		
+//		if ((mainPanel.getMarkPerturbation()||mainPanel.getEpithelium().getPerturbedInstance(instance))&&!mainPanel.getClearPerturbation()){
+//		//g2.setStroke(perturbedStroke);
+//		mainPanel.getEpithelium().setPerturbedInstance(i,j,true);
+//		}
 		
 		g.fillPolygon(polygon2);
 		g.setColor(Color.black);
@@ -221,39 +215,39 @@ public class DrawPolygonM extends JPanel {
 				}
 			}
 		} else {
-			System.out.println("XX e YY tÍm que ser maiores do que zero");
+			System.out.println("XX e YY têm que ser maiores do que zero");
 		}
 	}
-
-	public static ArrayList<ArrayList<Cell>> getMappedCells(String file_name) {
-		ArrayList<ArrayList<Cell>> cells = new ArrayList<ArrayList<Cell>>();
-
-		try {
-			ObjectOutputStream oos = new ObjectOutputStream(
-					new FileOutputStream(file_name, true));
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
-					file_name));
-
-			cells = (ArrayList<ArrayList<Cell>>) ois.readObject();
-			// frame.mainPanel.cells=cells;
-			// frame.mainPanel.hexagonsPanel.paintComponent(frame.mainPanel.hexagonsPanel.getGraphics());
-		} catch (FileNotFoundException e) { // TODO Auto-generated catch block
-
-		} catch (IOException e) { // TODO Auto-generated catch block
-
-		} catch (ClassNotFoundException e) { // TODO Auto-generated catch block
-
-		}
-
-		finally {
-			return cells;
-
-		}
-	}
+//
+//	public static List<List<Cell>> getMappedCells(String file_name) {
+//		List<List<Cell>> cells = new ArrayList<List<Cell>>();
+//
+//		try {
+//			ObjectOutputStream oos = new ObjectOutputStream(
+//					new FileOutputStream(file_name, true));
+//			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
+//					file_name));
+//
+//			cells = (List<List<Cell>>) ois.readObject();
+//			// frame.mainPanel.cells=cells;
+//			// frame.mainPanel.hexagonsPanel.paintComponent(frame.mainPanel.hexagonsPanel.getGraphics());
+//		} catch (FileNotFoundException e) { // TODO Auto-generated catch block
+//
+//		} catch (IOException e) { // TODO Auto-generated catch block
+//
+//		} catch (ClassNotFoundException e) { // TODO Auto-generated catch block
+//
+//		}
+//
+//		finally {
+//			return cells;
+//
+//		}
+//	}
 
 	public void initializeCellGenes(int size) {
 
-		cellGenes = new ArrayList<ArrayList<CellGenes>>();
+		cellGenes = new ArrayList<List<CellGenes>>();
 
 		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
 

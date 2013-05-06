@@ -1,21 +1,28 @@
 package pt.igc.nmd.epilogue;
 
 import java.awt.Color;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Hashtable;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
+import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 
 import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification;
 import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
+
+import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 public class SphericalEpithelium implements Epithelium, Serializable {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -1473898083699327135L;
 
 	public Color colors[] = { Color.orange, Color.green, Color.blue,
 			Color.pink, Color.yellow, Color.magenta, Color.cyan, Color.red,
@@ -23,60 +30,58 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 
 	private transient LogicalModel unitaryModel;
 	private transient LogicalModel composedModel;
-	private Hashtable<NodeInfo, Color> node2Color;
-	private Hashtable<NodeInfo, Boolean> activeComponents;
-	private Hashtable<Integer, Boolean> perturbedInstances;
-	private Hashtable<NodeInfo, Boolean> integrationComponents;
-	private Hashtable<NodeInfo, Hashtable<Byte, String>> integrationFunctionStrings;
+	private String unitarySBML = null;
+	private String composedSBML = null;
 
-	private Hashtable<NodeInfo, Integer> initialState;
+	private Color[] nodeColor = null;
+	private boolean[] displayComponents = null;
+	private String[][] integrationFunctionStrings = null;
+	private byte[] initialState = null;
+	private byte grid[][] = null; // {instance , {nodeindex , value}}
 
-	private Topology topology;
+	private Topology topology = null;
 
 	public SphericalEpithelium(Topology topology) {
 
 		this.topology = topology;
-		this.node2Color = new Hashtable<NodeInfo, Color>();
-		this.activeComponents = new Hashtable<NodeInfo, Boolean>();
-		this.perturbedInstances = new Hashtable<Integer, Boolean>();
-		this.integrationFunctionStrings = new Hashtable<NodeInfo, Hashtable<Byte, String>>();
-		this.integrationComponents = new Hashtable<NodeInfo, Boolean>();
-		this.unitaryModel = unitaryModel;
-		this.initialState = new Hashtable<NodeInfo, Integer>();
 	}
 
-	public void setInitialState(NodeInfo nodeInfo, Integer initialStateValue) {
-		this.initialState.put(nodeInfo, initialStateValue);
+	public void setInitialState(NodeInfo node, byte value) {
+		this.initialState[getUnitaryModel().getNodeOrder().indexOf(node)] = value;
 	}
 
-	public int getInitialState(NodeInfo a2) {
-		return (int) this.initialState.get(a2);
+	public byte getInitialState(NodeInfo node) {
+		return this.initialState[getUnitaryModel().getNodeOrder().indexOf(node)];
 	}
 
-	public void initializeColors() {
-		System.out.println("Unitary Model @initializeColors" + unitaryModel);
-		for (int i = 0; i < unitaryModel.getNodeOrder().size(); i++) {
-			int j = 0;
-			if (i < colors.length)
-				j = i;
-			else
-				j = colors.length - 1;
+	private void initializeColors() {
 
-			setColor(unitaryModel.getNodeOrder().get(i), colors[j]);
-			// System.out.println(colors[j]);
-		}
+		this.nodeColor = new Color[getUnitaryModel().getNodeOrder().size()];
+		for (int i = 0; i < this.nodeColor.length; i++)
+			this.nodeColor[i] = colors[i < colors.length ? i
+					: colors.length - 1];
 	}
 
-	public void setIntegrationComponents(NodeInfo node, boolean b) {
-		this.integrationComponents.put(node, b);
+	private void initializeDisplayComponents() {
+		this.displayComponents = new boolean[getUnitaryModel().getNodeOrder()
+				.size()];
+		for (int i = 0; i < this.displayComponents.length; i++)
+			this.displayComponents[i] = false;
+
 	}
 
-	public Hashtable<NodeInfo, Boolean> getIntegrationComponents() {
-		return this.integrationComponents;
+	private void initializeInitialState() {
+		this.initialState = new byte[getUnitaryModel().getNodeOrder().size()];
 	}
 
-	public Hashtable<Byte, String> getIntegrationFunctions(NodeInfo node) {
-		return this.integrationFunctionStrings.get(node);
+	public boolean isIntegrationComponent(NodeInfo node) {
+		return this.integrationFunctionStrings[getUnitaryModel().getNodeOrder()
+				.indexOf(node)] != null;
+	}
+
+	public String getIntegrationFunction(NodeInfo node, byte value) {
+		return this.integrationFunctionStrings[getUnitaryModel().getNodeOrder()
+				.indexOf(node)][value - 1];
 	}
 
 	public IntegrationExpression string2Expression(
@@ -88,7 +93,7 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 		try {
 			expression = spec.parse(integrationfunctionString);
 		} catch (org.antlr.runtime.RecognitionException e) {
-			// TODO Auto-generated catch block
+			// TODO: Must send to interface
 			e.printStackTrace();
 		}
 
@@ -96,18 +101,14 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 
 	}
 
-	public void setIntegrationFunctions(NodeInfo node,
-			Hashtable<Byte, String> integrationFunctions) {
-
-		if (this.integrationFunctionStrings.get(node) == null)
-			this.integrationFunctionStrings.put(node,
-					new Hashtable<Byte, String>());
-
-		for (Byte i = 1; i <= integrationFunctions.size(); i++)
-			this.integrationFunctionStrings.get(node).put(i,
-					integrationFunctions.get(i));
-		//
-		// System.out.println(integrationFunctionStrings);
+	public void setIntegrationFunctions(NodeInfo node, byte value,
+			String expression) {
+		if (this.integrationFunctionStrings[getUnitaryModel().getNodeOrder()
+				.indexOf(node)] == null)
+			this.integrationFunctionStrings[getUnitaryModel().getNodeOrder()
+					.indexOf(node)] = new String[node.getMax()];
+		this.integrationFunctionStrings[getUnitaryModel().getNodeOrder()
+				.indexOf(node)][value - 1] = expression;
 
 	}
 
@@ -118,10 +119,68 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 	@Override
 	public void setUnitaryModel(LogicalModel model) {
 		this.unitaryModel = model;
+		initializeColors();
+		initializeDisplayComponents();
+		initializeIntegrationFunctions();
+		initializeInitialState();
+		initializeGrid();
+
+		SBMLFormat format = new SBMLFormat();
+		ByteOutputStream bos = new ByteOutputStream();
+		try {
+			format.export(this.unitaryModel, bos);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		this.unitarySBML = new String(bos.getBytes());
+
+	}
+
+	private void initializeIntegrationFunctions() {
+		this.integrationFunctionStrings = new String[getUnitaryModel()
+				.getNodeOrder().size()][];
 	}
 
 	@Override
 	public LogicalModel getUnitaryModel() {
+		if (this.unitaryModel == null && this.unitarySBML != null) {
+			File tempFile = new File("temp" + System.currentTimeMillis()
+					+ ".sbml");
+			FileOutputStream fos = null;
+			try {
+				fos = new FileOutputStream(tempFile);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			try {
+				fos.write(this.unitarySBML.getBytes());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			try {
+				fos.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			SBMLFormat format = new SBMLFormat();
+			try {
+				setUnitaryModel(format.importFile(tempFile));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			tempFile.delete();
+
+		}
 		return this.unitaryModel;
 	}
 
@@ -134,41 +193,48 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 		this.composedModel = composedModel;
 	}
 
-	public Hashtable<NodeInfo, Color> getColors() {
-		return this.node2Color;
-	}
-
 	public void setColor(NodeInfo node, Color color) {
-		this.node2Color.put(node, color);
+		this.nodeColor[getUnitaryModel().getNodeOrder().indexOf(node)] = color;
 	}
 
-	public Hashtable<NodeInfo, Boolean> getComponentsDisplayOn() {
-		return this.activeComponents;
+	public boolean isDisplayComponentOn(NodeInfo node) {
+		return this.displayComponents[getUnitaryModel().getNodeOrder().indexOf(
+				node)];
 	}
 
-	public void setActiveComponents(NodeInfo node, Boolean bool) {
-		// System.out.println(this.activeComponents);
-		this.activeComponents.put(node, bool);
+	public void setActiveComponent(NodeInfo node, boolean bool) {
+		this.displayComponents[getUnitaryModel().getNodeOrder().indexOf(node)] = bool;
+	}
+
+	public void setActiveComponent(NodeInfo node) {
+		setActiveComponent(node, true);
 	}
 
 	public Color getColor(NodeInfo node) {
-		return node2Color.get(node);
+		return nodeColor[getUnitaryModel().getNodeOrder().indexOf(node)];
 	}
 
-	public void setPerturbedInstance(int i, int j, boolean b) {
-		int instance = topology.coords2Instance(i, j);
-		perturbedInstances.put(instance, b);
+	public void initializeGrid() {
 
+		this.grid = new byte[topology.getNumberInstances()][];
+		for (int i = 0; i < topology.getNumberInstances(); i++) {
+			this.grid[i] = new byte[getUnitaryModel().getNodeOrder().size()];
+			for (NodeInfo node : getUnitaryModel().getNodeOrder())
+				grid[i][getUnitaryModel().getNodeOrder().indexOf(node)] = 0;
+		}
 	}
 
-	public boolean getPerturbedInstance(int instance) {
-		return perturbedInstances.get(instance);
+	public byte getGridValue(Integer instance, NodeInfo node) {
 
+		return this.grid[instance][getUnitaryModel().getNodeOrder().indexOf(
+				node)];
 	}
 
-	public void setPerturbedInstance(int instance, boolean b) {
-		perturbedInstances.put(instance, b);
-
+	public void setGrid(Integer instance, NodeInfo node, byte value) {
+		this.grid[instance][getUnitaryModel().getNodeOrder().indexOf(node)] = value;
 	}
 
+	public SphericalEpithelium getEpithelium(){
+		return this;
+	}
 }

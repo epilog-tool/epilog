@@ -1,5 +1,6 @@
 package pt.igc.nmd.epilogue;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -7,12 +8,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class Topology {
+public class Topology implements Serializable {
 
-	// private Set<Integer> neighbors = Collections.synchronizedSet(new
-	// HashSet<Integer>());;
-	// private Set<Integer> neighborsaux = Collections.synchronizedSet(new
-	// HashSet<Integer>());
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3713765674642632574L;
+
 	static Set<Integer> neighbors1 = Collections
 			.synchronizedSet(new HashSet<Integer>());;
 	static Set<Integer> neighborsaux1 = Collections
@@ -33,8 +35,6 @@ public class Topology {
 		this.height = height;
 		this.rollOver = rollOver;
 
-		// neighbors = Collections.synchronizedSet(new HashSet<Integer>());;
-		// neighborsaux = Collections.synchronizedSet(new HashSet<Integer>());;
 	}
 
 	public void setHeight(int height) {

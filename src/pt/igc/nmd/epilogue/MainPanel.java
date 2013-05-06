@@ -32,8 +32,8 @@ public class MainPanel extends JFrame {
 	public Topology topology;
 	public Simulation simulation;
 	public LogicalModelComposition logicalModelComposition;
-	public Grid grid;
-	//public Hashtable<NodeInfo, Boolean> integrationComponents;
+	// public Grid grid;
+	// public Hashtable<NodeInfo, Boolean> integrationComponents;
 	public boolean initialSetupHasChanged;
 	public SetupConditions initialConditions;
 
@@ -51,10 +51,10 @@ public class MainPanel extends JFrame {
 
 		this.topology = new Topology(20, 20);
 		this.epithelium = new SphericalEpithelium(this.topology);
-		this.simulation = new Simulation(this);
+		this.simulation = new Simulation(this, epithelium);
 		this.logicalModelComposition = new LogicalModelComposition(this);
-		this.grid = new Grid(this);
-		//integrationComponents = new Hashtable<NodeInfo, Boolean>();
+		// this.grid = new Grid(this);
+		// integrationComponents = new Hashtable<NodeInfo, Boolean>();
 		initialSetupHasChanged = false;
 		this.markPerturbationControl = false;
 		this.clearPerturbationControl = true;
@@ -176,10 +176,6 @@ public class MainPanel extends JFrame {
 
 	}
 
-	public Grid getGrid() {
-		return this.grid;
-	}
-
 	public LogicalModelComposition getLogicalModelComposition() {
 		return this.logicalModelComposition;
 	}
@@ -198,11 +194,11 @@ public class MainPanel extends JFrame {
 		getContentPane().setBackground(backgroundColor);
 		getContentPane().setLayout(null);
 		this.setResizable(true);
-		
+
 		tabbedPane = new JTabbedPane();
 		startPanel = new StartPanel(this);
 		hexagonsPanel = new DrawPolygon(this);
-		componentsPanel = new ComponentsPanel(this, Color.white);
+		componentsPanel = new ComponentsPanel(this, Color.white, epithelium);
 		watcherPanel = new TextPanel(this);
 		auxiliaryHexagonsPanel = new JPanel();
 
@@ -213,10 +209,10 @@ public class MainPanel extends JFrame {
 		hexagonsPanel.setBounds(10, 80, 400, 500);
 		tabbedPane.setBounds(535, 60, 630, 240);
 		componentsPanel.setBounds(530, 310, 650, 250);
-		
+
 		tabbedPane.addTab("Value Analytics", watcherPanel);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
-		
+
 		tabbedPane.addTab("Initial Conditions", initialConditions);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
@@ -234,7 +230,7 @@ public class MainPanel extends JFrame {
 		watcherPanel.setVisible(false);
 		componentsPanel.setVisible(false);
 
-		//watcherPanel.setBackground(backgroundColor);
+		// watcherPanel.setBackground(backgroundColor);
 		auxiliaryHexagonsPanel.setBackground(backgroundColor);
 		startPanel.setBackground(Color.gray);
 		hexagonsPanel.setBackground(backgroundColor);
@@ -251,28 +247,19 @@ public class MainPanel extends JFrame {
 		// Adding overall ScrollPane
 		JScrollPane scrollPane = new JScrollPane(getContentPane());
 		setContentPane(scrollPane);
-		
-		
-		
 
 		// House Keeping
 		pack();
 		setVisible(true);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		
-	
-	}
 
-//	public LogicalModel getUnitaryModel() {
-//		repaint();
-//		return this.startPanel.getUnitaryModel();
-//	}
+	}
 
 	public void refreshComponentsColors() {
 		for (NodeInfo node : getEpithelium().getUnitaryModel().getNodeOrder()) {
 
-			Color color = mainPanel.getEpithelium().getColor(node);
+			Color color = epithelium.getColor(node);
 			componentsPanel.colorChooser2Node.get(node).setBackground(color);
 			componentsPanel.colorChooser2Node.get(node).panel.mapcolor = color;
 			componentsPanel.colorChooser2Node.get(node).panel.revalidate();
@@ -280,33 +267,10 @@ public class MainPanel extends JFrame {
 
 	}
 
-
 	public void restartAnalytics() {
 		// TODO Auto-generated method stub
 		watcherPanel.restartAnalytics();
 	}
-
-//	public ArrayList<NodeInfo> getIntegrationComponents() {
-//
-//		int i = 0;
-//		for (NodeInfo node : integrationComponents.keySet()) {
-//			if (!integrationComponents.get(node)) {
-//				i = i++;
-//			}
-//
-//		}
-//		ArrayList<NodeInfo> integrationStringComponents = new ArrayList<NodeInfo>();
-//
-//		for (NodeInfo node : integrationComponents.keySet()) {
-//			if (!integrationComponents.get(node)) {
-//				integrationStringComponents.add(node);
-//
-//			}
-//
-//		}
-		// TODO Auto-generated method stub
-//		return integrationStringComponents;
-//	}
 
 	public void setInitialSetupHasChanged(boolean b) {
 		initialSetupHasChanged = b;

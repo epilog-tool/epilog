@@ -3,16 +3,12 @@ package pt.igc.nmd.epilogue;
 import java.awt.Color;
 import java.io.Serializable;
 
-import javax.swing.JTextField;
-
+@Deprecated
 public class Cell implements Serializable {
 	
 	
-
 	public int G0;
 	public Color color1;
-
-
 
 	public Cell(int g0) {
 		super();

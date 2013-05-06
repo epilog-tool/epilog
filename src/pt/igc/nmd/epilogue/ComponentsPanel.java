@@ -6,17 +6,14 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.util.Hashtable;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 
 public class ComponentsPanel extends MapColorPanel {
@@ -24,9 +21,9 @@ public class ComponentsPanel extends MapColorPanel {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-
-	private LogicalModel model = null;
+	private static final long serialVersionUID = -498635471090715555L;
+	
+	private SphericalEpithelium epithelium;
 	public MainPanel mainPanel;
 	private DrawPolygon hexagonsPanel;
 
@@ -44,16 +41,21 @@ public class ComponentsPanel extends MapColorPanel {
 	private JPanel inputComponents;
 	private JPanel auxiliaryPanel[];
 
-	public ComponentsPanel(MainPanel mainPanel, Color color) {
+	public ComponentsPanel(MainPanel mainPanel, Color color, SphericalEpithelium epithelium) {
 		super(color);
 		this.mainPanel = mainPanel;
-
+		this.epithelium = epithelium;
 	}
 
 	public void init() {
-
-		Color backgroundColor = mainPanel.backgroundColor;
 	
+		//epithelium = new SphericalEpithelium(mainPanel.getTopology());
+		System.out.println("epithelium at compoenents: " + epithelium);
+		System.out.println("mainpanel" + mainPanel.getEpithelium());
+		this.epithelium = epithelium.getEpithelium();
+		System.out.println("epithelium at compoentens Panel" + this.epithelium);
+		
+		Color backgroundColor = mainPanel.backgroundColor;
 
 		jcheckbox2Node = new Hashtable<JCheckBox, NodeInfo>();
 		colorChooser2Node = new Hashtable<NodeInfo, ColorButton>();
@@ -78,8 +80,6 @@ public class ComponentsPanel extends MapColorPanel {
 		setLayout(layout);
 		setBackground(backgroundColor);
 
-		model = mainPanel.getEpithelium().getUnitaryModel();
-
 		LineBorder border = new LineBorder(Color.black, 1, true);
 		TitledBorder titleProperComponents = new TitledBorder(border,
 				"Proper Components", TitledBorder.LEFT,
@@ -93,9 +93,10 @@ public class ComponentsPanel extends MapColorPanel {
 		properComponents.setBorder(titleProperComponents);
 		inputComponents.setBorder(titleInputs);
 
-		if (model != null) {
-
-			listNodes = model.getNodeOrder();
+		System.out.println("@compoentnes Panel: " + epithelium.getUnitaryModel());
+		if (epithelium.getUnitaryModel() != null) {
+			System.out.println("@componentsPanel after model!=null"+ epithelium.getUnitaryModel());
+			listNodes = epithelium.getUnitaryModel().getNodeOrder();
 			nodeBox = new JCheckBox[listNodes.size()];
 			auxiliaryPanel = new JPanel[listNodes.size()];
 
@@ -103,8 +104,6 @@ public class ComponentsPanel extends MapColorPanel {
 			hexagonsPanel.initializeCellGenes(listNodes.size());
 
 			for (int i = 0; i < listNodes.size(); i++) {
-
-
 
 				if (!listNodes.get(i).isInput()) {
 
@@ -120,7 +119,7 @@ public class ComponentsPanel extends MapColorPanel {
 
 					jcheckbox2Node.put(nodeBox[i], listNodes.get(i));
 
-					mainPanel.getEpithelium().setActiveComponents(
+					mainPanel.getEpithelium().setActiveComponent(
 							listNodes.get(i), false);
 
 					nodeBox[i].addActionListener(new ActionListener() {
@@ -144,7 +143,7 @@ public class ComponentsPanel extends MapColorPanel {
 					colorChooser[i] = new ColorButton(this, listNodes.get(i));
 					colorChooser[i].setPreferredSize(new Dimension(20, 25));
 					colorChooser[i].setBackground(mainPanel.getEpithelium()
-							.getColors().get(listNodes.get(i)));
+							.getColor(listNodes.get(i)));
 					colorChooser2Node.put(listNodes.get(i), colorChooser[i]);
 
 					auxiliaryPanel[i].add(nodeBox[i]);
@@ -165,7 +164,7 @@ public class ComponentsPanel extends MapColorPanel {
 
 					jcheckbox2Node.put(nodeBox[i], listNodes.get(i));
 
-					mainPanel.getEpithelium().setActiveComponents(
+					mainPanel.getEpithelium().setActiveComponent(
 							listNodes.get(i), false);
 
 					nodeBox[i].addActionListener(new ActionListener() {
@@ -189,27 +188,22 @@ public class ComponentsPanel extends MapColorPanel {
 					colorChooser[i] = new ColorButton(this, listNodes.get(i));
 					colorChooser[i].setPreferredSize(new Dimension(20, 25));
 					colorChooser[i].setBackground(mainPanel.getEpithelium()
-							.getColors().get(listNodes.get(i)));
+							.getColor(listNodes.get(i)));
 					colorChooser2Node.put(listNodes.get(i), colorChooser[i]);
 
-//					System.out.println(listNodes.get(i).getNodeID()
-//							+ " "
-//							+ mainPanel.getEpithelium()
-//									.getIntegrationComponents()
-//									.get(listNodes.get(i)));
-					
-					if (mainPanel.getEpithelium().getIntegrationComponents()
-							.get(listNodes.get(i))) {
-						nodeBox[i].setVisible(!mainPanel.getEpithelium()
-								.getIntegrationComponents()
-								.get(listNodes.get(i)));
-						colorChooser[i].setVisible(!mainPanel.getEpithelium()
-								.getIntegrationComponents()
-								.get(listNodes.get(i)));
+					// System.out.println(listNodes.get(i).getNodeID()
+					// + " "
+					// + mainPanel.getEpithelium()
+					// .getIntegrationComponents()
+					// .get(listNodes.get(i)));
 
-						
+					if (mainPanel.getEpithelium().isIntegrationComponent(
+							listNodes.get(i))) {
+						nodeBox[i].setVisible(false);
+						colorChooser[i].setVisible(false);
+
 					}
-					
+
 					auxiliaryPanel[i].add(nodeBox[i]);
 					auxiliaryPanel[i].add(colorChooser[i]);
 					inputComponents.add(auxiliaryPanel[i]);
@@ -224,7 +218,7 @@ public class ComponentsPanel extends MapColorPanel {
 
 	public void fireCheckBoxChange(Boolean bool, JCheckBox box) {
 
-		mainPanel.getEpithelium().setActiveComponents(jcheckbox2Node.get(box),
+		mainPanel.getEpithelium().setActiveComponent(jcheckbox2Node.get(box),
 				bool);
 
 	}

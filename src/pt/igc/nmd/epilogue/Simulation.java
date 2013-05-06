@@ -23,25 +23,23 @@ public class Simulation {
 	private byte[] state = null;
 	byte[] currentState = null;
 	private MainPanel mainPanel;
-	//private Hashtable<NodeInfo, Integer> initialState;
+	private SphericalEpithelium epithelium;
 	public Hashtable<String, Byte> composedState = null;
 	private Hashtable<NodeInfo, Integer> node2Int;
 	private Hashtable<String, NodeInfo> string2OldNode;
-	private Color color;
 	private boolean hasStarted;
 	private boolean stableStateFound;
 
-	public Simulation(MainPanel mainPanel) {
-		color = Color.white;
+	public Simulation(MainPanel mainPanel, SphericalEpithelium epithelium) {
 		this.mainPanel = mainPanel;
 		this.state = null;
 		this.composedModel = null;
-//		this.initialState = new Hashtable<NodeInfo, Integer>();
 		this.composedState = new Hashtable<String, Byte>();
 		this.node2Int = new Hashtable<NodeInfo, Integer>();
 		this.string2OldNode = new Hashtable<String, NodeInfo>();
 		this.hasStarted = false;
 		this.stableStateFound = false;
+		this.epithelium = epithelium;
 
 	}
 
@@ -73,7 +71,7 @@ public class Simulation {
 
 		this.stableStateFound = false;
 		testmethod();
-		//System.out.println(iterationNumber);
+		// System.out.println(iterationNumber);
 
 		mainPanel.setBorderHexagonsPanel(iterationNumber);
 
@@ -105,9 +103,9 @@ public class Simulation {
 
 			nextState[index] = next;
 			setComposedState(node.getNodeID(), next);
-//			System.out.println(node + " " + index + " " + node.getMax() + " "
-//					+ node.isInput() + " " + current + " " + target + " "
-//					+ next);
+			// System.out.println(node + " " + index + " " + node.getMax() + " "
+			// + node.isInput() + " " + current + " " + target + " "
+			// + next);
 
 			if (current != next) {
 				stableStateFound_aux = false;
@@ -163,12 +161,13 @@ public class Simulation {
 		for (int instance = 0; instance < mainPanel.getTopology()
 				.getNumberInstances(); instance++) {
 
-			for (NodeInfo a2 : a) {
+			for (NodeInfo node : a) {
 				setComposedState(mainPanel.getLogicalModelComposition()
-						.computeNewName(a2.getNodeID(), instance), mainPanel
-						.getGrid().getGrid().get(instance).get(a2));
+						.computeNewName(node.getNodeID(), instance), 
+						epithelium.getGridValue(instance, node)
+						);
 				string2OldNode.put(mainPanel.getLogicalModelComposition()
-						.computeNewName(a2.getNodeID(), instance), a2);
+						.computeNewName(node.getNodeID(), instance), node);
 			}
 		}
 
@@ -198,26 +197,29 @@ public class Simulation {
 		return this.composedState;
 	}
 
-	public Color ColorInitial(int i, int j) {
-
+	private Color getCoordinateColor(int i, int j, boolean initial) {
 		int red = 255;
 		int green = 255;
 		int blue = 255;
-		color = new Color(red, green, blue);
-
-		Set<NodeInfo> a = mainPanel.getEpithelium().getComponentsDisplayOn()
-				.keySet();
+		Color color = new Color(red, green, blue);
 
 		int instance = mainPanel.getTopology().coords2Instance(i, j);
 
-		for (NodeInfo a2 : a) {
-			if (mainPanel.getEpithelium().getComponentsDisplayOn().get(a2)) {
+		for (NodeInfo node : mainPanel.getEpithelium().getUnitaryModel()
+				.getNodeOrder()) {
+			if (mainPanel.getEpithelium().isDisplayComponentOn(node)) {
 
-				int value = mainPanel.getGrid().getGrid().get(instance).get(a2);
+				int value = 0;
+				if (initial)
+					value = epithelium.getGridValue(instance, node);
+				else
+					value = composedState.get(mainPanel
+							.getLogicalModelComposition().computeNewName(
+									node.getNodeID(), instance));
 
 				if (value > 0) {
-					color = mainPanel.getEpithelium().getColors().get(a2);
-					color = ColorBrightness(color, value);
+					color = mainPanel.getEpithelium().getColor(node);
+					color = getColorLevel(color, value);
 
 					red = (red + color.getRed()) / 2;
 					green = (green + color.getGreen()) / 2;
@@ -229,7 +231,17 @@ public class Simulation {
 			}
 		}
 		return color;
+	}
 
+	public Color getCoordinateInitialColor(int i, int j) {
+
+		return getCoordinateColor(i, j, true);
+
+	}
+
+	public Color getCoordinateCurrentColor(int i, int j) {
+
+		return getCoordinateColor(i, j, false);
 	}
 
 	public void fillHexagons() {
@@ -244,8 +256,8 @@ public class Simulation {
 			column = mainPanel.getTopology().instance2j(i,
 					mainPanel.getTopology().getHeight());
 
-			for (NodeInfo node : mainPanel.getEpithelium()
-					.getComponentsDisplayOn().keySet()) {
+			for (NodeInfo node : mainPanel.getEpithelium().getUnitaryModel()
+					.getNodeOrder()) {
 
 				mainPanel.hexagonsPanel.drawHexagon(row, column,
 						mainPanel.hexagonsPanel.getGraphics());
@@ -253,53 +265,16 @@ public class Simulation {
 		}
 	}
 
-	public Color Color(int i, int j) {
+	public Color getColorLevel(Color color, float value) {
+		Color newColor = color;
 
-		int red = 255;
-		int green = 255;
-		int blue = 255;
-		this.color = new Color(red, green, blue);
+		if (value > 0)
+			for (int j = 2; j <= value; j++)
+				newColor = newColor.darker();
+		else if (value == 0)
+			newColor = Color.white;
 
-		Set<NodeInfo> a = mainPanel.getEpithelium().getComponentsDisplayOn()
-				.keySet();
-
-		for (NodeInfo a2 : a) {
-			if (mainPanel.getEpithelium().getComponentsDisplayOn().get(a2)) {
-
-				String key = mainPanel.getLogicalModelComposition()
-						.computeNewName(a2.getNodeID(),
-								mainPanel.getTopology().coords2Instance(i, j));
-
-				int value = composedState.get(key);
-
-				if (value > 0) {
-					this.color = mainPanel.getEpithelium().getColors().get(a2);
-					this.color = ColorBrightness(color, value);
-
-					red = (red + color.getRed()) / 2;
-					green = (green + color.getGreen()) / 2;
-					blue = (blue + color.getBlue()) / 2;
-					this.color = new Color(red, green, blue);
-				}
-
-				else if (value == 0) {
-					this.color = new Color(red, green, blue);
-				}
-			}
-		}
-		return this.color;
-	}
-
-	public Color ColorBrightness(Color color, float value) {
-		if (value > 0) {
-
-			for (int j = 2; j <= value; j++) {
-				this.color = color.darker();
-			}
-		} else if (value == 0) {
-			this.color = Color.white;
-		}
-		return this.color;
+		return newColor;
 	}
 
 	public void resetComposedInitialState() {

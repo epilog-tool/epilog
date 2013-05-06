@@ -69,15 +69,15 @@ public class LogicalModelComposition {
 				NodeInfo newNode = new NodeInfo(computeNewName(
 						node.getNodeID(), i), node.getMax());
 
-//				System.out.println(mainPanel.getEpithelium().getIntegrationComponents()
-//								.get(node));
+				// System.out.println(mainPanel.getEpithelium().getIntegrationComponents()
+				// .get(node));
 
 				// integration inputs are no longer inputs
 				if (node.isInput()
-						&& mainPanel.getEpithelium().getIntegrationComponents()
-								.get(node)) {
+						&& mainPanel.getEpithelium().isIntegrationComponent(
+								node)) {
 
-//					System.out.println("Old Integrative Node that is about to not be an input "+node.getNodeID());
+					// System.out.println("Old Integrative Node that is about to not be an input "+node.getNodeID());
 					newNode.setInput(false);
 					newIntegrationNodes.add(newNode);
 				} else {
@@ -177,23 +177,20 @@ public class LogicalModelComposition {
 
 		// Create MDDs for integration components
 
-//		ArrayList<NodeInfo> integrationComponents = mainPanel.getEpithelium()
-//				.getIntegrationComponents().keys();
+		// ArrayList<NodeInfo> integrationComponents = mainPanel.getEpithelium()
+		// .getIntegrationComponents().keys();
 
-		for (NodeInfo oldeNodeIdIntegrationComponent : mainPanel.getEpithelium()
-				.getIntegrationComponents().keySet()) {
+		for (NodeInfo oldeNodeIdIntegrationComponent : mainPanel
+				.getEpithelium().getUnitaryModel().getNodeOrder()) {
 
-			if (mainPanel.getEpithelium().getIntegrationComponents()
-					.get(oldeNodeIdIntegrationComponent)) {
+			if (mainPanel.getEpithelium().isIntegrationComponent(
+					oldeNodeIdIntegrationComponent)) {
 				// System.out.println(oldeNodeIdIntegrationComponent.getNodeID()
 				// + " "
 				// + mainPanel.getEpithelium().getIntegrationFunctions(
 				// oldeNodeIdIntegrationComponent));
 
-				for (byte targetValue : mainPanel
-						.getEpithelium()
-						.getIntegrationFunctions(oldeNodeIdIntegrationComponent)
-						.keySet()) {
+				for (byte targetValue = 1; targetValue < oldeNodeIdIntegrationComponent.getMax(); targetValue++) {
 
 					for (int i = 0; i < mainPanel.getTopology()
 							.getNumberInstances(); i++) {
@@ -204,11 +201,9 @@ public class LogicalModelComposition {
 						// + oldeNodeIdIntegrationComponent.getNodeID()
 						// + ":" + targetValue + "@" + i);
 
-						String function = mainPanel
-								.getEpithelium()
-								.getIntegrationFunctions(
-										oldeNodeIdIntegrationComponent)
-								.get(targetValue);
+						String function = mainPanel.getEpithelium()
+								.getIntegrationFunction(
+										oldeNodeIdIntegrationComponent,targetValue);
 
 						int integrationMDD = factory
 								.getMDD(mainPanel.getEpithelium()
@@ -254,9 +249,9 @@ public class LogicalModelComposition {
 
 		// Perform reduction of integration components
 		ModelReducer reducer = new ModelReducer(composedModel);
-		//System.err.println("New Integration Nodes: "+ newIntegrationNodes);
+		// System.err.println("New Integration Nodes: "+ newIntegrationNodes);
 		for (NodeInfo integrationNode : newIntegrationNodes) {
-			//System.err.println("Reducing " + integrationNode.getNodeID());
+			// System.err.println("Reducing " + integrationNode.getNodeID());
 			reducer.remove(nodeOrder.indexOf(integrationNode));
 		}
 

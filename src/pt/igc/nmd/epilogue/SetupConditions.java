@@ -11,7 +11,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -32,12 +31,7 @@ import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import org.antlr.runtime.RecognitionException;
-import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
-
-import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification;
-import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
 
 public class SetupConditions extends JFrame {
 
@@ -49,10 +43,10 @@ public class SetupConditions extends JFrame {
 	private SphericalEpithelium epithelium;
 	private Topology topology;
 
-	JTextArea textArea;
+	private JTextArea textArea;
 
 	private Color color;
-	public ArrayList<ArrayList<Cell>> cells;
+	public List<List<Cell>> cells;
 	private int startX;
 	private int startY;
 	private int endX;
@@ -60,7 +54,6 @@ public class SetupConditions extends JFrame {
 	private JComboBox rollOver;
 
 	private MainPanel mainPanel;
-	private LogicalModel model;
 
 	private JPanel properComponentsPanel;
 	private JPanel inputsPanel;
@@ -75,11 +68,9 @@ public class SetupConditions extends JFrame {
 	// Nodes Information
 
 	private List<NodeInfo> listNodes;
-	private Color colors[] = { Color.orange, Color.green, Color.blue,
-			Color.pink, Color.yellow, Color.magenta, Color.cyan, Color.red,
-			Color.LIGHT_GRAY, Color.black };
+
 	private JCheckBox nodeBox[];
-	private ArrayList<ColorButton> colorChooser;
+	private List<ColorButton> colorChooser;
 	private JComboBox[] initialStatePerComponent;
 	private JComboBox[] inputComboChooser;
 
@@ -90,16 +81,11 @@ public class SetupConditions extends JFrame {
 	private Hashtable<JComboBox, NodeInfo> JcomboInput2Node;
 	private Hashtable<NodeInfo, JComboBox> node2Jcombo;
 	private Hashtable<NodeInfo, JCheckBox> node2Jcheck;
-	private Hashtable<NodeInfo, JComboBox> node2JcomboInput;
-	private Hashtable<ColorButton, NodeInfo> color2Node;
+
 	private Hashtable<NodeInfo, ColorButton> node2Color;
 	private Hashtable<NodeInfo, Boolean> node2IntInput;
 	private Hashtable<NodeInfo, Boolean> componentDisplay;
-	private Hashtable<Byte, IntegrationExpression> valueOfIntegrationFunction;
-	// private Hashtable<NodeInfo, Boolean> integrationComponents;
 	private Hashtable<JButton, NodeInfo> integrationFunctionButton2Node;
-	// private Hashtable<NodeInfo, Hashtable<Byte, IntegrationExpression>>
-	// integrationFunctions;
 	private Hashtable<String, NodeInfo> string2Node;
 	private Hashtable<NodeInfo, JButton> node2IntegrationFunctionButton;
 	private Hashtable<Integer, String> instanceReturnsPerturbation;
@@ -111,7 +97,7 @@ public class SetupConditions extends JFrame {
 
 	private Color backgroundColor;
 
-	private JTextField filename = new JTextField(), dir = new JTextField();
+	// private JTextField filename = new JTextField(), dir = new JTextField();
 
 	/*
 	 * 
@@ -126,7 +112,7 @@ public class SetupConditions extends JFrame {
 		this.mainPanel = mainPanel;
 		this.epithelium = epithelium;
 		this.topology = topology;
-		this.model = epithelium.getUnitaryModel();
+
 		this.fill = false;
 		this.backgroundColor = new Color(0xD3D3D3);
 
@@ -137,15 +123,12 @@ public class SetupConditions extends JFrame {
 
 		colorChooser = new ArrayList<ColorButton>();
 
-		valueOfIntegrationFunction = new Hashtable<Byte, IntegrationExpression>();
-		// integrationComponents = new Hashtable<NodeInfo, Boolean>();
 		Jcombo2Node = new Hashtable<JComboBox, NodeInfo>();
 		Jcheck2Node = new Hashtable<JCheckBox, NodeInfo>();
 		JcomboInput2Node = new Hashtable<JComboBox, NodeInfo>();
 		node2Jcombo = new Hashtable<NodeInfo, JComboBox>();
 		node2Jcheck = new Hashtable<NodeInfo, JCheckBox>();
-		node2JcomboInput = new Hashtable<NodeInfo, JComboBox>();
-		color2Node = new Hashtable<ColorButton, NodeInfo>();
+
 		node2Color = new Hashtable<NodeInfo, ColorButton>();
 		integrationFunctionButton2Node = new Hashtable<JButton, NodeInfo>();
 		componentDisplay = new Hashtable<NodeInfo, Boolean>();
@@ -153,9 +136,6 @@ public class SetupConditions extends JFrame {
 		string2Node = new Hashtable<String, NodeInfo>();
 		node2IntegrationFunctionButton = new Hashtable<NodeInfo, JButton>();
 		instanceReturnsPerturbation = new Hashtable<Integer, String>();
-
-		// integrationFunctions = new Hashtable<NodeInfo, Hashtable<Byte,
-		// IntegrationExpression>>();
 
 		mainPanel.getSimulation().resetIterationNumber();
 
@@ -169,8 +149,6 @@ public class SetupConditions extends JFrame {
 
 		titleInputs = BorderFactory.createTitledBorder("Inputs");
 		titlePerturbation = BorderFactory.createTitledBorder("Perturbations");
-		// titleComposedModelSetup = BorderFactory
-		// .createTitledBorder("Composed Model Setup");
 
 		LineBorder border = new LineBorder(Color.black, 1, true);
 		titleComposedModelSetup = new TitledBorder(border,
@@ -227,7 +205,7 @@ public class SetupConditions extends JFrame {
 
 		/* ProperComponents and Input panel */
 
-		listNodes = model.getNodeOrder();
+		listNodes = epithelium.getUnitaryModel().getNodeOrder();
 
 		nodeBox = new JCheckBox[listNodes.size()];
 		initialStatePerComponent = new JComboBox[listNodes.size()];
@@ -244,11 +222,6 @@ public class SetupConditions extends JFrame {
 			node2IntInput.put(listNodes.get(i), false);
 
 			if (listNodes.get(i).isInput()) {
-
-				if (mainPanel.getEpithelium().getIntegrationComponents()
-						.get(listNodes.get(i)) == null)
-					mainPanel.getEpithelium().setIntegrationComponents(
-							listNodes.get(i), false);
 
 				if (inputCount % 2 != 0)
 					xOffsetInput = 200;
@@ -288,8 +261,8 @@ public class SetupConditions extends JFrame {
 				Jcombo2Node.put(initialStatePerComponent[i], listNodes.get(i));
 				node2Jcombo.put(listNodes.get(i), initialStatePerComponent[i]);
 
-				mainPanel.getEpithelium().setInitialState(
-						Jcombo2Node.get(initialStatePerComponent[i]), 0);
+				epithelium.setInitialState(
+						Jcombo2Node.get(initialStatePerComponent[i]), (byte) 0);
 
 				initialStatePerComponent[i]
 						.addActionListener(new ActionListener() {
@@ -304,11 +277,11 @@ public class SetupConditions extends JFrame {
 				colorChooser.add(new ColorButton(mainPanel.componentsPanel,
 						listNodes.get(i)));
 				colorChooser.get(i).setBackground(
-						epithelium.getColors().get(listNodes.get(i)));
+						epithelium.getColor(listNodes.get(i)));
 				colorChooser.get(i).setBounds(125 + xOffsetInput,
 						20 + yOffsetInput, 20, 25);
 
-				color2Node.put(colorChooser.get(i), listNodes.get(i));
+				// color2Node.put(colorChooser.get(i), listNodes.get(i));
 				node2Color.put(listNodes.get(i), colorChooser.get(i));
 
 				inputsPanel.add(nodeBox[i]);
@@ -340,17 +313,14 @@ public class SetupConditions extends JFrame {
 
 				inputComboChooser[i].setBounds(155 + xOffsetInput,
 						20 + yOffsetInput, 50, 25);
-				if (!mainPanel.getEpithelium().getIntegrationComponents()
-						.get(listNodes.get(i))) {
+				if (!epithelium.isIntegrationComponent(listNodes.get(i))) {
 					inputComboChooser[i]
 							.addItem(InputOption
 									.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));
 					inputComboChooser[i]
 							.addItem(InputOption
 									.getDescriptionString(InputOption.INTEGRATION_INPUT));
-				}
-				if (mainPanel.getEpithelium().getIntegrationComponents()
-						.get(listNodes.get(i))) {
+				} else {
 					inputComboChooser[i]
 							.addItem(InputOption
 									.getDescriptionString(InputOption.INTEGRATION_INPUT));
@@ -380,7 +350,6 @@ public class SetupConditions extends JFrame {
 
 							case INTEGRATION_INPUT: {
 
-								// System.out.println("Changed to integration");
 								setEnvOptions(source, false);
 								setInitialSetupHasChanged(true);
 							}
@@ -397,18 +366,14 @@ public class SetupConditions extends JFrame {
 
 				inputCount = inputCount + 1;
 
-				// System.out.println(mainPanel.getEpithelium()
-				// .getIntegrationComponents().get(listNodes.get(i)));
-				integrationFunctionButton.setVisible(mainPanel.getEpithelium()
-						.getIntegrationComponents().get(listNodes.get(i)));
-				nodeBox[i].setEnabled(!mainPanel.getEpithelium()
-						.getIntegrationComponents().get(listNodes.get(i)));
-				initialStatePerComponent[i].setVisible(!mainPanel
-						.getEpithelium().getIntegrationComponents()
-						.get(listNodes.get(i)));
+				integrationFunctionButton.setVisible(epithelium
+						.isIntegrationComponent(listNodes.get(i)));
+				nodeBox[i].setEnabled(!epithelium
+						.isIntegrationComponent(listNodes.get(i)));
+				initialStatePerComponent[i].setVisible(!epithelium
+						.isIntegrationComponent(listNodes.get(i)));
 				colorChooser.get(i).setVisible(
-						!mainPanel.getEpithelium().getIntegrationComponents()
-								.get(listNodes.get(i)));
+						!epithelium.isIntegrationComponent(listNodes.get(i)));
 
 			} else if (!listNodes.get(i).isInput()) {
 
@@ -450,8 +415,8 @@ public class SetupConditions extends JFrame {
 
 				Jcombo2Node.put(initialStatePerComponent[i], listNodes.get(i));
 
-				mainPanel.getEpithelium().setInitialState(
-						Jcombo2Node.get(initialStatePerComponent[i]), 0);
+				epithelium.setInitialState(
+						Jcombo2Node.get(initialStatePerComponent[i]), (byte) 0);
 
 				initialStatePerComponent[i]
 						.addActionListener(new ActionListener() {
@@ -467,7 +432,7 @@ public class SetupConditions extends JFrame {
 				colorChooser.add(new ColorButton(mainPanel.componentsPanel,
 						listNodes.get(i)));
 				colorChooser.get(i).setBackground(
-						epithelium.getColors().get(listNodes.get(i)));
+						epithelium.getColor(listNodes.get(i)));
 				colorChooser.get(i).setBounds(120 + xOffset, 30 + yOffset, 20,
 						25);
 				properComponentsPanel.add(initialStatePerComponent[i]);
@@ -524,7 +489,6 @@ public class SetupConditions extends JFrame {
 				resetMinAndMaxCombo(line1);
 			}
 		});
-		// System.out.println(perturbedExpressionMax.getSelectedItem() + "es");
 
 		markPerturbation.addActionListener(new ActionListener() {
 			@Override
@@ -729,7 +693,6 @@ public class SetupConditions extends JFrame {
 	public void save() {
 		JFileChooser fc = new JFileChooser();
 
-		
 		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
 
 			try {
@@ -741,13 +704,17 @@ public class SetupConditions extends JFrame {
 
 				oos.writeObject(epithelium);
 				oos.close();
-//				System.out.println(fc.getSelectedFile().getName());
-//				System.out.println(epithelium);
+
+				// XStream xstream = new XStream();
+				// String xml = xstream.toXML(epithelium);
+
+				// System.out.println(fc.getSelectedFile().getName());
+				// System.out.println(epithelium);
+
 			} catch (IOException e) {
 
 				e.printStackTrace();
 			}
-		System.out.println("Unitary Model @save()" + epithelium.getUnitaryModel());
 
 	}
 
@@ -761,7 +728,7 @@ public class SetupConditions extends JFrame {
 		for (Component c : inputsPanel.getComponents())
 			c.setEnabled(composedModelActive);
 		for (Component c : composedPanel.getComponents()) {
-			// System.out.println(c.getClass());
+
 			if (c.getClass() != aux.getClass())
 				c.setEnabled(composedModelActive);
 		}
@@ -770,7 +737,7 @@ public class SetupConditions extends JFrame {
 	protected void clearAllPerturbations() {
 		// TODO Auto-generated method stub
 		for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
-			epithelium.setPerturbedInstance(instance, false);
+			// epithelium.setPerturbedInstance(instance, false);
 		}
 	}
 
@@ -851,8 +818,8 @@ public class SetupConditions extends JFrame {
 				.setVisible(!bool);
 		node2IntInput.put(JcomboInput2Node.get(inputCombo), !bool);
 
-		mainPanel.getEpithelium().setIntegrationComponents(
-				JcomboInput2Node.get(inputCombo), !bool);
+		// mainPanel.getEpithelium().setIntegrationComponents(
+		// JcomboInput2Node.get(inputCombo), !bool);
 		// System.out.println(JcomboInput2Node.get(inputCombo)
 		// + " "
 		// + mainPanel.getEpithelium().getIntegrationComponents()
@@ -861,8 +828,8 @@ public class SetupConditions extends JFrame {
 
 	private void fireInitialStateChange(JComboBox combo) {
 
-		mainPanel.getEpithelium().setInitialState(Jcombo2Node.get(combo),
-				(Integer) combo.getSelectedItem());
+		epithelium.setInitialState(Jcombo2Node.get(combo),
+				((Integer) combo.getSelectedItem()).byteValue());
 	}
 
 	private void fireRollOverChange(String optionString) {
@@ -911,7 +878,7 @@ public class SetupConditions extends JFrame {
 	public void initialize() {
 
 		for (int i = 0; i < topology.getNumberInstances(); i++) {
-			epithelium.setPerturbedInstance(i, false);
+			// epithelium.setPerturbedInstance(i, false);
 		}
 		MapPanel.paintComponent(MapPanel.getGraphics());
 
@@ -1170,14 +1137,13 @@ public class SetupConditions extends JFrame {
 		List<NodeInfo> a = epithelium.getUnitaryModel().getNodeOrder();
 
 		int instance = topology.coords2Instance(i, j);
-		for (NodeInfo a2 : a) {
+		for (NodeInfo node : a) {
 
 			// System.out.println(componentDisplay + " " + a2.getNodeID());
-			if (componentDisplay.get(a2)) {
+			if (componentDisplay.get(node)) {
 
-				mainPanel.getGrid().setGrid(instance, a2,
-						(byte) mainPanel.getEpithelium().getInitialState(a2));
-
+				epithelium.setGrid(instance, node,
+						epithelium.getInitialState(node));
 			}
 		}
 	}
@@ -1193,10 +1159,10 @@ public class SetupConditions extends JFrame {
 
 		for (NodeInfo a2 : a) {
 			if (componentDisplay.get(a2)) {
-				int value = mainPanel.getEpithelium().getInitialState(a2);
+				int value = epithelium.getInitialState(a2);
 
 				if (value > 0) {
-					color = epithelium.getColors().get(a2);
+					color = epithelium.getColor(a2);
 					color = ColorBrightness(color, value);
 
 					red = (red + color.getRed()) / 2;
@@ -1225,13 +1191,14 @@ public class SetupConditions extends JFrame {
 
 		int instance = topology.coords2Instance(i, j);
 
-		for (NodeInfo a2 : a) {
-			if (componentDisplay.get(a2)) {
+		for (NodeInfo node : a) {
+			if (componentDisplay.get(node)) {
 
-				int value = mainPanel.getGrid().getGrid().get(instance).get(a2);
+				int value = epithelium.getGridValue(instance, node);
+				;
 
 				if (value > 0) {
-					color = epithelium.getColors().get(a2);
+					color = epithelium.getColor(node);
 					color = ColorBrightness(color, value);
 
 					red = (red + color.getRed()) / 2;
@@ -1260,10 +1227,10 @@ public class SetupConditions extends JFrame {
 
 	}
 
-	public void initializeCells(ArrayList<ArrayList<Cell>> cells) {
+	public void initializeCells(List<List<Cell>> cells) {
 		// adicionar try catch para textFx e fy
 
-		cells = new ArrayList<ArrayList<Cell>>();
+		cells = new ArrayList<List<Cell>>();
 		for (int i = 0; i < topology.getWidth(); i++) {
 
 			cells.add(new ArrayList<Cell>());
@@ -1276,7 +1243,7 @@ public class SetupConditions extends JFrame {
 
 	public void clearAllCells() {
 		// adicionar try catch para textFx e fy
-		mainPanel.getGrid().initializeGrid();
+		epithelium.initializeGrid();
 		for (int i = 0; i < topology.getWidth(); i++) {
 			for (int j = 0; j < topology.getHeight(); j++) {
 				// mainPanel.getSimulation().initializeInitialStates();
@@ -1322,27 +1289,6 @@ public class SetupConditions extends JFrame {
 		}
 	}
 
-	public Hashtable<Byte, IntegrationExpression> IntegrationValuedExpression(
-			Hashtable<Byte, String> integrationFunctionHash) {
-
-		IntegrationFunctionSpecification spec = new IntegrationFunctionSpecification();
-		IntegrationExpression expression = null;
-
-		for (byte targetValue : integrationFunctionHash.keySet()) {
-
-			try {
-				expression = spec.parse(integrationFunctionHash
-						.get(targetValue));
-			} catch (RecognitionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			valueOfIntegrationFunction.put(targetValue, expression);
-		}
-		return valueOfIntegrationFunction;
-	}
-
 	public void resetInitialConditions() {
 		Jcombo2Node = new Hashtable<JComboBox, NodeInfo>();
 		Jcheck2Node = new Hashtable<JCheckBox, NodeInfo>();
@@ -1350,16 +1296,14 @@ public class SetupConditions extends JFrame {
 
 		node2Jcombo = new Hashtable<NodeInfo, JComboBox>();
 		node2Jcheck = new Hashtable<NodeInfo, JCheckBox>();
-		node2JcomboInput = new Hashtable<NodeInfo, JComboBox>();
+		// node2JcomboInput = new Hashtable<NodeInfo, JComboBox>();
 
-		color2Node = new Hashtable<ColorButton, NodeInfo>();
+		// color2Node = new Hashtable<ColorButton, NodeInfo>();
 		node2Color = new Hashtable<NodeInfo, ColorButton>();
 
 		node2IntInput = new Hashtable<NodeInfo, Boolean>();
 
 		componentDisplay = new Hashtable<NodeInfo, Boolean>();
-
-		valueOfIntegrationFunction = new Hashtable<Byte, IntegrationExpression>();
 
 		// integrationComponents = new Hashtable<NodeInfo, Boolean>();
 		integrationFunctionButton2Node = new Hashtable<JButton, NodeInfo>();

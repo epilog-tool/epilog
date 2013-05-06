@@ -9,14 +9,12 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.beans.XMLEncoder;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -27,16 +25,15 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 
 public class StartPanel extends JPanel {
 
 	/**
-*
-*/
+	 * 
+	 */
+	private static final long serialVersionUID = -2013094563809493130L;
 
-	private static final long serialVersionUID = 1L;
 	private JButton closeButton;
 	private JButton loadModelButton;
 	private JButton setupConditionsButton;
@@ -50,11 +47,10 @@ public class StartPanel extends JPanel {
 	private JLabel labelFilename = new JLabel();
 	private JLabel iterationNumber = new JLabel();
 	private JLabel selectedFilenameLabel;
-	
+
 	private static JTextField userDefinedWidth = new JTextField();
 	private static JTextField userDefinedHeight = new JTextField();
-	
-	
+
 	private JFileChooser fc = new JFileChooser();
 	private MainPanel mainPanel = null;
 	private SphericalEpithelium epithelium;
@@ -174,7 +170,7 @@ public class StartPanel extends JPanel {
 
 				mainPanel.getLogicalModelComposition()
 						.resetLogicalModelComposition();
-				integrationComponentsReset();
+				// integrationComponentsReset();
 			}
 		});
 
@@ -254,8 +250,7 @@ public class StartPanel extends JPanel {
 				sanityCheckDimension(userDefinedWidth);
 				setWidth();
 				mainPanel.setInitialSetupHasChanged(true);
-				if (mainPanel.getEpithelium().getUnitaryModel() != null)
-					mainPanel.getGrid().initializeGrid();
+
 			}
 		});
 
@@ -270,8 +265,7 @@ public class StartPanel extends JPanel {
 				sanityCheckDimension(userDefinedHeight);
 				setHeight();
 				mainPanel.setInitialSetupHasChanged(true);
-				if (mainPanel.getEpithelium().getUnitaryModel() != null)
-					mainPanel.getGrid().initializeGrid();
+
 			}
 		});
 
@@ -426,6 +420,7 @@ public class StartPanel extends JPanel {
 		add(restartButton);
 		add(closeButton);
 		add(quitButton);
+		
 		return this;
 	}
 
@@ -435,14 +430,6 @@ public class StartPanel extends JPanel {
 		w = (w % 2 == 0) ? w : w + 1;
 		userDefined.setText("" + w);
 		mainPanel.repaint();
-	}
-
-	private void integrationComponentsReset() {
-		for (NodeInfo node : mainPanel.getEpithelium().getUnitaryModel()
-				.getNodeOrder()) {
-			if (node.isInput())
-				mainPanel.getEpithelium().setIntegrationComponents(node, false);
-		}
 	}
 
 	private void setHeight() {
@@ -469,35 +456,35 @@ public class StartPanel extends JPanel {
 
 	private void askConfigurations() {
 
-		SphericalEpithelium epithelium = new SphericalEpithelium(topology);
 
 		fc.setDialogTitle("Choose file");
 
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-			// selectedFilenameLabel.setText(fc.getSelectedFile().getName());
-			// selectedFilenameLabel.setForeground(Color.white);
 
+			ObjectInputStream ois = null;
 			try {
-//				ObjectOutputStream oos = new ObjectOutputStream(
-//						new FileOutputStream(fc.getSelectedFile()
-//								.getAbsolutePath(), true));
-				ObjectInputStream ois = new ObjectInputStream(
-						new FileInputStream(fc.getSelectedFile()
-								.getAbsolutePath()));
-
-				epithelium = (SphericalEpithelium) ois.readObject();
-
+				ois = new ObjectInputStream(new FileInputStream(fc
+						.getSelectedFile().getAbsolutePath()));
 			} catch (FileNotFoundException e) {
-
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			} catch (IOException e) {
-
-			} catch (ClassNotFoundException e) {
-
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
-		}
+			try {
+				epithelium = (SphericalEpithelium) ois.readObject();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-		loadConfigurations();
+			loadConfigurations();
+		}
 	}
 
 	private void loadModel() {
@@ -508,12 +495,12 @@ public class StartPanel extends JPanel {
 
 		try {
 			logicalModel = sbmlFormat.importFile(file);
-			
-//			FileOutputStream fos = new FileOutputStream("foo.dat");
-//			ObjectOutputStream oos = new ObjectOutputStream(fos);
-//			oos.writeObject(mainPanel.getEpithelium());
-		
-			
+
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			sbmlFormat.export(logicalModel, baos);
+
+			String mySBML = new String(baos.toByteArray());
+
 		} catch (IOException e) {
 			System.err.println("Cannot import file " + file.getAbsolutePath()
 					+ ": " + e.getMessage());
@@ -522,9 +509,7 @@ public class StartPanel extends JPanel {
 		if (logicalModel == null)
 			return;
 
-		mainPanel.getEpithelium().setUnitaryModel(logicalModel);
-		integrationComponentsReset();
-		mainPanel.getEpithelium().initializeColors();
+		epithelium.setUnitaryModel(logicalModel);
 		mainPanel.componentsPanel.removeAll();
 		mainPanel.componentsPanel.init();
 		mainPanel.getContentPane().repaint();
@@ -544,8 +529,6 @@ public class StartPanel extends JPanel {
 		userDefinedHeight.setEnabled(true);
 
 		mainPanel.watcherPanel.init();
-
-		mainPanel.getGrid().initializeGrid();
 		mainPanel.getSimulation().fillHexagons();
 		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
 				.getGraphics());
@@ -564,39 +547,15 @@ public class StartPanel extends JPanel {
 	private void loadConfigurations() {
 
 
-		System.out.println("Unitary Model @loadConfigurations" + epithelium.getUnitaryModel());
-		System.out.println("Height @loadConfigurations" + epithelium.getTopology().getHeight());
 		
-//		FileInputStream fis = null;
-//		try {
-//			fis = new FileInputStream("foo.bin");
-//		} catch (FileNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		  ObjectInputStream ois = null;
-//		try {
-//			ois = new ObjectInputStream(fis);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		  try {
-//			SphericalEpithelium aFoo = (SphericalEpithelium) ois.readObject();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (ClassNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		System.out.println("@startPanel - load configurations: "+epithelium);
 		
-		mainPanel.getEpithelium().initializeColors();
 		mainPanel.componentsPanel.removeAll();
 		mainPanel.componentsPanel.init();
 		mainPanel.getContentPane().repaint();
 		mainPanel.componentsPanel.setVisible(true);
 		mainPanel.watcherPanel.setVisible(true);
+		System.out.println("@startPanel - middle load configurations: "+epithelium);
 
 		labelFilename.setVisible(true);
 		stepButton.setVisible(true);
@@ -620,7 +579,5 @@ public class StartPanel extends JPanel {
 		TitledBorder titleInitialConditions;
 		titleInitialConditions = BorderFactory.createTitledBorder("");
 		mainPanel.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
-
 	}
-
 }

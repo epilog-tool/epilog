@@ -14,11 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.antlr.runtime.RecognitionException;
 import org.colomoto.logicalmodel.NodeInfo;
-
-import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification;
-import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
 
 public class IntegrationFunctionInterface extends JFrame {
 
@@ -29,7 +25,6 @@ public class IntegrationFunctionInterface extends JFrame {
 
 	private JPanel integrationPanel;
 	private JButton closeIntegrationPanel;
-	private NodeInfo node;
 	private SetupConditions setupConditions;
 	private Hashtable<Byte, String> integrationFunctionStrings;
 	private SphericalEpithelium epithelium;
@@ -69,10 +64,9 @@ public class IntegrationFunctionInterface extends JFrame {
 
 			valueTextField.setText("" + targetValue);
 
-			if (epithelium.getIntegrationFunctions(node) != null)
+			if (epithelium.isIntegrationComponent(node))
 				functionTextField.setText(""
-						+ epithelium.getIntegrationFunctions(node).get(
-								targetValue));
+						+ epithelium.getIntegrationFunction(node, targetValue));
 
 			valueTextField.setPreferredSize(new Dimension(30, 24));
 			functionTextField.setPreferredSize(new Dimension(400, 24));
@@ -115,20 +109,11 @@ public class IntegrationFunctionInterface extends JFrame {
 	public void setIntegrationFunction(NodeInfo node,
 			Hashtable<Byte, String> integrationFunctionStrings) {
 
-		/*
-		 * This function receives a node and the hashtable created from this
-		 * object. epithelium receives the information
-		 */
-		Hashtable<Byte, String> valueOfIntegrationFunction = new Hashtable<Byte, String>();
+		for (byte targetValue : integrationFunctionStrings.keySet())
 
-		for (byte targetValue : integrationFunctionStrings.keySet()) {
-
-			valueOfIntegrationFunction.put(targetValue,
+			epithelium.setIntegrationFunctions(node, targetValue,
 					integrationFunctionStrings.get(targetValue));
 
-		}
-
-		epithelium.setIntegrationFunctions(node, valueOfIntegrationFunction);
 	}
 
 	private void setInitialSetupHasChanged(boolean b) {
