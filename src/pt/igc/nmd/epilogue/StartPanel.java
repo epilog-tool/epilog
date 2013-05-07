@@ -216,6 +216,8 @@ public class StartPanel extends JPanel {
 				userDefinedHeight.setEnabled(true);
 				mainPanel.getSimulation().initializeSimulation();
 				mainPanel.restartAnalytics();
+				
+				mainPanel.getSimulation().setHasInitiated(false);
 			}
 		});
 
@@ -312,9 +314,7 @@ public class StartPanel extends JPanel {
 				askModel();
 				mainPanel.getContentPane().repaint();
 				mainPanel.getSimulation().resetIterationNumber();
-
 			}
-
 		});
 
 		loadConfigurations.addActionListener(new ActionListener() {
@@ -322,9 +322,7 @@ public class StartPanel extends JPanel {
 				askConfigurations();
 				mainPanel.getContentPane().repaint();
 				mainPanel.getSimulation().resetIterationNumber();
-
 			}
-
 		});
 
 		/*
@@ -338,9 +336,11 @@ public class StartPanel extends JPanel {
 		 * and Run button are set as visible 4) Initial conditions button and
 		 * grid's dimensions are disabled and the user no longer can modify them
 		 */
+		
 		simulationButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				
+				
 				mainPanel.auxiliaryHexagonsPanel
 						.setBorder(javax.swing.BorderFactory
 								.createEmptyBorder());
@@ -353,10 +353,16 @@ public class StartPanel extends JPanel {
 				simulationButton.setVisible(false);
 				stepButton.setVisible(true);
 				runButton.setVisible(true);
-				mainPanel.getSimulation().initializeSimulation();
+
 				setupConditionsButton.setEnabled(false);
 				userDefinedWidth.setEnabled(false);
 				userDefinedHeight.setEnabled(false);
+				
+				mainPanel.getSimulation().initializeSimulation();
+				//mainPanel.getSimulation().fillHexagons();
+				//mainPanel.getSimulation().setHasInitiated(false);
+				
+
 
 			}
 		});
@@ -529,12 +535,15 @@ public class StartPanel extends JPanel {
 		userDefinedHeight.setEnabled(true);
 
 		mainPanel.watcherPanel.init();
-		mainPanel.getSimulation().fillHexagons();
+		
+		
+		
 		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
 				.getGraphics());
 
 		mainPanel.getLogicalModelComposition().resetComposedModel();
-		mainPanel.getSimulation().setHasInitiated(false);
+		
+	
 		setupConditionsButton.setEnabled(true);
 		mainPanel.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
 				.createEmptyBorder());
@@ -548,14 +557,13 @@ public class StartPanel extends JPanel {
 
 
 		
-		System.out.println("@startPanel - load configurations: "+epithelium);
 		
+		mainPanel.setEpithelium(epithelium);
 		mainPanel.componentsPanel.removeAll();
 		mainPanel.componentsPanel.init();
 		mainPanel.getContentPane().repaint();
 		mainPanel.componentsPanel.setVisible(true);
 		mainPanel.watcherPanel.setVisible(true);
-		System.out.println("@startPanel - middle load configurations: "+epithelium);
 
 		labelFilename.setVisible(true);
 		stepButton.setVisible(true);

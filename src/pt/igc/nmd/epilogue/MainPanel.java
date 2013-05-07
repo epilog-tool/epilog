@@ -23,7 +23,7 @@ public class MainPanel extends JFrame {
 	/**
 *
 */
-	private SphericalEpithelium epithelium;
+	private SphericalEpithelium epithelium = null;
 	private StartPanel startPanel = null;
 	public DrawPolygon hexagonsPanel = null;
 	public TextPanel watcherPanel;
@@ -73,7 +73,6 @@ public class MainPanel extends JFrame {
 		hexagonsPanel.addMouseMotionListener(new MouseMotionListener() {
 			@Override
 			public void mouseDragged(MouseEvent arg0) {
-				// TODO Auto-generated method stub
 				int ind_it = (int) Math.floor((arg0.getX() / (1.5 * hexagonsPanel.radius)));
 
 				double ind_yts = (arg0.getY() - (ind_it % 2)
@@ -109,7 +108,6 @@ public class MainPanel extends JFrame {
 
 			@Override
 			public void mouseMoved(MouseEvent arg0) {
-				// TODO Auto-generated method stub
 				int ind_it = (int) Math.floor((arg0.getX() / (1.5 * hexagonsPanel.radius)));
 
 				double ind_yts = (arg0.getY() - (ind_it % 2)
@@ -173,7 +171,10 @@ public class MainPanel extends JFrame {
 
 	public SphericalEpithelium getEpithelium() {
 		return this.epithelium;
-
+	}
+	
+	public void setEpithelium(SphericalEpithelium epithelium){
+		this.epithelium = epithelium;
 	}
 
 	public LogicalModelComposition getLogicalModelComposition() {
@@ -257,9 +258,10 @@ public class MainPanel extends JFrame {
 	}
 
 	public void refreshComponentsColors() {
-		for (NodeInfo node : getEpithelium().getUnitaryModel().getNodeOrder()) {
+		
+		for (NodeInfo node : this.epithelium.getUnitaryModel().getNodeOrder()) {
 
-			Color color = epithelium.getColor(node);
+			Color color = this.epithelium.getColor(node);
 			componentsPanel.colorChooser2Node.get(node).setBackground(color);
 			componentsPanel.colorChooser2Node.get(node).panel.mapcolor = color;
 			componentsPanel.colorChooser2Node.get(node).panel.revalidate();
@@ -268,7 +270,6 @@ public class MainPanel extends JFrame {
 	}
 
 	public void restartAnalytics() {
-		// TODO Auto-generated method stub
 		watcherPanel.restartAnalytics();
 	}
 

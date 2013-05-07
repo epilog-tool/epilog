@@ -1,10 +1,9 @@
 package pt.igc.nmd.epilogue;
 
 import java.awt.Color;
-import java.io.Serializable;
 
-@Deprecated
-public class Cell implements Serializable {
+//@Deprecated
+public class Cell  {
 	
 	
 	public int G0;

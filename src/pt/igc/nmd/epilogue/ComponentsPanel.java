@@ -22,7 +22,7 @@ public class ComponentsPanel extends MapColorPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = -498635471090715555L;
-	
+
 	private SphericalEpithelium epithelium;
 	public MainPanel mainPanel;
 	private DrawPolygon hexagonsPanel;
@@ -41,20 +41,17 @@ public class ComponentsPanel extends MapColorPanel {
 	private JPanel inputComponents;
 	private JPanel auxiliaryPanel[];
 
-	public ComponentsPanel(MainPanel mainPanel, Color color, SphericalEpithelium epithelium) {
+	public ComponentsPanel(MainPanel mainPanel, Color color,
+			SphericalEpithelium epithelium) {
 		super(color);
 		this.mainPanel = mainPanel;
 		this.epithelium = epithelium;
 	}
 
 	public void init() {
-	
-		//epithelium = new SphericalEpithelium(mainPanel.getTopology());
-		System.out.println("epithelium at compoenents: " + epithelium);
-		System.out.println("mainpanel" + mainPanel.getEpithelium());
-		this.epithelium = epithelium.getEpithelium();
-		System.out.println("epithelium at compoentens Panel" + this.epithelium);
-		
+
+		this.epithelium = mainPanel.getEpithelium();
+
 		Color backgroundColor = mainPanel.backgroundColor;
 
 		jcheckbox2Node = new Hashtable<JCheckBox, NodeInfo>();
@@ -93,9 +90,8 @@ public class ComponentsPanel extends MapColorPanel {
 		properComponents.setBorder(titleProperComponents);
 		inputComponents.setBorder(titleInputs);
 
-		System.out.println("@compoentnes Panel: " + epithelium.getUnitaryModel());
 		if (epithelium.getUnitaryModel() != null) {
-			System.out.println("@componentsPanel after model!=null"+ epithelium.getUnitaryModel());
+			
 			listNodes = epithelium.getUnitaryModel().getNodeOrder();
 			nodeBox = new JCheckBox[listNodes.size()];
 			auxiliaryPanel = new JPanel[listNodes.size()];

@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Hashtable;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
@@ -31,13 +30,13 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 	private transient LogicalModel unitaryModel;
 	private transient LogicalModel composedModel;
 	private String unitarySBML = null;
-	private String composedSBML = null;
+//	private String composedSBML = null;
 
 	private Color[] nodeColor = null;
 	private boolean[] displayComponents = null;
 	private String[][] integrationFunctionStrings = null;
 	private byte[] initialState = null;
-	private byte grid[][] = null; // {instance , {nodeindex , value}}
+	private byte grid[][]; // {instance , {nodeindex , value}}
 
 	private Topology topology = null;
 
@@ -93,7 +92,7 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 		try {
 			expression = spec.parse(integrationfunctionString);
 		} catch (org.antlr.runtime.RecognitionException e) {
-			// TODO: Must send to interface
+
 			e.printStackTrace();
 		}
 
@@ -109,7 +108,11 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 					.indexOf(node)] = new String[node.getMax()];
 		this.integrationFunctionStrings[getUnitaryModel().getNodeOrder()
 				.indexOf(node)][value - 1] = expression;
-
+	}
+	
+	public void resetIntegrationNode(NodeInfo node){
+		this.integrationFunctionStrings[getUnitaryModel().getNodeOrder()
+		                				.indexOf(node)] = null;
 	}
 
 	public Topology getTopology() {
@@ -130,17 +133,15 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 		try {
 			format.export(this.unitaryModel, bos);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 
 		this.unitarySBML = new String(bos.getBytes());
-
 	}
 
 	private void initializeIntegrationFunctions() {
-		this.integrationFunctionStrings = new String[getUnitaryModel()
-				.getNodeOrder().size()][];
+		this.integrationFunctionStrings = new String[getUnitaryModel().getNodeOrder().size()][];
 	}
 
 	@Override
@@ -152,21 +153,21 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 			try {
 				fos = new FileOutputStream(tempFile);
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
+			
 				e.printStackTrace();
 			}
 
 			try {
 				fos.write(this.unitarySBML.getBytes());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 
 			try {
 				fos.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				// 
 				e.printStackTrace();
 			}
 
@@ -174,7 +175,7 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 			try {
 				setUnitaryModel(format.importFile(tempFile));
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				// 
 				e.printStackTrace();
 			}
 
@@ -220,12 +221,11 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 		for (int i = 0; i < topology.getNumberInstances(); i++) {
 			this.grid[i] = new byte[getUnitaryModel().getNodeOrder().size()];
 			for (NodeInfo node : getUnitaryModel().getNodeOrder())
-				grid[i][getUnitaryModel().getNodeOrder().indexOf(node)] = 0;
+				this.grid[i][getUnitaryModel().getNodeOrder().indexOf(node)] = 0;
 		}
 	}
 
 	public byte getGridValue(Integer instance, NodeInfo node) {
-
 		return this.grid[instance][getUnitaryModel().getNodeOrder().indexOf(
 				node)];
 	}
@@ -234,7 +234,7 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 		this.grid[instance][getUnitaryModel().getNodeOrder().indexOf(node)] = value;
 	}
 
-	public SphericalEpithelium getEpithelium(){
+	public SphericalEpithelium getEpithelium() {
 		return this;
 	}
 }

@@ -59,7 +59,6 @@ public class DrawPolygon extends JPanel {
 				height = 500 / max;
 				height = (500 - 1 * height) / (max);
 				radius = height / Math.sqrt(3.0);
-
 			}
 
 			else {
@@ -97,6 +96,7 @@ public class DrawPolygon extends JPanel {
 						g.fillPolygon(polygon2);
 						g.setColor(Color.black);
 						g.drawPolygon(polygon2);
+						
 				}
 
 					else {
@@ -249,14 +249,12 @@ public class DrawPolygon extends JPanel {
 			cellGenes.add(new ArrayList<CellGenes>());
 			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
 				cellGenes.get(i).add(new CellGenes(size));
-				
 			}
-
 		}
-
 	}
 
 	public void drawHexagon(int i, int j, Graphics g, Color color) {
+		
 		double centerX = 100, centerY = 0, x = 0, y = 0;
 
 		if (i % 2 == 0) {
@@ -275,19 +273,12 @@ public class DrawPolygon extends JPanel {
 			x = centerX + radius * Math.cos(k * 2 * Math.PI / 6);
 			y = centerY + radius * Math.sin(k * 2 * Math.PI / 6);
 			polygon2.addPoint((int) (x), (int) (y));
-
 		}
-		
-
-		// Este set color deve ser calculado pelo conjunto de cores assinalados
-		//Color color = initialConditionsColor(nodeBox, initialStatePerComponent );
-		
+	
 		g.setColor(color);
-		
 		g.fillPolygon(polygon2);
 		g.setColor(Color.black);
 		g.drawPolygon(polygon2);
-
 	}
 	
 	

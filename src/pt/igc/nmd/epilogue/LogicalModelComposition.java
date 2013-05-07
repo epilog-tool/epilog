@@ -1,8 +1,5 @@
 package pt.igc.nmd.epilogue;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +9,6 @@ import java.util.Map;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.LogicalModelImpl;
 import org.colomoto.logicalmodel.NodeInfo;
-import org.colomoto.logicalmodel.io.ginml.LogicalModel2GINML;
 import org.colomoto.logicalmodel.tool.reduction.ModelReducer;
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.MDDManagerFactory;
@@ -26,9 +22,6 @@ import pt.igc.nmd.epilogue.integrationgrammar.CompositionContextImpl;
 import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionMDDFactory;
 
 import composition.IntegrationFunctionMapping;
-//import org.ginsim.service.tool.composition.Topology;
-
-//import composition.IntegrationFunctionMapping;
 
 public class LogicalModelComposition {
 
@@ -115,6 +108,7 @@ public class LogicalModelComposition {
 		MDDVariableFactory mvf = new MDDVariableFactory();
 		for (NodeInfo node : nodeOrder) {
 			mvf.add(node, (byte) (node.getMax() + 1));
+
 		}
 
 		// Creates ddmanager with created variables, indicating the maximum
@@ -177,33 +171,27 @@ public class LogicalModelComposition {
 
 		// Create MDDs for integration components
 
-		// ArrayList<NodeInfo> integrationComponents = mainPanel.getEpithelium()
-		// .getIntegrationComponents().keys();
-
 		for (NodeInfo oldeNodeIdIntegrationComponent : mainPanel
 				.getEpithelium().getUnitaryModel().getNodeOrder()) {
 
 			if (mainPanel.getEpithelium().isIntegrationComponent(
 					oldeNodeIdIntegrationComponent)) {
-				// System.out.println(oldeNodeIdIntegrationComponent.getNodeID()
-				// + " "
-				// + mainPanel.getEpithelium().getIntegrationFunctions(
-				// oldeNodeIdIntegrationComponent));
-
-				for (byte targetValue = 1; targetValue < oldeNodeIdIntegrationComponent.getMax(); targetValue++) {
+			
+				for (byte targetValue = 1; targetValue < oldeNodeIdIntegrationComponent
+						.getMax()+1; targetValue++) {
+					
+//					 System.out.println(oldeNodeIdIntegrationComponent + " " +
+//					 targetValue);
 
 					for (int i = 0; i < mainPanel.getTopology()
 							.getNumberInstances(); i++) {
 						IntegrationFunctionMDDFactory factory = new IntegrationFunctionMDDFactory(
 								context, ddmanager);
 
-						// System.err.println("Integration for "
-						// + oldeNodeIdIntegrationComponent.getNodeID()
-						// + ":" + targetValue + "@" + i);
-
 						String function = mainPanel.getEpithelium()
 								.getIntegrationFunction(
-										oldeNodeIdIntegrationComponent,targetValue);
+										oldeNodeIdIntegrationComponent,
+										targetValue);
 
 						int integrationMDD = factory
 								.getMDD(mainPanel.getEpithelium()
@@ -217,6 +205,7 @@ public class LogicalModelComposition {
 						searcher.setNode(integrationMDD);
 
 						for (int value : searcher) {
+							
 							if (value == 0)
 								continue;
 
@@ -226,6 +215,7 @@ public class LogicalModelComposition {
 									.get(new SimpleEntry<String, Integer>(
 											oldeNodeIdIntegrationComponent
 													.getNodeID(), i));
+							//System.out.println(integrationComponent);
 							int index = nodeOrder.indexOf(integrationComponent);
 							kMDDs[index] = MDDBaseOperators.OR.combine(
 									ddmanager, kMDDs[index], pathMDD);
@@ -240,31 +230,38 @@ public class LogicalModelComposition {
 		// try {
 		// exporter.export(new FileOutputStream("test_beforeReduction.ginml"));
 		// } catch (FileNotFoundException e) {
-		// // TODO Auto-generated catch block
+		
 		// e.printStackTrace();
 		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
+	
 		// e.printStackTrace();
 		// }
 
 		// Perform reduction of integration components
 		ModelReducer reducer = new ModelReducer(composedModel);
-		// System.err.println("New Integration Nodes: "+ newIntegrationNodes);
+		 //System.err.println("New Integration Nodes: "+ newIntegrationNodes);
 		for (NodeInfo integrationNode : newIntegrationNodes) {
 			// System.err.println("Reducing " + integrationNode.getNodeID());
 			reducer.remove(nodeOrder.indexOf(integrationNode));
 		}
 
 		composedModel = reducer.getModel();
+		
+//		System.out.println(composedModel.getNodeOrder());
+//		System.out.println(composedModel.getExtraComponents());
+//		for (NodeInfo node : mainPanel.getEpithelium().getUnitaryModel()
+//				.getNodeOrder())
+//			System.out.println(node + " -> " +mainPanel.getEpithelium()
+//					.isIntegrationComponent(node));
 
 		// exporter = new LogicalModel2GINML(composedModel);
 		// try {
 		// exporter.export(new FileOutputStream("test_afterReduction.ginml"));
 		// } catch (FileNotFoundException e) {
-		// // TODO Auto-generated catch block
+		
 		// e.printStackTrace();
 		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
+		
 		// e.printStackTrace();
 		// }
 
@@ -300,7 +297,7 @@ public class LogicalModelComposition {
 
 	public void resetComposedModel() {
 		composedModel = null;
-		// TODO Auto-generated method stub
+
 	}
 
 	public void resetLogicalModelComposition() {

@@ -88,7 +88,7 @@ public class SetupConditions extends JFrame {
 	private Hashtable<JButton, NodeInfo> integrationFunctionButton2Node;
 	private Hashtable<String, NodeInfo> string2Node;
 	private Hashtable<NodeInfo, JButton> node2IntegrationFunctionButton;
-	private Hashtable<Integer, String> instanceReturnsPerturbation;
+	// private Hashtable<Integer, String> instanceReturnsPerturbation;
 
 	private boolean fill;
 	private boolean composedModelActive;
@@ -135,7 +135,7 @@ public class SetupConditions extends JFrame {
 		node2IntInput = new Hashtable<NodeInfo, Boolean>();
 		string2Node = new Hashtable<String, NodeInfo>();
 		node2IntegrationFunctionButton = new Hashtable<NodeInfo, JButton>();
-		instanceReturnsPerturbation = new Hashtable<Integer, String>();
+		// instanceReturnsPerturbation = new Hashtable<Integer, String>();
 
 		mainPanel.getSimulation().resetIterationNumber();
 
@@ -281,7 +281,6 @@ public class SetupConditions extends JFrame {
 				colorChooser.get(i).setBounds(125 + xOffsetInput,
 						20 + yOffsetInput, 20, 25);
 
-				// color2Node.put(colorChooser.get(i), listNodes.get(i));
 				node2Color.put(listNodes.get(i), colorChooser.get(i));
 
 				inputsPanel.add(nodeBox[i]);
@@ -806,7 +805,7 @@ public class SetupConditions extends JFrame {
 	}
 
 	protected void setEnvOptions(JComboBox inputCombo, boolean bool) {
-		// TODO Auto-generated method stub
+
 		node2Jcheck.get(JcomboInput2Node.get(inputCombo)).setEnabled(bool);
 		node2Jcheck.get(JcomboInput2Node.get(inputCombo)).setSelected(bool);
 		componentDisplay.put(JcomboInput2Node.get(inputCombo), bool);
@@ -818,8 +817,16 @@ public class SetupConditions extends JFrame {
 				.setVisible(!bool);
 		node2IntInput.put(JcomboInput2Node.get(inputCombo), !bool);
 
-		// mainPanel.getEpithelium().setIntegrationComponents(
-		// JcomboInput2Node.get(inputCombo), !bool);
+		if (bool) {
+			epithelium.resetIntegrationNode(JcomboInput2Node.get(inputCombo));
+		}
+		else{
+			for (int instance = 0; instance<mainPanel.getTopology().getNumberInstances(); instance++){
+				epithelium.setGrid(instance, JcomboInput2Node.get(inputCombo), (byte) 0);
+			}
+			
+		}
+
 		// System.out.println(JcomboInput2Node.get(inputCombo)
 		// + " "
 		// + mainPanel.getEpithelium().getIntegrationComponents()
@@ -1035,46 +1042,46 @@ public class SetupConditions extends JFrame {
 			public void mouseReleased(MouseEvent arg0) {
 				// TODO Auto-generated method stub
 
-				endX = arg0.getX();
-				endY = arg0.getX();
-
-				int ind_it = (int) Math.floor((arg0.getX() / (1.5 * MapPanel.radius)));
-
-				int ind_yts = (int) (arg0.getY() - (ind_it % 2)
-						* MapPanel.height / 2);
-				int ind_jt = (int) Math.floor(ind_yts / (MapPanel.height));
-
-				int xt = (int) ((int) arg0.getX() - ind_it
-						* (1.5 * MapPanel.radius));
-				int yt = (int) (ind_yts - ind_jt * (MapPanel.height));
-				int i = 0, j = 0;
-				int deltaj = 0;
-
-				if (yt > MapPanel.height / 2)
-					deltaj = 1;
-				else
-					deltaj = 0;
-
-				if (xt > MapPanel.radius
-						* Math.abs(0.5 - (yt / MapPanel.height))) {
-					i = (int) ind_it;
-					j = (int) ind_jt;
-
-				} else {
-					i = (int) ind_it - 1;
-					j = (int) (ind_jt - i % 2 + deltaj);
-				}
-
-				Rectangle a = new Rectangle(startX - ind_it, startY - ind_jt,
-						Math.abs(endX - startX), Math.abs(endY - startY));
-
-				MapPanel.getGraphics().drawRect(startX - ind_it,
-						startY - ind_it, Math.abs(endX - startX),
-						Math.abs(endY - startY));
-
-				for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
-
-				}
+//				endX = arg0.getX();
+//				endY = arg0.getX();
+//
+//				int ind_it = (int) Math.floor((arg0.getX() / (1.5 * MapPanel.radius)));
+//
+//				int ind_yts = (int) (arg0.getY() - (ind_it % 2)
+//						* MapPanel.height / 2);
+//				int ind_jt = (int) Math.floor(ind_yts / (MapPanel.height));
+//
+//				int xt = (int) ((int) arg0.getX() - ind_it
+//						* (1.5 * MapPanel.radius));
+//				int yt = (int) (ind_yts - ind_jt * (MapPanel.height));
+//				int i = 0, j = 0;
+//				int deltaj = 0;
+//
+//				if (yt > MapPanel.height / 2)
+//					deltaj = 1;
+//				else
+//					deltaj = 0;
+//
+//				if (xt > MapPanel.radius
+//						* Math.abs(0.5 - (yt / MapPanel.height))) {
+//					i = (int) ind_it;
+//					j = (int) ind_jt;
+//
+//				} else {
+//					i = (int) ind_it - 1;
+//					j = (int) (ind_jt - i % 2 + deltaj);
+//				}
+//
+//				Rectangle a = new Rectangle(startX - ind_it, startY - ind_jt,
+//						Math.abs(endX - startX), Math.abs(endY - startY));
+//
+//				MapPanel.getGraphics().drawRect(startX - ind_it,
+//						startY - ind_it, Math.abs(endX - startX),
+//						Math.abs(endY - startY));
+//
+//				for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
+//
+//				}
 			}
 
 		});

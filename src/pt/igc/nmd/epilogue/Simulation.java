@@ -7,11 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.border.TitledBorder;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
@@ -70,8 +67,6 @@ public class Simulation {
 	public void step() {
 
 		this.stableStateFound = false;
-		testmethod();
-		// System.out.println(iterationNumber);
 
 		mainPanel.setBorderHexagonsPanel(iterationNumber);
 
@@ -85,7 +80,6 @@ public class Simulation {
 
 		byte[] nextState = new byte[this.state.length];
 		for (NodeInfo node : composedModel.getNodeOrder()) {
-
 			int index = composedModel.getNodeOrder().indexOf(node);
 
 			byte next = 0;
@@ -102,10 +96,9 @@ public class Simulation {
 				next = target;
 
 			nextState[index] = next;
+			
 			setComposedState(node.getNodeID(), next);
-			// System.out.println(node + " " + index + " " + node.getMax() + " "
-			// + node.isInput() + " " + current + " " + target + " "
-			// + next);
+
 
 			if (current != next) {
 				stableStateFound_aux = false;
@@ -115,6 +108,22 @@ public class Simulation {
 		if (stableStateFound_aux) {
 			this.stableStateFound = true;
 		}
+
+		for (NodeInfo node : composedModel.getExtraComponents()) {
+
+			byte current = 0;
+			byte next = 0;
+			int index = composedModel.getExtraComponents().indexOf(node);
+			byte target = composedModel.getExtraValue(index, this.state);
+			if (current != target)
+				next = (byte) (current + ((target - current) / Math.abs(target
+						- current)));
+			else
+				next = target;
+		
+			setComposedState(node.getNodeID(), next);
+		}
+		
 		saveLastPic();
 		fillHexagons();
 		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
@@ -143,29 +152,28 @@ public class Simulation {
 
 	public void initializeSimulation() {
 
-		this.composedModel = mainPanel.getEpithelium().getComposedModel();
+		this.epithelium = mainPanel.getEpithelium();
+		this.composedModel = epithelium.getComposedModel();
 
 		if (mainPanel.initialSetupHasChanged) {
 			composedModel = mainPanel.getLogicalModelComposition()
 					.createComposedModel();
-
 		}
+
 		mainPanel.setInitialSetupHasChanged(false);
 
 		this.state = new byte[this.composedModel.getNodeOrder().size()];
 		setHasInitiated(true);
 
-		List<NodeInfo> a = mainPanel.getEpithelium().getUnitaryModel()
-				.getNodeOrder();
+		List<NodeInfo> a = epithelium.getUnitaryModel().getNodeOrder();
 
 		for (int instance = 0; instance < mainPanel.getTopology()
 				.getNumberInstances(); instance++) {
 
 			for (NodeInfo node : a) {
 				setComposedState(mainPanel.getLogicalModelComposition()
-						.computeNewName(node.getNodeID(), instance), 
-						epithelium.getGridValue(instance, node)
-						);
+						.computeNewName(node.getNodeID(), instance),
+						epithelium.getGridValue(instance, node));
 				string2OldNode.put(mainPanel.getLogicalModelComposition()
 						.computeNewName(node.getNodeID(), instance), node);
 			}
@@ -205,26 +213,29 @@ public class Simulation {
 
 		int instance = mainPanel.getTopology().coords2Instance(i, j);
 
-		for (NodeInfo node : mainPanel.getEpithelium().getUnitaryModel()
-				.getNodeOrder()) {
-			if (mainPanel.getEpithelium().isDisplayComponentOn(node)) {
+		for (NodeInfo node : epithelium.getUnitaryModel().getNodeOrder()) {
+			if (epithelium.isDisplayComponentOn(node)) {
 
 				int value = 0;
 				if (initial)
 					value = epithelium.getGridValue(instance, node);
+
 				else
+					// System.out.println("Node: "+ node + " -> value: " +
+					// epithelium.getGridValue(instance, node));
 					value = composedState.get(mainPanel
 							.getLogicalModelComposition().computeNewName(
 									node.getNodeID(), instance));
 
 				if (value > 0) {
-					color = mainPanel.getEpithelium().getColor(node);
+					color = epithelium.getColor(node);
 					color = getColorLevel(color, value);
 
 					red = (red + color.getRed()) / 2;
 					green = (green + color.getGreen()) / 2;
 					blue = (blue + color.getBlue()) / 2;
 					color = new Color(red, green, blue);
+
 				} else if (value == 0) {
 					color = new Color(red, green, blue);
 				}
@@ -234,13 +245,10 @@ public class Simulation {
 	}
 
 	public Color getCoordinateInitialColor(int i, int j) {
-
 		return getCoordinateColor(i, j, true);
-
 	}
 
 	public Color getCoordinateCurrentColor(int i, int j) {
-
 		return getCoordinateColor(i, j, false);
 	}
 
@@ -256,11 +264,11 @@ public class Simulation {
 			column = mainPanel.getTopology().instance2j(i,
 					mainPanel.getTopology().getHeight());
 
-			for (NodeInfo node : mainPanel.getEpithelium().getUnitaryModel()
-					.getNodeOrder()) {
+			for (NodeInfo node : epithelium.getUnitaryModel().getNodeOrder()) {
 
+				Color color = getCoordinateCurrentColor(row, column);
 				mainPanel.hexagonsPanel.drawHexagon(row, column,
-						mainPanel.hexagonsPanel.getGraphics());
+						mainPanel.hexagonsPanel.getGraphics(), color);
 			}
 		}
 	}
@@ -281,53 +289,6 @@ public class Simulation {
 		for (String node : this.composedState.keySet()) {
 			this.composedState.put(node, (byte) 0);
 		}
-	}
-
-	public void testmethod() {
-		// byte[] unitaryState;
-
-		// unitaryState = new byte[mainPanel.getEpithelium().getUnitaryModel()
-		// .getNodeOrder().size()];
-		// System.out.println("Current:");
-		// for (int i = 0;i<unitaryState.length;i++){
-		// unitaryState[i]=1;
-		// unitaryState[1]=0;
-		// System.out.print(unitaryState[i]);
-		// }
-		//
-		// System.out.println("Target:");
-		// for (int i = 0;i<unitaryState.length;i++){
-		// System.out.print(mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1,
-		// unitaryState));
-		// unitaryState[i]=mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1,
-		// unitaryState);
-		// }
-		//
-		// System.out.println("Current:");
-		// for (int i = 0;i<unitaryState.length;i++){
-		// System.out.print(unitaryState[i]);
-		//
-		// }
-		// System.out.println("Target:");
-		// for (int i = 0;i<unitaryState.length;i++){
-		// System.out.print(mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1,
-		// unitaryState));
-		// unitaryState[i]=mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1,
-		// unitaryState);
-		// }
-		//
-		// System.out.println("Current:");
-		// for (int i = 0;i<unitaryState.length;i++){
-		// System.out.print(unitaryState[i]);
-		//
-		// }
-		// System.out.println("Target:");
-		// for (int i = 0;i<unitaryState.length;i++){
-		// System.out.print(mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1,
-		// unitaryState));
-		// unitaryState[i]=mainPanel.getEpithelium().getUnitaryModel().getTargetValue(1,
-		// unitaryState);
-		// }
 	}
 
 }
