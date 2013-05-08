@@ -2,35 +2,23 @@ package pt.igc.nmd.epilogue;
 
 import java.awt.Color;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
-import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 
 import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification;
 import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
-
-public class SphericalEpithelium implements Epithelium, Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1473898083699327135L;
+public class SphericalEpithelium implements Epithelium {
 
 	public Color colors[] = { Color.orange, Color.green, Color.blue,
 			Color.pink, Color.yellow, Color.magenta, Color.cyan, Color.red,
 			Color.LIGHT_GRAY, Color.black };
 
-	private transient LogicalModel unitaryModel;
-	private transient LogicalModel composedModel;
-	private String unitarySBML = null;
-//	private String composedSBML = null;
+	private LogicalModel unitaryModel;
+	private LogicalModel composedModel;
+	private String SBMLFilename;
+	private File SBMLFile;
 
 	private Color[] nodeColor = null;
 	private boolean[] displayComponents = null;
@@ -45,6 +33,23 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 		this.topology = topology;
 	}
 
+	
+	public String getSBMLFilename(){
+		return SBMLFilename;
+	}
+	
+	public File getSBMLFile(){
+		return SBMLFile;
+	}
+	
+	public void setSBMLFile(File file){
+		SBMLFile = file;
+	}
+	
+	public void setSBMLFilename(String string){
+		SBMLFilename = string;
+	}
+	
 	public void setInitialState(NodeInfo node, byte value) {
 		this.initialState[getUnitaryModel().getNodeOrder().indexOf(node)] = value;
 	}
@@ -109,10 +114,10 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 		this.integrationFunctionStrings[getUnitaryModel().getNodeOrder()
 				.indexOf(node)][value - 1] = expression;
 	}
-	
-	public void resetIntegrationNode(NodeInfo node){
+
+	public void resetIntegrationNode(NodeInfo node) {
 		this.integrationFunctionStrings[getUnitaryModel().getNodeOrder()
-		                				.indexOf(node)] = null;
+				.indexOf(node)] = null;
 	}
 
 	public Topology getTopology() {
@@ -128,60 +133,61 @@ public class SphericalEpithelium implements Epithelium, Serializable {
 		initializeInitialState();
 		initializeGrid();
 
-		SBMLFormat format = new SBMLFormat();
-		ByteOutputStream bos = new ByteOutputStream();
-		try {
-			format.export(this.unitaryModel, bos);
-		} catch (IOException e) {
-
-			e.printStackTrace();
-		}
-
-		this.unitarySBML = new String(bos.getBytes());
+		// SBMLFormat format = new SBMLFormat();
+		// ByteOutputStream bos = new ByteOutputStream();
+		// try {
+		// format.export(this.unitaryModel, bos);
+		// } catch (IOException e) {
+		//
+		// e.printStackTrace();
+		// }
+		//
+		// this.unitarySBML = new String(bos.getBytes());
 	}
 
 	private void initializeIntegrationFunctions() {
-		this.integrationFunctionStrings = new String[getUnitaryModel().getNodeOrder().size()][];
+		this.integrationFunctionStrings = new String[getUnitaryModel()
+				.getNodeOrder().size()][];
 	}
 
 	@Override
 	public LogicalModel getUnitaryModel() {
-		if (this.unitaryModel == null && this.unitarySBML != null) {
-			File tempFile = new File("temp" + System.currentTimeMillis()
-					+ ".sbml");
-			FileOutputStream fos = null;
-			try {
-				fos = new FileOutputStream(tempFile);
-			} catch (FileNotFoundException e) {
-			
-				e.printStackTrace();
-			}
-
-			try {
-				fos.write(this.unitarySBML.getBytes());
-			} catch (IOException e) {
-				
-				e.printStackTrace();
-			}
-
-			try {
-				fos.close();
-			} catch (IOException e) {
-				// 
-				e.printStackTrace();
-			}
-
-			SBMLFormat format = new SBMLFormat();
-			try {
-				setUnitaryModel(format.importFile(tempFile));
-			} catch (IOException e) {
-				// 
-				e.printStackTrace();
-			}
-
-			tempFile.delete();
-
-		}
+		// if (this.unitaryModel == null && this.unitarySBML != null) {
+		// File tempFile = new File("temp" + System.currentTimeMillis()
+		// + ".sbml");
+		// FileOutputStream fos = null;
+		// try {
+		// fos = new FileOutputStream(tempFile);
+		// } catch (FileNotFoundException e) {
+		//
+		// e.printStackTrace();
+		// }
+		//
+		// try {
+		// fos.write(this.unitarySBML.getBytes());
+		// } catch (IOException e) {
+		//
+		// e.printStackTrace();
+		// }
+		//
+		// try {
+		// fos.close();
+		// } catch (IOException e) {
+		// //
+		// e.printStackTrace();
+		// }
+		//
+		// SBMLFormat format = new SBMLFormat();
+		// try {
+		// setUnitaryModel(format.importFile(tempFile));
+		// } catch (IOException e) {
+		// //
+		// e.printStackTrace();
+		// }
+		//
+		// tempFile.delete();
+		//
+		// }
 		return this.unitaryModel;
 	}
 

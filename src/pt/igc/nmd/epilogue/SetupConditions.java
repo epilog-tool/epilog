@@ -4,16 +4,15 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -691,29 +690,132 @@ public class SetupConditions extends JFrame {
 
 	public void save() {
 		JFileChooser fc = new JFileChooser();
-
+		PrintWriter out;
 		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
 
 			try {
 
-				FileOutputStream fos = new FileOutputStream(fc
-						.getSelectedFile().getAbsolutePath());
+				out = new PrintWriter(new FileWriter(fc.getSelectedFile()
+						.getAbsolutePath()));
+				createConfigFile(out);
+				out.close();
 
-				ObjectOutputStream oos = new ObjectOutputStream(fos);
-
-				oos.writeObject(epithelium);
-				oos.close();
-
-				// XStream xstream = new XStream();
-				// String xml = xstream.toXML(epithelium);
-
-				// System.out.println(fc.getSelectedFile().getName());
-				// System.out.println(epithelium);
+				// File bundle = new File(fc
+				// .getSelectedFile().getAbsolutePath());
+				// FileOutputStream stream = new FileOutputStream(bundle);
+				// ZipOutputStream zos = new ZipOutputStream(stream);
+				// ZipEntry ze = null;
+				//
+				// ze = new ZipEntry("config.txt");
+				// ze.setSize((long) out.toString().getBytes().length);
+				// zos.setLevel(9);
+				// zos.putNextEntry(ze);
+				// zos.write(out.toString().getBytes(), 0,
+				// out.toString().getBytes().length);
+				// zos.closeEntry();
+				//
+				// File file = mainPanel.getEpithelium().getSBMLFile();
+				//
+				// ze = new
+				// ZipEntry(mainPanel.getEpithelium().getSBMLFilename());
+				// ze.setSize((long) sbmlFormat.toString().getBytes().length);
+				// zos.setLevel(9);
+				// zos.putNextEntry(ze);
+				// zos.write(file.toString().getBytes(), 0,
+				// file.toString().getBytes().length);
+				// zos.closeEntry();
+				//
+				// zos.finish();
+				// zos.close();
 
 			} catch (IOException e) {
-
 				e.printStackTrace();
 			}
+
+	}
+
+	private void createConfigFile(PrintWriter out) {
+
+		Topology topology = mainPanel.getTopology();
+		SphericalEpithelium epithelium = mainPanel.getEpithelium();
+
+		// Grid Dimensions
+		out.write("GD " + topology.getWidth() + "," + topology.getHeight()
+				+ "\n");
+
+		out.write("\n");
+		// Roll-Over option
+		out.write("RL " + topology.getRollOver() + "\n");
+
+		out.write("\n");
+		// InitialState
+		for (NodeInfo node : epithelium.getUnitaryModel().getNodeOrder()) {
+			if (!epithelium.isIntegrationComponent(node)) {
+				for (int value = 1; value < node.getMax() + 1; value++) {
+					out.write("IC "
+							+ node.getNodeID()
+							+ " "
+							+ epithelium.getUnitaryModel().getNodeOrder()
+									.indexOf(node) + " : " + value + " ( ");
+					int previous = 0;
+					int inDash = 0;
+					for (int instance = 0; instance < topology
+							.getNumberInstances(); instance++) {
+						if (epithelium.getGridValue(instance, node) == value) {
+							if (previous != instance - 1) {
+								if (inDash == 1) {
+									out.write("-" + previous + ",");
+								} else if (previous != 0) {
+									out.write(",");
+								}
+								out.write("" + instance);
+								inDash = 0;
+							} else {
+								inDash = 1;
+								if (instance == topology.getNumberInstances()-1 & previous ==instance-1) {
+									out.write("-" + instance);
+								}
+							}
+							previous = instance;
+						}
+					}
+					out.write(" )\n");
+				}
+			}
+		}
+
+		out.write("\n");
+		// Integration Components
+		for (NodeInfo node : epithelium.getUnitaryModel().getNodeOrder()) {
+			if (epithelium.isIntegrationComponent(node)) {
+
+				for (byte value = 1; value < node.getMax() + 1; value++) {
+					out.write("IT "
+							+ node.getNodeID()
+							+ " "
+							+ epithelium.getUnitaryModel().getNodeOrder()
+									.indexOf(node) + " : " + value + " : "
+							+ epithelium.getIntegrationFunction(node, value)
+							+ "\n");
+				}
+
+			}
+
+		}
+
+		out.write("\n");
+		// Colors
+
+		for (NodeInfo node : epithelium.getUnitaryModel().getNodeOrder()) {
+			out.write("CL " + node.getNodeID() + " "
+					+ epithelium.getUnitaryModel().getNodeOrder().indexOf(node)
+					+ " : " + epithelium.getColor(node).getRGB() + "\n");
+		}
+
+		out.write("\n");
+		// Perturbations
+
+		// Priorities
 
 	}
 
@@ -819,12 +921,13 @@ public class SetupConditions extends JFrame {
 
 		if (bool) {
 			epithelium.resetIntegrationNode(JcomboInput2Node.get(inputCombo));
-		}
-		else{
-			for (int instance = 0; instance<mainPanel.getTopology().getNumberInstances(); instance++){
-				epithelium.setGrid(instance, JcomboInput2Node.get(inputCombo), (byte) 0);
+		} else {
+			for (int instance = 0; instance < mainPanel.getTopology()
+					.getNumberInstances(); instance++) {
+				epithelium.setGrid(instance, JcomboInput2Node.get(inputCombo),
+						(byte) 0);
 			}
-			
+
 		}
 
 		// System.out.println(JcomboInput2Node.get(inputCombo)
@@ -1042,46 +1145,48 @@ public class SetupConditions extends JFrame {
 			public void mouseReleased(MouseEvent arg0) {
 				// TODO Auto-generated method stub
 
-//				endX = arg0.getX();
-//				endY = arg0.getX();
-//
-//				int ind_it = (int) Math.floor((arg0.getX() / (1.5 * MapPanel.radius)));
-//
-//				int ind_yts = (int) (arg0.getY() - (ind_it % 2)
-//						* MapPanel.height / 2);
-//				int ind_jt = (int) Math.floor(ind_yts / (MapPanel.height));
-//
-//				int xt = (int) ((int) arg0.getX() - ind_it
-//						* (1.5 * MapPanel.radius));
-//				int yt = (int) (ind_yts - ind_jt * (MapPanel.height));
-//				int i = 0, j = 0;
-//				int deltaj = 0;
-//
-//				if (yt > MapPanel.height / 2)
-//					deltaj = 1;
-//				else
-//					deltaj = 0;
-//
-//				if (xt > MapPanel.radius
-//						* Math.abs(0.5 - (yt / MapPanel.height))) {
-//					i = (int) ind_it;
-//					j = (int) ind_jt;
-//
-//				} else {
-//					i = (int) ind_it - 1;
-//					j = (int) (ind_jt - i % 2 + deltaj);
-//				}
-//
-//				Rectangle a = new Rectangle(startX - ind_it, startY - ind_jt,
-//						Math.abs(endX - startX), Math.abs(endY - startY));
-//
-//				MapPanel.getGraphics().drawRect(startX - ind_it,
-//						startY - ind_it, Math.abs(endX - startX),
-//						Math.abs(endY - startY));
-//
-//				for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
-//
-//				}
+				// endX = arg0.getX();
+				// endY = arg0.getX();
+				//
+				// int ind_it = (int) Math.floor((arg0.getX() / (1.5 *
+				// MapPanel.radius)));
+				//
+				// int ind_yts = (int) (arg0.getY() - (ind_it % 2)
+				// * MapPanel.height / 2);
+				// int ind_jt = (int) Math.floor(ind_yts / (MapPanel.height));
+				//
+				// int xt = (int) ((int) arg0.getX() - ind_it
+				// * (1.5 * MapPanel.radius));
+				// int yt = (int) (ind_yts - ind_jt * (MapPanel.height));
+				// int i = 0, j = 0;
+				// int deltaj = 0;
+				//
+				// if (yt > MapPanel.height / 2)
+				// deltaj = 1;
+				// else
+				// deltaj = 0;
+				//
+				// if (xt > MapPanel.radius
+				// * Math.abs(0.5 - (yt / MapPanel.height))) {
+				// i = (int) ind_it;
+				// j = (int) ind_jt;
+				//
+				// } else {
+				// i = (int) ind_it - 1;
+				// j = (int) (ind_jt - i % 2 + deltaj);
+				// }
+				//
+				// Rectangle a = new Rectangle(startX - ind_it, startY - ind_jt,
+				// Math.abs(endX - startX), Math.abs(endY - startY));
+				//
+				// MapPanel.getGraphics().drawRect(startX - ind_it,
+				// startY - ind_it, Math.abs(endX - startX),
+				// Math.abs(endY - startY));
+				//
+				// for (int instance = 0; instance <
+				// topology.getNumberInstances(); instance++) {
+				//
+				// }
 			}
 
 		});
