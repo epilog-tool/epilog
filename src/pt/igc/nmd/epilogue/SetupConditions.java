@@ -10,6 +10,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -268,7 +273,7 @@ public class SetupConditions extends JFrame {
 							@Override
 							public void actionPerformed(ActionEvent arg0) {
 								JComboBox src = (JComboBox) arg0.getSource();
-								// TODO Auto-generated method stub
+
 								fireInitialStateChange(src);
 							}
 						});
@@ -422,7 +427,7 @@ public class SetupConditions extends JFrame {
 							@Override
 							public void actionPerformed(ActionEvent arg0) {
 								JComboBox src = (JComboBox) arg0.getSource();
-								// TODO Auto-generated method stub
+
 								fireInitialStateChange(src);
 							}
 						});
@@ -553,6 +558,7 @@ public class SetupConditions extends JFrame {
 		buttonFill.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setFill(true);
+				fill();
 
 				// TO DO: Fill has to check for each component individually if
 				// they have non zero expression neighbors. The fact that one
@@ -689,6 +695,8 @@ public class SetupConditions extends JFrame {
 	}
 
 	public void save() {
+
+		// TODO: Provisory method. It will evolve to something more elaborate
 		JFileChooser fc = new JFileChooser();
 		PrintWriter out;
 		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
@@ -696,9 +704,49 @@ public class SetupConditions extends JFrame {
 			try {
 
 				out = new PrintWriter(new FileWriter(fc.getSelectedFile()
-						.getAbsolutePath()));
+						.getAbsolutePath() + "_config.txt"));
 				createConfigFile(out);
 				out.close();
+
+				String zipFile = fc.getSelectedFile().getAbsolutePath()
+						+ ".zip";
+
+				String unitarySBML = "";
+				if (mainPanel.getEpithelium().isNewEpithelium()) {
+					unitarySBML = mainPanel.getEpithelium().getSBMLFilePath();
+				} else {
+					unitarySBML = mainPanel.getEpithelium().getSBMLLoadPath();
+					
+				}
+				System.out.println("Unitary SBML" + unitarySBML);
+				
+
+				String[] sourceFiles = {
+						fc.getSelectedFile().getAbsolutePath() + "_config.txt",
+						unitarySBML };
+
+				byte[] buffer = new byte[1024];
+				FileOutputStream fout = new FileOutputStream(zipFile);
+				ZipOutputStream zout = new ZipOutputStream(fout);
+
+				for (int i = 0; i < sourceFiles.length; i++) {
+					System.out.println("Adding " + sourceFiles[i]);
+					// create object of FileInputStream for source file
+					FileInputStream fin = new FileInputStream(sourceFiles[i]);
+					zout.putNextEntry(new ZipEntry(sourceFiles[i]));
+					int length;
+
+					while ((length = fin.read(buffer)) > 0) {
+						zout.write(buffer, 0, length);
+					}
+					zout.closeEntry();
+					fin.close();
+				}
+				zout.close();
+				System.out.println("Zip file has been created!");
+				File toDelete = new File(fc.getSelectedFile().getAbsolutePath()
+						+ "_config.txt");
+				toDelete.delete();
 
 				// File bundle = new File(fc
 				// .getSelectedFile().getAbsolutePath());
@@ -736,8 +784,15 @@ public class SetupConditions extends JFrame {
 
 	private void createConfigFile(PrintWriter out) {
 
+		// TODO : Change PrintWriter to FileWriter - Tratamento de Excepções. o
+		// file writer espera ate ter uma quantiodade grande de dados para
+		// enviar tudo de uma vez. importante quando estamos numa ligaão remota
+
 		Topology topology = mainPanel.getTopology();
 		SphericalEpithelium epithelium = mainPanel.getEpithelium();
+
+		// SBML Filename
+		out.write("SN " + epithelium.getSBMLFilename() + "\n");
 
 		// Grid Dimensions
 		out.write("GD " + topology.getWidth() + "," + topology.getHeight()
@@ -772,7 +827,8 @@ public class SetupConditions extends JFrame {
 								inDash = 0;
 							} else {
 								inDash = 1;
-								if (instance == topology.getNumberInstances()-1 & previous ==instance-1) {
+								if (instance == topology.getNumberInstances() - 1
+										& previous == instance - 1) {
 									out.write("-" + instance);
 								}
 							}
@@ -836,7 +892,7 @@ public class SetupConditions extends JFrame {
 	}
 
 	protected void clearAllPerturbations() {
-		// TODO Auto-generated method stub
+
 		for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
 			// epithelium.setPerturbedInstance(instance, false);
 		}
@@ -885,13 +941,13 @@ public class SetupConditions extends JFrame {
 	}
 
 	protected void setSelectedPerturbedComponent(String selectedItem) {
-		// TODO Auto-generated method stub
+
 		this.selectedPerturbedComponent = string2Node.get(selectedItem);
-		// System.out.println(this.selectedPerturbedComponent);
+
 	}
 
 	protected void setInitialSetupHasChanged(boolean b) {
-		// TODO Auto-generated method stub
+
 		mainPanel.setInitialSetupHasChanged(b);
 	}
 
@@ -902,7 +958,6 @@ public class SetupConditions extends JFrame {
 	}
 
 	protected void setFill(boolean b) {
-		// TODO Auto-generated method stub
 		this.fill = b;
 	}
 
@@ -996,7 +1051,7 @@ public class SetupConditions extends JFrame {
 
 			@Override
 			public void mouseDragged(MouseEvent arg0) {
-				// TODO Auto-generated method stub
+
 				int ind_it = (int) Math.floor((arg0.getX() / (1.5 * MapPanel.radius)));
 
 				double ind_yts = (arg0.getY() - (ind_it % 2) * MapPanel.height
@@ -1040,7 +1095,7 @@ public class SetupConditions extends JFrame {
 
 			@Override
 			public void mouseMoved(MouseEvent arg0) {
-				// TODO Auto-generated method stub
+
 				int ind_it = (int) Math.floor((arg0.getX() / (1.5 * MapPanel.radius)));
 
 				double ind_yts = (arg0.getY() - (ind_it % 2) * MapPanel.height
@@ -1078,7 +1133,7 @@ public class SetupConditions extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				// TODO Auto-generated method stub
+
 				int ind_it = (int) Math.floor((arg0.getX() / (1.5 * MapPanel.radius)));
 
 				double ind_yts = (arg0.getY() - (ind_it % 2) * MapPanel.height
@@ -1116,7 +1171,7 @@ public class SetupConditions extends JFrame {
 					}
 				} else if (fill) {
 
-					Fill(i, j);
+					fill();
 
 				}
 
@@ -1124,26 +1179,23 @@ public class SetupConditions extends JFrame {
 
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
-				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public void mouseExited(MouseEvent arg0) {
-				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				// TODO Auto-generated method stub
+
 				startX = arg0.getX();
 				startY = arg0.getX();
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-				// TODO Auto-generated method stub
 
 				// endX = arg0.getX();
 				// endY = arg0.getX();
@@ -1192,8 +1244,12 @@ public class SetupConditions extends JFrame {
 		});
 	}
 
-	public void Fill(int i, int j) {
+	/*
+	 * All cels within a selected space are filled with the value selecte
+	 */
+	public void fill() {
 
+		MapPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		// List[] neiList = new List[];
 		// if (i < topology.getWidth()
 		// && j < topology.getHeight()
@@ -1226,23 +1282,6 @@ public class SetupConditions extends JFrame {
 
 	public void getInitialState(int i, int j) {
 		Set<NodeInfo> a = mainPanel.getSimulation().getNode2Int().keySet();
-		// for (NodeInfo a2 : a) {
-		//
-		// textArea.append(a2
-		// + " "
-		// + topology.coords2Instance(i, j)
-		// + " "
-		// + a2
-		// + " "
-		// + mainPanel
-		// .getSimulation()
-		// .getComposedInitialState()
-		// .get(mainPanel.getLogicalModelComposition()
-		// .computeNewName(
-		// a2.getNodeID(),
-		// topology
-		// .coords2Instance(i, j))));
-		// }
 	}
 
 	public void setInitialState(int i, int j) {

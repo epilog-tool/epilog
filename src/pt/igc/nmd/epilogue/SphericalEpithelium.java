@@ -1,7 +1,6 @@
 package pt.igc.nmd.epilogue;
 
 import java.awt.Color;
-import java.io.File;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
@@ -18,7 +17,8 @@ public class SphericalEpithelium implements Epithelium {
 	private LogicalModel unitaryModel;
 	private LogicalModel composedModel;
 	private String SBMLFilename;
-	private File SBMLFile;
+	private String SBMLFilePath;
+	private String SBMLLoadPath;
 
 	private Color[] nodeColor = null;
 	private boolean[] displayComponents = null;
@@ -28,28 +28,29 @@ public class SphericalEpithelium implements Epithelium {
 
 	private Topology topology = null;
 
+	private boolean newEpithelium;
+
 	public SphericalEpithelium(Topology topology) {
 
 		this.topology = topology;
 	}
 
-	
-	public String getSBMLFilename(){
+	public String getSBMLFilename() {
 		return SBMLFilename;
 	}
-	
-	public File getSBMLFile(){
-		return SBMLFile;
+
+	public String getSBMLFilePath() {
+		return SBMLFilePath;
 	}
-	
-	public void setSBMLFile(File file){
-		SBMLFile = file;
+
+	public void setSBMLPath(String file) {
+		SBMLFilePath = file;
 	}
-	
-	public void setSBMLFilename(String string){
+
+	public void setSBMLFilename(String string) {
 		SBMLFilename = string;
 	}
-	
+
 	public void setInitialState(NodeInfo node, byte value) {
 		this.initialState[getUnitaryModel().getNodeOrder().indexOf(node)] = value;
 	}
@@ -127,11 +128,13 @@ public class SphericalEpithelium implements Epithelium {
 	@Override
 	public void setUnitaryModel(LogicalModel model) {
 		this.unitaryModel = model;
-		initializeColors();
-		initializeDisplayComponents();
-		initializeIntegrationFunctions();
-		initializeInitialState();
-		initializeGrid();
+		if (model != null) {
+			initializeColors();
+			initializeDisplayComponents();
+			initializeIntegrationFunctions();
+			initializeInitialState();
+			initializeGrid();
+		}
 
 		// SBMLFormat format = new SBMLFormat();
 		// ByteOutputStream bos = new ByteOutputStream();
@@ -243,4 +246,25 @@ public class SphericalEpithelium implements Epithelium {
 	public SphericalEpithelium getEpithelium() {
 		return this;
 	}
+
+	public void reset() {
+		setUnitaryModel(null);
+	}
+
+	public boolean isNewEpithelium() {
+		return newEpithelium;
+	}
+
+	public void setNewEpithelium(boolean b) {
+		newEpithelium = b;
+	}
+
+	public String getSBMLLoadPath() {
+		return SBMLLoadPath;
+	}
+	
+	public void setSBMLLoadPath(String s){
+		SBMLLoadPath = s;
+	}
+
 }

@@ -91,7 +91,7 @@ public class ComponentsPanel extends MapColorPanel {
 		inputComponents.setBorder(titleInputs);
 
 		if (epithelium.getUnitaryModel() != null) {
-			
+
 			listNodes = epithelium.getUnitaryModel().getNodeOrder();
 			nodeBox = new JCheckBox[listNodes.size()];
 			auxiliaryPanel = new JPanel[listNodes.size()];

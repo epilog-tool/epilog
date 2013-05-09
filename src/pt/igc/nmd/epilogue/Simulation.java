@@ -141,7 +141,6 @@ public class Simulation {
 		try {
 			ImageIO.write(im, "PNG", new File("shot.png"));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -154,6 +153,7 @@ public class Simulation {
 
 		this.epithelium = mainPanel.getEpithelium();
 		this.composedModel = epithelium.getComposedModel();
+		resetIterationNumber();
 
 		if (mainPanel.initialSetupHasChanged) {
 			composedModel = mainPanel.getLogicalModelComposition()

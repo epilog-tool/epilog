@@ -11,10 +11,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.Scanner;
 
 import javax.swing.BorderFactory;
@@ -37,14 +35,14 @@ public class StartPanel extends JPanel {
 	private static final long serialVersionUID = -2013094563809493130L;
 
 	private JButton closeButton;
-	private JButton loadModelButton;
+	private JButton newEpithelium;
 	private JButton setupConditionsButton;
 	private JButton restartButton;
 	private JButton runButton;
 	private JButton stepButton;
 	private JButton quitButton;
 	private JButton simulationButton;
-	private JButton loadConfigurations;
+	private JButton loadEpithelium;
 
 	private JLabel labelFilename = new JLabel();
 	private JLabel iterationNumber = new JLabel();
@@ -78,7 +76,7 @@ public class StartPanel extends JPanel {
 		 * Components definitions
 		 */
 
-		loadModelButton = new JButton("Load Model");
+		newEpithelium = new JButton("New Epihtelium");
 		selectedFilenameLabel = new JLabel();
 		restartButton = new JButton("Restart");
 		closeButton = new JButton("Close");
@@ -87,7 +85,7 @@ public class StartPanel extends JPanel {
 		setupConditionsButton = new JButton("Setup Conditions");
 		runButton = new RunStopButton();
 		stepButton = new JButton("Step");
-		loadConfigurations = new JButton("Load Configurations");
+		loadEpithelium = new JButton("Load Epithelium");
 
 		JLabel setWidth = new JLabel();
 		JLabel setHeight = new JLabel();
@@ -105,21 +103,13 @@ public class StartPanel extends JPanel {
 		iterationNumber.setText(""
 				+ mainPanel.getSimulation().getIterationNumber());
 
-		loadModelButton.setBounds(230, 13, 100, 30);
+		newEpithelium.setBounds(230, 13, 100, 30);
 		selectedFilenameLabel.setBounds(335, 13, 100, 30);
 
 		quitButton.setBackground(Color.red);
 
-		closeButton.setVisible(false);
-		stepButton.setVisible(false);
-		runButton.setVisible(false);
-		iterationNumber.setVisible(false);
-		labelFilename.setVisible(false);
-		setupConditionsButton.setVisible(false);
-		simulationButton.setVisible(false);
-
-		userDefinedWidth.setEnabled(true);
-		userDefinedHeight.setEnabled(true);
+		// userDefinedWidth.setEnabled(true);
+		// userDefinedHeight.setEnabled(true);
 
 		/*
 		 * Close Button: This button will close the current simulation and erase
@@ -137,27 +127,18 @@ public class StartPanel extends JPanel {
 
 		closeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mainPanel.getSimulation().resetIterationNumber();
 
 				mainPanel.setInitialSetupHasChanged(true);
 				mainPanel.getSimulation().setHasInitiated(false);
-				mainPanel.restartAnalytics();
+				mainPanel.getEpithelium().reset();
+				removeAll();
+				init();
+				mainPanel.componentsPanel.removeAll();
+				mainPanel.componentsPanel.init();
+				mainPanel.watcherPanel.removeAll();
+				mainPanel.watcherPanel.init();
 
 				selectedFilenameLabel.setText("");
-
-				mainPanel.componentsPanel.setVisible(false);
-				mainPanel.watcherPanel.setVisible(false);
-				stepButton.setVisible(false);
-				runButton.setVisible(false);
-				setupConditionsButton.setVisible(false);
-				simulationButton.setVisible(false);
-				restartButton.setVisible(false);
-				closeButton.setVisible(false);
-				// labelFilename.setVisible(false);
-
-				setupConditionsButton.setEnabled(true);
-				userDefinedWidth.setEnabled(true);
-				userDefinedHeight.setEnabled(true);
 
 				TitledBorder titleInitialConditions;
 				titleInitialConditions = BorderFactory.createTitledBorder("");
@@ -172,7 +153,7 @@ public class StartPanel extends JPanel {
 
 				mainPanel.getLogicalModelComposition()
 						.resetLogicalModelComposition();
-				// integrationComponentsReset();
+
 			}
 		});
 
@@ -201,25 +182,26 @@ public class StartPanel extends JPanel {
 		 * restarted 7) Initial Conditions values are reloaded
 		 */
 
-		restartButton.setVisible(false);
 		restartButton.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent e) {
-
-				mainPanel.getSimulation().resetIterationNumber();
-				mainPanel.setBorderHexagonsPanel();
-
-				simulationButton.setVisible(true);
-				stepButton.setVisible(false);
-				runButton.setVisible(false);
-				stepButton.setEnabled(true);
-				runButton.setEnabled(true);
-				setupConditionsButton.setEnabled(true);
-				userDefinedWidth.setEnabled(true);
-				userDefinedHeight.setEnabled(true);
-				mainPanel.getSimulation().initializeSimulation();
-				mainPanel.restartAnalytics();
-
 				mainPanel.getSimulation().setHasInitiated(false);
+
+				TitledBorder titleInitialConditions;
+				titleInitialConditions = BorderFactory.createTitledBorder("");
+				mainPanel.auxiliaryHexagonsPanel
+						.setBorder(javax.swing.BorderFactory
+								.createEmptyBorder());
+				mainPanel.auxiliaryHexagonsPanel
+						.setBorder(titleInitialConditions);
+
+				removeAll();
+				init();
+
+				mainPanel.getSimulation().initializeSimulation();
+				mainPanel.watcherPanel.removeAll();
+				mainPanel.watcherPanel.init();
+
 			}
 		});
 
@@ -309,19 +291,21 @@ public class StartPanel extends JPanel {
 		 * function askmodel performs all the operations
 		 */
 
-		loadModelButton.addActionListener(new ActionListener() {
+		newEpithelium.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				askModel();
 				mainPanel.getContentPane().repaint();
 				mainPanel.getSimulation().resetIterationNumber();
+				mainPanel.getEpithelium().setNewEpithelium(true);
 			}
 		});
 
-		loadConfigurations.addActionListener(new ActionListener() {
+		loadEpithelium.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				askConfigurations();
 				mainPanel.getContentPane().repaint();
 				mainPanel.getSimulation().resetIterationNumber();
+				mainPanel.getEpithelium().setNewEpithelium(false);
 			}
 		});
 
@@ -339,7 +323,9 @@ public class StartPanel extends JPanel {
 
 		simulationButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				mainPanel.getSimulation().initializeSimulation();
+				removeAll();
+				init();
 				mainPanel.auxiliaryHexagonsPanel
 						.setBorder(javax.swing.BorderFactory
 								.createEmptyBorder());
@@ -348,18 +334,6 @@ public class StartPanel extends JPanel {
 						.createTitledBorder("Initial Conditions");
 				mainPanel.auxiliaryHexagonsPanel
 						.setBorder(titleInitialConditions);
-
-				simulationButton.setVisible(false);
-				stepButton.setVisible(true);
-				runButton.setVisible(true);
-
-				setupConditionsButton.setEnabled(false);
-				userDefinedWidth.setEnabled(false);
-				userDefinedHeight.setEnabled(false);
-
-				mainPanel.getSimulation().initializeSimulation();
-				// mainPanel.getSimulation().fillHexagons();
-				// mainPanel.getSimulation().setHasInitiated(false);
 
 			}
 		});
@@ -411,17 +385,31 @@ public class StartPanel extends JPanel {
 		add(userDefinedWidth);
 		add(setHeight);
 		add(userDefinedHeight);
-		add(loadConfigurations);
-		add(loadModelButton);
-		add(labelFilename);
-		add(selectedFilenameLabel);
-		add(runButton);
-		add(stepButton);
-		add(simulationButton);
-		add(setupConditionsButton);
-		add(emptySpaceLabel);
-		add(restartButton);
-		add(closeButton);
+		add(loadEpithelium);
+		add(newEpithelium);
+
+		if (mainPanel.getEpithelium().getUnitaryModel() != null) {
+			add(labelFilename);
+			add(selectedFilenameLabel);
+
+			if (mainPanel.getSimulation().getHasInitiated()) {
+				add(runButton);
+				add(stepButton);
+
+				setupConditionsButton.setEnabled(false);
+				userDefinedWidth.setEnabled(false);
+				userDefinedHeight.setEnabled(false);
+			} else {
+				add(simulationButton);
+				setupConditionsButton.setEnabled(true);
+				userDefinedWidth.setEnabled(true);
+				userDefinedHeight.setEnabled(true);
+			}
+			add(setupConditionsButton);
+			add(emptySpaceLabel);
+			add(restartButton);
+			add(closeButton);
+		}
 		add(quitButton);
 
 		return this;
@@ -455,16 +443,17 @@ public class StartPanel extends JPanel {
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			selectedFilenameLabel.setText(fc.getSelectedFile().getName());
 			selectedFilenameLabel.setForeground(Color.white);
-			loadModel();
+
+			File file = fc.getSelectedFile();
+
+			epithelium.setSBMLFilename(file.getName());
+			epithelium.setSBMLPath(file.getAbsolutePath());
+
+			loadModel(file);
 		}
 	}
 
-	private void loadModel() {
-
-		File file = fc.getSelectedFile();
-
-		epithelium.setSBMLFile(file);
-		epithelium.setSBMLFilename(file.getName());
+	private void loadModel(File file) {
 
 		SBMLFormat sbmlFormat = new SBMLFormat();
 		LogicalModel logicalModel = null;
@@ -486,25 +475,13 @@ public class StartPanel extends JPanel {
 			return;
 
 		epithelium.setUnitaryModel(logicalModel);
+		removeAll();
+		init();
 		mainPanel.componentsPanel.removeAll();
 		mainPanel.componentsPanel.init();
-		mainPanel.getContentPane().repaint();
-		mainPanel.componentsPanel.setVisible(true);
-		mainPanel.watcherPanel.setVisible(true);
-		labelFilename.setVisible(true);
-		stepButton.setVisible(true);
-		runButton.setVisible(false);
-		stepButton.setVisible(false);
-		simulationButton.setVisible(true);
-		setupConditionsButton.setVisible(true);
-		restartButton.setVisible(true);
-		closeButton.setVisible(true);
-		stepButton.setEnabled(true);
-		runButton.setEnabled(true);
-		userDefinedWidth.setEnabled(true);
-		userDefinedHeight.setEnabled(true);
-
+		mainPanel.watcherPanel.removeAll();
 		mainPanel.watcherPanel.init();
+		mainPanel.getContentPane().repaint();
 
 		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
 				.getGraphics());
@@ -523,30 +500,54 @@ public class StartPanel extends JPanel {
 	private void askConfigurations() {
 
 		fc.setDialogTitle("Choose file");
-
+		
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			File folder = new File(
+					"temp");
+			for(File file: folder.listFiles()) file.delete();
+			UnZip.main(fc.getSelectedFile().getAbsolutePath());
 
-			try {
-				Scanner fileIn = new Scanner(new File(fc.getSelectedFile()
-						.getAbsolutePath()));
-
-				ld(fileIn);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			for (final File fileEntry : folder.listFiles()) {
+				if (fileEntry.getName().contains("sbml")){
+					loadModel(fileEntry);
+					mainPanel.getEpithelium().setSBMLLoadPath(fileEntry.getAbsolutePath());
+				}
 			}
-
-			loadConfigurations();
+			for (final File fileEntry : folder.listFiles()) {
+				if (fileEntry.getName().contains("config")) {
+					try {
+						Scanner fileIn = new Scanner(new File(fileEntry.getAbsolutePath()));
+						ld(fileIn);
+						
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					loadConfigurations();
+				}
+			}
 		}
 	}
 
 	private void ld(Scanner fileIn) {
+
+		// TODO: Mudar para Buffereader: Lê muitas coisas de cada vez, lida
+		// tambem com caracteres especiais
+
+		
 
 		while (fileIn.hasNext()) {
 
 			String line = fileIn.nextLine();
 
 			String identifier = line.split(" ")[0];
+
+
+			if (identifier.contains("SN")) {
+
+				String SBMLFilename = line.split(" ")[1];
+				mainPanel.getEpithelium().setSBMLFilename(SBMLFilename);
+			}
 
 			if (identifier.contains("GD")) {
 				mainPanel.getTopology().setWidth(
@@ -566,68 +567,62 @@ public class StartPanel extends JPanel {
 						.getNodeOrder()
 						.get(Integer.parseInt(line.split(" ")[2]));
 				byte value = (byte) Integer.parseInt(line.split(" ")[4]);
-				
-				for (String range: line.split(" ")[6].split(",")){
-					range.replace("(","");
-					range.replace(")","");
 
-					if (range.contains("-")){
-						range.replace("(","");
-						
+				for (String range : line.split(" ")[6].split(",")) {
+					range.replace("(", "");
+					range.replace(")", "");
+
+					if (range.contains("-")) {
+						range.replace("(", "");
+
 						int init = Integer.parseInt(range.split("-")[0]);
 						int end = Integer.parseInt(range.split("-")[1]);
-						for (int instance=init;instance<end+1;instance++){
-							mainPanel.getEpithelium().setGrid(instance, node, value);
+						for (int instance = init; instance < end + 1; instance++) {
+							mainPanel.getEpithelium().setGrid(instance, node,
+									value);
 						}
 					}
 				}
 			}
-			
+
 			if (identifier.contains("IT")) {
 				NodeInfo node = mainPanel.getEpithelium().getUnitaryModel()
 						.getNodeOrder()
 						.get(Integer.parseInt(line.split(" ")[2]));
 				byte value = (byte) Integer.parseInt(line.split(" ")[4]);
 				String expression = line.split(" ")[6];
-				mainPanel.getEpithelium().setIntegrationFunctions(node, value, expression);
+				mainPanel.getEpithelium().setIntegrationFunctions(node, value,
+						expression);
 			}
-			
+
 			if (identifier.contains("CL")) {
 
 				NodeInfo node = mainPanel.getEpithelium().getUnitaryModel()
 						.getNodeOrder()
 						.get(Integer.parseInt(line.split(" ")[2]));
 				Color color = new Color(Integer.parseInt(line.split(" ")[4]));
-				
+
 				mainPanel.getEpithelium().setColor(node, color);
 			}
-
 		}
 	}
 
 	private void loadConfigurations() {
 
 		mainPanel.setEpithelium(epithelium);
+		removeAll();
+		init();
 		mainPanel.componentsPanel.removeAll();
 		mainPanel.componentsPanel.init();
+		mainPanel.watcherPanel.removeAll();
+		mainPanel.watcherPanel.init();
 		mainPanel.getContentPane().repaint();
-		mainPanel.componentsPanel.setVisible(true);
-		mainPanel.watcherPanel.setVisible(true);
 
-		labelFilename.setVisible(true);
-		stepButton.setVisible(true);
-		runButton.setVisible(false);
-		stepButton.setVisible(false);
-		simulationButton.setVisible(true);
-		setupConditionsButton.setVisible(true);
-		restartButton.setVisible(true);
-		closeButton.setVisible(true);
 		stepButton.setEnabled(true);
 		runButton.setEnabled(true);
 		userDefinedWidth.setEnabled(true);
 		userDefinedHeight.setEnabled(true);
 
-		mainPanel.watcherPanel.init();
 		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
 				.getGraphics());
 		setupConditionsButton.setEnabled(true);

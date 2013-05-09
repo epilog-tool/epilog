@@ -228,8 +228,8 @@ public class MainPanel extends JFrame {
 
 		// LogicalModel model = getUnitaryModel();
 
-		watcherPanel.setVisible(false);
-		componentsPanel.setVisible(false);
+//		watcherPanel.setVisible(false);
+//		componentsPanel.setVisible(false);
 
 		// watcherPanel.setBackground(backgroundColor);
 		auxiliaryHexagonsPanel.setBackground(backgroundColor);
