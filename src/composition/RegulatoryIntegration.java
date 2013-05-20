@@ -10,10 +10,10 @@ import java.util.Set;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 
-import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification;
-import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationAtom;
-import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
-import pt.igc.nmd.epilogue.integrationgrammar.IntegrationFunctionSpecification.IntegrationOperation;
+import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionSpecification;
+import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionSpecification.IntegrationAtom;
+import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
+import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionSpecification.IntegrationOperation;
 
 /**
  * The integration function and proper components associated to an input
