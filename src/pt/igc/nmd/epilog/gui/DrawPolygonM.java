@@ -27,10 +27,10 @@ public class DrawPolygonM extends JPanel {
 	public int endX;
 	public int endY;
 
-	public MainPanel mainPanel;
+	public MainFrame mainPanel;
 
 
-	public DrawPolygonM(MainPanel mainPanel) {
+	public DrawPolygonM(MainFrame mainPanel) {
 		this.mainPanel = mainPanel;
 		width = mainPanel.getTopology().getWidth();
 		height = mainPanel.getTopology().getHeight();

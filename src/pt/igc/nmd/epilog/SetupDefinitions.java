@@ -39,7 +39,7 @@ import org.colomoto.logicalmodel.NodeInfo;
 
 import pt.igc.nmd.epilog.gui.ColorButton;
 import pt.igc.nmd.epilog.gui.DrawPolygonM;
-import pt.igc.nmd.epilog.gui.MainPanel;
+import pt.igc.nmd.epilog.gui.MainFrame;
 
 public class SetupDefinitions extends JFrame {
 
@@ -60,7 +60,7 @@ public class SetupDefinitions extends JFrame {
 	private int endX;
 	private int endY;
 
-	private MainPanel mainPanel;
+	private MainFrame mainPanel;
 
 	private JPanel properComponentsPanel;
 	private JPanel inputsPanel;
@@ -109,7 +109,7 @@ public class SetupDefinitions extends JFrame {
 	 */
 
 	public SetupDefinitions(SphericalEpithelium epithelium, Topology topology,
-			MainPanel mainPanel) {
+			MainFrame mainPanel) {
 
 		super("Setup Definitions");
 		setLayout(null);

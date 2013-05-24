@@ -15,7 +15,7 @@ import org.colomoto.logicalmodel.LogicalModel;
 //import java.awt.*;
 //import java.awt.event.MouseEvent;
 
-import pt.igc.nmd.epilog.gui.MainPanel;
+import pt.igc.nmd.epilog.gui.MainFrame;
 
 
 
@@ -26,7 +26,7 @@ public class TextPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private MainPanel mainPanel;
+	private MainFrame mainPanel;
 	private LogicalModel model;
 
 	private JLabel[] components;
@@ -37,7 +37,7 @@ public class TextPanel extends JPanel {
 //    Rectangle previousRectDrawn = new Rectangle();
 	
 	
-	public TextPanel(MainPanel mainPanel) {
+	public TextPanel(MainFrame mainPanel) {
 		this.mainPanel = mainPanel;
 		init();
 	}

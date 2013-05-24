@@ -1,4 +1,4 @@
-package composition;
+package pt.igc.nmd.composition;
 
 import java.util.AbstractMap;
 import java.util.Collection;

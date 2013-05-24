@@ -13,7 +13,7 @@ import javax.imageio.ImageIO;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 
-import pt.igc.nmd.epilog.gui.MainPanel;
+import pt.igc.nmd.epilog.gui.MainFrame;
 
 public class Simulation {
 
@@ -22,7 +22,7 @@ public class Simulation {
 	private byte[] state = null;
 	byte[] currentState = null;
 
-	private MainPanel mainPanel;
+	private MainFrame mainPanel;
 	private SphericalEpithelium epithelium;
 	public Hashtable<String, Byte> composedState = null;
 	private Hashtable<NodeInfo, Integer> node2Int;
@@ -31,7 +31,7 @@ public class Simulation {
 	private boolean stableStateFound;
 	private boolean automata;
 
-	public Simulation(MainPanel mainPanel, SphericalEpithelium epithelium) {
+	public Simulation(MainFrame mainPanel, SphericalEpithelium epithelium) {
 		this.mainPanel = mainPanel;
 		this.state = null;
 		this.composedModel = null;

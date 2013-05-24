@@ -27,7 +27,7 @@ public class ComponentsPanel extends MapColorPanel {
 	private static final long serialVersionUID = -498635471090715555L;
 
 	private SphericalEpithelium epithelium;
-	public MainPanel mainPanel;
+	public MainFrame mainPanel;
 	private DrawPolygon hexagonsPanel;
 
 	// Nodes Information
@@ -44,7 +44,7 @@ public class ComponentsPanel extends MapColorPanel {
 	private JPanel inputComponents;
 	private JPanel auxiliaryPanel[];
 
-	public ComponentsPanel(MainPanel mainPanel, Color color,
+	public ComponentsPanel(MainFrame mainPanel, Color color,
 			SphericalEpithelium epithelium) {
 		super(color);
 		this.mainPanel = mainPanel;

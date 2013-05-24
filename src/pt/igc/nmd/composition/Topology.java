@@ -1,4 +1,4 @@
-package composition;
+package pt.igc.nmd.composition;
 
 /**
  * Represents the topological relationships between Logical Regulatory Modules

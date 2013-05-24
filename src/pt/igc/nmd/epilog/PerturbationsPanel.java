@@ -23,7 +23,7 @@ import javax.swing.border.TitledBorder;
 
 import org.colomoto.logicalmodel.NodeInfo;
 
-import pt.igc.nmd.epilog.gui.MainPanel;
+import pt.igc.nmd.epilog.gui.MainFrame;
 
 public class PerturbationsPanel extends JPanel {
 
@@ -34,10 +34,10 @@ public class PerturbationsPanel extends JPanel {
 
 	private SphericalEpithelium epithelium;
 	private Topology topology;
-	private MainPanel mainPanel;
+	private MainFrame mainPanel;
 
 	public PerturbationsPanel(SphericalEpithelium epithelium,
-			Topology topology, MainPanel mainPanel) {
+			Topology topology, MainFrame mainPanel) {
 
 		this.mainPanel = mainPanel;
 		this.topology = topology;
@@ -372,7 +372,6 @@ public class PerturbationsPanel extends JPanel {
 
 	public void clearAllCells() {
 		// adicionar try catch para textFx e fy
-
 	}
 
 	public void markAllCells() {

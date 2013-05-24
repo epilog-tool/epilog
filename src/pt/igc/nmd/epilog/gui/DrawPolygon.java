@@ -22,11 +22,11 @@ public class DrawPolygon extends JPanel {
 
 	public double height = 0.0, radius = 0.0;
 	public List<NodeInfo> listNodes;
-	private MainPanel mainPanel;
+	private MainFrame mainPanel;
 	public List<List<CellGenes>> cellGenes;
 	public int countSelected = 0;
 
-	public DrawPolygon(MainPanel mainPanel) {
+	public DrawPolygon(MainFrame mainPanel) {
 		this.mainPanel = mainPanel;
 		this.setPreferredSize(new Dimension(500, 500));
 		this.cellGenes = new ArrayList<List<CellGenes>>();

@@ -27,7 +27,7 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 
 import pt.igc.nmd.epilog.gui.ColorButton;
-import pt.igc.nmd.epilog.gui.MainPanel;
+import pt.igc.nmd.epilog.gui.MainFrame;
 
 public class InitialConditions extends JPanel {
 
@@ -38,7 +38,7 @@ public class InitialConditions extends JPanel {
 
 	private SphericalEpithelium epithelium;
 	private Topology topology;
-	private MainPanel mainPanel;
+	private MainFrame mainPanel;
 
 	private Hashtable<JComboBox, Integer> Jcombo2Node;
 	private Hashtable<JCheckBox, Integer> Jcheck2Node;
@@ -55,7 +55,7 @@ public class InitialConditions extends JPanel {
 	private List<ColorButton> colorChooser;
 
 	public InitialConditions(SphericalEpithelium epithelium, Topology topology,
-			MainPanel mainPanel) {
+			MainFrame mainPanel) {
 
 		this.mainPanel = mainPanel;
 		this.topology = topology;

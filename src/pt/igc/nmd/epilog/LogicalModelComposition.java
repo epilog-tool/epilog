@@ -20,16 +20,16 @@ import org.colomoto.mddlib.MDDVariableFactory;
 import org.colomoto.mddlib.PathSearcher;
 import org.colomoto.mddlib.operators.MDDBaseOperators;
 
-import pt.igc.nmd.epilog.gui.MainPanel;
+import pt.igc.nmd.composition.IntegrationFunctionMapping;
+import pt.igc.nmd.epilog.gui.MainFrame;
 import pt.igc.nmd.epilog.integrationgrammar.CompositionContext;
 import pt.igc.nmd.epilog.integrationgrammar.CompositionContextImpl;
 import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionMDDFactory;
 
-import composition.IntegrationFunctionMapping;
 
 public class LogicalModelComposition {
 
-	private MainPanel mainPanel;
+	private MainFrame mainPanel;
 	private IntegrationFunctionMapping mapping = null;
 	private LogicalModel composedModel = null;
 	private Map<Map.Entry<NodeInfo, Integer>, NodeInfo> old2New = new HashMap<Map.Entry<NodeInfo, Integer>, NodeInfo>();
@@ -37,7 +37,7 @@ public class LogicalModelComposition {
 	private Map<NodeInfo, Map.Entry<NodeInfo, Integer>> new2Old = new HashMap<NodeInfo, Map.Entry<NodeInfo, Integer>>();
 	private Map<Integer, List<NodeInfo>> instanceNodes = new HashMap<Integer, List<NodeInfo>>();
 
-	public LogicalModelComposition(MainPanel mainPanel) {
+	public LogicalModelComposition(MainFrame mainPanel) {
 		this.mainPanel = mainPanel;
 
 	}

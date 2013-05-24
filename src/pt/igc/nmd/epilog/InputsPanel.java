@@ -27,7 +27,7 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 
 import pt.igc.nmd.epilog.gui.ColorButton;
-import pt.igc.nmd.epilog.gui.MainPanel;
+import pt.igc.nmd.epilog.gui.MainFrame;
 
 public class InputsPanel extends JPanel {
 
@@ -38,7 +38,7 @@ public class InputsPanel extends JPanel {
 
 	private SphericalEpithelium epithelium;
 	private Topology topology;
-	private MainPanel mainPanel;
+	private MainFrame mainPanel;
 
 	private JPanel auxiliaryPanel[];
 
@@ -61,7 +61,7 @@ public class InputsPanel extends JPanel {
 	private JPanel optionsPanel;
 	
 	public InputsPanel(SphericalEpithelium epithelium, Topology topology,
-			MainPanel mainPanel) {
+			MainFrame mainPanel) {
 
 		this.mainPanel = mainPanel;
 		this.topology = topology;
