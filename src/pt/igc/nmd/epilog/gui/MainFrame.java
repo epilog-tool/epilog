@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -48,9 +49,7 @@ import pt.igc.nmd.epilog.Topology;
 
 public class MainFrame extends JFrame {
 
-
 	private static final long serialVersionUID = 1779945742155950400L;
-
 
 	private SphericalEpithelium epithelium = null;
 
@@ -63,7 +62,7 @@ public class MainFrame extends JFrame {
 	public JPanel panelCenter = null;
 	public JPanel panelCenterLeft = null;
 	public JPanel panelCenterRight = null;
-	
+
 	public DrawPolygon hexagonsPanel = null;
 	public TextPanel watcherPanel;
 	public ComponentsPanel componentsPanel = null;
@@ -89,13 +88,10 @@ public class MainFrame extends JFrame {
 	private JTextField userDefinedWidth = new JTextField();
 	private JTextField userDefinedHeight = new JTextField();
 	private JLabel selectedFilenameLabel;
-	
-	
+
 	public MainFrame() {
 
-		this.topology = new Topology(20, 20);
-		this.epithelium = new SphericalEpithelium(this.topology);
-		this.simulation = new Simulation(this, epithelium);
+
 		this.logicalModelComposition = new LogicalModelComposition(this);
 		initialSetupHasChanged = false;
 		this.markPerturbationControl = false;
@@ -145,324 +141,334 @@ public class MainFrame extends JFrame {
 		getContentPane().setBackground(backgroundColor);
 		getContentPane().setLayout(new BorderLayout());
 		this.setResizable(true);
-		
-		
+
 		// Start Panel
 		startPanel = new StartPanel(this);
 		startPanel.setBackground(backgroundColor);
-		
+
 		getContentPane().add(startPanel, BorderLayout.PAGE_START);
 
+
+
+		pack();
+		setVisible(true);
+		setLocationRelativeTo(null);
+		// setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+	}
+
+	
+	// Hexagons Panel
+	public void initializePanelCenter() {
+		if (auxiliaryHexagonsPanel != null) {
+
+			this.remove(panelCenter);
+		}
+
+		this.topology = new Topology(20, 20);
+		this.epithelium = new SphericalEpithelium(this.topology);
+		this.simulation = new Simulation(this, epithelium);
+		
+		
 		panelCenter = new JPanel(new BorderLayout());
 		getContentPane().add(panelCenter, BorderLayout.CENTER);
-		
-		
-		
+
 		panelCenterLeft = new JPanel(new BorderLayout());
 		panelCenter.add(panelCenterLeft, BorderLayout.LINE_START);
-		
+
 		panelCenterRight = new JPanel(new BorderLayout());
 		panelCenter.add(panelCenterRight, BorderLayout.CENTER);
 
+		auxiliaryHexagonsPanel = new JPanel();
+		hexagonsPanel = new DrawPolygon(this);
+
+		panelCenterLeft.add(gridSpecsPanel(), BorderLayout.PAGE_START);
+		auxiliaryHexagonsPanel = new JPanel(new BorderLayout());
+		panelCenterLeft.add(auxiliaryHexagonsPanel, BorderLayout.CENTER);
+
+		UIManager.put("TitledBorder.border", new LineBorder(
+				panelCenter.getBackground(), 1));
+		TitledBorder titleInitialConditions;
+		titleInitialConditions = BorderFactory.createTitledBorder("");
+		auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
+				.createEmptyBorder());
+		auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
+		titleInitialConditions.setTitleColor(Color.black);
+
+	//	auxiliaryHexagonsPanel.setBackground(backgroundColor);
+
+//		hexagonsPanel.setBackground(backgroundColor);
 		
-		//Hexagons Panel
-		if (start == true) {
 
-			panelCenterLeft.add(gridSpecsPanel(), BorderLayout.PAGE_START);
-			auxiliaryHexagonsPanel = new JPanel(new BorderLayout());
-			panelCenterLeft.add(auxiliaryHexagonsPanel, BorderLayout.CENTER);
+		auxiliaryHexagonsPanel.add(hexagonsPanel, BorderLayout.CENTER);
 
+		hexagonsPanel.paintComponent(hexagonsPanel.getGraphics());
 
+		hexagonsPanel.addMouseMotionListener(new MouseMotionListener() {
+			@Override
+			public void mouseDragged(MouseEvent arg0) {
+				int ind_it = (int) Math.floor((arg0.getX() / (1.5 * hexagonsPanel.radius)));
 
-			UIManager.put("TitledBorder.border", new LineBorder(
-					backgroundColor, 1));
-			TitledBorder titleInitialConditions;
-			titleInitialConditions = BorderFactory.createTitledBorder("");
-			auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
-					.createEmptyBorder());
-			auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
-			titleInitialConditions.setTitleColor(Color.black);
+				double ind_yts = (arg0.getY() - (ind_it % 2)
+						* hexagonsPanel.height / 2);
+				double ind_jt = Math.floor(ind_yts / hexagonsPanel.height);
 
-			auxiliaryHexagonsPanel.setBackground(backgroundColor);
-			
-			hexagonsPanel.setBackground(backgroundColor);
-			componentsPanel.setBackground(backgroundColor);
+				double xt = arg0.getX() - ind_it
+						* (1.5 * hexagonsPanel.radius);
+				double yt = ind_yts - ind_jt * (hexagonsPanel.height);
+				int i = 0;
+				int j = 0;
+				int deltaj = 0;
 
-			auxiliaryHexagonsPanel.add(hexagonsPanel);
-			
-			hexagonsPanel.paintComponent(hexagonsPanel.getGraphics());
+				if (yt > hexagonsPanel.height / 2)
+					deltaj = 1;
+				else
+					deltaj = 0;
 
-			hexagonsPanel.addMouseMotionListener(new MouseMotionListener() {
-				@Override
-				public void mouseDragged(MouseEvent arg0) {
-					int ind_it = (int) Math.floor((arg0.getX() / (1.5 * hexagonsPanel.radius)));
+				if (xt > hexagonsPanel.radius
+						* Math.abs(0.5 - (yt / hexagonsPanel.height))) {
+					i = (int) ind_it;
+					j = (int) ind_jt;
 
-					double ind_yts = (arg0.getY() - (ind_it % 2)
-							* hexagonsPanel.height / 2);
-					double ind_jt = Math.floor(ind_yts / hexagonsPanel.height);
-
-					double xt = arg0.getX() - ind_it * (1.5 * hexagonsPanel.radius);
-					double yt = ind_yts - ind_jt * (hexagonsPanel.height);
-					int i = 0;
-					int j = 0;
-					int deltaj = 0;
-
-					if (yt > hexagonsPanel.height / 2)
-						deltaj = 1;
-					else
-						deltaj = 0;
-
-					if (xt > hexagonsPanel.radius
-							* Math.abs(0.5 - (yt / hexagonsPanel.height))) {
-						i = (int) ind_it;
-						j = (int) ind_jt;
-
-					} else {
-						i = (int) ind_it - 1;
-						j = (int) (ind_jt - i % 2 + deltaj);
-					}
-
-					// The mouse is over a cell that belongs to the grid
-					if (isEditable()) {
-						if (i < topology.getWidth() && j < topology.getHeight()
-								&& i >= 0 && j >= 0) {
-							Color color = Color(i, j);
-							hexagonsPanel.drawHexagon(i, j,
-									hexagonsPanel.getGraphics(), color);
-							epithelium.setInitialState(i, j);
-							fillHexagons();
-
-						}
-					}
+				} else {
+					i = (int) ind_it - 1;
+					j = (int) (ind_jt - i % 2 + deltaj);
 				}
 
-				@Override
-				public void mouseMoved(MouseEvent arg0) {
-					int ind_it = (int) Math.floor((arg0.getX() / (1.5 * hexagonsPanel.radius)));
-
-					double ind_yts = (arg0.getY() - (ind_it % 2)
-							* hexagonsPanel.height / 2);
-					double ind_jt = Math.floor(ind_yts / (hexagonsPanel.height));
-
-					double xt = arg0.getX() - ind_it * (1.5 * hexagonsPanel.radius);
-					double yt = ind_yts - ind_jt * (hexagonsPanel.height);
-					int i = 0, j = 0;
-					int deltaj = 0;
-
-					if (yt > hexagonsPanel.height / 2)
-						deltaj = 1;
-					else
-						deltaj = 0;
-
-					if (xt > hexagonsPanel.radius
-							* Math.abs(0.5 - (yt / hexagonsPanel.height))) {
-						i = (int) ind_it;
-						j = (int) ind_jt;
-
-					} else {
-						i = (int) ind_it - 1;
-						j = (int) (ind_jt - i % 2 + deltaj);
-					}
-
+				// The mouse is over a cell that belongs to the grid
+				if (isEditable()) {
 					if (i < topology.getWidth() && j < topology.getHeight()
 							&& i >= 0 && j >= 0) {
-
-						if (!isEditable() & epithelium.getUnitaryModel() != null) {
-
-							Hashtable<String, Byte> original = new Hashtable<String, Byte>();
-							int instance = topology.coords2Instance(i, j);
-
-							for (NodeInfo node : epithelium.getUnitaryModel()
-									.getNodeOrder()) {
-								if (epithelium.getComposedModel() != null) {
-									String composedNodeID = logicalModelComposition
-											.computeNewName(node.getNodeID(),
-													instance);
-
-									original.put(node.getNodeID(),
-											simulation.composedState
-													.get(composedNodeID));
-									hexagonsPanel.setToolTipText("" + original);
-								} else {
-									hexagonsPanel.setToolTipText(""
-											+ node.getNodeID()
-											+ ": "
-											+ epithelium.getGridValue(instance,
-													node) + "\n");
-								}
-							}
-
-						}
-					}
-				}
-			});
-
-			hexagonsPanel.addMouseListener(new MouseListener() {
-
-				@Override
-				public void mouseClicked(MouseEvent arg0) {
-
-					int ind_it = (int) Math.floor((arg0.getX() / (1.5 * hexagonsPanel.radius)));
-
-					double ind_yts = (arg0.getY() - (ind_it % 2)
-							* hexagonsPanel.height / 2);
-					double ind_jt = Math.floor(ind_yts / (hexagonsPanel.height));
-
-					double xt = arg0.getX() - ind_it * (1.5 * hexagonsPanel.radius);
-					double yt = ind_yts - ind_jt * (hexagonsPanel.height);
-					int i = 0, j = 0;
-					int deltaj = 0;
-
-					if (yt > hexagonsPanel.height / 2)
-						deltaj = 1;
-					else
-						deltaj = 0;
-
-					if (xt > hexagonsPanel.radius
-							* Math.abs(0.5 - (yt / hexagonsPanel.height))) {
-						i = (int) ind_it;
-						j = (int) ind_jt;
-
-					} else {
-						i = (int) ind_it - 1;
-						j = (int) (ind_jt - i % 2 + deltaj);
-					}
-
-					if (i < topology.getWidth() && j < topology.getHeight()
-							&& i >= 0 && j >= 0 && isEditable()) {
 						Color color = Color(i, j);
 						hexagonsPanel.drawHexagon(i, j,
 								hexagonsPanel.getGraphics(), color);
 						epithelium.setInitialState(i, j);
 						fillHexagons();
+
 					}
 				}
+			}
 
-				@Override
-				public void mouseEntered(MouseEvent arg0) {
+			@Override
+			public void mouseMoved(MouseEvent arg0) {
+				int ind_it = (int) Math.floor((arg0.getX() / (1.5 * hexagonsPanel.radius)));
 
+				double ind_yts = (arg0.getY() - (ind_it % 2)
+						* hexagonsPanel.height / 2);
+				double ind_jt = Math
+						.floor(ind_yts / (hexagonsPanel.height));
+
+				double xt = arg0.getX() - ind_it
+						* (1.5 * hexagonsPanel.radius);
+				double yt = ind_yts - ind_jt * (hexagonsPanel.height);
+				int i = 0, j = 0;
+				int deltaj = 0;
+
+				if (yt > hexagonsPanel.height / 2)
+					deltaj = 1;
+				else
+					deltaj = 0;
+
+				if (xt > hexagonsPanel.radius
+						* Math.abs(0.5 - (yt / hexagonsPanel.height))) {
+					i = (int) ind_it;
+					j = (int) ind_jt;
+
+				} else {
+					i = (int) ind_it - 1;
+					j = (int) (ind_jt - i % 2 + deltaj);
 				}
 
-				@Override
-				public void mouseExited(MouseEvent arg0) {
+				if (i < topology.getWidth() && j < topology.getHeight()
+						&& i >= 0 && j >= 0) {
 
+					if (!isEditable()
+							& epithelium.getUnitaryModel() != null) {
+
+						Hashtable<String, Byte> original = new Hashtable<String, Byte>();
+						int instance = topology.coords2Instance(i, j);
+
+						for (NodeInfo node : epithelium.getUnitaryModel()
+								.getNodeOrder()) {
+							if (epithelium.getComposedModel() != null) {
+								String composedNodeID = logicalModelComposition
+										.computeNewName(node.getNodeID(),
+												instance);
+
+								original.put(node.getNodeID(),
+										simulation.composedState
+												.get(composedNodeID));
+								hexagonsPanel.setToolTipText("" + original);
+							} else {
+								hexagonsPanel.setToolTipText(""
+										+ node.getNodeID()
+										+ ": "
+										+ epithelium.getGridValue(instance,
+												node) + "\n");
+							}
+						}
+
+					}
+				}
+			}
+		});
+
+		hexagonsPanel.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+
+				int ind_it = (int) Math.floor((arg0.getX() / (1.5 * hexagonsPanel.radius)));
+
+				double ind_yts = (arg0.getY() - (ind_it % 2)
+						* hexagonsPanel.height / 2);
+				double ind_jt = Math
+						.floor(ind_yts / (hexagonsPanel.height));
+
+				double xt = arg0.getX() - ind_it
+						* (1.5 * hexagonsPanel.radius);
+				double yt = ind_yts - ind_jt * (hexagonsPanel.height);
+				int i = 0, j = 0;
+				int deltaj = 0;
+
+				if (yt > hexagonsPanel.height / 2)
+					deltaj = 1;
+				else
+					deltaj = 0;
+
+				if (xt > hexagonsPanel.radius
+						* Math.abs(0.5 - (yt / hexagonsPanel.height))) {
+					i = (int) ind_it;
+					j = (int) ind_jt;
+
+				} else {
+					i = (int) ind_it - 1;
+					j = (int) (ind_jt - i % 2 + deltaj);
 				}
 
-				@Override
-				public void mousePressed(MouseEvent arg0) {
-
+				if (i < topology.getWidth() && j < topology.getHeight()
+						&& i >= 0 && j >= 0 && isEditable()) {
+					Color color = Color(i, j);
+					hexagonsPanel.drawHexagon(i, j,
+							hexagonsPanel.getGraphics(), color);
+					epithelium.setInitialState(i, j);
+					fillHexagons();
 				}
+			}
 
-				@Override
-				public void mouseReleased(MouseEvent arg0) {
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
 
-					// endX = arg0.getX();
-					// endY = arg0.getX();
-					//
-					// int ind_it = (int) Math.floor((arg0.getX() / (1.5 *
-					// MapPanel.radius)));
-					//
-					// int ind_yts = (int) (arg0.getY() - (ind_it % 2)
-					// * MapPanel.height / 2);
-					// int ind_jt = (int) Math.floor(ind_yts / (MapPanel.height));
-					//
-					// int xt = (int) ((int) arg0.getX() - ind_it
-					// * (1.5 * MapPanel.radius));
-					// int yt = (int) (ind_yts - ind_jt * (MapPanel.height));
-					// int i = 0, j = 0;
-					// int deltaj = 0;
-					//
-					// if (yt > MapPanel.height / 2)
-					// deltaj = 1;
-					// else
-					// deltaj = 0;
-					//
-					// if (xt > MapPanel.radius
-					// * Math.abs(0.5 - (yt / MapPanel.height))) {
-					// i = (int) ind_it;
-					// j = (int) ind_jt;
-					//
-					// } else {
-					// i = (int) ind_it - 1;
-					// j = (int) (ind_jt - i % 2 + deltaj);
-					// }
-					//
-					// Rectangle a = new Rectangle(startX - ind_it, startY - ind_jt,
-					// Math.abs(endX - startX), Math.abs(endY - startY));
-					//
-					// MapPanel.getGraphics().drawRect(startX - ind_it,
-					// startY - ind_it, Math.abs(endX - startX),
-					// Math.abs(endY - startY));
-					//
-					// for (int instance = 0; instance <
-					// topology.getNumberInstances(); instance++) {
-					//
-					// }
-				}
-			});
-		}
+			}
 
-		
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+
+				// endX = arg0.getX();
+				// endY = arg0.getX();
+				//
+				// int ind_it = (int) Math.floor((arg0.getX() / (1.5 *
+				// MapPanel.radius)));
+				//
+				// int ind_yts = (int) (arg0.getY() - (ind_it % 2)
+				// * MapPanel.height / 2);
+				// int ind_jt = (int) Math.floor(ind_yts /
+				// (MapPanel.height));
+				//
+				// int xt = (int) ((int) arg0.getX() - ind_it
+				// * (1.5 * MapPanel.radius));
+				// int yt = (int) (ind_yts - ind_jt * (MapPanel.height));
+				// int i = 0, j = 0;
+				// int deltaj = 0;
+				//
+				// if (yt > MapPanel.height / 2)
+				// deltaj = 1;
+				// else
+				// deltaj = 0;
+				//
+				// if (xt > MapPanel.radius
+				// * Math.abs(0.5 - (yt / MapPanel.height))) {
+				// i = (int) ind_it;
+				// j = (int) ind_jt;
+				//
+				// } else {
+				// i = (int) ind_it - 1;
+				// j = (int) (ind_jt - i % 2 + deltaj);
+				// }
+				//
+				// Rectangle a = new Rectangle(startX - ind_it, startY -
+				// ind_jt,
+				// Math.abs(endX - startX), Math.abs(endY - startY));
+				//
+				// MapPanel.getGraphics().drawRect(startX - ind_it,
+				// startY - ind_it, Math.abs(endX - startX),
+				// Math.abs(endY - startY));
+				//
+				// for (int instance = 0; instance <
+				// topology.getNumberInstances(); instance++) {
+				//
+				// }
+			}
+		});
+	}
+	private void initializePanelCenterRight() {
+
 		tabbedPane = new JTabbedPane();
 		startPanel = new StartPanel(this);
-		hexagonsPanel = new DrawPolygon(this);
 		componentsPanel = new ComponentsPanel(this, Color.white, epithelium);
-		auxiliaryHexagonsPanel = new JPanel();
 		simulationSetupPanel = new SimulationSetupPanel(this);
 
 		watcherPanel = new TextPanel(this);
 		initial = new InitialConditions(epithelium, topology, this);
 		inputsPanel = new InputsPanel(epithelium, topology, this);
 		perturbationsPanel = new PerturbationsPanel(epithelium, topology, this);
-		
-		if (getEpithelium().getUnitaryModel() != null) {
 
-//			tabbedPane.setBounds(535, 60, 630, 240);
-//			componentsPanel.setBounds(530, 310, 650, 250);
+		tabbedPane.addTab("Simulation", simulationSetupPanel);
+		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
-			tabbedPane.addTab("Simulation", simulationSetupPanel);
-			tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
+		tabbedPane.addTab("Initial Conditions", initial);
+		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
-			tabbedPane.addTab("Initial Conditions", initial);
-			tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
+		tabbedPane.addTab("Inputs", inputsPanel);
+		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
-			tabbedPane.addTab("Inputs", inputsPanel);
-			tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
+		tabbedPane.addTab("Perturbations and Priorities", perturbationsPanel);
+		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
-			tabbedPane.addTab("Perturbations and Priorities",
-					perturbationsPanel);
-			tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
+		tabbedPane.setForegroundAt(2, Color.white);
+		tabbedPane.setBackgroundAt(2, Color.gray);
+		tabbedPane.setForegroundAt(3, Color.white);
+		tabbedPane.setBackgroundAt(3, Color.gray);
 
-			tabbedPane.setForegroundAt(2, Color.white);
-			tabbedPane.setBackgroundAt(2, Color.gray);
-			tabbedPane.setForegroundAt(3, Color.white);
-			tabbedPane.setBackgroundAt(3, Color.gray);
+		tabbedPane.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				if (tabbedPane.getSelectedIndex() != 0)
+					editableTab = true;
+				else
+					editableTab = false;
+			}
+		});
 
-			tabbedPane.addChangeListener(new ChangeListener() {
-				@Override
-				public void stateChanged(ChangeEvent arg0) {
-					if (tabbedPane.getSelectedIndex() != 0)
-						editableTab = true;
-					else
-						editableTab = false;
-				}
-			});
-
-			panelCenterRight.add(tabbedPane, BorderLayout.PAGE_START);
-			panelCenterRight.add(componentsPanel, BorderLayout.CENTER);
-		}
-
-		 pack();
-		 setVisible(true);
-		 setLocationRelativeTo(null);
-//		 setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		panelCenterRight.add(tabbedPane, BorderLayout.PAGE_START);
+		panelCenterRight.add(componentsPanel, BorderLayout.CENTER);
 
 	}
 
 	public void setStart(boolean b) {
 		this.start = b;
 	}
-	
+
 	public boolean getStart() {
 		return this.start;
 	}
@@ -563,6 +569,9 @@ public class MainFrame extends JFrame {
 	}
 
 	private JPanel gridSpecsPanel() {
+		
+		//TODO Passar para classe
+		
 		/*
 		 * Grid Dimension: The number of rows and columns have to be even, so
 		 * even if the user writes an odd number, it is automatically corrected
@@ -581,18 +590,18 @@ public class MainFrame extends JFrame {
 		JButton loadSBML = new JButton("Load SBML");
 		JLabel labelFilename = new JLabel();
 		selectedFilenameLabel = new JLabel();
-		
+
 		labelFilename.setText("Filename: ");
-		labelFilename.setForeground(Color.white);
+		//labelFilename.setForeground(Color.white);
 
 		setWidth.setText("Width: ");
 		setHeight.setText("Height: ");
 
-		setWidth.setForeground(Color.white);
-		setHeight.setForeground(Color.white);
+//		setWidth.setForeground(Color.white);
+//		setHeight.setForeground(Color.white);
 
-//		userDefinedWidth.setPreferredSize(new Dimension(34, 26));
-//		userDefinedHeight.setPreferredSize(new Dimension(34, 26));
+		userDefinedWidth.setPreferredSize(new Dimension(34, 26));
+		userDefinedHeight.setPreferredSize(new Dimension(34, 26));
 
 		userDefinedWidth.setHorizontalAlignment(JTextField.CENTER);
 		userDefinedHeight.setHorizontalAlignment(JTextField.CENTER);
@@ -600,23 +609,57 @@ public class MainFrame extends JFrame {
 		userDefinedHeight.setText("" + getTopology().getHeight());
 
 		userDefinedWidth.addFocusListener(new FocusListener() {
-
-
-
 			@Override
 			public void focusLost(FocusEvent arg0) {
 				if (getEpithelium().getUnitaryModel() == null) {
-					sanityCheckDimension(userDefinedWidth);
-					sanityCheckDimension(userDefinedHeight);
-					setWidth();
-					setHeight();
+					getTopology().setWidth(
+							sanityCheckDimension(userDefinedWidth));
+					hexagonsPanel.paintComponent(hexagonsPanel.getGraphics());
 				}
 			}
 
 			@Override
 			public void focusGained(FocusEvent arg0) {
 				// TODO Auto-generated method stub
-				
+			}
+		});
+
+		userDefinedHeight.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+					getTopology().setHeight(
+							sanityCheckDimension(userDefinedHeight));
+					hexagonsPanel.paintComponent(hexagonsPanel.getGraphics());
+				}
+			}
+		});
+		userDefinedWidth.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+					getTopology().setHeight(
+							sanityCheckDimension(userDefinedWidth));
+					hexagonsPanel.paintComponent(hexagonsPanel.getGraphics());
+				}
 			}
 		});
 
@@ -625,81 +668,41 @@ public class MainFrame extends JFrame {
 			@Override
 			public void focusLost(FocusEvent arg0) {
 				if (getEpithelium().getUnitaryModel() == null) {
-					sanityCheckDimension(userDefinedWidth);
-					sanityCheckDimension(userDefinedHeight);
-					setWidth();
-					setHeight();
+					getTopology().setHeight(
+							sanityCheckDimension(userDefinedHeight));
+					hexagonsPanel.paintComponent(hexagonsPanel.getGraphics());
 				}
-
 			}
 
 			@Override
 			public void focusGained(FocusEvent arg0) {
 				// TODO Auto-generated method stub
-				
 			}
 		});
-
-//		addMouseListener(new MouseListener() {
-//
-//			@Override
-//			public void mouseClicked(MouseEvent arg0) {
-//				if (getEpithelium().getUnitaryModel() == null) {
-//					sanityCheckDimension(userDefinedWidth);
-//					sanityCheckDimension(userDefinedHeight);
-//					setWidth();
-//					setHeight();
-//				}
-//			}
-//
-//			@Override
-//			public void mouseEntered(MouseEvent arg0) {
-//
-//				if (getEpithelium().getUnitaryModel() == null) {
-//					sanityCheckDimension(userDefinedWidth);
-//					sanityCheckDimension(userDefinedHeight);
-//					setWidth();
-//					setHeight();
-//				}
-//			}
-//
-//			@Override
-//			public void mouseExited(MouseEvent arg0) {
-//			}
-//
-//			@Override
-//			public void mousePressed(MouseEvent arg0) {
-//			}
-//
-//			@Override
-//			public void mouseReleased(MouseEvent arg0) {
-//
-//			}
-//		});
 
 		panel.add(setWidth);
 		panel.add(userDefinedWidth);
 		panel.add(setHeight);
 		panel.add(userDefinedHeight);
 		panel.add(loadSBML);
-
+		if (getEpithelium().getUnitaryModel()!=null){
+			panel.add(labelFilename);
+			panel.add(selectedFilenameLabel);
+		}
 		
+
 		loadSBML.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-
 				askModel();
-				// mainPanel.getContentPane().repaint();
-				// mainPanel.getSimulation().resetIterationNumber();
-				// mainPanel.getEpithelium().setNewEpithelium(true);
+				initializePanelCenterRight();
 			}
 		});
-		
+
 		return panel;
 	}
-	
+
 	private void askModel() {
-		
+
 		fc.setDialogTitle("Choose file");
 
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -714,8 +717,7 @@ public class MainFrame extends JFrame {
 			loadModel(file);
 		}
 	}
-	
-	
+
 	public void fillHexagons() {
 
 		Color color = Color.white;
@@ -734,29 +736,15 @@ public class MainFrame extends JFrame {
 
 		}
 	}
-	
-	private void sanityCheckDimension(JTextField userDefined) {
+
+	private int sanityCheckDimension(JTextField userDefined) {
 		String dimString = userDefined.getText();
 		int w = Integer.parseInt(dimString);
 		w = (w % 2 == 0) ? w : w + 1;
 		userDefined.setText("" + w);
-		repaint();
-		if (getEpithelium().getUnitaryModel() != null)
-			fillHexagons();
+		return w;
 	}
 
-	private void setHeight() {
-		getTopology().setHeight(
-				Integer.parseInt(userDefinedHeight.getText()));
-		setInitialSetupHasChanged(true);
-	}
-
-	private void setWidth() {
-
-		getTopology().setWidth(
-				Integer.parseInt(userDefinedWidth.getText()));
-		setInitialSetupHasChanged(true);
-	}
 	private void loadModel(File file) {
 
 		SBMLFormat sbmlFormat = new SBMLFormat();
@@ -779,7 +767,7 @@ public class MainFrame extends JFrame {
 			return;
 
 		this.getEpithelium().setUnitaryModel(logicalModel);
-		//resetAllPanels();
+		// resetAllPanels();
 
 		this.getLogicalModelComposition().resetComposedModel();
 

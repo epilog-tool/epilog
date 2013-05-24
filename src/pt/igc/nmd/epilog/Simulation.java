@@ -129,8 +129,7 @@ public class Simulation {
 
 		saveLastPic();
 		fillHexagons();
-		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
-				.getGraphics());
+		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel.getGraphics());
 		this.iterationNumber++;
 		this.state = nextState;
 
@@ -184,8 +183,7 @@ public class Simulation {
 		}
 
 		fillHexagons();
-		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
-				.getGraphics());
+		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel.getGraphics());
 	}
 
 	public void setAutomataState(){

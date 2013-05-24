@@ -60,12 +60,12 @@ public class StartPanel extends JPanel {
 		 */
 
 		loadEpithelium = new JButton("Load Epithelium");
-		newEpithelium = new JButton("New Epihtelium");
+		newEpithelium = new JButton("New Epithelium");
 		quitButton = new JButton("Quit");
 		saveButton = new JButton("Save");
 
-		iterationNumber.setText(""
-				+ mainPanel.getSimulation().getIterationNumber());
+//		iterationNumber.setText(""
+//				+ mainPanel.getSimulation().getIterationNumber());
 
 
 		/*
@@ -88,10 +88,8 @@ public class StartPanel extends JPanel {
 
 		newEpithelium.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				createNewEpitheliumIn(true);
-
-				mainPanel.getContentPane().remove(mainPanel.startPanel);
-				mainPanel.setupMainFrame();
+				
+				mainPanel.initializePanelCenter();
 
 				// askModel();
 				// mainPanel.getContentPane().repaint();
@@ -182,8 +180,7 @@ public class StartPanel extends JPanel {
 		mainPanel.getEpithelium().setUnitaryModel(logicalModel);
 		resetAllPanels();
 
-		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
-				.getGraphics());
+		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel.getGraphics());
 
 		mainPanel.getLogicalModelComposition().resetComposedModel();
 
@@ -432,8 +429,7 @@ public class StartPanel extends JPanel {
 		mainPanel.setEpithelium(mainPanel.getEpithelium());
 		resetAllPanels();
 
-		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel
-				.getGraphics());
+		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel.getGraphics());
 		// setupDefinitionsButton.setEnabled(true);
 		mainPanel.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
 				.createEmptyBorder());

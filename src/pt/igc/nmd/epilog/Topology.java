@@ -33,7 +33,7 @@ public class Topology implements Serializable {
 		height = (height % 2 == 0) ? height : height + 1;
 		this.width = width;
 		this.height = height;
-		this.rollOver = rollOver;
+//		this.rollOver = rollOver;
 
 	}
 

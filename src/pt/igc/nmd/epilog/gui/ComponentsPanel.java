@@ -133,9 +133,7 @@ public class ComponentsPanel extends MapColorPanel {
 							} else
 								fireCheckBoxChange(false, src);
 
-							hexagonsPanel.paintComponent(hexagonsPanel
-									.getGraphics());
-
+							mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel.getGraphics());
 						}
 
 					});
@@ -178,8 +176,7 @@ public class ComponentsPanel extends MapColorPanel {
 							} else
 								fireCheckBoxChange(false, src);
 
-							hexagonsPanel.paintComponent(hexagonsPanel
-									.getGraphics());
+							mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel.getGraphics());
 
 						}
 
