@@ -1,7 +1,7 @@
 package pt.igc.nmd.epilog.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -9,8 +9,10 @@ import java.awt.event.ActionListener;
 import java.util.Hashtable;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
@@ -49,13 +51,12 @@ public class ComponentsPanel extends MapColorPanel {
 		super(color);
 		this.mainPanel = mainPanel;
 		this.epithelium = epithelium;
+		init();
 	}
 
 	public void init() {
 
 		this.epithelium = mainPanel.getEpithelium();
-
-		Color backgroundColor = mainPanel.backgroundColor;
 
 		jcheckbox2Node = new Hashtable<JCheckBox, NodeInfo>();
 		colorChooser2Node = new Hashtable<NodeInfo, ColorButton>();
@@ -67,18 +68,11 @@ public class ComponentsPanel extends MapColorPanel {
 		properComponents = new JPanel();
 		inputComponents = new JPanel();
 
-		properComponents.setPreferredSize(new Dimension(630, 110));
-		inputComponents.setPreferredSize(new Dimension(630, 110));
-
-		properComponents.setBackground(backgroundColor);
-		inputComponents.setBackground(backgroundColor);
-
 		properComponents.setLayout(layout);
 		inputComponents.setLayout(layout);
 
 		hexagonsPanel = this.mainPanel.hexagonsPanel;
-		setLayout(layout);
-		setBackground(backgroundColor);
+		setLayout(new BorderLayout());
 
 		LineBorder border = new LineBorder(Color.black, 1, true);
 		TitledBorder titleProperComponents = new TitledBorder(border,
@@ -95,12 +89,13 @@ public class ComponentsPanel extends MapColorPanel {
 
 		if (epithelium.getUnitaryModel() != null) {
 
+
 			listNodes = epithelium.getUnitaryModel().getNodeOrder();
 			nodeBox = new JCheckBox[listNodes.size()];
 			auxiliaryPanel = new JPanel[listNodes.size()];
 
 			colorChooser = new ColorButton[listNodes.size()];
-			hexagonsPanel.initializeCellGenes(listNodes.size());
+
 
 			for (int i = 0; i < listNodes.size(); i++) {
 
@@ -108,12 +103,9 @@ public class ComponentsPanel extends MapColorPanel {
 
 					auxiliaryPanel[i] = new JPanel();
 					auxiliaryPanel[i].setLayout(layout);
-					auxiliaryPanel[i].setBackground(backgroundColor);
-					auxiliaryPanel[i].setPreferredSize(new Dimension(115, 30));
-
+					auxiliaryPanel[i].setBorder(BorderFactory
+							.createEtchedBorder(EtchedBorder.LOWERED));
 					nodeBox[i] = new JCheckBox(listNodes.get(i).getNodeID());
-					nodeBox[i].setBackground(backgroundColor);
-					nodeBox[i].setPreferredSize(new Dimension(60, 25));
 					nodeBox[i].setToolTipText(listNodes.get(i).getNodeID());
 
 					jcheckbox2Node.put(nodeBox[i], listNodes.get(i));
@@ -129,7 +121,7 @@ public class ComponentsPanel extends MapColorPanel {
 								fireCheckBoxChange(true, src);
 
 								mainPanel.hexagonsPanel.repaint();
-								mainPanel.getSimulation().fillHexagons();
+								mainPanel.simulation.fillHexagons();
 							} else
 								fireCheckBoxChange(false, src);
 
@@ -138,7 +130,6 @@ public class ComponentsPanel extends MapColorPanel {
 
 					});
 					colorChooser[i] = new ColorButton(this, listNodes.get(i));
-					colorChooser[i].setPreferredSize(new Dimension(20, 25));
 					colorChooser[i].setBackground(mainPanel.getEpithelium()
 							.getColor(listNodes.get(i)));
 					colorChooser2Node.put(listNodes.get(i), colorChooser[i]);
@@ -151,12 +142,9 @@ public class ComponentsPanel extends MapColorPanel {
 				if (listNodes.get(i).isInput()) {
 					auxiliaryPanel[i] = new JPanel();
 					auxiliaryPanel[i].setLayout(layout);
-					auxiliaryPanel[i].setBackground(backgroundColor);
-
+					auxiliaryPanel[i].setBorder(BorderFactory
+							.createEtchedBorder(EtchedBorder.LOWERED));
 					nodeBox[i] = new JCheckBox(listNodes.get(i).getNodeID());
-					nodeBox[i].setBackground(backgroundColor);
-
-					nodeBox[i].setPreferredSize(new Dimension(80, 25));
 					nodeBox[i].setToolTipText(listNodes.get(i).getNodeID());
 
 					jcheckbox2Node.put(nodeBox[i], listNodes.get(i));
@@ -172,7 +160,7 @@ public class ComponentsPanel extends MapColorPanel {
 								fireCheckBoxChange(true, src);
 
 								mainPanel.hexagonsPanel.repaint();
-								mainPanel.getSimulation().fillHexagons();
+								mainPanel.simulation.fillHexagons();
 							} else
 								fireCheckBoxChange(false, src);
 
@@ -182,22 +170,14 @@ public class ComponentsPanel extends MapColorPanel {
 
 					});
 					colorChooser[i] = new ColorButton(this, listNodes.get(i));
-					colorChooser[i].setPreferredSize(new Dimension(20, 25));
 					colorChooser[i].setBackground(mainPanel.getEpithelium()
 							.getColor(listNodes.get(i)));
 					colorChooser2Node.put(listNodes.get(i), colorChooser[i]);
-
-					// System.out.println(listNodes.get(i).getNodeID()
-					// + " "
-					// + mainPanel.getEpithelium()
-					// .getIntegrationComponents()
-					// .get(listNodes.get(i)));
 
 					if (mainPanel.getEpithelium().isIntegrationComponent(
 							listNodes.get(i))) {
 						nodeBox[i].setVisible(false);
 						colorChooser[i].setVisible(false);
-
 					}
 
 					auxiliaryPanel[i].add(nodeBox[i]);
@@ -205,8 +185,8 @@ public class ComponentsPanel extends MapColorPanel {
 					inputComponents.add(auxiliaryPanel[i]);
 				}
 			}
-			add(properComponents);
-			add(inputComponents);
+			add(properComponents, BorderLayout.PAGE_START);
+			add(inputComponents, BorderLayout.CENTER);
 
 		}
 

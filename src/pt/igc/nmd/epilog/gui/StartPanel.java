@@ -6,14 +6,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
@@ -35,17 +40,15 @@ public class StartPanel extends JPanel {
 	private JButton saveButton;
 	private JButton quitButton;
 
-	private JLabel iterationNumber = new JLabel();
-
-
+	//private JLabel iterationNumber = new JLabel();
 
 	private JFileChooser fc = new JFileChooser();
-	private MainFrame mainPanel = null;
+	private MainFrame mainFrame = null;
 
-	private String SBMLFilename = null;
+	//private String SBMLFilename = null;
 
-	public StartPanel(MainFrame mainPanel) {
-		this.mainPanel = mainPanel;
+	public StartPanel(MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
 		init();
 	}
 
@@ -64,9 +67,8 @@ public class StartPanel extends JPanel {
 		quitButton = new JButton("Quit");
 		saveButton = new JButton("Save");
 
-//		iterationNumber.setText(""
-//				+ mainPanel.getSimulation().getIterationNumber());
-
+		// iterationNumber.setText(""
+		// + mainPanel.getSimulation().getIterationNumber());
 
 		/*
 		 * Quit Button: This button closes the application. It also closes all
@@ -76,7 +78,7 @@ public class StartPanel extends JPanel {
 		quitButton.setBackground(Color.red);
 		quitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mainPanel.dispose();
+				mainFrame.dispose();
 				System.exit(0);
 			}
 		});
@@ -88,8 +90,8 @@ public class StartPanel extends JPanel {
 
 		newEpithelium.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				mainPanel.initializePanelCenter();
+
+				mainFrame.initializePanelCenter();
 
 				// askModel();
 				// mainPanel.getContentPane().repaint();
@@ -101,16 +103,20 @@ public class StartPanel extends JPanel {
 		loadEpithelium.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				askConfigurations();
-				mainPanel.getContentPane().repaint();
-				mainPanel.getSimulation().resetIterationNumber();
-				mainPanel.getEpithelium().setNewEpithelium(false);
+				mainFrame.getContentPane().repaint();
+				mainFrame.simulation.resetIterationNumber();
+				mainFrame.getEpithelium().setNewEpithelium(false);
 			}
 		});
 
-//		if (mainPanel.getStart()) {
-//			newEpitheliumPanel();
-//		}
-		
+		saveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (mainFrame.topology == null
+						|| mainFrame.getEpithelium().getUnitaryModel() != null)
+					save();
+			}
+		});
+
 		add(newEpithelium);
 		add(loadEpithelium);
 		add(saveButton);
@@ -119,42 +125,19 @@ public class StartPanel extends JPanel {
 		return this;
 	}
 
-
-
-	private void createNewEpitheliumIn(boolean b) {
-		mainPanel.setStart(b);
-	}
-
-//	private void askModel() {
-//
-//		fc.setDialogTitle("Choose file");
-//
-//		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-//			selectedFilenameLabel.setText(fc.getSelectedFile().getName());
-//			selectedFilenameLabel.setForeground(Color.white);
-//
-//			File file = fc.getSelectedFile();
-//
-//			mainPanel.getEpithelium().setSBMLFilename(file.getName());
-//			mainPanel.getEpithelium().setSBMLPath(file.getAbsolutePath());
-//
-//			loadModel(file);
-//		}
+//	private void resetAllPanels() {
+//		removeAll();
+//		init();
+//		mainFrame.componentsPanel.removeAll();
+//		mainFrame.componentsPanel.init();
+//		mainFrame.watcherPanel.removeAll();
+//		mainFrame.watcherPanel.init();
+//		mainFrame.inputsPanel.removeAll();
+//		mainFrame.inputsPanel.init();
+//		mainFrame.initial.removeAll();
+//		mainFrame.initial.init();
+//		mainFrame.getContentPane().repaint();
 //	}
-
-	private void resetAllPanels() {
-		removeAll();
-		init();
-		mainPanel.componentsPanel.removeAll();
-		mainPanel.componentsPanel.init();
-		mainPanel.watcherPanel.removeAll();
-		mainPanel.watcherPanel.init();
-		mainPanel.inputsPanel.removeAll();
-		mainPanel.inputsPanel.init();
-		mainPanel.initial.removeAll();
-		mainPanel.initial.init();
-		mainPanel.getContentPane().repaint();
-	}
 
 	private void loadModel(File file) {
 
@@ -167,7 +150,7 @@ public class StartPanel extends JPanel {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			sbmlFormat.export(logicalModel, baos);
 
-			String mySBML = new String(baos.toByteArray());
+		//	String mySBML = new String(baos.toByteArray());
 
 		} catch (IOException e) {
 			System.err.println("Cannot import file " + file.getAbsolutePath()
@@ -177,19 +160,20 @@ public class StartPanel extends JPanel {
 		if (logicalModel == null)
 			return;
 
-		mainPanel.getEpithelium().setUnitaryModel(logicalModel);
-		resetAllPanels();
+		mainFrame.getEpithelium().setUnitaryModel(logicalModel);
+//		resetAllPanels();
 
-		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel.getGraphics());
+		mainFrame.hexagonsPanel.paintComponent(mainFrame.hexagonsPanel
+				.getGraphics());
 
-		mainPanel.getLogicalModelComposition().resetComposedModel();
+		mainFrame.getLogicalModelComposition().resetComposedModel();
 
 		// setupDefinitionsButton.setEnabled(true);
-		mainPanel.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
+		mainFrame.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
 				.createEmptyBorder());
 		TitledBorder titleInitialConditions;
 		titleInitialConditions = BorderFactory.createTitledBorder("");
-		mainPanel.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
+		mainFrame.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
 
 	}
 
@@ -206,7 +190,7 @@ public class StartPanel extends JPanel {
 			for (final File fileEntry : folder.listFiles()) {
 				if (fileEntry.getName().contains("sbml")) {
 					loadModel(fileEntry);
-					mainPanel.getEpithelium().setSBMLLoadPath(
+					mainFrame.getEpithelium().setSBMLLoadPath(
 							fileEntry.getAbsolutePath());
 				}
 			}
@@ -227,128 +211,6 @@ public class StartPanel extends JPanel {
 		}
 	}
 
-//	private void newEpitheliumPanel() {
-//		/*
-//		 * Grid Dimension: The number of rows and columns have to be even, so
-//		 * even if the user writes an odd number, it is automatically corrected
-//		 * to the next even number. Topology will hold the values. Whenever the
-//		 * grid dimensions are changed the mainPanel is informed of that so that
-//		 * the composed model can be recreated. It is particularly important
-//		 * when the user has already defined a composed model and then restarts
-//		 * the simulation and decides to change the grid's dimensions. If the
-//		 * model was already loaded and the user change the grids dimensions
-//		 * after a restart, then the grid has to reinitialize again.
-//		 */
-//
-//		JLabel setWidth = new JLabel();
-//		JLabel setHeight = new JLabel();
-//		JButton loadSBML = new JButton("Load SBML");
-//		JLabel labelFilename = new JLabel();
-//
-//		labelFilename.setText("Filename: ");
-//		labelFilename.setForeground(Color.white);
-//
-//		setWidth.setText("Width: ");
-//		setHeight.setText("Height: ");
-//
-//		setWidth.setForeground(Color.white);
-//		setHeight.setForeground(Color.white);
-//
-//		userDefinedWidth.setPreferredSize(new Dimension(34, 26));
-//		userDefinedHeight.setPreferredSize(new Dimension(34, 26));
-//
-//		userDefinedWidth.setHorizontalAlignment(JTextField.CENTER);
-//		userDefinedHeight.setHorizontalAlignment(JTextField.CENTER);
-//		userDefinedWidth.setText("" + mainPanel.getTopology().getWidth());
-//		userDefinedHeight.setText("" + mainPanel.getTopology().getHeight());
-//
-//		userDefinedWidth.addFocusListener(new FocusListener() {
-//
-//			@Override
-//			public void focusGained(FocusEvent arg0) {
-//				if (mainPanel.getEpithelium().getUnitaryModel() != null)
-//					mainPanel.fillHexagons();
-//			}
-//
-//			@Override
-//			public void focusLost(FocusEvent arg0) {
-//				if (mainPanel.getEpithelium().getUnitaryModel() == null) {
-//					sanityCheckDimension(userDefinedWidth);
-//					sanityCheckDimension(userDefinedHeight);
-//					setWidth();
-//					setHeight();
-//				}
-//			}
-//		});
-//
-//		userDefinedHeight.addFocusListener(new FocusListener() {
-//
-//			@Override
-//			public void focusGained(FocusEvent arg0) {
-//				if (mainPanel.getEpithelium().getUnitaryModel() != null)
-//					mainPanel.fillHexagons();
-//			}
-//
-//			@Override
-//			public void focusLost(FocusEvent arg0) {
-//				if (mainPanel.getEpithelium().getUnitaryModel() == null) {
-//					sanityCheckDimension(userDefinedWidth);
-//					sanityCheckDimension(userDefinedHeight);
-//					setWidth();
-//					setHeight();
-//				}
-//
-//			}
-//		});
-//
-//		addMouseListener(new MouseListener() {
-//
-//			@Override
-//			public void mouseClicked(MouseEvent arg0) {
-//				if (mainPanel.getEpithelium().getUnitaryModel() == null) {
-//					sanityCheckDimension(userDefinedWidth);
-//					sanityCheckDimension(userDefinedHeight);
-//					setWidth();
-//					setHeight();
-//				}
-//			}
-//
-//			@Override
-//			public void mouseEntered(MouseEvent arg0) {
-//
-//				if (mainPanel.getEpithelium().getUnitaryModel() == null) {
-//					sanityCheckDimension(userDefinedWidth);
-//					sanityCheckDimension(userDefinedHeight);
-//					setWidth();
-//					setHeight();
-//				}
-//			}
-//
-//			@Override
-//			public void mouseExited(MouseEvent arg0) {
-//			}
-//
-//			@Override
-//			public void mousePressed(MouseEvent arg0) {
-//			}
-//
-//			@Override
-//			public void mouseReleased(MouseEvent arg0) {
-//
-//			}
-//		});
-//
-//		add(setWidth);
-//		add(userDefinedWidth);
-//		add(setHeight);
-//		add(userDefinedHeight);
-//		add(loadSBML);
-//		if (mainPanel.getEpithelium().getUnitaryModel() != null) {
-//			labelFilename.setText(SBMLFilename);
-//			add(labelFilename);
-//		}
-//	}
-
 	private void ld(Scanner fileIn) {
 
 		// TODO: Mudar para Buffereader: Lê muitas coisas de cada vez, lida
@@ -363,24 +225,24 @@ public class StartPanel extends JPanel {
 			if (identifier.contains("SN")) {
 
 				String SBMLFilename = line.split(" ")[1];
-				mainPanel.getEpithelium().setSBMLFilename(SBMLFilename);
+				mainFrame.getEpithelium().setSBMLFilename(SBMLFilename);
 			}
 
 			if (identifier.contains("GD")) {
-				mainPanel.getTopology().setWidth(
+				mainFrame.topology.setWidth(
 						Integer.parseInt(line.split(" ")[1].split(",")[0]));
-				mainPanel.getTopology().setHeight(
+				mainFrame.topology.setHeight(
 						Integer.parseInt(line.split(" ")[1].split(",")[1]));
 				removeAll();
 				init();
 
 			}
 			if (identifier.contains("RL")) {
-				mainPanel.getTopology().setRollOver(
+				mainFrame.topology.setRollOver(
 						line.split(" ")[1].split(",")[0]);
 			}
 			if (identifier.contains("IC")) {
-				NodeInfo node = mainPanel.getEpithelium().getUnitaryModel()
+				NodeInfo node = mainFrame.getEpithelium().getUnitaryModel()
 						.getNodeOrder()
 						.get(Integer.parseInt(line.split(" ")[2]));
 				byte value = (byte) Integer.parseInt(line.split(" ")[4]);
@@ -395,7 +257,7 @@ public class StartPanel extends JPanel {
 						int init = Integer.parseInt(range.split("-")[0]);
 						int end = Integer.parseInt(range.split("-")[1]);
 						for (int instance = init; instance < end + 1; instance++) {
-							mainPanel.getEpithelium().setGrid(instance, node,
+							mainFrame.getEpithelium().setGrid(instance, node,
 									value);
 						}
 					}
@@ -403,38 +265,197 @@ public class StartPanel extends JPanel {
 			}
 
 			if (identifier.contains("IT")) {
-				NodeInfo node = mainPanel.getEpithelium().getUnitaryModel()
+				NodeInfo node = mainFrame.getEpithelium().getUnitaryModel()
 						.getNodeOrder()
 						.get(Integer.parseInt(line.split(" ")[2]));
 				byte value = (byte) Integer.parseInt(line.split(" ")[4]);
 				String expression = line.split(" ")[6];
-				mainPanel.getEpithelium().setIntegrationFunctions(node, value,
+				mainFrame.getEpithelium().setIntegrationFunctions(node, value,
 						expression);
 			}
 
 			if (identifier.contains("CL")) {
 
-				NodeInfo node = mainPanel.getEpithelium().getUnitaryModel()
+				NodeInfo node = mainFrame.getEpithelium().getUnitaryModel()
 						.getNodeOrder()
 						.get(Integer.parseInt(line.split(" ")[2]));
 				Color color = new Color(Integer.parseInt(line.split(" ")[4]));
 
-				mainPanel.getEpithelium().setColor(node, color);
+				mainFrame.getEpithelium().setColor(node, color);
 			}
 		}
 	}
 
 	private void loadConfigurations() {
 
-		mainPanel.setEpithelium(mainPanel.getEpithelium());
-		resetAllPanels();
+		mainFrame.setEpithelium(mainFrame.getEpithelium());
+//		resetAllPanels();
 
-		mainPanel.hexagonsPanel.paintComponent(mainPanel.hexagonsPanel.getGraphics());
+		mainFrame.hexagonsPanel.paintComponent(mainFrame.hexagonsPanel
+				.getGraphics());
 		// setupDefinitionsButton.setEnabled(true);
-		mainPanel.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
+		mainFrame.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
 				.createEmptyBorder());
 		TitledBorder titleInitialConditions;
 		titleInitialConditions = BorderFactory.createTitledBorder("");
-		mainPanel.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
+		mainFrame.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
+	}
+
+	public void save() {
+
+		// TODO: Provisory method. It will evolve to something more elaborate
+		JFileChooser fc = new JFileChooser();
+		PrintWriter out;
+		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
+
+			try {
+
+				out = new PrintWriter(new FileWriter(fc.getSelectedFile()
+						.getAbsolutePath() + "_config.txt"));
+				createConfigFile(out);
+				out.close();
+
+				String zipFile = fc.getSelectedFile().getAbsolutePath()
+						+ ".zip";
+
+				String unitarySBML = "";
+				if (mainFrame.getEpithelium().isNewEpithelium()) {
+					unitarySBML = mainFrame.getEpithelium().getSBMLFilePath();
+				} else {
+					unitarySBML = mainFrame.getEpithelium().getSBMLLoadPath();
+
+				}
+				System.out.println("Unitary SBML" + unitarySBML);
+
+				String[] sourceFiles = {
+						fc.getSelectedFile().getAbsolutePath() + "_config.txt",
+						unitarySBML };
+
+				byte[] buffer = new byte[1024];
+				FileOutputStream fout = new FileOutputStream(zipFile);
+				ZipOutputStream zout = new ZipOutputStream(fout);
+
+				for (int i = 0; i < sourceFiles.length; i++) {
+					System.out.println("Adding " + sourceFiles[i]);
+					// create object of FileInputStream for source file
+					FileInputStream fin = new FileInputStream(sourceFiles[i]);
+					zout.putNextEntry(new ZipEntry(sourceFiles[i]));
+					int length;
+
+					while ((length = fin.read(buffer)) > 0) {
+						zout.write(buffer, 0, length);
+					}
+					zout.closeEntry();
+					fin.close();
+				}
+				zout.close();
+				System.out.println("Zip file has been created!");
+				File toDelete = new File(fc.getSelectedFile().getAbsolutePath()
+						+ "_config.txt");
+				toDelete.delete();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+	}
+
+	private void createConfigFile(PrintWriter out) {
+
+		// TODO : Change PrintWriter to FileWriter - Tratamento de Excepções. o
+		// file writer espera ate ter uma quantiodade grande de dados para
+		// enviar tudo de uma vez. importante quando estamos numa ligaão remota
+
+		// SBML Filename
+		out.write("SN " + mainFrame.getEpithelium().getSBMLFilename() + "\n");
+
+		// Grid Dimensions
+		out.write("GD " + mainFrame.topology.getWidth() + ","
+				+ mainFrame.topology.getHeight() + "\n");
+
+		out.write("\n");
+		// Roll-Over option
+		out.write("RL " + mainFrame.topology.getRollOver() + "\n");
+
+		out.write("\n");
+		// InitialState
+		for (NodeInfo node : mainFrame.getEpithelium().getUnitaryModel()
+				.getNodeOrder()) {
+			if (!mainFrame.getEpithelium().isIntegrationComponent(node)) {
+				for (int value = 1; value < node.getMax() + 1; value++) {
+					out.write("IC "
+							+ node.getNodeID()
+							+ " "
+							+ mainFrame.getEpithelium().getUnitaryModel()
+									.getNodeOrder().indexOf(node) + " : "
+							+ value + " ( ");
+					int previous = 0;
+					int inDash = 0;
+					for (int instance = 0; instance < mainFrame.topology
+							.getNumberInstances(); instance++) {
+						if (mainFrame.getEpithelium().getGridValue(instance,
+								node) == value) {
+							if (previous != instance - 1) {
+								if (inDash == 1) {
+									out.write("-" + previous + ",");
+								} else if (previous != 0) {
+									out.write(",");
+								}
+								out.write("" + instance);
+								inDash = 0;
+							} else {
+								inDash = 1;
+								if (instance == mainFrame.topology
+										.getNumberInstances() - 1
+										& previous == instance - 1) {
+									out.write("-" + instance);
+								}
+							}
+							previous = instance;
+						}
+					}
+					out.write(" )\n");
+				}
+			}
+		}
+
+		out.write("\n");
+		// Integration Components
+		for (NodeInfo node : mainFrame.getEpithelium().getUnitaryModel()
+				.getNodeOrder()) {
+			if (mainFrame.getEpithelium().isIntegrationComponent(node)) {
+
+				for (byte value = 1; value < node.getMax() + 1; value++) {
+					out.write("IT "
+							+ node.getNodeID()
+							+ " "
+							+ mainFrame.getEpithelium().getUnitaryModel()
+									.getNodeOrder().indexOf(node)
+							+ " : "
+							+ value
+							+ " : "
+							+ mainFrame.getEpithelium().getIntegrationFunction(
+									node, value) + "\n");
+				}
+			}
+		}
+
+		out.write("\n");
+		// Colors
+
+		for (NodeInfo node : mainFrame.getEpithelium().getUnitaryModel()
+				.getNodeOrder()) {
+			out.write("CL "
+					+ node.getNodeID()
+					+ " "
+					+ mainFrame.getEpithelium().getUnitaryModel()
+							.getNodeOrder().indexOf(node) + " : "
+					+ mainFrame.getEpithelium().getColor(node).getRGB() + "\n");
+		}
+
+		out.write("\n");
+		// Perturbations
+
+		// Priorities
+
 	}
 }

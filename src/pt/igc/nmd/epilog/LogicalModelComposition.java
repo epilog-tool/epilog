@@ -1,7 +1,5 @@
 package pt.igc.nmd.epilog;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +9,6 @@ import java.util.Map;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.LogicalModelImpl;
 import org.colomoto.logicalmodel.NodeInfo;
-import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 import org.colomoto.logicalmodel.tool.reduction.ModelReducer;
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.MDDManagerFactory;
@@ -60,7 +57,7 @@ public class LogicalModelComposition {
 		byte max = 0;
 
 		// Creates all new NodeInfos for all instances
-		for (int i = 0; i < mainPanel.getTopology().getNumberInstances(); i++) {
+		for (int i = 0; i < mainPanel.topology.getNumberInstances(); i++) {
 			for (NodeInfo node : mainPanel.getEpithelium().getUnitaryModel()
 					.getNodeOrder()) {
 				NodeInfo newNode = new NodeInfo(computeNewName(
@@ -106,7 +103,7 @@ public class LogicalModelComposition {
 		// Create Composition Context
 
 		CompositionContext context = new CompositionContextImpl(
-				mainPanel.getTopology(), nodeOrder, this.oldString2New);
+				mainPanel.topology, nodeOrder, this.oldString2New);
 
 		// Create MDD variables
 		MDDVariableFactory mvf = new MDDVariableFactory();
@@ -187,7 +184,7 @@ public class LogicalModelComposition {
 //					 System.out.println(oldeNodeIdIntegrationComponent + " " +
 //					 targetValue);
 
-					for (int i = 0; i < mainPanel.getTopology()
+					for (int i = 0; i < mainPanel.topology
 							.getNumberInstances(); i++) {
 						IntegrationFunctionMDDFactory factory = new IntegrationFunctionMDDFactory(
 								context, ddmanager);
@@ -312,5 +309,18 @@ public class LogicalModelComposition {
 		new2Old = new HashMap<NodeInfo, Map.Entry<NodeInfo, Integer>>();
 		instanceNodes = new HashMap<Integer, List<NodeInfo>>();
 	}
+	
+	public NodeInfo getComposedNode(NodeInfo node, int instance){
+		return this.old2New.get(new SimpleEntry<NodeInfo,Integer>(node,new Integer(instance)));
+	}
+	
+	public NodeInfo getOriginalNode(NodeInfo node){
+		return this.new2Old.get(node).getKey();
+	}
+	
+	public Integer getOriginalInstance(NodeInfo node){
+		return this.new2Old.get(node).getValue();
+	}
+	
 
 }

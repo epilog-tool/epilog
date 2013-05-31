@@ -4,14 +4,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Polygon;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
 
 import org.colomoto.logicalmodel.NodeInfo;
-
-import pt.igc.nmd.epilog.CellGenes;
 
 public class DrawPolygon extends JPanel {
 
@@ -22,14 +19,13 @@ public class DrawPolygon extends JPanel {
 
 	public double height = 0.0, radius = 0.0;
 	public List<NodeInfo> listNodes;
-	private MainFrame mainPanel;
-	public List<List<CellGenes>> cellGenes;
+	private MainFrame mainFrame;
+
 	public int countSelected = 0;
 
-	public DrawPolygon(MainFrame mainPanel) {
-		this.mainPanel = mainPanel;
+	public DrawPolygon(MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
 		this.setPreferredSize(new Dimension(500, 500));
-		this.cellGenes = new ArrayList<List<CellGenes>>();
 	}
 
 	public void paintComponent(Graphics g) {
@@ -40,8 +36,8 @@ public class DrawPolygon extends JPanel {
 
 		int XX = 0, YY = 0, max = 0;
 		try {
-			XX = this.mainPanel.getTopology().getWidth();
-			YY = this.mainPanel.getTopology().getHeight();
+			XX = this.mainFrame.topology.getWidth();
+			YY = this.mainFrame.topology.getHeight();
 
 			max = Math.max(XX, YY);
 
@@ -93,34 +89,29 @@ public class DrawPolygon extends JPanel {
 						x = centerX + radius * Math.cos(i * 2 * Math.PI / 6);
 						y = centerY + radius * Math.sin(i * 2 * Math.PI / 6);
 						polygon2.addPoint((int) (x), (int) (y));
-
 					}
 
-					if (!mainPanel.getSimulation().getHasInitiated()) {
+					if (!this.mainFrame.simulation.isRunning()) {
 						g.setColor(Color.white); // Hexagons Color Keep white
 						g.fillPolygon(polygon2);
 						g.setColor(Color.black);
 						g.drawPolygon(polygon2);
-
 					}
 
 					else {
-						g.setColor(mainPanel.getSimulation()
+						g.setColor(this.mainFrame.simulation
 								.getCoordinateCurrentColor(k, j));
 
 						g.fillPolygon(polygon2);
 						g.setColor(Color.black);
 						g.drawPolygon(polygon2);
-
 					}
 
 					if (k % 2 == 0)
 						centerY = (j + 1 + 0.5) * radius * Math.sqrt(3.0);
 					else
 						centerY = (j + 2) * radius * Math.sqrt(3.0);
-
 				}
-
 			}
 		} else {
 			System.out.println("XX e YY têm que ser maiores do que zero");
@@ -155,7 +146,8 @@ public class DrawPolygon extends JPanel {
 			y = centerY + radius * Math.sin(k * 2 * Math.PI / 6);
 			polygon2.addPoint((int) (x), (int) (y));
 		}
-
+		
+		
 		g.setColor(color);
 		g.fillPolygon(polygon2);
 		g.setColor(Color.black);
@@ -166,8 +158,8 @@ public class DrawPolygon extends JPanel {
 
 		int XX = 0, YY = 0, max = 0;
 		try {
-			XX = this.mainPanel.getTopology().getWidth();
-			YY = this.mainPanel.getTopology().getHeight();
+			XX = this.mainFrame.topology.getWidth();
+			YY = this.mainFrame.topology.getHeight();
 
 			max = Math.max(XX, YY);
 
@@ -187,7 +179,6 @@ public class DrawPolygon extends JPanel {
 				height = 500 / max;
 				height = (500 - 1 * height) / (max);
 				radius = height / Math.sqrt(3.0);
-
 			}
 
 			else {
@@ -217,7 +208,6 @@ public class DrawPolygon extends JPanel {
 						x = centerX + radius * Math.cos(i * 2 * Math.PI / 6);
 						y = centerY + radius * Math.sin(i * 2 * Math.PI / 6);
 						polygon2.addPoint((int) (x), (int) (y));
-
 					}
 
 					g.setColor(Color.white);
@@ -229,26 +219,10 @@ public class DrawPolygon extends JPanel {
 						centerY = (j + 1 + 0.5) * radius * Math.sqrt(3.0);
 					else
 						centerY = (j + 2) * radius * Math.sqrt(3.0);
-
 				}
-
 			}
 		} else {
 			System.out.println("XX e YY têm que ser maiores do que zero");
 		}
 	}
-
-	public void initializeCellGenes(int size) {
-
-		cellGenes = new ArrayList<List<CellGenes>>();
-
-		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
-
-			cellGenes.add(new ArrayList<CellGenes>());
-			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
-				cellGenes.get(i).add(new CellGenes(size));
-			}
-		}
-	}
-
 }

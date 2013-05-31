@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
 import pt.igc.nmd.epilog.RunStopButton;
-import pt.igc.nmd.epilog.Topology;
 
 public class SimulationSetupPanel extends JPanel {
 
@@ -21,16 +20,15 @@ public class SimulationSetupPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = -6167613300012277711L;
 
-	public MainFrame mainPanel;
+	public MainFrame mainFrame;
 	private JComboBox rollOver;
 
 	private JButton runButton;
 	private JButton stepButton;
-	private JButton simulationButton;
 	private JButton restartButton;
 
 	public SimulationSetupPanel(MainFrame mainPanel) {
-		this.mainPanel = mainPanel;
+		this.mainFrame = mainPanel;
 		init();
 
 	}
@@ -55,8 +53,8 @@ public class SimulationSetupPanel extends JPanel {
 		rollOver.addItem("Vertical Roll-Over");
 		rollOver.addItem("Horizontal Roll-Over");
 		String aux = (String) rollOver.getSelectedItem();
-		if (mainPanel.getEpithelium().getUnitaryModel() != null)
-			mainPanel.getTopology().setRollOver(aux);
+		if (mainFrame.getEpithelium().getUnitaryModel() != null)
+			mainFrame.topology.setRollOver(aux);
 
 		rollOver.addActionListener(new ActionListener() {
 
@@ -65,7 +63,7 @@ public class SimulationSetupPanel extends JPanel {
 				JComboBox source = (JComboBox) event.getSource();
 				String optionString = (String) source.getSelectedItem();
 				fireRollOverChange(optionString);
-				mainPanel.setInitialSetupHasChanged(true);
+				mainFrame.setInitialSetupHasChanged(true);
 
 			}
 		});
@@ -76,12 +74,27 @@ public class SimulationSetupPanel extends JPanel {
 
 		JCheckBox createComposedModel = new JCheckBox("Create composed model");
 
+		createComposedModel.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent event) {
+				JCheckBox src = (JCheckBox) event.getSource();
+				if (src.isSelected()) {
+					// TODO: create composed model and simulate with composition
+					mainFrame.disableTabs(true);
+					mainFrame.simulation.initializeSimulation();
+				}
+				mainFrame.hexagonsPanel.paintComponent(mainFrame.hexagonsPanel
+						.getGraphics());
+
+			}
+
+		});
+
 		add(rollOver);
 		add(createComposedModel);
 
 		runButton = new RunStopButton();
 		stepButton = new JButton("Step");
-		simulationButton = new JButton("Simulation");
 
 		/*
 		 * Step Button: Initiates a step-by-step simulation. It also repaints
@@ -91,12 +104,10 @@ public class SimulationSetupPanel extends JPanel {
 		stepButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				// if (mainPanel.getSimulation().isAutomata())
-				// mainPanel.getSimulation().automataStep();
-				// else
-				mainPanel.getSimulation().step();
+				mainFrame.disableTabs(true);
+				mainFrame.simulation.step();
 
-				if (mainPanel.getSimulation().hasStableStateFound()) {
+				if (mainFrame.simulation.hasStableStateFound()) {
 					stepButton.setEnabled(false);
 					runButton.setEnabled(false);
 				}
@@ -108,7 +119,7 @@ public class SimulationSetupPanel extends JPanel {
 		 */
 		runButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mainPanel.getSimulation().run();
+				mainFrame.simulation.run();
 				stepButton.setEnabled(false);
 				runButton.setEnabled(false);
 			}
@@ -116,7 +127,7 @@ public class SimulationSetupPanel extends JPanel {
 
 		add(runButton);
 		add(stepButton);
-		
+
 		restartButton = new JButton("Restart");
 
 		/*
@@ -135,47 +146,28 @@ public class SimulationSetupPanel extends JPanel {
 		restartButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				mainPanel.getSimulation().setHasInitiated(false);
+
+				mainFrame.disableTabs(false);
+				mainFrame.simulation.reset();
 
 				TitledBorder titleInitialConditions;
 				titleInitialConditions = BorderFactory.createTitledBorder("");
-				mainPanel.auxiliaryHexagonsPanel
+				mainFrame.auxiliaryHexagonsPanel
 						.setBorder(javax.swing.BorderFactory
 								.createEmptyBorder());
-				mainPanel.auxiliaryHexagonsPanel
+				mainFrame.auxiliaryHexagonsPanel
 						.setBorder(titleInitialConditions);
 
 				removeAll();
 				init();
-
-				mainPanel.getSimulation().initializeSimulation();
-				//resetAllPanels();
-
 			}
 		});
-
-		// simulationButton.addActionListener(new ActionListener() {
-		// public void actionPerformed(ActionEvent e) {
-		// mainPanel.getSimulation().initializeSimulation();
-		// // mainPanel.getSimulation().setAutomata(false);
-		// removeAll();
-		// init();
-		// mainPanel.auxiliaryHexagonsPanel
-		// .setBorder(javax.swing.BorderFactory
-		// .createEmptyBorder());
-		// TitledBorder titleInitialConditions;
-		// titleInitialConditions = BorderFactory
-		// .createTitledBorder("Initial Conditions");
-		// mainPanel.auxiliaryHexagonsPanel
-		// .setBorder(titleInitialConditions);
-		//
-		// }
-		// });
+		add(restartButton);
 
 		return this;
 	}
 
 	private void fireRollOverChange(String optionString) { // ROLL OVER
-		mainPanel.getTopology().setRollOver(optionString);
+		mainFrame.topology.setRollOver(optionString);
 	}
 }

@@ -1,11 +1,5 @@
 package pt.igc.nmd.epilog.gui;
 
-
-
-
-
-
-
 /*
  * This Class allows the change of colors of the genes in the grid. 
  * 
@@ -28,15 +22,13 @@ import javax.swing.JPanel;
 
 import org.colomoto.logicalmodel.NodeInfo;
 
-
 public class ColorFrame extends JFrame {
-
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = -2547100069571677529L;
+
 	public JPanel contentPane;
 	public JPanel Panel;
 	public BtnChangeColor btt1;
@@ -54,46 +46,43 @@ public class ColorFrame extends JFrame {
 	public JButton buttonOk = new JButton("Ok");
 	public JButton buttonCancel = new JButton("Cancel");
 	public DrawPolygon dPanel;
-	//private NodeInfo node;
 
-	//public ColorFrame(ColorButton colorb,DrawPolygon dPanel, String nodeID) {
 	public ColorFrame(ColorButton colorb, NodeInfo node) {
-		//this.node = node;
-		
+
 		Color brown = new Color(165, 42, 42);
 		Color oliveGreen = new Color(128, 128, 0);
 		Color thistle = new Color(216, 191, 216);
-		//Color lightSalmon = new Color(255, 160, 122);
+		// Color lightSalmon = new Color(255, 160, 122);
 		Color darkOrange = new Color(255, 140, 0);
 		Color antiqueWhite = new Color(250, 235, 215);
 
 		contentPane = new JPanel();
-		btt1 = new BtnChangeColor(colorb, Color.yellow,node);
+		btt1 = new BtnChangeColor(colorb, Color.yellow, node);
 		btt1.initialize();
-		btt2 = new BtnChangeColor(colorb, darkOrange,node);
+		btt2 = new BtnChangeColor(colorb, darkOrange, node);
 		btt2.initialize();
-		btt3 = new BtnChangeColor(colorb, Color.green,node);
+		btt3 = new BtnChangeColor(colorb, Color.green, node);
 		btt3.initialize();
-		btt4 = new BtnChangeColor(colorb, Color.cyan,node);
+		btt4 = new BtnChangeColor(colorb, Color.cyan, node);
 		btt4.initialize();
-		btt5 = new BtnChangeColor(colorb, Color.magenta,node);
+		btt5 = new BtnChangeColor(colorb, Color.magenta, node);
 		btt5.initialize();
-		btt6 = new BtnChangeColor(colorb, antiqueWhite,node);
+		btt6 = new BtnChangeColor(colorb, antiqueWhite, node);
 		btt6.initialize();
-		btt7 = new BtnChangeColor(colorb, Color.red,node);
+		btt7 = new BtnChangeColor(colorb, Color.red, node);
 		btt7.initialize();
-		btt8 = new BtnChangeColor(colorb, Color.blue,node);
+		btt8 = new BtnChangeColor(colorb, Color.blue, node);
 		btt8.initialize();
-		btt9 = new BtnChangeColor(colorb, Color.black,node);
+		btt9 = new BtnChangeColor(colorb, Color.black, node);
 		btt9.initialize();
 
-		btt10 = new BtnChangeColor(colorb, brown,node);
+		btt10 = new BtnChangeColor(colorb, brown, node);
 		btt10.initialize();
-		btt11 = new BtnChangeColor(colorb, oliveGreen,node);
+		btt11 = new BtnChangeColor(colorb, oliveGreen, node);
 		btt11.initialize();
-		btt12 = new BtnChangeColor(colorb, thistle,node);
+		btt12 = new BtnChangeColor(colorb, thistle, node);
 		btt12.initialize();
-		//this.dPanel=dPanel;
+
 	}
 
 	public void initialize() {
@@ -108,7 +97,7 @@ public class ColorFrame extends JFrame {
 
 		setContentPane(contentPane);
 		pack();
-		// setLocationByPlatform(true);
+
 		setVisible(true);
 		setLocationRelativeTo(null);
 
@@ -141,8 +130,8 @@ public class ColorFrame extends JFrame {
 		contentPane.add(buttonOk);
 		buttonOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
 				dispose();
-				repaint();
 			}
 		});
 

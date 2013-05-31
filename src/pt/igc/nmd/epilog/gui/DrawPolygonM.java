@@ -4,11 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Polygon;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JPanel;
-import pt.igc.nmd.epilog.CellGenes;
 
 public class DrawPolygonM extends JPanel {
 
@@ -17,23 +14,24 @@ public class DrawPolygonM extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = -8070527969578519864L;
+	
 	public double height;
 	public double width;
 	public double radius = 0.0;
 
-	public List<List<CellGenes>> cellGenes;
+
 	public int startX;
 	public int startY;
 	public int endX;
 	public int endY;
 
-	public MainFrame mainPanel;
+	public MainFrame mainFrame;
 
 
-	public DrawPolygonM(MainFrame mainPanel) {
-		this.mainPanel = mainPanel;
-		width = mainPanel.getTopology().getWidth();
-		height = mainPanel.getTopology().getHeight();
+	public DrawPolygonM(MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
+		width = mainFrame.topology.getWidth();
+		height = mainFrame.topology.getHeight();
 
 		this.setPreferredSize(new Dimension(600, 700));
 	}
@@ -128,8 +126,8 @@ public class DrawPolygonM extends JPanel {
 		
 		int XX = 0, YY = 0, max = 0;
 		try {
-			XX = mainPanel.getTopology().getWidth();
-			YY = mainPanel.getTopology().getHeight();
+			XX = mainFrame.topology.getWidth();
+			YY = mainFrame.topology.getHeight();
 
 			max = Math.max(XX, YY);
 
@@ -236,21 +234,7 @@ public class DrawPolygonM extends JPanel {
 //		}
 //	}
 
-	public void initializeCellGenes(int size) {
 
-		cellGenes = new ArrayList<List<CellGenes>>();
-
-		for (int i = 0; i < mainPanel.getTopology().getWidth(); i++) {
-
-			cellGenes.add(new ArrayList<CellGenes>());
-			for (int j = 0; j < mainPanel.getTopology().getHeight(); j++) {
-				cellGenes.get(i).add(new CellGenes(size));
-
-			}
-
-		}
-
-	}
 
 
 	
