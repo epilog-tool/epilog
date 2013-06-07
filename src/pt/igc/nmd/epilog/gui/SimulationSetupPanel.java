@@ -1,15 +1,23 @@
 package pt.igc.nmd.epilog.gui;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Hashtable;
+import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
+
+import org.colomoto.logicalmodel.NodeInfo;
 
 import pt.igc.nmd.epilog.RunStopButton;
 
@@ -27,6 +35,8 @@ public class SimulationSetupPanel extends JPanel {
 	private JButton stepButton;
 	private JButton restartButton;
 
+	private boolean test = false;
+
 	public SimulationSetupPanel(MainFrame mainPanel) {
 		this.mainFrame = mainPanel;
 		init();
@@ -37,7 +47,7 @@ public class SimulationSetupPanel extends JPanel {
 
 		FlowLayout layout = new FlowLayout();
 		layout.setAlignment(FlowLayout.LEFT);
-		setLayout(new FlowLayout());
+		setLayout(new BorderLayout());
 
 		/*
 		 * RollOver: This will allow the user to define if there is any
@@ -46,6 +56,9 @@ public class SimulationSetupPanel extends JPanel {
 		 * over, due to the Euler Theory. At least one pentagon had to be
 		 * presented. By default, there is no roll-over selected
 		 */
+		// PAGE START PANEL
+
+		JPanel startPanel = new JPanel(layout);
 
 		rollOver = new JComboBox();
 
@@ -90,8 +103,8 @@ public class SimulationSetupPanel extends JPanel {
 
 		});
 
-		add(rollOver);
-		add(createComposedModel);
+		startPanel.add(rollOver);
+		startPanel.add(createComposedModel);
 
 		runButton = new RunStopButton();
 		stepButton = new JButton("Step");
@@ -125,8 +138,8 @@ public class SimulationSetupPanel extends JPanel {
 			}
 		});
 
-		add(runButton);
-		add(stepButton);
+		startPanel.add(runButton);
+		startPanel.add(stepButton);
 
 		restartButton = new JButton("Restart");
 
@@ -162,9 +175,92 @@ public class SimulationSetupPanel extends JPanel {
 				init();
 			}
 		});
-		add(restartButton);
+		startPanel.add(restartButton);
+		add(startPanel, BorderLayout.PAGE_START);
+
+		// LEFT PANEL
+
+		JPanel leftPanel = new JPanel();
+		JPanel[] auxiliary = new JPanel[4];
+
+		leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.PAGE_AXIS));
+
+		JComboBox initialCombo = new JComboBox();
+		JComboBox inputCombo = new JComboBox();
+		JComboBox perturbationsCombo = new JComboBox();
+		JComboBox prioritiesCombo = new JComboBox();
+
+		JLabel initialConditionsLabel = new JLabel();
+		JLabel inputsLabel = new JLabel();
+		JLabel perturbationsLabel = new JLabel();
+		JLabel prioritiesLabel = new JLabel();
+
+		initialConditionsLabel.setText("Choose an initial state set: ");
+		inputsLabel.setText("Choose an input set: ");
+		perturbationsLabel.setText("Choose a perturbation set: ");
+		prioritiesLabel.setText("Choose a priorities set: ");
+		
+		
+		prioritiesCombo.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						JComboBox src = (JComboBox) arg0
+								.getSource();
+						mainFrame.epithelium.setSelectedPriority((String) src.getSelectedItem());
+					}
+				});
+		
+		
+
+		fillCombo(initialCombo, "initial");
+		fillCombo(inputCombo, "input");
+		fillCombo(perturbationsCombo, "perturbations");
+		fillCombo(prioritiesCombo, "priorities");
+
+		auxiliary[0] = new JPanel();
+		auxiliary[1] = new JPanel();
+		auxiliary[2] = new JPanel();
+		auxiliary[3] = new JPanel();
+
+		auxiliary[0].add(initialConditionsLabel);
+		auxiliary[0].add(initialCombo);
+		auxiliary[1].add(inputsLabel);
+		auxiliary[1].add(inputCombo);
+		auxiliary[2].add(perturbationsLabel);
+		auxiliary[2].add(perturbationsCombo);
+		auxiliary[3].add(prioritiesLabel);
+		auxiliary[3].add(prioritiesCombo);
+
+		leftPanel.add(auxiliary[0]);
+		leftPanel.add(auxiliary[1]);
+		leftPanel.add(auxiliary[2]);
+		leftPanel.add(auxiliary[3]);
+
+		leftPanel.setBorder(BorderFactory
+				.createEtchedBorder(EtchedBorder.LOWERED));
+		add(leftPanel, BorderLayout.LINE_START);
 
 		return this;
+	}
+
+	private void fillCombo(JComboBox combo, String string) {
+		combo.addItem("none");
+		if (string == "initial") {
+
+		} else if (string == "input") {
+
+		} else if (string == "perturbations") {
+
+		} else if (string == "priorities") {
+
+			Hashtable<String, List<List<NodeInfo>>> set = mainFrame.epithelium
+					.getPrioritiesSet();
+			for (String i : set.keySet()) {
+				combo.addItem(i);
+			}
+
+		}
+
 	}
 
 	private void fireRollOverChange(String optionString) { // ROLL OVER

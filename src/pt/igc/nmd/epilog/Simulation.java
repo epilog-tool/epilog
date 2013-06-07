@@ -5,12 +5,9 @@ import java.awt.Container;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Hashtable;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 
 import pt.igc.nmd.epilog.gui.MainFrame;
@@ -20,19 +17,12 @@ public class Simulation {
 	private int iterationNumber = 1;
 	private GlobalModel globalModel = null;
 	private boolean needsComposedModel = false;
-	// private LogicalModel composedModel = null;
+
 	public Grid currentGlobalState = null;
 	private Grid nextGlobalState = null;
-	// private byte[] state = null;
-	// byte[] currentState = null;
 
 	private MainFrame mainFrame = null;
 	private Epithelium epithelium = null;
-
-	// TODO: Evaporate these variables
-	// public Hashtable<String, Byte> composedState = null;
-	// private Hashtable<NodeInfo, Integer> node2Int;
-	// private Hashtable<String, NodeInfo> string2OldNode;
 
 	private boolean isRunning = false;
 	private boolean stableStateFound = false;
@@ -48,14 +38,6 @@ public class Simulation {
 		this.epithelium = epithelium;
 		this.needsComposedModel = needsComposeModel;
 	}
-
-	// public void setNode2Int(NodeInfo node, Integer index) {
-	// this.node2Int.put(node, index);
-	// }
-	//
-	// public Hashtable<NodeInfo, Integer> getNode2Int() {
-	// return this.node2Int;
-	// }
 
 	public void run() {
 		resetIterationNumber();
@@ -79,7 +61,7 @@ public class Simulation {
 	}
 
 	public void step() {
-
+		
 		setRunning(true);
 		mainFrame.setBorderHexagonsPanel(iterationNumber);
 
@@ -103,8 +85,7 @@ public class Simulation {
 
 		saveLastPic();
 		fillHexagons();
-		// mainFrame.hexagonsPanel.paintComponent(mainFrame.hexagonsPanel
-		// .getGraphics());
+
 		this.iterationNumber++;
 
 		if (nextGlobalState.equals(currentGlobalState)) {
@@ -167,12 +148,13 @@ public class Simulation {
 		if (!initial) {
 			for (NodeInfo node : mainFrame.epithelium.getUnitaryModel()
 					.getNodeOrder()) {
+				
 				if (mainFrame.epithelium.isDisplayComponentOn(node)) {
+					
 
 					int value = 0;
-					if (mainFrame.simulation.currentGlobalState != null)
-						value = mainFrame.simulation.currentGlobalState
-								.getValue(instance, node);
+					if (currentGlobalState != null)
+						value = currentGlobalState.getValue(instance, node);
 					else
 						value = mainFrame.epithelium.getGridValue(instance,
 								node);

@@ -5,6 +5,7 @@ import java.awt.Color;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
+import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 
 import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
 
@@ -21,5 +22,7 @@ public interface Epithelium{
 	public IntegrationExpression[] getIntegrationExpressionsForInput(NodeInfo node);
 	public boolean isDisplayComponentOn(NodeInfo node);
 	public Color getColor(NodeInfo node);
+	
+	public AbstractPerturbation getInstancePerturbation(int instance);
 	
 }

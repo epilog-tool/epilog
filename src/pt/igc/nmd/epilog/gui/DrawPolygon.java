@@ -1,8 +1,10 @@
 package pt.igc.nmd.epilog.gui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.util.List;
 
@@ -101,7 +103,6 @@ public class DrawPolygon extends JPanel {
 					else {
 						g.setColor(this.mainFrame.simulation
 								.getCoordinateCurrentColor(k, j));
-
 						g.fillPolygon(polygon2);
 						g.setColor(Color.black);
 						g.drawPolygon(polygon2);
@@ -120,9 +121,9 @@ public class DrawPolygon extends JPanel {
 
 	public void drawHexagon(int i, int j, Graphics g, Color color) {
 
-		// Graphics2D g2 = (Graphics2D) g;
-		// BasicStroke stroke = new BasicStroke(1.0f);
-		// BasicStroke perturbedStroke = new BasicStroke(3.0f);
+		Graphics2D g2 = (Graphics2D) g;
+		BasicStroke stroke = new BasicStroke(1.0f);
+		BasicStroke perturbedStroke = new BasicStroke(3.0f);
 
 		if (color == null)
 			color = Color.white;
@@ -146,12 +147,19 @@ public class DrawPolygon extends JPanel {
 			y = centerY + radius * Math.sin(k * 2 * Math.PI / 6);
 			polygon2.addPoint((int) (x), (int) (y));
 		}
-		
-		
-		g.setColor(color);
-		g.fillPolygon(polygon2);
-		g.setColor(Color.black);
-		g.drawPolygon(polygon2);
+
+		if (mainFrame.isDrawingCells()) {
+			g2.setColor(color);
+			g2.fillPolygon(polygon2);
+			g2.setColor(Color.black);
+			g2.drawPolygon(polygon2);
+		} else if (mainFrame.isDrawingPerturbations()) {
+			g2.setStroke(perturbedStroke);
+			g2.setColor(color);
+			g2.fillPolygon(polygon2);
+			g2.setColor(Color.black);
+			g2.drawPolygon(polygon2);
+		}
 	}
 
 	public void clearAllCells(Graphics g) {

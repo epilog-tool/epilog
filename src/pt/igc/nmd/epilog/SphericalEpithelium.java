@@ -2,10 +2,12 @@ package pt.igc.nmd.epilog;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
+import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 
 import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionSpecification;
 import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
@@ -31,8 +33,23 @@ public class SphericalEpithelium implements Epithelium {
 	private byte[] initialState = null;
 	private byte grid[][]; // {instance , {nodeindex , value}}
 
+	AbstractPerturbation[] perturbations = null;
+	private AbstractPerturbation activePerturbation;
+
 	private Grid envGrid;
 	private Grid initialGrid;
+	private PerturbedGrid perturbedGrid;
+
+	private String selectedPriority;
+	private String selectedPerturbation;
+
+	private Hashtable<String, List<List<NodeInfo>>> prioritiesSet;
+
+	// private Hashtable<String, AbstractPerturbation> perturbationsList;
+
+	private Hashtable<String, List<List<NodeInfo>>> perturbationsSet;
+	private Hashtable<String, List<List<NodeInfo>>> initialSet;
+	private Hashtable<String, List<List<NodeInfo>>> inputSet;
 
 	private Topology topology = null;
 
@@ -41,6 +58,11 @@ public class SphericalEpithelium implements Epithelium {
 	public SphericalEpithelium(Topology topology) {
 
 		this.topology = topology;
+		prioritiesSet = new Hashtable<String, List<List<NodeInfo>>>();
+		// perturbationsList = new Hashtable<String, AbstractPerturbation>();
+		perturbationsSet = new Hashtable<String, List<List<NodeInfo>>>();
+		initialSet = new Hashtable<String, List<List<NodeInfo>>>();
+		inputSet = new Hashtable<String, List<List<NodeInfo>>>();
 	}
 
 	// SBML INFORMATION
@@ -211,6 +233,7 @@ public class SphericalEpithelium implements Epithelium {
 			initializeIntegrationFunctions();
 			initializeInitialState();
 			initializeGrid();
+			initializePerturbationsGrid();
 		}
 
 	}
@@ -318,6 +341,62 @@ public class SphericalEpithelium implements Epithelium {
 
 	public void setGrid(Integer instance, NodeInfo node, byte value) {
 		this.grid[instance][getUnitaryModel().getNodeOrder().indexOf(node)] = value;
-		
+
+	}
+
+	/*
+	 * Perturbations
+	 */
+
+	public AbstractPerturbation getActivePerturbation() {
+		return activePerturbation;
+	}
+
+	public void setActivePerturbation(AbstractPerturbation perturbation) {
+		activePerturbation = perturbation;
+	}
+
+	public void initializePerturbationsGrid() {
+		perturbations = new AbstractPerturbation[topology.getNumberInstances()];
+	}
+
+	public void setPerturbedInstance(int i, int j) {
+
+		AbstractPerturbation perturbation = getActivePerturbation();
+		int instance = topology.coords2Instance(i, j);
+		perturbations[instance] = perturbation;
+		System.out.println(instance + " " + perturbation);
+	}
+
+	public boolean isCellPerturbed(int instance) {
+		if (perturbations[instance] == null)
+			return false;
+		else
+			return true;
+	}
+
+	public AbstractPerturbation getInstancePerturbation(int instance) {
+		return perturbations[instance];
+	}
+
+	/*
+	 * Priorities
+	 */
+
+	public void setPrioritiesSet(String name,
+			List<List<NodeInfo>> prioritiesClass) {
+		prioritiesSet.put(name, prioritiesClass);
+	}
+
+	public Hashtable<String, List<List<NodeInfo>>> getPrioritiesSet() {
+		return prioritiesSet;
+	}
+
+	public String getSelectedPriority() {
+		return selectedPriority;
+	}
+
+	public void setSelectedPriority(String string) {
+		selectedPriority = string;
 	}
 }

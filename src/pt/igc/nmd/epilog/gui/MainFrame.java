@@ -51,37 +51,40 @@ public class MainFrame extends JFrame {
 	private static final long serialVersionUID = 1779945742155950400L;
 
 	public SphericalEpithelium epithelium = null;
-	public SimulationSetupPanel simulationSetupPanel = null;
+	private SimulationSetupPanel simulationSetupPanel = null;
 
 	private boolean start; // variable that returns true when the user wants to
 							// create a new epithelium
 
-	public StartPanel startPanel = null;
-	public JPanel panelCenter = null;
-	public JPanel panelCenterLeft = null;
-	public JPanel panelCenterRight = null;
+	private StartPanel startPanel = null;
+	private JPanel panelCenter = null;
+	private JPanel panelCenterLeft = null;
+	private JPanel panelCenterRight = null;
 
 	public DrawPolygon hexagonsPanel = null;
-	public TextPanel watcherPanel;
+	private TextPanel watcherPanel;
 	public ComponentsPanel componentsPanel = null;
 	public JPanel auxiliaryHexagonsPanel;
-	public InputsPanel inputsPanel = null;
-	public PerturbationsPanel perturbationsPanel = null;
-	public PrioritiesPanel prioritiesPanel = null;
-	public InitialConditions initial = null;
+	private InputsPanel inputsPanel = null;
+	private PerturbationsPanel perturbationsPanel = null;
+	private PrioritiesPanel prioritiesPanel = null;
+	private InitialConditions initial = null;
 
 	public Topology topology = null;
 	public Simulation simulation;
-	public LogicalModelComposition logicalModelComposition;
+	private LogicalModelComposition logicalModelComposition;
 
-	public boolean initialSetupHasChanged;
-	public boolean simulationHasBegan;
+	private boolean initialSetupHasChanged;
+	private boolean simulationHasBegan;
+	private boolean drawingPerturbations;
+	private boolean drawingPriorities;
+	private boolean drawingCells;
 
 	private JTabbedPane tabbedPane;
 
 	private JFileChooser fc = new JFileChooser();
 	private boolean editableTab;
-	public Color backgroundColor;
+	private Color backgroundColor;
 
 	private JTextField userDefinedWidth = new JTextField();
 	private JTextField userDefinedHeight = new JTextField();
@@ -108,6 +111,18 @@ public class MainFrame extends JFrame {
 
 	private boolean isEditable() {
 		return !simulation.isRunning() & editableTab;
+	}
+
+	public boolean isDrawingPerturbations() {
+		return drawingPerturbations;
+	}
+
+	public boolean isDrawingPriorities() {
+		return drawingPriorities;
+	}
+
+	public boolean isDrawingCells() {
+		return drawingCells;
 	}
 
 	public SphericalEpithelium getEpithelium() {
@@ -225,11 +240,24 @@ public class MainFrame extends JFrame {
 				if (isEditable()) {
 					if (i < topology.getWidth() && j < topology.getHeight()
 							&& i >= 0 && j >= 0) {
-						Color color = Color();
-						hexagonsPanel.drawHexagon(i, j,
-								hexagonsPanel.getGraphics(), color);
-						getEpithelium().setInitialState(i, j);
-//						System.out.println("instance @mainFrame-> "+ topology.coords2Instance(i, j));
+						if (isDrawingCells()) {
+							Color color = Color();
+							hexagonsPanel.drawHexagon(i, j,
+									hexagonsPanel.getGraphics(), color);
+							getEpithelium().setInitialState(i, j);
+						} else if (isDrawingPerturbations()) {
+							
+							epithelium.setPerturbedInstance(i,j);
+							Color color = Color(i,j);
+							hexagonsPanel.drawHexagon(i, j,
+									hexagonsPanel.getGraphics(), color);
+							
+							
+						} else if (isDrawingPriorities()) {
+							
+//							hexagonsPanel.drawHexagon(i, j,
+//									hexagonsPanel.getGraphics(), Color.white);
+						}
 					}
 				}
 			}
@@ -268,18 +296,20 @@ public class MainFrame extends JFrame {
 					int instance = topology.coords2Instance(i, j);
 					if (!isEditable() & epithelium.getUnitaryModel() != null) {
 
-						String string = ("instance: "
-									+ instance);
+						String string = ("instance: " + instance);
 						for (NodeInfo node : epithelium.getUnitaryModel()
 								.getNodeOrder()) {
 
-							string = string + (" node: " + node + " -> value: "
-									+ epithelium.getGridValue(instance, node)
-									+ " ");
+							string = string
+									+ (" node: "
+											+ node
+											+ " -> value: "
+											+ epithelium.getGridValue(instance,
+													node) + " ");
 
 						}
 						hexagonsPanel.setToolTipText(string);
-
+						System.out.println(epithelium.getInstancePerturbation(topology.coords2Instance(i, j)));
 					}
 				}
 			}
@@ -319,13 +349,27 @@ public class MainFrame extends JFrame {
 				if (isEditable()) {
 					if (i < topology.getWidth() && j < topology.getHeight()
 							&& i >= 0 && j >= 0) {
-						Color color = Color();
-						hexagonsPanel.drawHexagon(i, j,
-								hexagonsPanel.getGraphics(), color);
-						getEpithelium().setInitialState(i, j);
-						
+						if (isDrawingCells()) {
+							Color color = Color();
+							hexagonsPanel.drawHexagon(i, j,
+									hexagonsPanel.getGraphics(), color);
+							getEpithelium().setInitialState(i, j);
+						} else if (isDrawingPerturbations()) {
+							
+							epithelium.setPerturbedInstance(i,j);
+							Color color = Color.white;
+							hexagonsPanel.drawHexagon(i, j,
+									hexagonsPanel.getGraphics(), color);
+							getEpithelium().setPerturbedInstance(i, j);
+							
+						} else if (isDrawingPriorities()) {
+//							
+//							hexagonsPanel.drawHexagon(i, j,
+//									hexagonsPanel.getGraphics(), Color.white);
+						}
 					}
 				}
+
 			}
 
 			@Override
@@ -394,6 +438,18 @@ public class MainFrame extends JFrame {
 		});
 	}
 
+	private NodeInfo getPerturbedNode(){
+		return perturbationsPanel.string2Node.get(perturbationsPanel.selectedPerturbedComponent);
+	}
+	
+	private byte getPerturbedMinValue(){
+		return perturbationsPanel.minValue;
+	}
+	
+	private byte getPerturbedMaxValue(){
+		return perturbationsPanel.maxValue;
+	}
+	
 	private void initializePanelCenterRight() {
 
 		tabbedPane = new JTabbedPane();
@@ -418,7 +474,7 @@ public class MainFrame extends JFrame {
 
 		tabbedPane.addTab("Perturbations", perturbationsPanel);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
-		
+
 		tabbedPane.addTab("Priorities", prioritiesPanel);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
@@ -432,11 +488,25 @@ public class MainFrame extends JFrame {
 		tabbedPane.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				if (tabbedPane.getSelectedIndex() != 0)
+				editableTab = false;
+				drawingPerturbations = false;
+				drawingCells = false;
+				drawingPriorities = false;
+				if (tabbedPane.getSelectedIndex() == 0) {
+					simulationSetupPanelRepaint();
+				} else if (tabbedPane.getSelectedIndex() == 3) {
 					editableTab = true;
-				else
-					editableTab = false;
+					drawingPerturbations = true;
+				} else if (tabbedPane.getSelectedIndex() == 4) {
+					editableTab = true;
+					//drawingPriorities = true;
+				} else {
+					editableTab = true;
+					drawingCells = true;
+				}
+
 			}
+
 		});
 
 		panelCenterRight.add(tabbedPane, BorderLayout.PAGE_START);
@@ -444,6 +514,11 @@ public class MainFrame extends JFrame {
 
 	}
 
+	private void simulationSetupPanelRepaint(){
+		simulationSetupPanel = new SimulationSetupPanel(this);
+		tabbedPane.setComponentAt(0, simulationSetupPanel);
+	}
+	
 	public void setStart(boolean b) {
 		this.start = b;
 	}
@@ -512,12 +587,19 @@ public class MainFrame extends JFrame {
 		int instance = topology.coords2Instance(i, j);
 
 		for (NodeInfo node : listNodes) {
-			
+
 			if (!epithelium.isIntegrationComponent(listNodes.indexOf(node)))
 				if (this.epithelium.isDefinitionComponentDisplayOn(listNodes
 						.indexOf(node))) {
-					
+
 					int value = this.epithelium.getGridValue(instance, node);
+					
+//					if (epithelium.isCellPerturbed(instance))
+//						if (value>=epithelium.getPerturbationMaxValue(instance, node))
+//							value=epithelium.getPerturbationMaxValue(instance, node);
+//						else if (value<epithelium.getPerturbationMinValue(instance, node))
+//							value = epithelium.getPerturbationMinValue(instance, node);
+							
 					if (value > 0) {
 						color = this.epithelium.getColor(node);
 						color = ColorBrightness(color, value);
@@ -542,13 +624,12 @@ public class MainFrame extends JFrame {
 		List<NodeInfo> listNodes = this.epithelium.getUnitaryModel()
 				.getNodeOrder();
 
-
 		for (NodeInfo node : listNodes) {
-			
+
 			if (!epithelium.isIntegrationComponent(listNodes.indexOf(node)))
 				if (this.epithelium.isDefinitionComponentDisplayOn(listNodes
 						.indexOf(node))) {
-					
+
 					int value = this.epithelium.getInitialState(node);
 					if (value > 0) {
 						color = this.epithelium.getColor(node);
@@ -565,7 +646,6 @@ public class MainFrame extends JFrame {
 		return color;
 	}
 
-	
 	private JPanel gridSpecsPanel() {
 
 		// TODO Passar para classe
@@ -778,6 +858,7 @@ public class MainFrame extends JFrame {
 		tabbedPane.setEnabledAt(1, !bool);
 		tabbedPane.setEnabledAt(2, !bool);
 		tabbedPane.setEnabledAt(3, !bool);
+		tabbedPane.setEnabledAt(4, !bool);
 
 	}
 }
