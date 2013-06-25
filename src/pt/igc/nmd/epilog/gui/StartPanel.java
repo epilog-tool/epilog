@@ -120,7 +120,7 @@ public class StartPanel extends JPanel {
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (mainFrame.topology == null
-						|| mainFrame.getEpithelium().getUnitaryModel() != null)
+						|| mainFrame.epithelium.getUnitaryModel() != null)
 					save();
 			}
 		});
@@ -154,7 +154,7 @@ public class StartPanel extends JPanel {
 		if (logicalModel == null)
 			return;
 
-		this.mainFrame.getEpithelium().setUnitaryModel(logicalModel);
+		this.mainFrame.epithelium.setUnitaryModel(logicalModel);
 		// resetAllPanels();
 
 		this.mainFrame.hexagonsPanel
@@ -184,8 +184,8 @@ public class StartPanel extends JPanel {
 			for (final File fileEntry : folder.listFiles()) {
 				if (fileEntry.getName().contains("sbml")) {
 					loadModel(fileEntry);
-					this.mainFrame.getEpithelium().setSBMLLoadPath(
-							fileEntry.getAbsolutePath());
+					this.mainFrame.epithelium.setSBMLLoadPath(fileEntry
+							.getAbsolutePath());
 				}
 			}
 			for (final File fileEntry : folder.listFiles()) {
@@ -193,14 +193,14 @@ public class StartPanel extends JPanel {
 					try {
 						Scanner fileIn = new Scanner(new File(
 								fileEntry.getAbsolutePath()));
-
 						ld(fileIn);
+						loadConfigurations();
 
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					loadConfigurations();
+
 				}
 			}
 		}
@@ -234,7 +234,7 @@ public class StartPanel extends JPanel {
 			if (identifier.contains("SN")) {
 
 				String SBMLFilename = line.split(" ")[1];
-				this.mainFrame.getEpithelium().setSBMLFilename(SBMLFilename);
+				this.mainFrame.epithelium.setSBMLFilename(SBMLFilename);
 			}
 
 			if (identifier.contains("GD")) {
@@ -248,6 +248,7 @@ public class StartPanel extends JPanel {
 				// + this.mainFrame.topology.getHeight());
 				// removeAll();
 				// init();
+				this.mainFrame.setEpithelium(this.mainFrame.epithelium);
 
 			}
 			if (identifier.contains("RL")) {
@@ -255,8 +256,8 @@ public class StartPanel extends JPanel {
 						.split(",")[0]);
 			}
 			if (identifier.contains("IC")) {
-				NodeInfo node = this.mainFrame.getEpithelium()
-						.getUnitaryModel().getNodeOrder()
+				NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
+						.getNodeOrder()
 						.get(Integer.parseInt(line.split(" ")[2]));
 				byte value = (byte) Integer.parseInt(line.split(" ")[4]);
 
@@ -270,14 +271,15 @@ public class StartPanel extends JPanel {
 						int init = Integer.parseInt(range.split("-")[0]);
 						int end = Integer.parseInt(range.split("-")[1]);
 						for (int instance = init; instance <= end; instance++) {
-							this.mainFrame.getEpithelium().setGrid(instance,
-									node, value);
+
+							this.mainFrame.epithelium.setGrid(instance, node,
+									value);
 						}
 
 					} else if (range.length() >= 1) {
 						int instance = Integer.parseInt(range.split(" ")[0]);
-						this.mainFrame.getEpithelium().setGrid(instance, node,
-								value);
+						this.mainFrame.epithelium
+								.setGrid(instance, node, value);
 
 					}
 				}
@@ -307,8 +309,6 @@ public class StartPanel extends JPanel {
 			}
 
 			if (identifier.contains("PR")) {
-
-				
 
 				// TODO: Change to while
 
@@ -340,10 +340,11 @@ public class StartPanel extends JPanel {
 						prioritiesClass.add(prioritiesOfThisClass);
 					}
 					System.out.println(setNumber);
-					
-					if (setPrioritiesDescription.get(setNumber)!=null)
-					mainFrame.epithelium.setPrioritiesSet(
-							setPrioritiesDescription.get(setNumber), prioritiesClass);
+
+					if (setPrioritiesDescription.get(setNumber) != null)
+						mainFrame.epithelium.setPrioritiesSet(
+								setPrioritiesDescription.get(setNumber),
+								prioritiesClass);
 				}
 
 			}
@@ -477,7 +478,8 @@ public class StartPanel extends JPanel {
 
 	private void loadConfigurations() {
 
-		this.mainFrame.setEpithelium(this.mainFrame.getEpithelium());
+		this.mainFrame.setEpithelium(this.mainFrame.epithelium);
+		System.out.println(mainFrame.topology.getNumberInstances());
 		// this.mainFrame.gridSpecsPanel.removeAll();
 		this.mainFrame.repaint();
 		this.mainFrame.gridSpecsPanel();
@@ -510,13 +512,11 @@ public class StartPanel extends JPanel {
 						+ ".zip";
 
 				String unitarySBML = "";
-				if (this.mainFrame.getEpithelium().isNewEpithelium()) {
-					unitarySBML = this.mainFrame.getEpithelium()
-							.getSBMLFilePath();
+				if (this.mainFrame.epithelium.isNewEpithelium()) {
+					unitarySBML = this.mainFrame.epithelium.getSBMLFilePath();
 					System.out.println("isnew epithelium");
 				} else {
-					unitarySBML = this.mainFrame.getEpithelium()
-							.getSBMLLoadPath();
+					unitarySBML = this.mainFrame.epithelium.getSBMLLoadPath();
 
 				}
 

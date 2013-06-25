@@ -317,8 +317,12 @@ public class SphericalEpithelium implements Epithelium {
 	}
 
 	public void setGrid(Integer instance, NodeInfo node, byte value) {
+		if (this.grid.length!=topology.getNumberInstances()){
+			
+			initializeGrid();
+		}
 		this.grid[instance][getUnitaryModel().getNodeOrder().indexOf(node)] = value;
-
+		
 	}
 
 	/*
