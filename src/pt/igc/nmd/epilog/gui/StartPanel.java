@@ -512,7 +512,8 @@ public class StartPanel extends JPanel {
 							.getSBMLLoadPath();
 
 				}
-				unitarySBML = this.mainFrame.getEpithelium().getSBMLFilePath();
+				
+				//unitarySBML = this.mainFrame.getEpithelium().getSBMLFilePath();
 				System.out.println("Unitary SBML" + unitarySBML);
 
 				String[] sourceFiles = {
