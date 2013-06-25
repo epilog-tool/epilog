@@ -331,7 +331,8 @@ public class StartPanel extends JPanel {
 						List<NodeInfo> prioritiesOfThisClass = new ArrayList<NodeInfo>();
 						for (String aux_3 : prioritiesElementsString) {
 							NodeInfo node = string2Node.get(aux_3);
-							prioritiesOfThisClass.add(node);
+							if (node != null)
+								prioritiesOfThisClass.add(node);
 						}
 
 						prioritiesClass.add(prioritiesOfThisClass);
@@ -364,9 +365,10 @@ public class StartPanel extends JPanel {
 						AbstractPerturbation a = setPerturbation(node, min, max);
 						perturbationsList.add(a);
 					}
-					
-					mainFrame.epithelium.setLoadedPerturbations(perturbationsList);
-					
+
+					mainFrame.epithelium
+							.setLoadedPerturbations(perturbationsList);
+
 				}
 
 				else if (line.contains("mutations")) {
@@ -398,15 +400,15 @@ public class StartPanel extends JPanel {
 						mutationsList
 								.add(new MultiplePerturbation(perturbation));
 						mlist.put(index, mutation);
-						
+
 						index = index + 1;
 					}
 					List aux = new ArrayList<AbstractPerturbation>();
-					for (AbstractPerturbation a : mlist.values()){
+					for (AbstractPerturbation a : mlist.values()) {
 						aux.add(a);
 					}
 					mainFrame.epithelium.setLoadedMutations(aux);
-					
+
 				} else if (line.contains("name")) {
 
 					int setNumber = Integer.parseInt(line.split(" ")[1]);
@@ -458,9 +460,9 @@ public class StartPanel extends JPanel {
 							perturbationsSet.get(setName)[instance] = p;
 						}
 					}
-					 if (perturbationsSet.get(setName)!=null)
-					 mainFrame.epithelium.setPerturbationSet(setName,
-					 perturbationsSet.get(setName));
+					if (perturbationsSet.get(setName) != null)
+						mainFrame.epithelium.setPerturbationSet(setName,
+								perturbationsSet.get(setName));
 
 				}
 
@@ -511,11 +513,11 @@ public class StartPanel extends JPanel {
 				} else {
 					unitarySBML = this.mainFrame.getEpithelium()
 							.getSBMLLoadPath();
-					
 
 				}
-				
-				//unitarySBML = this.mainFrame.getEpithelium().getSBMLFilePath();
+
+				// unitarySBML =
+				// this.mainFrame.getEpithelium().getSBMLFilePath();
 				System.out.println("Unitary SBML" + unitarySBML);
 
 				String[] sourceFiles = {
@@ -681,7 +683,6 @@ public class StartPanel extends JPanel {
 			if (this.mainFrame.perturbationsPanel.getMutationStrings() != null) {
 				String string_2 = ("PT " + "mutations" + " : ");
 
-
 				for (AbstractPerturbation s : this.mainFrame.perturbationsPanel
 						.getMutationStrings()) {
 					string_2 = string_2 + ("(" + s.toString() + ")");
@@ -689,7 +690,7 @@ public class StartPanel extends JPanel {
 				}
 				out.write(string_2);
 				out.write("\n");
-			
+
 			}
 			int numberOfSets = (this.mainFrame.epithelium.getPerturbationsSet()
 					.keySet().size() - 1);
@@ -754,7 +755,8 @@ public class StartPanel extends JPanel {
 		out.write("\n");
 
 		// Priorities
-		System.out.println(this.mainFrame.epithelium.getPrioritiesSet().keySet().size() );
+		System.out.println(this.mainFrame.epithelium.getPrioritiesSet()
+				.keySet().size());
 		if (this.mainFrame.epithelium.getPrioritiesSet().keySet().size() != 0) {
 			int numberOfSets = (this.mainFrame.epithelium.getPrioritiesSet()
 					.keySet().size() - 1);
