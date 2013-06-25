@@ -211,6 +211,7 @@ public class StartPanel extends JPanel {
 
 		Hashtable<String, NodeInfo> string2Node = new Hashtable<String, NodeInfo>();
 		Hashtable<Integer, AbstractPerturbation> mlist = new Hashtable<Integer, AbstractPerturbation>();
+		Hashtable<Integer, String> setPrioritiesDescription = new Hashtable<Integer, String>();
 
 		Hashtable<String, AbstractPerturbation[]> perturbationsSet = new Hashtable<String, AbstractPerturbation[]>();
 		List perturbationsList = new ArrayList<AbstractPerturbation>();
@@ -307,7 +308,7 @@ public class StartPanel extends JPanel {
 
 			if (identifier.contains("PR")) {
 
-				Hashtable<Integer, String> setDescription = new Hashtable<Integer, String>();
+				
 
 				// TODO: Change to while
 
@@ -316,10 +317,11 @@ public class StartPanel extends JPanel {
 				} else if (line.contains("name")) {
 					int setNumber = Integer.parseInt(line.split(" ")[1]);
 					String setName = line.split(" ")[3];
-					setDescription.put(setNumber, setName);
+					setPrioritiesDescription.put(setNumber, setName);
+
 				} else {
 					List<List<NodeInfo>> prioritiesClass = new ArrayList<List<NodeInfo>>();
-					String setName = line.split(" ")[1];
+					int setNumber = Integer.parseInt(line.split(" ")[1]);
 					String priorities = line.split(":")[1];
 					priorities = priorities.replace("]]", "]");
 					priorities = priorities.replace("[", "");
@@ -337,9 +339,11 @@ public class StartPanel extends JPanel {
 
 						prioritiesClass.add(prioritiesOfThisClass);
 					}
-
-					mainFrame.epithelium.setPrioritiesSet(setName,
-							prioritiesClass);
+					System.out.println(setNumber);
+					
+					if (setPrioritiesDescription.get(setNumber)!=null)
+					mainFrame.epithelium.setPrioritiesSet(
+							setPrioritiesDescription.get(setNumber), prioritiesClass);
 				}
 
 			}
