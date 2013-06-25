@@ -68,7 +68,7 @@ public class Topology implements Serializable {
 
 		int j = 0;
 		if (instance != 0)
-			j = instance / getWidth();
+			j = instance/getWidth();
 
 		return j;
 	}
@@ -251,27 +251,23 @@ public class Topology implements Serializable {
 
 		if (distance <= 0)
 			neighbours.add(new Integer(instance));
-		else if (distance == 1) {
-			System.out.println("@instance "+instance + "with distance: " + distance);
-			for (int k : oneDistanceNeighbours(instance)) {
+		else if (distance == 1)
+			for (int k : oneDistanceNeighbours(instance))
 				neighbours.add(new Integer(k));
-				System.out.print("-> added " +k + " ");
-			}
-		} else if (distance > 1) {
+
+		else if (distance > 1) {
 
 			Set<Integer> frontier = this.nDistanceNeighbours(instance,
 					distance - 1);
-			System.out.println("@instance "+instance + "with distance: " + distance);
+
 			for (Integer v : frontier)
 				for (Integer k : oneDistanceNeighbours(v))
 					neighbours.add(k);
-			
 
 		} // distance < 0 falls thru
 
-		System.out.println("   ");
-		System.err.println("\t results(" + instance + "," + distance + ") = "
-				+ neighbours);
+		// System.err.println("\t results(" + instance + "," + distance + ") = "
+		// + neighbours);
 		return neighbours;
 
 	}
