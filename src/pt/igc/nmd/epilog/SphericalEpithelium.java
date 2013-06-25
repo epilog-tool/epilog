@@ -33,23 +33,22 @@ public class SphericalEpithelium implements Epithelium {
 	private byte[] initialState = null;
 	private byte grid[][]; // {instance , {nodeindex , value}}
 
-	AbstractPerturbation[] perturbations = null;
+	private AbstractPerturbation[] perturbations = null;
 	private AbstractPerturbation activePerturbation;
-
-	private Grid envGrid;
-	private Grid initialGrid;
-	private PerturbedGrid perturbedGrid;
+	
+	public List loadedPerturbations;
+	public List loadedMutations;
 
 	private String selectedPriority;
 	private String selectedPerturbation;
+	private String selectedInputSet;
+	private String selectedInitialSet;
 
 	private Hashtable<String, List<List<NodeInfo>>> prioritiesSet;
-
-	// private Hashtable<String, AbstractPerturbation> perturbationsList;
-
-	private Hashtable<String, List<List<NodeInfo>>> perturbationsSet;
-	private Hashtable<String, List<List<NodeInfo>>> initialSet;
-	private Hashtable<String, List<List<NodeInfo>>> inputSet;
+	private Hashtable<String, AbstractPerturbation[]> perturbationsSet;
+	private Hashtable<String, Grid> initialStateSet;
+	private Hashtable<String, Grid> inputsSet;
+	private Hashtable<String, Hashtable<NodeInfo, List<String>>> integrationInputsSet;
 
 	private Topology topology = null;
 
@@ -59,10 +58,13 @@ public class SphericalEpithelium implements Epithelium {
 
 		this.topology = topology;
 		prioritiesSet = new Hashtable<String, List<List<NodeInfo>>>();
-		// perturbationsList = new Hashtable<String, AbstractPerturbation>();
-		perturbationsSet = new Hashtable<String, List<List<NodeInfo>>>();
-		initialSet = new Hashtable<String, List<List<NodeInfo>>>();
-		inputSet = new Hashtable<String, List<List<NodeInfo>>>();
+		perturbationsSet = new Hashtable<String, AbstractPerturbation[]>();
+		initialStateSet = new Hashtable<String, Grid>();
+		inputsSet = new Hashtable<String, Grid>();
+		perturbations = new AbstractPerturbation[topology.getNumberInstances()];
+		integrationInputsSet = new Hashtable<String, Hashtable<NodeInfo, List<String>>>();
+		loadedPerturbations = new ArrayList<AbstractPerturbation>();
+		loadedMutations = new ArrayList<AbstractPerturbation>();
 	}
 
 	// SBML INFORMATION
@@ -72,11 +74,13 @@ public class SphericalEpithelium implements Epithelium {
 	}
 
 	public String getSBMLFilePath() {
+		// System.out.println(SBMLFilePath);
 		return SBMLFilePath;
 	}
 
 	public void setSBMLPath(String file) {
 		SBMLFilePath = file;
+
 	}
 
 	public void setSBMLFilename(String string) {
@@ -93,12 +97,12 @@ public class SphericalEpithelium implements Epithelium {
 
 	// COLORS
 
+	// TODO: CHange this to random colors
 	private void initializeColors() {
 
 		this.nodeColor = new Color[getUnitaryModel().getNodeOrder().size()];
 		for (int i = 0; i < this.nodeColor.length; i++)
-			this.nodeColor[i] = colors[i < colors.length ? i
-					: colors.length - 1];
+			this.nodeColor[i] = Color.white;
 	}
 
 	public void setColor(NodeInfo node, Color color) {
@@ -106,7 +110,9 @@ public class SphericalEpithelium implements Epithelium {
 	}
 
 	public Color getColor(NodeInfo node) {
-		return nodeColor[getUnitaryModel().getNodeOrder().indexOf(node)];
+		// System.out.println(getUnitaryModel().getNodeOrder().indexOf(node)+
+		// "  " +node);
+		return this.nodeColor[getUnitaryModel().getNodeOrder().indexOf(node)];
 	}
 
 	// DISPLAY COMPONENTS
@@ -234,6 +240,7 @@ public class SphericalEpithelium implements Epithelium {
 			initializeInitialState();
 			initializeGrid();
 			initializePerturbationsGrid();
+			noPerturbations();
 		}
 
 	}
@@ -309,36 +316,6 @@ public class SphericalEpithelium implements Epithelium {
 		return this.initialState[getUnitaryModel().getNodeOrder().indexOf(node)];
 	}
 
-	public void createGrids() {
-
-		List<NodeInfo> listEnvNodes = new ArrayList<NodeInfo>();
-		List<NodeInfo> listInitialConditions = new ArrayList<NodeInfo>();
-
-		for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
-			if (node.isInput())
-				listEnvNodes.add(node);
-			else
-				listInitialConditions.add(node);
-		}
-		this.envGrid = new Grid(topology.getNumberInstances(), listEnvNodes);
-		this.initialGrid = new Grid(topology.getNumberInstances(),
-				listInitialConditions);
-	}
-
-	public void initializeGrid(Grid grid) {
-		for (int i = 0; i < topology.getNumberInstances(); i++) {
-			this.grid[i] = new byte[grid.getListNodes().size()];
-			for (NodeInfo node : grid.getListNodes())
-				this.grid[i][grid.getListNodes().indexOf(node)] = 0;
-		}
-	}
-
-	public void initializeGrids() {
-		createGrids();
-		initializeGrid(this.envGrid);
-		initializeGrid(this.initialGrid);
-	}
-
 	public void setGrid(Integer instance, NodeInfo node, byte value) {
 		this.grid[instance][getUnitaryModel().getNodeOrder().indexOf(node)] = value;
 
@@ -347,6 +324,11 @@ public class SphericalEpithelium implements Epithelium {
 	/*
 	 * Perturbations
 	 */
+
+	public void noPerturbations() {
+		perturbationsSet.put("none",
+				new AbstractPerturbation[topology.getNumberInstances()]);
+	}
 
 	public AbstractPerturbation getActivePerturbation() {
 		return activePerturbation;
@@ -360,23 +342,181 @@ public class SphericalEpithelium implements Epithelium {
 		perturbations = new AbstractPerturbation[topology.getNumberInstances()];
 	}
 
-	public void setPerturbedInstance(int i, int j) {
-
+	public void setPerturbedInstance(int instance) {
 		AbstractPerturbation perturbation = getActivePerturbation();
-		int instance = topology.coords2Instance(i, j);
 		perturbations[instance] = perturbation;
-		System.out.println(instance + " " + perturbation);
+
 	}
 
 	public boolean isCellPerturbed(int instance) {
-		if (perturbations[instance] == null)
+		if (getInstancePerturbation(instance) == null)
+			return false;
+		else
+			return true;
+	}
+
+	public boolean isCellPerturbedDraw(int instance) {
+		if (getInstancePerturbationDraw(instance) == null)
 			return false;
 		else
 			return true;
 	}
 
 	public AbstractPerturbation getInstancePerturbation(int instance) {
+		// System.out.println(selectedPerturbation);
+		return getPerturbationsSet().get(selectedPerturbation)[instance];
+		// return perturbations[instance];
+	}
+
+	public AbstractPerturbation getInstancePerturbationDraw(int instance) {
 		return perturbations[instance];
+	}
+
+	public void setPerturbationSet(String name) {
+		AbstractPerturbation[] perturbations_aux = new AbstractPerturbation[topology
+				.getNumberInstances()];
+		for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
+			perturbations_aux[instance] = perturbations[instance];
+		}
+
+		perturbationsSet.put(name, perturbations_aux);
+	}
+	
+	public void setPerturbationSet(String name, AbstractPerturbation[] perturbations_1) {
+		perturbationsSet.put(name, perturbations_1);
+		System.out.println("Added a perturbationSEt @spithelium");
+	}
+	
+
+	public Hashtable<String, AbstractPerturbation[]> getPerturbationsSet() {
+		return perturbationsSet;
+	}
+
+	public String getSelectedPerturbation() {
+		return selectedPerturbation;
+	}
+	
+	public void setLoadedPerturbations(List a){
+		loadedPerturbations = a;
+	}
+	
+	public void setLoadedMutations(List a){
+		loadedMutations = a;
+	}
+
+	// Sets the selected perturbation from the saved Set
+	public void setSelectedPerturbation(String string) {
+		selectedPerturbation = string;
+	}
+
+	/*
+	 * Initial State
+	 */
+	public Hashtable<String, Grid> getInitialStateSet() {
+		return initialStateSet;
+	}
+
+	public void setInitalConditionsSet(String name) {
+
+		List<NodeInfo> properComponents = new ArrayList();
+		for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
+			if (!node.isInput()) {
+				properComponents.add(node);
+			}
+		}
+
+		Grid initialStateGrid = new Grid(topology.getNumberInstances(),
+				properComponents);
+
+		for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
+			for (NodeInfo node : properComponents) {
+				byte value = getGridValue(instance, node);
+				initialStateGrid.setGrid(instance, node, value);
+			}
+		}
+		initialStateSet.put(name, initialStateGrid);
+	}
+
+	public void setSelectedInitialSet(String string) {
+		selectedInitialSet = string;
+		Grid initial_aux = initialStateSet.get(string);
+		if (initial_aux != null)
+			combineGrids(initial_aux);
+	}
+
+	/*
+	 * Inputs
+	 */
+	public Hashtable<String, Grid> getInputsSet() {
+		return inputsSet;
+	}
+
+	public void setInputsSet(String name) {
+
+		List<NodeInfo> inputs = new ArrayList();
+		for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
+			if (node.isInput() & !isIntegrationComponent(node)) {
+				inputs.add(node);
+			}
+		}
+
+		Grid inputsGrid = new Grid(topology.getNumberInstances(), inputs);
+
+		for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
+			for (NodeInfo node : inputs) {
+				byte value = getGridValue(instance, node);
+				inputsGrid.setGrid(instance, node, value);
+			}
+		}
+		inputsSet.put(name, inputsGrid);
+	}
+
+	public void setInputsIntegrationSet(String name) {
+
+		List<NodeInfo> integrationNodes = new ArrayList();
+		List<IntegrationExpression> expression = new ArrayList();
+		Hashtable<NodeInfo, List<String>> test = new Hashtable<NodeInfo, List<String>>();
+
+		for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
+			if (isIntegrationComponent(node)) {
+				integrationNodes.add(node);
+				List<String> aux = new ArrayList<String>();
+				for (byte value = 1; value < node.getMax() + 1; value++) {
+					aux.add(getIntegrationFunction(node, value));
+				}
+				test.put(node, aux);
+			}
+		}
+		integrationInputsSet.put(name, test);
+	}
+
+	public void combineGrids(Grid grid) {
+		for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
+			for (NodeInfo node : grid.getListNodes()) {
+				this.grid[instance][getUnitaryModel().getNodeOrder().indexOf(
+						node)] = grid.getValue(instance, node);
+			}
+		}
+	}
+
+	public void setSelectedInputSet(String string) {
+		selectedInputSet = string;
+		Grid input_aux = inputsSet.get(string);
+		if (input_aux != null)
+			combineGrids(input_aux);
+		Hashtable<NodeInfo, List<String>> aux = integrationInputsSet
+				.get(string);
+		if (aux != null)
+			for (NodeInfo node : aux.keySet()) {
+				setIntegrationComponent(getUnitaryModel().getNodeOrder()
+						.indexOf(node), true);
+				for (int j = 0; j < aux.get(node).size(); j++) {
+					String expression = aux.get(node).get(j);
+					byte value = (byte) (j+1);
+					setIntegrationFunctions(node, value, expression);
+				}
+			}
+
 	}
 
 	/*

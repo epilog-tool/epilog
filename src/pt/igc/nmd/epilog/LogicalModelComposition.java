@@ -31,7 +31,7 @@ public class LogicalModelComposition {
 	private LogicalModel composedModel = null;
 	private Map<Map.Entry<NodeInfo, Integer>, NodeInfo> old2New = new HashMap<Map.Entry<NodeInfo, Integer>, NodeInfo>();
 	private Map<Map.Entry<String, Integer>, NodeInfo> oldString2New = new HashMap<Map.Entry<String, Integer>, NodeInfo>();
-	private Map<NodeInfo, Map.Entry<NodeInfo, Integer>> new2Old = new HashMap<NodeInfo, Map.Entry<NodeInfo, Integer>>();
+	public Map<NodeInfo, Map.Entry<NodeInfo, Integer>> new2Old = new HashMap<NodeInfo, Map.Entry<NodeInfo, Integer>>();
 	private Map<Integer, List<NodeInfo>> instanceNodes = new HashMap<Integer, List<NodeInfo>>();
 
 	public LogicalModelComposition(MainFrame mainPanel) {

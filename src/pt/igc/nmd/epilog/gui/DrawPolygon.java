@@ -32,9 +32,9 @@ public class DrawPolygon extends JPanel {
 
 	public void paintComponent(Graphics g) {
 
-		// Graphics2D g2 = (Graphics2D) g;
-		// BasicStroke stroke = new BasicStroke(1.0f);
-		// BasicStroke perturbedStroke = new BasicStroke(3.0f);
+		Graphics2D g2 = (Graphics2D) g;
+		BasicStroke stroke = new BasicStroke(1.0f);
+		BasicStroke perturbedStroke = new BasicStroke(3.0f);
 
 		int XX = 0, YY = 0, max = 0;
 		try {
@@ -93,6 +93,8 @@ public class DrawPolygon extends JPanel {
 						polygon2.addPoint((int) (x), (int) (y));
 					}
 
+					int instance = this.mainFrame.topology
+							.coords2Instance(k, j);
 					if (!this.mainFrame.simulation.isRunning()) {
 						g.setColor(Color.white); // Hexagons Color Keep white
 						g.fillPolygon(polygon2);
@@ -102,11 +104,16 @@ public class DrawPolygon extends JPanel {
 
 					else {
 						g.setColor(this.mainFrame.simulation
-								.getCoordinateCurrentColor(k, j));
-						g.fillPolygon(polygon2);
-						g.setColor(Color.black);
-						g.drawPolygon(polygon2);
-					}
+								.getCoordinateCurrentColor(instance));
+						g2.setStroke(stroke);
+						if (mainFrame.epithelium.isCellPerturbed(instance)) {
+							g2.setStroke(perturbedStroke);
+						}
+							g.fillPolygon(polygon2);
+							g.setColor(Color.black);
+							g.drawPolygon(polygon2);
+						}
+					
 
 					if (k % 2 == 0)
 						centerY = (j + 1 + 0.5) * radius * Math.sqrt(3.0);
@@ -119,7 +126,10 @@ public class DrawPolygon extends JPanel {
 		}
 	}
 
-	public void drawHexagon(int i, int j, Graphics g, Color color) {
+	public void drawHexagon(int instance, Graphics g, Color color) {
+
+		int i = this.mainFrame.topology.instance2i(instance);
+		int j = this.mainFrame.topology.instance2j(instance);
 
 		Graphics2D g2 = (Graphics2D) g;
 		BasicStroke stroke = new BasicStroke(1.0f);
@@ -148,17 +158,37 @@ public class DrawPolygon extends JPanel {
 			polygon2.addPoint((int) (x), (int) (y));
 		}
 
-		if (mainFrame.isDrawingCells()) {
+		if (this.mainFrame.isDrawingCells()) {
+			// if (mainFrame.epithelium.isCellPerturbed(instance))
+			// g2.setStroke(perturbedStroke);
+			g2.setStroke(stroke);
 			g2.setColor(color);
 			g2.fillPolygon(polygon2);
 			g2.setColor(Color.black);
 			g2.drawPolygon(polygon2);
-		} else if (mainFrame.isDrawingPerturbations()) {
-			g2.setStroke(perturbedStroke);
+		} else if (this.mainFrame.isDrawingPerturbations()) {
+			g2.setStroke(stroke);
+			color = color.white;
+			if (mainFrame.epithelium.isCellPerturbedDraw(instance)) {
+				g2.setStroke(perturbedStroke);
+
+				if (mainFrame.epithelium.getActivePerturbation() != null)
+					color = mainFrame.perturbationsPanel.perturbationColor
+							.get(mainFrame.epithelium.getActivePerturbation());
+			}
 			g2.setColor(color);
 			g2.fillPolygon(polygon2);
 			g2.setColor(Color.black);
 			g2.drawPolygon(polygon2);
+		} else {
+			g2.setStroke(stroke);
+			if (mainFrame.epithelium.isCellPerturbed(instance)) {
+				g2.setStroke(perturbedStroke);
+				g2.setColor(color);
+				g2.fillPolygon(polygon2);
+				g2.setColor(Color.black);
+				g2.drawPolygon(polygon2);
+			}
 		}
 	}
 

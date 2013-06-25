@@ -1,6 +1,7 @@
 package pt.igc.nmd.epilog;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -10,6 +11,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -43,20 +45,20 @@ public class PerturbationsPanel extends JPanel {
 	public byte minValue;
 	public byte maxValue;
 	public Hashtable<String, NodeInfo> string2Node;
-	private JLabel showPerturbation;
 	private JPanel centerCenterPanel;
-	private String perturbationString = "";
 	private JComboBox componentBox;
 	private int selectedIndex;
 	private JPanel centerPanelC11;
 	private JPanel centerPanelC12;
-	private JTextField namePerturbation;
+	private JPanel rightPanel;
 	private JTextField setName;
-	private JComboBox sets;
-	private JComboBox mutationsList;
+	private JComboBox mutationsSetsCombo;
+	private JComboBox mutationsListCombo;
 	private DefaultListModel listModel;
 	private List<Integer> selectedIndexes = null;
 	private JList perturbationsList;
+
+	public Hashtable<AbstractPerturbation, Color> perturbationColor = null;
 
 	List<AbstractPerturbation> perturbation = null;
 
@@ -69,7 +71,7 @@ public class PerturbationsPanel extends JPanel {
 	public void init() {
 
 		// Color backgroundColor = mainFrame.getBackground();
-
+		perturbationColor = new Hashtable<AbstractPerturbation, Color>();
 		setLayout(new BorderLayout());
 
 		// PAGE START PANEL
@@ -119,17 +121,16 @@ public class PerturbationsPanel extends JPanel {
 
 		JPanel endPanel = new JPanel(layout);
 
-		JButton buttonAdd = new JButton("+");
+		JButton buttonSetAdd = new JButton("+");
 		JButton buttonClear = new JButton("-");
 		setName = new JTextField("", 15);
-		sets = new JComboBox();
-		sets.setPreferredSize(new Dimension(setName.getPreferredSize().width,
-				sets.getPreferredSize().height));
+		mutationsSetsCombo = new JComboBox();
+		mutationsSetsCombo.setPreferredSize(new Dimension(setName
+				.getPreferredSize().width, mutationsSetsCombo
+				.getPreferredSize().height));
 
-		buttonAdd.addActionListener(new ActionListener() {
+		buttonSetAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Add the selected grid to the sets of initial
-				// conditions with the name of the textfield
 				addElementToSet();
 			}
 		});
@@ -140,21 +141,26 @@ public class PerturbationsPanel extends JPanel {
 			}
 		});
 
-		sets.addActionListener(new ActionListener() {
+		mutationsSetsCombo.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO: Choose a set and insert the name of that set on the
-				// textfield
 				loadInitialconditions();
 			}
 		});
 
 		endPanel.add(setName);
-		endPanel.add(buttonAdd);
-		endPanel.add(sets);
+		endPanel.add(buttonSetAdd);
+		endPanel.add(mutationsSetsCombo);
 		endPanel.add(buttonClear);
 
 		add(endPanel, BorderLayout.PAGE_END);
+
+		// Right Panel
+
+		rightPanel = new JPanel();
+		rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+
+		add(rightPanel, BorderLayout.LINE_END);
 
 		// CenterPanel
 
@@ -167,6 +173,12 @@ public class PerturbationsPanel extends JPanel {
 		JPanel centerC5 = new JPanel(new BorderLayout());
 
 		listModel = new DefaultListModel();
+		
+		if (mainFrame.epithelium.loadedPerturbations!=null)
+			for (int i = 0;i< mainFrame.epithelium.loadedPerturbations.size();i++)
+				listModel.addElement(mainFrame.epithelium.loadedPerturbations.get(i));
+		
+		
 		perturbationsList = new JList(listModel);
 
 		perturbationsList
@@ -176,22 +188,6 @@ public class PerturbationsPanel extends JPanel {
 		this.add(new JScrollPane(perturbationsList));
 
 		final ListSelectionModel lsm = perturbationsList.getSelectionModel();
-
-		perturbationsList.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-
-				// selectedIndexes = new ArrayList<Integer>();
-				// // Find out which indexes are selected.
-				// int minIndex = lsm.getMinSelectionIndex();
-				// int maxIndex = lsm.getMaxSelectionIndex();
-				// for (int i = minIndex; i <= maxIndex; i++) {
-				// if (lsm.isSelectedIndex(i)) {
-				// selectedIndexes.add(i);
-				// setPriorityClassActivated(e.getSource());
-				// }
-				// }
-			}
-		});
 
 		centerPanelC11 = new JPanel(layout);
 		centerPanelC12 = new JPanel(layout);
@@ -217,21 +213,28 @@ public class PerturbationsPanel extends JPanel {
 
 		for (NodeInfo node : mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder()) {
-			componentBox.addItem(node.getNodeID());
-			string2Node.put(node.getNodeID(), node);
+			if (!node.isInput()) {
+				componentBox.addItem(node.getNodeID());
+				string2Node.put(node.getNodeID(), node);
+			}
 		}
 
 		componentBox.setSelectedItem(mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder().get(0).getNodeID());
 		selectedPerturbedComponent = mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder().get(0).getNodeID();
+		setMinValue((byte) 0);
+		setMaxValue(mainFrame.epithelium.getUnitaryModel().getNodeOrder()
+				.get(0).getMax());
 
 		JComboBox minValueBox = getPerturbedExpressionCombo();
 		JComboBox maxValueBox = getPerturbedExpressionCombo();
 
-		mutationsList = new JComboBox();
-
-		// showPerturbation = new JLabel();
+		mutationsListCombo = new JComboBox();
+		
+		if (mainFrame.epithelium.loadedMutations!=null)
+			for (int i = 0;i< mainFrame.epithelium.loadedMutations.size();i++)
+				mutationsListCombo.addItem(mainFrame.epithelium.loadedMutations.get(i));
 
 		maxValueBox.setSelectedItem(maxValueBox.getItemCount() - 1);
 
@@ -244,6 +247,8 @@ public class PerturbationsPanel extends JPanel {
 				setIndex(src.getSelectedIndex());
 				setSelectedPerturbedComponent((String) src.getSelectedItem());
 				resetMinAndMaxCombo(centerCenterPanel);
+				setMinValue((byte) 0);
+				setMaxValue(src.getSelectedIndex());
 			}
 		});
 
@@ -253,7 +258,7 @@ public class PerturbationsPanel extends JPanel {
 				JComboBox src = (JComboBox) arg0.getSource();
 				setMinValue((byte) Integer.parseInt(src.getSelectedItem()
 						.toString()));
-				System.out.println("minValue" + minValue);
+				// System.out.println("minValue" + minValue);
 			}
 		});
 
@@ -263,7 +268,7 @@ public class PerturbationsPanel extends JPanel {
 				JComboBox src = (JComboBox) arg0.getSource();
 				setMaxValue((byte) Integer.parseInt(src.getSelectedItem()
 						.toString()));
-				System.out.println("maxValue" + maxValue);
+				// System.out.println("maxValue" + maxValue);
 			}
 		});
 
@@ -295,10 +300,16 @@ public class PerturbationsPanel extends JPanel {
 
 		deletePerturbation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				// perturbationsList.remove(selectedIndexs);
+				for (int i = 0; i < perturbationsList.getModel().getSize(); i++) {
+					if (!selectedIndexes.contains(i)) {
+						// System.out.println(i);
+					}
+				}
 			}
 		});
 
-		mutationsList.addActionListener(new ActionListener() {
+		mutationsListCombo.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JComboBox src = (JComboBox) arg0.getSource();
@@ -314,7 +325,7 @@ public class PerturbationsPanel extends JPanel {
 		centerPanelC31.add(perturbationsList, BorderLayout.CENTER);
 		centerPanelC31.add(deletePerturbation, BorderLayout.PAGE_END);
 
-		centerPanelC51.add(mutationsList, BorderLayout.CENTER);
+		centerPanelC51.add(mutationsListCombo, BorderLayout.CENTER);
 		centerPanelC51.add(deleteMutation, BorderLayout.PAGE_END);
 
 		centerC1.add(componentBox, BorderLayout.PAGE_START);
@@ -338,44 +349,60 @@ public class PerturbationsPanel extends JPanel {
 
 	// Methods
 
+	private JPanel initRightPanel() {
+
+		if (mutationsListCombo != null)
+			rightPanel.removeAll();
+		for (int i = 0; i < mutationsListCombo.getItemCount(); i++) {
+			JPanel auxiliaryPanel = new JPanel();
+			JLabel test = new JLabel();
+			JButton colorBox = new JButton();
+			colorBox.setBackground(mainFrame.epithelium.colors[i]);
+			test.setText(mutationsListCombo.getItemAt(i).toString());
+
+			perturbationColor.put(
+					(AbstractPerturbation) mutationsListCombo.getItemAt(i),
+					mainFrame.epithelium.colors[i]);
+			auxiliaryPanel.add(test);
+			auxiliaryPanel.add(colorBox);
+			rightPanel.add(auxiliaryPanel);
+		}
+		return rightPanel;
+
+	}
+
 	private void setPerturbation(String selectedPerturbedComponent,
 			int minValue, int maxValue) {
 		NodeInfo node = string2Node.get(selectedPerturbedComponent);
 		if (minValue == maxValue) {
 			FixedValuePerturbation a = new FixedValuePerturbation(node,
 					minValue);
-			listModel.addElement(a);
+			if (!listModel.contains(a))
+				listModel.addElement(a);
 
 		} else {
 			RangePerturbation a = new RangePerturbation(node, minValue,
 					maxValue);
-			listModel.addElement(a);
+			if (!listModel.contains(a))
+				listModel.addElement(a);
 		}
 	}
-
-	// private void removeComponentFromBox() {
-	// componentBox.removeItemAt(selectedIndex);
-	// }
 
 	private void setIndex(int i) {
 		selectedIndex = i;
 	}
 
-	// public void setShowPerturbation(String string) {
-	// perturbationString = string;
-	// showPerturbation.setText(perturbationString);
-	//
-	// centerCenterPanel.repaint();
-	// centerCenterPanel.revalidate();
-	// }
-
 	public void setMinValue(byte min) {
 		minValue = min;
-		System.out.println(min);
 	}
 
 	public void setMaxValue(byte max) {
 		maxValue = max;
+	}
+
+	public void setMaxValue(int index) {
+		maxValue = mainFrame.getEpithelium().getUnitaryModel().getNodeOrder()
+				.get(index).getMax();
 	}
 
 	protected void resetMinAndMaxCombo(JPanel centerPanel) {
@@ -433,16 +460,21 @@ public class PerturbationsPanel extends JPanel {
 	}
 
 	public void clearAllCells() {
-		mainFrame.epithelium.initializeGrid();
+		for (int instance = 0; instance < mainFrame.topology
+				.getNumberInstances(); instance++) {
+			mainFrame.epithelium.setActivePerturbation(null);
+			mainFrame.epithelium.setPerturbedInstance(instance);
+					
+		}
+		repaint();
 		fillHexagons();
 	}
 
 	public void markAllCells() {
 
-		for (int i = 0; i < mainFrame.topology.getWidth(); i++) {
-			for (int j = 0; j < mainFrame.topology.getHeight(); j++) {
-				mainFrame.epithelium.setInitialState(i, j);
-			}
+		for (int instance = 0; instance < this.mainFrame.topology
+				.getNumberInstances(); instance++) {
+			mainFrame.epithelium.setPerturbedInstance(instance);
 		}
 		fillHexagons();
 	}
@@ -459,23 +491,49 @@ public class PerturbationsPanel extends JPanel {
 
 		MultiplePerturbation mutation = new MultiplePerturbation(perturbation);
 
-		mutationsList.addItem(mutation);
+		mutationsListCombo.addItem(mutation);
+		rightPanel = initRightPanel();
+		this.repaint();
+
 	}
 
 	private void setActivePerturbation(JComboBox combo) {
-		mainFrame.epithelium.setActivePerturbation((AbstractPerturbation) combo.getSelectedItem());
+		mainFrame.epithelium.setActivePerturbation((AbstractPerturbation) combo
+				.getSelectedItem());
 	}
 
 	// ENd Panel Auxiliary Functions
 
-
 	private void addElementToSet() {
 		String name = setName.getText();
-		sets.addItem(name);
-		// mainFrame.epithelium.setPerturbationsSet(name,finalPerturbation());
+		if (!mainFrame.epithelium.getPerturbationsSet().containsKey(name))
+			mutationsSetsCombo.addItem(name);
+		mainFrame.epithelium.setPerturbationSet(name);
 	}
 
 	private void loadInitialconditions() {
-		setName.setText((String) sets.getSelectedItem());
+		setName.setText((String) mutationsSetsCombo.getSelectedItem());
+	}
+
+	// Saving Auxiliary Functions
+
+	public String[] getPerturbationsStrings() {
+		String[] perturbationsString = new String[listModel.getSize()];
+
+		for (int i = 0; i < listModel.getSize(); i++) {
+			perturbationsString[i]=listModel.getElementAt(i).toString();
+		}
+		return perturbationsString;
+	}
+	
+	
+	public AbstractPerturbation[] getMutationStrings(){
+		AbstractPerturbation[] mutation = new AbstractPerturbation[mutationsListCombo.getItemCount()];
+	
+		for (int i = 0; i < mutationsListCombo.getItemCount(); i++) {
+			mutation[i]=(AbstractPerturbation) mutationsListCombo.getItemAt(i);
+		}
+		
+		return mutation;
 	}
 }

@@ -37,23 +37,27 @@ public class GlobalModel {
 		this.epithelium = epithelium;
 		if (needsComposedModel && epithelium.getComposedModel() == null)
 			mainFrame.getLogicalModelComposition().createComposedModel();
+		this.composedModelPresent = needsComposedModel;
 	}
 
 	public Grid getNextState(Grid currentState) {
 
-		String key = mainFrame.epithelium.getSelectedPriority();
-		
-		List<List<NodeInfo>> priorities = mainFrame.epithelium
+		String key = this.mainFrame.epithelium.getSelectedPriority();
+
+		List<List<NodeInfo>> priorities = this.mainFrame.epithelium
 				.getPrioritiesSet().get(key);
-		
-		if (priorities==null){
+
+		if (priorities == null) {
 			priorities = new ArrayList<List<NodeInfo>>();
-			priorities.add(mainFrame.epithelium.getUnitaryModel().getNodeOrder());
+			priorities.add(this.mainFrame.epithelium.getUnitaryModel()
+					.getNodeOrder());
 		}
-		
+
 		Grid nextState = currentState;
+		//System.out.println("Current STate:" + currentState.getValue(1, epithelium.getUnitaryModel().getNodeOrder().get(0)));
 		for (List<NodeInfo> nodes : priorities) {
 			nextState = getNextStatePriorities(currentState, nodes);
+			//System.out.println("next State:" + nextState.getValue(1, epithelium.getUnitaryModel().getNodeOrder().get(0)));
 			if (!currentState.equals(nextState)) {
 				break;
 			}
@@ -62,32 +66,48 @@ public class GlobalModel {
 	}
 
 	private Grid getNextStatePriorities(Grid currentState, List<NodeInfo> nodes) {
+
 		if (composedModelPresent)
 			return getNextStateFromComposedModel(currentState, nodes);
 		else
 			return getNextStateUsingCellularAutomata(currentState, nodes);
 	}
 
-	private Grid getNextStateFromComposedModel(Grid currentState, List<NodeInfo> nodes) {
-		
-		LogicalModel composedModel = epithelium.getComposedModel();
+	private Grid getNextStateFromComposedModel(Grid currentState,
+			List<NodeInfo> nodes) {
+
+		System.out.println("I am using the composed Model and the nodes of this priority list are: " + nodes);
+
+		LogicalModel composedModel = this.epithelium.getComposedModel();
 		Grid nextState = new Grid(currentState.getNumberInstances(),
 				currentState.getListNodes());
 
 		byte[] composedState = new byte[composedModel.getNodeOrder().size()];
 
 		for (NodeInfo node : composedModel.getNodeOrder())
+			
 			composedState[composedModel.getNodeOrder().indexOf(node)] = currentState
-					.getValue(mainFrame.getLogicalModelComposition()
-							.getOriginalInstance(node), mainFrame
+					.getValue(this.mainFrame.getLogicalModelComposition()
+							.getOriginalInstance(node), this.mainFrame
 							.getLogicalModelComposition().getOriginalNode(node));
 
 		for (NodeInfo node : composedModel.getNodeOrder()) {
-
-			if (!nodes.contains(node))
+			
+			if (!nodes.contains(this.mainFrame.getLogicalModelComposition().new2Old.get(node).getKey())) {
+				
+				int index = composedModel.getNodeOrder().indexOf(node);
+				byte next = composedState[index];
+				
+				nextState.setGrid(mainFrame.getLogicalModelComposition()
+				.getOriginalInstance(node).intValue(), mainFrame
+				.getLogicalModelComposition().getOriginalNode(node), next);
+				
 				continue;
+			}
+			
 			int index = composedModel.getNodeOrder().indexOf(node);
 		
+
 			byte next = 0;
 			byte target;
 			byte current;
@@ -95,29 +115,46 @@ public class GlobalModel {
 			current = composedState[index];
 			target = composedModel.getTargetValue(index, composedState);
 
-			next = computeNextValue(current, target, mainFrame
-					.getLogicalModelComposition().getOriginalNode(node), mainFrame.getLogicalModelComposition()
-					.getOriginalInstance(node).intValue());
+			next = computeNextValue(
+					current,
+					target,
+					mainFrame.getLogicalModelComposition()
+							.getOriginalNode(node),
+					mainFrame.getLogicalModelComposition()
+							.getOriginalInstance(node).intValue());
 
 			nextState.setGrid(mainFrame.getLogicalModelComposition()
 					.getOriginalInstance(node).intValue(), mainFrame
 					.getLogicalModelComposition().getOriginalNode(node), next);
-			
+
 		}
 
 		for (NodeInfo node : composedModel.getExtraComponents()) {
 
-			if (!nodes.contains(node))
+			if (!nodes.contains(this.mainFrame.getLogicalModelComposition().new2Old.get(node).getKey())) {
+				
+				int index = composedModel.getExtraComponents().indexOf(node);
+				byte next = composedState[index];
+				
+				nextState.setGrid(mainFrame.getLogicalModelComposition()
+				.getOriginalInstance(node).intValue(), mainFrame
+				.getLogicalModelComposition().getOriginalNode(node), next);
+				
 				continue;
-					
+			}
+
 			byte current = 0;
 			byte next = 0;
 			int index = composedModel.getExtraComponents().indexOf(node);
 			byte target = composedModel.getExtraValue(index, composedState);
-			
-			next = computeNextValue(current, target, mainFrame
-					.getLogicalModelComposition().getOriginalNode(node), mainFrame.getLogicalModelComposition()
-					.getOriginalInstance(node).intValue());
+
+			next = computeNextValue(
+					current,
+					target,
+					mainFrame.getLogicalModelComposition()
+							.getOriginalNode(node),
+					mainFrame.getLogicalModelComposition()
+							.getOriginalInstance(node).intValue());
 
 			nextState.setGrid(mainFrame.getLogicalModelComposition()
 					.getOriginalInstance(node).intValue(), mainFrame
@@ -127,8 +164,12 @@ public class GlobalModel {
 		return nextState;
 	}
 
-	private Grid getNextStateUsingCellularAutomata(Grid currentState, List<NodeInfo> nodes) {
-
+	private Grid getNextStateUsingCellularAutomata(Grid currentState,
+			List<NodeInfo> nodes) {
+		
+		System.out.println("I am using the cellular Automata and the nodes of this priority list are: " + nodes);
+		
+		
 		Grid nextState = new Grid(currentState.getNumberInstances(),
 				currentState.getListNodes());
 
@@ -161,7 +202,7 @@ public class GlobalModel {
 				evaluator[index] = new IntegrationFunctionEvaluation(
 						expressions[index], context);
 
-			for (int instance = 1; instance < mainFrame.topology
+			for (int instance = 0; instance < mainFrame.topology
 					.getNumberInstances(); instance++) {
 
 				byte target = 0;
@@ -176,7 +217,7 @@ public class GlobalModel {
 				currentState.setGrid(instance, integrationInput, target);
 			}
 		}
-
+		
 		// update proper components
 
 		for (int instance = 0; instance < mainFrame.topology
@@ -184,10 +225,15 @@ public class GlobalModel {
 			for (NodeInfo node : epithelium.getUnitaryModel().getNodeOrder()) {
 
 				if (!nodes.contains(node))
+				{
+					byte next = currentState.getValue(instance,node);
+					nextState.setGrid(instance, node, next);
 					continue;
-				
+				}
+
 				int index = epithelium.getUnitaryModel().getNodeOrder()
 						.indexOf(node);
+
 				byte next = 0;
 				byte target;
 				byte current;
@@ -198,52 +244,57 @@ public class GlobalModel {
 				target = epithelium.getUnitaryModel().getTargetValue(index,
 						cellState);
 
-				next = computeNextValue(current,target,node,instance);
-				
-				nextState.setGrid(instance, node, next);
+				next = computeNextValue(current, target, node, instance);
 
+				nextState.setGrid(instance, node, next);
+				//System.out.println(nextState.getValue(1, epithelium.getUnitaryModel().getNodeOrder().get(0)));
+				
 			}
 		}
 
 		return nextState;
 	}
-	
-	
-	private byte computeNextValue(byte current, byte target, NodeInfo node, int instance){
-		byte next = current;
+
+	private byte computeNextValue(byte current, byte target, NodeInfo node,
+			int instance) {
 		
+		
+		byte next = current;
+
 		if (current != target)
-			next = (byte) (current + ((target - current) / Math
-					.abs(target - current)));
+			next = (byte) (current + ((target - current) / Math.abs(target
+					- current)));
 		else
 			next = target;
-		
-		AbstractPerturbation mutant = epithelium.getInstancePerturbation(instance);
+
+		AbstractPerturbation mutant = epithelium
+				.getInstancePerturbation(instance);
 
 		List<AbstractPerturbation> perturbations = new ArrayList<AbstractPerturbation>();
-		
-		if (mutant != null){
-				if (mutant instanceof MultiplePerturbation)
-					perturbations.addAll(((MultiplePerturbation) mutant).perturbations);
-				else
-					perturbations.add(mutant);
+
+		if (mutant != null) {
+			if (mutant instanceof MultiplePerturbation)
+				perturbations
+						.addAll(((MultiplePerturbation) mutant).perturbations);
+			else
+				perturbations.add(mutant);
 		}
-		
-		for (AbstractPerturbation perturbation : perturbations){
-			if (perturbation instanceof FixedValuePerturbation){
+
+		for (AbstractPerturbation perturbation : perturbations) {
+			if (perturbation instanceof FixedValuePerturbation) {
 				if (node.equals(((FixedValuePerturbation) perturbation).component))
-					return (byte) ((FixedValuePerturbation) perturbation).value;	
-			} else if (perturbation instanceof RangePerturbation){
+					return (byte) ((FixedValuePerturbation) perturbation).value;
+			} else if (perturbation instanceof RangePerturbation) {
 				if (node.equals(((RangePerturbation) perturbation).component))
-					if (next > ((RangePerturbation) perturbation).max){
+					if (next > ((RangePerturbation) perturbation).max) {
 						return (byte) ((RangePerturbation) perturbation).max;
 					} else if (next < ((RangePerturbation) perturbation).min) {
 						return (byte) ((RangePerturbation) perturbation).min;
-					}		
+					}
 			}
 		}
-		
+
 		return next;
 	}
-	
+
 }

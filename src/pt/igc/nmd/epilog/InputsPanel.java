@@ -13,6 +13,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -21,8 +22,8 @@ import javax.swing.border.EtchedBorder;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 
-import pt.igc.nmd.epilog.gui.ColorButton;
 import pt.igc.nmd.epilog.gui.MainFrame;
+
 
 public class InputsPanel extends JPanel {
 
@@ -33,7 +34,7 @@ public class InputsPanel extends JPanel {
 
 	private SphericalEpithelium epithelium;
 	private Topology topology;
-	private MainFrame mainPanel;
+	private MainFrame mainFrame;
 
 	private JPanel auxiliaryPanel[];
 
@@ -41,16 +42,20 @@ public class InputsPanel extends JPanel {
 	private Hashtable<JCheckBox, Integer> Jcheck2Node;
 	private Hashtable<JComboBox, Integer> JcomboInput2Node;
 	private Hashtable<JButton, Integer> integrationFunctionButton2Node;
+	
+	private Hashtable<JButton, NodeInfo> button2Node;
 
-	private ColorButton[] node2Color;
 	private JComboBox[] node2Jcombo;
 	private JCheckBox[] node2Jcheck;
 	private JButton[] node2IntegrationFunctionButton;
 	private JComboBox[] initialStatePerComponent;
 	private JComboBox[] inputComboChooser;
 	private JCheckBox nodeBox[];
+	private JButton[] colorButton;
+	
+	private JTextField setName;
+	private JComboBox sets;
 
-	private List<ColorButton> colorChooser;
 
 	private JButton integrationFunctionButton;
 //	private JPanel optionsPanel;
@@ -58,7 +63,7 @@ public class InputsPanel extends JPanel {
 	public InputsPanel(SphericalEpithelium epithelium, Topology topology,
 			MainFrame mainFrame) {
 
-		this.mainPanel = mainFrame;
+		this.mainFrame = mainFrame;
 		this.topology = topology;
 		this.epithelium = epithelium;
 
@@ -67,11 +72,11 @@ public class InputsPanel extends JPanel {
 
 	public void init() {
 
-		Color backgroundColor = mainPanel.getBackground();
+		Color backgroundColor = mainFrame.getBackground();
 
 		setLayout(new BorderLayout());
 
-		LogicalModel unitaryModel = mainPanel.getEpithelium().getUnitaryModel();
+		LogicalModel unitaryModel = mainFrame.getEpithelium().getUnitaryModel();
 
 		if (unitaryModel != null) {
 			List<NodeInfo> listNodes = epithelium.getUnitaryModel()
@@ -82,8 +87,6 @@ public class InputsPanel extends JPanel {
 			for (NodeInfo node : listNodes)
 				if (node.isInput())
 					listEnvNodes.add(node);
-
-//			Grid envGrid = new Grid(topology.getNumberInstances(), listEnvNodes);
 
 			// PAGE START PANEL
 
@@ -134,16 +137,15 @@ public class InputsPanel extends JPanel {
 
 			JButton buttonAdd = new JButton("+");
 			JButton buttonClear = new JButton("-");
-			JTextField setName = new JTextField("", 15);
-			JComboBox sets = new JComboBox();
+			setName = new JTextField("", 15);
+			sets = new JComboBox();
 			sets.setPreferredSize(new Dimension(
 					setName.getPreferredSize().width,
 					sets.getPreferredSize().height));
 
 			buttonAdd.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					// TODO: Add the selected grid to the sets of initial
-					// conditions with the name of the textfield
+					inputsAdd();
 				}
 			});
 
@@ -176,24 +178,20 @@ public class InputsPanel extends JPanel {
 
 			nodeBox = new JCheckBox[listNodes.size()];
 			node2Jcheck = new JCheckBox[listNodes.size()];
-			node2Color = new ColorButton[listNodes.size()];
 			node2Jcombo = new JComboBox[listNodes.size()];
 			node2IntegrationFunctionButton = new JButton[listNodes.size()];
 			initialStatePerComponent = new JComboBox[listNodes.size()];
 			inputComboChooser = new JComboBox[listNodes.size()];
-
+			colorButton = new JButton[listNodes.size()];
+			
+			button2Node = new Hashtable<JButton, NodeInfo>();
 			Jcheck2Node = new Hashtable<JCheckBox, Integer>();
 			Jcombo2Node = new Hashtable<JComboBox, Integer>();
 			integrationFunctionButton2Node = new Hashtable<JButton, Integer>();
 			JcomboInput2Node = new Hashtable<JComboBox, Integer>();
 
-			colorChooser = new ArrayList<ColorButton>();
-
 			for (int i = 0; i < listNodes.size(); i++) {
 
-				if (!listNodes.get(i).isInput())
-					colorChooser.add(new ColorButton(mainPanel.componentsPanel,
-							listNodes.get(i)));
 				if (listNodes.get(i).isInput()) {
 
 					auxiliaryPanel[i] = new JPanel();
@@ -206,6 +204,13 @@ public class InputsPanel extends JPanel {
 					nodeBox[i].setBackground(backgroundColor);
 					nodeBox[i].setToolTipText(listNodes.get(i).getNodeID());
 					nodeBox[i].setBackground(backgroundColor);
+					
+					
+					colorButton[i] = new JButton("");
+					colorButton[i].setBackground(mainFrame.epithelium.getColor(listNodes.get(i)));
+					//colorButton[i].setBackground(mainFrame.getRandomColor());
+					//mainFrame.epithelium.setColor(listNodes.get(i), colorButton[i].getBackground());
+					button2Node.put(colorButton[i],listNodes.get(i));
 
 					Jcheck2Node.put(nodeBox[i], i);
 					node2Jcheck[i] = nodeBox[i];
@@ -220,7 +225,13 @@ public class InputsPanel extends JPanel {
 							fillHexagons();
 						}
 					});
-
+					
+					colorButton[i].addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							JButton src = (JButton) arg0.getSource();
+							setNewColor(src);
+						}
+					});
 
 					initialStatePerComponent[i] = new JComboBox();
 
@@ -244,14 +255,6 @@ public class InputsPanel extends JPanel {
 								}
 							});
 
-					colorChooser.add(new ColorButton(mainPanel.componentsPanel,
-							listNodes.get(i)));
-					colorChooser.get(i).setBackground(
-							epithelium.getColor(listNodes.get(i)));
-					colorChooser.get(i).setPreferredSize(
-							node2Jcombo[i].getPreferredSize());
-
-					node2Color[i] = colorChooser.get(i);
 
 					integrationFunctionButton = new JButton("Function");
 					integrationFunctionButton
@@ -288,18 +291,18 @@ public class InputsPanel extends JPanel {
 										.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));
 					}
 
-					if (mainPanel.getEpithelium()
+					if (mainFrame.getEpithelium()
 							.isDefinitionComponentDisplayOn(i))
 						nodeBox[i].isSelected();
-					if (mainPanel.getEpithelium().isIntegrationComponent(i))
+					if (mainFrame.getEpithelium().isIntegrationComponent(i))
 						nodeBox[i].setEnabled(false);
 
 					auxiliaryPanel[i].add(nodeBox[i]);
-					if (mainPanel.getEpithelium().isIntegrationComponent(i))
+					if (mainFrame.getEpithelium().isIntegrationComponent(i))
 						auxiliaryPanel[i].add(integrationFunctionButton);
 					else {
 						auxiliaryPanel[i].add(initialStatePerComponent[i]);
-						auxiliaryPanel[i].add(colorChooser.get(i));
+						auxiliaryPanel[i].add(colorButton[i]);
 					}
 					auxiliaryPanel[i].add(inputComboChooser[i]);
 					centerPanel.add(auxiliaryPanel[i]);
@@ -340,37 +343,44 @@ public class InputsPanel extends JPanel {
 			add(centerPanel, BorderLayout.CENTER);
 		}
 	}
+	
+	private void setNewColor(JButton src){
+		Color newColor = JColorChooser.showDialog(src, "Color Chooser", mainFrame.epithelium.getColor(button2Node.get(src)));
+		src.setBackground(newColor);
+		mainFrame.epithelium.setColor(button2Node.get(src),newColor);
+		fillHexagons();
+	}
 
 	protected void initializeIntegrationInterface(JButton src) {
-		NodeInfo node = mainPanel.getEpithelium().getUnitaryModel()
+		NodeInfo node = mainFrame.getEpithelium().getUnitaryModel()
 				.getNodeOrder().get(integrationFunctionButton2Node.get(src));
 		new IntegrationFunctionInterface(this.epithelium, node);
 
 	}
 
 	private void fireInitialStateChange(JComboBox combo) {
-		epithelium.setInitialState(mainPanel.getEpithelium().getUnitaryModel()
+		epithelium.setInitialState(mainFrame.getEpithelium().getUnitaryModel()
 				.getNodeOrder().get(Jcombo2Node.get(combo)),
 				((Integer) combo.getSelectedItem()).byteValue());
 	}
 
 	public void setComponentDisplay(int i, boolean b) {
-		mainPanel.getEpithelium().setDefinitionsComponentDisplay(i, b);
+		mainFrame.getEpithelium().setDefinitionsComponentDisplay(i, b);
 	}
 
 	protected void setEnvOptions(JComboBox inputCombo, boolean bool) {
 
 		int i = JcomboInput2Node.get(inputCombo);
-		mainPanel.getEpithelium().setIntegrationComponent(i, !bool);
+		mainFrame.getEpithelium().setIntegrationComponent(i, !bool);
 
 		if (bool) {
-			epithelium.resetIntegrationNode(mainPanel.getEpithelium()
+			epithelium.resetIntegrationNode(mainFrame.getEpithelium()
 					.getUnitaryModel().getNodeOrder()
 					.get(JcomboInput2Node.get(inputCombo)));
 		} else {
-			for (int instance = 0; instance < mainPanel.topology
+			for (int instance = 0; instance < mainFrame.topology
 					.getNumberInstances(); instance++) {
-				epithelium.setGrid(instance, mainPanel.getEpithelium()
+				epithelium.setGrid(instance, mainFrame.getEpithelium()
 						.getUnitaryModel().getNodeOrder().get(i), (byte) 0);
 			}
 		}
@@ -382,7 +392,7 @@ public class InputsPanel extends JPanel {
 
 		fillHexagons();
 
-		System.out.println(mainPanel.getEpithelium().getUnitaryModel()
+		System.out.println(mainFrame.getEpithelium().getUnitaryModel()
 				.getNodeOrder().get(i).getNodeID());
 
 		// System.out.println(JcomboInput2Node.get(inputCombo)
@@ -418,11 +428,11 @@ public class InputsPanel extends JPanel {
 	}
 
 	protected void setInitialSetupHasChanged(boolean b) {
-		mainPanel.setInitialSetupHasChanged(b);
+		mainFrame.setInitialSetupHasChanged(b);
 	}
 
 	public void fillHexagons() {
-		mainPanel.fillHexagons();
+		mainFrame.fillHexagons();
 	}
 
 	public void clearAllCells() {
@@ -439,4 +449,16 @@ public class InputsPanel extends JPanel {
 		}
 		fillHexagons();
 	}
+	
+	// End Methods
+
+	private void inputsAdd() {
+		String name = setName.getText();
+		if (!mainFrame.epithelium.getInputsSet().containsKey(name))
+			sets.addItem(name);
+		mainFrame.epithelium.setInputsSet(name);
+		System.out.println(name);
+
+	}
+	
 }

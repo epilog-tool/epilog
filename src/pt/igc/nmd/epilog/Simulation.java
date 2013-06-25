@@ -33,10 +33,10 @@ public class Simulation {
 	}
 
 	public Simulation(MainFrame mainFrame, Epithelium epithelium,
-			boolean needsComposeModel) {
+			boolean needsComposedModel) {
 		this.mainFrame = mainFrame;
 		this.epithelium = epithelium;
-		this.needsComposedModel = needsComposeModel;
+		this.needsComposedModel = needsComposedModel;
 	}
 
 	public void run() {
@@ -54,6 +54,9 @@ public class Simulation {
 		setRunning(false);
 		currentGlobalState = null;
 		globalModel = null;
+		nextGlobalState=null;
+		resetIterationNumber();
+		stableStateFound = false;
 	}
 
 	public boolean isRunning() {
@@ -63,22 +66,24 @@ public class Simulation {
 	public void step() {
 		
 		setRunning(true);
-		mainFrame.setBorderHexagonsPanel(iterationNumber);
+		this.mainFrame.setBorderHexagonsPanel(iterationNumber);
 
+		
 		if (currentGlobalState == null) {
 			currentGlobalState = new Grid(
-					mainFrame.topology.getNumberInstances(), epithelium
+					this.mainFrame.topology.getNumberInstances(), this.epithelium
 							.getUnitaryModel().getNodeOrder());
 			for (int instance = 0; instance < currentGlobalState
 					.getNumberInstances(); instance++)
 				for (NodeInfo node : currentGlobalState.getListNodes())
 					currentGlobalState.setGrid(instance, node,
-							epithelium.getGridValue(instance, node));
+							this.epithelium.getGridValue(instance, node));
 		}
 
 		if (globalModel == null) {
-			globalModel = new GlobalModel(mainFrame, epithelium,
-					needsComposedModel);
+			
+			globalModel = new GlobalModel(this.mainFrame, this.epithelium,
+					this.needsComposedModel);
 		}
 
 		nextGlobalState = globalModel.getNextState(currentGlobalState);
@@ -96,8 +101,19 @@ public class Simulation {
 
 	}
 
+	public int getCurrentGlobalStateValue(int instance, NodeInfo node){
+		int value = 0;
+		if (currentGlobalState != null)
+			value = currentGlobalState.getValue(instance, node);
+		else
+			value = this.mainFrame.epithelium.getGridValue(instance,
+					node);
+		
+		return value;
+	}
+	
 	public void saveLastPic() {
-		Container c = mainFrame.hexagonsPanel;
+		Container c = this.mainFrame.hexagonsPanel;
 		BufferedImage im = new BufferedImage(c.getWidth(), c.getHeight(),
 				BufferedImage.TYPE_INT_ARGB);
 		c.paint(im.getGraphics());
@@ -112,20 +128,24 @@ public class Simulation {
 	public boolean hasStableStateFound() {
 		return this.stableStateFound;
 	}
+	
+	public void setNeedComposedModel(Boolean b){
+		this.needsComposedModel = b;
+	}
 
 	public void initializeSimulation() {
 
-		this.epithelium = mainFrame.getEpithelium();
+		this.epithelium = this.mainFrame.getEpithelium();
 		resetIterationNumber();
 
-		if (epithelium.getComposedModel() == null && needsComposedModel) {
-			mainFrame.getLogicalModelComposition().createComposedModel();
+		if (this.epithelium.getComposedModel() == null && this.needsComposedModel) {
+			this.mainFrame.getLogicalModelComposition().createComposedModel();
 		}
 
 		setRunning(true);
 
 		fillHexagons();
-		mainFrame.hexagonsPanel.paintComponent(mainFrame.hexagonsPanel
+		this.mainFrame.hexagonsPanel.paintComponent(this.mainFrame.hexagonsPanel
 				.getGraphics());
 	}
 
@@ -137,30 +157,28 @@ public class Simulation {
 		this.iterationNumber = 1;
 	}
 
-	private Color getCoordinateColor(int i, int j, boolean initial) {
+	private Color getCoordinateColor(int instance, boolean initial) {
 		int red = 255;
 		int green = 255;
 		int blue = 255;
 		Color color = new Color(red, green, blue);
 
-		int instance = mainFrame.topology.coords2Instance(i, j);
-
 		if (!initial) {
-			for (NodeInfo node : mainFrame.epithelium.getUnitaryModel()
+			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
 					.getNodeOrder()) {
 				
-				if (mainFrame.epithelium.isDisplayComponentOn(node)) {
+				if (this.mainFrame.epithelium.isDisplayComponentOn(node)) {
 					
 
 					int value = 0;
 					if (currentGlobalState != null)
 						value = currentGlobalState.getValue(instance, node);
 					else
-						value = mainFrame.epithelium.getGridValue(instance,
+						value = this.mainFrame.epithelium.getGridValue(instance,
 								node);
 
 					if (value > 0) {
-						color = mainFrame.epithelium.getColor(node);
+						color = this.mainFrame.epithelium.getColor(node);
 						color = getColorLevel(color, value);
 
 						red = (red + color.getRed()) / 2;
@@ -178,31 +196,24 @@ public class Simulation {
 		return color;
 	}
 
-	public Color getCoordinateInitialColor(int i, int j) {
-		return getCoordinateColor(i, j, true);
+	public Color getCoordinateInitialColor(int instance) {
+		return getCoordinateColor(instance, true);
 	}
 
-	public Color getCoordinateCurrentColor(int i, int j) {
-		return getCoordinateColor(i, j, false);
+	public Color getCoordinateCurrentColor(int instance) {
+		return getCoordinateColor(instance, false);
 	}
 
 	public void fillHexagons() {
 
-		int row;
-		int column;
 
-		for (int i = 0; i < mainFrame.topology.getNumberInstances(); i++) {
-
-			row = mainFrame.topology.instance2i(i,
-					mainFrame.topology.getWidth());
-			column = mainFrame.topology.instance2j(i,
-					mainFrame.topology.getHeight());
+		for (int instance = 0; instance < this.mainFrame.topology.getNumberInstances(); instance++) {
 
 			for (NodeInfo node : epithelium.getUnitaryModel().getNodeOrder()) {
 
-				Color color = getCoordinateCurrentColor(row, column);
-				mainFrame.hexagonsPanel.drawHexagon(row, column,
-						mainFrame.hexagonsPanel.getGraphics(), color);
+				Color color = getCoordinateCurrentColor(instance);
+				this.mainFrame.hexagonsPanel.drawHexagon(instance,
+						this.mainFrame.hexagonsPanel.getGraphics(), color);
 			}
 		}
 	}

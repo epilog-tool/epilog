@@ -12,6 +12,9 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -25,6 +28,10 @@ import javax.swing.border.TitledBorder;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
+import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
+import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
+import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
+import org.colomoto.logicalmodel.perturbation.RangePerturbation;
 
 import pt.igc.nmd.epilog.UnZip;
 
@@ -40,12 +47,12 @@ public class StartPanel extends JPanel {
 	private JButton saveButton;
 	private JButton quitButton;
 
-	//private JLabel iterationNumber = new JLabel();
+	// private JLabel iterationNumber = new JLabel();
 
 	private JFileChooser fc = new JFileChooser();
 	private MainFrame mainFrame = null;
 
-	//private String SBMLFilename = null;
+	// private String SBMLFilename = null;
 
 	public StartPanel(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
@@ -102,10 +109,11 @@ public class StartPanel extends JPanel {
 
 		loadEpithelium.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				mainFrame.initializePanelCenter();
 				askConfigurations();
 				mainFrame.getContentPane().repaint();
 				mainFrame.simulation.resetIterationNumber();
-				mainFrame.getEpithelium().setNewEpithelium(false);
+				// mainFrame.getEpithelium().setNewEpithelium(false);
 			}
 		});
 
@@ -125,20 +133,6 @@ public class StartPanel extends JPanel {
 		return this;
 	}
 
-//	private void resetAllPanels() {
-//		removeAll();
-//		init();
-//		mainFrame.componentsPanel.removeAll();
-//		mainFrame.componentsPanel.init();
-//		mainFrame.watcherPanel.removeAll();
-//		mainFrame.watcherPanel.init();
-//		mainFrame.inputsPanel.removeAll();
-//		mainFrame.inputsPanel.init();
-//		mainFrame.initial.removeAll();
-//		mainFrame.initial.init();
-//		mainFrame.getContentPane().repaint();
-//	}
-
 	private void loadModel(File file) {
 
 		SBMLFormat sbmlFormat = new SBMLFormat();
@@ -150,7 +144,7 @@ public class StartPanel extends JPanel {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			sbmlFormat.export(logicalModel, baos);
 
-		//	String mySBML = new String(baos.toByteArray());
+			// String mySBML = new String(baos.toByteArray());
 
 		} catch (IOException e) {
 			System.err.println("Cannot import file " + file.getAbsolutePath()
@@ -160,20 +154,20 @@ public class StartPanel extends JPanel {
 		if (logicalModel == null)
 			return;
 
-		mainFrame.getEpithelium().setUnitaryModel(logicalModel);
-//		resetAllPanels();
+		this.mainFrame.getEpithelium().setUnitaryModel(logicalModel);
+		// resetAllPanels();
 
-		mainFrame.hexagonsPanel.paintComponent(mainFrame.hexagonsPanel
-				.getGraphics());
+		this.mainFrame.hexagonsPanel
+				.paintComponent(this.mainFrame.hexagonsPanel.getGraphics());
 
-		mainFrame.getLogicalModelComposition().resetComposedModel();
+		this.mainFrame.getLogicalModelComposition().resetComposedModel();
 
 		// setupDefinitionsButton.setEnabled(true);
-		mainFrame.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
-				.createEmptyBorder());
+		this.mainFrame.auxiliaryHexagonsPanel
+				.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		TitledBorder titleInitialConditions;
 		titleInitialConditions = BorderFactory.createTitledBorder("");
-		mainFrame.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
+		this.mainFrame.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
 
 	}
 
@@ -190,7 +184,7 @@ public class StartPanel extends JPanel {
 			for (final File fileEntry : folder.listFiles()) {
 				if (fileEntry.getName().contains("sbml")) {
 					loadModel(fileEntry);
-					mainFrame.getEpithelium().setSBMLLoadPath(
+					this.mainFrame.getEpithelium().setSBMLLoadPath(
 							fileEntry.getAbsolutePath());
 				}
 			}
@@ -199,6 +193,7 @@ public class StartPanel extends JPanel {
 					try {
 						Scanner fileIn = new Scanner(new File(
 								fileEntry.getAbsolutePath()));
+
 						ld(fileIn);
 
 					} catch (FileNotFoundException e) {
@@ -212,6 +207,19 @@ public class StartPanel extends JPanel {
 	}
 
 	private void ld(Scanner fileIn) {
+		int numberOfSets = 0;
+
+		Hashtable<String, NodeInfo> string2Node = new Hashtable<String, NodeInfo>();
+		Hashtable<Integer, AbstractPerturbation> mlist = new Hashtable<Integer, AbstractPerturbation>();
+
+		Hashtable<String, AbstractPerturbation[]> perturbationsSet = new Hashtable<String, AbstractPerturbation[]>();
+		List perturbationsList = new ArrayList<AbstractPerturbation>();
+		List mutationsList = new ArrayList<AbstractPerturbation>();
+
+		for (NodeInfo node : mainFrame.epithelium.getUnitaryModel()
+				.getNodeOrder()) {
+			string2Node.put(node.getNodeID(), node);
+		}
 
 		// TODO: Mudar para Buffereader: Lê muitas coisas de cada vez, lida
 		// tambem com caracteres especiais
@@ -225,80 +233,257 @@ public class StartPanel extends JPanel {
 			if (identifier.contains("SN")) {
 
 				String SBMLFilename = line.split(" ")[1];
-				mainFrame.getEpithelium().setSBMLFilename(SBMLFilename);
+				this.mainFrame.getEpithelium().setSBMLFilename(SBMLFilename);
 			}
 
 			if (identifier.contains("GD")) {
-				mainFrame.topology.setWidth(
-						Integer.parseInt(line.split(" ")[1].split(",")[0]));
-				mainFrame.topology.setHeight(
-						Integer.parseInt(line.split(" ")[1].split(",")[1]));
-				removeAll();
-				init();
+				this.mainFrame.topology.setWidth(Integer.parseInt(line
+						.split(" ")[1].split(",")[0]));
+				this.mainFrame.topology.setHeight(Integer.parseInt(line
+						.split(" ")[1].split(",")[1]));
+				// this.mainFrame.userDefinedWidth.setText(""
+				// + this.mainFrame.topology.getWidth());
+				// this.mainFrame.userDefinedHeight.setText(""
+				// + this.mainFrame.topology.getHeight());
+				// removeAll();
+				// init();
 
 			}
 			if (identifier.contains("RL")) {
-				mainFrame.topology.setRollOver(
-						line.split(" ")[1].split(",")[0]);
+				this.mainFrame.topology.setRollOver(line.split(" ")[1]
+						.split(",")[0]);
 			}
 			if (identifier.contains("IC")) {
-				NodeInfo node = mainFrame.getEpithelium().getUnitaryModel()
-						.getNodeOrder()
+				NodeInfo node = this.mainFrame.getEpithelium()
+						.getUnitaryModel().getNodeOrder()
 						.get(Integer.parseInt(line.split(" ")[2]));
 				byte value = (byte) Integer.parseInt(line.split(" ")[4]);
 
 				for (String range : line.split(" ")[6].split(",")) {
 					range.replace("(", "");
 					range.replace(")", "");
+					range.replace(" ", "");
 
 					if (range.contains("-")) {
-						range.replace("(", "");
 
 						int init = Integer.parseInt(range.split("-")[0]);
 						int end = Integer.parseInt(range.split("-")[1]);
-						for (int instance = init; instance < end + 1; instance++) {
-							mainFrame.getEpithelium().setGrid(instance, node,
-									value);
+						for (int instance = init; instance <= end; instance++) {
+							this.mainFrame.getEpithelium().setGrid(instance,
+									node, value);
 						}
+
+					} else if (range.length() >= 1) {
+						int instance = Integer.parseInt(range.split(" ")[0]);
+						this.mainFrame.getEpithelium().setGrid(instance, node,
+								value);
+
 					}
 				}
 			}
 
 			if (identifier.contains("IT")) {
-				NodeInfo node = mainFrame.getEpithelium().getUnitaryModel()
+				NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
 						.getNodeOrder()
 						.get(Integer.parseInt(line.split(" ")[2]));
 				byte value = (byte) Integer.parseInt(line.split(" ")[4]);
 				String expression = line.split(" ")[6];
-				mainFrame.getEpithelium().setIntegrationFunctions(node, value,
+				this.mainFrame.epithelium.setIntegrationFunctions(node, value,
 						expression);
+				this.mainFrame.epithelium.setIntegrationComponent(
+						mainFrame.epithelium.getUnitaryModel().getNodeOrder()
+								.indexOf(node), true);
 			}
 
 			if (identifier.contains("CL")) {
 
-				NodeInfo node = mainFrame.getEpithelium().getUnitaryModel()
+				NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
 						.getNodeOrder()
 						.get(Integer.parseInt(line.split(" ")[2]));
 				Color color = new Color(Integer.parseInt(line.split(" ")[4]));
 
-				mainFrame.getEpithelium().setColor(node, color);
+				this.mainFrame.epithelium.setColor(node, color);
 			}
+
+			if (identifier.contains("PR")) {
+
+				Hashtable<Integer, String> setDescription = new Hashtable<Integer, String>();
+
+				// TODO: Change to while
+
+				if (line.contains("#sets")) {
+					numberOfSets = Integer.parseInt(line.split(" ")[3]);
+				} else if (line.contains("name")) {
+					int setNumber = Integer.parseInt(line.split(" ")[1]);
+					String setName = line.split(" ")[3];
+					setDescription.put(setNumber, setName);
+				} else {
+					List<List<NodeInfo>> prioritiesClass = new ArrayList<List<NodeInfo>>();
+					String setName = line.split(" ")[1];
+					String priorities = line.split(":")[1];
+					priorities = priorities.replace("]]", "]");
+					priorities = priorities.replace("[", "");
+					priorities = priorities.replace(" ", "");
+					String[] p1 = priorities.split("]");
+
+					for (String aux : p1) {
+						String[] prioritiesElementsString = aux.split(",");
+						List<NodeInfo> prioritiesOfThisClass = new ArrayList<NodeInfo>();
+						for (String aux_3 : prioritiesElementsString) {
+							NodeInfo node = string2Node.get(aux_3);
+							prioritiesOfThisClass.add(node);
+						}
+
+						prioritiesClass.add(prioritiesOfThisClass);
+					}
+
+					mainFrame.epithelium.setPrioritiesSet(setName,
+							prioritiesClass);
+				}
+
+			}
+
+			if (identifier.contains("PT")) {
+
+				Hashtable<Integer, String> setDescription = new Hashtable<Integer, String>();
+				int index = 0;
+
+				if (line.contains("perturbations")) {
+					String perturbationsString = line.split(":")[1];
+					perturbationsString = perturbationsString.replace("(", "");
+					perturbationsString = perturbationsString.replace(")", "");
+					perturbationsString = perturbationsString.replace(" ", "");
+					String[] perturbationsArray = perturbationsString
+							.split("]");
+					for (String aux : perturbationsArray) {
+						int max = Integer.parseInt(aux.split(",")[1]);
+						int min = Integer.parseInt(aux.split(",")[0]
+								.split("\\[")[1]);
+
+						NodeInfo node = string2Node.get(aux.split("\\[")[0]);
+						AbstractPerturbation a = setPerturbation(node, min, max);
+						perturbationsList.add(a);
+					}
+					
+					mainFrame.epithelium.setLoadedPerturbations(perturbationsList);
+					
+				}
+
+				else if (line.contains("mutations")) {
+
+					List perturbation = new ArrayList<AbstractPerturbation>();
+
+					String mutationsString = line.split(":")[1];
+					mutationsString = mutationsString.replace("(", "");
+					// mutationsString = mutationsString.replace(")", "");
+					mutationsString = mutationsString.replace(" ", "");
+					String[] mutationsArray = mutationsString.split("\\)");
+					for (String aux : mutationsArray) {
+
+						String[] aux_2 = aux.split("\\]");
+
+						for (String aux_3 : aux_2) {
+
+							int max = Integer.parseInt(aux_3.split(",")[1]);
+							int min = Integer.parseInt(aux.split(",")[0]
+									.split("\\[")[1]);
+							NodeInfo node = string2Node
+									.get(aux.split("\\[")[0]);
+							AbstractPerturbation a = setPerturbation(node, min,
+									max);
+							perturbation.add(a);
+						}
+						MultiplePerturbation mutation = new MultiplePerturbation(
+								perturbation);
+						mutationsList
+								.add(new MultiplePerturbation(perturbation));
+						mlist.put(index, mutation);
+						
+						index = index + 1;
+					}
+					List aux = new ArrayList<AbstractPerturbation>();
+					for (AbstractPerturbation a : mlist.values()){
+						aux.add(a);
+					}
+					mainFrame.epithelium.setLoadedMutations(aux);
+					
+				} else if (line.contains("name")) {
+
+					int setNumber = Integer.parseInt(line.split(" ")[1]);
+					String setName = line.split(" ")[3];
+					setDescription.put(setNumber, setName);
+					if (perturbationsSet.get(setName) == null)
+						perturbationsSet.put(setName,
+								new AbstractPerturbation[mainFrame.topology
+										.getNumberInstances()]);
+
+				} else if (line.contains("color")) {
+
+				} else if (line.contains("MT")) {
+					// System.out.println(line);
+					String setName = line.split(" ")[1];
+					AbstractPerturbation p = mlist.get(Integer.parseInt(line
+							.split(" ")[3]));
+					String aux = line.split(":")[1];
+
+					for (String range : aux.split(",")) {
+						range = range.replace("(", "");
+						range = range.replace(")", "");
+						range = range.replace(" ", "");
+
+						if (range.contains("-")) {
+
+							int init = Integer.parseInt(range.split("-")[0]);
+							int end = Integer.parseInt(range.split("-")[1]);
+							for (int instance = init; instance <= end; instance++) {
+								if (perturbationsSet.get(setName) == null)
+									perturbationsSet
+											.put(setName,
+													new AbstractPerturbation[mainFrame.topology
+															.getNumberInstances()]);
+
+								perturbationsSet.get(setName)[instance] = p;
+
+							}
+
+						} else if (range.length() >= 1) {
+							int instance = Integer
+									.parseInt(range.split(" ")[0]);
+
+							if (perturbationsSet.get(setName) == null)
+								perturbationsSet
+										.put(setName,
+												new AbstractPerturbation[mainFrame.topology
+														.getNumberInstances()]);
+							perturbationsSet.get(setName)[instance] = p;
+						}
+					}
+					 if (perturbationsSet.get(setName)!=null)
+					 mainFrame.epithelium.setPerturbationSet(setName,
+					 perturbationsSet.get(setName));
+
+				}
+
+			}
+
 		}
 	}
 
 	private void loadConfigurations() {
 
-		mainFrame.setEpithelium(mainFrame.getEpithelium());
-//		resetAllPanels();
+		this.mainFrame.setEpithelium(this.mainFrame.getEpithelium());
+		// this.mainFrame.gridSpecsPanel.removeAll();
+		this.mainFrame.repaint();
+		this.mainFrame.gridSpecsPanel();
+		this.mainFrame.repaint();
+		this.mainFrame.hexagonsPanel
+				.paintComponent(this.mainFrame.hexagonsPanel.getGraphics());
 
-		mainFrame.hexagonsPanel.paintComponent(mainFrame.hexagonsPanel
-				.getGraphics());
-		// setupDefinitionsButton.setEnabled(true);
-		mainFrame.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
-				.createEmptyBorder());
+		this.mainFrame.auxiliaryHexagonsPanel
+				.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		TitledBorder titleInitialConditions;
 		titleInitialConditions = BorderFactory.createTitledBorder("");
-		mainFrame.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
+		this.mainFrame.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
 	}
 
 	public void save() {
@@ -319,12 +504,15 @@ public class StartPanel extends JPanel {
 						+ ".zip";
 
 				String unitarySBML = "";
-				if (mainFrame.getEpithelium().isNewEpithelium()) {
-					unitarySBML = mainFrame.getEpithelium().getSBMLFilePath();
+				if (this.mainFrame.getEpithelium().isNewEpithelium()) {
+					unitarySBML = this.mainFrame.getEpithelium()
+							.getSBMLFilePath();
 				} else {
-					unitarySBML = mainFrame.getEpithelium().getSBMLLoadPath();
+					unitarySBML = this.mainFrame.getEpithelium()
+							.getSBMLLoadPath();
 
 				}
+				unitarySBML = this.mainFrame.getEpithelium().getSBMLFilePath();
 				System.out.println("Unitary SBML" + unitarySBML);
 
 				String[] sourceFiles = {
@@ -337,6 +525,7 @@ public class StartPanel extends JPanel {
 
 				for (int i = 0; i < sourceFiles.length; i++) {
 					System.out.println("Adding " + sourceFiles[i]);
+					System.out.println(sourceFiles[i]);
 					// create object of FileInputStream for source file
 					FileInputStream fin = new FileInputStream(sourceFiles[i]);
 					zout.putNextEntry(new ZipEntry(sourceFiles[i]));
@@ -366,52 +555,71 @@ public class StartPanel extends JPanel {
 		// enviar tudo de uma vez. importante quando estamos numa ligaão remota
 
 		// SBML Filename
-		out.write("SN " + mainFrame.getEpithelium().getSBMLFilename() + "\n");
+		out.write("SN " + this.mainFrame.epithelium.getSBMLFilename() + "\n");
 
 		// Grid Dimensions
-		out.write("GD " + mainFrame.topology.getWidth() + ","
-				+ mainFrame.topology.getHeight() + "\n");
+		out.write("GD " + this.mainFrame.topology.getWidth() + ","
+				+ this.mainFrame.topology.getHeight() + "\n");
 
 		out.write("\n");
 		// Roll-Over option
-		out.write("RL " + mainFrame.topology.getRollOver() + "\n");
+		out.write("RL " + this.mainFrame.topology.getRollOver() + "\n");
 
 		out.write("\n");
 		// InitialState
-		for (NodeInfo node : mainFrame.getEpithelium().getUnitaryModel()
+		for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder()) {
-			if (!mainFrame.getEpithelium().isIntegrationComponent(node)) {
+			if (!this.mainFrame.epithelium.isIntegrationComponent(node)) {
 				for (int value = 1; value < node.getMax() + 1; value++) {
+
 					out.write("IC "
 							+ node.getNodeID()
 							+ " "
-							+ mainFrame.getEpithelium().getUnitaryModel()
+							+ this.mainFrame.epithelium.getUnitaryModel()
 									.getNodeOrder().indexOf(node) + " : "
 							+ value + " ( ");
-					int previous = 0;
-					int inDash = 0;
-					for (int instance = 0; instance < mainFrame.topology
+
+					// System.out.print("IC "
+					// + node.getNodeID()
+					// + " "
+					// + mainFrame.getEpithelium().getUnitaryModel()
+					// .getNodeOrder().indexOf(node) + " : "
+					// + value + " ( ");
+
+					int next = 0;
+					int current = 0;
+					boolean start = true;
+					boolean ongoing = false;
+
+					for (int instance = 0; instance < this.mainFrame.topology
 							.getNumberInstances(); instance++) {
-						if (mainFrame.getEpithelium().getGridValue(instance,
+						if (this.mainFrame.epithelium.getGridValue(instance,
 								node) == value) {
-							if (previous != instance - 1) {
-								if (inDash == 1) {
-									out.write("-" + previous + ",");
-								} else if (previous != 0) {
-									out.write(",");
-								}
+
+							if (start) {
 								out.write("" + instance);
-								inDash = 0;
-							} else {
-								inDash = 1;
-								if (instance == mainFrame.topology
-										.getNumberInstances() - 1
-										& previous == instance - 1) {
-									out.write("-" + instance);
-								}
+								start = false;
+								current = instance;
+							} else if ((instance != current + 1)
+									& ongoing == false) {
+								out.write(",");
+								out.write("" + instance);
+								current = instance;
+							} else if ((instance == current + 1)) {
+								ongoing = true;
+								current = instance;
 							}
-							previous = instance;
+						} else if (ongoing == true) {
+							ongoing = false;
+							out.write("-");
+							out.write("" + (current));
 						}
+						if (instance == (this.mainFrame.topology
+								.getNumberInstances() - 1) & ongoing == true) {
+							out.write("-");
+							out.write("" + (instance));
+						}
+
 					}
 					out.write(" )\n");
 				}
@@ -420,20 +628,20 @@ public class StartPanel extends JPanel {
 
 		out.write("\n");
 		// Integration Components
-		for (NodeInfo node : mainFrame.getEpithelium().getUnitaryModel()
+		for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder()) {
-			if (mainFrame.getEpithelium().isIntegrationComponent(node)) {
+			if (this.mainFrame.epithelium.isIntegrationComponent(node)) {
 
 				for (byte value = 1; value < node.getMax() + 1; value++) {
 					out.write("IT "
 							+ node.getNodeID()
 							+ " "
-							+ mainFrame.getEpithelium().getUnitaryModel()
+							+ this.mainFrame.epithelium.getUnitaryModel()
 									.getNodeOrder().indexOf(node)
 							+ " : "
 							+ value
 							+ " : "
-							+ mainFrame.getEpithelium().getIntegrationFunction(
+							+ this.mainFrame.epithelium.getIntegrationFunction(
 									node, value) + "\n");
 				}
 			}
@@ -442,20 +650,145 @@ public class StartPanel extends JPanel {
 		out.write("\n");
 		// Colors
 
-		for (NodeInfo node : mainFrame.getEpithelium().getUnitaryModel()
+		for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder()) {
 			out.write("CL "
 					+ node.getNodeID()
 					+ " "
-					+ mainFrame.getEpithelium().getUnitaryModel()
+					+ this.mainFrame.epithelium.getUnitaryModel()
 							.getNodeOrder().indexOf(node) + " : "
-					+ mainFrame.getEpithelium().getColor(node).getRGB() + "\n");
+					+ this.mainFrame.epithelium.getColor(node).getRGB() + "\n");
 		}
 
 		out.write("\n");
+
 		// Perturbations
 
+		if (this.mainFrame.epithelium.getPerturbationsSet().keySet().size() != 1) {
+
+			String string = ("PT " + "perturbations" + " : ");
+
+			for (String s : this.mainFrame.perturbationsPanel
+					.getPerturbationsStrings())
+				string = string + ("(" + s + ")");
+			out.write(string);
+
+			out.write("\n");
+
+			if (this.mainFrame.perturbationsPanel.getMutationStrings() != null) {
+				String string_2 = ("PT " + "mutations" + " : ");
+				String string_colors = ("PT " + "colors" + " : ");
+
+				for (AbstractPerturbation s : this.mainFrame.perturbationsPanel
+						.getMutationStrings()) {
+					string_2 = string_2 + ("(" + s.toString() + ")");
+					Color color = this.mainFrame.perturbationsPanel.perturbationColor
+							.get(s);
+					string_colors = string_colors
+							+ ("(" + color.getRGB() + ")");
+				}
+				out.write(string_2);
+				out.write("\n");
+				out.write(string_colors);
+				out.write("\n");
+			}
+			int numberOfSets = (this.mainFrame.epithelium.getPerturbationsSet()
+					.keySet().size() - 1);
+			out.write("PT " + "#sets" + " : " + numberOfSets);
+			out.write("\n");
+
+			int setIndex = 0;
+			for (String s : this.mainFrame.epithelium.getPerturbationsSet()
+					.keySet()) {
+				out.write("PT " + setIndex + " name " + ":" + s);
+				out.write("\n");
+
+				for (int mutationIndex = 0; mutationIndex < this.mainFrame.perturbationsPanel
+						.getMutationStrings().length; mutationIndex++) {
+					out.write("PT " + setIndex + " MT " + mutationIndex + " : "
+							+ " ( ");
+
+					int next = 0;
+					int current = 0;
+					boolean start = true;
+					boolean ongoing = false;
+
+					for (int instance = 0; instance < this.mainFrame.topology
+							.getNumberInstances(); instance++) {
+						if (this.mainFrame.epithelium.getPerturbationsSet()
+								.get(s)[instance] == this.mainFrame.perturbationsPanel
+								.getMutationStrings()[mutationIndex]) {
+
+							if (start) {
+								out.write("" + instance);
+								start = false;
+								current = instance;
+							} else if ((instance != current + 1)
+									& ongoing == false) {
+								out.write(",");
+								out.write("" + instance);
+								current = instance;
+							} else if ((instance == current + 1)) {
+								ongoing = true;
+								current = instance;
+							}
+						} else if (ongoing == true) {
+							ongoing = false;
+							out.write("-");
+							out.write("" + (current));
+						}
+						if (instance == (this.mainFrame.topology
+								.getNumberInstances() - 1) & ongoing == true) {
+							out.write("-");
+							out.write("" + (instance));
+						}
+
+					}
+					out.write(" )\n");
+
+				}
+
+				setIndex++;
+			}
+
+		}// ends the perturbations
+		out.write("\n");
+
 		// Priorities
+		if (this.mainFrame.epithelium.getPrioritiesSet().keySet().size() != 1) {
+			int numberOfSets = (this.mainFrame.epithelium.getPrioritiesSet()
+					.keySet().size() - 1);
+			out.write("PR " + "#sets" + " : " + numberOfSets);
+			out.write("\n");
+
+			int index = 0;
+			for (String s : this.mainFrame.epithelium.getPrioritiesSet()
+					.keySet()) {
+				out.write("PR " + index + " name " + s);
+				out.write("\n");
+				out.write("PR "
+						+ index
+						+ " : "
+						+ this.mainFrame.epithelium.getPrioritiesSet().get(s)
+								.toString());
+				out.write("\n");
+				index++;
+			}
+
+		}
 
 	}
+
+	// Auxiliary Methods
+
+	private AbstractPerturbation setPerturbation(NodeInfo node, int minValue,
+			int maxValue) {
+		AbstractPerturbation a = null;
+		if (minValue == maxValue)
+			a = new FixedValuePerturbation(node, minValue);
+		else
+			a = new RangePerturbation(node, minValue, maxValue);
+		return a;
+	}
+
 }

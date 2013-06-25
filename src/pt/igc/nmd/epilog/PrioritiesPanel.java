@@ -41,7 +41,7 @@ public class PrioritiesPanel extends JPanel {
 	public Hashtable<String, NodeInfo> string2Node;
 
 	private List<DefaultListModel> listOfListModel;
-	
+
 	private JTextField setName;
 	private JComboBox sets;
 
@@ -117,8 +117,7 @@ public class PrioritiesPanel extends JPanel {
 		JButton buttonClear = new JButton("-");
 		setName = new JTextField("", 15);
 		sets = new JComboBox();
-		sets.setPreferredSize(new Dimension(
-				setName.getPreferredSize().width,
+		sets.setPreferredSize(new Dimension(setName.getPreferredSize().width,
 				sets.getPreferredSize().height));
 
 		buttonAdd.addActionListener(new ActionListener() {
@@ -138,8 +137,6 @@ public class PrioritiesPanel extends JPanel {
 		sets.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO: Choose a set and insert the name of that set on the
-				// textfield
 				loadInitialconditions();
 			}
 		});
@@ -241,7 +238,7 @@ public class PrioritiesPanel extends JPanel {
 		List<DefaultListModel> listofListToREturn = new ArrayList<DefaultListModel>();
 		for (int i = 0; i < lists.size(); i++) {
 			if (lists.get(i).getSize() == 0) {
-			//	System.out.println("This List is empty");
+				// System.out.println("This List is empty");
 			} else {
 				listofListToREturn.add(lists.get(i));
 			}
@@ -261,14 +258,14 @@ public class PrioritiesPanel extends JPanel {
 		if (selectedIndexes.size() > 0) {
 			// TO CREATE a new class
 			if (priorityClass.size() - 1 == lastClass) {
-//				System.out.println("I have to create a new class because"
-//						+ priorityClass.size() + " = " + lastClass + 1);
+				// System.out.println("I have to create a new class because"
+				// + priorityClass.size() + " = " + lastClass + 1);
 				// Itens to be added
 				DefaultListModel listModel = new DefaultListModel();
 				for (int j : selectedIndexes) {
 
-//					System.out.println(listOfListModel.get(lastClass).get(j)
-//							.toString());
+					// System.out.println(listOfListModel.get(lastClass).get(j)
+					// .toString());
 					listModel.addElement(listOfListModel.get(lastClass).get(j)
 							.toString());
 
@@ -327,8 +324,8 @@ public class PrioritiesPanel extends JPanel {
 		}
 	}
 
-	public  List<List<NodeInfo>> finalPriorities() {
-		
+	public List<List<NodeInfo>> finalPriorities() {
+
 		List<List<NodeInfo>> priorities = new ArrayList<List<NodeInfo>>();
 
 		for (int j = 0; j < priorityClass.size(); j++) {
@@ -344,16 +341,17 @@ public class PrioritiesPanel extends JPanel {
 		}
 		return priorities;
 	}
-	
-	//ENd Panel Auxiliary Functions
+
+	// ENd Panel Auxiliary Functions
 	private void addElementToSet() {
 		String name = setName.getText();
-		sets.addItem(name);
-		mainFrame.epithelium.setPrioritiesSet(name,finalPriorities());
+		if (!mainFrame.epithelium.getPrioritiesSet().containsKey(name))
+			sets.addItem(name);
+		mainFrame.epithelium.setPrioritiesSet(name, finalPriorities());
 	}
 
 	private void loadInitialconditions() {
 		setName.setText((String) sets.getSelectedItem());
 	}
-	
+
 }

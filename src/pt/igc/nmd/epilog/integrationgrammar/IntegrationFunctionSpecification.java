@@ -233,13 +233,17 @@ public class IntegrationFunctionSpecification {
 	public IntegrationExpression parse(String specificationString)
 			throws RecognitionException {
 
+		IntegrationExpression r = null;
+		if (specificationString!=null){
 		specificationString.replaceAll("\\s", "");
 
 		ANTLRStringStream in = new ANTLRStringStream(specificationString);
 		IntegrationGrammarLexer lexer = new IntegrationGrammarLexer(in);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		IntegrationGrammarParser parser = new IntegrationGrammarParser(tokens);
-		return parser.eval();
+		r = parser.eval();
+		}
+		return r;
 	}
 
 }

@@ -18,7 +18,9 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import org.colomoto.logicalmodel.NodeInfo;
+import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 
+import pt.igc.nmd.epilog.Grid;
 import pt.igc.nmd.epilog.RunStopButton;
 
 public class SimulationSetupPanel extends JPanel {
@@ -63,8 +65,13 @@ public class SimulationSetupPanel extends JPanel {
 		rollOver = new JComboBox();
 
 		rollOver.addItem("No Roll-Over");
-		rollOver.addItem("Vertical Roll-Over");
-		rollOver.addItem("Horizontal Roll-Over");
+		if (mainFrame.topology.getHeight() % 2 == 0)
+			rollOver.addItem("Vertical Roll-Over");
+		if (mainFrame.topology.getWidth() % 2 == 0)
+			rollOver.addItem("Horizontal Roll-Over");
+		if (mainFrame.topology.getHeight() % 2 != 0
+				& mainFrame.topology.getWidth() % 2 != 0)
+			rollOver.setEnabled(false);
 		String aux = (String) rollOver.getSelectedItem();
 		if (mainFrame.getEpithelium().getUnitaryModel() != null)
 			mainFrame.topology.setRollOver(aux);
@@ -92,8 +99,10 @@ public class SimulationSetupPanel extends JPanel {
 			public void actionPerformed(ActionEvent event) {
 				JCheckBox src = (JCheckBox) event.getSource();
 				if (src.isSelected()) {
+					// System.out.println("just checked");
 					// TODO: create composed model and simulate with composition
 					mainFrame.disableTabs(true);
+					mainFrame.simulation.setNeedComposedModel(true);
 					mainFrame.simulation.initializeSimulation();
 				}
 				mainFrame.hexagonsPanel.paintComponent(mainFrame.hexagonsPanel
@@ -161,6 +170,7 @@ public class SimulationSetupPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 
 				mainFrame.disableTabs(false);
+				mainFrame.simulation.setNeedComposedModel(false);
 				mainFrame.simulation.reset();
 
 				TitledBorder titleInitialConditions;
@@ -199,18 +209,42 @@ public class SimulationSetupPanel extends JPanel {
 		inputsLabel.setText("Choose an input set: ");
 		perturbationsLabel.setText("Choose a perturbation set: ");
 		prioritiesLabel.setText("Choose a priorities set: ");
-		
-		
+
 		prioritiesCombo.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent arg0) {
-						JComboBox src = (JComboBox) arg0
-								.getSource();
-						mainFrame.epithelium.setSelectedPriority((String) src.getSelectedItem());
-					}
-				});
-		
-		
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JComboBox src = (JComboBox) arg0.getSource();
+				mainFrame.epithelium.setSelectedPriority((String) src
+						.getSelectedItem());
+			}
+		});
+
+		initialCombo.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JComboBox src = (JComboBox) arg0.getSource();
+				mainFrame.epithelium.setSelectedInitialSet((String) src
+						.getSelectedItem());
+			}
+		});
+
+		inputCombo.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JComboBox src = (JComboBox) arg0.getSource();
+				mainFrame.epithelium.setSelectedInputSet((String) src
+						.getSelectedItem());
+			}
+		});
+
+		perturbationsCombo.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JComboBox src = (JComboBox) arg0.getSource();
+				mainFrame.epithelium.setSelectedPerturbation((String) src
+						.getSelectedItem());
+			}
+		});
 
 		fillCombo(initialCombo, "initial");
 		fillCombo(inputCombo, "input");
@@ -244,23 +278,53 @@ public class SimulationSetupPanel extends JPanel {
 	}
 
 	private void fillCombo(JComboBox combo, String string) {
-		combo.addItem("none");
+
 		if (string == "initial") {
-
+			Hashtable<String, Grid> set = mainFrame.epithelium
+					.getInitialStateSet();
+			for (String i : set.keySet()) {
+				if (i == "none")
+					combo.addItem(i);
+			}
+			for (String i : set.keySet()) {
+				if (i != "none")
+					combo.addItem(i);
+			}
 		} else if (string == "input") {
-
+			combo.addItem("none");
+			Hashtable<String, Grid> set = mainFrame.epithelium
+					.getInputsSet();
+			for (String i : set.keySet()) {
+				if (i == "none")
+					combo.addItem(i);
+			}
+			for (String i : set.keySet()) {
+				if (i != "none")
+					combo.addItem(i);
+			}
+			
+			
 		} else if (string == "perturbations") {
 
-		} else if (string == "priorities") {
+			Hashtable<String, AbstractPerturbation[]> set = mainFrame.epithelium
+					.getPerturbationsSet();
+			for (String i : set.keySet()) {
+				if (i == "none")
+					combo.addItem(i);
+			}
+			for (String i : set.keySet()) {
+				if (i != "none")
+					combo.addItem(i);
+			}
 
+		} else if (string == "priorities") {
+			combo.addItem("none");
 			Hashtable<String, List<List<NodeInfo>>> set = mainFrame.epithelium
 					.getPrioritiesSet();
 			for (String i : set.keySet()) {
 				combo.addItem(i);
 			}
-
 		}
-
 	}
 
 	private void fireRollOverChange(String optionString) { // ROLL OVER

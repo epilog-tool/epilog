@@ -29,11 +29,11 @@ public class Topology implements Serializable {
 
 	public Topology(int width, int height) {
 		super();
-		width = (width % 2 == 0) ? width : width + 1;
-		height = (height % 2 == 0) ? height : height + 1;
+		// width = (width % 2 == 0) ? width : width + 1;
+		// height = (height % 2 == 0) ? height : height + 1;
 		this.width = width;
 		this.height = height;
-//		this.rollOver = rollOver;
+		// this.rollOver = rollOver;
 
 	}
 
@@ -58,20 +58,23 @@ public class Topology implements Serializable {
 	}
 
 	/* Methods to transform instance index to coordinates and vice-versa */
-	public int instance2i(int instance, int width) {
+	public int instance2i(int instance) {
 
-		int i = instance % width;
+		int i = instance % getWidth();
 		return i;
 	}
 
-	public int instance2j(int instance, int width) {
+	public int instance2j(int instance) {
 
-		int j = instance / width;
+		int j = 0;
+		if (instance != 0)
+			j = instance/getWidth();
+
 		return j;
 	}
 
 	public int coords2Instance(int i, int j) {
-		return j * this.width + i;
+		return j * getWidth() + i;
 	}
 
 	// Neighbours
@@ -98,11 +101,12 @@ public class Topology implements Serializable {
 		int iNeighbor;
 		int jNeighbor;
 
-		int i = instance2i(instance, getWidth());
-		int j = instance2j(instance, getWidth());
+		int i = instance2i(instance);
+		int j = instance2j(instance);
 
-//		System.out.println(instance + " ->" + instance2i(instance, getWidth())
-//				+ " " + instance2j(instance, getWidth()));
+		// System.out.println(instance + " ->" + instance2i(instance,
+		// getWidth())
+		// + " " + instance2j(instance, getWidth()));
 
 		for (int k = 0; k < neighbors_y.length; k++) {
 			if (i % 2 == 0) {
@@ -145,11 +149,12 @@ public class Topology implements Serializable {
 		int iNeighbor;
 		int jNeighbor;
 
-		int i = instance2i(instance, getWidth());
-		int j = instance2j(instance, getWidth());
+		int i = instance2i(instance);
+		int j = instance2j(instance);
 
-//		System.out.println(instance + " ->" + instance2i(instance, getWidth())
-//				+ " " + instance2j(instance, getWidth()));
+		// System.out.println(instance + " ->" + instance2i(instance,
+		// getWidth())
+		// + " " + instance2j(instance, getWidth()));
 
 		for (int k = 0; k < neighbors_y.length; k++) {
 			if (i % 2 == 0) {
@@ -192,8 +197,8 @@ public class Topology implements Serializable {
 		int iNeighbor;
 		int jNeighbor;
 
-		int i = instance2i(instance, getWidth());
-		int j = instance2j(instance, getWidth());
+		int i = instance2i(instance);
+		int j = instance2j(instance);
 
 		// System.out.println(instance + " ->" + instance2i(instance,
 		// getWidth())
@@ -241,8 +246,8 @@ public class Topology implements Serializable {
 
 		Set<Integer> neighbours = new TreeSet<Integer>();
 
-//		System.err.println("\tCalculating neigh of instance " + instance
-//				+ " up until distance " + distance);
+		// System.err.println("\tCalculating neigh of instance " + instance
+		// + " up until distance " + distance);
 
 		if (distance <= 0)
 			neighbours.add(new Integer(instance));
@@ -261,8 +266,8 @@ public class Topology implements Serializable {
 
 		} // distance < 0 falls thru
 
-//		System.err.println("\t results(" + instance + "," + distance + ") = "
-//				+ neighbours);
+		// System.err.println("\t results(" + instance + "," + distance + ") = "
+		// + neighbours);
 		return neighbours;
 
 	}
