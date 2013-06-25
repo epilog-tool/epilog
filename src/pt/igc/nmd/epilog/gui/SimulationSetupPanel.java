@@ -31,13 +31,18 @@ public class SimulationSetupPanel extends JPanel {
 	private static final long serialVersionUID = -6167613300012277711L;
 
 	public MainFrame mainFrame;
-	private JComboBox rollOver;
-
+	public JComboBox rollOver;
+	public JCheckBox createComposedModel;
 	private JButton runButton;
 	private JButton stepButton;
 	private JButton restartButton;
 
 	private boolean test = false;
+	
+	public 		JComboBox initialCombo;
+	public 		JComboBox inputCombo ;
+	public 		JComboBox perturbationsCombo ;
+	public 		JComboBox prioritiesCombo ;
 
 	public SimulationSetupPanel(MainFrame mainPanel) {
 		this.mainFrame = mainPanel;
@@ -92,7 +97,7 @@ public class SimulationSetupPanel extends JPanel {
 		 * Option to create a composed Model
 		 */
 
-		JCheckBox createComposedModel = new JCheckBox("Create composed model");
+		createComposedModel = new JCheckBox("Create composed model");
 
 		createComposedModel.addActionListener(new ActionListener() {
 
@@ -172,7 +177,7 @@ public class SimulationSetupPanel extends JPanel {
 				mainFrame.disableTabs(false);
 				mainFrame.simulation.setNeedComposedModel(false);
 				mainFrame.simulation.reset();
-
+				mainFrame.simulationPanelson();
 				TitledBorder titleInitialConditions;
 				titleInitialConditions = BorderFactory.createTitledBorder("");
 				mainFrame.auxiliaryHexagonsPanel
@@ -195,10 +200,10 @@ public class SimulationSetupPanel extends JPanel {
 
 		leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.PAGE_AXIS));
 
-		JComboBox initialCombo = new JComboBox();
-		JComboBox inputCombo = new JComboBox();
-		JComboBox perturbationsCombo = new JComboBox();
-		JComboBox prioritiesCombo = new JComboBox();
+		initialCombo = new JComboBox();
+		inputCombo = new JComboBox();
+		perturbationsCombo = new JComboBox();
+		prioritiesCombo = new JComboBox();
 
 		JLabel initialConditionsLabel = new JLabel();
 		JLabel inputsLabel = new JLabel();

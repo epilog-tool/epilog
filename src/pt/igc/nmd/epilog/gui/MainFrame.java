@@ -162,7 +162,7 @@ public class MainFrame extends JFrame {
 			this.remove(panelCenter);
 		}
 
-		this.topology = new Topology(24, 24);
+		this.topology = new Topology(6,1);
 		this.epithelium = new SphericalEpithelium(this.topology);
 		this.simulation = new Simulation(this, epithelium);
 
@@ -394,6 +394,24 @@ public class MainFrame extends JFrame {
 			public void mouseReleased(MouseEvent arg0) {
 			}
 		});
+	}
+	
+	public void simulationPanelsoff(){
+		simulationSetupPanel.initialCombo.setEnabled(false);
+		simulationSetupPanel.inputCombo.setEnabled(false);
+		simulationSetupPanel.perturbationsCombo.setEnabled(false);
+		simulationSetupPanel.prioritiesCombo.setEnabled(false);
+		simulationSetupPanel.createComposedModel.setEnabled(false);
+		simulationSetupPanel.rollOver.setEnabled(false);
+	}
+	
+	public void simulationPanelson(){
+		simulationSetupPanel.initialCombo.setEnabled(true);
+		simulationSetupPanel.inputCombo.setEnabled(true);
+		simulationSetupPanel.perturbationsCombo.setEnabled(true);
+		simulationSetupPanel.prioritiesCombo.setEnabled(true);
+		simulationSetupPanel.createComposedModel.setEnabled(true);
+		simulationSetupPanel.rollOver.setEnabled(true);
 	}
 
 	private void initializePanelCenterRight() {

@@ -102,8 +102,8 @@ public class StartPanel extends JPanel {
 
 				// askModel();
 				// mainPanel.getContentPane().repaint();
-				// mainPanel.getSimulation().resetIterationNumber();
-				// mainPanel.getEpithelium().setNewEpithelium(true);
+				mainFrame.simulation.reset();
+				mainFrame.epithelium.setNewEpithelium(true);
 			}
 		});
 
@@ -112,8 +112,8 @@ public class StartPanel extends JPanel {
 				mainFrame.initializePanelCenter();
 				askConfigurations();
 				mainFrame.getContentPane().repaint();
-				mainFrame.simulation.resetIterationNumber();
-				// mainFrame.getEpithelium().setNewEpithelium(false);
+				mainFrame.simulation.reset();
+				mainFrame.epithelium.setNewEpithelium(false);
 			}
 		});
 
@@ -507,9 +507,11 @@ public class StartPanel extends JPanel {
 				if (this.mainFrame.getEpithelium().isNewEpithelium()) {
 					unitarySBML = this.mainFrame.getEpithelium()
 							.getSBMLFilePath();
+					System.out.println("isnew epithelium");
 				} else {
 					unitarySBML = this.mainFrame.getEpithelium()
 							.getSBMLLoadPath();
+					
 
 				}
 				
@@ -678,20 +680,16 @@ public class StartPanel extends JPanel {
 
 			if (this.mainFrame.perturbationsPanel.getMutationStrings() != null) {
 				String string_2 = ("PT " + "mutations" + " : ");
-				String string_colors = ("PT " + "colors" + " : ");
+
 
 				for (AbstractPerturbation s : this.mainFrame.perturbationsPanel
 						.getMutationStrings()) {
 					string_2 = string_2 + ("(" + s.toString() + ")");
-					Color color = this.mainFrame.perturbationsPanel.perturbationColor
-							.get(s);
-					string_colors = string_colors
-							+ ("(" + color.getRGB() + ")");
+
 				}
 				out.write(string_2);
 				out.write("\n");
-				out.write(string_colors);
-				out.write("\n");
+			
 			}
 			int numberOfSets = (this.mainFrame.epithelium.getPerturbationsSet()
 					.keySet().size() - 1);
@@ -756,7 +754,8 @@ public class StartPanel extends JPanel {
 		out.write("\n");
 
 		// Priorities
-		if (this.mainFrame.epithelium.getPrioritiesSet().keySet().size() != 1) {
+		System.out.println(this.mainFrame.epithelium.getPrioritiesSet().keySet().size() );
+		if (this.mainFrame.epithelium.getPrioritiesSet().keySet().size() != 0) {
 			int numberOfSets = (this.mainFrame.epithelium.getPrioritiesSet()
 					.keySet().size() - 1);
 			out.write("PR " + "#sets" + " : " + numberOfSets);

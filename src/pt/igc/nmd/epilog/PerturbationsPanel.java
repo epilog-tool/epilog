@@ -128,6 +128,13 @@ public class PerturbationsPanel extends JPanel {
 		mutationsSetsCombo.setPreferredSize(new Dimension(setName
 				.getPreferredSize().width, mutationsSetsCombo
 				.getPreferredSize().height));
+		
+		if (mainFrame.epithelium.getPrioritiesSet()!=null){
+			for (String key: mainFrame.epithelium.getPrioritiesSet().keySet()){
+				mutationsSetsCombo.addItem(key);
+			}
+		}
+		
 
 		buttonSetAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -512,7 +519,11 @@ public class PerturbationsPanel extends JPanel {
 	}
 
 	private void loadInitialconditions() {
+		System.out.println("Estou aqui no loadinitialConditions");
 		setName.setText((String) mutationsSetsCombo.getSelectedItem());
+		mainFrame.epithelium.setSelectedPerturbation((String) mutationsSetsCombo.getSelectedItem());
+		//mainFrame.hexagonsPanel.repaint();
+		//mainFrame.fillHexagons();
 	}
 
 	// Saving Auxiliary Functions

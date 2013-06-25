@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.JComboBox;
 
 import org.colomoto.logicalmodel.NodeInfo;
 
@@ -40,8 +41,7 @@ public class Simulation {
 	}
 
 	public void run() {
-		resetIterationNumber();
-		while (!stableStateFound) {
+		while (!stableStateFound | iterationNumber%30==0) {
 			step();
 		}
 	}
@@ -67,6 +67,9 @@ public class Simulation {
 		
 		setRunning(true);
 		this.mainFrame.setBorderHexagonsPanel(iterationNumber);
+		
+		this.mainFrame.simulationPanelsoff();
+
 
 		
 		if (currentGlobalState == null) {

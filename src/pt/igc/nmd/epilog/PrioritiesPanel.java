@@ -37,6 +37,7 @@ public class PrioritiesPanel extends JPanel {
 	private JPanel centerPanel = null;
 	private List<JList> priorityClass = null;
 	private List<Integer> selectedIndexes = null;
+	private JTextField priorityChosenString;
 	private int lastClass = 0;
 	public Hashtable<String, NodeInfo> string2Node;
 
@@ -69,6 +70,7 @@ public class PrioritiesPanel extends JPanel {
 		JButton buttonIncreaseLeft = new JButton("->");
 		JButton buttonIncreaseRight = new JButton("<-");
 		JButton buttonRemove = new JButton("Remove");
+		priorityChosenString = new JTextField("");
 
 		buttonIncreaseLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -106,6 +108,7 @@ public class PrioritiesPanel extends JPanel {
 		optionsPanel.add(buttonIncreaseLeft);
 		optionsPanel.add(buttonIncreaseRight);
 		optionsPanel.add(buttonRemove);
+		optionsPanel.add(priorityChosenString);
 
 		add(optionsPanel, BorderLayout.PAGE_START);
 
@@ -119,6 +122,12 @@ public class PrioritiesPanel extends JPanel {
 		sets = new JComboBox();
 		sets.setPreferredSize(new Dimension(setName.getPreferredSize().width,
 				sets.getPreferredSize().height));
+
+		if (mainFrame.epithelium.getPrioritiesSet() != null) {
+			for (String key : mainFrame.epithelium.getPrioritiesSet().keySet()) {
+				sets.addItem(key);
+			}
+		}
 
 		buttonAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -134,6 +143,7 @@ public class PrioritiesPanel extends JPanel {
 			}
 		});
 
+		// JComboBox that selects the one
 		sets.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -235,15 +245,15 @@ public class PrioritiesPanel extends JPanel {
 	}
 
 	private List<DefaultListModel> removeList(List<DefaultListModel> lists) {
-		List<DefaultListModel> listofListToREturn = new ArrayList<DefaultListModel>();
+		List<DefaultListModel> listofListToReturn = new ArrayList<DefaultListModel>();
 		for (int i = 0; i < lists.size(); i++) {
 			if (lists.get(i).getSize() == 0) {
 				// System.out.println("This List is empty");
 			} else {
-				listofListToREturn.add(lists.get(i));
+				listofListToReturn.add(lists.get(i));
 			}
 		}
-		return listofListToREturn;
+		return listofListToReturn;
 
 	}
 
@@ -352,6 +362,31 @@ public class PrioritiesPanel extends JPanel {
 
 	private void loadInitialconditions() {
 		setName.setText((String) sets.getSelectedItem());
+		List<List<NodeInfo>> priorities = new ArrayList<List<NodeInfo>>();
+
+		if (mainFrame.epithelium.getPrioritiesSet().get(
+				(String) sets.getSelectedItem()) != null) {
+			priorities = mainFrame.epithelium.getPrioritiesSet().get(
+					(String) sets.getSelectedItem());
+			int numberOfLists = priorities.size();
+
+			String string = "";
+			for (int index = 0; index < priorities.size(); index++) {
+				// DefaultListModel listModel = new DefaultListModel();
+				string = string + "[";
+				for (NodeInfo node : priorities.get(index)) {
+					// listModel.addElement(node.getNodeID());
+					string = string + " " + node.getNodeID();
+				}
+				string = string + "]";
+						if (index < priorities.size()-1){
+							string = string + " "+ "<";
+						}
+			}
+			priorityChosenString.setText(string);
+		}
+
+
 	}
 
 }

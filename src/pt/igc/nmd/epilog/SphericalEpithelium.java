@@ -384,7 +384,6 @@ public class SphericalEpithelium implements Epithelium {
 	
 	public void setPerturbationSet(String name, AbstractPerturbation[] perturbations_1) {
 		perturbationsSet.put(name, perturbations_1);
-		System.out.println("Added a perturbationSEt @spithelium");
 	}
 	
 
