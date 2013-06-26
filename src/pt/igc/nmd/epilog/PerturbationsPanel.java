@@ -128,13 +128,12 @@ public class PerturbationsPanel extends JPanel {
 		mutationsSetsCombo.setPreferredSize(new Dimension(setName
 				.getPreferredSize().width, mutationsSetsCombo
 				.getPreferredSize().height));
-		
-		if (mainFrame.epithelium.getPrioritiesSet()!=null){
-			for (String key: mainFrame.epithelium.getPrioritiesSet().keySet()){
+
+		if (mainFrame.epithelium.getPrioritiesSet() != null) {
+			for (String key : mainFrame.epithelium.getPrioritiesSet().keySet()) {
 				mutationsSetsCombo.addItem(key);
 			}
 		}
-		
 
 		buttonSetAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -180,12 +179,12 @@ public class PerturbationsPanel extends JPanel {
 		JPanel centerC5 = new JPanel(new BorderLayout());
 
 		listModel = new DefaultListModel();
-		
-		if (mainFrame.epithelium.loadedPerturbations!=null)
-			for (int i = 0;i< mainFrame.epithelium.loadedPerturbations.size();i++)
-				listModel.addElement(mainFrame.epithelium.loadedPerturbations.get(i));
-		
-		
+
+		if (mainFrame.epithelium.loadedPerturbations != null)
+			for (int i = 0; i < mainFrame.epithelium.loadedPerturbations.size(); i++)
+				listModel.addElement(mainFrame.epithelium.loadedPerturbations
+						.get(i));
+
 		perturbationsList = new JList(listModel);
 
 		perturbationsList
@@ -238,10 +237,11 @@ public class PerturbationsPanel extends JPanel {
 		JComboBox maxValueBox = getPerturbedExpressionCombo();
 
 		mutationsListCombo = new JComboBox();
-		
-		if (mainFrame.epithelium.loadedMutations!=null)
-			for (int i = 0;i< mainFrame.epithelium.loadedMutations.size();i++)
-				mutationsListCombo.addItem(mainFrame.epithelium.loadedMutations.get(i));
+
+		if (mainFrame.epithelium.loadedMutations != null)
+			for (int i = 0; i < mainFrame.epithelium.loadedMutations.size(); i++)
+				mutationsListCombo.addItem(mainFrame.epithelium.loadedMutations
+						.get(i));
 
 		maxValueBox.setSelectedItem(maxValueBox.getItemCount() - 1);
 
@@ -364,12 +364,18 @@ public class PerturbationsPanel extends JPanel {
 			JPanel auxiliaryPanel = new JPanel();
 			JLabel test = new JLabel();
 			JButton colorBox = new JButton();
-			colorBox.setBackground(mainFrame.epithelium.colors[i]);
+
+			Color color = mainFrame.getRandomColor();
+			while (!perturbationColor.values().contains(color)) {
+
+				colorBox.setBackground(color);
+				perturbationColor.put(
+						(AbstractPerturbation) mutationsListCombo.getItemAt(i),
+						color);
+			}
+			
 			test.setText(mutationsListCombo.getItemAt(i).toString());
 
-			perturbationColor.put(
-					(AbstractPerturbation) mutationsListCombo.getItemAt(i),
-					mainFrame.epithelium.colors[i]);
 			auxiliaryPanel.add(test);
 			auxiliaryPanel.add(colorBox);
 			rightPanel.add(auxiliaryPanel);
@@ -471,7 +477,7 @@ public class PerturbationsPanel extends JPanel {
 				.getNumberInstances(); instance++) {
 			mainFrame.epithelium.setActivePerturbation(null);
 			mainFrame.epithelium.setPerturbedInstance(instance);
-					
+
 		}
 		repaint();
 		fillHexagons();
@@ -519,11 +525,13 @@ public class PerturbationsPanel extends JPanel {
 	}
 
 	private void loadInitialconditions() {
-		System.out.println("Estou aqui no loadinitialConditions");
+
 		setName.setText((String) mutationsSetsCombo.getSelectedItem());
-		mainFrame.epithelium.setSelectedPerturbation((String) mutationsSetsCombo.getSelectedItem());
-		//mainFrame.hexagonsPanel.repaint();
-		//mainFrame.fillHexagons();
+		mainFrame.epithelium
+				.setSelectedPerturbation((String) mutationsSetsCombo
+						.getSelectedItem());
+		// mainFrame.hexagonsPanel.repaint();
+		// mainFrame.fillHexagons();
 	}
 
 	// Saving Auxiliary Functions
@@ -532,19 +540,20 @@ public class PerturbationsPanel extends JPanel {
 		String[] perturbationsString = new String[listModel.getSize()];
 
 		for (int i = 0; i < listModel.getSize(); i++) {
-			perturbationsString[i]=listModel.getElementAt(i).toString();
+			perturbationsString[i] = listModel.getElementAt(i).toString();
 		}
 		return perturbationsString;
 	}
-	
-	
-	public AbstractPerturbation[] getMutationStrings(){
-		AbstractPerturbation[] mutation = new AbstractPerturbation[mutationsListCombo.getItemCount()];
-	
+
+	public AbstractPerturbation[] getMutationStrings() {
+		AbstractPerturbation[] mutation = new AbstractPerturbation[mutationsListCombo
+				.getItemCount()];
+
 		for (int i = 0; i < mutationsListCombo.getItemCount(); i++) {
-			mutation[i]=(AbstractPerturbation) mutationsListCombo.getItemAt(i);
+			mutation[i] = (AbstractPerturbation) mutationsListCombo
+					.getItemAt(i);
 		}
-		
+
 		return mutation;
 	}
 }

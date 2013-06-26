@@ -50,6 +50,8 @@ public class LogicalModelComposition {
 	public LogicalModel createComposedModel() {
 		// if (composedModel != null)
 		// return composedModel;
+		
+		System.out.println("STarting to create the composed Model");
 
 		List<NodeInfo> nodeOrder = new ArrayList<NodeInfo>();
 		List<NodeInfo> newIntegrationNodes = new ArrayList<NodeInfo>();

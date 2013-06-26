@@ -136,6 +136,7 @@ public class ComponentsPanel extends JPanel {
 						public void actionPerformed(ActionEvent arg0) {
 							JButton src = (JButton) arg0.getSource();
 							setNewColor(src);
+							
 						}
 					});
 
@@ -168,6 +169,7 @@ public class ComponentsPanel extends JPanel {
 								.getColor(listNodes.get(i)));
 					}
 					button2Node.put(colorButton[i], listNodes.get(i));
+				
 
 					this.mainFrame.getEpithelium().setActiveComponent(
 							listNodes.get(i), false);
@@ -210,6 +212,7 @@ public class ComponentsPanel extends JPanel {
 		src.setBackground(newColor);
 		this.mainFrame.epithelium.setColor(button2Node.get(src), newColor);
 		this.mainFrame.fillHexagons();
+		System.out.println ("new Color: " + newColor.getRed()+ newColor.getGreen() +newColor.getBlue() );
 	}
 
 	public void fireCheckBoxChange(Boolean bool, JCheckBox box) {

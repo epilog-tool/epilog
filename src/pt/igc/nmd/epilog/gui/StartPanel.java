@@ -212,6 +212,7 @@ public class StartPanel extends JPanel {
 		Hashtable<String, NodeInfo> string2Node = new Hashtable<String, NodeInfo>();
 		Hashtable<Integer, AbstractPerturbation> mlist = new Hashtable<Integer, AbstractPerturbation>();
 		Hashtable<Integer, String> setPrioritiesDescription = new Hashtable<Integer, String>();
+		Hashtable<Integer, String> setPerturbationsDescription = new Hashtable<Integer, String>();
 
 		Hashtable<String, AbstractPerturbation[]> perturbationsSet = new Hashtable<String, AbstractPerturbation[]>();
 		List perturbationsList = new ArrayList<AbstractPerturbation>();
@@ -339,7 +340,7 @@ public class StartPanel extends JPanel {
 
 						prioritiesClass.add(prioritiesOfThisClass);
 					}
-					System.out.println(setNumber);
+					// System.out.println(setNumber);
 
 					if (setPrioritiesDescription.get(setNumber) != null)
 						mainFrame.epithelium.setPrioritiesSet(
@@ -351,24 +352,38 @@ public class StartPanel extends JPanel {
 
 			if (identifier.contains("PT")) {
 
-				Hashtable<Integer, String> setDescription = new Hashtable<Integer, String>();
 				int index = 0;
 
 				if (line.contains("perturbations")) {
 					String perturbationsString = line.split(":")[1];
 					perturbationsString = perturbationsString.replace("(", "");
 					perturbationsString = perturbationsString.replace(")", "");
-					perturbationsString = perturbationsString.replace(" ", "");
+					// perturbationsString = perturbationsString.replace(" ",
+					// "");
 					String[] perturbationsArray = perturbationsString
 							.split("]");
 					for (String aux : perturbationsArray) {
-						int max = Integer.parseInt(aux.split(",")[1]);
-						int min = Integer.parseInt(aux.split(",")[0]
-								.split("\\[")[1]);
+						if (aux.contains(",")) {
+							aux = aux.replace(" ", "");
+							int max = Integer.parseInt(aux.split(",")[1]);
+							int min = Integer.parseInt(aux.split(",")[0]
+									.split("\\[")[1]);
 
-						NodeInfo node = string2Node.get(aux.split("\\[")[0]);
-						AbstractPerturbation a = setPerturbation(node, min, max);
-						perturbationsList.add(a);
+							NodeInfo node = string2Node
+									.get(aux.split("\\[")[0]);
+							AbstractPerturbation a = setPerturbation(node, min,
+									max);
+							perturbationsList.add(a);
+						}
+						if (aux.contains("KO")) {
+							aux = aux.replace(" ", "");
+							NodeInfo node = string2Node.get(aux.split("KO")[0]);
+							AbstractPerturbation a = setPerturbation(node, 0, 0);
+							perturbationsList.add(a);
+						} else {
+							NodeInfo node = string2Node.get(aux.split(" ")[0]);
+							// TODO
+						}
 					}
 
 					mainFrame.epithelium
@@ -377,8 +392,7 @@ public class StartPanel extends JPanel {
 				}
 
 				else if (line.contains("mutations")) {
-
-					List perturbation = new ArrayList<AbstractPerturbation>();
+					// TODO ECTOPIC AND KO
 
 					String mutationsString = line.split(":")[1];
 					mutationsString = mutationsString.replace("(", "");
@@ -386,19 +400,31 @@ public class StartPanel extends JPanel {
 					mutationsString = mutationsString.replace(" ", "");
 					String[] mutationsArray = mutationsString.split("\\)");
 					for (String aux : mutationsArray) {
-
+						List perturbation = new ArrayList<AbstractPerturbation>();
 						String[] aux_2 = aux.split("\\]");
 
 						for (String aux_3 : aux_2) {
+							if (aux.contains(",")) {
+								int max = Integer.parseInt(aux_3.split(",")[1]);
+								int min = Integer.parseInt(aux.split(",")[0]
+										.split("\\[")[1]);
+								NodeInfo node = string2Node.get(aux
+										.split("\\[")[0]);
+								AbstractPerturbation a = setPerturbation(node,
+										min, max);
+								perturbation.add(a);
+							}
 
-							int max = Integer.parseInt(aux_3.split(",")[1]);
-							int min = Integer.parseInt(aux.split(",")[0]
-									.split("\\[")[1]);
-							NodeInfo node = string2Node
-									.get(aux.split("\\[")[0]);
-							AbstractPerturbation a = setPerturbation(node, min,
-									max);
-							perturbation.add(a);
+							if (aux.contains("KO")) {
+								int max = 0;
+								int min = 0;
+								NodeInfo node = string2Node
+										.get(aux.split("KO")[0]);
+								AbstractPerturbation a = setPerturbation(node,
+										min, max);
+								perturbation.add(a);
+							}
+
 						}
 						MultiplePerturbation mutation = new MultiplePerturbation(
 								perturbation);
@@ -418,7 +444,7 @@ public class StartPanel extends JPanel {
 
 					int setNumber = Integer.parseInt(line.split(" ")[1]);
 					String setName = line.split(" ")[3];
-					setDescription.put(setNumber, setName);
+					setPerturbationsDescription.put(setNumber, setName);
 					if (perturbationsSet.get(setName) == null)
 						perturbationsSet.put(setName,
 								new AbstractPerturbation[mainFrame.topology
@@ -479,7 +505,6 @@ public class StartPanel extends JPanel {
 	private void loadConfigurations() {
 
 		this.mainFrame.setEpithelium(this.mainFrame.epithelium);
-		System.out.println(mainFrame.topology.getNumberInstances());
 		// this.mainFrame.gridSpecsPanel.removeAll();
 		this.mainFrame.repaint();
 		this.mainFrame.gridSpecsPanel();
@@ -514,7 +539,6 @@ public class StartPanel extends JPanel {
 				String unitarySBML = "";
 				if (this.mainFrame.epithelium.isNewEpithelium()) {
 					unitarySBML = this.mainFrame.epithelium.getSBMLFilePath();
-					System.out.println("isnew epithelium");
 				} else {
 					unitarySBML = this.mainFrame.epithelium.getSBMLLoadPath();
 
@@ -522,7 +546,7 @@ public class StartPanel extends JPanel {
 
 				// unitarySBML =
 				// this.mainFrame.getEpithelium().getSBMLFilePath();
-				System.out.println("Unitary SBML" + unitarySBML);
+				// System.out.println("Unitary SBML" + unitarySBML);
 
 				String[] sourceFiles = {
 						fc.getSelectedFile().getAbsolutePath() + "_config.txt",
@@ -533,8 +557,8 @@ public class StartPanel extends JPanel {
 				ZipOutputStream zout = new ZipOutputStream(fout);
 
 				for (int i = 0; i < sourceFiles.length; i++) {
-					System.out.println("Adding " + sourceFiles[i]);
-					System.out.println(sourceFiles[i]);
+					// System.out.println("Adding " + sourceFiles[i]);
+					// System.out.println(sourceFiles[i]);
 					// create object of FileInputStream for source file
 					FileInputStream fin = new FileInputStream(sourceFiles[i]);
 					zout.putNextEntry(new ZipEntry(sourceFiles[i]));
@@ -547,7 +571,7 @@ public class StartPanel extends JPanel {
 					fin.close();
 				}
 				zout.close();
-				System.out.println("Zip file has been created!");
+				// System.out.println("Zip file has been created!");
 				File toDelete = new File(fc.getSelectedFile().getAbsolutePath()
 						+ "_config.txt");
 				toDelete.delete();
@@ -759,8 +783,8 @@ public class StartPanel extends JPanel {
 		out.write("\n");
 
 		// Priorities
-		System.out.println(this.mainFrame.epithelium.getPrioritiesSet()
-				.keySet().size());
+		// System.out.println(this.mainFrame.epithelium.getPrioritiesSet()
+		// .keySet().size());
 		if (this.mainFrame.epithelium.getPrioritiesSet().keySet().size() != 0) {
 			int numberOfSets = (this.mainFrame.epithelium.getPrioritiesSet()
 					.keySet().size() - 1);

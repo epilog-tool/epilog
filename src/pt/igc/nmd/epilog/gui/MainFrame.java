@@ -162,7 +162,7 @@ public class MainFrame extends JFrame {
 			this.remove(panelCenter);
 		}
 
-		this.topology = new Topology(6,1);
+		this.topology = new Topology(24,24);
 		this.epithelium = new SphericalEpithelium(this.topology);
 		this.simulation = new Simulation(this, epithelium);
 
@@ -297,7 +297,7 @@ public class MainFrame extends JFrame {
 						String string = ("<html>" + "instance: " + instance);
 						for (NodeInfo node : epithelium.getUnitaryModel()
 								.getNodeOrder()) {
-							if (!node.isInput()) {
+							//if (!node.isInput()) {
 
 								string = string
 										+ ("<br>" + " node: " + node
@@ -306,7 +306,7 @@ public class MainFrame extends JFrame {
 															instance, node));
 
 							}
-						}
+					//	}
 						if (epithelium.isCellPerturbed(instance))
 							string = string
 									+ ("<br>" + "Perturbation: " + epithelium

@@ -105,6 +105,8 @@ public class DrawPolygon extends JPanel {
 					else {
 						g.setColor(this.mainFrame.simulation
 								.getCoordinateCurrentColor(instance));
+						System.out.println(this.mainFrame.simulation
+								.getCoordinateCurrentColor(instance));
 						g2.setStroke(stroke);
 						if (mainFrame.epithelium.isCellPerturbed(instance)) {
 							g2.setStroke(perturbedStroke);

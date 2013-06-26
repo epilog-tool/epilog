@@ -21,6 +21,7 @@ public class Simulation {
 
 	public Grid currentGlobalState = null;
 	private Grid nextGlobalState = null;
+	private boolean runButtonActivated = false;
 
 	private MainFrame mainFrame = null;
 	private Epithelium epithelium = null;
@@ -41,8 +42,12 @@ public class Simulation {
 	}
 
 	public void run() {
-		while (!stableStateFound | iterationNumber%30==0) {
+
+		while (!stableStateFound && iterationNumber % 30 != 0) {
+			runButtonActivated = true;
+			System.out.println(iterationNumber);
 			step();
+			runButtonActivated = false;
 		}
 	}
 
@@ -54,7 +59,7 @@ public class Simulation {
 		setRunning(false);
 		currentGlobalState = null;
 		globalModel = null;
-		nextGlobalState=null;
+		nextGlobalState = null;
 		resetIterationNumber();
 		stableStateFound = false;
 	}
@@ -64,18 +69,16 @@ public class Simulation {
 	}
 
 	public void step() {
-		
+
 		setRunning(true);
 		this.mainFrame.setBorderHexagonsPanel(iterationNumber);
-		
+
 		this.mainFrame.simulationPanelsoff();
 
-
-		
 		if (currentGlobalState == null) {
 			currentGlobalState = new Grid(
-					this.mainFrame.topology.getNumberInstances(), this.epithelium
-							.getUnitaryModel().getNodeOrder());
+					this.mainFrame.topology.getNumberInstances(),
+					this.epithelium.getUnitaryModel().getNodeOrder());
 			for (int instance = 0; instance < currentGlobalState
 					.getNumberInstances(); instance++)
 				for (NodeInfo node : currentGlobalState.getListNodes())
@@ -84,7 +87,7 @@ public class Simulation {
 		}
 
 		if (globalModel == null) {
-			
+
 			globalModel = new GlobalModel(this.mainFrame, this.epithelium,
 					this.needsComposedModel);
 		}
@@ -92,29 +95,30 @@ public class Simulation {
 		nextGlobalState = globalModel.getNextState(currentGlobalState);
 
 		saveLastPic();
-		fillHexagons();
+		if (!runButtonActivated)
+			fillHexagons();
 
 		this.iterationNumber++;
 
 		if (nextGlobalState.equals(currentGlobalState)) {
 			stableStateFound = true;
 			resetIterationNumber();
+			System.out.println("StableSate Found");
 		}
 		currentGlobalState = nextGlobalState;
 
 	}
 
-	public int getCurrentGlobalStateValue(int instance, NodeInfo node){
+	public int getCurrentGlobalStateValue(int instance, NodeInfo node) {
 		int value = 0;
 		if (currentGlobalState != null)
 			value = currentGlobalState.getValue(instance, node);
 		else
-			value = this.mainFrame.epithelium.getGridValue(instance,
-					node);
-		
+			value = this.mainFrame.epithelium.getGridValue(instance, node);
+
 		return value;
 	}
-	
+
 	public void saveLastPic() {
 		Container c = this.mainFrame.hexagonsPanel;
 		BufferedImage im = new BufferedImage(c.getWidth(), c.getHeight(),
@@ -131,8 +135,8 @@ public class Simulation {
 	public boolean hasStableStateFound() {
 		return this.stableStateFound;
 	}
-	
-	public void setNeedComposedModel(Boolean b){
+
+	public void setNeedComposedModel(Boolean b) {
 		this.needsComposedModel = b;
 	}
 
@@ -141,15 +145,16 @@ public class Simulation {
 		this.epithelium = this.mainFrame.getEpithelium();
 		resetIterationNumber();
 
-		if (this.epithelium.getComposedModel() == null && this.needsComposedModel) {
+		if (this.epithelium.getComposedModel() == null
+				&& this.needsComposedModel) {
 			this.mainFrame.getLogicalModelComposition().createComposedModel();
 		}
 
 		setRunning(true);
 
 		fillHexagons();
-		this.mainFrame.hexagonsPanel.paintComponent(this.mainFrame.hexagonsPanel
-				.getGraphics());
+		this.mainFrame.hexagonsPanel
+				.paintComponent(this.mainFrame.hexagonsPanel.getGraphics());
 	}
 
 	public int getIterationNumber() {
@@ -169,24 +174,36 @@ public class Simulation {
 		if (!initial) {
 			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
 					.getNodeOrder()) {
-				
+
 				if (this.mainFrame.epithelium.isDisplayComponentOn(node)) {
-					
 
 					int value = 0;
 					if (currentGlobalState != null)
 						value = currentGlobalState.getValue(instance, node);
 					else
-						value = this.mainFrame.epithelium.getGridValue(instance,
-								node);
+						value = this.mainFrame.epithelium.getGridValue(
+								instance, node);
 
 					if (value > 0) {
 						color = this.mainFrame.epithelium.getColor(node);
-						color = getColorLevel(color, value);
+						if (value > 1)
+							color = getColorLevel(color, value);
 
+						if(red!=255)
 						red = (red + color.getRed()) / 2;
-						green = (green + color.getGreen()) / 2;
-						blue = (blue + color.getBlue()) / 2;
+						else
+							red =color.getRed();
+						
+						if(green!=255)
+							green = (green + color.getGreen()) / 2;
+						else
+							green =color.getGreen();
+						
+						if(blue!=255)
+							blue = (blue + color.getBlue()) / 2;
+						else
+							blue =color.getBlue();
+						
 						color = new Color(red, green, blue);
 
 					} else if (value == 0) {
@@ -209,8 +226,8 @@ public class Simulation {
 
 	public void fillHexagons() {
 
-
-		for (int instance = 0; instance < this.mainFrame.topology.getNumberInstances(); instance++) {
+		for (int instance = 0; instance < this.mainFrame.topology
+				.getNumberInstances(); instance++) {
 
 			for (NodeInfo node : epithelium.getUnitaryModel().getNodeOrder()) {
 

@@ -367,12 +367,14 @@ public class SphericalEpithelium implements Epithelium {
 	}
 
 	public AbstractPerturbation getInstancePerturbation(int instance) {
-		// System.out.println(selectedPerturbation);
 		return getPerturbationsSet().get(selectedPerturbation)[instance];
 		// return perturbations[instance];
 	}
 
 	public AbstractPerturbation getInstancePerturbationDraw(int instance) {
+		
+		if (perturbations.length!=topology.getNumberInstances())
+			initializePerturbationsGrid();
 		return perturbations[instance];
 	}
 

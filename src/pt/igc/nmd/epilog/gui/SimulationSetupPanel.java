@@ -147,8 +147,10 @@ public class SimulationSetupPanel extends JPanel {
 		runButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainFrame.simulation.run();
-				stepButton.setEnabled(false);
-				runButton.setEnabled(false);
+				if (mainFrame.simulation.hasStableStateFound()) {
+					stepButton.setEnabled(false);
+					runButton.setEnabled(false);
+				}
 			}
 		});
 

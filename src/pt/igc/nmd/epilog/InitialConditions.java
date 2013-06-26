@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -73,9 +74,10 @@ public class InitialConditions extends JPanel {
 			JPanel optionsPanel = new JPanel();
 			optionsPanel.setLayout(layout);
 
-			JButton buttonMarkAll = new JButton("Apply All");
+			JButton buttonMarkAll = new JButton("Select All");
 			JButton buttonClearAll = new JButton("Clear All");
 			JButton buttonFill = new JButton("Fill");
+			JButton buttondeselectAll = new JButton("Deselect all");
 
 			buttonFill.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -85,6 +87,20 @@ public class InitialConditions extends JPanel {
 					// they have non zero expression neighbors. The fact that
 					// one
 					// component closes doesn't mean that the others do
+				}
+			});
+
+			buttondeselectAll.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					for (JCheckBox singleNodeBox : nodeBox) {
+						 
+							singleNodeBox.setSelected(false);
+							setComponentDisplay(Jcheck2Node.get(singleNodeBox),
+									singleNodeBox.isSelected());
+						}
+						fillHexagons();
+
+					
 				}
 			});
 
@@ -105,6 +121,7 @@ public class InitialConditions extends JPanel {
 			optionsPanel.add(buttonMarkAll);
 			optionsPanel.add(buttonClearAll);
 			optionsPanel.add(buttonFill);
+			optionsPanel.add(buttondeselectAll);
 
 			add(optionsPanel, BorderLayout.PAGE_START);
 
@@ -155,22 +172,28 @@ public class InitialConditions extends JPanel {
 			panelCenter.setLayout(layout);
 			List<NodeInfo> listNodes = mainFrame.epithelium.getUnitaryModel()
 					.getNodeOrder();
-
+			
+			List<NodeInfo> properComponentsList = new ArrayList<NodeInfo>();
+			
+			for (int i = 0; i < listNodes.size(); i++) {
+				if (!listNodes.get(i).isInput())
+					properComponentsList.add(listNodes.get(i));
+			}
 			auxiliaryPanel = new JPanel[listNodes.size()];
 
-			nodeBox = new JCheckBox[listNodes.size()];
-			colorButton = new JButton[listNodes.size()];
+			nodeBox = new JCheckBox[properComponentsList.size()];
+			colorButton = new JButton[properComponentsList.size()];
 
-			node2Jcheck = new JCheckBox[listNodes.size()];
-			node2Jcombo = new JComboBox[listNodes.size()];
+			node2Jcheck = new JCheckBox[properComponentsList.size()];
+			node2Jcombo = new JComboBox[properComponentsList.size()];
 
-			initialStatePerComponent = new JComboBox[listNodes.size()];
+			initialStatePerComponent = new JComboBox[properComponentsList.size()];
 
 			Jcheck2Node = new Hashtable<JCheckBox, Integer>();
 			Jcombo2Node = new Hashtable<JComboBox, Integer>();
 			button2Node = new Hashtable<JButton, NodeInfo>();
 
-			for (int i = 0; i < listNodes.size(); i++) {
+			for (int i = 0; i < properComponentsList.size(); i++) {
 
 				if (!listNodes.get(i).isInput()) {
 
@@ -295,7 +318,5 @@ public class InitialConditions extends JPanel {
 		System.out.println(name);
 
 	}
-
-
 
 }
