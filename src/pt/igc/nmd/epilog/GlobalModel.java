@@ -21,24 +21,20 @@ import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionSpecification.Int
 
 public class GlobalModel {
 
-	private Epithelium epithelium = null;
 	private MainFrame mainFrame = null;
-	private boolean composedModelPresent = false;
 
-	public GlobalModel(MainFrame mainFrame, Epithelium epithelium) {
-		this.mainFrame = mainFrame;
-		this.epithelium = epithelium;
-		this.composedModelPresent = (epithelium.getComposedModel() != null);
-	}
 
-	public GlobalModel(MainFrame mainFrame, Epithelium epithelium,
-			boolean needsComposedModel) {
+	public GlobalModel(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
-		this.epithelium = epithelium;
-		if (needsComposedModel && epithelium.getComposedModel() == null)
+		System.out.println("needsComposedModel: " + this.mainFrame.needsComposedModel);
+		System.out.println("getComposedModel(): " + this.mainFrame.epithelium.getComposedModel());
+		System.out.println("resetComposedModel: " + this.mainFrame.resetComposedModel);
+		
+		if (this.mainFrame.needsComposedModel && (this.mainFrame.epithelium.getComposedModel() == null || this.mainFrame.resetComposedModel))
 			mainFrame.getLogicalModelComposition().createComposedModel();
-		this.composedModelPresent = needsComposedModel;
+		this.mainFrame.resetComposedModel=false;
 	}
+
 
 	public Grid getNextState(Grid currentState) {
 
@@ -67,7 +63,7 @@ public class GlobalModel {
 
 	private Grid getNextStatePriorities(Grid currentState, List<NodeInfo> nodes) {
 
-		if (composedModelPresent)
+		if (this.mainFrame.needsComposedModel)
 			return getNextStateFromComposedModel(currentState, nodes);
 		else
 			return getNextStateUsingCellularAutomata(currentState, nodes);
@@ -78,7 +74,7 @@ public class GlobalModel {
 
 		System.out.println("I am using the composed Model and the nodes of this priority list are: " + nodes);
 
-		LogicalModel composedModel = this.epithelium.getComposedModel();
+		LogicalModel composedModel = this.mainFrame.epithelium.getComposedModel();
 		Grid nextState = new Grid(currentState.getNumberInstances(),
 				currentState.getListNodes());
 
@@ -175,8 +171,8 @@ public class GlobalModel {
 
 		List<NodeInfo> integrationInputs = new ArrayList<NodeInfo>();
 
-		for (NodeInfo node : epithelium.getUnitaryModel().getNodeOrder())
-			if (epithelium.isIntegrationComponent(node))
+		for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel().getNodeOrder())
+			if (this.mainFrame.epithelium.isIntegrationComponent(node))
 				integrationInputs.add(node);
 
 		// update integration inputs
@@ -184,17 +180,17 @@ public class GlobalModel {
 		Map<Map.Entry<String, Integer>, NodeInfo> translator = new HashMap<Map.Entry<String, Integer>, NodeInfo>();
 		for (int instance = 0; instance < mainFrame.topology
 				.getNumberInstances(); instance++) {
-			for (NodeInfo node : epithelium.getUnitaryModel().getNodeOrder())
+			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel().getNodeOrder())
 				translator.put(new AbstractMap.SimpleEntry<String, Integer>(
 						node.getNodeID(), new Integer(instance)), node);
 		}
 
 		CompositionContext context = new CompositionContextImpl(
 				mainFrame.topology,
-				epithelium.getUnitaryModel().getNodeOrder(), translator);
+				this.mainFrame.epithelium.getUnitaryModel().getNodeOrder(), translator);
 
 		for (NodeInfo integrationInput : integrationInputs) {
-			IntegrationExpression expressions[] = epithelium
+			IntegrationExpression expressions[] = this.mainFrame.epithelium
 					.getIntegrationExpressionsForInput(integrationInput);
 			IntegrationFunctionEvaluation evaluator[] = new IntegrationFunctionEvaluation[expressions.length];
 
@@ -222,7 +218,7 @@ public class GlobalModel {
 
 		for (int instance = 0; instance < mainFrame.topology
 				.getNumberInstances(); instance++) {
-			for (NodeInfo node : epithelium.getUnitaryModel().getNodeOrder()) {
+			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel().getNodeOrder()) {
 
 				if (!nodes.contains(node))
 				{
@@ -231,7 +227,7 @@ public class GlobalModel {
 					continue;
 				}
 
-				int index = epithelium.getUnitaryModel().getNodeOrder()
+				int index = this.mainFrame.epithelium.getUnitaryModel().getNodeOrder()
 						.indexOf(node);
 
 				byte next = 0;
@@ -241,7 +237,7 @@ public class GlobalModel {
 				byte[] cellState = currentState.asByteArray(instance);
 
 				current = cellState[index];
-				target = epithelium.getUnitaryModel().getTargetValue(index,
+				target = this.mainFrame.epithelium.getUnitaryModel().getTargetValue(index,
 						cellState);
 
 				next = computeNextValue(current, target, node, instance);
@@ -267,7 +263,7 @@ public class GlobalModel {
 		else
 			next = target;
 
-		AbstractPerturbation mutant = epithelium
+		AbstractPerturbation mutant = this.mainFrame.epithelium
 				.getInstancePerturbation(instance);
 
 		List<AbstractPerturbation> perturbations = new ArrayList<AbstractPerturbation>();

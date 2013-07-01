@@ -58,9 +58,9 @@ public class PerturbationsPanel extends JPanel {
 	private List<Integer> selectedIndexes = null;
 	private JList perturbationsList;
 
-	public Hashtable<AbstractPerturbation, Color> perturbationColor = null;
+	public JButton buttonFill;
 
-	List<AbstractPerturbation> perturbation = null;
+	// public List<AbstractPerturbation> perturbation = null;
 
 	public PerturbationsPanel(MainFrame mainFrame) {
 
@@ -70,8 +70,6 @@ public class PerturbationsPanel extends JPanel {
 
 	public void init() {
 
-		// Color backgroundColor = mainFrame.getBackground();
-		perturbationColor = new Hashtable<AbstractPerturbation, Color>();
 		setLayout(new BorderLayout());
 
 		// PAGE START PANEL
@@ -84,16 +82,11 @@ public class PerturbationsPanel extends JPanel {
 
 		JButton buttonMarkAll = new JButton("Apply All");
 		JButton buttonClearAll = new JButton("Clear All");
-		JButton buttonFill = new JButton("Fill");
+		buttonFill = new JButton("Fill");
 
 		buttonFill.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-				// TO DO: Fill has to check for each component individually
-				// if
-				// they have non zero expression neighbors. The fact that
-				// one
-				// component closes doesn't mean that the others do
+				fireOnFill();
 			}
 		});
 
@@ -129,9 +122,11 @@ public class PerturbationsPanel extends JPanel {
 				.getPreferredSize().width, mutationsSetsCombo
 				.getPreferredSize().height));
 
-		if (mainFrame.epithelium.getPrioritiesSet() != null) {
-			for (String key : mainFrame.epithelium.getPrioritiesSet().keySet()) {
-				mutationsSetsCombo.addItem(key);
+		if (mainFrame.epithelium.getPerturbationsSet() != null) {
+			for (String key : mainFrame.epithelium.getPerturbationsSet()
+					.keySet()) {
+				if (key != "none")
+					mutationsSetsCombo.addItem(key);
 			}
 		}
 
@@ -143,14 +138,14 @@ public class PerturbationsPanel extends JPanel {
 
 		buttonClear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Erase from the list of sets a specific set
+				removeElementFromSet();
 			}
 		});
 
 		mutationsSetsCombo.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				loadInitialconditions();
+				loadSelectedPerturbationSet();
 			}
 		});
 
@@ -212,7 +207,7 @@ public class PerturbationsPanel extends JPanel {
 		centerPanel.setBorder(BorderFactory
 				.createEtchedBorder(EtchedBorder.LOWERED));
 
-		perturbation = new ArrayList<AbstractPerturbation>();
+		// perturbation = new ArrayList<AbstractPerturbation>();
 		string2Node = new Hashtable<String, NodeInfo>();
 
 		componentBox = new JComboBox();
@@ -307,12 +302,12 @@ public class PerturbationsPanel extends JPanel {
 
 		deletePerturbation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				System.out.println(selectedIndexes);
 				// perturbationsList.remove(selectedIndexs);
-				for (int i = 0; i < perturbationsList.getModel().getSize(); i++) {
-					if (!selectedIndexes.contains(i)) {
-						// System.out.println(i);
-					}
+				for (int index = perturbationsList.getModel().getSize(); index < 0; index--) {
+					listModel.removeElementAt(index);
 				}
+		//TODO
 			}
 		});
 
@@ -352,6 +347,7 @@ public class PerturbationsPanel extends JPanel {
 		centerPanel.add(centerC4);
 		centerPanel.add(centerC5);
 		add(centerPanel, BorderLayout.CENTER);
+		rightPanel = initRightPanel();
 	}
 
 	// Methods
@@ -365,15 +361,25 @@ public class PerturbationsPanel extends JPanel {
 			JLabel test = new JLabel();
 			JButton colorBox = new JButton();
 
-			Color color = mainFrame.getRandomColor();
-			while (!perturbationColor.values().contains(color)) {
+			Color color = mainFrame.epithelium
+					.getPerturbationColor(mutationsListCombo.getItemAt(i)
+							.toString());
 
-				colorBox.setBackground(color);
-				perturbationColor.put(
-						(AbstractPerturbation) mutationsListCombo.getItemAt(i),
-						color);
+			if (color == null) {
+				color = mainFrame.getRandomColor();
+
+				while (mainFrame.epithelium.perturbationColor.values()
+						.contains(color)) {
+					color = mainFrame.getRandomColor();
+				}
 			}
-			
+			mainFrame.epithelium.setPerturbationColor(mutationsListCombo
+					.getItemAt(i).toString(), color);
+
+			colorBox.setBackground(mainFrame.epithelium
+					.getPerturbationColor(mutationsListCombo.getItemAt(i)
+							.toString()));
+
 			test.setText(mutationsListCombo.getItemAt(i).toString());
 
 			auxiliaryPanel.add(test);
@@ -484,7 +490,6 @@ public class PerturbationsPanel extends JPanel {
 	}
 
 	public void markAllCells() {
-
 		for (int instance = 0; instance < this.mainFrame.topology
 				.getNumberInstances(); instance++) {
 			mainFrame.epithelium.setPerturbedInstance(instance);
@@ -515,6 +520,16 @@ public class PerturbationsPanel extends JPanel {
 				.getSelectedItem());
 	}
 
+	private void fireOnFill() {
+		if (!mainFrame.isFillOn()) {
+			buttonFill.setBackground(Color.yellow);
+			mainFrame.setFill(true);
+		} else {
+			mainFrame.setFill(false);
+			buttonFill.setBackground(this.getBackground());
+		}
+	}
+
 	// ENd Panel Auxiliary Functions
 
 	private void addElementToSet() {
@@ -524,14 +539,41 @@ public class PerturbationsPanel extends JPanel {
 		mainFrame.epithelium.setPerturbationSet(name);
 	}
 
-	private void loadInitialconditions() {
+	private void removeElementFromSet() {
+		String setToRemove = (String) mutationsSetsCombo.getSelectedItem();
+		mainFrame.epithelium.getPerturbationsSet().remove(setToRemove);
+		System.out.println("I want to remove: " + setToRemove);
+		setName.setText("");
+		mutationsSetsCombo.removeAllItems();
+		for (String string : mainFrame.epithelium.getPerturbationsSet()
+				.keySet())
+			if (string!="none")
+			mutationsSetsCombo.addItem(string);
+	}
+
+	private void loadSelectedPerturbationSet() {
 
 		setName.setText((String) mutationsSetsCombo.getSelectedItem());
 		mainFrame.epithelium
 				.setSelectedPerturbation((String) mutationsSetsCombo
 						.getSelectedItem());
-		// mainFrame.hexagonsPanel.repaint();
-		// mainFrame.fillHexagons();
+		if (mutationsSetsCombo.getSelectedItem() != null) {
+			AbstractPerturbation[] aux = mainFrame.epithelium
+					.getPerturbationsSet().get(
+							(String) mutationsSetsCombo.getSelectedItem());
+			clearAllCells();
+			for (int instance = 0; instance < mainFrame.topology
+					.getNumberInstances(); instance++) {
+				if (mainFrame.epithelium.isCellPerturbed(instance)) {
+
+					System.out.println("instance: " + instance
+							+ " is perturbed");
+					mainFrame.epithelium.setActivePerturbation(aux[instance]);
+					mainFrame.epithelium.setPerturbedInstance(instance);
+				}
+			}
+			fillHexagons();
+		}
 	}
 
 	// Saving Auxiliary Functions

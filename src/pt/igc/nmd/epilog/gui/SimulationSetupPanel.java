@@ -33,16 +33,17 @@ public class SimulationSetupPanel extends JPanel {
 	public MainFrame mainFrame;
 	public JComboBox rollOver;
 	public JCheckBox createComposedModel;
+
 	private JButton runButton;
 	private JButton stepButton;
 	private JButton restartButton;
 
 	private boolean test = false;
-	
-	public 		JComboBox initialCombo;
-	public 		JComboBox inputCombo ;
-	public 		JComboBox perturbationsCombo ;
-	public 		JComboBox prioritiesCombo ;
+
+	public JComboBox initialCombo;
+	public JComboBox inputCombo;
+	public JComboBox perturbationsCombo;
+	public JComboBox prioritiesCombo;
 
 	public SimulationSetupPanel(MainFrame mainPanel) {
 		this.mainFrame = mainPanel;
@@ -99,6 +100,7 @@ public class SimulationSetupPanel extends JPanel {
 
 		createComposedModel = new JCheckBox("Create composed model");
 
+		createComposedModel.setSelected(mainFrame.needsComposedModel);
 		createComposedModel.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent event) {
@@ -106,9 +108,15 @@ public class SimulationSetupPanel extends JPanel {
 				if (src.isSelected()) {
 					// System.out.println("just checked");
 					// TODO: create composed model and simulate with composition
-					mainFrame.disableTabs(true);
-					mainFrame.simulation.setNeedComposedModel(true);
-					mainFrame.simulation.initializeSimulation();
+
+					mainFrame.needsComposedModel = true;
+
+					// mainFrame.disableTabs(true);
+					// mainFrame.simulation.setNeedComposedModel(true);
+					// mainFrame.simulation.initializeSimulation();
+				}
+				else{
+					mainFrame.needsComposedModel = false;
 				}
 				mainFrame.hexagonsPanel.paintComponent(mainFrame.hexagonsPanel
 						.getGraphics());
@@ -177,7 +185,8 @@ public class SimulationSetupPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 
 				mainFrame.disableTabs(false);
-				mainFrame.simulation.setNeedComposedModel(false);
+				mainFrame.setProv(true);
+				// mainFrame.simulation.setNeedComposedModel(false);
 				mainFrame.simulation.reset();
 				mainFrame.simulationPanelson();
 				TitledBorder titleInitialConditions;
@@ -187,9 +196,9 @@ public class SimulationSetupPanel extends JPanel {
 								.createEmptyBorder());
 				mainFrame.auxiliaryHexagonsPanel
 						.setBorder(titleInitialConditions);
-
 				removeAll();
 				init();
+				mainFrame.simulation.saveLastPic();
 			}
 		});
 		startPanel.add(restartButton);
@@ -223,6 +232,8 @@ public class SimulationSetupPanel extends JPanel {
 				JComboBox src = (JComboBox) arg0.getSource();
 				mainFrame.epithelium.setSelectedPriority((String) src
 						.getSelectedItem());
+				String string = "priorities";
+				needToResetComposedModel(string, (String) src.getSelectedItem());
 			}
 		});
 
@@ -241,15 +252,21 @@ public class SimulationSetupPanel extends JPanel {
 				JComboBox src = (JComboBox) arg0.getSource();
 				mainFrame.epithelium.setSelectedInputSet((String) src
 						.getSelectedItem());
+				String string = "input";
+				needToResetComposedModel(string, (String) src.getSelectedItem());
 			}
 		});
 
 		perturbationsCombo.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+
 				JComboBox src = (JComboBox) arg0.getSource();
 				mainFrame.epithelium.setSelectedPerturbation((String) src
 						.getSelectedItem());
+				String string = "perturbation";
+				needToResetComposedModel(string, (String) src.getSelectedItem());
+
 			}
 		});
 
@@ -284,6 +301,28 @@ public class SimulationSetupPanel extends JPanel {
 		return this;
 	}
 
+	private void needToResetComposedModel(String string, String selected) {
+		if (string == "perturbation") {
+			if (selected == mainFrame.previsioulySelectedPeturbationSet)
+				mainFrame.resetComposedModel = false;
+			else
+				mainFrame.resetComposedModel = true;
+			mainFrame.previsioulySelectedPeturbationSet = selected;
+		} else if (string == "input") {
+			if (selected == mainFrame.previsioulySelectedInputSet)
+				mainFrame.resetComposedModel = false;
+			else
+				mainFrame.resetComposedModel = true;
+			mainFrame.previsioulySelectedInputSet = selected;
+		} else if (string == "priorities") {
+			if (selected == mainFrame.previsioulySelectedPrioritiesSet)
+				mainFrame.resetComposedModel = false;
+			else
+				mainFrame.resetComposedModel = true;
+			mainFrame.previsioulySelectedPrioritiesSet = selected;
+		}
+	}
+
 	private void fillCombo(JComboBox combo, String string) {
 
 		if (string == "initial") {
@@ -299,8 +338,7 @@ public class SimulationSetupPanel extends JPanel {
 			}
 		} else if (string == "input") {
 			combo.addItem("none");
-			Hashtable<String, Grid> set = mainFrame.epithelium
-					.getInputsSet();
+			Hashtable<String, Grid> set = mainFrame.epithelium.getInputsSet();
 			for (String i : set.keySet()) {
 				if (i == "none")
 					combo.addItem(i);
@@ -309,8 +347,7 @@ public class SimulationSetupPanel extends JPanel {
 				if (i != "none")
 					combo.addItem(i);
 			}
-			
-			
+
 		} else if (string == "perturbations") {
 
 			Hashtable<String, AbstractPerturbation[]> set = mainFrame.epithelium

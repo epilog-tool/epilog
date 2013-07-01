@@ -69,7 +69,7 @@ public class PrioritiesPanel extends JPanel {
 
 		JButton buttonIncreaseLeft = new JButton("->");
 		JButton buttonIncreaseRight = new JButton("<-");
-		JButton buttonRemove = new JButton("Remove");
+		// JButton buttonRemove = new JButton("Remove");
 		priorityChosenString = new JTextField("");
 
 		buttonIncreaseLeft.addActionListener(new ActionListener() {
@@ -85,29 +85,29 @@ public class PrioritiesPanel extends JPanel {
 			}
 		});
 
-		buttonRemove.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.out.println(" ");
-				System.out.println("Priority Classes Number: "
-						+ priorityClass.size());
-				for (int i = 0; i < priorityClass.size(); i++) {
-					System.out.println("@Priority " + i
-							+ "there are the nodes: ");
-					for (int j = 0; j < priorityClass.get(i).getModel()
-							.getSize(); j++) {
-						System.out.print(priorityClass.get(i).getModel()
-								.getElementAt(j)
-								+ " ");
-					}
-					System.out.println(" ");
-					finalPriorities();
-				}
-			}
-		});
+		// buttonRemove.addActionListener(new ActionListener() {
+		// public void actionPerformed(ActionEvent e) {
+		// System.out.println(" ");
+		// System.out.println("Priority Classes Number: "
+		// + priorityClass.size());
+		// for (int i = 0; i < priorityClass.size(); i++) {
+		// System.out.println("@Priority " + i
+		// + "there are the nodes: ");
+		// for (int j = 0; j < priorityClass.get(i).getModel()
+		// .getSize(); j++) {
+		// System.out.print(priorityClass.get(i).getModel()
+		// .getElementAt(j)
+		// + " ");
+		// }
+		// System.out.println(" ");
+		// finalPriorities();
+		// }
+		// }
+		// });
 
 		optionsPanel.add(buttonIncreaseLeft);
 		optionsPanel.add(buttonIncreaseRight);
-		optionsPanel.add(buttonRemove);
+		// optionsPanel.add(buttonRemove);
 		optionsPanel.add(priorityChosenString);
 
 		add(optionsPanel, BorderLayout.PAGE_START);
@@ -131,15 +131,14 @@ public class PrioritiesPanel extends JPanel {
 
 		buttonAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Add the selected grid to the sets of initial
-				// conditions with the name of the textfield
+
 				addElementToSet();
 			}
 		});
 
 		buttonClear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Erase from the list of sets a specific set
+				removeElementFromSet();
 			}
 		});
 
@@ -360,10 +359,23 @@ public class PrioritiesPanel extends JPanel {
 		mainFrame.epithelium.setPrioritiesSet(name, finalPriorities());
 	}
 
+	private void removeElementFromSet() {
+		String setToRemove = (String) sets.getSelectedItem();
+		mainFrame.epithelium.getPrioritiesSet().remove(setToRemove);
+		System.out.println("I want to remove: " + setToRemove);
+		setName.setText("");
+		priorityChosenString.setText("");
+		sets.removeAllItems();
+		for (String string: mainFrame.epithelium.getPrioritiesSet().keySet())
+			sets.addItem(string);
+		
+	}
+
 	private void loadInitialconditions() {
 		setName.setText((String) sets.getSelectedItem());
 		List<List<NodeInfo>> priorities = new ArrayList<List<NodeInfo>>();
 
+		if (sets.getSelectedItem() != null) {
 		if (mainFrame.epithelium.getPrioritiesSet().get(
 				(String) sets.getSelectedItem()) != null) {
 			priorities = mainFrame.epithelium.getPrioritiesSet().get(
@@ -379,14 +391,13 @@ public class PrioritiesPanel extends JPanel {
 					string = string + " " + node.getNodeID();
 				}
 				string = string + "]";
-						if (index < priorities.size()-1){
-							string = string + " "+ "<";
-						}
+				if (index < priorities.size() - 1) {
+					string = string + " " + "<";
+				}
 			}
 			priorityChosenString.setText(string);
 		}
-
-
+		}
 	}
 
 }

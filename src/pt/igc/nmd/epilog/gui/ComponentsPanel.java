@@ -212,7 +212,7 @@ public class ComponentsPanel extends JPanel {
 		src.setBackground(newColor);
 		this.mainFrame.epithelium.setColor(button2Node.get(src), newColor);
 		this.mainFrame.fillHexagons();
-		System.out.println ("new Color: " + newColor.getRed()+ newColor.getGreen() +newColor.getBlue() );
+		
 	}
 
 	public void fireCheckBoxChange(Boolean bool, JCheckBox box) {

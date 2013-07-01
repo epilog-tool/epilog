@@ -95,27 +95,21 @@ public class DrawPolygon extends JPanel {
 
 					int instance = this.mainFrame.topology
 							.coords2Instance(k, j);
-					if (!this.mainFrame.simulation.isRunning()) {
-						g.setColor(Color.white); // Hexagons Color Keep white
-						g.fillPolygon(polygon2);
-						g.setColor(Color.black);
-						g.drawPolygon(polygon2);
+					if (!this.mainFrame.simulation.isRunning()
+							&& !this.mainFrame.isProv()) {
+						paintHexagons(stroke, Color.white, polygon2, g2);
 					}
 
 					else {
-						g.setColor(this.mainFrame.simulation
-								.getCoordinateCurrentColor(instance));
-						System.out.println(this.mainFrame.simulation
-								.getCoordinateCurrentColor(instance));
-						g2.setStroke(stroke);
+						BasicStroke selectedStroke = stroke;
 						if (mainFrame.epithelium.isCellPerturbed(instance)) {
-							g2.setStroke(perturbedStroke);
+							selectedStroke = perturbedStroke;
 						}
-							g.fillPolygon(polygon2);
-							g.setColor(Color.black);
-							g.drawPolygon(polygon2);
-						}
-					
+						paintHexagons(selectedStroke,
+								this.mainFrame.simulation
+										.getCoordinateCurrentColor(instance),
+								polygon2, g2);
+					}
 
 					if (k % 2 == 0)
 						centerY = (j + 1 + 0.5) * radius * Math.sqrt(3.0);
@@ -161,40 +155,45 @@ public class DrawPolygon extends JPanel {
 		}
 
 		if (this.mainFrame.isDrawingCells()) {
-			// if (mainFrame.epithelium.isCellPerturbed(instance))
-			// g2.setStroke(perturbedStroke);
-			g2.setStroke(stroke);
-			g2.setColor(color);
-			g2.fillPolygon(polygon2);
-			g2.setColor(Color.black);
-			g2.drawPolygon(polygon2);
+			BasicStroke selectedStroke = stroke;
+			paintHexagons(stroke, color, polygon2, g2);
 		} else if (this.mainFrame.isDrawingPerturbations()) {
-			g2.setStroke(stroke);
+			BasicStroke selectedStroke = stroke;
 			color = color.white;
 			if (mainFrame.epithelium.isCellPerturbedDraw(instance)) {
-				g2.setStroke(perturbedStroke);
-
+				selectedStroke = perturbedStroke;
 				if (mainFrame.epithelium.getActivePerturbation() != null)
-					color = mainFrame.perturbationsPanel.perturbationColor
-							.get(mainFrame.epithelium.getActivePerturbation());
+				color = mainFrame.epithelium.getPerturbationColor(
+							mainFrame.epithelium.getActivePerturbation().toString());
 			}
-			g2.setColor(color);
-			g2.fillPolygon(polygon2);
-			g2.setColor(Color.black);
-			g2.drawPolygon(polygon2);
+			paintHexagons(selectedStroke, color, polygon2, g2);
+
 		} else {
-			g2.setStroke(stroke);
 			if (mainFrame.epithelium.isCellPerturbed(instance)) {
-				g2.setStroke(perturbedStroke);
-				g2.setColor(color);
-				g2.fillPolygon(polygon2);
-				g2.setColor(Color.black);
-				g2.drawPolygon(polygon2);
+				BasicStroke selectedStroke = perturbedStroke;
+
+				paintHexagons(selectedStroke, color, polygon2, g2);
 			}
 		}
 	}
 
+	private void paintHexagons(BasicStroke stroke, Color color,
+			Polygon polygon2, Graphics2D g2) {
+		g2.setStroke(stroke);
+		g2.setColor(color);
+		g2.fillPolygon(polygon2);
+		g2.setColor(Color.black);
+		g2.drawPolygon(polygon2);
+	}
+	
+	private void fill(){
+		System.out.println("DO FILL");
+	}
+
 	public void clearAllCells(Graphics g) {
+
+		Graphics2D g2 = (Graphics2D) g;
+		BasicStroke stroke = new BasicStroke(1.0f);
 
 		int XX = 0, YY = 0, max = 0;
 		try {
@@ -250,10 +249,7 @@ public class DrawPolygon extends JPanel {
 						polygon2.addPoint((int) (x), (int) (y));
 					}
 
-					g.setColor(Color.white);
-					g.fillPolygon(polygon2);
-					g.setColor(Color.black);
-					g.drawPolygon(polygon2);
+					paintHexagons(stroke, Color.white, polygon2, g2);
 
 					if (k % 2 == 0)
 						centerY = (j + 1 + 0.5) * radius * Math.sqrt(3.0);

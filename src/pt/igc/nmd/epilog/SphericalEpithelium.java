@@ -38,6 +38,8 @@ public class SphericalEpithelium implements Epithelium {
 	
 	public List loadedPerturbations;
 	public List loadedMutations;
+	
+	public Hashtable<String, Color>perturbationColor ;
 
 	private String selectedPriority;
 	private String selectedPerturbation;
@@ -65,6 +67,8 @@ public class SphericalEpithelium implements Epithelium {
 		integrationInputsSet = new Hashtable<String, Hashtable<NodeInfo, List<String>>>();
 		loadedPerturbations = new ArrayList<AbstractPerturbation>();
 		loadedMutations = new ArrayList<AbstractPerturbation>();
+		
+		perturbationColor = new Hashtable<String, Color>();
 	}
 
 	// SBML INFORMATION
@@ -277,10 +281,9 @@ public class SphericalEpithelium implements Epithelium {
 
 	// GRIDS
 
-	public void setInitialState(int i, int j) {
+	public void setInitialState(int instance) {
 		List<NodeInfo> listNodes = getUnitaryModel().getNodeOrder();
 
-		int instance = topology.coords2Instance(i, j);
 		for (NodeInfo node : listNodes) {
 
 			if (isDefinitionComponentDisplayOn(listNodes.indexOf(node))) {
@@ -328,6 +331,14 @@ public class SphericalEpithelium implements Epithelium {
 	/*
 	 * Perturbations
 	 */
+	
+	public Color getPerturbationColor(String perturbation){
+		return perturbationColor.get(perturbation);
+	}
+	
+	public void setPerturbationColor(String perturbation, Color color){
+		perturbationColor.put(perturbation, color);
+	}
 
 	public void noPerturbations() {
 		perturbationsSet.put("none",

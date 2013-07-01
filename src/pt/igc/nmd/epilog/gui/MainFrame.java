@@ -16,10 +16,12 @@ import java.awt.event.MouseMotionListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -66,20 +68,34 @@ public class MainFrame extends JFrame {
 	private TextPanel watcherPanel;
 	public ComponentsPanel componentsPanel = null;
 	public JPanel auxiliaryHexagonsPanel;
-	private InputsPanel inputsPanel = null;
+	public InputsPanel inputsPanel = null;
 	public PerturbationsPanel perturbationsPanel = null;
 	private PrioritiesPanel prioritiesPanel = null;
-	private InitialConditions initial = null;
+	public InitialConditions initial = null;
+
+	private int fillXi;
+	private int fillYi;
 
 	public Topology topology = null;
 	public Simulation simulation;
 	private LogicalModelComposition logicalModelComposition;
 
+	public boolean needsComposedModel;
+	public boolean resetComposedModel;
+	
+	public String previsioulySelectedPeturbationSet = "none";
+	public String previsioulySelectedPrioritiesSet = "none";
+	public String previsioulySelectedInputSet= "none";
+	
+	
 	private boolean initialSetupHasChanged;
 	private boolean simulationHasBegan;
 	private boolean drawingPerturbations;
 	private boolean drawingPriorities;
 	private boolean drawingCells;
+
+	private boolean fill = false;
+	private boolean prov = false;
 
 	private JTabbedPane tabbedPane;
 
@@ -114,6 +130,14 @@ public class MainFrame extends JFrame {
 
 	public boolean isDrawingPerturbations() {
 		return drawingPerturbations;
+	}
+
+	public void setProv(boolean b) {
+		prov = b;
+	}
+
+	public boolean isProv() {
+		return prov;
 	}
 
 	public boolean isDrawingPriorities() {
@@ -162,9 +186,9 @@ public class MainFrame extends JFrame {
 			this.remove(panelCenter);
 		}
 
-		this.topology = new Topology(24,24);
+		this.topology = new Topology(24, 24);
 		this.epithelium = new SphericalEpithelium(this.topology);
-		this.simulation = new Simulation(this, epithelium);
+		this.simulation = new Simulation(this);
 
 		panelCenter = new JPanel(new BorderLayout());
 		getContentPane().add(panelCenter, BorderLayout.CENTER);
@@ -182,7 +206,7 @@ public class MainFrame extends JFrame {
 		auxiliaryHexagonsPanel = new JPanel();
 		hexagonsPanel = new DrawPolygon(this);
 		gridSpecsPanel = gridSpecsPanel();
-		
+
 		panelCenterLeft.add(gridSpecsPanel, BorderLayout.PAGE_START);
 		auxiliaryHexagonsPanel = new JPanel(new BorderLayout());
 		panelCenterLeft.add(auxiliaryHexagonsPanel, BorderLayout.CENTER);
@@ -232,7 +256,7 @@ public class MainFrame extends JFrame {
 
 				// The mouse is over a cell that belongs to the grid
 
-				if (isEditable()) {
+				if (isEditable() ) {
 					if (i < topology.getWidth() && j < topology.getHeight()
 							&& i >= 0 && j >= 0) {
 
@@ -242,15 +266,17 @@ public class MainFrame extends JFrame {
 							Color color = Color();
 							hexagonsPanel.drawHexagon(instance,
 									hexagonsPanel.getGraphics(), color);
-							getEpithelium().setInitialState(i, j);
+							getEpithelium().setInitialState(instance);
 						} else if (isDrawingPerturbations()) {
-
-							epithelium.setPerturbedInstance(instance);
-							if (epithelium.getActivePerturbation()!=null){
-							Color color = perturbationsPanel.perturbationColor.get(epithelium.getActivePerturbation());
 							
-							hexagonsPanel.drawHexagon(instance,
-									hexagonsPanel.getGraphics(), color);}
+							epithelium.setPerturbedInstance(instance);
+							if (epithelium.getActivePerturbation() != null) {
+								Color color = epithelium.getPerturbationColor(
+										epithelium.getActivePerturbation().toString());
+
+								hexagonsPanel.drawHexagon(instance,
+										hexagonsPanel.getGraphics(), color);
+							}
 
 						} else if (isDrawingPriorities()) {
 
@@ -292,28 +318,41 @@ public class MainFrame extends JFrame {
 
 					int instance = topology.coords2Instance(i, j);
 
-
-					if (!isDrawingPerturbations()& epithelium.getUnitaryModel() != null) {
+					if (!isDrawingPerturbations()
+							& epithelium.getUnitaryModel() != null) {
 						String string = ("<html>" + "instance: " + instance);
 						for (NodeInfo node : epithelium.getUnitaryModel()
 								.getNodeOrder()) {
-							//if (!node.isInput()) {
+							// if (!node.isInput()) {
 
-								string = string
-										+ ("<br>" + " node: " + node
-												+ " -> value: " + simulation
-													.getCurrentGlobalStateValue(
-															instance, node));
+							string = string
+									+ ("<br>" + " node: " + node
+											+ " -> value: " + simulation
+												.getCurrentGlobalStateValue(
+														instance, node));
 
-							}
-					//	}
+						}
+						// }
 						if (epithelium.isCellPerturbed(instance))
 							string = string
 									+ ("<br>" + "Perturbation: " + epithelium
 											.getInstancePerturbation(instance));
+						// string = string + ("<br>" + Color().getRed() +
+						// " "+Color().getGreen()+ " "+Color().getBlue());
 						string = string + ("</html>");
 						hexagonsPanel.setToolTipText(string);
 
+					}
+					if (isDrawingPerturbations()){
+						String string = ("<html>" + "instance: " + instance);
+						if (epithelium.isCellPerturbed(instance))
+							string = string
+									+ ("<br>" + "Perturbation: " + epithelium
+											.getInstancePerturbation(instance));
+						// string = string + ("<br>" + Color().getRed() +
+						// " "+Color().getGreen()+ " "+Color().getBlue());
+						string = string + ("</html>");
+						hexagonsPanel.setToolTipText(string);
 					}
 				}
 			}
@@ -354,19 +393,21 @@ public class MainFrame extends JFrame {
 					if (i < topology.getWidth() && j < topology.getHeight()
 							&& i >= 0 && j >= 0) {
 						int instance = topology.coords2Instance(i, j);
-						if (isDrawingCells()) {
+						if (isDrawingCells() && !isFillOn()) {
 							Color color = Color();
 							hexagonsPanel.drawHexagon(instance,
 									hexagonsPanel.getGraphics(), color);
-							getEpithelium().setInitialState(i, j);
+							getEpithelium().setInitialState(instance);
 						} else if (isDrawingPerturbations()) {
 
 							epithelium.setPerturbedInstance(instance);
-							if (epithelium.getActivePerturbation()!=null){
-							Color color = perturbationsPanel.perturbationColor.get(epithelium.getActivePerturbation());
-							
-							hexagonsPanel.drawHexagon(instance,
-									hexagonsPanel.getGraphics(), color);}
+							if (epithelium.getActivePerturbation() != null) {
+								Color color = epithelium.getPerturbationColor(
+										epithelium.getActivePerturbation().toString());
+
+								hexagonsPanel.drawHexagon(instance,
+										hexagonsPanel.getGraphics(), color);
+							}
 
 						} else if (isDrawingPriorities()) {
 						}
@@ -388,15 +429,148 @@ public class MainFrame extends JFrame {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 
+				int ind_it = (int) Math.floor((arg0.getX() / (1.5 * hexagonsPanel.radius)));
+
+				double ind_yts = (arg0.getY() - (ind_it % 2)
+						* hexagonsPanel.height / 2);
+				double ind_jt = Math.floor(ind_yts / (hexagonsPanel.height));
+
+				double xt = arg0.getX() - ind_it * (1.5 * hexagonsPanel.radius);
+				double yt = ind_yts - ind_jt * (hexagonsPanel.height);
+				int i = 0, j = 0;
+				int deltaj = 0;
+
+				if (yt > hexagonsPanel.height / 2)
+					deltaj = 1;
+				else
+					deltaj = 0;
+
+				if (xt > hexagonsPanel.radius
+						* Math.abs(0.5 - (yt / hexagonsPanel.height))) {
+					i = (int) ind_it;
+					j = (int) ind_jt;
+
+				} else {
+					i = (int) ind_it - 1;
+					j = (int) (ind_jt - i % 2 + deltaj);
+				}
+
+				if (isEditable() & isFillOn()) {
+					if (i < topology.getWidth() && j < topology.getHeight()
+							&& i >= 0 && j >= 0) {
+						// int instance = topology.coords2Instance(i, j);
+						if (isFillOn()) {
+							fillXi = i;
+							fillYi = j;
+						}
+
+					}
+				}
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
+				int ind_it = (int) Math.floor((arg0.getX() / (1.5 * hexagonsPanel.radius)));
+
+				double ind_yts = (arg0.getY() - (ind_it % 2)
+						* hexagonsPanel.height / 2);
+				double ind_jt = Math.floor(ind_yts / (hexagonsPanel.height));
+
+				double xt = arg0.getX() - ind_it * (1.5 * hexagonsPanel.radius);
+				double yt = ind_yts - ind_jt * (hexagonsPanel.height);
+				int i = 0, j = 0;
+				int deltaj = 0;
+
+				if (yt > hexagonsPanel.height / 2)
+					deltaj = 1;
+				else
+					deltaj = 0;
+
+				if (xt > hexagonsPanel.radius
+						* Math.abs(0.5 - (yt / hexagonsPanel.height))) {
+					i = (int) ind_it;
+					j = (int) ind_jt;
+
+				} else {
+					i = (int) ind_it - 1;
+					j = (int) (ind_jt - i % 2 + deltaj);
+				}
+
+				if (isEditable()) {
+					List<Integer> instanceList = new ArrayList<Integer>();
+					if (i < topology.getWidth() && j < topology.getHeight()
+							&& i >= 0 && j >= 0) {
+
+						if (isFillOn())
+							instanceList = fill(fillXi, fillYi, i, j);
+
+						for (int instance : instanceList) {
+							if (isDrawingCells()) {
+								epithelium.setInitialState(instance);
+
+								hexagonsPanel.drawHexagon(instance,
+										hexagonsPanel.getGraphics(), Color());
+							} else if (isDrawingPerturbations()) {
+
+								epithelium.setPerturbedInstance(instance);
+								if (epithelium.getActivePerturbation() != null) {
+									Color color = epithelium.getPerturbationColor(
+											epithelium.getActivePerturbation().toString());
+
+									hexagonsPanel.drawHexagon(instance,
+											hexagonsPanel.getGraphics(), color);
+								}
+
+							}
+
+						}
+
+					}
+				}
 			}
 		});
 	}
-	
-	public void simulationPanelsoff(){
+
+	public List<Integer> fill(int xInitial, int yInitial, int xFinal, int yFinal) {
+		List<Integer> instanceList = new ArrayList<Integer>();
+		int x1 = xInitial;
+		int x2 = xFinal;
+		int y1 = yInitial;
+		int y2 = yFinal;
+
+		if (xInitial > xFinal) {
+			x1 = xFinal;
+			x2 = xInitial;
+		}
+		if (yInitial > yFinal) {
+			y1 = yFinal;
+			y2 = yInitial;
+		}
+
+		for (int i = x1; i <= x2; i++)
+			for (int j = y1; j <= y2; j++) {
+				if (i > topology.getWidth())
+					i = topology.getWidth();
+				if (j > topology.getHeight())
+					j = topology.getHeight();
+
+				if (i >= 0 && j >= 0) {
+					int instance = topology.coords2Instance(i, j);
+					instanceList.add(instance);
+				}
+			}
+		return instanceList;
+	}
+
+	public void setFill(boolean b) {
+		fill = b;
+	}
+
+	public boolean isFillOn() {
+		return fill;
+	}
+
+	public void simulationPanelsoff() {
 		simulationSetupPanel.initialCombo.setEnabled(false);
 		simulationSetupPanel.inputCombo.setEnabled(false);
 		simulationSetupPanel.perturbationsCombo.setEnabled(false);
@@ -404,8 +578,8 @@ public class MainFrame extends JFrame {
 		simulationSetupPanel.createComposedModel.setEnabled(false);
 		simulationSetupPanel.rollOver.setEnabled(false);
 	}
-	
-	public void simulationPanelson(){
+
+	public void simulationPanelson() {
 		simulationSetupPanel.initialCombo.setEnabled(true);
 		simulationSetupPanel.inputCombo.setEnabled(true);
 		simulationSetupPanel.perturbationsCombo.setEnabled(true);
@@ -458,28 +632,54 @@ public class MainFrame extends JFrame {
 				drawingPriorities = false;
 				hexagonsPanel.clearAllCells(hexagonsPanel.getGraphics());
 				componentsPanel.setVisible(false);
+				setFill(false);
 				
 				if (tabbedPane.getSelectedIndex() == 0) {
 					simulationSetupPanelRepaint();
 					componentsPanel.setVisible(true);
 					componentsPanel.removeAll();
 					componentsPanel.init();
+					setFill(false);
 				} else if (tabbedPane.getSelectedIndex() == 3) {
 					editableTab = true;
 					drawingPerturbations = true;
 					fillHexagons();
+					setFill(false);
+					perturbationsPanel.buttonFill.setBackground(getBackground());
 				} else if (tabbedPane.getSelectedIndex() == 4) {
 					editableTab = true;
 					drawingCells = false;
 					// drawingPriorities = true;
+					setFill(false);
 				} else if (tabbedPane.getSelectedIndex() == 2) {
 					editableTab = true;
 					drawingCells = true;
-					// inputsPanel.init();
-				} else if (tabbedPane.getSelectedIndex() == 1){
+					setFill(false);
+					inputsPanel.buttonFill.setBackground(getBackground());
+					for (JCheckBox singleNodeBox : initial.nodeBox) {
+
+						singleNodeBox.setSelected(false);
+						initial.setComponentDisplay(
+								initial.Jcheck2Node.get(singleNodeBox),
+								singleNodeBox.isSelected());
+					}
+					fillHexagons();
+
+				} else if (tabbedPane.getSelectedIndex() == 1) {
 					editableTab = true;
 					drawingCells = true;
-					//initial.init();
+					setFill(false);
+					initial.buttonFill.setBackground(getBackground());
+
+					for (JCheckBox singleNodeBox : inputsPanel.nodeBox) {
+						if (singleNodeBox != null) {
+							singleNodeBox.setSelected(false);
+							inputsPanel.setComponentDisplay(
+									inputsPanel.Jcheck2Node.get(singleNodeBox),
+									singleNodeBox.isSelected());
+						}
+					}
+					fillHexagons();
 				}
 			}
 		});
@@ -565,17 +765,33 @@ public class MainFrame extends JFrame {
 					int value = this.epithelium.getGridValue(instance, node);
 
 					if (value > 0) {
-						color = this.epithelium.getColor(node);
-						color = ColorBrightness(color, value);
-						red = (red + color.getRed()) / 2;
-						green = (green + color.getGreen()) / 2;
-						blue = (blue + color.getBlue()) / 2;
+						color = epithelium.getColor(node);
+						if (value > 1)
+							color = simulation.getColorLevel(color, value,
+									node.getMax());
+
+						if (red != 255)
+							red = (red + color.getRed()) / 2;
+						else
+							red = color.getRed();
+
+						if (green != 255)
+							green = (green + color.getGreen()) / 2;
+						else
+							green = color.getGreen();
+
+						if (blue != 255)
+							blue = (blue + color.getBlue()) / 2;
+						else
+							blue = color.getBlue();
+
 						color = new Color(red, green, blue);
-					} else if (value == 0) {
-						color = new Color(red, green, blue);
+
 					}
 				}
+
 		}
+
 		return color;
 	}
 
@@ -598,15 +814,28 @@ public class MainFrame extends JFrame {
 					if (value > 0) {
 						color = this.epithelium.getColor(node);
 						color = ColorBrightness(color, value);
-						red = (red + color.getRed()) / 2;
-						green = (green + color.getGreen()) / 2;
-						blue = (blue + color.getBlue()) / 2;
+						if (red != 255)
+							red = (red + color.getRed()) / 2;
+						else
+							red = color.getRed();
+
+						if (green != 255)
+							green = (green + color.getGreen()) / 2;
+						else
+							green = color.getGreen();
+
+						if (blue != 255)
+							blue = (blue + color.getBlue()) / 2;
+						else
+							blue = color.getBlue();
 						color = new Color(red, green, blue);
 					} else if (value == 0) {
 						color = new Color(red, green, blue);
 					}
+
 				}
 		}
+
 		return color;
 	}
 
@@ -637,11 +866,11 @@ public class MainFrame extends JFrame {
 		userDefinedHeight.setHorizontalAlignment(JTextField.CENTER);
 		userDefinedWidth.setText("" + topology.getWidth());
 		userDefinedHeight.setText("" + topology.getHeight());
-		
+
 		userDefinedWidth.addFocusListener(new FocusListener() {
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				
+
 				if (getEpithelium().getUnitaryModel() == null) {
 					JTextField src = (JTextField) arg0.getSource();
 					topology.setWidth(Integer.parseInt(src.getText()));
@@ -669,7 +898,7 @@ public class MainFrame extends JFrame {
 			public void keyPressed(KeyEvent arg0) {
 				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
 					JTextField src = (JTextField) arg0.getSource();
-					
+
 					topology.setHeight(Integer.parseInt(src.getText()));
 					hexagonsPanel.paintComponent(hexagonsPanel.getGraphics());
 				}
@@ -689,7 +918,7 @@ public class MainFrame extends JFrame {
 			public void keyPressed(KeyEvent arg0) {
 				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
 					JTextField src = (JTextField) arg0.getSource();
-					
+
 					topology.setWidth(Integer.parseInt(src.getText()));
 					hexagonsPanel.paintComponent(hexagonsPanel.getGraphics());
 				}
@@ -730,7 +959,6 @@ public class MainFrame extends JFrame {
 				initializePanelCenterRight();
 			}
 		});
-		
 
 		return panel;
 	}
@@ -764,13 +992,13 @@ public class MainFrame extends JFrame {
 		}
 	}
 
-//	private JTextField sanityCheckDimension(JTextField userDefined) {
-//		String dimString = userDefined.getText();
-//		int w = Integer.parseInt(dimString);
-//		// w = (w % 2 == 0) ? w : w + 1;
-//		userDefined.setText("" + w);
-//		return userDefined;
-//	}
+	// private JTextField sanityCheckDimension(JTextField userDefined) {
+	// String dimString = userDefined.getText();
+	// int w = Integer.parseInt(dimString);
+	// // w = (w % 2 == 0) ? w : w + 1;
+	// userDefined.setText("" + w);
+	// return userDefined;
+	// }
 
 	private void loadModel(File file) {
 
@@ -800,16 +1028,17 @@ public class MainFrame extends JFrame {
 		this.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
 
 	}
-	
+
 	public Color getRandomColor() {
-	     String[] letters = {"0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"};
-	     String color = "#";
-	     for (int i = 0; i < 6; i++ ) {
-	         color += letters[(int) Math.round(Math.random() * 15)];
-	     }
-	     Color newColor = Color.decode(color);
-	     return newColor;
-	 }
+		String[] letters = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+				"A", "B", "C", "D", "E", "F" };
+		String color = "#";
+		for (int i = 0; i < 6; i++) {
+			color += letters[(int) Math.round(Math.random() * 15)];
+		}
+		Color newColor = Color.decode(color);
+		return newColor;
+	}
 
 	public void disableTabs(Boolean bool) {
 

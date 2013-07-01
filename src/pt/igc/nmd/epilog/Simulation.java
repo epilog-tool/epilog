@@ -17,28 +17,18 @@ public class Simulation {
 
 	private int iterationNumber = 1;
 	private GlobalModel globalModel = null;
-	private boolean needsComposedModel = false;
 
 	public Grid currentGlobalState = null;
 	private Grid nextGlobalState = null;
 	private boolean runButtonActivated = false;
 
 	private MainFrame mainFrame = null;
-	private Epithelium epithelium = null;
 
 	private boolean isRunning = false;
 	private boolean stableStateFound = false;
 
-	public Simulation(MainFrame mainFrame, Epithelium epithelium) {
+	public Simulation(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
-		this.epithelium = epithelium;
-	}
-
-	public Simulation(MainFrame mainFrame, Epithelium epithelium,
-			boolean needsComposedModel) {
-		this.mainFrame = mainFrame;
-		this.epithelium = epithelium;
-		this.needsComposedModel = needsComposedModel;
 	}
 
 	public void run() {
@@ -78,18 +68,17 @@ public class Simulation {
 		if (currentGlobalState == null) {
 			currentGlobalState = new Grid(
 					this.mainFrame.topology.getNumberInstances(),
-					this.epithelium.getUnitaryModel().getNodeOrder());
+					this.mainFrame.epithelium.getUnitaryModel().getNodeOrder());
 			for (int instance = 0; instance < currentGlobalState
 					.getNumberInstances(); instance++)
 				for (NodeInfo node : currentGlobalState.getListNodes())
 					currentGlobalState.setGrid(instance, node,
-							this.epithelium.getGridValue(instance, node));
+							this.mainFrame.epithelium.getGridValue(instance, node));
 		}
 
 		if (globalModel == null) {
 
-			globalModel = new GlobalModel(this.mainFrame, this.epithelium,
-					this.needsComposedModel);
+			globalModel = new GlobalModel(this.mainFrame);
 		}
 
 		nextGlobalState = globalModel.getNextState(currentGlobalState);
@@ -137,16 +126,16 @@ public class Simulation {
 	}
 
 	public void setNeedComposedModel(Boolean b) {
-		this.needsComposedModel = b;
+		this.mainFrame.needsComposedModel = b;
 	}
 
 	public void initializeSimulation() {
 
-		this.epithelium = this.mainFrame.getEpithelium();
+		this.mainFrame.epithelium = this.mainFrame.getEpithelium();
 		resetIterationNumber();
 
-		if (this.epithelium.getComposedModel() == null
-				&& this.needsComposedModel) {
+		if (this.mainFrame.epithelium.getComposedModel() == null
+				&& this.mainFrame.needsComposedModel) {
 			this.mainFrame.getLogicalModelComposition().createComposedModel();
 		}
 
@@ -187,24 +176,32 @@ public class Simulation {
 					if (value > 0) {
 						color = this.mainFrame.epithelium.getColor(node);
 						if (value > 1)
-							color = getColorLevel(color, value);
+							color = getColorLevel(color, value, node.getMax());
 
-						if(red!=255)
-						red = (red + color.getRed()) / 2;
+						if (red != 255)
+							red = (red + color.getRed()) / 2;
 						else
-							red =color.getRed();
-						
-						if(green!=255)
+							red = color.getRed();
+
+						if (green != 255)
 							green = (green + color.getGreen()) / 2;
 						else
-							green =color.getGreen();
-						
-						if(blue!=255)
+							green = color.getGreen();
+
+						if (blue != 255)
 							blue = (blue + color.getBlue()) / 2;
 						else
-							blue =color.getBlue();
-						
+							blue = color.getBlue();
+
 						color = new Color(red, green, blue);
+
+//						if (mainFrame.epithelium.getUnitaryModel()
+//								.getNodeOrder().indexOf(node) == 0
+//								&& value == 2) {
+//							color = Color.red;
+//
+//							System.out.println("TRICK");
+//						}
 
 					} else if (value == 0) {
 						color = new Color(red, green, blue);
@@ -229,7 +226,7 @@ public class Simulation {
 		for (int instance = 0; instance < this.mainFrame.topology
 				.getNumberInstances(); instance++) {
 
-			for (NodeInfo node : epithelium.getUnitaryModel().getNodeOrder()) {
+			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel().getNodeOrder()) {
 
 				Color color = getCoordinateCurrentColor(instance);
 				this.mainFrame.hexagonsPanel.drawHexagon(instance,
@@ -238,16 +235,38 @@ public class Simulation {
 		}
 	}
 
-	public Color getColorLevel(Color color, float value) {
+	public Color getColorLevel(Color color, int value, int max) {
 		Color newColor = color;
-
-		if (value > 0)
-			for (int j = 2; j <= value; j++)
-				newColor = newColor.darker();
-		else if (value == 0)
+		float res;
+		if (value > 0) {
+			// for (int j = 2; j <= value; j++)
+			// newColor = newColor.darker();
+			res = value / max;
+			newColor = lighter(newColor, res);
+		} else if (value == 0)
 			newColor = Color.white;
 
 		return newColor;
 	}
 
+	public Color lighter(Color color, float fraction) {
+		
+		
+	    int red   = (int) Math.round (color.getRed()   * (1.0 + fraction));
+	    int green = (int) Math.round (color.getGreen() * (1.0 + fraction));
+	    int blue  = (int) Math.round (color.getBlue()  * (1.0 + fraction));
+
+	    if (red   < 0) red   = 0; else if (red   > 255) red   = 255;
+	    if (green < 0) green = 0; else if (green > 255) green = 255;
+	    if (blue  < 0) blue  = 0; else if (blue  > 255) blue  = 255;    
+	    
+	    if (red   == 0) red   = (int) Math.round (color.getRed()   * (1.2 + fraction));
+	    if (green == 0) green = (int) Math.round (color.getGreen()   * (1.2 + fraction));
+	    if (blue  == 0) blue  = (int) Math.round (color.getBlue()   * (1.2 + fraction));  
+
+	    int alpha = color.getAlpha();
+
+	    return new Color (red, green, blue, alpha);
+
+	}
 }

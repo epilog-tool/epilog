@@ -216,7 +216,7 @@ public class StartPanel extends JPanel {
 
 		Hashtable<String, AbstractPerturbation[]> perturbationsSet = new Hashtable<String, AbstractPerturbation[]>();
 		List perturbationsList = new ArrayList<AbstractPerturbation>();
-		List mutationsList = new ArrayList<AbstractPerturbation>();
+//		List mutationsList = new ArrayList<AbstractPerturbation>();
 
 		for (NodeInfo node : mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder()) {
@@ -357,12 +357,12 @@ public class StartPanel extends JPanel {
 				if (line.contains("perturbations")) {
 					String perturbationsString = line.split(":")[1];
 					perturbationsString = perturbationsString.replace("(", "");
-					perturbationsString = perturbationsString.replace(")", "");
-					// perturbationsString = perturbationsString.replace(" ",
-					// "");
+
 					String[] perturbationsArray = perturbationsString
-							.split("]");
+							.split("\\)");
+
 					for (String aux : perturbationsArray) {
+						aux = aux.replace("]", "");
 						if (aux.contains(",")) {
 							aux = aux.replace(" ", "");
 							int max = Integer.parseInt(aux.split(",")[1]);
@@ -371,17 +371,24 @@ public class StartPanel extends JPanel {
 
 							NodeInfo node = string2Node
 									.get(aux.split("\\[")[0]);
+
 							AbstractPerturbation a = setPerturbation(node, min,
 									max);
 							perturbationsList.add(a);
-						}
-						if (aux.contains("KO")) {
+						} else if (aux.contains("KO")) {
 							aux = aux.replace(" ", "");
 							NodeInfo node = string2Node.get(aux.split("KO")[0]);
 							AbstractPerturbation a = setPerturbation(node, 0, 0);
 							perturbationsList.add(a);
 						} else {
+
 							NodeInfo node = string2Node.get(aux.split(" ")[0]);
+							int min = Integer.parseInt(aux.split(" ")[1]
+									.split("E")[1]);
+							int max = min;
+							AbstractPerturbation a = setPerturbation(node, min,
+									max);
+							perturbationsList.add(a);
 							// TODO
 						}
 					}
@@ -396,47 +403,69 @@ public class StartPanel extends JPanel {
 
 					String mutationsString = line.split(":")[1];
 					mutationsString = mutationsString.replace("(", "");
-					// mutationsString = mutationsString.replace(")", "");
-					mutationsString = mutationsString.replace(" ", "");
+					mutationsString = mutationsString.replace("[", "");
+					mutationsString = mutationsString.replace("]", "");
 					String[] mutationsArray = mutationsString.split("\\)");
+					NodeInfo node = null;
+
 					for (String aux : mutationsArray) {
 						List perturbation = new ArrayList<AbstractPerturbation>();
-						String[] aux_2 = aux.split("\\]");
 
-						for (String aux_3 : aux_2) {
-							if (aux.contains(",")) {
-								int max = Integer.parseInt(aux_3.split(",")[1]);
-								int min = Integer.parseInt(aux.split(",")[0]
-										.split("\\[")[1]);
-								NodeInfo node = string2Node.get(aux
-										.split("\\[")[0]);
-								AbstractPerturbation a = setPerturbation(node,
-										min, max);
-								perturbation.add(a);
-							}
+						if (aux.length() > 1) {
 
-							if (aux.contains("KO")) {
-								int max = 0;
-								int min = 0;
-								NodeInfo node = string2Node
-										.get(aux.split("KO")[0]);
-								AbstractPerturbation a = setPerturbation(node,
-										min, max);
-								perturbation.add(a);
-							}
+							String[] aux_2 = aux.split(" ");
+							for (String aux_3 : aux_2) {
+								if (aux_3.length() > 1) {
+									if (string2Node.get(aux_3) != null) {
 
-						}
-						MultiplePerturbation mutation = new MultiplePerturbation(
-								perturbation);
-						mutationsList
-								.add(new MultiplePerturbation(perturbation));
-						mlist.put(index, mutation);
+										node = string2Node.get(aux_3);
 
-						index = index + 1;
-					}
+									}// Ends if (string2Node.get(aux_3)!=null)
+									else if (aux_3.contains(",")) {
+										int min = Integer.parseInt(aux_3
+												.split(",")[0]);
+										int max = Integer.parseInt(aux_3
+												.split(",")[1]);
+										AbstractPerturbation a = setPerturbation(
+												node, min, max);
+										perturbation.add(a);
+									} // Ends else if (aux_3.contains(","))
+									else if (aux_3.contains("KO")) {
+										int max = 0;
+										int min = 0;
+										AbstractPerturbation a = setPerturbation(
+												node, min, max);
+										perturbation.add(a);
+									}// ENds else if (aux_3.contains("KO"))
+
+									else if (aux_3.contains("E")) {
+										int min = Integer.parseInt(aux
+												.split("E")[1].split(" ")[0]);
+										int max = min;
+										AbstractPerturbation a = setPerturbation(
+												node, min, max);
+										perturbation.add(a);
+									}// Ends else if (aux_3.contains("E"))
+
+								}// Ends if (aux_3.length()>1)
+							}// Ends for (String aux_3 : aux_2)
+							MultiplePerturbation mutation = new MultiplePerturbation(
+									perturbation);
+							mlist.put(index, mutation);
+
+							index = index + 1;
+						}// ends if (aux.length() > 1)
+
+					}// Ends for (String aux : mutationsArray)
+
 					List aux = new ArrayList<AbstractPerturbation>();
+					List aux2 = new ArrayList<String>();
+					
 					for (AbstractPerturbation a : mlist.values()) {
-						aux.add(a);
+						
+						if (!aux2.contains(a.toString()))
+							aux.add(a);
+						aux2.add(a.toString());
 					}
 					mainFrame.epithelium.setLoadedMutations(aux);
 
@@ -445,16 +474,17 @@ public class StartPanel extends JPanel {
 					int setNumber = Integer.parseInt(line.split(" ")[1]);
 					String setName = line.split(" ")[3];
 					setPerturbationsDescription.put(setNumber, setName);
-					if (perturbationsSet.get(setName) == null)
+					if (perturbationsSet.get(setName) == null){
+			
 						perturbationsSet.put(setName,
 								new AbstractPerturbation[mainFrame.topology
 										.getNumberInstances()]);
-
+					}
 				} else if (line.contains("color")) {
 
 				} else if (line.contains("MT")) {
 					// System.out.println(line);
-					String setName = line.split(" ")[1];
+					String setName = setPerturbationsDescription.get(Integer.parseInt(line.split(" ")[1])).replace(":", "");
 					AbstractPerturbation p = mlist.get(Integer.parseInt(line
 							.split(" ")[3]));
 					String aux = line.split(":")[1];
@@ -469,12 +499,13 @@ public class StartPanel extends JPanel {
 							int init = Integer.parseInt(range.split("-")[0]);
 							int end = Integer.parseInt(range.split("-")[1]);
 							for (int instance = init; instance <= end; instance++) {
-								if (perturbationsSet.get(setName) == null)
+								if (perturbationsSet.get(setName) == null){
+									
 									perturbationsSet
 											.put(setName,
 													new AbstractPerturbation[mainFrame.topology
 															.getNumberInstances()]);
-
+								}
 								perturbationsSet.get(setName)[instance] = p;
 
 							}
@@ -773,9 +804,7 @@ public class StartPanel extends JPanel {
 
 					}
 					out.write(" )\n");
-
 				}
-
 				setIndex++;
 			}
 

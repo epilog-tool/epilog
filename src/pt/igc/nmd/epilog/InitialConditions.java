@@ -34,13 +34,13 @@ public class InitialConditions extends JPanel {
 	private MainFrame mainFrame;
 
 	private Hashtable<JComboBox, Integer> Jcombo2Node;
-	private Hashtable<JCheckBox, Integer> Jcheck2Node;
+	public Hashtable<JCheckBox, Integer> Jcheck2Node;
 	private Hashtable<JButton, NodeInfo> button2Node;
 
 	private JComboBox[] node2Jcombo;
 	private JCheckBox[] node2Jcheck;
 	private JComboBox[] initialStatePerComponent;
-	private JCheckBox nodeBox[];
+	public JCheckBox nodeBox[];
 
 	private JPanel auxiliaryPanel[];
 
@@ -48,6 +48,9 @@ public class InitialConditions extends JPanel {
 
 	private JTextField setName;
 	private JComboBox sets;
+	
+	public JButton buttonFill;
+
 
 	public InitialConditions(MainFrame mainPanel) {
 
@@ -76,21 +79,18 @@ public class InitialConditions extends JPanel {
 
 			JButton buttonMarkAll = new JButton("Select All");
 			JButton buttonClearAll = new JButton("Clear All");
-			JButton buttonFill = new JButton("Fill");
-			JButton buttondeselectAll = new JButton("Deselect all");
+			buttonFill = new JButton("Fill");
+			JButton buttonDeselectAll = new JButton("Deselect all");
+			JButton buttonSelectAll = new JButton("Select all");
 
 			buttonFill.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-
-					// TO DO: Fill has to check for each component individually
-					// if
-					// they have non zero expression neighbors. The fact that
-					// one
-					// component closes doesn't mean that the others do
+					fireOnFill();
+						
 				}
 			});
 
-			buttondeselectAll.addActionListener(new ActionListener() {
+			buttonDeselectAll.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					for (JCheckBox singleNodeBox : nodeBox) {
 						 
@@ -98,30 +98,39 @@ public class InitialConditions extends JPanel {
 							setComponentDisplay(Jcheck2Node.get(singleNodeBox),
 									singleNodeBox.isSelected());
 						}
+						fillHexagons();	
+				}
+			});
+			
+			buttonSelectAll.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					for (JCheckBox singleNodeBox : nodeBox) {
+						 
+							singleNodeBox.setSelected(true);
+							setComponentDisplay(Jcheck2Node.get(singleNodeBox),
+									singleNodeBox.isSelected());
+						}
 						fillHexagons();
-
-					
 				}
 			});
 
 			buttonMarkAll.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					markAllCells();
-
 				}
 			});
 
 			buttonClearAll.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					clearAllCells();
-
 				}
 			});
 
 			optionsPanel.add(buttonMarkAll);
 			optionsPanel.add(buttonClearAll);
 			optionsPanel.add(buttonFill);
-			optionsPanel.add(buttondeselectAll);
+			optionsPanel.add(buttonDeselectAll);
+			optionsPanel.add(buttonSelectAll);
 
 			add(optionsPanel, BorderLayout.PAGE_START);
 
@@ -147,7 +156,7 @@ public class InitialConditions extends JPanel {
 
 			buttonClear.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					// TODO: Erase from the list of sets a specific set
+					removeElementFromSet() ;
 				}
 			});
 
@@ -208,9 +217,9 @@ public class InitialConditions extends JPanel {
 					nodeBox[i].setToolTipText(listNodes.get(i).getNodeID());
 
 					colorButton[i] = new JButton("");
-					button2Node.put(colorButton[i], listNodes.get(i));
-					colorButton[i].setBackground(mainFrame.epithelium
-							.getColor(listNodes.get(i)));
+					colorButton[i].setBackground(mainFrame.epithelium.getColor(listNodes.get(i)));
+					button2Node.put(colorButton[i],listNodes.get(i));
+
 
 					colorButton[i].addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
@@ -296,14 +305,25 @@ public class InitialConditions extends JPanel {
 
 	public void markAllCells() {
 
-		for (int i = 0; i < mainFrame.topology.getWidth(); i++) {
-			for (int j = 0; j < mainFrame.topology.getHeight(); j++) {
-				mainFrame.epithelium.setInitialState(i, j);
-			}
+		for (int instance = 0; instance < mainFrame.topology
+				.getNumberInstances(); instance++) {
+
+			mainFrame.epithelium.setInitialState(instance);
 		}
 		fillHexagons();
 	}
 
+	private void fireOnFill(){
+		if(!mainFrame.isFillOn()){
+			buttonFill.setBackground(Color.yellow);
+			mainFrame.setFill(true);
+		}
+		else{
+			mainFrame.setFill(false);
+			buttonFill.setBackground(this.getBackground());
+		}
+	}
+	
 	public void fillHexagons() {
 		mainFrame.fillHexagons();
 	}
@@ -318,5 +338,15 @@ public class InitialConditions extends JPanel {
 		System.out.println(name);
 
 	}
-
+	private void removeElementFromSet() {
+		String setToRemove = (String) sets.getSelectedItem();
+		mainFrame.epithelium.getInitialStateSet().remove(setToRemove);
+		System.out.println("I want to remove: " + setToRemove);
+		setName.setText("");
+		sets.removeAllItems();
+		for (String string : mainFrame.epithelium.getInitialStateSet()
+				.keySet())
+			if (string!="none")
+				sets.addItem(string);
+	}
 }

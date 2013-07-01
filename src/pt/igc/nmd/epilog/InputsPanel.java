@@ -39,7 +39,7 @@ public class InputsPanel extends JPanel {
 	private JPanel auxiliaryPanel[];
 
 	private Hashtable<JComboBox, Integer> Jcombo2Node;
-	private Hashtable<JCheckBox, Integer> Jcheck2Node;
+	public Hashtable<JCheckBox, Integer> Jcheck2Node;
 	private Hashtable<JComboBox, Integer> JcomboInput2Node;
 	private Hashtable<JButton, Integer> integrationFunctionButton2Node;
 	
@@ -50,14 +50,16 @@ public class InputsPanel extends JPanel {
 	private JButton[] node2IntegrationFunctionButton;
 	private JComboBox[] initialStatePerComponent;
 	private JComboBox[] inputComboChooser;
-	private JCheckBox nodeBox[];
+	public JCheckBox nodeBox[];
 	private JButton[] colorButton;
 	
 	private JTextField setName;
 	private JComboBox sets;
+	
 
 
 	private JButton integrationFunctionButton;
+	public JButton buttonFill;
 //	private JPanel optionsPanel;
 
 	public InputsPanel(SphericalEpithelium epithelium, Topology topology,
@@ -98,16 +100,15 @@ public class InputsPanel extends JPanel {
 
 			JButton buttonMarkAll = new JButton("Apply All");
 			JButton buttonClearAll = new JButton("Clear All");
-			JButton buttonFill = new JButton("Fill");
+			buttonFill = new JButton("Fill");
+			JButton buttonDeselectAll = new JButton("Deselect all");
+			JButton buttonSelectAll = new JButton("Select all");
 
 			buttonFill.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-
-					// TO DO: Fill has to check for each component individually
-					// if
-					// they have non zero expression neighbors. The fact that
-					// one
-					// component closes doesn't mean that the others do
+					
+					fireOnFill();
+						
 				}
 			});
 
@@ -124,10 +125,40 @@ public class InputsPanel extends JPanel {
 
 				}
 			});
+			
+			buttonDeselectAll.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					for (JCheckBox singleNodeBox : nodeBox) {
+						if (singleNodeBox!=null){
+							singleNodeBox.setSelected(false);
+							setComponentDisplay(Jcheck2Node.get(singleNodeBox),
+									singleNodeBox.isSelected());
+						}}
+						fillHexagons();
+
+					
+				}
+			});
+			
+			buttonSelectAll.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					for (JCheckBox singleNodeBox : nodeBox) {
+						if (singleNodeBox!=null){
+							singleNodeBox.setSelected(true);
+							setComponentDisplay(Jcheck2Node.get(singleNodeBox),
+									singleNodeBox.isSelected());
+						}}
+						fillHexagons();
+
+					
+				}
+			});
 
 			optionsPanel.add(buttonMarkAll);
 			optionsPanel.add(buttonClearAll);
 			optionsPanel.add(buttonFill);
+			optionsPanel.add(buttonDeselectAll);
+			optionsPanel.add(buttonSelectAll);
 
 			add(optionsPanel, BorderLayout.PAGE_START);
 
@@ -151,7 +182,7 @@ public class InputsPanel extends JPanel {
 
 			buttonClear.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					// TODO: Erase from the list of sets a specific set
+					removeElementFromSet() ;
 				}
 			});
 
@@ -189,7 +220,8 @@ public class InputsPanel extends JPanel {
 			Jcombo2Node = new Hashtable<JComboBox, Integer>();
 			integrationFunctionButton2Node = new Hashtable<JButton, Integer>();
 			JcomboInput2Node = new Hashtable<JComboBox, Integer>();
-
+			
+		
 			for (int i = 0; i < listNodes.size(); i++) {
 
 				if (listNodes.get(i).isInput()) {
@@ -203,17 +235,23 @@ public class InputsPanel extends JPanel {
 					nodeBox[i] = new JCheckBox(listNodes.get(i).getNodeID());
 					nodeBox[i].setBackground(backgroundColor);
 					nodeBox[i].setToolTipText(listNodes.get(i).getNodeID());
-					nodeBox[i].setBackground(backgroundColor);
+					
 					
 					
 					colorButton[i] = new JButton("");
 					colorButton[i].setBackground(mainFrame.epithelium.getColor(listNodes.get(i)));
-					//colorButton[i].setBackground(mainFrame.getRandomColor());
-					//mainFrame.epithelium.setColor(listNodes.get(i), colorButton[i].getBackground());
 					button2Node.put(colorButton[i],listNodes.get(i));
+					
+					colorButton[i].addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							JButton src = (JButton) arg0.getSource();
+							setNewColor(src);
+						}
+					});
 
 					Jcheck2Node.put(nodeBox[i], i);
 					node2Jcheck[i] = nodeBox[i];
+					
 					epithelium.setDefinitionsComponentDisplay(i, false);
 
 					nodeBox[i].addActionListener(new ActionListener() {
@@ -226,12 +264,7 @@ public class InputsPanel extends JPanel {
 						}
 					});
 					
-					colorButton[i].addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent arg0) {
-							JButton src = (JButton) arg0.getSource();
-							setNewColor(src);
-						}
-					});
+				
 
 					initialStatePerComponent[i] = new JComboBox();
 
@@ -241,7 +274,7 @@ public class InputsPanel extends JPanel {
 					Jcombo2Node.put(initialStatePerComponent[i], i);
 					node2Jcombo[i] = initialStatePerComponent[i];
 
-					epithelium.setInitialState(listNodes.get(Jcombo2Node
+					mainFrame.epithelium.setInitialState(listNodes.get(Jcombo2Node
 							.get(initialStatePerComponent[i])), (byte) 0);
 
 					initialStatePerComponent[i]
@@ -291,14 +324,14 @@ public class InputsPanel extends JPanel {
 										.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));
 					}
 
-					if (mainFrame.getEpithelium()
+					if (mainFrame.epithelium
 							.isDefinitionComponentDisplayOn(i))
 						nodeBox[i].isSelected();
-					if (mainFrame.getEpithelium().isIntegrationComponent(i))
+					if (mainFrame.epithelium.isIntegrationComponent(i))
 						nodeBox[i].setEnabled(false);
 
 					auxiliaryPanel[i].add(nodeBox[i]);
-					if (mainFrame.getEpithelium().isIntegrationComponent(i))
+					if (mainFrame.epithelium.isIntegrationComponent(i))
 						auxiliaryPanel[i].add(integrationFunctionButton);
 					else {
 						auxiliaryPanel[i].add(initialStatePerComponent[i]);
@@ -316,7 +349,7 @@ public class InputsPanel extends JPanel {
 											.getSource();
 									String optionString = (String) source
 											.getSelectedItem();
-
+									
 									InputOption option = InputOption
 											.getOptionFromString(optionString);
 
@@ -343,6 +376,19 @@ public class InputsPanel extends JPanel {
 			add(centerPanel, BorderLayout.CENTER);
 		}
 	}
+	
+	private void fireOnFill(){
+		if(!mainFrame.isFillOn()){
+			buttonFill.setBackground(Color.yellow);
+			mainFrame.setFill(true);
+		}
+		else{
+			mainFrame.setFill(false);
+			buttonFill.setBackground(this.getBackground());
+		}
+			
+	}
+	
 	
 	private void setNewColor(JButton src){
 		Color newColor = JColorChooser.showDialog(src, "Color Chooser", mainFrame.epithelium.getColor(button2Node.get(src)));
@@ -442,10 +488,10 @@ public class InputsPanel extends JPanel {
 
 	public void markAllCells() {
 
-		for (int i = 0; i < topology.getWidth(); i++) {
-			for (int j = 0; j < topology.getHeight(); j++) {
-				epithelium.setInitialState(i, j);
-			}
+		for (int instance = 0; instance < mainFrame.topology
+				.getNumberInstances(); instance++) {
+
+			mainFrame.epithelium.setInitialState(instance);
 		}
 		fillHexagons();
 	}
@@ -457,8 +503,18 @@ public class InputsPanel extends JPanel {
 		if (!mainFrame.epithelium.getInputsSet().containsKey(name))
 			sets.addItem(name);
 		mainFrame.epithelium.setInputsSet(name);
-		System.out.println(name);
-
+	}
+	
+	private void removeElementFromSet() {
+		String setToRemove = (String) sets.getSelectedItem();
+		mainFrame.epithelium.getInputsSet().remove(setToRemove);
+		System.out.println("I want to remove: " + setToRemove);
+		setName.setText("");
+		sets.removeAllItems();
+		for (String string : mainFrame.epithelium.getInputsSet()
+				.keySet())
+			if (string!="none")
+				sets.addItem(string);
 	}
 	
 }
