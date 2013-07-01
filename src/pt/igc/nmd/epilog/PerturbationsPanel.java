@@ -302,12 +302,22 @@ public class PerturbationsPanel extends JPanel {
 
 		deletePerturbation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(selectedIndexes);
+				// System.out.println(selectedIndexes);
 				// perturbationsList.remove(selectedIndexs);
-				for (int index = perturbationsList.getModel().getSize(); index < 0; index--) {
-					listModel.removeElementAt(index);
-				}
-		//TODO
+				// for (int index = perturbationsList.getModel().getSize();
+				// index < 0; index--) {
+				// listModel.removeElementAt(index);
+				// perturbationsList.remove(index);
+				// }
+				deletePerturbation();
+
+				// TODO
+			}
+		});
+
+		deleteMutation.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				deleteMutation();
 			}
 		});
 
@@ -351,6 +361,55 @@ public class PerturbationsPanel extends JPanel {
 	}
 
 	// Methods
+
+	private void deletePerturbation() {
+
+		listModel = new DefaultListModel();
+		List<AbstractPerturbation> perturbationToDelete = new ArrayList<AbstractPerturbation>();
+
+		for (int index = 0; index < perturbationsList.getModel().getSize(); index++) {
+			for (int i : selectedIndexes)
+				if (i - index != 0)
+					listModel.addElement(perturbationsList.getModel()
+							.getElementAt(index));
+				else
+					perturbationToDelete.add((AbstractPerturbation) perturbationsList.getModel()
+							.getElementAt(index));
+		}
+		perturbationsList.setModel(listModel);
+
+		for (int i = 0; i < mutationsListCombo.getItemCount(); i++) {
+			MultiplePerturbation p = (MultiplePerturbation) mutationsListCombo
+					.getItemAt(i);
+			for (int j = 0; j < perturbationToDelete.size(); j++) {
+				if (p.perturbations.contains(perturbationToDelete.get(j))) {
+		
+					mainFrame.epithelium
+							.setActivePerturbation(p);
+					deleteMutation();
+				}
+			}
+		}
+
+	}
+
+	private void deleteMutation() {
+
+		List<AbstractPerturbation> newList = new ArrayList<AbstractPerturbation>();
+		int index = -1;
+		for (int i = 0; i < mutationsListCombo.getItemCount(); i++) {
+			if (mutationsListCombo.getItemAt(i) != mainFrame.epithelium
+					.getActivePerturbation())
+				newList.add((AbstractPerturbation) mutationsListCombo
+						.getItemAt(i));
+
+		}
+		mutationsListCombo.removeAllItems();
+		for (AbstractPerturbation p : newList)
+			mutationsListCombo.addItem(p);
+
+		initRightPanel();
+	}
 
 	private JPanel initRightPanel() {
 
@@ -547,8 +606,8 @@ public class PerturbationsPanel extends JPanel {
 		mutationsSetsCombo.removeAllItems();
 		for (String string : mainFrame.epithelium.getPerturbationsSet()
 				.keySet())
-			if (string!="none")
-			mutationsSetsCombo.addItem(string);
+			if (string != "none")
+				mutationsSetsCombo.addItem(string);
 	}
 
 	private void loadSelectedPerturbationSet() {
@@ -566,8 +625,6 @@ public class PerturbationsPanel extends JPanel {
 					.getNumberInstances(); instance++) {
 				if (mainFrame.epithelium.isCellPerturbed(instance)) {
 
-					System.out.println("instance: " + instance
-							+ " is perturbed");
 					mainFrame.epithelium.setActivePerturbation(aux[instance]);
 					mainFrame.epithelium.setPerturbedInstance(instance);
 				}
@@ -595,7 +652,6 @@ public class PerturbationsPanel extends JPanel {
 			mutation[i] = (AbstractPerturbation) mutationsListCombo
 					.getItemAt(i);
 		}
-
 		return mutation;
 	}
 }

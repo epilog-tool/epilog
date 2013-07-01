@@ -95,8 +95,7 @@ public class DrawPolygon extends JPanel {
 
 					int instance = this.mainFrame.topology
 							.coords2Instance(k, j);
-					if (!this.mainFrame.simulation.isRunning()
-							&& !this.mainFrame.isProv()) {
+					if ( !this.mainFrame.isProv()) {
 						paintHexagons(stroke, Color.white, polygon2, g2);
 					}
 

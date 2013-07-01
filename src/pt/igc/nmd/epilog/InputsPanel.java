@@ -386,7 +386,6 @@ public class InputsPanel extends JPanel {
 			mainFrame.setFill(false);
 			buttonFill.setBackground(this.getBackground());
 		}
-			
 	}
 	
 	
@@ -398,35 +397,35 @@ public class InputsPanel extends JPanel {
 	}
 
 	protected void initializeIntegrationInterface(JButton src) {
-		NodeInfo node = mainFrame.getEpithelium().getUnitaryModel()
+		NodeInfo node = mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder().get(integrationFunctionButton2Node.get(src));
 		new IntegrationFunctionInterface(this.epithelium, node);
 
 	}
 
 	private void fireInitialStateChange(JComboBox combo) {
-		epithelium.setInitialState(mainFrame.getEpithelium().getUnitaryModel()
+		epithelium.setInitialState(mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder().get(Jcombo2Node.get(combo)),
 				((Integer) combo.getSelectedItem()).byteValue());
 	}
 
 	public void setComponentDisplay(int i, boolean b) {
-		mainFrame.getEpithelium().setDefinitionsComponentDisplay(i, b);
+		mainFrame.epithelium.setDefinitionsComponentDisplay(i, b);
 	}
 
 	protected void setEnvOptions(JComboBox inputCombo, boolean bool) {
 
 		int i = JcomboInput2Node.get(inputCombo);
-		mainFrame.getEpithelium().setIntegrationComponent(i, !bool);
+		mainFrame.epithelium.setIntegrationComponent(i, !bool);
 
 		if (bool) {
-			epithelium.resetIntegrationNode(mainFrame.getEpithelium()
+			epithelium.resetIntegrationNode(mainFrame.epithelium
 					.getUnitaryModel().getNodeOrder()
 					.get(JcomboInput2Node.get(inputCombo)));
 		} else {
 			for (int instance = 0; instance < mainFrame.topology
 					.getNumberInstances(); instance++) {
-				epithelium.setGrid(instance, mainFrame.getEpithelium()
+				epithelium.setGrid(instance, mainFrame.epithelium
 						.getUnitaryModel().getNodeOrder().get(i), (byte) 0);
 			}
 		}
@@ -438,7 +437,7 @@ public class InputsPanel extends JPanel {
 
 		fillHexagons();
 
-		System.out.println(mainFrame.getEpithelium().getUnitaryModel()
+		System.out.println(mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder().get(i).getNodeID());
 
 		// System.out.println(JcomboInput2Node.get(inputCombo)
@@ -501,8 +500,10 @@ public class InputsPanel extends JPanel {
 	private void inputsAdd() {
 		String name = setName.getText();
 		if (!mainFrame.epithelium.getInputsSet().containsKey(name))
-			sets.addItem(name);
+			sets.addItem(name);{
 		mainFrame.epithelium.setInputsSet(name);
+		
+			}
 	}
 	
 	private void removeElementFromSet() {

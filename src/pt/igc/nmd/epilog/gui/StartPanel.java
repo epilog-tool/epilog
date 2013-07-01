@@ -213,10 +213,12 @@ public class StartPanel extends JPanel {
 		Hashtable<Integer, AbstractPerturbation> mlist = new Hashtable<Integer, AbstractPerturbation>();
 		Hashtable<Integer, String> setPrioritiesDescription = new Hashtable<Integer, String>();
 		Hashtable<Integer, String> setPerturbationsDescription = new Hashtable<Integer, String>();
+		Hashtable<Integer, String> setInitialStateDescription = new Hashtable<Integer, String>();
+		Hashtable<Integer, String> setInputsDescription = new Hashtable<Integer, String>();
 
 		Hashtable<String, AbstractPerturbation[]> perturbationsSet = new Hashtable<String, AbstractPerturbation[]>();
 		List perturbationsList = new ArrayList<AbstractPerturbation>();
-//		List mutationsList = new ArrayList<AbstractPerturbation>();
+		// List mutationsList = new ArrayList<AbstractPerturbation>();
 
 		for (NodeInfo node : mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder()) {
@@ -256,32 +258,44 @@ public class StartPanel extends JPanel {
 				this.mainFrame.topology.setRollOver(line.split(" ")[1]
 						.split(",")[0]);
 			}
-			if (identifier.contains("IC")) {
-				NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
-						.getNodeOrder()
-						.get(Integer.parseInt(line.split(" ")[2]));
-				byte value = (byte) Integer.parseInt(line.split(" ")[4]);
+			if (identifier.contains("IS")) {
+				if (line.contains("name")) {
+					int key = Integer.parseInt(line.split(" ")[1]);
+					String value = line.split(":")[1];
+					setInitialStateDescription.put(key, value);
+					mainFrame.epithelium.setInitialStateSet(value);
+					
+				} else {
 
-				for (String range : line.split(" ")[6].split(",")) {
-					range.replace("(", "");
-					range.replace(")", "");
-					range.replace(" ", "");
+					NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
+							.getNodeOrder()
+							.get(Integer.parseInt(line.split(" ")[3]));
+					byte value = (byte) Integer.parseInt(line.split(" ")[5]);
+					String name = setInitialStateDescription.get(Integer
+							.parseInt(line.split(" ")[1]));
+					
 
-					if (range.contains("-")) {
+					for (String range : line.split(" ")[7].split(",")) {
+						range.replace("(", "");
+						range.replace(")", "");
+						range.replace(" ", "");
 
-						int init = Integer.parseInt(range.split("-")[0]);
-						int end = Integer.parseInt(range.split("-")[1]);
-						for (int instance = init; instance <= end; instance++) {
+						if (range.contains("-")) {
 
-							this.mainFrame.epithelium.setGrid(instance, node,
-									value);
+							int init = Integer.parseInt(range.split("-")[0]);
+							int end = Integer.parseInt(range.split("-")[1]);
+							for (int instance = init; instance <= end; instance++) {
+
+								mainFrame.epithelium.getInitialStateSet().get(name).setGrid(instance, node, value);
+							}
+
+						} else if (range.length() >= 1) {
+							int instance = Integer
+									.parseInt(range.split(" ")[0]);
+
+							mainFrame.epithelium.getInitialStateSet().get(name).setGrid(instance, node, value);
+
 						}
-
-					} else if (range.length() >= 1) {
-						int instance = Integer.parseInt(range.split(" ")[0]);
-						this.mainFrame.epithelium
-								.setGrid(instance, node, value);
-
 					}
 				}
 			}
@@ -460,9 +474,9 @@ public class StartPanel extends JPanel {
 
 					List aux = new ArrayList<AbstractPerturbation>();
 					List aux2 = new ArrayList<String>();
-					
+
 					for (AbstractPerturbation a : mlist.values()) {
-						
+
 						if (!aux2.contains(a.toString()))
 							aux.add(a);
 						aux2.add(a.toString());
@@ -474,8 +488,8 @@ public class StartPanel extends JPanel {
 					int setNumber = Integer.parseInt(line.split(" ")[1]);
 					String setName = line.split(" ")[3];
 					setPerturbationsDescription.put(setNumber, setName);
-					if (perturbationsSet.get(setName) == null){
-			
+					if (perturbationsSet.get(setName) == null) {
+
 						perturbationsSet.put(setName,
 								new AbstractPerturbation[mainFrame.topology
 										.getNumberInstances()]);
@@ -484,7 +498,9 @@ public class StartPanel extends JPanel {
 
 				} else if (line.contains("MT")) {
 					// System.out.println(line);
-					String setName = setPerturbationsDescription.get(Integer.parseInt(line.split(" ")[1])).replace(":", "");
+					String setName = setPerturbationsDescription.get(
+							Integer.parseInt(line.split(" ")[1])).replace(":",
+							"");
 					AbstractPerturbation p = mlist.get(Integer.parseInt(line
 							.split(" ")[3]));
 					String aux = line.split(":")[1];
@@ -499,8 +515,8 @@ public class StartPanel extends JPanel {
 							int init = Integer.parseInt(range.split("-")[0]);
 							int end = Integer.parseInt(range.split("-")[1]);
 							for (int instance = init; instance <= end; instance++) {
-								if (perturbationsSet.get(setName) == null){
-									
+								if (perturbationsSet.get(setName) == null) {
+
 									perturbationsSet
 											.put(setName,
 													new AbstractPerturbation[mainFrame.topology
@@ -536,7 +552,7 @@ public class StartPanel extends JPanel {
 	private void loadConfigurations() {
 
 		this.mainFrame.setEpithelium(this.mainFrame.epithelium);
-		// this.mainFrame.gridSpecsPanel.removeAll();
+		this.mainFrame.setProv(true);
 		this.mainFrame.repaint();
 		this.mainFrame.gridSpecsPanel();
 		this.mainFrame.repaint();
@@ -588,9 +604,7 @@ public class StartPanel extends JPanel {
 				ZipOutputStream zout = new ZipOutputStream(fout);
 
 				for (int i = 0; i < sourceFiles.length; i++) {
-					// System.out.println("Adding " + sourceFiles[i]);
-					// System.out.println(sourceFiles[i]);
-					// create object of FileInputStream for source file
+
 					FileInputStream fin = new FileInputStream(sourceFiles[i]);
 					zout.putNextEntry(new ZipEntry(sourceFiles[i]));
 					int length;
@@ -631,87 +645,164 @@ public class StartPanel extends JPanel {
 
 		out.write("\n");
 		// InitialState
-		for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
-				.getNodeOrder()) {
-			if (!this.mainFrame.epithelium.isIntegrationComponent(node)) {
-				for (int value = 1; value < node.getMax() + 1; value++) {
 
-					out.write("IC "
-							+ node.getNodeID()
-							+ " "
-							+ this.mainFrame.epithelium.getUnitaryModel()
-									.getNodeOrder().indexOf(node) + " : "
-							+ value + " ( ");
+		int index = -1;
+		for (String key : mainFrame.epithelium.getInitialStateSet().keySet()) {
+			mainFrame.epithelium.setSelectedInitialSet(key);
+			index = index + 1;
 
-					// System.out.print("IC "
-					// + node.getNodeID()
-					// + " "
-					// + mainFrame.getEpithelium().getUnitaryModel()
-					// .getNodeOrder().indexOf(node) + " : "
-					// + value + " ( ");
+			out.write("IS " + index + " name : " + key + "\n");
 
-					int next = 0;
-					int current = 0;
-					boolean start = true;
-					boolean ongoing = false;
+			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
+					.getNodeOrder()) {
+				if (!node.isInput()) {
+					for (int value = 1; value < node.getMax() + 1; value++) {
 
-					for (int instance = 0; instance < this.mainFrame.topology
-							.getNumberInstances(); instance++) {
-						if (this.mainFrame.epithelium.getGridValue(instance,
-								node) == value) {
+						out.write("IS "
+								+ index
+								+ " "
+								+ node.getNodeID()
+								+ " "
+								+ this.mainFrame.epithelium.getUnitaryModel()
+										.getNodeOrder().indexOf(node) + " : "
+								+ value + " ( ");
 
-							if (start) {
-								out.write("" + instance);
-								start = false;
-								current = instance;
-							} else if ((instance != current + 1)
-									& ongoing == false) {
-								out.write(",");
-								out.write("" + instance);
-								current = instance;
-							} else if ((instance == current + 1)) {
-								ongoing = true;
-								current = instance;
+						int next = 0;
+						int current = 0;
+						boolean start = true;
+						boolean ongoing = false;
+
+						for (int instance = 0; instance < this.mainFrame.topology
+								.getNumberInstances(); instance++) {
+							if (this.mainFrame.epithelium.getGridValue(
+									instance, node) == value) {
+
+								if (start) {
+									out.write("" + instance);
+									start = false;
+									current = instance;
+								} else if ((instance != current + 1)
+										& ongoing == false) {
+									out.write(",");
+									out.write("" + instance);
+									current = instance;
+								} else if ((instance == current + 1)) {
+									ongoing = true;
+									current = instance;
+								}
+							} else if (ongoing == true) {
+								ongoing = false;
+								out.write("-");
+								out.write("" + (current));
 							}
-						} else if (ongoing == true) {
-							ongoing = false;
-							out.write("-");
-							out.write("" + (current));
-						}
-						if (instance == (this.mainFrame.topology
-								.getNumberInstances() - 1) & ongoing == true) {
-							out.write("-");
-							out.write("" + (instance));
-						}
+							if (instance == (this.mainFrame.topology
+									.getNumberInstances() - 1)
+									& ongoing == true) {
+								out.write("-");
+								out.write("" + (instance));
+							}
 
+						}
+						out.write(" )\n");
 					}
-					out.write(" )\n");
 				}
-			}
-		}
+			}// ends for (NodeInfo node :
+				// this.mainFrame.epithelium.getUnitaryModel().getNodeOrder())
+		}// for (String key: mainFrame.epithelium.getInitialStateSet().keySet())
 
 		out.write("\n");
-		// Integration Components
-		for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
-				.getNodeOrder()) {
-			if (this.mainFrame.epithelium.isIntegrationComponent(node)) {
 
-				for (byte value = 1; value < node.getMax() + 1; value++) {
-					out.write("IT "
-							+ node.getNodeID()
-							+ " "
-							+ this.mainFrame.epithelium.getUnitaryModel()
-									.getNodeOrder().indexOf(node)
-							+ " : "
-							+ value
-							+ " : "
-							+ this.mainFrame.epithelium.getIntegrationFunction(
-									node, value) + "\n");
+		// Env Inputs
+
+		index = -1;
+		for (String key : mainFrame.epithelium.getInputsSet().keySet()) {
+			mainFrame.epithelium.setSelectedInputSet(key);
+			index = index + 1;
+
+			out.write("IC " + index + " name : " + key + "\n");
+
+			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
+					.getNodeOrder()) {
+				if (node.isInput()
+						& !this.mainFrame.epithelium
+								.isIntegrationComponent(node)) {
+					for (int value = 1; value < node.getMax() + 1; value++) {
+
+						out.write("IC "
+								+ index
+								+ " "
+								+ node.getNodeID()
+								+ " "
+								+ this.mainFrame.epithelium.getUnitaryModel()
+										.getNodeOrder().indexOf(node) + " : "
+								+ value + " ( ");
+
+						int next = 0;
+						int current = 0;
+						boolean start = true;
+						boolean ongoing = false;
+
+						for (int instance = 0; instance < this.mainFrame.topology
+								.getNumberInstances(); instance++) {
+							if (this.mainFrame.epithelium.getGridValue(
+									instance, node) == value) {
+
+								if (start) {
+									out.write("" + instance);
+									start = false;
+									current = instance;
+								} else if ((instance != current + 1)
+										& ongoing == false) {
+									out.write(",");
+									out.write("" + instance);
+									current = instance;
+								} else if ((instance == current + 1)) {
+									ongoing = true;
+									current = instance;
+								}
+							} else if (ongoing == true) {
+								ongoing = false;
+								out.write("-");
+								out.write("" + (current));
+							}
+							if (instance == (this.mainFrame.topology
+									.getNumberInstances() - 1)
+									& ongoing == true) {
+								out.write("-");
+								out.write("" + (instance));
+							}
+
+						}
+						out.write(" )\n");
+					}
+				}// Ends the if (node.isInput()&
+					// !this.mainFrame.epithelium.isIntegrationComponent(node))
+
+				if (this.mainFrame.epithelium.isIntegrationComponent(node)) {
+
+					for (byte value = 1; value < node.getMax() + 1; value++) {
+						out.write("IT "
+								+ index
+								+ " "
+								+ node.getNodeID()
+								+ " "
+								+ this.mainFrame.epithelium.getUnitaryModel()
+										.getNodeOrder().indexOf(node)
+								+ " : "
+								+ value
+								+ " : "
+								+ this.mainFrame.epithelium
+										.getIntegrationFunction(node, value)
+								+ "\n");
+					}
 				}
-			}
-		}
+
+			}// ends for (NodeInfo node :
+				// this.mainFrame.epithelium.getUnitaryModel().getNodeOrder())
+		}// for (String key: mainFrame.epithelium.getInputSet().keySet())
 
 		out.write("\n");
+
 		// Colors
 
 		for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
@@ -820,7 +911,7 @@ public class StartPanel extends JPanel {
 			out.write("PR " + "#sets" + " : " + numberOfSets);
 			out.write("\n");
 
-			int index = 0;
+			index = 0;
 			for (String s : this.mainFrame.epithelium.getPrioritiesSet()
 					.keySet()) {
 				out.write("PR " + index + " name " + s);

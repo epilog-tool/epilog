@@ -35,11 +35,11 @@ public class SphericalEpithelium implements Epithelium {
 
 	private AbstractPerturbation[] perturbations = null;
 	private AbstractPerturbation activePerturbation;
-	
+
 	public List loadedPerturbations;
 	public List loadedMutations;
-	
-	public Hashtable<String, Color>perturbationColor ;
+
+	public Hashtable<String, Color> perturbationColor;
 
 	private String selectedPriority;
 	private String selectedPerturbation;
@@ -67,7 +67,7 @@ public class SphericalEpithelium implements Epithelium {
 		integrationInputsSet = new Hashtable<String, Hashtable<NodeInfo, List<String>>>();
 		loadedPerturbations = new ArrayList<AbstractPerturbation>();
 		loadedMutations = new ArrayList<AbstractPerturbation>();
-		
+
 		perturbationColor = new Hashtable<String, Color>();
 	}
 
@@ -320,23 +320,23 @@ public class SphericalEpithelium implements Epithelium {
 	}
 
 	public void setGrid(Integer instance, NodeInfo node, byte value) {
-		if (this.grid.length!=topology.getNumberInstances()){
-			
+		if (this.grid.length != topology.getNumberInstances()) {
+
 			initializeGrid();
 		}
 		this.grid[instance][getUnitaryModel().getNodeOrder().indexOf(node)] = value;
-		
+
 	}
 
 	/*
 	 * Perturbations
 	 */
-	
-	public Color getPerturbationColor(String perturbation){
+
+	public Color getPerturbationColor(String perturbation) {
 		return perturbationColor.get(perturbation);
 	}
-	
-	public void setPerturbationColor(String perturbation, Color color){
+
+	public void setPerturbationColor(String perturbation, Color color) {
 		perturbationColor.put(perturbation, color);
 	}
 
@@ -378,13 +378,18 @@ public class SphericalEpithelium implements Epithelium {
 	}
 
 	public AbstractPerturbation getInstancePerturbation(int instance) {
-		return getPerturbationsSet().get(selectedPerturbation)[instance];
-		// return perturbations[instance];
+
+		if (selectedPerturbation != null)
+
+			return getPerturbationsSet().get(selectedPerturbation)[instance];
+		else
+			return null;
+
 	}
 
 	public AbstractPerturbation getInstancePerturbationDraw(int instance) {
-		
-		if (perturbations.length!=topology.getNumberInstances())
+
+		if (perturbations.length != topology.getNumberInstances())
 			initializePerturbationsGrid();
 		return perturbations[instance];
 	}
@@ -398,11 +403,11 @@ public class SphericalEpithelium implements Epithelium {
 
 		perturbationsSet.put(name, perturbations_aux);
 	}
-	
-	public void setPerturbationSet(String name, AbstractPerturbation[] perturbations_1) {
+
+	public void setPerturbationSet(String name,
+			AbstractPerturbation[] perturbations_1) {
 		perturbationsSet.put(name, perturbations_1);
 	}
-	
 
 	public Hashtable<String, AbstractPerturbation[]> getPerturbationsSet() {
 		return perturbationsSet;
@@ -411,12 +416,12 @@ public class SphericalEpithelium implements Epithelium {
 	public String getSelectedPerturbation() {
 		return selectedPerturbation;
 	}
-	
-	public void setLoadedPerturbations(List a){
+
+	public void setLoadedPerturbations(List a) {
 		loadedPerturbations = a;
 	}
-	
-	public void setLoadedMutations(List a){
+
+	public void setLoadedMutations(List a) {
 		loadedMutations = a;
 	}
 
@@ -432,7 +437,7 @@ public class SphericalEpithelium implements Epithelium {
 		return initialStateSet;
 	}
 
-	public void setInitalConditionsSet(String name) {
+	public void setInitialStateSet(String name) {
 
 		List<NodeInfo> properComponents = new ArrayList();
 		for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
@@ -467,6 +472,10 @@ public class SphericalEpithelium implements Epithelium {
 		return inputsSet;
 	}
 
+	public Hashtable<String, Hashtable<NodeInfo, List<String>>> getInputsIntegrationSet() {
+		return integrationInputsSet;
+	}
+
 	public void setInputsSet(String name) {
 
 		List<NodeInfo> inputs = new ArrayList();
@@ -485,6 +494,7 @@ public class SphericalEpithelium implements Epithelium {
 			}
 		}
 		inputsSet.put(name, inputsGrid);
+		setInputsIntegrationSet(name);
 	}
 
 	public void setInputsIntegrationSet(String name) {
@@ -518,21 +528,22 @@ public class SphericalEpithelium implements Epithelium {
 	public void setSelectedInputSet(String string) {
 		selectedInputSet = string;
 		Grid input_aux = inputsSet.get(string);
+
 		if (input_aux != null)
 			combineGrids(input_aux);
 		Hashtable<NodeInfo, List<String>> aux = integrationInputsSet
 				.get(string);
+
 		if (aux != null)
 			for (NodeInfo node : aux.keySet()) {
 				setIntegrationComponent(getUnitaryModel().getNodeOrder()
 						.indexOf(node), true);
 				for (int j = 0; j < aux.get(node).size(); j++) {
 					String expression = aux.get(node).get(j);
-					byte value = (byte) (j+1);
+					byte value = (byte) (j + 1);
 					setIntegrationFunctions(node, value, expression);
 				}
 			}
-
 	}
 
 	/*

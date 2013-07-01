@@ -106,14 +106,7 @@ public class SimulationSetupPanel extends JPanel {
 			public void actionPerformed(ActionEvent event) {
 				JCheckBox src = (JCheckBox) event.getSource();
 				if (src.isSelected()) {
-					// System.out.println("just checked");
-					// TODO: create composed model and simulate with composition
-
 					mainFrame.needsComposedModel = true;
-
-					// mainFrame.disableTabs(true);
-					// mainFrame.simulation.setNeedComposedModel(true);
-					// mainFrame.simulation.initializeSimulation();
 				}
 				else{
 					mainFrame.needsComposedModel = false;
@@ -185,8 +178,6 @@ public class SimulationSetupPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 
 				mainFrame.disableTabs(false);
-				mainFrame.setProv(true);
-				// mainFrame.simulation.setNeedComposedModel(false);
 				mainFrame.simulation.reset();
 				mainFrame.simulationPanelson();
 				TitledBorder titleInitialConditions;
@@ -243,6 +234,7 @@ public class SimulationSetupPanel extends JPanel {
 				JComboBox src = (JComboBox) arg0.getSource();
 				mainFrame.epithelium.setSelectedInitialSet((String) src
 						.getSelectedItem());
+				
 			}
 		});
 
@@ -254,6 +246,7 @@ public class SimulationSetupPanel extends JPanel {
 						.getSelectedItem());
 				String string = "input";
 				needToResetComposedModel(string, (String) src.getSelectedItem());
+				mainFrame.fillHexagons();
 			}
 		});
 

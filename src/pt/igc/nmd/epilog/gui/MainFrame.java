@@ -38,7 +38,7 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 
-import pt.igc.nmd.epilog.InitialConditions;
+import pt.igc.nmd.epilog.InitialState;
 import pt.igc.nmd.epilog.InputsPanel;
 import pt.igc.nmd.epilog.LogicalModelComposition;
 import pt.igc.nmd.epilog.PerturbationsPanel;
@@ -71,7 +71,7 @@ public class MainFrame extends JFrame {
 	public InputsPanel inputsPanel = null;
 	public PerturbationsPanel perturbationsPanel = null;
 	private PrioritiesPanel prioritiesPanel = null;
-	public InitialConditions initial = null;
+	public InitialState initial = null;
 
 	private int fillXi;
 	private int fillYi;
@@ -596,7 +596,7 @@ public class MainFrame extends JFrame {
 		simulationSetupPanel = new SimulationSetupPanel(this);
 
 		watcherPanel = new TextPanel(this);
-		initial = new InitialConditions(this);
+		initial = new InitialState(this);
 		inputsPanel = new InputsPanel(epithelium, topology, this);
 		perturbationsPanel = new PerturbationsPanel(this);
 		prioritiesPanel = new PrioritiesPanel(this);
