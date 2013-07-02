@@ -299,6 +299,48 @@ public class StartPanel extends JPanel {
 					}
 				}
 			}
+			
+			if (identifier.contains("IC")) {
+				if (line.contains("name")) {
+					int key = Integer.parseInt(line.split(" ")[1]);
+					String value = line.split(":")[1];
+					setInputsDescription.put(key, value);
+					mainFrame.epithelium.setInputsSet(value);
+					
+				} else {
+
+					NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
+							.getNodeOrder()
+							.get(Integer.parseInt(line.split(" ")[3]));
+					byte value = (byte) Integer.parseInt(line.split(" ")[5]);
+					String name = setInputsDescription.get(Integer
+							.parseInt(line.split(" ")[1]));
+					
+
+					for (String range : line.split(" ")[7].split(",")) {
+						range.replace("(", "");
+						range.replace(")", "");
+						range.replace(" ", "");
+
+						if (range.contains("-")) {
+
+							int init = Integer.parseInt(range.split("-")[0]);
+							int end = Integer.parseInt(range.split("-")[1]);
+							for (int instance = init; instance <= end; instance++) {
+
+								mainFrame.epithelium.getInputsSet().get(name).setGrid(instance, node, value);
+							}
+
+						} else if (range.length() >= 1) {
+							int instance = Integer
+									.parseInt(range.split(" ")[0]);
+
+							mainFrame.epithelium.getInputsSet().get(name).setGrid(instance, node, value);
+
+						}
+					}
+				}
+			}
 
 			if (identifier.contains("IT")) {
 				NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
@@ -306,11 +348,14 @@ public class StartPanel extends JPanel {
 						.get(Integer.parseInt(line.split(" ")[3]));
 				byte value = (byte) Integer.parseInt(line.split(" ")[5]);
 				String expression = line.split(" ")[7];
-				this.mainFrame.epithelium.setIntegrationFunctions(node, value,
-						expression);
-				this.mainFrame.epithelium.setIntegrationComponent(
-						mainFrame.epithelium.getUnitaryModel().getNodeOrder()
-								.indexOf(node), true);
+				String name = setInputsDescription.get(Integer
+						.parseInt(line.split(" ")[1]));
+				
+				mainFrame.epithelium.getInputsIntegrationSet().get(name).get(node)[value]=expression;
+		
+//				this.mainFrame.epithelium.setIntegrationComponent(
+//						mainFrame.epithelium.getUnitaryModel().getNodeOrder()
+//								.indexOf(node), true);
 			}
 
 			if (identifier.contains("CL")) {
