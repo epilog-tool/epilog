@@ -303,9 +303,9 @@ public class StartPanel extends JPanel {
 			if (identifier.contains("IT")) {
 				NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
 						.getNodeOrder()
-						.get(Integer.parseInt(line.split(" ")[2]));
-				byte value = (byte) Integer.parseInt(line.split(" ")[4]);
-				String expression = line.split(" ")[6];
+						.get(Integer.parseInt(line.split(" ")[3]));
+				byte value = (byte) Integer.parseInt(line.split(" ")[5]);
+				String expression = line.split(" ")[7];
 				this.mainFrame.epithelium.setIntegrationFunctions(node, value,
 						expression);
 				this.mainFrame.epithelium.setIntegrationComponent(
@@ -775,7 +775,7 @@ public class StartPanel extends JPanel {
 						}
 						out.write(" )\n");
 					}
-				}// Ends the if (node.isInput()&
+				}// Ends if (node.isInput()&
 					// !this.mainFrame.epithelium.isIntegrationComponent(node))
 
 				if (this.mainFrame.epithelium.isIntegrationComponent(node)) {

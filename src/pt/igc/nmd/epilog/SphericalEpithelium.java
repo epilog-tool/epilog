@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
@@ -164,13 +165,20 @@ public class SphericalEpithelium implements Epithelium {
 	// INTEGRATION COMPONENTS
 
 	public boolean isIntegrationComponent(NodeInfo node) {
-		return this.integrationFunctionStrings[getUnitaryModel().getNodeOrder()
-				.indexOf(node)] != null;
+//		return this.integrationFunctionStrings[getUnitaryModel().getNodeOrder()
+//				.indexOf(node)] != null;
+		return isIntegrationComponent(getUnitaryModel().getNodeOrder().indexOf(node));
 	}
 
 	public String getIntegrationFunction(NodeInfo node, byte value) {
+	
+		
+		if (integrationFunctionStrings[getUnitaryModel().getNodeOrder()
+		                              				.indexOf(node)] !=null)
 		return this.integrationFunctionStrings[getUnitaryModel().getNodeOrder()
 				.indexOf(node)][value - 1];
+		else
+			return "";
 	}
 
 	public IntegrationExpression string2Expression(
@@ -499,13 +507,12 @@ public class SphericalEpithelium implements Epithelium {
 
 	public void setInputsIntegrationSet(String name) {
 
-		List<NodeInfo> integrationNodes = new ArrayList();
-		List<IntegrationExpression> expression = new ArrayList();
+		
 		Hashtable<NodeInfo, List<String>> test = new Hashtable<NodeInfo, List<String>>();
 
 		for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
 			if (isIntegrationComponent(node)) {
-				integrationNodes.add(node);
+				
 				List<String> aux = new ArrayList<String>();
 				for (byte value = 1; value < node.getMax() + 1; value++) {
 					aux.add(getIntegrationFunction(node, value));
@@ -526,24 +533,40 @@ public class SphericalEpithelium implements Epithelium {
 	}
 
 	public void setSelectedInputSet(String string) {
+		
 		selectedInputSet = string;
 		Grid input_aux = inputsSet.get(string);
 
-		if (input_aux != null)
+		if (input_aux != null){
 			combineGrids(input_aux);
+			for (NodeInfo node: input_aux.getListNodes())
+				setIntegrationComponent(getUnitaryModel().getNodeOrder()
+						.indexOf(node), false);
+		}
 		Hashtable<NodeInfo, List<String>> aux = integrationInputsSet
 				.get(string);
+		
 
-		if (aux != null)
-			for (NodeInfo node : aux.keySet()) {
-				setIntegrationComponent(getUnitaryModel().getNodeOrder()
-						.indexOf(node), true);
-				for (int j = 0; j < aux.get(node).size(); j++) {
-					String expression = aux.get(node).get(j);
-					byte value = (byte) (j + 1);
-					setIntegrationFunctions(node, value, expression);
+		if (aux != null){
+			Set<NodeInfo> aux_nodes = aux.keySet();
+			for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
+				if (aux_nodes.contains(node)) {
+					
+					setIntegrationComponent(getUnitaryModel().getNodeOrder()
+							.indexOf(node), true);
+					for (int j = 0; j < aux.get(node).size(); j++) {
+						String expression = aux.get(node).get(j);
+						byte value = (byte) (j + 1);
+						setIntegrationFunctions(node, value, expression);
+					}
+				} else if (node.isInput()){
+		
+					setIntegrationComponent(getUnitaryModel().getNodeOrder()
+							.indexOf(node), false);
+					
 				}
 			}
+		}
 	}
 
 	/*

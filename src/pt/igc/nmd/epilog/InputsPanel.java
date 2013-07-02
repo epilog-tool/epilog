@@ -18,6 +18,7 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
+import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
@@ -100,7 +101,7 @@ public class InputsPanel extends JPanel {
 
 			JButton buttonMarkAll = new JButton("Apply All");
 			JButton buttonClearAll = new JButton("Clear All");
-			buttonFill = new JButton("Fill");
+			buttonFill = new JButton("Rectangle Fill");
 			JButton buttonDeselectAll = new JButton("Deselect all");
 			JButton buttonSelectAll = new JButton("Select all");
 
@@ -173,6 +174,13 @@ public class InputsPanel extends JPanel {
 			sets.setPreferredSize(new Dimension(
 					setName.getPreferredSize().width,
 					sets.getPreferredSize().height));
+			
+			if (mainFrame.epithelium.getInputsSet() != null) {
+				for (String key : mainFrame.epithelium.getInputsSet()
+						.keySet()) {
+					sets.addItem(key);
+				}
+			}
 
 			buttonAdd.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -189,8 +197,8 @@ public class InputsPanel extends JPanel {
 			sets.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					// TODO: Choose a set and insert the name of that set on the
-					// textfield
+					loadInitialconditions();
+					mainFrame.fillHexagons();
 				}
 			});
 
@@ -436,14 +444,6 @@ public class InputsPanel extends JPanel {
 		init();
 
 		fillHexagons();
-
-		System.out.println(mainFrame.epithelium.getUnitaryModel()
-				.getNodeOrder().get(i).getNodeID());
-
-		// System.out.println(JcomboInput2Node.get(inputCombo)
-		// + " "
-		// + mainPanel.getEpithelium().getIntegrationComponents()
-		// .get(JcomboInput2Node.get(inputCombo)));
 	}
 
 	private enum InputOption {
@@ -495,6 +495,24 @@ public class InputsPanel extends JPanel {
 		fillHexagons();
 	}
 	
+	
+	private void loadInitialconditions() {
+		setName.setText((String) sets.getSelectedItem());
+		if (sets.getSelectedItem() != null)
+			if (mainFrame.epithelium.getInputsSet().get(
+					(String) sets.getSelectedItem()) != null){
+				mainFrame.epithelium.setSelectedInputSet((String) sets
+						.getSelectedItem());
+			System.out.println("Selected a new set");	
+			}
+		
+	for (NodeInfo node: mainFrame.epithelium.getUnitaryModel().getNodeOrder()){
+		if(mainFrame.epithelium.isIntegrationComponent(node))
+			System.out.println("node is integrationscomponent: " + node);
+	}
+	}
+	
+	
 	// End Methods
 
 	private void inputsAdd() {
@@ -502,19 +520,17 @@ public class InputsPanel extends JPanel {
 		if (!mainFrame.epithelium.getInputsSet().containsKey(name))
 			sets.addItem(name);{
 		mainFrame.epithelium.setInputsSet(name);
-		
 			}
 	}
 	
 	private void removeElementFromSet() {
 		String setToRemove = (String) sets.getSelectedItem();
 		mainFrame.epithelium.getInputsSet().remove(setToRemove);
-		System.out.println("I want to remove: " + setToRemove);
 		setName.setText("");
 		sets.removeAllItems();
-		for (String string : mainFrame.epithelium.getInputsSet()
-				.keySet())
-			if (string!="none")
+
+		for (String string : mainFrame.epithelium.getInputsSet().keySet())
+			if (string != "none")
 				sets.addItem(string);
 	}
 	
