@@ -331,7 +331,7 @@ public class SimulationSetupPanel extends JPanel {
 			}
 		} else if (string == "input") {
 			combo.addItem("none");
-			Hashtable<String, Grid> set = mainFrame.epithelium.getInputsSet();
+			Hashtable<String, Hashtable<NodeInfo, List<String>>> set = mainFrame.epithelium.getInputsIntegrationSet();
 			for (String i : set.keySet()) {
 				if (i == "none")
 					combo.addItem(i);

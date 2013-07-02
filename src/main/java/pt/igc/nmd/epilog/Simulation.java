@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.JComboBox;
 
 import org.colomoto.logicalmodel.NodeInfo;
 
@@ -35,7 +34,6 @@ public class Simulation {
 
 		while (!stableStateFound && iterationNumber % 30 != 0) {
 			runButtonActivated = true;
-			System.out.println(iterationNumber);
 			step();
 			runButtonActivated = false;
 		}
@@ -83,7 +81,7 @@ public class Simulation {
 
 		nextGlobalState = globalModel.getNextState(currentGlobalState);
 
-		saveLastPic();
+		//saveLastPic();
 		if (!runButtonActivated)
 			fillHexagons();
 
@@ -175,7 +173,7 @@ public class Simulation {
 
 					if (value > 0) {
 						color = this.mainFrame.epithelium.getColor(node);
-						if (value > 1)
+						if (value >= 1)
 							color = getColorLevel(color, value, node.getMax());
 
 						if (red != 255)
@@ -195,13 +193,6 @@ public class Simulation {
 
 						color = new Color(red, green, blue);
 
-//						if (mainFrame.epithelium.getUnitaryModel()
-//								.getNodeOrder().indexOf(node) == 0
-//								&& value == 2) {
-//							color = Color.red;
-//
-//							System.out.println("TRICK");
-//						}
 
 					} else if (value == 0) {
 						color = new Color(red, green, blue);
@@ -239,10 +230,8 @@ public class Simulation {
 		Color newColor = color;
 		float res;
 		if (value > 0) {
-			// for (int j = 2; j <= value; j++)
-			// newColor = newColor.darker();
 			res = value / max;
-			newColor = lighter(newColor, res);
+			newColor = lighter(newColor, (1-res));
 		} else if (value == 0)
 			newColor = Color.white;
 

@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -185,34 +184,30 @@ public class InitialState extends JPanel {
 
 			// CENTER PANEL
 			JPanel panelCenter = new JPanel();
+			JPanel panelEnd = new JPanel();
+			JPanel panelCenterAux = new JPanel(new BorderLayout());
 			panelCenter.setLayout(layout);
+			panelEnd.setLayout(layout);
 			List<NodeInfo> listNodes = mainFrame.epithelium.getUnitaryModel()
 					.getNodeOrder();
 
-			List<NodeInfo> properComponentsList = new ArrayList<NodeInfo>();
 
-			for (int i = 0; i < listNodes.size(); i++) {
-				if (!listNodes.get(i).isInput())
-					properComponentsList.add(listNodes.get(i));
-			}
 			auxiliaryPanel = new JPanel[listNodes.size()];
 
-			nodeBox = new JCheckBox[properComponentsList.size()];
-			colorButton = new JButton[properComponentsList.size()];
+			nodeBox = new JCheckBox[listNodes.size()];
+			colorButton = new JButton[listNodes.size()];
 
-			node2Jcheck = new JCheckBox[properComponentsList.size()];
-			node2Jcombo = new JComboBox[properComponentsList.size()];
+			node2Jcheck = new JCheckBox[listNodes.size()];
+			node2Jcombo = new JComboBox[listNodes.size()];
 
-			initialStatePerComponent = new JComboBox[properComponentsList
+			initialStatePerComponent = new JComboBox[listNodes
 					.size()];
 
 			Jcheck2Node = new Hashtable<JCheckBox, Integer>();
 			Jcombo2Node = new Hashtable<JComboBox, Integer>();
 			button2Node = new Hashtable<JButton, NodeInfo>();
 
-			for (int i = 0; i < properComponentsList.size(); i++) {
-
-				if (!listNodes.get(i).isInput()) {
+			for (int i = 0; i < listNodes.size(); i++) {
 
 					auxiliaryPanel[i] = new JPanel();
 					auxiliaryPanel[i].setLayout(layout);
@@ -273,10 +268,24 @@ public class InitialState extends JPanel {
 					auxiliaryPanel[i].add(nodeBox[i]);
 					auxiliaryPanel[i].add(initialStatePerComponent[i]);
 					auxiliaryPanel[i].add(colorButton[i]);
-					panelCenter.add(auxiliaryPanel[i]);
-				}
-			}
-			add(panelCenter, BorderLayout.CENTER);
+					
+					if (mainFrame.epithelium.isIntegrationComponent(i))
+						auxiliaryPanel[i].setVisible(false);
+					else
+						auxiliaryPanel[i].setVisible(true);
+					
+					if (listNodes.get(i).isInput())
+						panelEnd.add(auxiliaryPanel[i]);
+					else
+						panelCenter.add(auxiliaryPanel[i]);
+				
+			} // End Center Panel
+			
+			panelCenterAux.add(panelCenter, BorderLayout.CENTER);
+			panelCenterAux.add(panelEnd, BorderLayout.PAGE_END);
+
+			add(panelCenterAux, BorderLayout.CENTER);
+			
 		}
 
 	}

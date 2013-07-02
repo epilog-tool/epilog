@@ -115,8 +115,6 @@ public class SphericalEpithelium implements Epithelium {
 	}
 
 	public Color getColor(NodeInfo node) {
-		// System.out.println(getUnitaryModel().getNodeOrder().indexOf(node)+
-		// "  " +node);
 		return this.nodeColor[getUnitaryModel().getNodeOrder().indexOf(node)];
 	}
 
@@ -165,8 +163,6 @@ public class SphericalEpithelium implements Epithelium {
 	// INTEGRATION COMPONENTS
 
 	public boolean isIntegrationComponent(NodeInfo node) {
-//		return this.integrationFunctionStrings[getUnitaryModel().getNodeOrder()
-//				.indexOf(node)] != null;
 		return isIntegrationComponent(getUnitaryModel().getNodeOrder().indexOf(node));
 	}
 
@@ -447,18 +443,18 @@ public class SphericalEpithelium implements Epithelium {
 
 	public void setInitialStateSet(String name) {
 
-		List<NodeInfo> properComponents = new ArrayList();
+		List<NodeInfo> initialStateComponents = new ArrayList();
 		for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
-			if (!node.isInput()) {
-				properComponents.add(node);
+			if (!isIntegrationComponent(node)) {
+				initialStateComponents.add(node);
 			}
 		}
 
 		Grid initialStateGrid = new Grid(topology.getNumberInstances(),
-				properComponents);
+				initialStateComponents);
 
 		for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
-			for (NodeInfo node : properComponents) {
+			for (NodeInfo node : initialStateComponents) {
 				byte value = getGridValue(instance, node);
 				initialStateGrid.setGrid(instance, node, value);
 			}
@@ -476,9 +472,9 @@ public class SphericalEpithelium implements Epithelium {
 	/*
 	 * Inputs
 	 */
-	public Hashtable<String, Grid> getInputsSet() {
-		return inputsSet;
-	}
+//	public Hashtable<String, Grid> getInputsSet() {
+//		return inputsSet;
+//	}
 
 	public Hashtable<String, Hashtable<NodeInfo, List<String>>> getInputsIntegrationSet() {
 		return integrationInputsSet;
@@ -486,22 +482,22 @@ public class SphericalEpithelium implements Epithelium {
 
 	public void setInputsSet(String name) {
 
-		List<NodeInfo> inputs = new ArrayList();
-		for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
-			if (node.isInput() & !isIntegrationComponent(node)) {
-				inputs.add(node);
-			}
-		}
-
-		Grid inputsGrid = new Grid(topology.getNumberInstances(), inputs);
-
-		for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
-			for (NodeInfo node : inputs) {
-				byte value = getGridValue(instance, node);
-				inputsGrid.setGrid(instance, node, value);
-			}
-		}
-		inputsSet.put(name, inputsGrid);
+//		List<NodeInfo> inputs = new ArrayList();
+//		for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
+//			if (node.isInput() & !isIntegrationComponent(node)) {
+//				inputs.add(node);
+//			}
+//		}
+//
+//		Grid inputsGrid = new Grid(topology.getNumberInstances(), inputs);
+//
+//		for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
+//			for (NodeInfo node : inputs) {
+//				byte value = getGridValue(instance, node);
+//				inputsGrid.setGrid(instance, node, value);
+//			}
+//		}
+//		inputsSet.put(name, inputsGrid);
 		setInputsIntegrationSet(name);
 	}
 
@@ -535,14 +531,14 @@ public class SphericalEpithelium implements Epithelium {
 	public void setSelectedInputSet(String string) {
 		
 		selectedInputSet = string;
-		Grid input_aux = inputsSet.get(string);
+//		Grid input_aux = inputsSet.get(string);
 
-		if (input_aux != null){
-			combineGrids(input_aux);
-			for (NodeInfo node: input_aux.getListNodes())
-				setIntegrationComponent(getUnitaryModel().getNodeOrder()
-						.indexOf(node), false);
-		}
+//		if (input_aux != null){
+//			combineGrids(input_aux);
+//			for (NodeInfo node: input_aux.getListNodes())
+//				setIntegrationComponent(getUnitaryModel().getNodeOrder()
+//						.indexOf(node), false);
+//		}
 		Hashtable<NodeInfo, List<String>> aux = integrationInputsSet
 				.get(string);
 		

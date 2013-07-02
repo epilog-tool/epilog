@@ -177,8 +177,9 @@ public class StartPanel extends JPanel {
 
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			File folder = new File("temp");
-			for (File file : folder.listFiles())
-				file.delete();
+			
+//			for (File file : folder.listFiles())
+//				file.delete();
 			UnZip.main(fc.getSelectedFile().getAbsolutePath());
 
 			for (final File fileEntry : folder.listFiles()) {
@@ -200,7 +201,6 @@ public class StartPanel extends JPanel {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-
 				}
 			}
 		}
@@ -245,12 +245,6 @@ public class StartPanel extends JPanel {
 						.split(" ")[1].split(",")[0]));
 				this.mainFrame.topology.setHeight(Integer.parseInt(line
 						.split(" ")[1].split(",")[1]));
-				// this.mainFrame.userDefinedWidth.setText(""
-				// + this.mainFrame.topology.getWidth());
-				// this.mainFrame.userDefinedHeight.setText(""
-				// + this.mainFrame.topology.getHeight());
-				// removeAll();
-				// init();
 				this.mainFrame.setEpithelium(this.mainFrame.epithelium);
 
 			}
@@ -300,47 +294,6 @@ public class StartPanel extends JPanel {
 				}
 			}
 			
-			if (identifier.contains("IC")) {
-				if (line.contains("name")) {
-					int key = Integer.parseInt(line.split(" ")[1]);
-					String value = line.split(":")[1];
-					setInputsDescription.put(key, value);
-					mainFrame.epithelium.setInputsSet(value);
-					
-				} else {
-
-					NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
-							.getNodeOrder()
-							.get(Integer.parseInt(line.split(" ")[3]));
-					byte value = (byte) Integer.parseInt(line.split(" ")[5]);
-					String name = setInputsDescription.get(Integer
-							.parseInt(line.split(" ")[1]));
-					
-
-					for (String range : line.split(" ")[7].split(",")) {
-						range.replace("(", "");
-						range.replace(")", "");
-						range.replace(" ", "");
-
-						if (range.contains("-")) {
-
-							int init = Integer.parseInt(range.split("-")[0]);
-							int end = Integer.parseInt(range.split("-")[1]);
-							for (int instance = init; instance <= end; instance++) {
-
-								mainFrame.epithelium.getInputsSet().get(name).setGrid(instance, node, value);
-							}
-
-						} else if (range.length() >= 1) {
-							int instance = Integer
-									.parseInt(range.split(" ")[0]);
-
-							mainFrame.epithelium.getInputsSet().get(name).setGrid(instance, node, value);
-
-						}
-					}
-				}
-			}
 
 			if (identifier.contains("IT")) {
 				NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
@@ -350,8 +303,9 @@ public class StartPanel extends JPanel {
 				String expression = line.split(" ")[7];
 				String name = setInputsDescription.get(Integer
 						.parseInt(line.split(" ")[1]));
+				//TODO: integration function
 				
-				mainFrame.epithelium.getInputsIntegrationSet().get(name).get(node)[value]=expression;
+			//	mainFrame.epithelium.getInputsIntegrationSet().get(name).get(node)[value]=expression;
 		
 //				this.mainFrame.epithelium.setIntegrationComponent(
 //						mainFrame.epithelium.getUnitaryModel().getNodeOrder()
@@ -760,7 +714,7 @@ public class StartPanel extends JPanel {
 		// Env Inputs
 
 		index = -1;
-		for (String key : mainFrame.epithelium.getInputsSet().keySet()) {
+		for (String key : mainFrame.epithelium.getInputsIntegrationSet().keySet()) {
 			mainFrame.epithelium.setSelectedInputSet(key);
 			index = index + 1;
 

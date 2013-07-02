@@ -337,8 +337,6 @@ public class MainFrame extends JFrame {
 							string = string
 									+ ("<br>" + "Perturbation: " + epithelium
 											.getInstancePerturbation(instance));
-						// string = string + ("<br>" + Color().getRed() +
-						// " "+Color().getGreen()+ " "+Color().getBlue());
 						string = string + ("</html>");
 						hexagonsPanel.setToolTipText(string);
 
@@ -349,8 +347,7 @@ public class MainFrame extends JFrame {
 							string = string
 									+ ("<br>" + "Perturbation: " + epithelium
 											.getInstancePerturbation(instance));
-						// string = string + ("<br>" + Color().getRed() +
-						// " "+Color().getGreen()+ " "+Color().getBlue());
+
 						string = string + ("</html>");
 						hexagonsPanel.setToolTipText(string);
 					}
@@ -655,7 +652,7 @@ public class MainFrame extends JFrame {
 					editableTab = true;
 					drawingCells = true;
 					setFill(false);
-					inputsPanel.buttonFill.setBackground(getBackground());
+//					inputsPanel.buttonFill.setBackground(getBackground());
 					for (JCheckBox singleNodeBox : initial.nodeBox) {
 
 						singleNodeBox.setSelected(false);
@@ -666,19 +663,21 @@ public class MainFrame extends JFrame {
 					fillHexagons();
 
 				} else if (tabbedPane.getSelectedIndex() == 1) {
+					initial.removeAll();
+					initial.init();
 					editableTab = true;
 					drawingCells = true;
 					setFill(false);
 					initial.buttonFill.setBackground(getBackground());
 
-					for (JCheckBox singleNodeBox : inputsPanel.nodeBox) {
-						if (singleNodeBox != null) {
-							singleNodeBox.setSelected(false);
-							inputsPanel.setComponentDisplay(
-									inputsPanel.Jcheck2Node.get(singleNodeBox),
-									singleNodeBox.isSelected());
-						}
-					}
+//					for (JCheckBox singleNodeBox : inputsPanel.nodeBox) {
+//						if (singleNodeBox != null) {
+//							singleNodeBox.setSelected(false);
+//							inputsPanel.setComponentDisplay(
+//									inputsPanel.Jcheck2Node.get(singleNodeBox),
+//									singleNodeBox.isSelected());
+//						}
+//					}
 					fillHexagons();
 				}
 			}
@@ -735,17 +734,17 @@ public class MainFrame extends JFrame {
 
 	}
 
-	public Color ColorBrightness(Color color, int value) {
-		if (value > 0) {
-
-			for (int j = 2; j <= value; j++) {
-				color = color.darker();
-			}
-		} else if (value == 0) {
-			color = Color.white;
-		}
-		return color;
-	}
+//	public Color ColorBrightness(Color color, int value) {
+//		if (value > 0) {
+//
+//			for (int j = 2; j <= value; j++) {
+//				color = color.darker();
+//			}
+//		} else if (value == 0) {
+//			color = Color.white;
+//		}
+//		return color;
+//	}
 
 	public Color Color(int instance) {
 
@@ -813,7 +812,7 @@ public class MainFrame extends JFrame {
 					int value = this.epithelium.getInitialState(node);
 					if (value > 0) {
 						color = this.epithelium.getColor(node);
-						color = ColorBrightness(color, value);
+						color = simulation.getColorLevel(color, value, node.getMax());
 						if (red != 255)
 							red = (red + color.getRed()) / 2;
 						else
