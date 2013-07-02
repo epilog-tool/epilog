@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/antlr-2.7.7.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/antlr-runtime-3.1.3.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/bibsonomy-bibtex-parser-2.0.26.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/bibsonomy-common-2.0.26.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/bibsonomy-model-2.0.26.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/bytecode-1.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/commons-dbcp-1.2.2.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/commons-pool-1.3.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/core-1.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/jgrapht-jdk1.5-0.7.3.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/jigsaw-2.2.6.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/jsbml-1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/jython-standalone-2.5.3.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/log4j-1.2.8.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/LogicalModel-0.2-SNAPSHOT.jar" sourcepath="/logicalmodel/src/main"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/MDDlib-0.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/stax-api-1.0-2.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/stax-api-1.0.1.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/stax2-api-3.0.3.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/staxmate-2.0.0.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/stringtemplate-3.2.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/woodstox-core-lgpl-4.0.9.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/xpp3_min-1.1.4c.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/lib/xstream-1.3.1.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/ginsim-dev/target/GINsim-2.9-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/MDDlib/target/MDDlib-0.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/Users/Pedro/workspace/logicalmodel/target/LogicalModel-0.2-SNAPSHOT.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
