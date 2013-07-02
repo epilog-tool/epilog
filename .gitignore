@@ -1,2 +1,7 @@
 .DS_Store
+jsbml.log
 *.zip
+bin
+build
+.classpath
+.project
