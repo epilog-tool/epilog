@@ -1,5 +1,6 @@
 .DS_Store
 jsbml.log
+target
 *.zip
 bin
 build
