@@ -540,7 +540,6 @@ public class StartPanel extends JPanel {
 					if (perturbationsSet.get(setName) != null)
 						mainFrame.epithelium.setPerturbationSet(setName,
 								perturbationsSet.get(setName));
-
 				}
 
 			}
@@ -551,7 +550,6 @@ public class StartPanel extends JPanel {
 	private void loadConfigurations() {
 
 		this.mainFrame.setEpithelium(this.mainFrame.epithelium);
-		this.mainFrame.setProv(true);
 		this.mainFrame.repaint();
 		this.mainFrame.gridSpecsPanel();
 		this.mainFrame.repaint();

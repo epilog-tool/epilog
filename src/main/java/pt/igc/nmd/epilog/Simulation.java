@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+
 import org.colomoto.logicalmodel.NodeInfo;
 
 import pt.igc.nmd.epilog.gui.MainFrame;
@@ -193,7 +194,6 @@ public class Simulation {
 
 						color = new Color(red, green, blue);
 
-
 					} else if (value == 0) {
 						color = new Color(red, green, blue);
 
@@ -224,6 +224,7 @@ public class Simulation {
 						this.mainFrame.hexagonsPanel.getGraphics(), color);
 			}
 		}
+//		this.mainFrame.auxiliaryHexagonsPanel.repaint();
 	}
 
 	public Color getColorLevel(Color color, int value, int max) {

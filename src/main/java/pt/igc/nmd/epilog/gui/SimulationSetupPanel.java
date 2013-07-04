@@ -17,11 +17,11 @@ import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
+
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 
 import pt.igc.nmd.epilog.Grid;
-import pt.igc.nmd.epilog.RunStopButton;
 
 public class SimulationSetupPanel extends JPanel {
 
@@ -121,7 +121,7 @@ public class SimulationSetupPanel extends JPanel {
 		startPanel.add(rollOver);
 		startPanel.add(createComposedModel);
 
-		runButton = new RunStopButton();
+		runButton = new JButton("Run");
 		stepButton = new JButton("Step");
 
 		/*
@@ -234,7 +234,8 @@ public class SimulationSetupPanel extends JPanel {
 				JComboBox src = (JComboBox) arg0.getSource();
 				mainFrame.epithelium.setSelectedInitialSet((String) src
 						.getSelectedItem());
-				
+				mainFrame.hexagonsPanel.repaint();
+				mainFrame.simulation.fillHexagons();
 			}
 		});
 
@@ -259,7 +260,8 @@ public class SimulationSetupPanel extends JPanel {
 						.getSelectedItem());
 				String string = "perturbation";
 				needToResetComposedModel(string, (String) src.getSelectedItem());
-
+				mainFrame.hexagonsPanel.repaint();
+				mainFrame.simulation.fillHexagons();
 			}
 		});
 

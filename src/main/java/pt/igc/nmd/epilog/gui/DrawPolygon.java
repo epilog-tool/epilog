@@ -95,7 +95,7 @@ public class DrawPolygon extends JPanel {
 
 					int instance = this.mainFrame.topology
 							.coords2Instance(k, j);
-					if ( !this.mainFrame.isProv()) {
+					if ( this.mainFrame.epithelium.getUnitaryModel()==null) {
 						paintHexagons(stroke, Color.white, polygon2, g2);
 					}
 
@@ -117,7 +117,7 @@ public class DrawPolygon extends JPanel {
 				}
 			}
 		} else {
-			System.out.println("XX e YY têm que ser maiores do que zero");
+			System.out.println("XX and YY must be bigger than zero");
 		}
 	}
 
@@ -257,7 +257,7 @@ public class DrawPolygon extends JPanel {
 				}
 			}
 		} else {
-			System.out.println("XX e YY têm que ser maiores do que zero");
+			System.out.println("XX and YY must be bigger than zero");
 		}
 	}
 }
