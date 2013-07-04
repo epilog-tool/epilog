@@ -77,7 +77,7 @@ public class InitialState extends JPanel {
 
 			JButton buttonMarkAll = new JButton("Apply All");
 			JButton buttonClearAll = new JButton("Clear All");
-			buttonFill = new JButton("Fill");
+			buttonFill = new JButton("Rectangle Fill");
 			JButton buttonDeselectAll = new JButton("Deselect all");
 			JButton buttonSelectAll = new JButton("Select all");
 

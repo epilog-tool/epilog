@@ -435,7 +435,37 @@ public class MainFrame extends JFrame {
 					j = (int) (ind_jt - i % 2 + deltaj);
 				}
 
-				paintHexagons(i, j);
+				if (isEditable()) {
+					List<Integer> instanceList = new ArrayList<Integer>();
+					if (i < topology.getWidth() && j < topology.getHeight()
+							&& i >= 0 && j >= 0) {
+
+						if (isFillOn())
+							instanceList = fill(fillXi, fillYi, i, j);
+
+						for (int instance : instanceList) {
+							if (isDrawingCells()) {
+								epithelium.setInitialState(instance);
+
+								hexagonsPanel.drawHexagon(instance,
+										hexagonsPanel.getGraphics(), Color());
+							} else if (isDrawingPerturbations()) {
+
+								epithelium.setPerturbedInstance(instance);
+								if (epithelium.getActivePerturbation() != null) {
+									Color color = epithelium.getPerturbationColor(
+											epithelium.getActivePerturbation().toString());
+
+									hexagonsPanel.drawHexagon(instance,
+											hexagonsPanel.getGraphics(), color);
+								}
+
+							}
+
+						}
+
+					}
+				}
 			}
 		});
 	}
@@ -679,17 +709,6 @@ public class MainFrame extends JFrame {
 
 	}
 
-	// public Color ColorBrightness(Color color, int value) {
-	// if (value > 0) {
-	//
-	// for (int j = 2; j <= value; j++) {
-	// color = color.darker();
-	// }
-	// } else if (value == 0) {
-	// color = Color.white;
-	// }
-	// return color;
-	// }
 
 	public Color Color(int instance) {
 
@@ -796,13 +815,10 @@ public class MainFrame extends JFrame {
 		selectedFilenameLabel = new JLabel();
 
 		labelFilename.setText("Filename: ");
-		// labelFilename.setForeground(Color.white);
 
 		setWidth.setText("Width: ");
 		setHeight.setText("Height: ");
 
-		// setWidth.setForeground(Color.white);
-		// setHeight.setForeground(Color.white);
 
 		userDefinedWidth.setPreferredSize(new Dimension(34, 26));
 		userDefinedHeight.setPreferredSize(new Dimension(34, 26));
@@ -825,7 +841,6 @@ public class MainFrame extends JFrame {
 
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				// TODO Auto-generated method stub
 			}
 		});
 
@@ -937,14 +952,6 @@ public class MainFrame extends JFrame {
 					color);
 		}
 	}
-
-	// private JTextField sanityCheckDimension(JTextField userDefined) {
-	// String dimString = userDefined.getText();
-	// int w = Integer.parseInt(dimString);
-	// // w = (w % 2 == 0) ? w : w + 1;
-	// userDefined.setText("" + w);
-	// return userDefined;
-	// }
 
 	private void loadModel(File file) {
 

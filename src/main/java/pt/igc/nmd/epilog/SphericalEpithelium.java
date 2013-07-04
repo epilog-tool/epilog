@@ -15,10 +15,6 @@ import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionSpecification.Int
 
 public class SphericalEpithelium implements Epithelium {
 
-	public Color colors[] = { Color.orange, Color.green, Color.blue,
-			Color.pink, Color.yellow, Color.magenta, Color.cyan, Color.red,
-			Color.LIGHT_GRAY, Color.black };
-
 	private LogicalModel unitaryModel;
 	private LogicalModel composedModel;
 	private String SBMLFilename;
@@ -43,7 +39,7 @@ public class SphericalEpithelium implements Epithelium {
 	public Hashtable<String, Color> perturbationColor;
 
 	private String selectedPriority;
-	private String selectedPerturbation;
+	private String selectedPerturbationSet;
 	private String selectedInputSet;
 	private String selectedInitialSet;
 
@@ -117,6 +113,7 @@ public class SphericalEpithelium implements Epithelium {
 	public Color getColor(NodeInfo node) {
 		return this.nodeColor[getUnitaryModel().getNodeOrder().indexOf(node)];
 	}
+
 
 	// DISPLAY COMPONENTS
 
@@ -363,8 +360,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	public void setPerturbedInstance(int instance) {
 		AbstractPerturbation perturbation = getActivePerturbation();
-		perturbations[instance] = perturbation;
-
+		perturbations[instance] = perturbation; 
 	}
 
 	public boolean isCellPerturbed(int instance) {
@@ -382,11 +378,23 @@ public class SphericalEpithelium implements Epithelium {
 	}
 
 	public AbstractPerturbation getInstancePerturbation(int instance) {
-		if (selectedPerturbation != null && getPerturbationsSet().get(selectedPerturbation) != null)
-			return getPerturbationsSet().get(selectedPerturbation)[instance];
-		else
+		
+//		if (selectedPerturbation == null)
+//			System.out.println("selectedPerturbation " + selectedPerturbation + " " + instance);
+//		if (selectedPerturbation != null && getPerturbationsSet().get(selectedPerturbation) == null)
+//			System.out.println("getPerturbationsSet().get(selectedPerturbation) "  + instance);
+		
+		if (selectedPerturbationSet != null && getPerturbationsSet().get(selectedPerturbationSet) == null){
+			System.out.println("getPerturbationsSet().get(selectedPerturbation) "  + instance);
+			for (String name: getPerturbationsSet().keySet())
+				System.out.println(name);
+		}
+		
+		if (selectedPerturbationSet != null && getPerturbationsSet().get(selectedPerturbationSet) != null)
+			return getPerturbationsSet().get(selectedPerturbationSet)[instance];
+		else{
 			return null;
-
+		}
 	}
 
 	public AbstractPerturbation getInstancePerturbationDraw(int instance) {
@@ -397,13 +405,15 @@ public class SphericalEpithelium implements Epithelium {
 	}
 
 	public void setPerturbationSet(String name) {
+		
 		AbstractPerturbation[] perturbations_aux = new AbstractPerturbation[topology
 				.getNumberInstances()];
 		for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
+					
 			perturbations_aux[instance] = perturbations[instance];
 		}
-
 		perturbationsSet.put(name, perturbations_aux);
+		
 	}
 
 	public void setPerturbationSet(String name,
@@ -416,7 +426,7 @@ public class SphericalEpithelium implements Epithelium {
 	}
 
 	public String getSelectedPerturbation() {
-		return selectedPerturbation;
+		return selectedPerturbationSet;
 	}
 
 	public void setLoadedPerturbations(List a) {
@@ -429,7 +439,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	// Sets the selected perturbation from the saved Set
 	public void setSelectedPerturbation(String string) {
-		selectedPerturbation = string;
+		selectedPerturbationSet = string;
 	}
 
 	/*
@@ -470,9 +480,7 @@ public class SphericalEpithelium implements Epithelium {
 	/*
 	 * Inputs
 	 */
-//	public Hashtable<String, Grid> getInputsSet() {
-//		return inputsSet;
-//	}
+
 
 	public Hashtable<String, Hashtable<NodeInfo, List<String>>> getInputsIntegrationSet() {
 		return integrationInputsSet;
@@ -480,22 +488,6 @@ public class SphericalEpithelium implements Epithelium {
 
 	public void setInputsSet(String name) {
 
-//		List<NodeInfo> inputs = new ArrayList();
-//		for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
-//			if (node.isInput() & !isIntegrationComponent(node)) {
-//				inputs.add(node);
-//			}
-//		}
-//
-//		Grid inputsGrid = new Grid(topology.getNumberInstances(), inputs);
-//
-//		for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
-//			for (NodeInfo node : inputs) {
-//				byte value = getGridValue(instance, node);
-//				inputsGrid.setGrid(instance, node, value);
-//			}
-//		}
-//		inputsSet.put(name, inputsGrid);
 		setInputsIntegrationSet(name);
 	}
 
@@ -529,14 +521,7 @@ public class SphericalEpithelium implements Epithelium {
 	public void setSelectedInputSet(String string) {
 		
 		selectedInputSet = string;
-//		Grid input_aux = inputsSet.get(string);
 
-//		if (input_aux != null){
-//			combineGrids(input_aux);
-//			for (NodeInfo node: input_aux.getListNodes())
-//				setIntegrationComponent(getUnitaryModel().getNodeOrder()
-//						.indexOf(node), false);
-//		}
 		Hashtable<NodeInfo, List<String>> aux = integrationInputsSet
 				.get(string);
 		

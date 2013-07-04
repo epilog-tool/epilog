@@ -260,7 +260,6 @@ public class PerturbationsPanel extends JPanel {
 				JComboBox src = (JComboBox) arg0.getSource();
 				setMinValue((byte) Integer.parseInt(src.getSelectedItem()
 						.toString()));
-				// System.out.println("minValue" + minValue);
 			}
 		});
 
@@ -270,7 +269,6 @@ public class PerturbationsPanel extends JPanel {
 				JComboBox src = (JComboBox) arg0.getSource();
 				setMaxValue((byte) Integer.parseInt(src.getSelectedItem()
 						.toString()));
-				// System.out.println("maxValue" + maxValue);
 			}
 		});
 
@@ -373,8 +371,9 @@ public class PerturbationsPanel extends JPanel {
 					listModel.addElement(perturbationsList.getModel()
 							.getElementAt(index));
 				else
-					perturbationToDelete.add((AbstractPerturbation) perturbationsList.getModel()
-							.getElementAt(index));
+					perturbationToDelete
+							.add((AbstractPerturbation) perturbationsList
+									.getModel().getElementAt(index));
 		}
 		perturbationsList.setModel(listModel);
 
@@ -383,9 +382,8 @@ public class PerturbationsPanel extends JPanel {
 					.getItemAt(i);
 			for (int j = 0; j < perturbationToDelete.size(); j++) {
 				if (p.perturbations.contains(perturbationToDelete.get(j))) {
-		
-					mainFrame.epithelium
-							.setActivePerturbation(p);
+
+					mainFrame.epithelium.setActivePerturbation(p);
 					deleteMutation();
 				}
 			}
@@ -533,10 +531,6 @@ public class PerturbationsPanel extends JPanel {
 		selectedPerturbedComponent = string;
 	}
 
-	public void fillHexagons() {
-		mainFrame.fillHexagons();
-	}
-
 	public void clearAllCells() {
 		for (int instance = 0; instance < mainFrame.topology
 				.getNumberInstances(); instance++) {
@@ -545,7 +539,7 @@ public class PerturbationsPanel extends JPanel {
 
 		}
 		repaint();
-		fillHexagons();
+		mainFrame.fillHexagons();
 	}
 
 	public void markAllCells() {
@@ -553,7 +547,7 @@ public class PerturbationsPanel extends JPanel {
 				.getNumberInstances(); instance++) {
 			mainFrame.epithelium.setPerturbedInstance(instance);
 		}
-		fillHexagons();
+		mainFrame.fillHexagons();
 	}
 
 	// CenterCenterPanel auxiliary methods
@@ -612,24 +606,29 @@ public class PerturbationsPanel extends JPanel {
 
 	private void loadSelectedPerturbationSet() {
 
-		setName.setText((String) mutationsSetsCombo.getSelectedItem());
-		mainFrame.epithelium
-				.setSelectedPerturbation((String) mutationsSetsCombo
-						.getSelectedItem());
-		if (mutationsSetsCombo.getSelectedItem() != null) {
-			AbstractPerturbation[] aux = mainFrame.epithelium
-					.getPerturbationsSet().get(
-							(String) mutationsSetsCombo.getSelectedItem());
-			clearAllCells();
-			for (int instance = 0; instance < mainFrame.topology
-					.getNumberInstances(); instance++) {
-				if (mainFrame.epithelium.isCellPerturbed(instance)) {
+		if (mainFrame.epithelium.getPerturbationsSet().get(
+				(String) mutationsSetsCombo.getSelectedItem()) != null) {
+			setName.setText((String) mutationsSetsCombo.getSelectedItem());
+			mainFrame.epithelium
+					.setSelectedPerturbation((String) mutationsSetsCombo
+							.getSelectedItem());
+			if (mutationsSetsCombo.getSelectedItem() != null) {
+				AbstractPerturbation[] aux = mainFrame.epithelium
+						.getPerturbationsSet().get(
+								(String) mutationsSetsCombo.getSelectedItem());
+				clearAllCells();
 
-					mainFrame.epithelium.setActivePerturbation(aux[instance]);
-					mainFrame.epithelium.setPerturbedInstance(instance);
+				for (int instance = 0; instance < mainFrame.topology
+						.getNumberInstances(); instance++) {
+					if (mainFrame.epithelium.isCellPerturbed(instance)) {
+
+						mainFrame.epithelium
+								.setActivePerturbation(aux[instance]);
+						mainFrame.epithelium.setPerturbedInstance(instance);
+					}
 				}
+				mainFrame.fillHexagons();
 			}
-			fillHexagons();
 		}
 	}
 

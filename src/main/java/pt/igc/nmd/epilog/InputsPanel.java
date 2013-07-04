@@ -86,70 +86,6 @@ public class InputsPanel extends JPanel {
 
 			optionsPanel.setLayout(layout);
 
-//			JButton buttonMarkAll = new JButton("Apply All");
-//			JButton buttonClearAll = new JButton("Clear All");
-//			buttonFill = new JButton("Rectangle Fill");
-//			JButton buttonDeselectAll = new JButton("Deselect all");
-//			JButton buttonSelectAll = new JButton("Select all");
-
-//			buttonFill.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent e) {
-//					
-//					fireOnFill();
-//						
-//				}
-//			});
-
-//			buttonMarkAll.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent e) {
-//					markAllCells();
-//
-//				}
-//			});
-//
-//			buttonClearAll.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent e) {
-//					clearAllCells();
-//
-//				}
-//			});
-			
-//			buttonDeselectAll.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent e) {
-//					for (JCheckBox singleNodeBox : nodeBox) {
-//						if (singleNodeBox!=null){
-//							singleNodeBox.setSelected(false);
-//							setComponentDisplay(Jcheck2Node.get(singleNodeBox),
-//									singleNodeBox.isSelected());
-//						}}
-//						fillHexagons();
-//
-//					
-//				}
-//			});
-			
-//			buttonSelectAll.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent e) {
-//					for (JCheckBox singleNodeBox : nodeBox) {
-//						if (singleNodeBox!=null){
-//							singleNodeBox.setSelected(true);
-//							setComponentDisplay(Jcheck2Node.get(singleNodeBox),
-//									singleNodeBox.isSelected());
-//						}}
-//						fillHexagons();
-//
-//					
-//				}
-//			});
-
-//			optionsPanel.add(buttonMarkAll);
-//			optionsPanel.add(buttonClearAll);
-//			optionsPanel.add(buttonFill);
-//			optionsPanel.add(buttonDeselectAll);
-//			optionsPanel.add(buttonSelectAll);
-
-//			add(optionsPanel, BorderLayout.PAGE_START);
-
 			// END PANEL
 
 			JPanel endPanel = new JPanel(layout);
@@ -229,62 +165,6 @@ public class InputsPanel extends JPanel {
 							.createEtchedBorder(EtchedBorder.LOWERED));
 					
 					JLabel nodeID = new JLabel(listNodes.get(i).getNodeID());
-
-//					nodeBox[i] = new JCheckBox(listNodes.get(i).getNodeID());
-//					nodeBox[i].setBackground(backgroundColor);
-//					nodeBox[i].setToolTipText(listNodes.get(i).getNodeID());
-					
-					
-					
-//					colorButton[i] = new JButton("");
-//					colorButton[i].setBackground(mainFrame.epithelium.getColor(listNodes.get(i)));
-//					button2Node.put(colorButton[i],listNodes.get(i));
-					
-//					colorButton[i].addActionListener(new ActionListener() {
-//						public void actionPerformed(ActionEvent arg0) {
-//							JButton src = (JButton) arg0.getSource();
-//							setNewColor(src);
-//						}
-//					});
-
-//					Jcheck2Node.put(nodeBox[i], i);
-//					node2Jcheck[i] = nodeBox[i];
-					
-//					epithelium.setDefinitionsComponentDisplay(i, false);
-
-//					nodeBox[i].addActionListener(new ActionListener() {
-//						@Override
-//						public void actionPerformed(ActionEvent arg0) {
-//							JCheckBox src = (JCheckBox) arg0.getSource();
-//							setComponentDisplay(Jcheck2Node.get(src),
-//									src.isSelected());
-//							fillHexagons();
-//						}
-//					});
-					
-				
-
-//					initialStatePerComponent[i] = new JComboBox();
-//
-//					for (int maxValue = 0; maxValue < listNodes.get(i).getMax() + 1; maxValue++) {
-//						initialStatePerComponent[i].addItem(maxValue);
-//					}
-//					Jcombo2Node.put(initialStatePerComponent[i], i);
-//					node2Jcombo[i] = initialStatePerComponent[i];
-//
-//					mainFrame.epithelium.setInitialState(listNodes.get(Jcombo2Node
-//							.get(initialStatePerComponent[i])), (byte) 0);
-//
-//					initialStatePerComponent[i]
-//							.addActionListener(new ActionListener() {
-//								@Override
-//								public void actionPerformed(ActionEvent arg0) {
-//									JComboBox src = (JComboBox) arg0
-//											.getSource();
-//
-//									fireInitialStateChange(src);
-//								}
-//							});
 
 
 					integrationFunctionButton = new JButton("Function");
@@ -405,11 +285,6 @@ public class InputsPanel extends JPanel {
 
 	}
 
-//	private void fireInitialStateChange(JComboBox combo) {
-//		epithelium.setInitialState(mainFrame.epithelium.getUnitaryModel()
-//				.getNodeOrder().get(Jcombo2Node.get(combo)),
-//				((Integer) combo.getSelectedItem()).byteValue());
-//	}
 
 	public void setComponentDisplay(int i, boolean b) {
 		mainFrame.epithelium.setDefinitionsComponentDisplay(i, b);
@@ -497,13 +372,8 @@ public class InputsPanel extends JPanel {
 					(String) sets.getSelectedItem()) != null){
 				mainFrame.epithelium.setSelectedInputSet((String) sets
 						.getSelectedItem());
-			System.out.println("Selected a new set");	
 			}
 		
-	for (NodeInfo node: mainFrame.epithelium.getUnitaryModel().getNodeOrder()){
-		if(mainFrame.epithelium.isIntegrationComponent(node))
-			System.out.println("node is integrationscomponent: " + node);
-	}
 	}
 	
 	
