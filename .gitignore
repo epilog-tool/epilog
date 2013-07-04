@@ -1,6 +1,9 @@
 .DS_Store
 jsbml.log
 target
+*.png
+.settings
+.metadata
 *.zip
 bin
 build
