@@ -382,9 +382,7 @@ public class SphericalEpithelium implements Epithelium {
 	}
 
 	public AbstractPerturbation getInstancePerturbation(int instance) {
-
-		if (selectedPerturbation != null)
-
+		if (selectedPerturbation != null && getPerturbationsSet().get(selectedPerturbation) != null)
 			return getPerturbationsSet().get(selectedPerturbation)[instance];
 		else
 			return null;

@@ -108,7 +108,7 @@ public class DrawPolygon extends JPanel {
 								this.mainFrame.simulation
 										.getCoordinateCurrentColor(instance),
 								polygon2, g2);
-					}
+										}
 
 					if (k % 2 == 0)
 						centerY = (j + 1 + 0.5) * radius * Math.sqrt(3.0);
@@ -156,6 +156,7 @@ public class DrawPolygon extends JPanel {
 		if (this.mainFrame.isDrawingCells()) {
 			BasicStroke selectedStroke = stroke;
 			paintHexagons(stroke, color, polygon2, g2);
+			
 		} else if (this.mainFrame.isDrawingPerturbations()) {
 			BasicStroke selectedStroke = stroke;
 			color = color.white;

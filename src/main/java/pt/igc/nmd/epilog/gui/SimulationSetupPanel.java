@@ -234,7 +234,7 @@ public class SimulationSetupPanel extends JPanel {
 				JComboBox src = (JComboBox) arg0.getSource();
 				mainFrame.epithelium.setSelectedInitialSet((String) src
 						.getSelectedItem());
-				mainFrame.hexagonsPanel.repaint();
+				//mainFrame.hexagonsPanel.repaint();
 				mainFrame.simulation.fillHexagons();
 			}
 		});
@@ -260,7 +260,7 @@ public class SimulationSetupPanel extends JPanel {
 						.getSelectedItem());
 				String string = "perturbation";
 				needToResetComposedModel(string, (String) src.getSelectedItem());
-				mainFrame.hexagonsPanel.repaint();
+				//mainFrame.hexagonsPanel.repaint();
 				mainFrame.simulation.fillHexagons();
 			}
 		});

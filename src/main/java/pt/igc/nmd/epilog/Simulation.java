@@ -224,7 +224,6 @@ public class Simulation {
 						this.mainFrame.hexagonsPanel.getGraphics(), color);
 			}
 		}
-//		this.mainFrame.auxiliaryHexagonsPanel.repaint();
 	}
 
 	public Color getColorLevel(Color color, int value, int max) {

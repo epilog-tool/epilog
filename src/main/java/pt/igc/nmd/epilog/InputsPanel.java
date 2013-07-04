@@ -45,22 +45,15 @@ public class InputsPanel extends JPanel {
 	
 	private Hashtable<JButton, NodeInfo> button2Node;
 
-//	private JComboBox[] node2Jcombo;
-//	private JCheckBox[] node2Jcheck;
+
 	private JButton[] node2IntegrationFunctionButton;
-//	private JComboBox[] initialStatePerComponent;
 	private JComboBox[] inputComboChooser;
-//	public JCheckBox nodeBox[];
-//	private JButton[] colorButton;
+
 	
 	private JTextField setName;
 	private JComboBox sets;
 	
-
-
 	private JButton integrationFunctionButton;
-//	public JButton buttonFill;
-//	private JPanel optionsPanel;
 
 	public InputsPanel(SphericalEpithelium epithelium, Topology topology,
 			MainFrame mainFrame) {
@@ -84,11 +77,6 @@ public class InputsPanel extends JPanel {
 			List<NodeInfo> listNodes = epithelium.getUnitaryModel()
 					.getNodeOrder();
 
-//			// CREATION OF THE INPUT GRID
-//			List<NodeInfo> listEnvNodes = new ArrayList<NodeInfo>();
-//			for (NodeInfo node : listNodes)
-//				if (node.isInput())
-//					listEnvNodes.add(node);
 
 			// PAGE START PANEL
 

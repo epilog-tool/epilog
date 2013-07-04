@@ -928,7 +928,7 @@ public class MainFrame extends JFrame {
 	public void fillHexagons() {
 
 		Color color = Color.white;
-		if (epithelium.getUnitaryModel() != null)
+		if (epithelium.getUnitaryModel() == null)
 			return;
 		for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
 

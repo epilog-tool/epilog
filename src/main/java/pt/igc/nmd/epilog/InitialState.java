@@ -319,7 +319,6 @@ public class InitialState extends JPanel {
 	}
 
 	public void clearAllCells() {
-		// adicionar try catch para textFx e fy
 		mainFrame.epithelium.initializeGrid();
 		fillHexagons();
 	}
