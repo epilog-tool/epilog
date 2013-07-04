@@ -184,10 +184,6 @@ public class DrawPolygon extends JPanel {
 		g2.setColor(Color.black);
 		g2.drawPolygon(polygon2);
 	}
-	
-	private void fill(){
-		System.out.println("DO FILL");
-	}
 
 	public void clearAllCells(Graphics g) {
 

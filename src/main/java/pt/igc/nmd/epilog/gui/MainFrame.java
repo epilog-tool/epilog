@@ -351,32 +351,7 @@ public class MainFrame extends JFrame {
 					j = (int) (ind_jt - i % 2 + deltaj);
 				}
 
-				if (isEditable()) {
-					if (i < topology.getWidth() && j < topology.getHeight()
-							&& i >= 0 && j >= 0) {
-						int instance = topology.coords2Instance(i, j);
-						if (isDrawingCells() && !isFillOn()) {
-							Color color = Color();
-							hexagonsPanel.drawHexagon(instance,
-									hexagonsPanel.getGraphics(), color);
-							getEpithelium().setInitialState(instance);
-						} else if (isDrawingPerturbations()) {
-
-							epithelium.setPerturbedInstance(instance);
-							if (epithelium.getActivePerturbation() != null) {
-								Color color = epithelium
-										.getPerturbationColor(epithelium
-												.getActivePerturbation()
-												.toString());
-
-								hexagonsPanel.drawHexagon(instance,
-										hexagonsPanel.getGraphics(), color);
-							}
-
-						} else if (isDrawingPriorities()) {
-						}
-					}
-				}
+				paintHexagons(i, j);
 
 			}
 
