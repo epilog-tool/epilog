@@ -194,7 +194,7 @@ public class StartPanel extends JPanel {
 					try {
 						Scanner fileIn = new Scanner(new File(
 								fileEntry.getAbsolutePath()));
-						ld(fileIn);
+					//	ld(fileIn);
 						loadConfigurations();
 
 					} catch (FileNotFoundException e) {
@@ -296,8 +296,6 @@ public class StartPanel extends JPanel {
 			
 
 			if (identifier.contains("IT")) {
-				
-				System.out.println(line);
 				NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
 						.getNodeOrder()
 						.get(Integer.parseInt(line.split(" ")[3]));
@@ -366,10 +364,12 @@ public class StartPanel extends JPanel {
 			}
 
 			if (identifier.contains("PT")) {
-
+				
 				int index = 0;
 
 				if (line.contains("perturbations")) {
+					
+					
 					String perturbationsString = line.split(":")[1];
 					perturbationsString = perturbationsString.replace("(", "");
 
@@ -387,6 +387,7 @@ public class StartPanel extends JPanel {
 							NodeInfo node = string2Node
 									.get(aux.split("\\[")[0]);
 
+							
 							AbstractPerturbation a = setPerturbation(node, min,
 									max);
 							perturbationsList.add(a);
@@ -574,7 +575,8 @@ public class StartPanel extends JPanel {
 
 			try {
 
-				out = new PrintWriter(new FileWriter("config.txt"));
+				out = new PrintWriter(new FileWriter(fc.getSelectedFile()
+						.getAbsolutePath() + "_config.txt"));
 				createConfigFile(out);
 				out.close();
 
@@ -594,7 +596,7 @@ public class StartPanel extends JPanel {
 				// System.out.println("Unitary SBML" + unitarySBML);
 
 				String[] sourceFiles = {
-						"config.txt",
+						fc.getSelectedFile().getAbsolutePath() + "_config.txt",
 						unitarySBML };
 
 				byte[] buffer = new byte[1024];
@@ -615,7 +617,8 @@ public class StartPanel extends JPanel {
 				}
 				zout.close();
 				// System.out.println("Zip file has been created!");
-				File toDelete = new File("config.txt");
+				File toDelete = new File(fc.getSelectedFile().getAbsolutePath()
+						+ "_config.txt");
 				toDelete.delete();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -930,6 +933,7 @@ public class StartPanel extends JPanel {
 
 	private AbstractPerturbation setPerturbation(NodeInfo node, int minValue,
 			int maxValue) {
+		System.out.println(node);
 		AbstractPerturbation a = null;
 		if (minValue == maxValue)
 			a = new FixedValuePerturbation(node, minValue);
