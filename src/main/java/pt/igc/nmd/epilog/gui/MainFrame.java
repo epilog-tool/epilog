@@ -36,14 +36,11 @@ import javax.swing.event.ChangeListener;
 import org.colomoto.logicalmodel.NodeInfo;
 
 import pt.igc.nmd.epilog.Epithelium;
-import pt.igc.nmd.epilog.InitialState;
-import pt.igc.nmd.epilog.InputsPanel;
 import pt.igc.nmd.epilog.LogicalModelComposition;
 import pt.igc.nmd.epilog.PerturbationsPanel;
 import pt.igc.nmd.epilog.PrioritiesPanel;
 import pt.igc.nmd.epilog.Simulation;
 import pt.igc.nmd.epilog.SphericalEpithelium;
-import pt.igc.nmd.epilog.TextPanel;
 import pt.igc.nmd.epilog.Topology;
 
 public class MainFrame extends JFrame {
@@ -63,13 +60,12 @@ public class MainFrame extends JFrame {
 	public JPanel gridSpecsPanel = null;
 
 	public DrawPolygon hexagonsPanel = null;
-	private TextPanel watcherPanel;
 	public ComponentsPanel componentsPanel = null;
 	public JPanel auxiliaryHexagonsPanel;
 	public InputsPanel inputsPanel = null;
 	public PerturbationsPanel perturbationsPanel = null;
 	private PrioritiesPanel prioritiesPanel = null;
-	public InitialState initial = null;
+	public InitialConditions initial = null;
 
 	private int fillXi;
 	private int fillYi;
@@ -521,7 +517,7 @@ public class MainFrame extends JFrame {
 	/**
 	 * Initializes the right panel of Epilog's main panel.
 	 * 
-	 * @see InitialState
+	 * @see InitialConditions
 	 * @see InputsPanel
 	 * @see PerturbationsPanel
 	 * @see PrioritiesPanel
@@ -534,8 +530,8 @@ public class MainFrame extends JFrame {
 		componentsPanel = new ComponentsPanel(this);
 		simulationSetupPanel = new SimulationSetupPanel(this);
 
-		initial = new InitialState(this);
-		inputsPanel = new InputsPanel(epithelium, topology, this);
+		initial = new InitialConditions(this);
+		inputsPanel = new InputsPanel(this);
 		perturbationsPanel = new PerturbationsPanel(this);
 		prioritiesPanel = new PrioritiesPanel(this);
 
@@ -879,20 +875,20 @@ public class MainFrame extends JFrame {
 	// Value Analytics related Methods
 
 	/**
-	 * Sets the initialSetupHasChanged value as true or false
+	 * Sets the information to be painted at the analytics panel
 	 * 
-	 * @param b
-	 *            boolean value to update initialSetupHasChanged with
+	 * @param string string with the information of all components
+	 * @param instance instance to analyze
 	 */
-	private void setTool(String s, int instance) {
-		stringTextTool = s;
+	private void setTool(String string, int instance) {
+		stringTextTool = string;
 		getTool(instance);
 	}
 
 	/**
-	 * Sets the initialSetupHasChanged value as true or false
+	 * Repaints the analytics panel with the status of all components in an instance
 	 * 
-	 * @param instance instance to analyse
+	 * @param instance instance to analyze
 	 */
 	public void getTool(int instance) {
 
@@ -913,7 +909,6 @@ public class MainFrame extends JFrame {
 		simulationSetupPanel.lineStartPanel.revalidate();
 		simulationSetupPanel.lineStartPanel.repaint();
 		simulationSetupPanel.lineStartPanel.add(test, BorderLayout.PAGE_END);
-
 	}
 
 	// FILL related Methods

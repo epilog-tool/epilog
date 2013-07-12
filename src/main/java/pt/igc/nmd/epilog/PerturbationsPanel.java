@@ -122,8 +122,8 @@ public class PerturbationsPanel extends JPanel {
 				.getPreferredSize().width, mutationsSetsCombo
 				.getPreferredSize().height));
 
-		if (mainFrame.epithelium.getPerturbationsSet() != null) {
-			for (String key : mainFrame.epithelium.getPerturbationsSet()
+		if (this.mainFrame.epithelium.getPerturbationsSet() != null) {
+			for (String key : this.mainFrame.epithelium.getPerturbationsSet()
 					.keySet()) {
 				if (key != "none")
 					mutationsSetsCombo.addItem(key);
@@ -175,9 +175,9 @@ public class PerturbationsPanel extends JPanel {
 
 		listModel = new DefaultListModel();
 
-		if (mainFrame.epithelium.loadedPerturbations != null)
-			for (int i = 0; i < mainFrame.epithelium.loadedPerturbations.size(); i++)
-				listModel.addElement(mainFrame.epithelium.loadedPerturbations
+		if (this.mainFrame.epithelium.loadedPerturbations != null)
+			for (int i = 0; i < this.mainFrame.epithelium.loadedPerturbations.size(); i++)
+				listModel.addElement(this.mainFrame.epithelium.loadedPerturbations
 						.get(i));
 
 		perturbationsList = new JList(listModel);
@@ -212,9 +212,7 @@ public class PerturbationsPanel extends JPanel {
 
 		componentBox = new JComboBox();
 
-		System.out.println(mainFrame.epithelium.getUnitaryModel()
-				.getNodeOrder());
-		for (NodeInfo node : mainFrame.epithelium.getUnitaryModel()
+		for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder()) {
 			if (!node.isInput()) {
 				componentBox.addItem(node.getNodeID());
@@ -222,12 +220,12 @@ public class PerturbationsPanel extends JPanel {
 			}
 		}
 
-		componentBox.setSelectedItem(mainFrame.epithelium.getUnitaryModel()
+		componentBox.setSelectedItem(this.mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder().get(0).getNodeID());
-		selectedPerturbedComponent = mainFrame.epithelium.getUnitaryModel()
+		selectedPerturbedComponent = this.mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder().get(0).getNodeID();
 		setMinValue((byte) 0);
-		setMaxValue(mainFrame.epithelium.getUnitaryModel().getNodeOrder()
+		setMaxValue(this.mainFrame.epithelium.getUnitaryModel().getNodeOrder()
 				.get(0).getMax());
 
 		JComboBox minValueBox = getPerturbedExpressionCombo();
@@ -235,9 +233,9 @@ public class PerturbationsPanel extends JPanel {
 
 		mutationsListCombo = new JComboBox();
 
-		if (mainFrame.epithelium.loadedMutations != null)
-			for (int i = 0; i < mainFrame.epithelium.loadedMutations.size(); i++)
-				mutationsListCombo.addItem(mainFrame.epithelium.loadedMutations
+		if (this.mainFrame.epithelium.loadedMutations != null)
+			for (int i = 0; i < this.mainFrame.epithelium.loadedMutations.size(); i++)
+				mutationsListCombo.addItem(this.mainFrame.epithelium.loadedMutations
 						.get(i));
 
 		maxValueBox.setSelectedItem(maxValueBox.getItemCount() - 1);
@@ -385,7 +383,7 @@ public class PerturbationsPanel extends JPanel {
 			for (int j = 0; j < perturbationToDelete.size(); j++) {
 				if (p.perturbations.contains(perturbationToDelete.get(j))) {
 
-					mainFrame.epithelium.setActivePerturbation(p);
+					this.mainFrame.epithelium.setActivePerturbation(p);
 					deleteMutation();
 				}
 			}
@@ -398,7 +396,7 @@ public class PerturbationsPanel extends JPanel {
 		List<AbstractPerturbation> newList = new ArrayList<AbstractPerturbation>();
 		int index = -1;
 		for (int i = 0; i < mutationsListCombo.getItemCount(); i++) {
-			if (mutationsListCombo.getItemAt(i) != mainFrame.epithelium
+			if (mutationsListCombo.getItemAt(i) != this.mainFrame.epithelium
 					.getActivePerturbation())
 				newList.add((AbstractPerturbation) mutationsListCombo
 						.getItemAt(i));
@@ -420,22 +418,22 @@ public class PerturbationsPanel extends JPanel {
 			JLabel test = new JLabel();
 			JButton colorBox = new JButton();
 
-			Color color = mainFrame.epithelium
+			Color color = this.mainFrame.epithelium
 					.getPerturbationColor(mutationsListCombo.getItemAt(i)
 							.toString());
 
 			if (color == null) {
-				color = mainFrame.getRandomColor();
+				color = this.mainFrame.getRandomColor();
 
-				while (mainFrame.epithelium.perturbationColor.values()
+				while (this.mainFrame.epithelium.perturbationColor.values()
 						.contains(color)) {
-					color = mainFrame.getRandomColor();
+					color = this.mainFrame.getRandomColor();
 				}
 			}
-			mainFrame.epithelium.setPerturbationColor(mutationsListCombo
+			this.mainFrame.epithelium.setPerturbationColor(mutationsListCombo
 					.getItemAt(i).toString(), color);
 
-			colorBox.setBackground(mainFrame.epithelium
+			colorBox.setBackground(this.mainFrame.epithelium
 					.getPerturbationColor(mutationsListCombo.getItemAt(i)
 							.toString()));
 
@@ -479,7 +477,7 @@ public class PerturbationsPanel extends JPanel {
 	}
 
 	public void setMaxValue(int index) {
-		maxValue = mainFrame.getEpithelium().getUnitaryModel().getNodeOrder()
+		maxValue = this.mainFrame.epithelium.getUnitaryModel().getNodeOrder()
 				.get(index).getMax();
 	}
 
@@ -534,22 +532,22 @@ public class PerturbationsPanel extends JPanel {
 	}
 
 	public void clearAllCells() {
-		for (int instance = 0; instance < mainFrame.topology
+		for (int instance = 0; instance < this.mainFrame.topology
 				.getNumberInstances(); instance++) {
-			mainFrame.epithelium.setActivePerturbation(null);
-			mainFrame.epithelium.setPerturbedInstance(instance);
+			this.mainFrame.epithelium.setActivePerturbation(null);
+			this.mainFrame.epithelium.setPerturbedInstance(instance);
 
 		}
 		repaint();
-		mainFrame.fillHexagons();
+		this.mainFrame.fillHexagons();
 	}
 
 	public void markAllCells() {
 		for (int instance = 0; instance < this.mainFrame.topology
 				.getNumberInstances(); instance++) {
-			mainFrame.epithelium.setPerturbedInstance(instance);
+			this.mainFrame.epithelium.setPerturbedInstance(instance);
 		}
-		mainFrame.fillHexagons();
+		this.mainFrame.fillHexagons();
 	}
 
 	// CenterCenterPanel auxiliary methods
@@ -571,36 +569,43 @@ public class PerturbationsPanel extends JPanel {
 	}
 
 	private void setActivePerturbation(JComboBox combo) {
-		mainFrame.epithelium.setActivePerturbation((AbstractPerturbation) combo
+		this.mainFrame.epithelium.setActivePerturbation((AbstractPerturbation) combo
 				.getSelectedItem());
 	}
 
 	private void fireOnFill() {
-		if (!mainFrame.isFillOn()) {
+		if (!this.mainFrame.isFillOn()) {
 			buttonFill.setBackground(Color.yellow);
-			mainFrame.setFill(true);
+			this.mainFrame.setFill(true);
 		} else {
-			mainFrame.setFill(false);
+			this.mainFrame.setFill(false);
 			buttonFill.setBackground(this.getBackground());
 		}
 	}
 
 	// ENd Panel Auxiliary Functions
 
+	/**
+	 * Adds a perturbation set. If a name is already used, then the new set replaces the old one.
+	 * 
+	 */
 	private void addElementToSet() {
 		String name = setName.getText();
-		if (!mainFrame.epithelium.getPerturbationsSet().containsKey(name))
+		if (!this.mainFrame.epithelium.getPerturbationsSet().containsKey(name))
 			mutationsSetsCombo.addItem(name);
-		mainFrame.epithelium.setPerturbationSet(name);
+		this.mainFrame.epithelium.setPerturbationSet(name);
 	}
 
+	/**
+	 * Removes an element from the set of perturbation sets.
+	 * 
+	 */
 	private void removeElementFromSet() {
 		String setToRemove = (String) mutationsSetsCombo.getSelectedItem();
-		mainFrame.epithelium.getPerturbationsSet().remove(setToRemove);
-		System.out.println("I want to remove: " + setToRemove);
+		this.mainFrame.epithelium.getPerturbationsSet().remove(setToRemove);
 		setName.setText("");
 		mutationsSetsCombo.removeAllItems();
-		for (String string : mainFrame.epithelium.getPerturbationsSet()
+		for (String string : this.mainFrame.epithelium.getPerturbationsSet()
 				.keySet())
 			if (string != "none")
 				mutationsSetsCombo.addItem(string);
@@ -608,28 +613,28 @@ public class PerturbationsPanel extends JPanel {
 
 	private void loadSelectedPerturbationSet() {
 
-		if (mainFrame.epithelium.getPerturbationsSet().get(
+		if (this.mainFrame.epithelium.getPerturbationsSet().get(
 				(String) mutationsSetsCombo.getSelectedItem()) != null) {
 			setName.setText((String) mutationsSetsCombo.getSelectedItem());
-			mainFrame.epithelium
+			this.mainFrame.epithelium
 					.setSelectedPerturbation((String) mutationsSetsCombo
 							.getSelectedItem());
 			if (mutationsSetsCombo.getSelectedItem() != null) {
-				AbstractPerturbation[] aux = mainFrame.epithelium
+				AbstractPerturbation[] aux = this.mainFrame.epithelium
 						.getPerturbationsSet().get(
 								(String) mutationsSetsCombo.getSelectedItem());
 				clearAllCells();
 
-				for (int instance = 0; instance < mainFrame.topology
+				for (int instance = 0; instance < this.mainFrame.topology
 						.getNumberInstances(); instance++) {
-					if (mainFrame.epithelium.isCellPerturbed(instance)) {
+					if (this.mainFrame.epithelium.isCellPerturbed(instance)) {
 
-						mainFrame.epithelium
+						this.mainFrame.epithelium
 								.setActivePerturbation(aux[instance]);
-						mainFrame.epithelium.setPerturbedInstance(instance);
+						this.mainFrame.epithelium.setPerturbedInstance(instance);
 					}
 				}
-				mainFrame.fillHexagons();
+				this.mainFrame.fillHexagons();
 			}
 		}
 	}
