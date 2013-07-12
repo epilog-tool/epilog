@@ -1,7 +1,9 @@
 package pt.igc.nmd.epilog.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
@@ -15,6 +17,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 
@@ -44,6 +47,8 @@ public class SimulationSetupPanel extends JPanel {
 	public JComboBox inputCombo;
 	public JComboBox perturbationsCombo;
 	public JComboBox prioritiesCombo;
+	
+	JPanel lineStartPanel = new JPanel();
 
 	public SimulationSetupPanel(MainFrame mainPanel) {
 		this.mainFrame = mainPanel;
@@ -179,7 +184,7 @@ public class SimulationSetupPanel extends JPanel {
 
 				mainFrame.disableTabs(false);
 				mainFrame.simulation.reset();
-				mainFrame.simulationPanelson();
+				simulationPanelson();
 				TitledBorder titleInitialConditions;
 				titleInitialConditions = BorderFactory.createTitledBorder("");
 				mainFrame.auxiliaryHexagonsPanel
@@ -195,13 +200,19 @@ public class SimulationSetupPanel extends JPanel {
 		startPanel.add(restartButton);
 		add(startPanel, BorderLayout.PAGE_START);
 
-		// LEFT PANEL
+		// LINE START
 
-		JPanel leftPanel = new JPanel();
+		
+		
+		JPanel northLineStartPanel = new JPanel(new BorderLayout());
+		JPanel centerLineStartPanel = new JPanel();
+		JPanel southLineStartPanel = new JPanel();
+		
 		JPanel[] auxiliary = new JPanel[4];
 
-		leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.PAGE_AXIS));
-
+		//LineStartPanel.setLayout(new BoxLayout(LineStartPanel, BoxLayout.PAGE_AXIS));
+		lineStartPanel.setLayout(new BorderLayout());
+		
 		initialCombo = new JComboBox();
 		inputCombo = new JComboBox();
 		perturbationsCombo = new JComboBox();
@@ -212,6 +223,7 @@ public class SimulationSetupPanel extends JPanel {
 		JLabel perturbationsLabel = new JLabel();
 		JLabel prioritiesLabel = new JLabel();
 
+		
 		initialConditionsLabel.setText("Choose an initial state set: ");
 		inputsLabel.setText("Choose an input set: ");
 		perturbationsLabel.setText("Choose a perturbation set: ");
@@ -284,14 +296,49 @@ public class SimulationSetupPanel extends JPanel {
 		auxiliary[3].add(prioritiesLabel);
 		auxiliary[3].add(prioritiesCombo);
 
-		leftPanel.add(auxiliary[0]);
-		leftPanel.add(auxiliary[1]);
-		leftPanel.add(auxiliary[2]);
-		leftPanel.add(auxiliary[3]);
+		northLineStartPanel.add(auxiliary[0],BorderLayout.PAGE_START);
+		northLineStartPanel.add(auxiliary[2],BorderLayout.LINE_START);
+		northLineStartPanel.add(auxiliary[3],BorderLayout.PAGE_END);
+		
+		centerLineStartPanel.add(auxiliary[1]);
+		
 
-		leftPanel.setBorder(BorderFactory
+		LineBorder border = new LineBorder(Color.black, 1, true);
+		
+		TitledBorder north = new TitledBorder(border,
+				"Definitions", TitledBorder.LEFT,
+				TitledBorder.DEFAULT_POSITION, new Font("Arial", Font.ITALIC,
+						14), Color.black);
+
+		TitledBorder center = new TitledBorder(border, "Epithelium",
+				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
+						"Arial", Font.ITALIC, 14), Color.black);
+		
+		TitledBorder south = new TitledBorder(border, "Analytics",
+				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
+						"Arial", Font.ITALIC, 14), Color.black);
+		
+		northLineStartPanel.setBorder(north);
+		centerLineStartPanel.setBorder(center);
+		southLineStartPanel.setBorder(south);
+		
+		lineStartPanel.setBorder(BorderFactory
 				.createEtchedBorder(EtchedBorder.LOWERED));
-		add(leftPanel, BorderLayout.LINE_START);
+		
+		lineStartPanel.add(northLineStartPanel,BorderLayout.PAGE_START);
+		lineStartPanel.add(centerLineStartPanel,BorderLayout.LINE_START);
+		lineStartPanel.add(southLineStartPanel,BorderLayout.PAGE_END);
+		
+		add(lineStartPanel, BorderLayout.LINE_START);
+		
+		// CENTER
+		
+		JPanel centerPanel = mainFrame.componentsPanel.init();
+		add(centerPanel, BorderLayout.CENTER);
+		
+
+		
+
 
 		return this;
 	}
@@ -369,4 +416,26 @@ public class SimulationSetupPanel extends JPanel {
 	private void fireRollOverChange(String optionString) { // ROLL OVER
 		mainFrame.topology.setRollOver(optionString);
 	}
+	
+	// Tabs on or off
+	
+	
+	public void simulationPanelsoff() {
+		initialCombo.setEnabled(false);
+		inputCombo.setEnabled(false);
+		perturbationsCombo.setEnabled(false);
+		prioritiesCombo.setEnabled(false);
+		createComposedModel.setEnabled(false);
+		rollOver.setEnabled(false);
+	}
+
+	public void simulationPanelson() {
+		initialCombo.setEnabled(true);
+		inputCombo.setEnabled(true);
+		perturbationsCombo.setEnabled(true);
+		prioritiesCombo.setEnabled(true);
+		createComposedModel.setEnabled(true);
+		rollOver.setEnabled(true);
+	}
+	
 }

@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -13,9 +14,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,10 +33,9 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
-import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 
+import pt.igc.nmd.epilog.Epithelium;
 import pt.igc.nmd.epilog.InitialState;
 import pt.igc.nmd.epilog.InputsPanel;
 import pt.igc.nmd.epilog.LogicalModelComposition;
@@ -53,7 +51,7 @@ public class MainFrame extends JFrame {
 	private static final long serialVersionUID = 1779945742155950400L;
 
 	public SphericalEpithelium epithelium = null;
-	private SimulationSetupPanel simulationSetupPanel = null;
+	public SimulationSetupPanel simulationSetupPanel = null;
 
 	private boolean start; // variable that returns true when the user wants to
 							// create a new epithelium
@@ -75,6 +73,8 @@ public class MainFrame extends JFrame {
 
 	private int fillXi;
 	private int fillYi;
+
+	private String stringTextTool;
 
 	public Topology topology = null;
 	public Simulation simulation;
@@ -113,6 +113,11 @@ public class MainFrame extends JFrame {
 		this.start = false;
 	}
 
+	/**
+	 * Initializes epilog's main panel
+	 * 
+	 * @see setupMainFrame
+	 */
 	public void initialize() throws Exception {
 
 		UIManager.setLookAndFeel(UIManager
@@ -122,34 +127,12 @@ public class MainFrame extends JFrame {
 		setupMainFrame();
 	}
 
-	private boolean isEditable() {
-		return !simulation.isRunning() & editableTab;
-	}
-
-	public boolean isDrawingPerturbations() {
-		return drawingPerturbations;
-	}
-
-	public boolean isDrawingPriorities() {
-		return drawingPriorities;
-	}
-
-	public boolean isDrawingCells() {
-		return drawingCells;
-	}
-
-	public SphericalEpithelium getEpithelium() {
-		return this.epithelium;
-	}
-
-	public void setEpithelium(SphericalEpithelium epithelium) {
-		this.epithelium = epithelium;
-	}
-
-	public LogicalModelComposition getLogicalModelComposition() {
-		return this.logicalModelComposition;
-	}
-
+	/**
+	 * Runs the main panel for the first time and summons the creation of the
+	 * startPanel
+	 * 
+	 * @see StartPanel
+	 */
 	public void setupMainFrame() {
 
 		getContentPane().setPreferredSize(new Dimension(1200, 600));
@@ -169,7 +152,24 @@ public class MainFrame extends JFrame {
 
 	}
 
-	// Hexagons Panel
+	/**
+	 * After an epithelium model is loaded (or a new model is created) a
+	 * Topology, an Epithelium and a Simulation are created. It also creates the
+	 * hexagons grid, with a predefined size (that a user can modify) and the
+	 * option to load an SMBL file. MouseEvents over the hexagons grid are
+	 * created.
+	 * 
+	 * @see StartPanel()
+	 * @see Topology()
+	 * @see Epithelium()
+	 * @see Simulation()
+	 * @see DrawPolygon()
+	 * @see paintHexagons(int i, int j)
+	 * @see setTool()
+	 * @see isDrawingPerturbations()
+	 * @see isEditable()
+	 * @see isFillOn()
+	 */
 	public void initializePanelCenter() {
 		if (auxiliaryHexagonsPanel != null) {
 
@@ -302,6 +302,7 @@ public class MainFrame extends JFrame {
 											.getInstancePerturbation(instance));
 						string = string + ("</html>");
 						hexagonsPanel.setToolTipText(string);
+						setTool(string, instance);
 
 					}
 					if (isDrawingPerturbations()) {
@@ -313,7 +314,7 @@ public class MainFrame extends JFrame {
 
 						string = string + ("</html>");
 						hexagonsPanel.setToolTipText(string);
-
+						setTool(string, instance);
 					}
 				}
 
@@ -453,8 +454,10 @@ public class MainFrame extends JFrame {
 
 								epithelium.setPerturbedInstance(instance);
 								if (epithelium.getActivePerturbation() != null) {
-									Color color = epithelium.getPerturbationColor(
-											epithelium.getActivePerturbation().toString());
+									Color color = epithelium
+											.getPerturbationColor(epithelium
+													.getActivePerturbation()
+													.toString());
 
 									hexagonsPanel.drawHexagon(instance,
 											hexagonsPanel.getGraphics(), color);
@@ -470,6 +473,22 @@ public class MainFrame extends JFrame {
 		});
 	}
 
+	/**
+	 * If the mouse is over an hexagon, then the hexagon is filled with the
+	 * color resulting from the selected components and its values. If the user
+	 * is drawing a perturbation then it is painted with the corresponding
+	 * color.
+	 * 
+	 * @see DrawPolygon
+	 * @see Epithelium
+	 * @see isDrawingPerturbations
+	 * @see isDrawingCells
+	 * @see Color
+	 * @param i
+	 *            position of the width coordinate
+	 * @param j
+	 *            position of the height coordinate
+	 */
 	private void paintHexagons(int i, int j) {
 
 		if (isEditable()) {
@@ -494,71 +513,20 @@ public class MainFrame extends JFrame {
 						hexagonsPanel.drawHexagon(instance,
 								hexagonsPanel.getGraphics(), color);
 					}
-
-				} else if (isDrawingPriorities()) {
-
 				}
 			}
 		}
 	}
 
-	public List<Integer> fill(int xInitial, int yInitial, int xFinal, int yFinal) {
-		List<Integer> instanceList = new ArrayList<Integer>();
-		int x1 = xInitial;
-		int x2 = xFinal;
-		int y1 = yInitial;
-		int y2 = yFinal;
-
-		if (xInitial > xFinal) {
-			x1 = xFinal;
-			x2 = xInitial;
-		}
-		if (yInitial > yFinal) {
-			y1 = yFinal;
-			y2 = yInitial;
-		}
-
-		for (int i = x1; i <= x2; i++)
-			for (int j = y1; j <= y2; j++) {
-				if (i > topology.getWidth())
-					i = topology.getWidth();
-				if (j > topology.getHeight())
-					j = topology.getHeight();
-
-				if (i >= 0 && j >= 0) {
-					int instance = topology.coords2Instance(i, j);
-					instanceList.add(instance);
-				}
-			}
-		return instanceList;
-	}
-
-	public void setFill(boolean b) {
-		fill = b;
-	}
-
-	public boolean isFillOn() {
-		return fill;
-	}
-
-	public void simulationPanelsoff() {
-		simulationSetupPanel.initialCombo.setEnabled(false);
-		simulationSetupPanel.inputCombo.setEnabled(false);
-		simulationSetupPanel.perturbationsCombo.setEnabled(false);
-		simulationSetupPanel.prioritiesCombo.setEnabled(false);
-		simulationSetupPanel.createComposedModel.setEnabled(false);
-		simulationSetupPanel.rollOver.setEnabled(false);
-	}
-
-	public void simulationPanelson() {
-		simulationSetupPanel.initialCombo.setEnabled(true);
-		simulationSetupPanel.inputCombo.setEnabled(true);
-		simulationSetupPanel.perturbationsCombo.setEnabled(true);
-		simulationSetupPanel.prioritiesCombo.setEnabled(true);
-		simulationSetupPanel.createComposedModel.setEnabled(true);
-		simulationSetupPanel.rollOver.setEnabled(true);
-	}
-
+	/**
+	 * Initializes the right panel of Epilog's main panel.
+	 * 
+	 * @see InitialState
+	 * @see InputsPanel
+	 * @see PerturbationsPanel
+	 * @see PrioritiesPanel
+	 * @see fillHexagons
+	 */
 	private void initializePanelCenterRight() {
 
 		tabbedPane = new JTabbedPane();
@@ -566,7 +534,6 @@ public class MainFrame extends JFrame {
 		componentsPanel = new ComponentsPanel(this);
 		simulationSetupPanel = new SimulationSetupPanel(this);
 
-		watcherPanel = new TextPanel(this);
 		initial = new InitialState(this);
 		inputsPanel = new InputsPanel(epithelium, topology, this);
 		perturbationsPanel = new PerturbationsPanel(this);
@@ -627,7 +594,6 @@ public class MainFrame extends JFrame {
 					editableTab = true;
 					drawingCells = true;
 					setFill(false);
-					// inputsPanel.buttonFill.setBackground(getBackground());
 					for (JCheckBox singleNodeBox : initial.nodeBox) {
 
 						singleNodeBox.setSelected(false);
@@ -658,151 +624,47 @@ public class MainFrame extends JFrame {
 			}
 		});
 
-		panelCenterRight.add(tabbedPane, BorderLayout.PAGE_START);
-		panelCenterRight.add(componentsPanel, BorderLayout.CENTER);
+		panelCenterRight.add(tabbedPane, BorderLayout.CENTER);
+
+		// PAGE_END
+
+		JPanel end = new JPanel();
+		panelCenterRight.add(end, BorderLayout.PAGE_END);
+
+		// panelCenterRight.add(componentsPanel, BorderLayout.CENTER);
 
 	}
 
+	/**
+	 * Repaints the right panel at Epilog's main Panel.
+	 */
 	private void simulationSetupPanelRepaint() {
 		simulationSetupPanel = new SimulationSetupPanel(this);
 		tabbedPane.setComponentAt(0, simulationSetupPanel);
 	}
 
-	public void setStart(boolean b) {
-		this.start = b;
+	/**
+	 * Disables tabs when simulation is running.
+	 * 
+	 * @param b
+	 *            boolean value
+	 */
+	public void disableTabs(Boolean bool) {
+
+		tabbedPane.setEnabledAt(1, !bool);
+		tabbedPane.setEnabledAt(2, !bool);
+		tabbedPane.setEnabledAt(3, !bool);
+		tabbedPane.setEnabledAt(4, !bool);
 	}
 
-	public boolean getStart() {
-		return this.start;
-	}
-
-	public void refreshComponentsColors() {
-		componentsPanel.removeAll();
-		componentsPanel.init();
-
-	}
-
-	public void restartAnalytics() {
-		watcherPanel.restartAnalytics();
-	}
-
-	public void setInitialSetupHasChanged(boolean b) {
-		initialSetupHasChanged = b;
-	}
-
-	public void setBorderHexagonsPanel(int iterationNumber) {
-		this.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
-				.createEmptyBorder());
-		TitledBorder titleInitialConditions;
-		titleInitialConditions = BorderFactory
-				.createTitledBorder("Simulation Iteration: " + iterationNumber);
-		this.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
-	}
-
-	public void setBorderHexagonsPanel() {
-		this.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
-				.createEmptyBorder());
-		TitledBorder titleInitialConditions;
-		titleInitialConditions = BorderFactory
-				.createTitledBorder("Initial Conditions");
-		this.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
-
-	}
-
-
-	public Color Color(int instance) {
-
-		int red = 255;
-		int green = 255;
-		int blue = 255;
-		Color color = new Color(red, green, blue);
-		List<NodeInfo> listNodes = this.epithelium.getUnitaryModel()
-				.getNodeOrder();
-
-		for (NodeInfo node : listNodes) {
-
-			if (!epithelium.isIntegrationComponent(listNodes.indexOf(node)))
-				if (this.epithelium.isDefinitionComponentDisplayOn(listNodes
-						.indexOf(node))) {
-
-					int value = this.epithelium.getGridValue(instance, node);
-
-					if (value > 0) {
-						color = epithelium.getColor(node);
-						if (value > 1)
-							color = simulation.getColorLevel(color, value,
-									node.getMax());
-
-						if (red != 255)
-							red = (red + color.getRed()) / 2;
-						else
-							red = color.getRed();
-
-						if (green != 255)
-							green = (green + color.getGreen()) / 2;
-						else
-							green = color.getGreen();
-
-						if (blue != 255)
-							blue = (blue + color.getBlue()) / 2;
-						else
-							blue = color.getBlue();
-
-						color = new Color(red, green, blue);
-
-					}
-				}
-
-		}
-
-		return color;
-	}
-
-	public Color Color() {
-
-		int red = 255;
-		int green = 255;
-		int blue = 255;
-		Color color = new Color(red, green, blue);
-		List<NodeInfo> listNodes = this.epithelium.getUnitaryModel()
-				.getNodeOrder();
-
-		for (NodeInfo node : listNodes) {
-
-			if (!epithelium.isIntegrationComponent(listNodes.indexOf(node)))
-				if (this.epithelium.isDefinitionComponentDisplayOn(listNodes
-						.indexOf(node))) {
-
-					int value = this.epithelium.getInitialState(node);
-					if (value > 0) {
-						color = this.epithelium.getColor(node);
-						color = simulation.getColorLevel(color, value,
-								node.getMax());
-						if (red != 255)
-							red = (red + color.getRed()) / 2;
-						else
-							red = color.getRed();
-
-						if (green != 255)
-							green = (green + color.getGreen()) / 2;
-						else
-							green = color.getGreen();
-
-						if (blue != 255)
-							blue = (blue + color.getBlue()) / 2;
-						else
-							blue = color.getBlue();
-						color = new Color(red, green, blue);
-					} else if (value == 0) {
-						color = new Color(red, green, blue);
-					}
-
-				}
-		}
-
-		return color;
-	}
-
+	/**
+	 * Repaints the left panel of Epilog's mainPanel, whenever the grid's
+	 * dimension has changed
+	 * 
+	 * @see Topology
+	 * @see DrawPolygon
+	 * @return panel left panel
+	 */
 	public JPanel gridSpecsPanel() {
 
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -818,7 +680,6 @@ public class MainFrame extends JFrame {
 
 		setWidth.setText("Width: ");
 		setHeight.setText("Height: ");
-
 
 		userDefinedWidth.setPreferredSize(new Dimension(34, 26));
 		userDefinedHeight.setPreferredSize(new Dimension(34, 26));
@@ -923,23 +784,362 @@ public class MainFrame extends JFrame {
 		return panel;
 	}
 
-	private void askModel() {
+	// Getter, Setters and Boolean Methods
 
-		fc.setDialogTitle("Choose file");
-
-		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-			selectedFilenameLabel.setText(fc.getSelectedFile().getName());
-			selectedFilenameLabel.setForeground(Color.white);
-
-			File file = fc.getSelectedFile();
-
-			this.getEpithelium().setSBMLFilename(file.getName());
-			this.getEpithelium().setSBMLPath(file.getAbsolutePath());
-
-			loadModel(file);
-		}
+	/**
+	 * Checks if the hexagons grid can be editable at that moment (whether a
+	 * click on the mouse when is over the grid modifies it)
+	 * 
+	 * @return true if editable, false otherwise
+	 */
+	private boolean isEditable() {
+		return !simulation.isRunning() & editableTab;
 	}
 
+	/**
+	 * Checks if the hexagons grid can be editable with perturbations at that
+	 * moment (whether a click on the mouse when is over the grid modifies it)
+	 * 
+	 * @return drawingPerturbations true if is drawing perturbations, false
+	 *         otherwise
+	 */
+	public boolean isDrawingPerturbations() {
+		return drawingPerturbations;
+	}
+
+	/**
+	 * Checks if the hexagons grid can be editable with initial conditions at
+	 * that moment (whether a click on the mouse when is over the grid modifies
+	 * it)
+	 * 
+	 * @return drawingCells true if is drawing initial conditions, false
+	 *         otherwise
+	 */
+	public boolean isDrawingCells() {
+		return drawingCells;
+	}
+
+	/**
+	 * Gets the epithelium used by the mainFrame
+	 * 
+	 * @return epithelium epithelium in use
+	 */
+	public SphericalEpithelium getEpithelium() {
+		return this.epithelium;
+	}
+
+	/**
+	 * Sets the epithelium used by the mainFrame.
+	 * 
+	 * @param epithelium
+	 *            epithelium in use
+	 */
+	public void setEpithelium(SphericalEpithelium epithelium) {
+		this.epithelium = epithelium;
+	}
+
+	/**
+	 * Gets the composed model used by the mainFrame.
+	 * 
+	 * @return logicalModelComposition composed model in use
+	 */
+	public LogicalModelComposition getLogicalModelComposition() {
+		return this.logicalModelComposition;
+	}
+
+	/**
+	 * Sets that the simulation has begun
+	 * 
+	 * @param b
+	 *            boolean value to update start
+	 */
+	public void setStart(boolean b) {
+		this.start = b;
+	}
+
+	/**
+	 * Asks if the simulation has begun.
+	 * 
+	 * @return start true if simulation has begun, false otherwise
+	 */
+	public boolean getStart() {
+		return this.start;
+	}
+
+	/**
+	 * Sets the initialSetupHasChanged value as true or false
+	 * 
+	 * @param b
+	 *            boolean value to update initialSetupHasChanged with
+	 */
+	public void setInitialSetupHasChanged(boolean b) {
+		initialSetupHasChanged = b;
+	}
+
+	// Value Analytics related Methods
+
+	/**
+	 * Sets the initialSetupHasChanged value as true or false
+	 * 
+	 * @param b
+	 *            boolean value to update initialSetupHasChanged with
+	 */
+	private void setTool(String s, int instance) {
+		stringTextTool = s;
+		getTool(instance);
+	}
+
+	/**
+	 * Sets the initialSetupHasChanged value as true or false
+	 * 
+	 * @param instance instance to analyse
+	 */
+	public void getTool(int instance) {
+
+		JPanel test = new JPanel();
+		JLabel aux = new JLabel(stringTextTool);
+		test.add(aux);
+
+		LineBorder border = new LineBorder(Color.black, 1, true);
+
+		TitledBorder south = new TitledBorder(border, "Analytics @ instance: "
+				+ instance, TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION,
+				new Font("Arial", Font.ITALIC, 14), Color.black);
+
+		test.setBorder(south);
+
+		simulationSetupPanel.lineStartPanel.remove(2);
+		simulationSetupPanel.lineStartPanel.repaint();
+		simulationSetupPanel.lineStartPanel.revalidate();
+		simulationSetupPanel.lineStartPanel.repaint();
+		simulationSetupPanel.lineStartPanel.add(test, BorderLayout.PAGE_END);
+
+	}
+
+	// FILL related Methods
+
+	/**
+	 * Calculates which instances are to be painted when the fill rectangle
+	 * option is selected.
+	 * 
+	 * @param xInitial
+	 *            initial x-axis coordinate
+	 * @param yInitial
+	 *            initial y-axis coordinate
+	 * @param xFinal
+	 *            final x-axis coordinate
+	 * @param yFinal
+	 *            final y-axis coordinate
+	 * @return instanceList instance list to be painted
+	 */
+
+	public List<Integer> fill(int xInitial, int yInitial, int xFinal, int yFinal) {
+		List<Integer> instanceList = new ArrayList<Integer>();
+		int x1 = xInitial;
+		int x2 = xFinal;
+		int y1 = yInitial;
+		int y2 = yFinal;
+
+		if (xInitial > xFinal) {
+			x1 = xFinal;
+			x2 = xInitial;
+		}
+		if (yInitial > yFinal) {
+			y1 = yFinal;
+			y2 = yInitial;
+		}
+
+		for (int i = x1; i <= x2; i++)
+			for (int j = y1; j <= y2; j++) {
+				if (i > topology.getWidth())
+					i = topology.getWidth();
+				if (j > topology.getHeight())
+					j = topology.getHeight();
+
+				if (i >= 0 && j >= 0) {
+					int instance = topology.coords2Instance(i, j);
+					instanceList.add(instance);
+				}
+			}
+		return instanceList;
+	}
+
+	/**
+	 * Sets fill option on.
+	 * 
+	 * @param b
+	 *            boolean value to update fill
+	 */
+	public void setFill(boolean b) {
+		fill = b;
+	}
+
+	/**
+	 * Asks if the rectangle fill option is on
+	 * 
+	 * @return fill true if rectangle fill is on, false otherwise
+	 */
+	public boolean isFillOn() {
+		return fill;
+	}
+
+	// Drawing Methods
+
+	/**
+	 * Updates the iteration number at the hexagons grid border, after the
+	 * simulation has begun
+	 * 
+	 * @param iterationNumber
+	 *            iteration number
+	 */
+	public void setBorderHexagonsPanel(int iterationNumber) {
+		this.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
+				.createEmptyBorder());
+		TitledBorder titleInitialConditions;
+
+		if (iterationNumber != 0)
+			titleInitialConditions = BorderFactory
+					.createTitledBorder("Simulation Iteration: "
+							+ iterationNumber);
+		else
+			titleInitialConditions = BorderFactory
+					.createTitledBorder("Initial Conditions");
+		this.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
+	}
+
+	/**
+	 * Calculates the color of an hexagon to be painted with during the
+	 * simulation. This color is the average of all colors selected to display.
+	 * 
+	 * @param instance
+	 *            instance that is to be painted
+	 * @return color color with which the instance is to be painted
+	 */
+	public Color Color(int instance) {
+
+		int red = 255;
+		int green = 255;
+		int blue = 255;
+		Color color = new Color(red, green, blue);
+		List<NodeInfo> listNodes = this.epithelium.getUnitaryModel()
+				.getNodeOrder();
+
+		for (NodeInfo node : listNodes) {
+
+			if (!epithelium.isIntegrationComponent(listNodes.indexOf(node)))
+				if (this.epithelium.isDefinitionComponentDisplayOn(listNodes
+						.indexOf(node))) {
+
+					int value = this.epithelium.getGridValue(instance, node);
+
+					if (value > 0) {
+						color = epithelium.getColor(node);
+						if (value > 1)
+							color = simulation.getColorLevel(color, value,
+									node.getMax());
+
+						if (red != 255)
+							red = (red + color.getRed()) / 2;
+						else
+							red = color.getRed();
+
+						if (green != 255)
+							green = (green + color.getGreen()) / 2;
+						else
+							green = color.getGreen();
+
+						if (blue != 255)
+							blue = (blue + color.getBlue()) / 2;
+						else
+							blue = color.getBlue();
+
+						color = new Color(red, green, blue);
+
+					}
+				}
+
+		}
+
+		return color;
+	}
+
+	/**
+	 * Calculates the color of an hexagon to be painted while drawing the
+	 * initial conditions. This color is the average of all colors selected to
+	 * display.
+	 * 
+	 * @param instance
+	 *            instance that is to be painted
+	 * @return color color with which the instance is to be painted
+	 */
+	public Color Color() {
+
+		int red = 255;
+		int green = 255;
+		int blue = 255;
+		Color color = new Color(red, green, blue);
+		List<NodeInfo> listNodes = this.epithelium.getUnitaryModel()
+				.getNodeOrder();
+
+		for (NodeInfo node : listNodes) {
+
+			if (!epithelium.isIntegrationComponent(listNodes.indexOf(node)))
+				if (this.epithelium.isDefinitionComponentDisplayOn(listNodes
+						.indexOf(node))) {
+
+					int value = this.epithelium.getInitialState(node);
+					if (value > 0) {
+						color = this.epithelium.getColor(node);
+						color = simulation.getColorLevel(color, value,
+								node.getMax());
+						if (red != 255)
+							red = (red + color.getRed()) / 2;
+						else
+							red = color.getRed();
+
+						if (green != 255)
+							green = (green + color.getGreen()) / 2;
+						else
+							green = color.getGreen();
+
+						if (blue != 255)
+							blue = (blue + color.getBlue()) / 2;
+						else
+							blue = color.getBlue();
+						color = new Color(red, green, blue);
+					} else if (value == 0) {
+						color = new Color(red, green, blue);
+					}
+
+				}
+		}
+
+		return color;
+	}
+
+	/**
+	 * Randomly creates colors to attribute to components.
+	 * 
+	 * @return newColor random color
+	 */
+	public Color getRandomColor() {
+		String[] letters = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+				"A", "B", "C", "D", "E", "F" };
+		String color = "#";
+		for (int i = 0; i < 6; i++) {
+			color += letters[(int) Math.round(Math.random() * 15)];
+		}
+		Color newColor = Color.decode(color);
+		return newColor;
+	}
+
+	
+	/**
+	 * Paints instances
+	 * 
+	 * @see Color(int instance)
+	 * @see DrawPolygon
+	 */
 	public void fillHexagons() {
 
 		Color color = Color.white;
@@ -953,52 +1153,30 @@ public class MainFrame extends JFrame {
 		}
 	}
 
-	private void loadModel(File file) {
+	// Loading Methods
 
-		SBMLFormat sbmlFormat = new SBMLFormat();
-		LogicalModel logicalModel = null;
+	/**
+	 * Loads the sbml model.
+	 * 
+	 * @see startPanel.loadModel()
+	 * 
+	 * 
+	 */
+	private void askModel() {
 
-		try {
-			logicalModel = sbmlFormat.importFile(file);
+		fc.setDialogTitle("Choose file");
 
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			sbmlFormat.export(logicalModel, baos);
+		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			selectedFilenameLabel.setText(fc.getSelectedFile().getName());
+			selectedFilenameLabel.setForeground(Color.white);
 
-		} catch (IOException e) {
-			System.err.println("Cannot import file " + file.getAbsolutePath()
-					+ ": " + e.getMessage());
+			File file = fc.getSelectedFile();
+
+			this.epithelium.setSBMLFilename(file.getName());
+			this.epithelium.setSBMLPath(file.getAbsolutePath());
+
+			startPanel.loadModel(file);
 		}
-
-		if (logicalModel == null)
-			return;
-
-		this.getEpithelium().setUnitaryModel(logicalModel);
-		this.getLogicalModelComposition().resetComposedModel();
-		this.auxiliaryHexagonsPanel.setBorder(javax.swing.BorderFactory
-				.createEmptyBorder());
-		TitledBorder titleInitialConditions;
-		titleInitialConditions = BorderFactory.createTitledBorder("");
-		this.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
-
 	}
 
-	public Color getRandomColor() {
-		String[] letters = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-				"A", "B", "C", "D", "E", "F" };
-		String color = "#";
-		for (int i = 0; i < 6; i++) {
-			color += letters[(int) Math.round(Math.random() * 15)];
-		}
-		Color newColor = Color.decode(color);
-		return newColor;
-	}
-
-	public void disableTabs(Boolean bool) {
-
-		tabbedPane.setEnabledAt(1, !bool);
-		tabbedPane.setEnabledAt(2, !bool);
-		tabbedPane.setEnabledAt(3, !bool);
-		tabbedPane.setEnabledAt(4, !bool);
-
-	}
 }

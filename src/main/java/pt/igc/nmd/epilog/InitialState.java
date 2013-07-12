@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
@@ -17,6 +18,8 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
@@ -278,6 +281,19 @@ public class InitialState extends JPanel {
 						panelEnd.add(auxiliaryPanel[i]);
 					else
 						panelCenter.add(auxiliaryPanel[i]);
+					
+					LineBorder border = new LineBorder(Color.black, 1, true);
+					TitledBorder titleProperComponents = new TitledBorder(border,
+							"Proper Components", TitledBorder.LEFT,
+							TitledBorder.DEFAULT_POSITION, new Font("Arial", Font.ITALIC,
+									14), Color.black);
+
+					TitledBorder titleInputs = new TitledBorder(border, "Inputs",
+							TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
+									"Arial", Font.ITALIC, 14), Color.black);
+
+					panelCenter.setBorder(titleProperComponents);
+					panelEnd.setBorder(titleInputs);
 				
 			} // End Center Panel
 			

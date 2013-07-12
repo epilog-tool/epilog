@@ -59,6 +59,18 @@ public class StartPanel extends JPanel {
 		init();
 	}
 
+	/**
+	 * Initializes the startPanel, which is the command line at the top of
+	 * Epilog's mainPanel. If an epithelium model is loaded (or created) the
+	 * main panel is modified, and only then can a user save an epithelium
+	 * model.
+	 * 
+	 * @return startPanel the produced panel
+	 * 
+	 * @see MainFrame
+	 * @see initializePanelCenter()
+	 * @see save
+	 */
 	private JPanel init() {
 
 		FlowLayout layout = new FlowLayout();
@@ -74,9 +86,6 @@ public class StartPanel extends JPanel {
 		quitButton = new JButton("Quit");
 		saveButton = new JButton("Save");
 
-		// iterationNumber.setText(""
-		// + mainPanel.getSimulation().getIterationNumber());
-
 		/*
 		 * Quit Button: This button closes the application. It also closes all
 		 * opened windows.
@@ -91,24 +100,25 @@ public class StartPanel extends JPanel {
 		});
 
 		/*
-		 * Model Loading: The model is loaded now from the SBML file. The
-		 * function askmodel performs all the operations
+		 * New Epithelium: The model is loaded now from the SBML file. Previous
+		 * simulations are erased and a new epithelium is created.
 		 */
 
 		newEpithelium.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
 				mainFrame.initializePanelCenter();
-
-				// askModel();
-				// mainPanel.getContentPane().repaint();
 				mainFrame.simulation.reset();
 				mainFrame.epithelium.setNewEpithelium(true);
 			}
 		});
 
+		/*
+		 * Load Epithelium: a previously saved model is loaded.
+		 */
 		loadEpithelium.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
 				mainFrame.initializePanelCenter();
 				askConfigurations();
 				mainFrame.getContentPane().repaint();
@@ -119,9 +129,8 @@ public class StartPanel extends JPanel {
 
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (mainFrame.topology == null
-						|| mainFrame.epithelium.getUnitaryModel() != null)
-					save();
+				if (mainFrame.epithelium != null)
+					saveEpitheliumModel();
 			}
 		});
 
@@ -133,7 +142,15 @@ public class StartPanel extends JPanel {
 		return this;
 	}
 
-	private void loadModel(File file) {
+	/**
+	 * Loads the sbml model zipped in the epithelium model
+	 * 
+	 * @param file
+	 *            sbml file with the original regulatory model
+	 *            
+	 * 
+	 */
+	public void loadModel(File file) {
 
 		SBMLFormat sbmlFormat = new SBMLFormat();
 		LogicalModel logicalModel = null;
@@ -144,8 +161,6 @@ public class StartPanel extends JPanel {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			sbmlFormat.export(logicalModel, baos);
 
-			// String mySBML = new String(baos.toByteArray());
-
 		} catch (IOException e) {
 			System.err.println("Cannot import file " + file.getAbsolutePath()
 					+ ": " + e.getMessage());
@@ -155,7 +170,6 @@ public class StartPanel extends JPanel {
 			return;
 
 		this.mainFrame.epithelium.setUnitaryModel(logicalModel);
-		// resetAllPanels();
 
 		this.mainFrame.hexagonsPanel
 				.paintComponent(this.mainFrame.hexagonsPanel.getGraphics());
@@ -171,15 +185,23 @@ public class StartPanel extends JPanel {
 
 	}
 
+	/**
+	 * The user chooses a previously saved epithelium model. An sbml file and a
+	 * configurations file are loaded.
+	 * 
+	 * @see loadModel
+	 * @see loadConfigurations
+	 * @see ld
+	 */
 	private void askConfigurations() {
 
 		fc.setDialogTitle("Choose file");
 
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			File folder = new File("temp");
-			
-//			for (File file : folder.listFiles())
-//				file.delete();
+
+			// for (File file : folder.listFiles())
+			// file.delete();
 			UnZip.main(fc.getSelectedFile().getAbsolutePath());
 
 			for (final File fileEntry : folder.listFiles()) {
@@ -194,7 +216,7 @@ public class StartPanel extends JPanel {
 					try {
 						Scanner fileIn = new Scanner(new File(
 								fileEntry.getAbsolutePath()));
-						ld(fileIn);
+						loadConfigFile(fileIn);
 						loadConfigurations();
 
 					} catch (FileNotFoundException e) {
@@ -206,7 +228,15 @@ public class StartPanel extends JPanel {
 		}
 	}
 
-	private void ld(Scanner fileIn) {
+	/**
+	 * Loads the information retrieved from the config file
+	 * 
+	 * @param fileIn
+	 *            config file with the saved configurations of the epithelium
+	 *            model
+	 * @see setPerturbation
+	 */
+	private void loadConfigFile(Scanner fileIn) {
 		int numberOfSets = 0;
 
 		Hashtable<String, NodeInfo> string2Node = new Hashtable<String, NodeInfo>();
@@ -216,9 +246,10 @@ public class StartPanel extends JPanel {
 		Hashtable<Integer, String> setInitialStateDescription = new Hashtable<Integer, String>();
 		Hashtable<Integer, String> setInputsDescription = new Hashtable<Integer, String>();
 
+		Hashtable<String, Hashtable<NodeInfo, List<String>>> p0 = new Hashtable<String, Hashtable<NodeInfo, List<String>>>();
+
 		Hashtable<String, AbstractPerturbation[]> perturbationsSet = new Hashtable<String, AbstractPerturbation[]>();
 		List perturbationsList = new ArrayList<AbstractPerturbation>();
-		// List mutationsList = new ArrayList<AbstractPerturbation>();
 
 		for (NodeInfo node : mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder()) {
@@ -258,7 +289,7 @@ public class StartPanel extends JPanel {
 					String value = line.split(":")[1];
 					setInitialStateDescription.put(key, value);
 					mainFrame.epithelium.setInitialStateSet(value);
-					
+
 				} else {
 
 					NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
@@ -267,7 +298,6 @@ public class StartPanel extends JPanel {
 					byte value = (byte) Integer.parseInt(line.split(" ")[5]);
 					String name = setInitialStateDescription.get(Integer
 							.parseInt(line.split(" ")[1]));
-					
 
 					for (String range : line.split(" ")[7].split(",")) {
 						range.replace("(", "");
@@ -280,39 +310,58 @@ public class StartPanel extends JPanel {
 							int end = Integer.parseInt(range.split("-")[1]);
 							for (int instance = init; instance <= end; instance++) {
 
-								mainFrame.epithelium.getInitialStateSet().get(name).setGrid(instance, node, value);
+								mainFrame.epithelium.getInitialStateSet()
+										.get(name)
+										.setGrid(instance, node, value);
 							}
 
 						} else if (range.length() >= 1) {
 							int instance = Integer
 									.parseInt(range.split(" ")[0]);
 
-							mainFrame.epithelium.getInitialStateSet().get(name).setGrid(instance, node, value);
+							mainFrame.epithelium.getInitialStateSet().get(name)
+									.setGrid(instance, node, value);
 
 						}
 					}
 				}
 			}
-			
 
 			if (identifier.contains("IT")) {
-				
-				System.out.println(line);
-				NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
-						.getNodeOrder()
-						.get(Integer.parseInt(line.split(" ")[3]));
-				byte value = (byte) Integer.parseInt(line.split(" ")[5]);
-				String expression = line.split(" ")[7];
-				String name = setInputsDescription.get(Integer
-						.parseInt(line.split(" ")[1]));
-				//TODO: integration function
-				
-			//	mainFrame.epithelium.getInputsIntegrationSet().get(name).get(node)[value]=expression;
-		
-//				this.mainFrame.epithelium.setIntegrationComponent(
-//						mainFrame.epithelium.getUnitaryModel().getNodeOrder()
-//								.indexOf(node), true);
+
+				if (line.contains("name")) {
+					int key = Integer.parseInt(line.split(" ")[1]);
+					String setName = line.split(":")[1];
+
+					setInputsDescription.put(key, setName);
+					Hashtable<NodeInfo, List<String>> p1 = new Hashtable<NodeInfo, List<String>>();
+
+					p0.put(setName, p1);
+
+				} else {
+
+					System.out.println(line);
+					NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
+							.getNodeOrder()
+							.get(Integer.parseInt(line.split(" ")[3]));
+
+					mainFrame.epithelium.setIntegrationComponent(
+							Integer.parseInt(line.split(" ")[3]), true);
+					byte value = (byte) Integer.parseInt(line.split(" ")[5]);
+
+					String expression = line.split(" ")[7];
+					String setName = setInputsDescription.get(Integer
+							.parseInt(line.split(" ")[1]));
+
+					if (p0.get(setName).get(node) == null) {
+						List<String> p2 = new ArrayList<String>();
+						p0.get(setName).put(node, p2);
+					}
+					p0.get(setName).get(node).add(expression);
+				}
 			}
+
+			mainFrame.epithelium.integrationInputsSet = p0;
 
 			if (identifier.contains("CL")) {
 
@@ -355,7 +404,6 @@ public class StartPanel extends JPanel {
 
 						prioritiesClass.add(prioritiesOfThisClass);
 					}
-					// System.out.println(setNumber);
 
 					if (setPrioritiesDescription.get(setNumber) != null)
 						mainFrame.epithelium.setPrioritiesSet(
@@ -404,7 +452,6 @@ public class StartPanel extends JPanel {
 							AbstractPerturbation a = setPerturbation(node, min,
 									max);
 							perturbationsList.add(a);
-							// TODO
 						}
 					}
 
@@ -414,7 +461,6 @@ public class StartPanel extends JPanel {
 				}
 
 				else if (line.contains("mutations")) {
-					// TODO ECTOPIC AND KO
 
 					String mutationsString = line.split(":")[1];
 					mutationsString = mutationsString.replace("(", "");
@@ -498,7 +544,6 @@ public class StartPanel extends JPanel {
 				} else if (line.contains("color")) {
 
 				} else if (line.contains("MT")) {
-					// System.out.println(line);
 					String setName = setPerturbationsDescription.get(
 							Integer.parseInt(line.split(" ")[1])).replace(":",
 							"");
@@ -549,6 +594,10 @@ public class StartPanel extends JPanel {
 		}
 	}
 
+	/**
+	 * Updates Epilog's main Panel with the loaded configurations
+	 * 
+	 */
 	private void loadConfigurations() {
 
 		this.mainFrame.setEpithelium(this.mainFrame.epithelium);
@@ -565,7 +614,13 @@ public class StartPanel extends JPanel {
 		this.mainFrame.auxiliaryHexagonsPanel.setBorder(titleInitialConditions);
 	}
 
-	public void save() {
+	/**
+	 * Saves the epithelium model
+	 * 
+	 * @see createConfigFile
+	 * 
+	 */
+	public void saveEpitheliumModel() {
 
 		// TODO: Provisory method. It will evolve to something more elaborate
 		JFileChooser fc = new JFileChooser();
@@ -589,13 +644,7 @@ public class StartPanel extends JPanel {
 
 				}
 
-				// unitarySBML =
-				// this.mainFrame.getEpithelium().getSBMLFilePath();
-				// System.out.println("Unitary SBML" + unitarySBML);
-
-				String[] sourceFiles = {
-						"config.txt",
-						unitarySBML };
+				String[] sourceFiles = { "config.txt", unitarySBML };
 
 				byte[] buffer = new byte[1024];
 				FileOutputStream fout = new FileOutputStream(zipFile);
@@ -614,7 +663,7 @@ public class StartPanel extends JPanel {
 					fin.close();
 				}
 				zout.close();
-				// System.out.println("Zip file has been created!");
+
 				File toDelete = new File("config.txt");
 				toDelete.delete();
 			} catch (IOException e) {
@@ -623,6 +672,13 @@ public class StartPanel extends JPanel {
 
 	}
 
+	/**
+	 * Creates the configuration file to save with the epithelium model
+	 * 
+	 * @param out
+	 *            config file (.txt)
+	 * 
+	 */
 	private void createConfigFile(PrintWriter out) {
 
 		// TODO : Change PrintWriter to FileWriter - Tratamento de Excepcoes. o
@@ -652,57 +708,56 @@ public class StartPanel extends JPanel {
 
 			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
 					.getNodeOrder()) {
-				if (!node.isInput()) {
-					for (int value = 1; value < node.getMax() + 1; value++) {
 
-						out.write("IS "
-								+ index
-								+ " "
-								+ node.getNodeID()
-								+ " "
-								+ this.mainFrame.epithelium.getUnitaryModel()
-										.getNodeOrder().indexOf(node) + " : "
-								+ value + " ( ");
+				for (int value = 1; value < node.getMax() + 1; value++) {
 
-						int next = 0;
-						int current = 0;
-						boolean start = true;
-						boolean ongoing = false;
+					out.write("IS "
+							+ index
+							+ " "
+							+ node.getNodeID()
+							+ " "
+							+ this.mainFrame.epithelium.getUnitaryModel()
+									.getNodeOrder().indexOf(node) + " : "
+							+ value + " ( ");
 
-						for (int instance = 0; instance < this.mainFrame.topology
-								.getNumberInstances(); instance++) {
-							if (this.mainFrame.epithelium.getGridValue(
-									instance, node) == value) {
+					int next = 0;
+					int current = 0;
+					boolean start = true;
+					boolean ongoing = false;
 
-								if (start) {
-									out.write("" + instance);
-									start = false;
-									current = instance;
-								} else if ((instance != current + 1)
-										& ongoing == false) {
-									out.write(",");
-									out.write("" + instance);
-									current = instance;
-								} else if ((instance == current + 1)) {
-									ongoing = true;
-									current = instance;
-								}
-							} else if (ongoing == true) {
-								ongoing = false;
-								out.write("-");
-								out.write("" + (current));
+					for (int instance = 0; instance < this.mainFrame.topology
+							.getNumberInstances(); instance++) {
+						if (this.mainFrame.epithelium.getGridValue(instance,
+								node) == value) {
+
+							if (start) {
+								out.write("" + instance);
+								start = false;
+								current = instance;
+							} else if ((instance != current + 1)
+									& ongoing == false) {
+								out.write(",");
+								out.write("" + instance);
+								current = instance;
+							} else if ((instance == current + 1)) {
+								ongoing = true;
+								current = instance;
 							}
-							if (instance == (this.mainFrame.topology
-									.getNumberInstances() - 1)
-									& ongoing == true) {
-								out.write("-");
-								out.write("" + (instance));
-							}
-
+						} else if (ongoing == true) {
+							ongoing = false;
+							out.write("-");
+							out.write("" + (current));
 						}
-						out.write(" )\n");
+						if (instance == (this.mainFrame.topology
+								.getNumberInstances() - 1) & ongoing == true) {
+							out.write("-");
+							out.write("" + (instance));
+						}
+
 					}
+					out.write(" )\n");
 				}
+
 			}// ends for (NodeInfo node :
 				// this.mainFrame.epithelium.getUnitaryModel().getNodeOrder())
 		}// for (String key: mainFrame.epithelium.getInitialStateSet().keySet())
@@ -712,68 +767,25 @@ public class StartPanel extends JPanel {
 		// Env Inputs
 
 		index = -1;
-		for (String key : mainFrame.epithelium.getInputsIntegrationSet().keySet()) {
+		for (String key : mainFrame.epithelium.getInputsIntegrationSet()
+				.keySet()) {
 			mainFrame.epithelium.setSelectedInputSet(key);
 			index = index + 1;
 
-			out.write("IC " + index + " name : " + key + "\n");
+			out.write("IT " + index + " name : " + key + " [ ");
 
 			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
 					.getNodeOrder()) {
-				if (node.isInput()
-						& !this.mainFrame.epithelium
-								.isIntegrationComponent(node)) {
-					for (int value = 1; value < node.getMax() + 1; value++) {
+				if (this.mainFrame.epithelium.isIntegrationComponent(node))
+					out.write(this.mainFrame.epithelium.getUnitaryModel()
+							.getNodeOrder().indexOf(node)
+							+ " ");
+			}
 
-						out.write("IC "
-								+ index
-								+ " "
-								+ node.getNodeID()
-								+ " "
-								+ this.mainFrame.epithelium.getUnitaryModel()
-										.getNodeOrder().indexOf(node) + " : "
-								+ value + " ( ");
+			out.write("]" + "\n");
 
-						int next = 0;
-						int current = 0;
-						boolean start = true;
-						boolean ongoing = false;
-
-						for (int instance = 0; instance < this.mainFrame.topology
-								.getNumberInstances(); instance++) {
-							if (this.mainFrame.epithelium.getGridValue(
-									instance, node) == value) {
-
-								if (start) {
-									out.write("" + instance);
-									start = false;
-									current = instance;
-								} else if ((instance != current + 1)
-										& ongoing == false) {
-									out.write(",");
-									out.write("" + instance);
-									current = instance;
-								} else if ((instance == current + 1)) {
-									ongoing = true;
-									current = instance;
-								}
-							} else if (ongoing == true) {
-								ongoing = false;
-								out.write("-");
-								out.write("" + (current));
-							}
-							if (instance == (this.mainFrame.topology
-									.getNumberInstances() - 1)
-									& ongoing == true) {
-								out.write("-");
-								out.write("" + (instance));
-							}
-
-						}
-						out.write(" )\n");
-					}
-				}// Ends if (node.isInput()&
-					// !this.mainFrame.epithelium.isIntegrationComponent(node))
+			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
+					.getNodeOrder()) {
 
 				if (this.mainFrame.epithelium.isIntegrationComponent(node)) {
 
@@ -900,8 +912,7 @@ public class StartPanel extends JPanel {
 		out.write("\n");
 
 		// Priorities
-		// System.out.println(this.mainFrame.epithelium.getPrioritiesSet()
-		// .keySet().size());
+
 		if (this.mainFrame.epithelium.getPrioritiesSet().keySet().size() != 0) {
 			int numberOfSets = (this.mainFrame.epithelium.getPrioritiesSet()
 					.keySet().size() - 1);
@@ -928,14 +939,27 @@ public class StartPanel extends JPanel {
 
 	// Auxiliary Methods
 
+	/**
+	 * Retrieves the information of the config file and re-creates the perturbation.
+	 * 
+	 * @param node
+	 *            component with the perturbation
+	 * @param minValue
+	 *            minimum value of the perturbation
+	 * @param maxValue
+	 *            maximum value of the perturbation
+	 * @return resultingPerturbation component perturbation
+	 * 
+	 */
 	private AbstractPerturbation setPerturbation(NodeInfo node, int minValue,
 			int maxValue) {
-		AbstractPerturbation a = null;
+		AbstractPerturbation resultingPerturbation = null;
 		if (minValue == maxValue)
-			a = new FixedValuePerturbation(node, minValue);
+			resultingPerturbation = new FixedValuePerturbation(node, minValue);
 		else
-			a = new RangePerturbation(node, minValue, maxValue);
-		return a;
+			resultingPerturbation = new RangePerturbation(node, minValue,
+					maxValue);
+		return resultingPerturbation;
 	}
 
 }

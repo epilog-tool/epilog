@@ -47,7 +47,7 @@ public class SphericalEpithelium implements Epithelium {
 	private Hashtable<String, AbstractPerturbation[]> perturbationsSet;
 	private Hashtable<String, Grid> initialStateSet;
 	private Hashtable<String, Grid> inputsSet;
-	private Hashtable<String, Hashtable<NodeInfo, List<String>>> integrationInputsSet;
+	public Hashtable<String, Hashtable<NodeInfo, List<String>>> integrationInputsSet;
 
 	private Topology topology = null;
 
@@ -246,6 +246,8 @@ public class SphericalEpithelium implements Epithelium {
 			initializeGrid();
 			initializePerturbationsGrid();
 			noPerturbations();
+			noInitialState();
+			noIntegrationFunctions();
 		}
 
 	}
@@ -379,16 +381,11 @@ public class SphericalEpithelium implements Epithelium {
 
 	public AbstractPerturbation getInstancePerturbation(int instance) {
 		
-//		if (selectedPerturbation == null)
-//			System.out.println("selectedPerturbation " + selectedPerturbation + " " + instance);
-//		if (selectedPerturbation != null && getPerturbationsSet().get(selectedPerturbation) == null)
+//		if (selectedPerturbationSet != null && getPerturbationsSet().get(selectedPerturbationSet) == null){
 //			System.out.println("getPerturbationsSet().get(selectedPerturbation) "  + instance);
-		
-		if (selectedPerturbationSet != null && getPerturbationsSet().get(selectedPerturbationSet) == null){
-			System.out.println("getPerturbationsSet().get(selectedPerturbation) "  + instance);
-			for (String name: getPerturbationsSet().keySet())
-				System.out.println(name);
-		}
+//			for (String name: getPerturbationsSet().keySet())
+//				System.out.println(name);
+//		}
 		
 		if (selectedPerturbationSet != null && getPerturbationsSet().get(selectedPerturbationSet) != null)
 			return getPerturbationsSet().get(selectedPerturbationSet)[instance];
@@ -448,6 +445,21 @@ public class SphericalEpithelium implements Epithelium {
 	public Hashtable<String, Grid> getInitialStateSet() {
 		return initialStateSet;
 	}
+	
+	public void noInitialState() {
+		
+		List<NodeInfo> initialStateComponents = new ArrayList();
+		for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
+			if (!isIntegrationComponent(node)) {
+				initialStateComponents.add(node);
+			}
+		}
+		
+		initialStateSet.put("none",
+				new Grid(topology.getNumberInstances(),
+						initialStateComponents));
+	}
+	
 
 	public void setInitialStateSet(String name) {
 
@@ -478,23 +490,32 @@ public class SphericalEpithelium implements Epithelium {
 	}
 
 	/*
-	 * Inputs
+	 * Integration Functions and Inputs Definitions
 	 */
 
 
 	public Hashtable<String, Hashtable<NodeInfo, List<String>>> getInputsIntegrationSet() {
 		return integrationInputsSet;
 	}
-
-	public void setInputsSet(String name) {
-
-		setInputsIntegrationSet(name);
+	
+	public void noIntegrationFunctions() {
+		
+//TODO: Solve this issue
 	}
+	
 
-	public void setInputsIntegrationSet(String name) {
+	/*
+	 * This method adds an input set to the saved set of inputs
+	 * 
+	 * Input : String with the IntegrationInputSet name
+	 * Output: 
+	 * 
+	 */
+
+	public void setIntegrationInputsSet(String name) {
 
 		
-		Hashtable<NodeInfo, List<String>> test = new Hashtable<NodeInfo, List<String>>();
+		Hashtable<NodeInfo, List<String>> integrationFunctions = new Hashtable<NodeInfo, List<String>>();
 
 		for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
 			if (isIntegrationComponent(node)) {
@@ -503,10 +524,10 @@ public class SphericalEpithelium implements Epithelium {
 				for (byte value = 1; value < node.getMax() + 1; value++) {
 					aux.add(getIntegrationFunction(node, value));
 				}
-				test.put(node, aux);
+				integrationFunctions.put(node, aux);
 			}
 		}
-		integrationInputsSet.put(name, test);
+		integrationInputsSet.put(name, integrationFunctions);
 	}
 
 	public void combineGrids(Grid grid) {

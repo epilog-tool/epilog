@@ -46,7 +46,7 @@ public class ComponentsPanel extends JPanel {
 		init();
 	}
 
-	public void init() {
+	public JPanel init() {
 
 		jcheckbox2Node = new Hashtable<JCheckBox, NodeInfo>();
 		isEnv = new Hashtable<NodeInfo, Boolean>();
@@ -203,7 +203,7 @@ public class ComponentsPanel extends JPanel {
 			add(inputComponents, BorderLayout.PAGE_END);
 
 		}
-
+return this;
 	}
 
 	private void setNewColor(JButton src) {

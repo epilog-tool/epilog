@@ -212,6 +212,8 @@ public class PerturbationsPanel extends JPanel {
 
 		componentBox = new JComboBox();
 
+		System.out.println(mainFrame.epithelium.getUnitaryModel()
+				.getNodeOrder());
 		for (NodeInfo node : mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder()) {
 			if (!node.isInput()) {

@@ -138,14 +138,8 @@ public class InputsPanel extends JPanel {
 
 			auxiliaryPanel = new JPanel[listNodes.size()];
 		
-
-//			nodeBox = new JCheckBox[listNodes.size()];
-//			node2Jcheck = new JCheckBox[listNodes.size()];
-//			node2Jcombo = new JComboBox[listNodes.size()];
 			node2IntegrationFunctionButton = new JButton[listNodes.size()];
-//			initialStatePerComponent = new JComboBox[listNodes.size()];
 			inputComboChooser = new JComboBox[listNodes.size()];
-//			colorButton = new JButton[listNodes.size()];
 			
 			button2Node = new Hashtable<JButton, NodeInfo>();
 			Jcheck2Node = new Hashtable<JCheckBox, Integer>();
@@ -202,18 +196,13 @@ public class InputsPanel extends JPanel {
 										.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));
 					}
 
-//					if (mainFrame.epithelium
-//							.isDefinitionComponentDisplayOn(i))
-//						nodeBox[i].isSelected();
-//					if (mainFrame.epithelium.isIntegrationComponent(i))
-//						nodeBox[i].setEnabled(false);
+
 
 					auxiliaryPanel[i].add(nodeID);
 					if (mainFrame.epithelium.isIntegrationComponent(i))
 						auxiliaryPanel[i].add(integrationFunctionButton);
 					else {
-//						auxiliaryPanel[i].add(initialStatePerComponent[i]);
-//						auxiliaryPanel[i].add(colorButton[i]);
+
 					}
 					
 					
@@ -256,19 +245,7 @@ public class InputsPanel extends JPanel {
 			add(centerPanel, BorderLayout.CENTER);
 		}
 	}
-	
-//	private void fireOnFill(){
-//		if(!mainFrame.isFillOn()){
-//			buttonFill.setBackground(Color.yellow);
-//			mainFrame.setFill(true);
-//		}
-//		else{
-//			mainFrame.setFill(false);
-//			buttonFill.setBackground(this.getBackground());
-//		}
-//	}
-	
-	
+
 	private void setNewColor(JButton src){
 		Color newColor = JColorChooser.showDialog(src, "Color Chooser", mainFrame.epithelium.getColor(button2Node.get(src)));
 		src.setBackground(newColor);
@@ -280,8 +257,6 @@ public class InputsPanel extends JPanel {
 		NodeInfo node = mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder().get(integrationFunctionButton2Node.get(src));
 		new IntegrationFunctionInterface(this.epithelium, node);
-		
-		
 
 	}
 
@@ -383,7 +358,7 @@ public class InputsPanel extends JPanel {
 		String name = setName.getText();
 		if (!mainFrame.epithelium.getInputsIntegrationSet().containsKey(name))
 			sets.addItem(name);{
-		mainFrame.epithelium.setInputsSet(name);
+		mainFrame.epithelium.setIntegrationInputsSet(name);
 			}
 	}
 	

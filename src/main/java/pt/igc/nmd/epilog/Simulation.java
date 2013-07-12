@@ -62,7 +62,7 @@ public class Simulation {
 		setRunning(true);
 		this.mainFrame.setBorderHexagonsPanel(iterationNumber);
 
-		this.mainFrame.simulationPanelsoff();
+		this.mainFrame.simulationSetupPanel.simulationPanelsoff();
 
 		if (currentGlobalState == null) {
 			currentGlobalState = new Grid(
