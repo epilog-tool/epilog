@@ -1,9 +1,6 @@
-
 /**
+ * This package deals with all the graphical updates and modifications on Epilog.
  * 
- * This package deals with all the graphical updates and 
- * 
- * @author Pedro
- *
+ * @author Pedro Varela
  */
 package pt.igc.nmd.epilog.gui;

@@ -14,6 +14,17 @@ public class CompositionContextImpl implements CompositionContext {
 	private List<NodeInfo> nodeOrder = null;
 	private Map<Map.Entry<String, Integer>, NodeInfo> translator = null;
 
+	/**
+	 * Implements the composition context
+	 * 
+	 * @param topology
+	 *            associated topology
+	 * @param nodeOrder
+	 *            node order associated with the model
+	 * @param translator
+	 *            relates a node with a string with the nodeID
+	 * 
+	 */
 	public CompositionContextImpl(Topology topology, List<NodeInfo> nodeOrder,
 			Map<Map.Entry<String, Integer>, NodeInfo> translator) {
 		this.topology = topology;
@@ -21,16 +32,34 @@ public class CompositionContextImpl implements CompositionContext {
 		this.translator = translator;
 	}
 
+	/**
+	 * Returns the list of nodes after the composition
+	 * 
+	 * @return nodeOrder
+	 * 
+	 */
 	@Override
 	public List<NodeInfo> getLowLevelComponents() {
 		return nodeOrder;
 	}
 
+	/**
+	 * Returns the indexes of all neighbors, when in a range.
+	 * 
+	 * @param instance
+	 *            instance that has the neighbors
+	 * @param minDistance
+	 *            minimum distance of neighbors
+	 * @param maxDistance
+	 *            maximum distance of neighbors
+	 * @return results set of neighbours
+	 * 
+	 */
 	@Override
 	public Set<Integer> getNeighbourIndices(int instance, int minDistance,
 			int maxDistance) {
-//		System.err.println("Calculating neighbours at range " + minDistance
-//				+ ":" + maxDistance);
+		// System.err.println("Calculating neighbours at range " + minDistance
+		// + ":" + maxDistance);
 
 		Set<Integer> results = topology.nDistanceNeighbours(instance,
 				maxDistance);
@@ -38,15 +67,38 @@ public class CompositionContextImpl implements CompositionContext {
 				minDistance - 1);
 
 		results.removeAll(frontier);
-//		System.out.println(instance + " -> " + results);
+		// System.out.println(instance + " -> " + results);
 		return results;
 	}
 
+	/**
+	 * Returns the indexes of all neighbors, when only at a specified distance.
+	 * 
+	 * @param instance
+	 *            instance that has the neighbors
+	 * @param minDistance
+	 *            minimum distance of neighbors
+	 * @param maxDistance
+	 *            maximum distance of neighbors
+	 * @return results set of neighbours
+	 * 
+	 */
 	@Override
 	public Set<Integer> getNeighbourIndices(int instance, int distance) {
 		return getNeighbourIndices(instance, distance, distance);
 	}
 
+	/**
+	 * Returns node related to a string and an instance
+	 * 
+	 * @param componentName
+	 *            string with the if of the component
+	 * @param instance
+	 *            instance
+	 * 
+	 * @return node
+	 * 
+	 */
 	@Override
 	public NodeInfo getLowLevelComponentFromName(String componentName,
 			int instance) {
@@ -56,89 +108,5 @@ public class CompositionContextImpl implements CompositionContext {
 		return translator.get(key);
 
 	}
-
-	// package pt.igc.nmd.epilogue.integrationgrammar;
-	//
-	// import java.util.AbstractMap;
-	// import java.util.HashSet;
-	// import java.util.List;
-	// import java.util.Map;
-	// import java.util.Set;
-	//
-	// import org.colomoto.logicalmodel.NodeInfo;
-	//
-	// import composition.CompositionSpecificationDialog;
-	//
-	// import pt.igc.nmd.epilogue.Topology;
-	//
-	// public class CompositionContextImpl implements CompositionContext {
-	// private Topology topology = null;
-	// private List<NodeInfo> nodeOrder = null;
-	// private Map<Map.Entry<String, Integer>, NodeInfo> translator = null;
-	// private CompositionSpecificationDialog dialog = null;
-	//
-	// public CompositionContextImpl(Topology topology, List<NodeInfo>
-	// nodeOrder,
-	// Map<Map.Entry<String, Integer>, NodeInfo> translator) {
-	// this.topology = topology;
-	// this.nodeOrder = nodeOrder;
-	// this.translator = translator;
-	// this.dialog = dialog;
-	// this.nodeOrder = nodeOrder;
-	// }
-	//
-	// @Override
-	// public List<NodeInfo> getLowLevelComponents() {
-	// return nodeOrder;
-	// }
-	//
-	// @Override
-	// public NodeInfo getLowLevelComponentFromName(String componentName,
-	// int instance) {
-	//
-	// Map.Entry<String, Integer> key = new AbstractMap.SimpleEntry<String,
-	// Integer>(
-	// componentName, new Integer(instance));
-	// return translator.get(key);
-	// }
-	//
-	// @Override
-	// public Set<Integer> getNeighbourIndices(int instance, int distance) {
-	// Set<Integer> results = this.getAllNeighbourIndicesCloserThan(instance,
-	// distance);
-	// Set<Integer> frontier = this.getAllNeighbourIndicesCloserThan(instance,
-	// distance - 1);
-	//
-	// results.removeAll(frontier);
-	// return results;
-	// }
-	//
-	// private Set<Integer> getAllNeighbourIndicesCloserThan(int instance,
-	// int distance) {
-	// Set<Integer> results = new HashSet<Integer>();
-	//
-	// if (distance <= 0) {
-	// results.add(new Integer(instance));
-	// return results;
-	// } else if (distance == 1) {
-	// for (int n = 1; n <= dialog.getNumberInstances(); n++) {
-	// if (dialog.areNeighbours(instance, n)) {
-	// results.add(new Integer(n));
-	// }
-	// }
-	// return results;
-	// } else {
-	// Set<Integer> frontier = this.getAllNeighbourIndicesCloserThan(
-	// instance, distance - 1);
-	// for (Integer v : frontier) {
-	// for (int n = 1; n <= dialog.getNumberInstances(); n++)
-	// if (dialog.areNeighbours(v.intValue(), n))
-	// results.add(n);
-	// }
-	// return results;
-	// }
-	// }
-	//
-	// }
 
 }

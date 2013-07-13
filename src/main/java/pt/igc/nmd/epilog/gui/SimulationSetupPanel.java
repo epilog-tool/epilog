@@ -10,7 +10,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -19,7 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
-
 
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
@@ -41,13 +39,13 @@ public class SimulationSetupPanel extends JPanel {
 	private JButton stepButton;
 	private JButton restartButton;
 
-	private boolean test = false;
+	// private boolean test = false;
 
 	public JComboBox initialCombo;
 	public JComboBox inputCombo;
 	public JComboBox perturbationsCombo;
 	public JComboBox prioritiesCombo;
-	
+
 	JPanel lineStartPanel = new JPanel();
 
 	public SimulationSetupPanel(MainFrame mainPanel) {
@@ -56,6 +54,13 @@ public class SimulationSetupPanel extends JPanel {
 
 	}
 
+	/**
+	 * Initializes the simulation setup panel, to be inserted in the tab on
+	 * Epilog's main panel.
+	 * 
+	 * @return this panel
+	 * 
+	 */
 	public JPanel init() {
 
 		FlowLayout layout = new FlowLayout();
@@ -112,8 +117,7 @@ public class SimulationSetupPanel extends JPanel {
 				JCheckBox src = (JCheckBox) event.getSource();
 				if (src.isSelected()) {
 					mainFrame.needsComposedModel = true;
-				}
-				else{
+				} else {
 					mainFrame.needsComposedModel = false;
 				}
 				mainFrame.hexagonsPanel.paintComponent(mainFrame.hexagonsPanel
@@ -202,17 +206,16 @@ public class SimulationSetupPanel extends JPanel {
 
 		// LINE START
 
-		
-		
 		JPanel northLineStartPanel = new JPanel(new BorderLayout());
 		JPanel centerLineStartPanel = new JPanel();
 		JPanel southLineStartPanel = new JPanel();
-		
+
 		JPanel[] auxiliary = new JPanel[4];
 
-		//LineStartPanel.setLayout(new BoxLayout(LineStartPanel, BoxLayout.PAGE_AXIS));
+		// LineStartPanel.setLayout(new BoxLayout(LineStartPanel,
+		// BoxLayout.PAGE_AXIS));
 		lineStartPanel.setLayout(new BorderLayout());
-		
+
 		initialCombo = new JComboBox();
 		inputCombo = new JComboBox();
 		perturbationsCombo = new JComboBox();
@@ -223,7 +226,6 @@ public class SimulationSetupPanel extends JPanel {
 		JLabel perturbationsLabel = new JLabel();
 		JLabel prioritiesLabel = new JLabel();
 
-		
 		initialConditionsLabel.setText("Choose an initial state set: ");
 		inputsLabel.setText("Choose an input set: ");
 		perturbationsLabel.setText("Choose a perturbation set: ");
@@ -296,53 +298,59 @@ public class SimulationSetupPanel extends JPanel {
 		auxiliary[3].add(prioritiesLabel);
 		auxiliary[3].add(prioritiesCombo);
 
-		northLineStartPanel.add(auxiliary[0],BorderLayout.PAGE_START);
-		northLineStartPanel.add(auxiliary[2],BorderLayout.LINE_START);
-		northLineStartPanel.add(auxiliary[3],BorderLayout.PAGE_END);
-		
+		northLineStartPanel.add(auxiliary[0], BorderLayout.PAGE_START);
+		northLineStartPanel.add(auxiliary[2], BorderLayout.LINE_START);
+		northLineStartPanel.add(auxiliary[3], BorderLayout.PAGE_END);
+
 		centerLineStartPanel.add(auxiliary[1]);
-		
 
 		LineBorder border = new LineBorder(Color.black, 1, true);
-		
-		TitledBorder north = new TitledBorder(border,
-				"Definitions", TitledBorder.LEFT,
-				TitledBorder.DEFAULT_POSITION, new Font("Arial", Font.ITALIC,
-						14), Color.black);
+
+		TitledBorder north = new TitledBorder(border, "Definitions",
+				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
+						"Arial", Font.ITALIC, 14), Color.black);
 
 		TitledBorder center = new TitledBorder(border, "Epithelium",
 				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
 						"Arial", Font.ITALIC, 14), Color.black);
-		
+
 		TitledBorder south = new TitledBorder(border, "Analytics",
 				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
 						"Arial", Font.ITALIC, 14), Color.black);
-		
+
 		northLineStartPanel.setBorder(north);
 		centerLineStartPanel.setBorder(center);
 		southLineStartPanel.setBorder(south);
-		
+
 		lineStartPanel.setBorder(BorderFactory
 				.createEtchedBorder(EtchedBorder.LOWERED));
-		
-		lineStartPanel.add(northLineStartPanel,BorderLayout.PAGE_START);
-		lineStartPanel.add(centerLineStartPanel,BorderLayout.LINE_START);
-		lineStartPanel.add(southLineStartPanel,BorderLayout.PAGE_END);
-		
+
+		lineStartPanel.add(northLineStartPanel, BorderLayout.PAGE_START);
+		lineStartPanel.add(centerLineStartPanel, BorderLayout.LINE_START);
+		lineStartPanel.add(southLineStartPanel, BorderLayout.PAGE_END);
+
 		add(lineStartPanel, BorderLayout.LINE_START);
-		
+
 		// CENTER
-		
+
 		JPanel centerPanel = mainFrame.componentsPanel.init();
 		add(centerPanel, BorderLayout.CENTER);
-		
-
-		
-
 
 		return this;
 	}
 
+	/**
+	 * Forces the creation of a new composed model, if any of the simulation
+	 * settings changed.
+	 * 
+	 * @param string
+	 *            string related with the type of modification that will force
+	 *            the creation of a new composed model
+	 * @param selected
+	 *            name of the new set of the modification that forced the reset
+	 *            of the composed model
+	 * 
+	 */
 	private void needToResetComposedModel(String string, String selected) {
 		if (string == "perturbation") {
 			if (selected == mainFrame.previsioulySelectedPeturbationSet)
@@ -365,6 +373,17 @@ public class SimulationSetupPanel extends JPanel {
 		}
 	}
 
+	/**
+	 * Adds names of the sets to each of the combo box related to simulation and
+	 * epithelium definitions in the simulations setup panel.
+	 * 
+	 * @param string
+	 *            string related with the type of modification that will force
+	 *            the creation of a new composed model
+	 * @param combo
+	 *            comboBox related with the type of modifications
+	 * 
+	 */
 	private void fillCombo(JComboBox combo, String string) {
 
 		if (string == "initial") {
@@ -380,7 +399,8 @@ public class SimulationSetupPanel extends JPanel {
 			}
 		} else if (string == "input") {
 			combo.addItem("none");
-			Hashtable<String, Hashtable<NodeInfo, List<String>>> set = mainFrame.epithelium.getInputsIntegrationSet();
+			Hashtable<String, Hashtable<NodeInfo, List<String>>> set = mainFrame.epithelium
+					.getInputsIntegrationSet();
 			for (String i : set.keySet()) {
 				if (i == "none")
 					combo.addItem(i);
@@ -413,13 +433,25 @@ public class SimulationSetupPanel extends JPanel {
 		}
 	}
 
+	/**
+	 * Updates Topology with the selected roll over option.
+	 * 
+	 * @param optionString
+	 *            roll-over option selected
+	 * 
+	 * @see Topology
+	 */
 	private void fireRollOverChange(String optionString) { // ROLL OVER
 		mainFrame.topology.setRollOver(optionString);
 	}
-	
+
 	// Tabs on or off
+
 	
-	
+	/**
+	 * Disables all tabs, except the simulation tab.
+	 * 
+	 */
 	public void simulationPanelsoff() {
 		initialCombo.setEnabled(false);
 		inputCombo.setEnabled(false);
@@ -429,6 +461,11 @@ public class SimulationSetupPanel extends JPanel {
 		rollOver.setEnabled(false);
 	}
 
+	
+	/**
+	 * Enables all tabs.
+	 * 
+	 */
 	public void simulationPanelson() {
 		initialCombo.setEnabled(true);
 		inputCombo.setEnabled(true);
@@ -437,5 +474,5 @@ public class SimulationSetupPanel extends JPanel {
 		createComposedModel.setEnabled(true);
 		rollOver.setEnabled(true);
 	}
-	
+
 }

@@ -52,6 +52,13 @@ public class InitialConditions extends JPanel {
 
 	public JButton buttonFill;
 
+	
+	/**
+	 * Generates the initial conditions panel, to be inserted in the tab on Epilog's
+	 * main panel.
+	 * 
+	 * @param mainFrame
+	 */
 	public InitialConditions(MainFrame mainPanel) {
 
 		this.mainFrame = mainPanel;

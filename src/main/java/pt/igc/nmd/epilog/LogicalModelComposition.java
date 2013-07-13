@@ -23,7 +23,6 @@ import pt.igc.nmd.epilog.integrationgrammar.CompositionContext;
 import pt.igc.nmd.epilog.integrationgrammar.CompositionContextImpl;
 import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionMDDFactory;
 
-
 public class LogicalModelComposition {
 
 	private MainFrame mainPanel;
@@ -34,23 +33,43 @@ public class LogicalModelComposition {
 	public Map<NodeInfo, Map.Entry<NodeInfo, Integer>> new2Old = new HashMap<NodeInfo, Map.Entry<NodeInfo, Integer>>();
 	private Map<Integer, List<NodeInfo>> instanceNodes = new HashMap<Integer, List<NodeInfo>>();
 
+	/**
+	 * Initializes the creation of the compsoed model.
+	 * 
+	 * @param mainPanel
+	 */
 	public LogicalModelComposition(MainFrame mainPanel) {
 		this.mainPanel = mainPanel;
 
 	}
 
+	/**
+	 * Get the mapping used.
+	 * 
+	 * @return mapping
+	 */
 	public IntegrationFunctionMapping getMapping() {
 		return this.mapping;
 	}
 
+	/**
+	 * Set the mapping.
+	 * 
+	 * @param mapping
+	 */
 	public void setMapping(IntegrationFunctionMapping mapping) {
 		this.mapping = mapping;
 	}
 
+	/**
+	 * Create the composed model.
+	 * 
+	 * @return composed model
+	 */
 	public LogicalModel createComposedModel() {
 		// if (composedModel != null)
 		// return composedModel;
-		
+
 		System.out.println("STarting to create the composed Model");
 
 		List<NodeInfo> nodeOrder = new ArrayList<NodeInfo>();
@@ -179,15 +198,14 @@ public class LogicalModelComposition {
 
 			if (mainPanel.getEpithelium().isIntegrationComponent(
 					oldeNodeIdIntegrationComponent)) {
-			
-				for (byte targetValue = 1; targetValue < oldeNodeIdIntegrationComponent
-						.getMax()+1; targetValue++) {
-					
-//					 System.out.println(oldeNodeIdIntegrationComponent + " " +
-//					 targetValue);
 
-					for (int i = 0; i < mainPanel.topology
-							.getNumberInstances(); i++) {
+				for (byte targetValue = 1; targetValue < oldeNodeIdIntegrationComponent
+						.getMax() + 1; targetValue++) {
+
+					// System.out.println(oldeNodeIdIntegrationComponent + " " +
+					// targetValue);
+
+					for (int i = 0; i < mainPanel.topology.getNumberInstances(); i++) {
 						IntegrationFunctionMDDFactory factory = new IntegrationFunctionMDDFactory(
 								context, ddmanager);
 
@@ -208,7 +226,7 @@ public class LogicalModelComposition {
 						searcher.setNode(integrationMDD);
 
 						for (int value : searcher) {
-							
+
 							if (value == 0)
 								continue;
 
@@ -218,7 +236,7 @@ public class LogicalModelComposition {
 									.get(new SimpleEntry<String, Integer>(
 											oldeNodeIdIntegrationComponent
 													.getNodeID(), i));
-							//System.out.println(integrationComponent);
+							// System.out.println(integrationComponent);
 							int index = nodeOrder.indexOf(integrationComponent);
 							kMDDs[index] = MDDBaseOperators.OR.combine(
 									ddmanager, kMDDs[index], pathMDD);
@@ -233,38 +251,38 @@ public class LogicalModelComposition {
 		// try {
 		// exporter.export(new FileOutputStream("test_beforeReduction.ginml"));
 		// } catch (FileNotFoundException e) {
-		
+
 		// e.printStackTrace();
 		// } catch (IOException e) {
-	
+
 		// e.printStackTrace();
 		// }
 
 		// Perform reduction of integration components
 		ModelReducer reducer = new ModelReducer(composedModel);
-		 //System.err.println("New Integration Nodes: "+ newIntegrationNodes);
+		// System.err.println("New Integration Nodes: "+ newIntegrationNodes);
 		for (NodeInfo integrationNode : newIntegrationNodes) {
 			// System.err.println("Reducing " + integrationNode.getNodeID());
 			reducer.remove(nodeOrder.indexOf(integrationNode));
 		}
 
 		composedModel = reducer.getModel();
-		
-//		System.out.println(composedModel.getNodeOrder());
-//		System.out.println(composedModel.getExtraComponents());
-//		for (NodeInfo node : mainPanel.getEpithelium().getUnitaryModel()
-//				.getNodeOrder())
-//			System.out.println(node + " -> " +mainPanel.getEpithelium()
-//					.isIntegrationComponent(node));
+
+		// System.out.println(composedModel.getNodeOrder());
+		// System.out.println(composedModel.getExtraComponents());
+		// for (NodeInfo node : mainPanel.getEpithelium().getUnitaryModel()
+		// .getNodeOrder())
+		// System.out.println(node + " -> " +mainPanel.getEpithelium()
+		// .isIntegrationComponent(node));
 
 		// exporter = new LogicalModel2GINML(composedModel);
 		// try {
 		// exporter.export(new FileOutputStream("test_afterReduction.ginml"));
 		// } catch (FileNotFoundException e) {
-		
+
 		// e.printStackTrace();
 		// } catch (IOException e) {
-		
+
 		// e.printStackTrace();
 		// }
 
@@ -274,9 +292,12 @@ public class LogicalModelComposition {
 	}
 
 	/**
+	 * Generate new name for the composed component
 	 * 
 	 * @param originalName
+	 *            modeID
 	 * @param moduleId
+	 *            instance number
 	 * @return newName
 	 */
 	public String computeNewName(String original, int moduleId) {
@@ -284,6 +305,17 @@ public class LogicalModelComposition {
 		return original + "_" + (moduleId);
 	}
 
+	/**
+	 * Build the new MDD Path.
+	 * 
+	 * @param ddmanager
+	 *            MDD manager
+	 * @param state
+	 *            state of the world
+	 * @param leaf
+	 *            leaf
+	 * @return MDD path
+	 */
 	private int buildPathMDD(MDDManager ddmanager, int[] state, int leaf) {
 		MDDVariable[] ddVariables = ddmanager.getAllVariables();
 		int mddPath = leaf;
@@ -298,11 +330,17 @@ public class LogicalModelComposition {
 		return mddPath;
 	}
 
+	/**
+	 * Resets the composed model.
+	 */
 	public void resetComposedModel() {
 		composedModel = null;
 
 	}
 
+	/**
+	 * Resets the logical model composition parameters.
+	 */
 	public void resetLogicalModelComposition() {
 		mapping = null;
 		composedModel = null;
@@ -311,18 +349,37 @@ public class LogicalModelComposition {
 		new2Old = new HashMap<NodeInfo, Map.Entry<NodeInfo, Integer>>();
 		instanceNodes = new HashMap<Integer, List<NodeInfo>>();
 	}
-	
-	public NodeInfo getComposedNode(NodeInfo node, int instance){
-		return this.old2New.get(new SimpleEntry<NodeInfo,Integer>(node,new Integer(instance)));
+
+	/**
+	 * Returns the composed node related to an instance and a node from the
+	 * original regulatory model.
+	 * 
+	 * @param node
+	 *            original node
+	 * @param instance instance
+	 * @return newNode
+	 */
+	public NodeInfo getComposedNode(NodeInfo node, int instance) {
+		return this.old2New.get(new SimpleEntry<NodeInfo, Integer>(node,
+				new Integer(instance)));
 	}
-	
-	public NodeInfo getOriginalNode(NodeInfo node){
+
+	/**
+	 * Returns the original node retrieved from a composed node.
+	 * @param node composed node
+	 * @return Old node
+	 */
+	public NodeInfo getOriginalNode(NodeInfo node) {
 		return this.new2Old.get(node).getKey();
 	}
-	
-	public Integer getOriginalInstance(NodeInfo node){
+
+/**
+ * Returns the instance related to a composed node
+ * @param node composed node
+ * @return instance
+ */
+	public Integer getOriginalInstance(NodeInfo node) {
 		return this.new2Old.get(node).getValue();
 	}
-	
 
 }

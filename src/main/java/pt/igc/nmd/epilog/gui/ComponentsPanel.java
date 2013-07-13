@@ -46,6 +46,15 @@ public class ComponentsPanel extends JPanel {
 		init();
 	}
 
+	/**
+	 * Generates a panel composed by two panels: one with proper components and
+	 * another with environmental inputs, if there are any. Associated with each
+	 * component there is a color, and a selection checkbox.
+	 * 
+	 * @see pt.igc.nmd.epilog.gui.DrawPolygon
+	 * 
+	 * @return componentsPanel
+	 */
 	public JPanel init() {
 
 		jcheckbox2Node = new Hashtable<JCheckBox, NodeInfo>();
@@ -204,7 +213,14 @@ public class ComponentsPanel extends JPanel {
 		}
 		return this;
 	}
-
+	
+	
+	/**
+	 * Changes the color associated with a component.
+	 * 
+	 * @param src button associated with a components color
+	 * @see mainFrame.epithelium.setColor
+	 */
 	private void setNewColor(JButton src) {
 		Color newColor = JColorChooser.showDialog(src, "Color Chooser",
 				this.mainFrame.epithelium.getColor(button2Node.get(src)));
@@ -214,9 +230,18 @@ public class ComponentsPanel extends JPanel {
 
 	}
 
+	
+	/**
+	 * Sets the component as selected or not.
+	 * 
+	 * @param box checkbox associated with a component
+	 * @param bool boolean value: true if node selected, false otherwise
+	 * 
+	 * @see mainFrame.epithelium.setActiveComponent()
+	 */
 	public void fireCheckBoxChange(Boolean bool, JCheckBox box) {
 
-		this.mainFrame.getEpithelium().setActiveComponent(
+		this.mainFrame.epithelium.setActiveComponent(
 				jcheckbox2Node.get(box), bool);
 	}
 

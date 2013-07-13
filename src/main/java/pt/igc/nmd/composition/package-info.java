@@ -2,7 +2,7 @@
 /**
  * 
  * 
- * @author Pedro Varela and Nuno Mendes
+ * @author Nuno Mendes
  *
  */
 package pt.igc.nmd.composition;

@@ -19,16 +19,54 @@ public class IntegrationFunctionMDDFactory {
 	private CompositionContext context = null;
 	private MDDManager manager = null;
 
+	/**
+	 * Creates the MDD.
+	 * 
+	 * @param context
+	 *            composition context
+	 * @param manager
+	 *            MDD manager
+	 * 
+	 * 
+	 */
 	public IntegrationFunctionMDDFactory(CompositionContext context,
 			MDDManager manager) {
 		this.context = context;
 		this.manager = manager;
 	}
 
+	/**
+	 * Calls the MDD getter.
+	 * 
+	 * @param expression
+	 *            integration expression
+	 * @param instance
+	 *            instance
+	 * @return MDD
+	 * @see getMDD(IntegrationExpression expression, int instance, boolean
+	 *      optimize)
+	 * 
+	 * 
+	 */
 	public int getMDD(IntegrationExpression expression, int instance) {
 		return getMDD(expression, instance, true);
 	}
 
+	/**
+	 * Creates the MDD.
+	 * 
+	 * @param expression
+	 *            integration expression
+	 * @param instance
+	 *            instance
+	 * @param optimize
+	 *            optimization boolean value
+	 * @return MDD
+	 * @see getMDD(IntegrationExpression expression, int instance, boolean
+	 *      optimize)
+	 * 
+	 * 
+	 */
 	public int getMDD(IntegrationExpression expression, int instance,
 			boolean optimize) {
 
@@ -216,6 +254,20 @@ public class IntegrationFunctionMDDFactory {
 
 	}
 
+	/**
+	 * Build the MDDPath.
+	 * 
+	 * @param ddm
+	 *            MDD manager
+	 * @param state
+	 *            state of the world
+	 * @param leaf
+	 *            leaf
+	 * @return value
+	 * 
+	 * 
+	 * 
+	 */
 	private int buildMDDPath(MDDManager ddm, byte[] state, int leaf) {
 		MDDVariable[] ddVariables = ddm.getAllVariables();
 		int mddPath = leaf;
@@ -229,6 +281,18 @@ public class IntegrationFunctionMDDFactory {
 		return mddPath;
 	}
 
+	/**
+	 * Calls the neighbours mask generator.
+	 * 
+	 * @param v
+	 *            places
+	 * @param neighbours
+	 *            neighbours
+	 * @return mask
+	 * @see generateNeighboursMask(int n, int m, int offset, boolean[] frozen)
+	 * 
+	 * 
+	 */
 	private static List<boolean[]> generateNeighboursMask(int v,
 			List<Integer> neighbours) {
 		boolean[] mask = new boolean[neighbours.size()];
@@ -237,6 +301,22 @@ public class IntegrationFunctionMDDFactory {
 		return generateNeighboursMask(v, neighbours.size(), 0, mask);
 	}
 
+	/**
+	 * Neighbours mask generator.
+	 * 
+	 * @param n
+	 *            places
+	 * @param m
+	 *            number of neighbours
+	 * @param offse
+	 *            offset
+	 * @param frozen
+	 *            mask
+	 * @return masks
+	 * @see generateNeighboursMask(int v, List<Integer> neighbours)
+	 * 
+	 * 
+	 */
 	private static List<boolean[]> generateNeighboursMask(int n, int m,
 			int offset, boolean[] frozen) {
 		List<boolean[]> masks = new ArrayList<boolean[]>();

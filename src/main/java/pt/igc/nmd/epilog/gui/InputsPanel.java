@@ -22,8 +22,6 @@ import javax.swing.border.EtchedBorder;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 
-
-
 public class InputsPanel extends JPanel {
 
 	/**
@@ -35,31 +33,39 @@ public class InputsPanel extends JPanel {
 
 	private JPanel auxiliaryPanel[];
 
-	//private Hashtable<JComboBox, Integer> Jcombo2Node;
+	// private Hashtable<JComboBox, Integer> Jcombo2Node;
 	public Hashtable<JCheckBox, Integer> Jcheck2Node;
 	private Hashtable<JComboBox, Integer> JcomboInput2Node;
 	private Hashtable<JButton, Integer> integrationFunctionButton2Node;
-	
-	private Hashtable<JButton, NodeInfo> button2Node;
 
+	private Hashtable<JButton, NodeInfo> button2Node;
 
 	private JButton[] node2IntegrationFunctionButton;
 	private JComboBox[] inputComboChooser;
 
-	
 	private JTextField setName;
 	private JComboBox sets;
-	
+
 	private JButton integrationFunctionButton;
 
+	
+	/**
+	 * Generates the inputs panel, to be inserted in the tab on Epilog's
+	 * main panel.
+	 * 
+	 * @param mainFrame
+	 */
 	public InputsPanel(MainFrame mainFrame) {
 
 		this.mainFrame = mainFrame;
-
-
 		init();
 	}
 
+	/**
+	 * Initializes the inputs panel, to be inserted in the tab on Epilog's main
+	 * panel.
+	 * 
+	 */
 	public void init() {
 
 		Color backgroundColor = this.mainFrame.getBackground();
@@ -69,9 +75,8 @@ public class InputsPanel extends JPanel {
 		LogicalModel unitaryModel = this.mainFrame.epithelium.getUnitaryModel();
 
 		if (unitaryModel != null) {
-			List<NodeInfo> listNodes = this.mainFrame.epithelium.getUnitaryModel()
-					.getNodeOrder();
-
+			List<NodeInfo> listNodes = this.mainFrame.epithelium
+					.getUnitaryModel().getNodeOrder();
 
 			// PAGE START PANEL
 
@@ -92,10 +97,10 @@ public class InputsPanel extends JPanel {
 			sets.setPreferredSize(new Dimension(
 					setName.getPreferredSize().width,
 					sets.getPreferredSize().height));
-			
+
 			if (this.mainFrame.epithelium.getInputsIntegrationSet() != null) {
-				for (String key : this.mainFrame.epithelium.getInputsIntegrationSet()
-						.keySet()) {
+				for (String key : this.mainFrame.epithelium
+						.getInputsIntegrationSet().keySet()) {
 					sets.addItem(key);
 				}
 			}
@@ -108,7 +113,7 @@ public class InputsPanel extends JPanel {
 
 			buttonClear.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					removeElementFromSet() ;
+					removeElementFromSet();
 				}
 			});
 
@@ -132,17 +137,16 @@ public class InputsPanel extends JPanel {
 			JPanel centerPanel = new JPanel(layout);
 
 			auxiliaryPanel = new JPanel[listNodes.size()];
-		
+
 			node2IntegrationFunctionButton = new JButton[listNodes.size()];
 			inputComboChooser = new JComboBox[listNodes.size()];
-			
+
 			button2Node = new Hashtable<JButton, NodeInfo>();
 			Jcheck2Node = new Hashtable<JCheckBox, Integer>();
-		//	Jcombo2Node = new Hashtable<JComboBox, Integer>();
+			// Jcombo2Node = new Hashtable<JComboBox, Integer>();
 			integrationFunctionButton2Node = new Hashtable<JButton, Integer>();
 			JcomboInput2Node = new Hashtable<JComboBox, Integer>();
-			
-		
+
 			for (int i = 0; i < listNodes.size(); i++) {
 
 				if (listNodes.get(i).isInput()) {
@@ -152,9 +156,8 @@ public class InputsPanel extends JPanel {
 					auxiliaryPanel[i].setBackground(backgroundColor);
 					auxiliaryPanel[i].setBorder(BorderFactory
 							.createEtchedBorder(EtchedBorder.LOWERED));
-					
-					JLabel nodeID = new JLabel(listNodes.get(i).getNodeID());
 
+					JLabel nodeID = new JLabel(listNodes.get(i).getNodeID());
 
 					integrationFunctionButton = new JButton("Function");
 					integrationFunctionButton
@@ -191,16 +194,13 @@ public class InputsPanel extends JPanel {
 										.getDescriptionString(InputOption.ENVIRONMENTAL_INPUT));
 					}
 
-
-
 					auxiliaryPanel[i].add(nodeID);
 					if (this.mainFrame.epithelium.isIntegrationComponent(i))
 						auxiliaryPanel[i].add(integrationFunctionButton);
 					else {
 
 					}
-					
-					
+
 					auxiliaryPanel[i].add(inputComboChooser[i]);
 					centerPanel.add(auxiliaryPanel[i]);
 
@@ -213,7 +213,7 @@ public class InputsPanel extends JPanel {
 											.getSource();
 									String optionString = (String) source
 											.getSelectedItem();
-									
+
 									InputOption option = InputOption
 											.getOptionFromString(optionString);
 
@@ -241,42 +241,48 @@ public class InputsPanel extends JPanel {
 		}
 	}
 
-	private void setNewColor(JButton src){
-		Color newColor = JColorChooser.showDialog(src, "Color Chooser", this.mainFrame.epithelium.getColor(button2Node.get(src)));
-		src.setBackground(newColor);
-		this.mainFrame.epithelium.setColor(button2Node.get(src),newColor);
-		this.mainFrame.fillHexagons();
-	}
-
+	/**
+	 * Initiates the integration function editing panel.
+	 * 
+	 * @param src
+	 *            button that associates a component with the integration
+	 *            functions
+	 * 
+	 */
 	protected void initializeIntegrationInterface(JButton src) {
 		NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder().get(integrationFunctionButton2Node.get(src));
 		new IntegrationFunctionInterface(this.mainFrame.epithelium, node);
-
 	}
 
-
-	public void setComponentDisplay(int i, boolean b) {
-		this.mainFrame.epithelium.setDefinitionsComponentDisplay(i, b);
-	}
-
+	/**
+	 * Sets an input as environment or integrations.
+	 * 
+	 * @param inputCombo
+	 *            JComboBox associated with a node that indicates if it is an
+	 *            integration or environment input
+	 * @param b
+	 *            boolean value that is true if a component is an environment
+	 *            input, false otherwise
+	 */
 	protected void setEnvOptions(JComboBox inputCombo, boolean bool) {
 
 		int i = JcomboInput2Node.get(inputCombo);
 		this.mainFrame.epithelium.setIntegrationComponent(i, !bool);
 
 		if (bool) {
-			this.mainFrame.epithelium.resetIntegrationNode(this.mainFrame.epithelium
-					.getUnitaryModel().getNodeOrder()
-					.get(JcomboInput2Node.get(inputCombo)));
+			this.mainFrame.epithelium
+					.resetIntegrationNode(this.mainFrame.epithelium
+							.getUnitaryModel().getNodeOrder()
+							.get(JcomboInput2Node.get(inputCombo)));
 		} else {
 			for (int instance = 0; instance < this.mainFrame.topology
 					.getNumberInstances(); instance++) {
-				this.mainFrame.epithelium.setGrid(instance, this.mainFrame.epithelium
-						.getUnitaryModel().getNodeOrder().get(i), (byte) 0);
+				this.mainFrame.epithelium.setGrid(instance,
+						this.mainFrame.epithelium.getUnitaryModel()
+								.getNodeOrder().get(i), (byte) 0);
 			}
 		}
-		setInitialSetupHasChanged(true);
 		removeAll();
 		repaint();
 		revalidate();
@@ -285,6 +291,11 @@ public class InputsPanel extends JPanel {
 		this.mainFrame.fillHexagons();
 	}
 
+	
+	/**
+	 * Enumeration of the options of the choice of input type.
+	 * 
+	 */
 	private enum InputOption {
 		ENVIRONMENTAL_INPUT, INTEGRATION_INPUT;
 
@@ -311,38 +322,39 @@ public class InputsPanel extends JPanel {
 		}
 	}
 
-	protected void setInitialSetupHasChanged(boolean b) {
-		this.mainFrame.setInitialSetupHasChanged(b);
-	}
-
 	
-	
+	/**
+	 * Loads the initial conditions set selected when changing the sets at the inputs panel.
+	 * 
+	 */
 	private void loadInitialconditions() {
 		setName.setText((String) sets.getSelectedItem());
 		if (sets.getSelectedItem() != null)
 			if (this.mainFrame.epithelium.getInputsIntegrationSet().get(
-					(String) sets.getSelectedItem()) != null){
+					(String) sets.getSelectedItem()) != null) {
 				this.mainFrame.epithelium.setSelectedInputSet((String) sets
 						.getSelectedItem());
 			}
-		
+
 	}
-	
-	
+
 	// End Methods
 
 	/**
-	 * Adds an input set. If a name is already used, then the new set replaces the old one.
+	 * Adds an input set. If a name is already used, then the new set replaces
+	 * the old one.
 	 * 
 	 */
 	private void inputsAdd() {
 		String name = setName.getText();
-		if (!this.mainFrame.epithelium.getInputsIntegrationSet().containsKey(name))
-			sets.addItem(name);{
-				this.mainFrame.epithelium.setIntegrationInputsSet(name);
-			}
+		if (!this.mainFrame.epithelium.getInputsIntegrationSet().containsKey(
+				name))
+			sets.addItem(name);
+		{
+			this.mainFrame.epithelium.setIntegrationInputsSet(name);
+		}
 	}
-	
+
 	/**
 	 * Removes an element from the set of input sets.
 	 * 
@@ -353,9 +365,10 @@ public class InputsPanel extends JPanel {
 		setName.setText("");
 		sets.removeAllItems();
 
-		for (String string : this.mainFrame.epithelium.getInputsIntegrationSet().keySet())
+		for (String string : this.mainFrame.epithelium
+				.getInputsIntegrationSet().keySet())
 			if (string != "none")
 				sets.addItem(string);
 	}
-	
+
 }

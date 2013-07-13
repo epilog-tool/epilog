@@ -30,7 +30,16 @@ public class IntegrationFunctionInterface extends JFrame {
 	private Hashtable<Byte, String> integrationFunctionStrings;
 	private SphericalEpithelium epithelium;
 
-	public IntegrationFunctionInterface(SphericalEpithelium epithelium, final NodeInfo node) {
+	/**
+	 * Summons the integration functions edition panel.
+	 * 
+	 * @param epithelium
+	 *            epithelium model used
+	 * @param node
+	 *            node associated with the integration functions
+	 */
+	public IntegrationFunctionInterface(SphericalEpithelium epithelium,
+			final NodeInfo node) {
 		super("Insert Integration Function");
 		this.epithelium = epithelium;
 		integrationFunctionStrings = new Hashtable<Byte, String>();
@@ -86,7 +95,6 @@ public class IntegrationFunctionInterface extends JFrame {
 					integrationFunctionStrings.put(
 							Byte.parseByte(valueTextField.getText()),
 							functionTextField.getText());
-					setInitialSetupHasChanged(true);
 				}
 			});
 
@@ -105,6 +113,15 @@ public class IntegrationFunctionInterface extends JFrame {
 		pack();
 	}
 
+	/**
+	 * Saves the integration functions written in the epithelium model.
+	 * 
+	 * @param integrationFunctionStrings
+	 *            hashtable that relates the target value with the integration
+	 *            function
+	 * @param node
+	 *            node associated with the integration functions
+	 */
 	public void setIntegrationFunction(NodeInfo node,
 			Hashtable<Byte, String> integrationFunctionStrings) {
 
@@ -113,10 +130,6 @@ public class IntegrationFunctionInterface extends JFrame {
 			epithelium.setIntegrationFunctions(node, targetValue,
 					integrationFunctionStrings.get(targetValue));
 
-	}
-
-	private void setInitialSetupHasChanged(boolean b) {
-		epithelium.setComposedModel(null);
 	}
 
 }

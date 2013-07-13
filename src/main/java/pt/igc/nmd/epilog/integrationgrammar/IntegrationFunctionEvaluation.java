@@ -19,16 +19,45 @@ public class IntegrationFunctionEvaluation {
 	private IntegrationExpression expression = null;
 	private CompositionContext context = null;
 
+	
+	/**
+	 * Evaluates an expression.
+	 * 
+	 * @param expression integration expression
+	 * @param context composition context
+	 * 
+	 * 
+	 */
 	public IntegrationFunctionEvaluation(IntegrationExpression expression,
 			CompositionContext context) {
 		this.expression = expression;
 		this.context = context;
 	}
 
+	/**
+	 * Evaluates an instance.
+	 * 
+	 * @param instance instance to evaluate
+	 * @param state state of the world
+	 * @return state of the instance
+	 * 
+	 * 
+	 */
 	public boolean evaluate(int instance, byte[][] state) {
 		return traverseTreeEvaluate(instance, state, expression);
 	}
 
+	
+	/**
+	 * Evaluates an instance
+	 * 
+	 * @param instance instance to evaluate
+	 * @param state state of the world
+	 * @param expression integration expression
+	 * @return true if result exists
+	 * 
+	 * 
+	 */
 	private boolean traverseTreeEvaluate(int instance, byte[][] state,
 			IntegrationExpression expression) {
 

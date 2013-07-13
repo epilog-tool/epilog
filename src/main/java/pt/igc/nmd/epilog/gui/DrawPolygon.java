@@ -25,11 +25,26 @@ public class DrawPolygon extends JPanel {
 
 	public int countSelected = 0;
 
+	/**
+	 * Generates the hexagons grid.
+	 * 
+	 * @param mainframe
+	 *            related mainframe
+
+	 * @see  pt.igc.nmd.epilog.gui.MainFrame mainFrame
+	 */
 	public DrawPolygon(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
 		this.setPreferredSize(new Dimension(500, 500));
 	}
 
+	/**
+	 * Paints the hexagons grid. If there is no model loaded it paints in white,
+	 * otherwise with the resulting color of the selected components.
+	 * 
+	 * @param g
+	 *            graphics
+	 */
 	public void paintComponent(Graphics g) {
 
 		Graphics2D g2 = (Graphics2D) g;
@@ -95,20 +110,20 @@ public class DrawPolygon extends JPanel {
 
 					int instance = this.mainFrame.topology
 							.coords2Instance(k, j);
-					if ( this.mainFrame.epithelium.getUnitaryModel()==null) {
+					if (this.mainFrame.epithelium.getUnitaryModel() == null) {
 						paintHexagons(stroke, Color.white, polygon2, g2);
 					}
 
 					else {
 						BasicStroke selectedStroke = stroke;
-						if (mainFrame.epithelium.isCellPerturbed(instance)) {
+						if (this.mainFrame.epithelium.isCellPerturbed(instance)) {
 							selectedStroke = perturbedStroke;
 						}
 						paintHexagons(selectedStroke,
 								this.mainFrame.simulation
 										.getCoordinateCurrentColor(instance),
 								polygon2, g2);
-										}
+					}
 
 					if (k % 2 == 0)
 						centerY = (j + 1 + 0.5) * radius * Math.sqrt(3.0);
@@ -121,6 +136,19 @@ public class DrawPolygon extends JPanel {
 		}
 	}
 
+	/**
+	 * Paints an instance of the hexagons grid.
+	 * 
+	 * @param instance
+	 *            instance to be painted
+	 * @param g
+	 *            graphic (hexagons grid)
+	 * @param color
+	 *            color to paint the instance
+	 * 
+	 * @see paintHexagons(BasicStroke stroke, Color color, Polygon polygon2,
+	 *      Graphics2D g2)
+	 */
 	public void drawHexagon(int instance, Graphics g, Color color) {
 
 		int i = this.mainFrame.topology.instance2i(instance);
@@ -156,20 +184,21 @@ public class DrawPolygon extends JPanel {
 		if (this.mainFrame.isDrawingCells()) {
 			BasicStroke selectedStroke = stroke;
 			paintHexagons(stroke, color, polygon2, g2);
-			
+
 		} else if (this.mainFrame.isDrawingPerturbations()) {
 			BasicStroke selectedStroke = stroke;
 			color = color.white;
-			if (mainFrame.epithelium.isCellPerturbedDraw(instance)) {
+			if (this.mainFrame.epithelium.isCellPerturbedDraw(instance)) {
 				selectedStroke = perturbedStroke;
-				if (mainFrame.epithelium.getActivePerturbation() != null)
-				color = mainFrame.epithelium.getPerturbationColor(
-							mainFrame.epithelium.getActivePerturbation().toString());
+				if (this.mainFrame.epithelium.getActivePerturbation() != null)
+					color = this.mainFrame.epithelium
+							.getPerturbationColor(this.mainFrame.epithelium
+									.getActivePerturbation().toString());
 			}
 			paintHexagons(selectedStroke, color, polygon2, g2);
 
 		} else {
-			if (mainFrame.epithelium.isCellPerturbed(instance)) {
+			if (this.mainFrame.epithelium.isCellPerturbed(instance)) {
 				BasicStroke selectedStroke = perturbedStroke;
 
 				paintHexagons(selectedStroke, color, polygon2, g2);
@@ -177,6 +206,20 @@ public class DrawPolygon extends JPanel {
 		}
 	}
 
+	/**
+	 * Paints Hexagons.
+	 * 
+	 * @param stroke
+	 *            thickness of the hexagon edges
+	 * @param polygon2
+	 *            graphics2d of the hexagons grid
+	 * @param g
+	 *            graphic (hexagons grid)
+	 * @param color
+	 *            color to paint the instance
+	 * 
+	 * @see drawHexagon(int instance, Graphics g, Color color)
+	 */
 	private void paintHexagons(BasicStroke stroke, Color color,
 			Polygon polygon2, Graphics2D g2) {
 		g2.setStroke(stroke);
@@ -186,6 +229,15 @@ public class DrawPolygon extends JPanel {
 		g2.drawPolygon(polygon2);
 	}
 
+	/**
+	 * Paints all hexagons in white.
+	 * 
+	 * @param g
+	 *            graphic (hexagons grid)
+	 * 
+	 * @see paintHexagons(BasicStroke stroke, Color color, Polygon polygon2,
+	 *      Graphics2D g2)
+	 */
 	public void clearAllCells(Graphics g) {
 
 		Graphics2D g2 = (Graphics2D) g;

@@ -376,7 +376,6 @@ public class GlobalModel {
 					}
 			}
 		}
-
 		return next;
 	}
 

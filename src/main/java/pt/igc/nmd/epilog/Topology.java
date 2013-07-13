@@ -27,6 +27,13 @@ public class Topology implements Serializable {
 	private int[] neighbors_y = { 0, 0, -1, 1, -1, 1 };
 	private String rollOver;
 
+	/**
+	 * Defines the topology of the epithelium model.
+	 * 
+	 * @param width width of the hexagons grid
+	 * @param height height of the hexagons grid
+	 * 
+	 */
 	public Topology(int width, int height) {
 		super();
 		// width = (width % 2 == 0) ? width : width + 1;
@@ -37,33 +44,81 @@ public class Topology implements Serializable {
 
 	}
 
+	/**
+	 * Sets a new height for the hexagons grid.
+	 * 
+	 * @param height new height
+	 * 
+	 */
 	public void setHeight(int height) {
 		this.height = height;
 	}
 
+	/**
+	 * Sets a new width for the hexagons grid.
+	 * 
+	 * @param width new width
+	 * 
+	 */
 	public void setWidth(int width) {
 		this.width = width;
 	}
 
+	
+	/**
+	 * Returns the grid's width.
+	 * 
+	 * @return width
+	 * 
+	 */
 	public int getWidth() {
 		return this.width;
 	}
 
+	/**
+	 * Returns the grid's height.
+	 * 
+	 * @return height
+	 * 
+	 */
 	public int getHeight() {
 		return this.height;
 	}
 
+	
+	/**
+	 * Returns the number of instances.
+	 * 
+	 * @return number of instances
+	 * 
+	 */
 	public int getNumberInstances() {
 		return this.height * this.width;
 	}
 
 	/* Methods to transform instance index to coordinates and vice-versa */
+	
+	/**
+	 * Translates and instance number into a corresponding coordinate of the x-axis
+	 * 
+	 * @param instance
+	 * @return x axis coordinate
+	 * 
+	 */
 	public int instance2i(int instance) {
 
 		int i = instance % getWidth();
 		return i;
 	}
 
+	
+	/**
+	 * Translates and instance number into a corresponding coordinate of the y-axis
+	 * 
+	 * @param instance
+	 * @return y axis coordinate
+	 * 
+	 */
 	public int instance2j(int instance) {
 
 		int j = 0;
@@ -73,16 +128,44 @@ public class Topology implements Serializable {
 		return j;
 	}
 
+	
+	/**
+	 * Translates into an instance number the x and y coordinates.
+	 * 
+	 * @param i x coordinate
+	 * @param j y coordinate
+	 * @return instance number
+	 * 
+	 */
 	public int coords2Instance(int i, int j) {
 		return j * getWidth() + i;
 	}
 
 	// Neighbours
 
+	
+	/**
+	 * Calls the iterative method to determine the set of neighours at a  distances
+	 * 
+	 * @param instance instance that has neighbours
+	 * @param distance neighbours distance
+	 * @return set of neighbours
+	 *@see nDistanceNeighbours(int instance, int distance) 
+	 * 
+	 */
 	public Set<Integer> groupNeighbors(int instance, int distance) {
 		return nDistanceNeighbours(instance, distance);
 	}
 
+	
+	/**
+	 * Determines if two instances are neighbours at a distance
+	 * 
+	 * @param instanceA instance to compare
+	 * @param instanceB instance to compare
+	 * @return true if they are neighbours, false otherwise
+	 * 
+	 */
 	public boolean areNeighbors(int instanceA, int instanceB, int distance) {
 
 		return (groupNeighbors(instanceA, distance).contains(instanceB));
@@ -95,6 +178,15 @@ public class Topology implements Serializable {
 		this.rollOver = rollOver;
 	}
 
+	
+	/**
+	 * Determines the list of neighbours with horizontal roll over
+	 * 
+	 * @param instance instance that has neighbours
+	 * @return list of neighbours
+	 *@see nDistanceNeighbours(int instance, int distance) 
+	 * 
+	 */
 	public List<Integer> horizontalRollOver(int instance) {
 		List<Integer> neighbors = new ArrayList<Integer>();
 
@@ -142,6 +234,14 @@ public class Topology implements Serializable {
 		return neighbors;
 	}
 
+	/**
+	 * Determines the list of neighbours with vertical roll over
+	 * 
+	 * @param instance instance that has neighbours
+	 * @return list of neighbours
+	 *@see nDistanceNeighbours(int instance, int distance) 
+	 * 
+	 */
 	public List<Integer> verticalRollOver(int instance) {
 
 		List<Integer> neighbors = new ArrayList<Integer>();
@@ -189,7 +289,15 @@ public class Topology implements Serializable {
 		}
 		return neighbors;
 	}
-
+	
+	/**
+	 * Determines the list of neighbours with no roll over
+	 * 
+	 * @param instance instance that has neighbours
+	 * @return list of neighbours
+	 *@see nDistanceNeighbours(int instance, int distance) 
+	 * 
+	 */
 	public List<Integer> noRollOver(int instance) {
 
 		List<Integer> neighbors = new ArrayList<Integer>();
@@ -225,6 +333,14 @@ public class Topology implements Serializable {
 		return neighbors;
 	}
 
+	/**
+	 * Calls the iterative method to determine the list of neighours at distance 1
+	 * 
+	 * @param instance instance that has neighbours
+	 * @return list of neighbours
+	 *@see nDistanceNeighbours(int instance, int distance) 
+	 * 
+	 */
 	private List<Integer> oneDistanceNeighbours(int instance) {
 
 		List<Integer> neighbours = new ArrayList<Integer>();
@@ -241,6 +357,15 @@ public class Topology implements Serializable {
 		return neighbours;
 
 	}
+	
+	/**
+	 * Determines neighbours at a distance of an instance
+	 * @param instance instance that has neighbours
+	 * @param distance neighbours distance
+	 * @return set of neighbours
+	 *
+	 * 
+	 */
 
 	public Set<Integer> nDistanceNeighbours(int instance, int distance) {
 
@@ -272,6 +397,12 @@ public class Topology implements Serializable {
 
 	}
 
+	/**
+	 * Returns the active roll-over option.
+	 * 
+	 * @return roll over option as string
+	 * 
+	 */
 	public String getRollOver() {
 		return this.rollOver;
 	}

@@ -75,8 +75,8 @@ public class IntegrationFunctionClause {
 	public IntegrationFunctionClause conjunctionWith(
 			IntegrationFunctionClause clause) {
 
-//		System.err.println(this + "\nAND\n" + clause);
-		
+		// System.err.println(this + "\nAND\n" + clause);
+
 		IntegrationFunctionClause result = new IntegrationFunctionClause();
 
 		if (this.isImpossible() || clause.isImpossible())
@@ -109,31 +109,60 @@ public class IntegrationFunctionClause {
 
 		}
 
-//		System.err.println("RESULT = " + result);
-		
+		// System.err.println("RESULT = " + result);
+
 		return result;
 	}
+
+	/**
+	 * 
+	 * @return a set of nodes
+	 */
 
 	protected Set<NodeInfo> getKeySet() {
 		return this.constraints.keySet();
 	}
 
+	/**
+	 * 
+	 * @return null if there are no clauses in this case
+	 */
 	public boolean isImpossible() {
 		return this.constraints == null;
 	}
 
+	/**
+	 * 
+	 * @return true if this clause is always true
+	 */
 	public boolean isTautological() {
 		return this.constraints != null && this.constraints.isEmpty();
 	}
 
+	/**
+	 * sets all clauses as null
+	 * 
+	 */
 	public void setImpossible() {
 		this.constraints = null;
 	}
 
+	/**
+	 * 
+	 * sets all clauses as true
+	 */
 	public void setTautological() {
 		this.constraints = new HashMap<NodeInfo, Byte>();
 
 	}
+
+	/**
+	 * Translates a clause to a byte array.
+	 * 
+	 * @param context
+	 *            composition context
+	 * @return clause as byte
+	 */
 
 	public byte[] toByteArray(CompositionContext context) {
 		int size = context.getLowLevelComponents().size();
@@ -149,6 +178,10 @@ public class IntegrationFunctionClause {
 		return clause;
 	}
 
+	/**
+	 * 
+	 * @return true if all the clauses are equal
+	 */
 	@Override
 	public boolean equals(Object object) {
 		if (!(object instanceof IntegrationFunctionClause) || (object == null))
@@ -166,6 +199,11 @@ public class IntegrationFunctionClause {
 			return 0;
 	}
 
+	/**
+	 * Translates clause into string
+	 * 
+	 * @returns clause as string
+	 */
 	public String toString() {
 		String out = "CLAUSE[" + this.hashCode() + ":[";
 		if (this.isImpossible())

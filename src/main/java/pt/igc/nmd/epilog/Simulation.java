@@ -8,7 +8,6 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-
 import org.colomoto.logicalmodel.NodeInfo;
 
 import pt.igc.nmd.epilog.gui.MainFrame;
@@ -27,10 +26,18 @@ public class Simulation {
 	private boolean isRunning = false;
 	private boolean stableStateFound = false;
 
+	/**
+	 * Initializes the simulation setup.
+	 * 
+	 * @param mainFrame
+	 */
 	public Simulation(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
 	}
 
+	/**
+	 * Simulates for 30 iterations or until a stable state is found.
+	 */
 	public void run() {
 
 		while (!stableStateFound && iterationNumber % 30 != 0) {
@@ -40,10 +47,21 @@ public class Simulation {
 		}
 	}
 
+	/**
+	 * Sets a boolean value of true if the simulation is running, false
+	 * otherwise.
+	 * 
+	 * @param b
+	 *            boolean value
+	 * @see step()
+	 */
 	public void setRunning(boolean b) {
 		this.isRunning = b;
 	}
 
+	/**
+	 * Reset the simulation definitions.
+	 */
 	public void reset() {
 		setRunning(false);
 		currentGlobalState = null;
@@ -53,10 +71,20 @@ public class Simulation {
 		stableStateFound = false;
 	}
 
+	/**
+	 * Returns true if the simulation is running, false otherwise.
+	 * 
+	 * @return
+	 */
 	public boolean isRunning() {
 		return this.isRunning;
 	}
 
+	/**
+	 * Iterates one step at a time.
+	 * 
+	 * @see run()
+	 */
 	public void step() {
 
 		setRunning(true);
@@ -72,7 +100,8 @@ public class Simulation {
 					.getNumberInstances(); instance++)
 				for (NodeInfo node : currentGlobalState.getListNodes())
 					currentGlobalState.setGrid(instance, node,
-							this.mainFrame.epithelium.getGridValue(instance, node));
+							this.mainFrame.epithelium.getGridValue(instance,
+									node));
 		}
 
 		if (globalModel == null) {
@@ -82,7 +111,7 @@ public class Simulation {
 
 		nextGlobalState = globalModel.getNextState(currentGlobalState);
 
-		//saveLastPic();
+		// saveLastPic();
 		if (!runButtonActivated)
 			fillHexagons();
 
@@ -97,6 +126,15 @@ public class Simulation {
 
 	}
 
+	/**
+	 * Get the current global state of the world for a node.
+	 * 
+	 * @param instance
+	 *            instance in evaluation
+	 * @param node
+	 *            node in evaluation
+	 * @return current value of the node
+	 */
 	public int getCurrentGlobalStateValue(int instance, NodeInfo node) {
 		int value = 0;
 		if (currentGlobalState != null)
@@ -107,6 +145,9 @@ public class Simulation {
 		return value;
 	}
 
+	/**
+	 * Allows to save an image with the epithelium develpment at an iteration.
+	 */
 	public void saveLastPic() {
 		Container c = this.mainFrame.hexagonsPanel;
 		BufferedImage im = new BufferedImage(c.getWidth(), c.getHeight(),
@@ -120,14 +161,28 @@ public class Simulation {
 		}
 	}
 
+	/**
+	 * Returns true if a stable state is found, false otherwise
+	 * 
+	 * @return
+	 */
 	public boolean hasStableStateFound() {
 		return this.stableStateFound;
 	}
 
+	/**
+	 * Sets the need to reset the composed model as true or false
+	 * 
+	 * @param b
+	 *            boolean value
+	 */
 	public void setNeedComposedModel(Boolean b) {
 		this.mainFrame.needsComposedModel = b;
 	}
 
+	/**
+	 * Initializes simulation, creating or not the composed model.
+	 */
 	public void initializeSimulation() {
 
 		this.mainFrame.epithelium = this.mainFrame.getEpithelium();
@@ -145,14 +200,29 @@ public class Simulation {
 				.paintComponent(this.mainFrame.hexagonsPanel.getGraphics());
 	}
 
+	/**
+	 * Returns the iteration number.
+	 * 
+	 * @return
+	 */
 	public int getIterationNumber() {
 		return this.iterationNumber;
 	}
 
+	/**
+	 * Resets the iteration number.
+	 */
 	public void resetIterationNumber() {
 		this.iterationNumber = 1;
 	}
 
+	/**
+	 * Returns the color of an instance when simulating
+	 * 
+	 * @param instance
+	 * @param initial
+	 * @return
+	 */
 	private Color getCoordinateColor(int instance, boolean initial) {
 		int red = 255;
 		int green = 255;
@@ -204,20 +274,40 @@ public class Simulation {
 		return color;
 	}
 
+	/**
+	 * Calls the method to generate an instance color at the initial conditions
+	 * definition.
+	 * 
+	 * @param instance
+	 * @return
+	 * @see getCoordinateColor(int instance, boolean b)
+	 */
 	public Color getCoordinateInitialColor(int instance) {
 		return getCoordinateColor(instance, true);
 	}
 
+	/**
+	 * Calls the method to generate an instance color at the simulation.
+	 * 
+	 * @param instance
+	 * @return
+	 * @see getCoordinateColor(int instance, boolean b)
+	 */
 	public Color getCoordinateCurrentColor(int instance) {
 		return getCoordinateColor(instance, false);
 	}
 
+	/**
+	 * Paints the hexagons.
+	 * 
+	 */
 	public void fillHexagons() {
 
 		for (int instance = 0; instance < this.mainFrame.topology
 				.getNumberInstances(); instance++) {
 
-			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel().getNodeOrder()) {
+			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
+					.getNodeOrder()) {
 
 				Color color = getCoordinateCurrentColor(instance);
 				this.mainFrame.hexagonsPanel.drawHexagon(instance,
@@ -226,36 +316,63 @@ public class Simulation {
 		}
 	}
 
+	/**
+	 * Returns the color selected for a component, but with a gradient
+	 * associated with the value of the component and the maximum value
+	 * 
+	 * @param color
+	 * @param value
+	 * @param max
+	 * @return
+	 */
 	public Color getColorLevel(Color color, int value, int max) {
 		Color newColor = color;
 		float res;
 		if (value > 0) {
 			res = value / max;
-			newColor = lighter(newColor, (1-res));
+			newColor = lighter(newColor, (1 - res));
 		} else if (value == 0)
 			newColor = Color.white;
 
 		return newColor;
 	}
 
+	/**
+	 * Lightens the color received.
+	 * 
+	 * @param color
+	 * @param fraction
+	 * @return lighter version of the color received
+	 */
 	public Color lighter(Color color, float fraction) {
-		
-		
-	    int red   = (int) Math.round (color.getRed()   * (1.0 + fraction));
-	    int green = (int) Math.round (color.getGreen() * (1.0 + fraction));
-	    int blue  = (int) Math.round (color.getBlue()  * (1.0 + fraction));
 
-	    if (red   < 0) red   = 0; else if (red   > 255) red   = 255;
-	    if (green < 0) green = 0; else if (green > 255) green = 255;
-	    if (blue  < 0) blue  = 0; else if (blue  > 255) blue  = 255;    
-	    
-	    if (red   == 0) red   = (int) Math.round (color.getRed()   * (1.2 + fraction));
-	    if (green == 0) green = (int) Math.round (color.getGreen()   * (1.2 + fraction));
-	    if (blue  == 0) blue  = (int) Math.round (color.getBlue()   * (1.2 + fraction));  
+		int red = (int) Math.round(color.getRed() * (1.0 + fraction));
+		int green = (int) Math.round(color.getGreen() * (1.0 + fraction));
+		int blue = (int) Math.round(color.getBlue() * (1.0 + fraction));
 
-	    int alpha = color.getAlpha();
+		if (red < 0)
+			red = 0;
+		else if (red > 255)
+			red = 255;
+		if (green < 0)
+			green = 0;
+		else if (green > 255)
+			green = 255;
+		if (blue < 0)
+			blue = 0;
+		else if (blue > 255)
+			blue = 255;
 
-	    return new Color (red, green, blue, alpha);
+		if (red == 0)
+			red = (int) Math.round(color.getRed() * (1.2 + fraction));
+		if (green == 0)
+			green = (int) Math.round(color.getGreen() * (1.2 + fraction));
+		if (blue == 0)
+			blue = (int) Math.round(color.getBlue() * (1.2 + fraction));
+
+		int alpha = color.getAlpha();
+
+		return new Color(red, green, blue, alpha);
 
 	}
 }

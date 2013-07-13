@@ -9,6 +9,10 @@ import org.antlr.runtime.RecognitionException;
 
 public class IntegrationFunctionSpecification {
 
+	/**
+	 * Integration function specifications
+	 * 
+	 */
 	public static abstract interface IntegrationExpression {
 	}
 
@@ -39,6 +43,10 @@ public class IntegrationFunctionSpecification {
 
 	}
 
+	/**
+	 * Defines disjunction
+	 * 
+	 */
 	public static class IntegrationDisjunction extends IntegrationOperation {
 
 		public IntegrationDisjunction(IntegrationExpression exp1,
@@ -48,6 +56,10 @@ public class IntegrationFunctionSpecification {
 
 	}
 
+	/**
+	 * Defines Conjunction
+	 * 
+	 */
 	public static class IntegrationConjunction extends IntegrationOperation {
 
 		public IntegrationConjunction(IntegrationExpression exp1,
@@ -57,6 +69,10 @@ public class IntegrationFunctionSpecification {
 
 	}
 
+	/**
+	 * Defines Integration Atom
+	 * 
+	 */
 	public static class IntegrationAtom implements IntegrationExpression {
 		private String componentName = null;
 		private byte threshold = 0;
@@ -124,6 +140,10 @@ public class IntegrationFunctionSpecification {
 
 	}
 
+	/**
+	 * Defines negation
+	 * 
+	 */
 	public static class IntegrationNegation implements IntegrationExpression {
 		private IntegrationExpression atom = null;
 

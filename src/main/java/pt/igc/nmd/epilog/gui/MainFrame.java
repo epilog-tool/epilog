@@ -37,8 +37,6 @@ import org.colomoto.logicalmodel.NodeInfo;
 
 import pt.igc.nmd.epilog.Epithelium;
 import pt.igc.nmd.epilog.LogicalModelComposition;
-import pt.igc.nmd.epilog.PerturbationsPanel;
-import pt.igc.nmd.epilog.PrioritiesPanel;
 import pt.igc.nmd.epilog.Simulation;
 import pt.igc.nmd.epilog.SphericalEpithelium;
 import pt.igc.nmd.epilog.Topology;
@@ -99,6 +97,10 @@ public class MainFrame extends JFrame {
 
 	private JLabel selectedFilenameLabel;
 
+	/**
+	 * Generates the main panel.
+	 *
+	 */
 	public MainFrame() {
 
 		this.logicalModelComposition = new LogicalModelComposition(this);
@@ -112,7 +114,7 @@ public class MainFrame extends JFrame {
 	/**
 	 * Initializes epilog's main panel
 	 * 
-	 * @see setupMainFrame
+	 * @see setupMainFrame()
 	 */
 	public void initialize() throws Exception {
 
@@ -155,16 +157,6 @@ public class MainFrame extends JFrame {
 	 * option to load an SMBL file. MouseEvents over the hexagons grid are
 	 * created.
 	 * 
-	 * @see StartPanel()
-	 * @see Topology()
-	 * @see Epithelium()
-	 * @see Simulation()
-	 * @see DrawPolygon()
-	 * @see paintHexagons(int i, int j)
-	 * @see setTool()
-	 * @see isDrawingPerturbations()
-	 * @see isEditable()
-	 * @see isFillOn()
 	 */
 	public void initializePanelCenter() {
 		if (auxiliaryHexagonsPanel != null) {
@@ -477,9 +469,9 @@ public class MainFrame extends JFrame {
 	 * 
 	 * @see DrawPolygon
 	 * @see Epithelium
-	 * @see isDrawingPerturbations
-	 * @see isDrawingCells
-	 * @see Color
+	 * @see isDrawingPerturbations()
+	 * @see isDrawingCells()
+	 * @see Color()
 	 * @param i
 	 *            position of the width coordinate
 	 * @param j
@@ -521,7 +513,7 @@ public class MainFrame extends JFrame {
 	 * @see InputsPanel
 	 * @see PerturbationsPanel
 	 * @see PrioritiesPanel
-	 * @see fillHexagons
+	 * @see fillHexagons()
 	 */
 	private void initializePanelCenterRight() {
 
