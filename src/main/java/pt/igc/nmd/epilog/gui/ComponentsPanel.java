@@ -77,7 +77,7 @@ public class ComponentsPanel extends JPanel {
 				TitledBorder.DEFAULT_POSITION, new Font("Arial", Font.ITALIC,
 						14), Color.black);
 
-		TitledBorder titleInputs = new TitledBorder(border, "Inputs",
+		TitledBorder titleInputs = new TitledBorder(border, "Environmental Inputs",
 				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
 						"Arial", Font.ITALIC, 14), Color.black);
 
@@ -130,7 +130,7 @@ public class ComponentsPanel extends JPanel {
 								fireCheckBoxChange(true, src);
 
 								mainFrame.hexagonsPanel.repaint();
-								mainFrame.simulation.fillHexagons();
+								mainFrame.fillHexagons();
 							} else
 								fireCheckBoxChange(false, src);
 
@@ -138,7 +138,6 @@ public class ComponentsPanel extends JPanel {
 									.paintComponent(mainFrame.hexagonsPanel
 											.getGraphics());
 						}
-
 					});
 
 					colorButton[i].addActionListener(new ActionListener() {
@@ -190,16 +189,14 @@ public class ComponentsPanel extends JPanel {
 								fireCheckBoxChange(true, src);
 
 								mainFrame.hexagonsPanel.repaint();
-								mainFrame.simulation.fillHexagons();
+								mainFrame.fillHexagons();
 							} else
 								fireCheckBoxChange(false, src);
 
 							mainFrame.hexagonsPanel
 									.paintComponent(mainFrame.hexagonsPanel
 											.getGraphics());
-
 						}
-
 					});
 
 					auxiliaryPanel[i].add(nodeBox[i]);
@@ -222,7 +219,7 @@ public class ComponentsPanel extends JPanel {
 	 * @see mainFrame.epithelium.setColor
 	 */
 	private void setNewColor(JButton src) {
-		Color newColor = JColorChooser.showDialog(src, "Color Chooser",
+		Color newColor = JColorChooser.showDialog(src, "Color Chooser - " + button2Node.get(src).getNodeID(),
 				this.mainFrame.epithelium.getColor(button2Node.get(src)));
 		src.setBackground(newColor);
 		this.mainFrame.epithelium.setColor(button2Node.get(src), newColor);

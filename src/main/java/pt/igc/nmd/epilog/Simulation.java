@@ -113,7 +113,7 @@ public class Simulation {
 
 		// saveLastPic();
 		if (!runButtonActivated)
-			fillHexagons();
+			this.mainFrame.fillHexagons();
 
 		this.iterationNumber++;
 
@@ -195,7 +195,7 @@ public class Simulation {
 
 		setRunning(true);
 
-		fillHexagons();
+		this.mainFrame.fillHexagons();
 		this.mainFrame.hexagonsPanel
 				.paintComponent(this.mainFrame.hexagonsPanel.getGraphics());
 	}
@@ -297,24 +297,21 @@ public class Simulation {
 		return getCoordinateColor(instance, false);
 	}
 
-	/**
-	 * Paints the hexagons.
-	 * 
-	 */
-	public void fillHexagons() {
-
-		for (int instance = 0; instance < this.mainFrame.topology
-				.getNumberInstances(); instance++) {
-
-			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
-					.getNodeOrder()) {
-
-				Color color = getCoordinateCurrentColor(instance);
-				this.mainFrame.hexagonsPanel.drawHexagon(instance,
-						this.mainFrame.hexagonsPanel.getGraphics(), color);
-			}
-		}
-	}
+ 
+//	public void fillHexagons() {
+//
+//		for (int instance = 0; instance < this.mainFrame.topology
+//				.getNumberInstances(); instance++) {
+//
+//			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
+//					.getNodeOrder()) {
+//
+//				Color color = getCoordinateCurrentColor(instance);
+//				this.mainFrame.hexagonsPanel.drawHexagon(instance,
+//						this.mainFrame.hexagonsPanel.getGraphics(), color);
+//			}
+//		}
+//	}
 
 	/**
 	 * Returns the color selected for a component, but with a gradient

@@ -6,6 +6,8 @@ import java.util.Map.Entry;
 
 import org.colomoto.logicalmodel.NodeInfo;
 
+
+
 public class CompositionDialog implements CompositionSpecificationDialog {
 
 	Topology topology = null;

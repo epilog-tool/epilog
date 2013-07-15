@@ -296,7 +296,7 @@ public class InitialConditions extends JPanel {
 						TitledBorder.DEFAULT_POSITION, new Font("Arial",
 								Font.ITALIC, 14), Color.black);
 
-				TitledBorder titleInputs = new TitledBorder(border, "Inputs",
+				TitledBorder titleInputs = new TitledBorder(border, "Environmental Inputs",
 						TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION,
 						new Font("Arial", Font.ITALIC, 14), Color.black);
 
@@ -401,6 +401,7 @@ public class InitialConditions extends JPanel {
 					(String) sets.getSelectedItem()) != null)
 				this.mainFrame.epithelium.setSelectedInitialSet((String) sets
 						.getSelectedItem());
+		this.mainFrame.fillHexagons();
 	}
 
 	/**

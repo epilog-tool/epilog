@@ -89,7 +89,7 @@ public class PerturbationsPanel extends JPanel {
 
 		JButton buttonMarkAll = new JButton("Apply All");
 		JButton buttonClearAll = new JButton("Clear All");
-		buttonFill = new JButton("Fill");
+		buttonFill = new JButton("Rectangle Fill");
 
 		buttonFill.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -206,7 +206,7 @@ public class PerturbationsPanel extends JPanel {
 		JPanel centerPanelC51 = new JPanel(new BorderLayout());
 
 		JButton addPerturbationButton = new JButton("->");
-		JButton addMultiplePertubation = new JButton("Multiple");
+		JButton addMultiplePertubation = new JButton("Active Perturbation");
 		JButton deletePerturbation = new JButton("Delete");
 		JButton deleteMutation = new JButton("Delete");
 

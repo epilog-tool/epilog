@@ -254,14 +254,15 @@ public class IntegrationFunctionSpecification {
 			throws RecognitionException {
 
 		IntegrationExpression r = null;
-		if (specificationString!=null){
-		specificationString.replaceAll("\\s", "");
+		if (specificationString != null) {
+			specificationString.replaceAll("\\s", "");
 
-		ANTLRStringStream in = new ANTLRStringStream(specificationString);
-		IntegrationGrammarLexer lexer = new IntegrationGrammarLexer(in);
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		IntegrationGrammarParser parser = new IntegrationGrammarParser(tokens);
-		r = parser.eval();
+			ANTLRStringStream in = new ANTLRStringStream(specificationString);
+			IntegrationGrammarLexer lexer = new IntegrationGrammarLexer(in);
+			CommonTokenStream tokens = new CommonTokenStream(lexer);
+			IntegrationGrammarParser parser = new IntegrationGrammarParser(
+					tokens);
+			r = parser.eval();
 		}
 		return r;
 	}

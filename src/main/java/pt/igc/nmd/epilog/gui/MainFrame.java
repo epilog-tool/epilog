@@ -281,7 +281,6 @@ public class MainFrame extends JFrame {
 											+ " -> value: " + simulation
 												.getCurrentGlobalStateValue(
 														instance, node));
-
 						}
 						// }
 						if (epithelium.isCellPerturbed(instance))
@@ -305,7 +304,6 @@ public class MainFrame extends JFrame {
 						setTool(string, instance);
 					}
 				}
-
 			}
 		});
 
@@ -594,6 +592,7 @@ public class MainFrame extends JFrame {
 				} else if (tabbedPane.getSelectedIndex() == 1) {
 					initial.removeAll();
 					initial.init();
+					fillHexagons();
 					editableTab = true;
 					drawingCells = true;
 					setFill(false);
