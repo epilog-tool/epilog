@@ -196,9 +196,10 @@ public class SimulationSetupPanel extends JPanel {
 								.createEmptyBorder());
 				mainFrame.auxiliaryHexagonsPanel
 						.setBorder(titleInitialConditions);
-				removeAll();
-				init();
-				mainFrame.simulation.saveLastPic();
+//				removeAll();
+//				repaint();
+//				revalidate();
+//				init();
 			}
 		});
 		startPanel.add(restartButton);
@@ -314,13 +315,36 @@ public class SimulationSetupPanel extends JPanel {
 				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
 						"Arial", Font.ITALIC, 14), Color.black);
 
-		TitledBorder south = new TitledBorder(border, "Analytics",
-				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
-						"Arial", Font.ITALIC, 14), Color.black);
+
+		
+		TitledBorder south = new TitledBorder(border, "Analytics @ instance: "
+				+ ("(" + mainFrame.topology.instance2i(0)+","+ mainFrame.topology.instance2j(0) + ")"), TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION,
+				new Font("Arial", Font.ITALIC, 14), Color.black);
+		
+		String string = ("<html>");
+		for (NodeInfo node : mainFrame.epithelium.getUnitaryModel()
+				.getNodeOrder()) {
+			if (!mainFrame.epithelium.isIntegrationComponent(node)) {
+
+				string = string
+						+ ("<br>" + "node: " + node + " -> value: " + mainFrame.epithelium
+								.getGridValue(0,
+										node));
+
+			}
+		}
+		string = string + ("</html>");
+		JLabel f = new JLabel(string);
+		southLineStartPanel.add(f);
+		
+		
 
 		northLineStartPanel.setBorder(north);
 		centerLineStartPanel.setBorder(center);
 		southLineStartPanel.setBorder(south);
+		
+		
+		
 
 		lineStartPanel.setBorder(BorderFactory
 				.createEtchedBorder(EtchedBorder.LOWERED));
@@ -330,12 +354,12 @@ public class SimulationSetupPanel extends JPanel {
 		lineStartPanel.add(southLineStartPanel, BorderLayout.PAGE_END);
 
 		add(lineStartPanel, BorderLayout.LINE_START);
-
+		
 		// CENTER
 
 		JPanel centerPanel = mainFrame.componentsPanel.init();
 		add(centerPanel, BorderLayout.CENTER);
-
+		
 		return this;
 	}
 

@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
@@ -23,7 +24,6 @@ import javax.swing.border.TitledBorder;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
-
 
 public class InitialConditions extends JPanel {
 
@@ -44,6 +44,9 @@ public class InitialConditions extends JPanel {
 	public JCheckBox nodeBox[];
 
 	private JPanel auxiliaryPanel[];
+	public JPanel panelCenterAux;
+	public JPanel panelCenterMain;
+	public JPanel panelStart;
 
 	private JButton[] colorButton;
 
@@ -52,16 +55,15 @@ public class InitialConditions extends JPanel {
 
 	public JButton buttonFill;
 
-	
 	/**
-	 * Generates the initial conditions panel, to be inserted in the tab on Epilog's
-	 * main panel.
+	 * Generates the initial conditions panel, to be inserted in the tab on
+	 * Epilog's main panel.
 	 * 
 	 * @param mainFrame
 	 */
-	public InitialConditions(MainFrame mainPanel) {
+	public InitialConditions(MainFrame mainFrame) {
 
-		this.mainFrame = mainPanel;
+		this.mainFrame = mainFrame;
 		init();
 	}
 
@@ -197,9 +199,10 @@ public class InitialConditions extends JPanel {
 			add(endPanel, BorderLayout.PAGE_END);
 
 			// CENTER PANEL
+			panelCenterMain = new JPanel(new BorderLayout());
 			JPanel panelCenter = new JPanel();
 			JPanel panelEnd = new JPanel();
-			JPanel panelCenterAux = new JPanel(new BorderLayout());
+			panelCenterAux = new JPanel(new BorderLayout());
 			panelCenter.setLayout(layout);
 			panelEnd.setLayout(layout);
 			List<NodeInfo> listNodes = this.mainFrame.epithelium
@@ -296,31 +299,61 @@ public class InitialConditions extends JPanel {
 						TitledBorder.DEFAULT_POSITION, new Font("Arial",
 								Font.ITALIC, 14), Color.black);
 
-				TitledBorder titleInputs = new TitledBorder(border, "Environmental Inputs",
-						TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION,
-						new Font("Arial", Font.ITALIC, 14), Color.black);
+				TitledBorder titleInputs = new TitledBorder(border,
+						"Environmental Inputs", TitledBorder.LEFT,
+						TitledBorder.DEFAULT_POSITION, new Font("Arial",
+								Font.ITALIC, 14), Color.black);
 
 				panelCenter.setBorder(titleProperComponents);
 				panelEnd.setBorder(titleInputs);
 
 			} // End Center Panel
 
-			panelCenterAux.add(panelCenter, BorderLayout.CENTER);
+			// Analytics Panel
+			panelStart = new JPanel();
+
+			LineBorder border = new LineBorder(Color.black, 1, true);
+			TitledBorder south = new TitledBorder(border, "Analytics @ " + "("
+					+ this.mainFrame.topology.instance2i(this.mainFrame.activeInstance)
+					+ ","
+					+this.mainFrame.topology.instance2j(this.mainFrame.activeInstance)
+					+ ")", TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION,
+					new Font("Arial", Font.ITALIC, 14), Color.black);
+			panelStart.setBorder(south);
+
+			String string = ("<html>");
+			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
+					.getNodeOrder()) {
+				if (!this.mainFrame.epithelium.isIntegrationComponent(node)) {
+
+					string = string
+							+ ("<br>" + "node: " + node + " -> value: "  + this.mainFrame.epithelium
+									.getGridValue(this.mainFrame.activeInstance,
+											node));
+
+				}
+			}
+			string = string + ("</html>");
+			JLabel f = new JLabel(string);
+			panelStart.add(f);
+
+			panelCenterMain.add(panelCenter, BorderLayout.CENTER);
+
+			panelCenterAux.add(panelStart, BorderLayout.LINE_START);
+			panelCenterAux.add(panelCenterMain, BorderLayout.CENTER);
 			panelCenterAux.add(panelEnd, BorderLayout.PAGE_END);
 
 			add(panelCenterAux, BorderLayout.CENTER);
-
 		}
-
 	}
 
-	
-	//Color and Drawing
-	
+	// Color and Drawing
+
 	/**
 	 * Changes the color associated with a component.
 	 * 
-	 * @param src button associated with a components color
+	 * @param src
+	 *            button associated with a components color
 	 * @see mainFrame.epithelium.setColor
 	 */
 	public void setNewColor(JButton src) {
@@ -329,22 +362,22 @@ public class InitialConditions extends JPanel {
 				this.mainFrame.epithelium.getColor(button2Node.get(src)));
 		src.setBackground(newColor);
 		this.mainFrame.epithelium.setColor(button2Node.get(src), newColor);
-		mainFrame.fillHexagons();
+		this.mainFrame.fillHexagons();
 	}
 
-	
 	/**
 	 * Sets the component as selected or not.
 	 * 
-	 * @param i index of the component in the nodeList
-	 * @param b boolean value: true if node selected, false otherwise
+	 * @param i
+	 *            index of the component in the nodeList
+	 * @param b
+	 *            boolean value: true if node selected, false otherwise
 	 * @see this.mainFrame.epithelium.setDefinitionsComponentDisplay()
 	 */
 	public void setComponentDisplay(int i, boolean b) {
 		this.mainFrame.epithelium.setDefinitionsComponentDisplay(i, b);
 	}
-	
-	
+
 	/**
 	 * Clear all instances to a initial state of zero.
 	 * 
@@ -355,8 +388,7 @@ public class InitialConditions extends JPanel {
 		this.mainFrame.epithelium.initializeGrid();
 		this.mainFrame.fillHexagons();
 	}
-	
-	
+
 	/**
 	 * Marks all instances with the selected components values.
 	 * 
@@ -364,17 +396,18 @@ public class InitialConditions extends JPanel {
 	 * @see this.mainFrame.epithelium.setInitialState(instance);
 	 */
 	public void markAllCells() {
-		
+
 		for (int instance = 0; instance < this.mainFrame.topology
 				.getNumberInstances(); instance++) {
-			
+
 			this.mainFrame.epithelium.setInitialState(instance);
 		}
 		this.mainFrame.fillHexagons();
 	}
-	
+
 	/**
-	 * Changes the color of the rectangle fill to yellow if selected and sets the value of the control variable fill as true or false.
+	 * Changes the color of the rectangle fill to yellow if selected and sets
+	 * the value of the control variable fill as true or false.
 	 * 
 	 * @see mainFrame.setFill(boolean b);
 	 * 
@@ -388,10 +421,10 @@ public class InitialConditions extends JPanel {
 			buttonFill.setBackground(this.getBackground());
 		}
 	}
-	
-	
+
 	/**
-	 * Loads the initial conditions set selected when changing the sets at the initial conditions panel.
+	 * Loads the initial conditions set selected when changing the sets at the
+	 * initial conditions panel.
 	 * 
 	 */
 	private void loadInitialConditionsSet() {
@@ -401,13 +434,13 @@ public class InitialConditions extends JPanel {
 					(String) sets.getSelectedItem()) != null)
 				this.mainFrame.epithelium.setSelectedInitialSet((String) sets
 						.getSelectedItem());
-		this.mainFrame.fillHexagons();
 	}
 
 	/**
 	 * Changes the initial state associated with a component.
 	 * 
-	 * @param combo ComboBox associated with an initial value and a component.
+	 * @param combo
+	 *            ComboBox associated with an initial value and a component.
 	 */
 	private void fireInitialStateChange(JComboBox combo) {
 		this.mainFrame.epithelium.setInitialState(this.mainFrame.epithelium
@@ -415,12 +448,11 @@ public class InitialConditions extends JPanel {
 				((Integer) combo.getSelectedItem()).byteValue());
 	}
 
-
-
 	// End Methods
-	
+
 	/**
-	 * Adds an initial conditions set. If a name is already used, then the new set replaces the old one.
+	 * Adds an initial conditions set. If a name is already used, then the new
+	 * set replaces the old one.
 	 * 
 	 */
 	private void initialConditionsAdd() {

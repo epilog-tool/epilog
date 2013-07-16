@@ -70,6 +70,8 @@ public class MainFrame extends JFrame {
 
 	private String stringTextTool;
 
+	public int activeInstance;
+
 	public Topology topology = null;
 	public Simulation simulation;
 	private LogicalModelComposition logicalModelComposition;
@@ -99,7 +101,7 @@ public class MainFrame extends JFrame {
 
 	/**
 	 * Generates the main panel.
-	 *
+	 * 
 	 */
 	public MainFrame() {
 
@@ -154,7 +156,7 @@ public class MainFrame extends JFrame {
 	 * After an epithelium model is loaded (or a new model is created) a
 	 * Topology, an Epithelium and a Simulation are created. It also creates the
 	 * hexagons grid, with a predefined size (that a user can modify) and the
-	 * option to load an SMBL file. MouseEvents over the hexagons grid are
+	 * option to load an SMBL file. MouseEvents over the hexa gons grid are
 	 * created.
 	 * 
 	 */
@@ -268,10 +270,13 @@ public class MainFrame extends JFrame {
 						&& i >= 0 && j >= 0) {
 
 					int instance = topology.coords2Instance(i, j);
-
+					activeInstance = instance;
 					if (!isDrawingPerturbations()
 							& epithelium.getUnitaryModel() != null) {
-						String string = ("<html>" + "instance: " + instance);
+						// String string = ("<html>" + "instance: " + "(" +
+						// topology.instance2i(instance)+","+
+						// topology.instance2j(instance) + ")");
+						String string = ("<html>");
 						for (NodeInfo node : epithelium.getUnitaryModel()
 								.getNodeOrder()) {
 							// if (!node.isInput()) {
@@ -281,14 +286,16 @@ public class MainFrame extends JFrame {
 											+ " -> value: " + simulation
 												.getCurrentGlobalStateValue(
 														instance, node));
+
 						}
+
 						// }
 						if (epithelium.isCellPerturbed(instance))
 							string = string
 									+ ("<br>" + "Perturbation: " + epithelium
 											.getInstancePerturbation(instance));
 						string = string + ("</html>");
-						hexagonsPanel.setToolTipText(string);
+						// hexagonsPanel.setToolTipText(string);
 						setTool(string, instance);
 
 					}
@@ -300,7 +307,7 @@ public class MainFrame extends JFrame {
 											.getInstancePerturbation(instance));
 
 						string = string + ("</html>");
-						hexagonsPanel.setToolTipText(string);
+						// hexagonsPanel.setToolTipText(string);
 						setTool(string, instance);
 					}
 				}
@@ -340,6 +347,8 @@ public class MainFrame extends JFrame {
 
 				paintHexagons(i, j);
 
+				if (tabbedPane.getSelectedIndex() == 0)
+					simulation.saveLastPic();
 			}
 
 			@Override
@@ -555,15 +564,14 @@ public class MainFrame extends JFrame {
 				drawingCells = false;
 				drawingPriorities = false;
 				hexagonsPanel.clearAllCells(hexagonsPanel.getGraphics());
-				componentsPanel.setVisible(false);
 				setFill(false);
 
 				if (tabbedPane.getSelectedIndex() == 0) {
 					simulationSetupPanelRepaint();
-					componentsPanel.setVisible(true);
 					componentsPanel.removeAll();
 					componentsPanel.init();
 					setFill(false);
+					
 				} else if (tabbedPane.getSelectedIndex() == 3) {
 					editableTab = true;
 					drawingPerturbations = true;
@@ -574,7 +582,6 @@ public class MainFrame extends JFrame {
 				} else if (tabbedPane.getSelectedIndex() == 4) {
 					editableTab = true;
 					drawingCells = false;
-					// drawingPriorities = true;
 					setFill(false);
 				} else if (tabbedPane.getSelectedIndex() == 2) {
 					editableTab = true;
@@ -587,26 +594,16 @@ public class MainFrame extends JFrame {
 								initial.Jcheck2Node.get(singleNodeBox),
 								singleNodeBox.isSelected());
 					}
-					fillHexagons();
 
 				} else if (tabbedPane.getSelectedIndex() == 1) {
 					initial.removeAll();
 					initial.init();
-					fillHexagons();
 					editableTab = true;
 					drawingCells = true;
 					setFill(false);
 					initial.buttonFill.setBackground(getBackground());
+					epithelium.setSelectedInitialSet("none");
 
-					// for (JCheckBox singleNodeBox : inputsPanel.nodeBox) {
-					// if (singleNodeBox != null) {
-					// singleNodeBox.setSelected(false);
-					// inputsPanel.setComponentDisplay(
-					// inputsPanel.Jcheck2Node.get(singleNodeBox),
-					// singleNodeBox.isSelected());
-					// }
-					// }
-					fillHexagons();
 				}
 			}
 		});
@@ -868,8 +865,10 @@ public class MainFrame extends JFrame {
 	/**
 	 * Sets the information to be painted at the analytics panel
 	 * 
-	 * @param string string with the information of all components
-	 * @param instance instance to analyze
+	 * @param string
+	 *            string with the information of all components
+	 * @param instance
+	 *            instance to analyze
 	 */
 	private void setTool(String string, int instance) {
 		stringTextTool = string;
@@ -877,29 +876,44 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
-	 * Repaints the analytics panel with the status of all components in an instance
+	 * Repaints the analytics panel with the status of all components in an
+	 * instance
 	 * 
-	 * @param instance instance to analyze
+	 * @param instance
+	 *            instance to analyze
 	 */
 	public void getTool(int instance) {
 
 		JPanel test = new JPanel();
 		JLabel aux = new JLabel(stringTextTool);
-		test.add(aux);
-
 		LineBorder border = new LineBorder(Color.black, 1, true);
 
 		TitledBorder south = new TitledBorder(border, "Analytics @ instance: "
-				+ instance, TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION,
-				new Font("Arial", Font.ITALIC, 14), Color.black);
+				+ ("(" + topology.instance2i(instance) + ","
+						+ topology.instance2j(instance) + ")"),
+				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
+						"Arial", Font.ITALIC, 14), Color.black);
 
 		test.setBorder(south);
+		test.add(aux);
 
-		simulationSetupPanel.lineStartPanel.remove(2);
-		simulationSetupPanel.lineStartPanel.repaint();
-		simulationSetupPanel.lineStartPanel.revalidate();
-		simulationSetupPanel.lineStartPanel.repaint();
-		simulationSetupPanel.lineStartPanel.add(test, BorderLayout.PAGE_END);
+		if (tabbedPane.getSelectedIndex() == 0) {
+
+			simulationSetupPanel.lineStartPanel.remove(2);
+			simulationSetupPanel.lineStartPanel.repaint();
+			simulationSetupPanel.lineStartPanel.revalidate();
+			simulationSetupPanel.lineStartPanel.repaint();
+			simulationSetupPanel.lineStartPanel
+					.add(test, BorderLayout.PAGE_END);
+		} else if (tabbedPane.getSelectedIndex() == 1) {
+
+			initial.panelStart.removeAll();
+			initial.panelStart.setBorder(south);
+			initial.panelStart.add(aux);
+			initial.panelCenterAux.repaint();
+			initial.panelCenterAux.revalidate();
+			initial.panelCenterAux.repaint();
+		}
 	}
 
 	// FILL related Methods
@@ -1020,7 +1034,7 @@ public class MainFrame extends JFrame {
 
 					if (value > 0) {
 						color = epithelium.getColor(node);
-						if (value > 1)
+						if (value >= 1)
 							color = simulation.getColorLevel(color, value,
 									node.getMax());
 
@@ -1043,7 +1057,6 @@ public class MainFrame extends JFrame {
 
 					}
 				}
-
 		}
 
 		return color;
@@ -1078,6 +1091,7 @@ public class MainFrame extends JFrame {
 						color = this.epithelium.getColor(node);
 						color = simulation.getColorLevel(color, value,
 								node.getMax());
+						
 						if (red != 255)
 							red = (red + color.getRed()) / 2;
 						else
@@ -1119,7 +1133,6 @@ public class MainFrame extends JFrame {
 		return newColor;
 	}
 
-	
 	/**
 	 * Paints instances
 	 * 
@@ -1133,7 +1146,10 @@ public class MainFrame extends JFrame {
 			return;
 		for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
 
-			color = Color(instance);
+//			if (tabbedPane.getSelectedIndex() == 1)
+//				color = Color.red;
+//			else
+				color = Color(instance);
 			hexagonsPanel.drawHexagon(instance, hexagonsPanel.getGraphics(),
 					color);
 		}
@@ -1162,6 +1178,7 @@ public class MainFrame extends JFrame {
 			this.epithelium.setSBMLPath(file.getAbsolutePath());
 
 			startPanel.loadModel(file);
+			startPanel.saveButton.setEnabled(true);
 		}
 	}
 

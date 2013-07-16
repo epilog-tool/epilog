@@ -164,13 +164,13 @@ public class GlobalModel {
 			current = composedState[index];
 			target = composedModel.getTargetValue(index, composedState);
 
-			next = computeNextValue(
-					current,
-					target,
-					mainFrame.getLogicalModelComposition()
-							.getOriginalNode(node),
-					mainFrame.getLogicalModelComposition()
-							.getOriginalInstance(node).intValue());
+			if (current != target)
+				next = computeNextValue(current, target, mainFrame
+						.getLogicalModelComposition().getOriginalNode(node),
+						mainFrame.getLogicalModelComposition()
+								.getOriginalInstance(node).intValue());
+			else
+				next = target;
 
 			nextState.setGrid(mainFrame.getLogicalModelComposition()
 					.getOriginalInstance(node).intValue(), mainFrame
@@ -195,18 +195,20 @@ public class GlobalModel {
 				continue;
 			}
 
+			// TODO check if this is correct current =0!
 			byte current = 0;
 			byte next = 0;
+
 			int index = composedModel.getExtraComponents().indexOf(node);
 			byte target = composedModel.getExtraValue(index, composedState);
 
-			next = computeNextValue(
-					current,
-					target,
-					mainFrame.getLogicalModelComposition()
-							.getOriginalNode(node),
-					mainFrame.getLogicalModelComposition()
-							.getOriginalInstance(node).intValue());
+			if (current != target)
+				next = computeNextValue(current, target, mainFrame
+						.getLogicalModelComposition().getOriginalNode(node),
+						mainFrame.getLogicalModelComposition()
+								.getOriginalInstance(node).intValue());
+			else
+				next = target;
 
 			nextState.setGrid(mainFrame.getLogicalModelComposition()
 					.getOriginalInstance(node).intValue(), mainFrame
@@ -312,7 +314,10 @@ public class GlobalModel {
 				target = this.mainFrame.epithelium.getUnitaryModel()
 						.getTargetValue(index, cellState);
 
-				next = computeNextValue(current, target, node, instance);
+				if (current != target)
+					next = computeNextValue(current, target, node, instance);
+				else
+					next = target;
 
 				nextState.setGrid(instance, node, next);
 

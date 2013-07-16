@@ -30,41 +30,48 @@ public class Topology implements Serializable {
 	/**
 	 * Defines the topology of the epithelium model.
 	 * 
-	 * @param width width of the hexagons grid
-	 * @param height height of the hexagons grid
+	 * @param width
+	 *            width of the hexagons grid
+	 * @param height
+	 *            height of the hexagons grid
 	 * 
 	 */
 	public Topology(int width, int height) {
 		super();
-		// width = (width % 2 == 0) ? width : width + 1;
-		// height = (height % 2 == 0) ? height : height + 1;
+
 		this.width = width;
 		this.height = height;
-		// this.rollOver = rollOver;
 
 	}
 
 	/**
 	 * Sets a new height for the hexagons grid.
 	 * 
-	 * @param height new height
+	 * @param height
+	 *            new height
 	 * 
 	 */
 	public void setHeight(int height) {
-		this.height = height;
+		if (width == 1 & height == 1)
+			this.width = 2;
+			this.height = height;
+
 	}
 
 	/**
 	 * Sets a new width for the hexagons grid.
 	 * 
-	 * @param width new width
+	 * @param width
+	 *            new width
 	 * 
 	 */
 	public void setWidth(int width) {
-		this.width = width;
+		if (width == 1 & height == 1)
+			this.width = 2;
+		else
+			this.width = width;
 	}
 
-	
 	/**
 	 * Returns the grid's width.
 	 * 
@@ -85,7 +92,6 @@ public class Topology implements Serializable {
 		return this.height;
 	}
 
-	
 	/**
 	 * Returns the number of instances.
 	 * 
@@ -97,9 +103,10 @@ public class Topology implements Serializable {
 	}
 
 	/* Methods to transform instance index to coordinates and vice-versa */
-	
+
 	/**
-	 * Translates and instance number into a corresponding coordinate of the x-axis
+	 * Translates and instance number into a corresponding coordinate of the
+	 * x-axis
 	 * 
 	 * @param instance
 	 * @return x axis coordinate
@@ -111,9 +118,9 @@ public class Topology implements Serializable {
 		return i;
 	}
 
-	
 	/**
-	 * Translates and instance number into a corresponding coordinate of the y-axis
+	 * Translates and instance number into a corresponding coordinate of the
+	 * y-axis
 	 * 
 	 * @param instance
 	 * @return y axis coordinate
@@ -123,17 +130,18 @@ public class Topology implements Serializable {
 
 		int j = 0;
 		if (instance != 0)
-			j = instance/getWidth();
+			j = instance / getWidth();
 
 		return j;
 	}
 
-	
 	/**
 	 * Translates into an instance number the x and y coordinates.
 	 * 
-	 * @param i x coordinate
-	 * @param j y coordinate
+	 * @param i
+	 *            x coordinate
+	 * @param j
+	 *            y coordinate
 	 * @return instance number
 	 * 
 	 */
@@ -143,26 +151,29 @@ public class Topology implements Serializable {
 
 	// Neighbours
 
-	
 	/**
-	 * Calls the iterative method to determine the set of neighours at a  distances
+	 * Calls the iterative method to determine the set of neighours at a
+	 * distances
 	 * 
-	 * @param instance instance that has neighbours
-	 * @param distance neighbours distance
+	 * @param instance
+	 *            instance that has neighbours
+	 * @param distance
+	 *            neighbours distance
 	 * @return set of neighbours
-	 *@see nDistanceNeighbours(int instance, int distance) 
+	 * @see nDistanceNeighbours(int instance, int distance)
 	 * 
 	 */
 	public Set<Integer> groupNeighbors(int instance, int distance) {
 		return nDistanceNeighbours(instance, distance);
 	}
 
-	
 	/**
 	 * Determines if two instances are neighbours at a distance
 	 * 
-	 * @param instanceA instance to compare
-	 * @param instanceB instance to compare
+	 * @param instanceA
+	 *            instance to compare
+	 * @param instanceB
+	 *            instance to compare
 	 * @return true if they are neighbours, false otherwise
 	 * 
 	 */
@@ -178,13 +189,13 @@ public class Topology implements Serializable {
 		this.rollOver = rollOver;
 	}
 
-	
 	/**
 	 * Determines the list of neighbours with horizontal roll over
 	 * 
-	 * @param instance instance that has neighbours
+	 * @param instance
+	 *            instance that has neighbours
 	 * @return list of neighbours
-	 *@see nDistanceNeighbours(int instance, int distance) 
+	 * @see nDistanceNeighbours(int instance, int distance)
 	 * 
 	 */
 	public List<Integer> horizontalRollOver(int instance) {
@@ -237,9 +248,10 @@ public class Topology implements Serializable {
 	/**
 	 * Determines the list of neighbours with vertical roll over
 	 * 
-	 * @param instance instance that has neighbours
+	 * @param instance
+	 *            instance that has neighbours
 	 * @return list of neighbours
-	 *@see nDistanceNeighbours(int instance, int distance) 
+	 * @see nDistanceNeighbours(int instance, int distance)
 	 * 
 	 */
 	public List<Integer> verticalRollOver(int instance) {
@@ -289,13 +301,14 @@ public class Topology implements Serializable {
 		}
 		return neighbors;
 	}
-	
+
 	/**
 	 * Determines the list of neighbours with no roll over
 	 * 
-	 * @param instance instance that has neighbours
+	 * @param instance
+	 *            instance that has neighbours
 	 * @return list of neighbours
-	 *@see nDistanceNeighbours(int instance, int distance) 
+	 * @see nDistanceNeighbours(int instance, int distance)
 	 * 
 	 */
 	public List<Integer> noRollOver(int instance) {
@@ -334,11 +347,13 @@ public class Topology implements Serializable {
 	}
 
 	/**
-	 * Calls the iterative method to determine the list of neighours at distance 1
+	 * Calls the iterative method to determine the list of neighours at distance
+	 * 1
 	 * 
-	 * @param instance instance that has neighbours
+	 * @param instance
+	 *            instance that has neighbours
 	 * @return list of neighbours
-	 *@see nDistanceNeighbours(int instance, int distance) 
+	 * @see nDistanceNeighbours(int instance, int distance)
 	 * 
 	 */
 	private List<Integer> oneDistanceNeighbours(int instance) {
@@ -357,13 +372,16 @@ public class Topology implements Serializable {
 		return neighbours;
 
 	}
-	
+
 	/**
 	 * Determines neighbours at a distance of an instance
-	 * @param instance instance that has neighbours
-	 * @param distance neighbours distance
+	 * 
+	 * @param instance
+	 *            instance that has neighbours
+	 * @param distance
+	 *            neighbours distance
 	 * @return set of neighbours
-	 *
+	 * 
 	 * 
 	 */
 

@@ -14,7 +14,7 @@ import pt.igc.nmd.epilog.gui.MainFrame;
 
 public class Simulation {
 
-	private int iterationNumber = 1;
+	private int iterationNumber = 0;
 	private GlobalModel globalModel = null;
 
 	public Grid currentGlobalState = null;
@@ -25,6 +25,7 @@ public class Simulation {
 
 	private boolean isRunning = false;
 	private boolean stableStateFound = false;
+	private boolean runcontrol=true;
 
 	/**
 	 * Initializes the simulation setup.
@@ -40,11 +41,14 @@ public class Simulation {
 	 */
 	public void run() {
 
-		while (!stableStateFound && iterationNumber % 30 != 0) {
+		
+		while (!stableStateFound && (iterationNumber % 3 != 0 || runcontrol==false)) {
+			runcontrol=true;
 			runButtonActivated = true;
 			step();
 			runButtonActivated = false;
 		}
+		runcontrol=false;
 	}
 
 	/**
@@ -86,7 +90,7 @@ public class Simulation {
 	 * @see run()
 	 */
 	public void step() {
-
+		this.iterationNumber++;
 		setRunning(true);
 		this.mainFrame.setBorderHexagonsPanel(iterationNumber);
 
@@ -115,7 +119,7 @@ public class Simulation {
 		if (!runButtonActivated)
 			this.mainFrame.fillHexagons();
 
-		this.iterationNumber++;
+		
 
 		if (nextGlobalState.equals(currentGlobalState)) {
 			stableStateFound = true;
@@ -146,7 +150,7 @@ public class Simulation {
 	}
 
 	/**
-	 * Allows to save an image with the epithelium develpment at an iteration.
+	 * Saves an image with the epithelium at  iteration.
 	 */
 	public void saveLastPic() {
 		Container c = this.mainFrame.hexagonsPanel;
@@ -213,7 +217,7 @@ public class Simulation {
 	 * Resets the iteration number.
 	 */
 	public void resetIterationNumber() {
-		this.iterationNumber = 1;
+		this.iterationNumber = 0;
 	}
 
 	/**

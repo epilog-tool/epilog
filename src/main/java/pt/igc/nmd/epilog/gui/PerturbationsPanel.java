@@ -165,8 +165,8 @@ public class PerturbationsPanel extends JPanel {
 
 		// Right Panel
 
-		rightPanel = new JPanel();
-		rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+		rightPanel = new JPanel(new FlowLayout());
+		//rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
 
 		add(rightPanel, BorderLayout.LINE_END);
 
@@ -365,7 +365,12 @@ public class PerturbationsPanel extends JPanel {
 		centerPanel.add(centerC3);
 		centerPanel.add(centerC4);
 		centerPanel.add(centerC5);
-		add(centerPanel, BorderLayout.CENTER);
+		
+		JPanel centerMain = new JPanel(new BorderLayout());
+		
+		centerMain.add(centerPanel, BorderLayout.CENTER);
+		centerMain.add(rightPanel, BorderLayout.PAGE_END);
+		add(centerMain, BorderLayout.CENTER);
 		rightPanel = initRightPanel();
 	}
 

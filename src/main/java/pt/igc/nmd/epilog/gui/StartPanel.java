@@ -44,7 +44,7 @@ public class StartPanel extends JPanel {
 
 	private JButton newEpithelium;
 	private JButton loadEpithelium;
-	private JButton saveButton;
+	public JButton saveButton;
 	private JButton quitButton;
 
 	// private JLabel iterationNumber = new JLabel();
@@ -124,9 +124,12 @@ public class StartPanel extends JPanel {
 				mainFrame.getContentPane().repaint();
 				mainFrame.simulation.reset();
 				mainFrame.epithelium.setNewEpithelium(false);
+				saveButton.setEnabled(true);
 			}
 		});
 
+		if (mainFrame.epithelium==null)
+			saveButton.setEnabled(false);
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (mainFrame.epithelium != null)
