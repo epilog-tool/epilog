@@ -15,6 +15,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -38,6 +39,7 @@ public class SimulationSetupPanel extends JPanel {
 	private JButton runButton;
 	private JButton stepButton;
 	private JButton restartButton;
+	private JPanel centerPanel;
 
 	// private boolean test = false;
 
@@ -67,13 +69,12 @@ public class SimulationSetupPanel extends JPanel {
 		layout.setAlignment(FlowLayout.LEFT);
 		setLayout(new BorderLayout());
 
-		/*
-		 * RollOver: This will allow the user to define if there is any
-		 * neighborhood relation between hexagons at the extremes (horizontal
-		 * and vertical). Note that there is no vertical and horizontal roll
-		 * over, due to the Euler Theory. At least one pentagon had to be
-		 * presented. By default, there is no roll-over selected
-		 */
+
+		// CENTER
+
+		centerPanel = mainFrame.componentsPanel.init();
+		add(centerPanel, BorderLayout.CENTER);
+		
 		// PAGE START PANEL
 
 		JPanel startPanel = new JPanel(layout);
@@ -196,6 +197,8 @@ public class SimulationSetupPanel extends JPanel {
 								.createEmptyBorder());
 				mainFrame.auxiliaryHexagonsPanel
 						.setBorder(titleInitialConditions);
+				runButton.setEnabled(true);
+				stepButton.setEnabled(true);
 //				removeAll();
 //				repaint();
 //				revalidate();
@@ -239,7 +242,7 @@ public class SimulationSetupPanel extends JPanel {
 				mainFrame.epithelium.setSelectedPriority((String) src
 						.getSelectedItem());
 				String string = "priorities";
-				needToResetComposedModel(string, (String) src.getSelectedItem());
+				//needToResetComposedModel(string, (String) src.getSelectedItem());
 			}
 		});
 
@@ -262,7 +265,8 @@ public class SimulationSetupPanel extends JPanel {
 						.getSelectedItem());
 				String string = "input";
 				needToResetComposedModel(string, (String) src.getSelectedItem());
-				mainFrame.fillHexagons();
+				repaintSimulationSetupPanel();
+
 			}
 		});
 
@@ -318,7 +322,7 @@ public class SimulationSetupPanel extends JPanel {
 
 		
 		TitledBorder south = new TitledBorder(border, "Analytics @ instance: "
-				+ ("(" + mainFrame.topology.instance2i(0)+","+ mainFrame.topology.instance2j(0) + ")"), TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION,
+				+ ("(" + mainFrame.topology.instance2j(0)+","+ mainFrame.topology.instance2i(0) + ")"), TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION,
 				new Font("Arial", Font.ITALIC, 14), Color.black);
 		
 		String string = ("<html>");
@@ -333,35 +337,46 @@ public class SimulationSetupPanel extends JPanel {
 
 			}
 		}
+		
 		string = string + ("</html>");
 		JLabel f = new JLabel(string);
 		southLineStartPanel.add(f);
 		
-		
+		JScrollPane nw = new JScrollPane(southLineStartPanel);
+		//nw.add(southLineStartPanel);
 
 		northLineStartPanel.setBorder(north);
 		centerLineStartPanel.setBorder(center);
-		southLineStartPanel.setBorder(south);
-		
-		
-		
+		nw.setBorder(south);
 
 		lineStartPanel.setBorder(BorderFactory
 				.createEtchedBorder(EtchedBorder.LOWERED));
 
 		lineStartPanel.add(northLineStartPanel, BorderLayout.PAGE_START);
 		lineStartPanel.add(centerLineStartPanel, BorderLayout.LINE_START);
-		lineStartPanel.add(southLineStartPanel, BorderLayout.PAGE_END);
+		lineStartPanel.add(nw, BorderLayout.PAGE_END);
 
 		add(lineStartPanel, BorderLayout.LINE_START);
 		
-		// CENTER
 
-		JPanel centerPanel = mainFrame.componentsPanel.init();
-		add(centerPanel, BorderLayout.CENTER);
 		
 		return this;
 	}
+	
+	
+	
+	private void repaintSimulationSetupPanel(){
+		centerPanel.removeAll();
+		centerPanel.repaint();
+		centerPanel.revalidate();
+		this.remove(0);
+		JPanel aux = new JPanel();
+		aux = mainFrame.componentsPanel.init();
+		add(aux, 0);
+		
+		
+	}
+	
 
 	/**
 	 * Forces the creation of a new composed model, if any of the simulation
@@ -388,13 +403,7 @@ public class SimulationSetupPanel extends JPanel {
 			else
 				mainFrame.resetComposedModel = true;
 			mainFrame.previsioulySelectedInputSet = selected;
-		} else if (string == "priorities") {
-			if (selected == mainFrame.previsioulySelectedPrioritiesSet)
-				mainFrame.resetComposedModel = false;
-			else
-				mainFrame.resetComposedModel = true;
-			mainFrame.previsioulySelectedPrioritiesSet = selected;
-		}
+		} 
 	}
 
 	/**
@@ -422,7 +431,7 @@ public class SimulationSetupPanel extends JPanel {
 					combo.addItem(i);
 			}
 		} else if (string == "input") {
-			combo.addItem("none");
+//			combo.addItem("none");
 			Hashtable<String, Hashtable<NodeInfo, List<String>>> set = mainFrame.epithelium
 					.getInputsIntegrationSet();
 			for (String i : set.keySet()) {
@@ -449,7 +458,7 @@ public class SimulationSetupPanel extends JPanel {
 
 		} else if (string == "priorities") {
 			combo.addItem("none");
-			Hashtable<String, List<List<NodeInfo>>> set = mainFrame.epithelium
+			Hashtable<String, List<List<String>>> set = mainFrame.epithelium
 					.getPrioritiesSet();
 			for (String i : set.keySet()) {
 				combo.addItem(i);

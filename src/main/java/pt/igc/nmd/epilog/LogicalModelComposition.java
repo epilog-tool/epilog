@@ -1,10 +1,16 @@
 package pt.igc.nmd.epilog;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.LogicalModelImpl;
@@ -25,7 +31,7 @@ import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionMDDFactory;
 
 public class LogicalModelComposition {
 
-	private MainFrame mainPanel;
+	private MainFrame mainFrame;
 	private IntegrationFunctionMapping mapping = null;
 	private LogicalModel composedModel = null;
 	private Map<Map.Entry<NodeInfo, Integer>, NodeInfo> old2New = new HashMap<Map.Entry<NodeInfo, Integer>, NodeInfo>();
@@ -39,7 +45,7 @@ public class LogicalModelComposition {
 	 * @param mainPanel
 	 */
 	public LogicalModelComposition(MainFrame mainPanel) {
-		this.mainPanel = mainPanel;
+		this.mainFrame = mainPanel;
 
 	}
 
@@ -67,10 +73,10 @@ public class LogicalModelComposition {
 	 * @return composed model
 	 */
 	public LogicalModel createComposedModel() {
-		// if (composedModel != null)
-		// return composedModel;
 
-		System.out.println("STarting to create the composed Model");
+		
+
+		System.out.println("Starting to create the composed Model");
 
 		List<NodeInfo> nodeOrder = new ArrayList<NodeInfo>();
 		List<NodeInfo> newIntegrationNodes = new ArrayList<NodeInfo>();
@@ -78,8 +84,8 @@ public class LogicalModelComposition {
 		byte max = 0;
 
 		// Creates all new NodeInfos for all instances
-		for (int i = 0; i < mainPanel.topology.getNumberInstances(); i++) {
-			for (NodeInfo node : mainPanel.getEpithelium().getUnitaryModel()
+		for (int i = 0; i < mainFrame.topology.getNumberInstances(); i++) {
+			for (NodeInfo node : mainFrame.getEpithelium().getUnitaryModel()
 					.getNodeOrder()) {
 				NodeInfo newNode = new NodeInfo(computeNewName(
 						node.getNodeID(), i), node.getMax());
@@ -89,7 +95,7 @@ public class LogicalModelComposition {
 
 				// integration inputs are no longer inputs
 				if (node.isInput()
-						&& mainPanel.getEpithelium().isIntegrationComponent(
+						&& mainFrame.getEpithelium().isIntegrationComponent(
 								node)) {
 
 					// System.out.println("Old Integrative Node that is about to not be an input "+node.getNodeID());
@@ -124,7 +130,7 @@ public class LogicalModelComposition {
 		// Create Composition Context
 
 		CompositionContext context = new CompositionContextImpl(
-				mainPanel.topology, nodeOrder, this.oldString2New);
+				mainFrame.topology, nodeOrder, this.oldString2New);
 
 		// Create MDD variables
 		MDDVariableFactory mvf = new MDDVariableFactory();
@@ -151,13 +157,13 @@ public class LogicalModelComposition {
 			NodeInfo oldNode = this.new2Old.get(node).getKey();
 			Integer instance = this.new2Old.get(node).getValue();
 
-			PathSearcher searcher = new PathSearcher(mainPanel.getEpithelium()
+			PathSearcher searcher = new PathSearcher(mainFrame.getEpithelium()
 					.getUnitaryModel().getMDDManager(), 1, oldNode.getMax());
 
 			int path[] = searcher.getPath();
-			int okMDDs[] = mainPanel.getEpithelium().getUnitaryModel()
+			int okMDDs[] = mainFrame.getEpithelium().getUnitaryModel()
 					.getLogicalFunctions();
-			int nodeIndex = mainPanel.getEpithelium().getUnitaryModel()
+			int nodeIndex = mainFrame.getEpithelium().getUnitaryModel()
 					.getNodeOrder().indexOf(oldNode);
 			searcher.setNode(okMDDs[nodeIndex]);
 
@@ -168,7 +174,7 @@ public class LogicalModelComposition {
 				for (int j = 0; j < newPath.length; j++)
 					newPath[j] = -1;
 				for (int j = 0; j < path.length; j++) {
-					NodeInfo currentOldNode = mainPanel.getEpithelium()
+					NodeInfo currentOldNode = mainFrame.getEpithelium()
 							.getUnitaryModel().getNodeOrder().get(j);
 					NodeInfo currentNewNode = this.old2New
 							.get(new SimpleEntry<NodeInfo, Integer>(
@@ -193,11 +199,11 @@ public class LogicalModelComposition {
 
 		// Create MDDs for integration components
 
-		for (NodeInfo oldeNodeIdIntegrationComponent : mainPanel
-				.getEpithelium().getUnitaryModel().getNodeOrder()) {
+		for (NodeInfo oldeNodeIdIntegrationComponent : mainFrame.epithelium
+				.getUnitaryModel().getNodeOrder()) {
 
-			if (mainPanel.getEpithelium().isIntegrationComponent(
-					oldeNodeIdIntegrationComponent)) {
+			if (mainFrame.epithelium
+					.isIntegrationComponent(oldeNodeIdIntegrationComponent)) {
 
 				for (byte targetValue = 1; targetValue < oldeNodeIdIntegrationComponent
 						.getMax() + 1; targetValue++) {
@@ -205,17 +211,17 @@ public class LogicalModelComposition {
 					// System.out.println(oldeNodeIdIntegrationComponent + " " +
 					// targetValue);
 
-					for (int i = 0; i < mainPanel.topology.getNumberInstances(); i++) {
+					for (int i = 0; i < mainFrame.topology.getNumberInstances(); i++) {
 						IntegrationFunctionMDDFactory factory = new IntegrationFunctionMDDFactory(
 								context, ddmanager);
 
-						String function = mainPanel.getEpithelium()
+						String function = mainFrame.epithelium
 								.getIntegrationFunction(
 										oldeNodeIdIntegrationComponent,
 										targetValue);
 
-						int integrationMDD = factory
-								.getMDD(mainPanel.getEpithelium()
+						int integrationMDD = factory.getMDD(
+								mainFrame.epithelium
 										.string2Expression(function), i);
 
 						// get all Paths and build them for targetValue
@@ -286,10 +292,14 @@ public class LogicalModelComposition {
 		// e.printStackTrace();
 		// }
 
-		mainPanel.getEpithelium().setComposedModel(composedModel);
+		mainFrame.getEpithelium().setComposedModel(composedModel);
+	
 		return composedModel;
 
 	}
+
+
+
 
 	/**
 	 * Generate new name for the composed component
@@ -356,7 +366,8 @@ public class LogicalModelComposition {
 	 * 
 	 * @param node
 	 *            original node
-	 * @param instance instance
+	 * @param instance
+	 *            instance
 	 * @return newNode
 	 */
 	public NodeInfo getComposedNode(NodeInfo node, int instance) {
@@ -366,18 +377,22 @@ public class LogicalModelComposition {
 
 	/**
 	 * Returns the original node retrieved from a composed node.
-	 * @param node composed node
+	 * 
+	 * @param node
+	 *            composed node
 	 * @return Old node
 	 */
 	public NodeInfo getOriginalNode(NodeInfo node) {
 		return this.new2Old.get(node).getKey();
 	}
 
-/**
- * Returns the instance related to a composed node
- * @param node composed node
- * @return instance
- */
+	/**
+	 * Returns the instance related to a composed node
+	 * 
+	 * @param node
+	 *            composed node
+	 * @return instance
+	 */
 	public Integer getOriginalInstance(NodeInfo node) {
 		return this.new2Old.get(node).getValue();
 	}

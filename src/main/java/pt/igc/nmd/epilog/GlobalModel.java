@@ -60,21 +60,24 @@ public class GlobalModel {
 
 		String key = this.mainFrame.epithelium.getSelectedPriority();
 
-		List<List<NodeInfo>> priorities = this.mainFrame.epithelium
+		List<List<String>> priorities = this.mainFrame.epithelium
 				.getPrioritiesSet().get(key);
 
 		if (priorities == null) {
-			priorities = new ArrayList<List<NodeInfo>>();
-			priorities.add(this.mainFrame.epithelium.getUnitaryModel()
-					.getNodeOrder());
+			priorities = new ArrayList<List<String>>();
+			List<String> p_aux = new ArrayList<String>();
+			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
+					.getNodeOrder())
+				p_aux.add(node.getNodeID());
+			priorities.add(p_aux);
 		}
 
 		Grid nextState = currentState;
 
-		for (List<NodeInfo> nodes : priorities) {
+		for (List<String> nodes : priorities) {
 			nextState = getNextStatePriorities(currentState, nodes);
 
-			if (!currentState.equals(nextState)) {
+			if (!mainFrame.simulation.stateComparative(currentState, nextState)) {
 				break;
 			}
 		}
@@ -94,7 +97,7 @@ public class GlobalModel {
 	 *            list of nodes that have priority (are updated first)
 	 * @return nextState grid with the next state
 	 */
-	private Grid getNextStatePriorities(Grid currentState, List<NodeInfo> nodes) {
+	private Grid getNextStatePriorities(Grid currentState, List<String> nodes) {
 
 		if (this.mainFrame.needsComposedModel)
 			return getNextStateFromComposedModel(currentState, nodes);
@@ -118,7 +121,14 @@ public class GlobalModel {
 	 * @return nextState grid with the next state
 	 */
 	private Grid getNextStateFromComposedModel(Grid currentState,
-			List<NodeInfo> nodes) {
+			List<String> nodes) {
+
+		List<NodeInfo> priorityNodesCleanOfSignal = new ArrayList<NodeInfo>();
+
+		for (String node : nodes) {
+			priorityNodesCleanOfSignal
+					.add(mainFrame.prioritiesPanel.string2Node.get(node));
+		}
 
 		System.out
 				.println("I am using the composed Model and the nodes of this priority list are: "
@@ -140,9 +150,8 @@ public class GlobalModel {
 
 		for (NodeInfo node : composedModel.getNodeOrder()) {
 
-			if (!nodes
-					.contains(this.mainFrame.getLogicalModelComposition().new2Old
-							.get(node).getKey())) {
+			if (!priorityNodesCleanOfSignal.contains(this.mainFrame
+					.getLogicalModelComposition().new2Old.get(node).getKey())) {
 
 				int index = composedModel.getNodeOrder().indexOf(node);
 				byte next = composedState[index];
@@ -151,7 +160,10 @@ public class GlobalModel {
 						.getOriginalInstance(node).intValue(), mainFrame
 						.getLogicalModelComposition().getOriginalNode(node),
 						next);
-
+				// System.out.println(mainFrame.getLogicalModelComposition()
+				// .getOriginalInstance(node).intValue() + " " +mainFrame
+				// .getLogicalModelComposition().getOriginalNode(node) + " "
+				// +next);
 				continue;
 			}
 
@@ -164,11 +176,20 @@ public class GlobalModel {
 			current = composedState[index];
 			target = composedModel.getTargetValue(index, composedState);
 
-			if (current != target)
+			if (current != target) {
+
 				next = computeNextValue(current, target, mainFrame
 						.getLogicalModelComposition().getOriginalNode(node),
 						mainFrame.getLogicalModelComposition()
 								.getOriginalInstance(node).intValue());
+
+				// System.out.println("Main Node " +
+				// mainFrame.getLogicalModelComposition()
+				// .getOriginalInstance(node).intValue() + " " +mainFrame
+				// .getLogicalModelComposition().getOriginalNode(node) + " "
+				// +next);
+			}
+
 			else
 				next = target;
 
@@ -180,34 +201,55 @@ public class GlobalModel {
 
 		for (NodeInfo node : composedModel.getExtraComponents()) {
 
-			if (!nodes
-					.contains(this.mainFrame.getLogicalModelComposition().new2Old
-							.get(node).getKey())) {
+			
+			
+			if (!priorityNodesCleanOfSignal.contains(this.mainFrame
+					.getLogicalModelComposition().new2Old.get(node).getKey())) {
 
 				int index = composedModel.getExtraComponents().indexOf(node);
-				byte next = composedState[index];
+
+				byte next = currentState.getValue(this.mainFrame
+						.getLogicalModelComposition().getOriginalInstance(node),
+						this.mainFrame.getLogicalModelComposition()
+								.getOriginalNode(node));
 
 				nextState.setGrid(mainFrame.getLogicalModelComposition()
 						.getOriginalInstance(node).intValue(), mainFrame
 						.getLogicalModelComposition().getOriginalNode(node),
 						next);
 
+//				System.out.println("Not updating this Node "
+//						+ mainFrame.getLogicalModelComposition()
+//								.getOriginalInstance(node).intValue()
+//						+ " "
+//						+ mainFrame.getLogicalModelComposition()
+//								.getOriginalNode(node) + " " + next);
 				continue;
 			}
 
-			// TODO check if this is correct current =0!
-			byte current = 0;
+			byte current = currentState.getValue(this.mainFrame
+					.getLogicalModelComposition().getOriginalInstance(node),
+					this.mainFrame.getLogicalModelComposition()
+							.getOriginalNode(node));
+			;
 			byte next = 0;
 
 			int index = composedModel.getExtraComponents().indexOf(node);
 			byte target = composedModel.getExtraValue(index, composedState);
 
-			if (current != target)
+			if (current != target) {
 				next = computeNextValue(current, target, mainFrame
 						.getLogicalModelComposition().getOriginalNode(node),
 						mainFrame.getLogicalModelComposition()
 								.getOriginalInstance(node).intValue());
-			else
+
+//				System.out.println("extra Node "
+//						+ mainFrame.getLogicalModelComposition()
+//								.getOriginalInstance(node).intValue()
+//						+ " "
+//						+ mainFrame.getLogicalModelComposition()
+//								.getOriginalNode(node) + " " + next);
+			} else
 				next = target;
 
 			nextState.setGrid(mainFrame.getLogicalModelComposition()
@@ -215,9 +257,27 @@ public class GlobalModel {
 					.getLogicalModelComposition().getOriginalNode(node), next);
 		}
 
+		
 		return nextState;
 	}
 
+//	private void printComposedState(byte[] composedState){
+//		
+//			for (byte value: composedState)
+//				System.out.print(value);
+//			System.out.println(" ");
+//		}
+//	
+//	
+//	
+//	private void printNextState(Grid nextState) {
+//		String aux = mainFrame.simulation.getIterationNumber() + " : ";
+//		for (int instance = 0; instance < nextState.getNumberInstances(); instance++) {
+//			for (NodeInfo node : nextState.getListNodes())
+//				aux = aux + (nextState.getValue(instance, node));
+//		}
+//		System.out.println(aux);
+//	}
 	/**
 	 * Receives the current state of the world and the list of nodes that have
 	 * priority and updates the current state using the CA. The first nodes to
@@ -232,7 +292,15 @@ public class GlobalModel {
 	 * @return nextState grid with the next state
 	 */
 	private Grid getNextStateUsingCellularAutomata(Grid currentState,
-			List<NodeInfo> nodes) {
+			List<String> nodes) {
+
+		List<NodeInfo> priorityNodesCleanOfSignal = new ArrayList<NodeInfo>();
+
+		for (String nodeString : nodes) {
+			priorityNodesCleanOfSignal
+					.add(mainFrame.prioritiesPanel.string2Node.get(nodeString));
+			System.out.println(nodeString);
+		}
 
 		System.out
 				.println("I am using the cellular Automata and the nodes of this priority list are: "
@@ -283,7 +351,6 @@ public class GlobalModel {
 						target = value;
 					}
 				}
-
 				currentState.setGrid(instance, integrationInput, target);
 			}
 		}
@@ -295,9 +362,10 @@ public class GlobalModel {
 			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
 					.getNodeOrder()) {
 
-				if (!nodes.contains(node)) {
+				if (!priorityNodesCleanOfSignal.contains(node)) {
 					byte next = currentState.getValue(instance, node);
 					nextState.setGrid(instance, node, next);
+
 					continue;
 				}
 
@@ -314,16 +382,21 @@ public class GlobalModel {
 				target = this.mainFrame.epithelium.getUnitaryModel()
 						.getTargetValue(index, cellState);
 
-				if (current != target)
-					next = computeNextValue(current, target, node, instance);
-				else
+				if (current != target) {
+					if ((current > target && nodes.contains(node.getNodeID()
+							+ "-"))
+							|| (current < target && nodes.contains(node
+									.getNodeID() + "+"))
+							|| (nodes.contains(node.getNodeID())))
+						next = computeNextValue(current, target, node, instance);
+					else
+						next = currentState.getValue(instance, node);
+				} else {
 					next = target;
-
+				}
 				nextState.setGrid(instance, node, next);
-
 			}
 		}
-
 		return nextState;
 	}
 

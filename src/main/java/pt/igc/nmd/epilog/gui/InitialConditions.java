@@ -314,9 +314,9 @@ public class InitialConditions extends JPanel {
 
 			LineBorder border = new LineBorder(Color.black, 1, true);
 			TitledBorder south = new TitledBorder(border, "Analytics @ " + "("
-					+ this.mainFrame.topology.instance2i(this.mainFrame.activeInstance)
+					+ this.mainFrame.topology.instance2j(this.mainFrame.activeInstance)
 					+ ","
-					+this.mainFrame.topology.instance2j(this.mainFrame.activeInstance)
+					+this.mainFrame.topology.instance2i(this.mainFrame.activeInstance)
 					+ ")", TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION,
 					new Font("Arial", Font.ITALIC, 14), Color.black);
 			panelStart.setBorder(south);
@@ -457,6 +457,9 @@ public class InitialConditions extends JPanel {
 	 */
 	private void initialConditionsAdd() {
 		String name = setName.getText();
+		name = name.replace(" ","");
+		if (name=="none")
+			name = "none1";
 		if (!this.mainFrame.epithelium.getInitialStateSet().containsKey(name))
 			sets.addItem(name);
 		this.mainFrame.epithelium.setInitialStateSet(name);
