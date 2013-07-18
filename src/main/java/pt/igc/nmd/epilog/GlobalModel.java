@@ -299,7 +299,7 @@ public class GlobalModel {
 		for (String nodeString : nodes) {
 			priorityNodesCleanOfSignal
 					.add(mainFrame.prioritiesPanel.string2Node.get(nodeString));
-			System.out.println(nodeString);
+//			System.out.println(nodeString);
 		}
 
 		System.out

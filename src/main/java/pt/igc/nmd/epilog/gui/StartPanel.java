@@ -595,9 +595,9 @@ public class StartPanel extends JPanel {
 						String[] prioritiesElementsString = aux.split(",");
 						List<String> prioritiesOfThisClass = new ArrayList<String>();
 						for (String aux_3 : prioritiesElementsString) {
-							NodeInfo node = string2Node.get(aux_3);
-							if (node != null)
-								prioritiesOfThisClass.add(node.getNodeID());
+//							NodeInfo node = string2Node.get(aux_3);
+//							if (node != null)
+								prioritiesOfThisClass.add(aux_3);
 						}
 
 						prioritiesClass.add(prioritiesOfThisClass);
@@ -786,7 +786,6 @@ public class StartPanel extends JPanel {
 						mainFrame.epithelium.setPerturbationSet(setName,
 								perturbationsSet.get(setName));
 				}
-
 			}
 
 		}
