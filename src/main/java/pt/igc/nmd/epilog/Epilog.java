@@ -9,8 +9,9 @@ public class Epilog {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-
+		
 		new MainFrame().initialize();
+		
 
 	}
 }

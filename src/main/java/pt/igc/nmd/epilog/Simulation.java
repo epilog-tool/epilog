@@ -14,7 +14,7 @@ import pt.igc.nmd.epilog.gui.MainFrame;
 
 public class Simulation {
 
-	private int iterationNumber = 1;
+	private int iterationNumber = 0;
 	private GlobalModel globalModel = null;
 
 	public Grid currentGlobalState = null;
@@ -25,6 +25,7 @@ public class Simulation {
 
 	private boolean isRunning = false;
 	private boolean stableStateFound = false;
+	private boolean runcontrol = true;
 
 	/**
 	 * Initializes the simulation setup.
@@ -40,11 +41,14 @@ public class Simulation {
 	 */
 	public void run() {
 
-		while (!stableStateFound && iterationNumber % 30 != 0) {
+		while (!stableStateFound
+				&& (iterationNumber % 30 != 0 || runcontrol == false)) {
+			runcontrol = true;
 			runButtonActivated = true;
 			step();
 			runButtonActivated = false;
 		}
+		runcontrol = false;
 	}
 
 	/**
@@ -86,7 +90,7 @@ public class Simulation {
 	 * @see run()
 	 */
 	public void step() {
-
+		this.iterationNumber++;
 		setRunning(true);
 		this.mainFrame.setBorderHexagonsPanel(iterationNumber);
 
@@ -115,15 +119,37 @@ public class Simulation {
 		if (!runButtonActivated)
 			this.mainFrame.fillHexagons();
 
-		this.iterationNumber++;
-
-		if (nextGlobalState.equals(currentGlobalState)) {
+		// if (nextGlobalState.equals(currentGlobalState)) {
+		if (stateComparative(nextGlobalState, currentGlobalState)) {
 			stableStateFound = true;
 			resetIterationNumber();
-			System.out.println("StableSate Found");
+			System.out.println("Stable State Found");
 		}
 		currentGlobalState = nextGlobalState;
 
+	}
+
+	/**
+	 * Global states are compared, without comparing the integration inputs,
+	 * since they provide no information regarding the updating iteration.
+	 * 
+	 * @param currentState
+	 * @param nextState
+	 * @return true if states are equal, false otherwise
+	 */
+	public boolean stateComparative(Grid currentState, Grid nextState) {
+		for (int instance = 0; instance < nextState.getNumberInstances(); instance++) {
+			for (NodeInfo node : nextState.getListNodes()) {
+				if (!mainFrame.epithelium.isIntegrationComponent(node))
+
+					if (currentState.getValue(instance, node) != nextState
+							.getValue(instance, node)) {
+						
+						return false;
+					}
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -146,7 +172,7 @@ public class Simulation {
 	}
 
 	/**
-	 * Allows to save an image with the epithelium develpment at an iteration.
+	 * Saves an image with the epithelium at iteration.
 	 */
 	public void saveLastPic() {
 		Container c = this.mainFrame.hexagonsPanel;
@@ -213,7 +239,7 @@ public class Simulation {
 	 * Resets the iteration number.
 	 */
 	public void resetIterationNumber() {
-		this.iterationNumber = 1;
+		this.iterationNumber = 0;
 	}
 
 	/**
@@ -297,21 +323,20 @@ public class Simulation {
 		return getCoordinateColor(instance, false);
 	}
 
- 
-//	public void fillHexagons() {
-//
-//		for (int instance = 0; instance < this.mainFrame.topology
-//				.getNumberInstances(); instance++) {
-//
-//			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
-//					.getNodeOrder()) {
-//
-//				Color color = getCoordinateCurrentColor(instance);
-//				this.mainFrame.hexagonsPanel.drawHexagon(instance,
-//						this.mainFrame.hexagonsPanel.getGraphics(), color);
-//			}
-//		}
-//	}
+	// public void fillHexagons() {
+	//
+	// for (int instance = 0; instance < this.mainFrame.topology
+	// .getNumberInstances(); instance++) {
+	//
+	// for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
+	// .getNodeOrder()) {
+	//
+	// Color color = getCoordinateCurrentColor(instance);
+	// this.mainFrame.hexagonsPanel.drawHexagon(instance,
+	// this.mainFrame.hexagonsPanel.getGraphics(), color);
+	// }
+	// }
+	// }
 
 	/**
 	 * Returns the color selected for a component, but with a gradient

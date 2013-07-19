@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 import org.colomoto.logicalmodel.NodeInfo;
 
 import pt.igc.nmd.epilog.SphericalEpithelium;
+import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
 
 public class IntegrationFunctionInterface extends JFrame {
 
@@ -108,6 +109,8 @@ public class IntegrationFunctionInterface extends JFrame {
 
 				dispose();
 				setIntegrationFunction(node, integrationFunctionStrings);
+				// TODO: CHECK
+				checkFunction(node, integrationFunctionStrings);
 			}
 		});
 		pack();
@@ -132,4 +135,14 @@ public class IntegrationFunctionInterface extends JFrame {
 
 	}
 
+	private void checkFunction(NodeInfo node,
+			Hashtable<Byte, String> integrationFunctionStrings) {
+
+		for (byte value : integrationFunctionStrings.keySet()) {
+
+			String function = epithelium.getIntegrationFunction(node, value);
+			IntegrationExpression a = epithelium.string2Expression(function);
+
+		}
+	}
 }

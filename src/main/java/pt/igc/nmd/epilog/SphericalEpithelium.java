@@ -33,8 +33,8 @@ public class SphericalEpithelium implements Epithelium {
 	private AbstractPerturbation[] perturbations = null;
 	private AbstractPerturbation activePerturbation;
 
-	public List loadedPerturbations;
-	public List loadedMutations;
+	public List<AbstractPerturbation> loadedPerturbations;
+	public List<AbstractPerturbation> loadedMutations;
 
 	public Hashtable<String, Color> perturbationColor;
 
@@ -43,11 +43,14 @@ public class SphericalEpithelium implements Epithelium {
 	private String selectedInputSet;
 	private String selectedInitialSet;
 
-	private Hashtable<String, List<List<NodeInfo>>> prioritiesSet;
+	private Hashtable<String, List<List<String>>> prioritiesSet;
 	private Hashtable<String, AbstractPerturbation[]> perturbationsSet;
 	private Hashtable<String, Grid> initialStateSet;
 	private Hashtable<String, Grid> inputsSet;
 	public Hashtable<String, Hashtable<NodeInfo, List<String>>> integrationInputsSet;
+	
+	public Hashtable<String, NodeInfo> string2Node;
+
 
 	private Topology topology = null;
 
@@ -61,7 +64,7 @@ public class SphericalEpithelium implements Epithelium {
 	public SphericalEpithelium(Topology topology) {
 
 		this.topology = topology;
-		prioritiesSet = new Hashtable<String, List<List<NodeInfo>>>();
+		prioritiesSet = new Hashtable<String, List<List<String>>>();
 		perturbationsSet = new Hashtable<String, AbstractPerturbation[]>();
 		initialStateSet = new Hashtable<String, Grid>();
 		inputsSet = new Hashtable<String, Grid>();
@@ -69,6 +72,8 @@ public class SphericalEpithelium implements Epithelium {
 		integrationInputsSet = new Hashtable<String, Hashtable<NodeInfo, List<String>>>();
 		loadedPerturbations = new ArrayList<AbstractPerturbation>();
 		loadedMutations = new ArrayList<AbstractPerturbation>();
+		
+		string2Node = new Hashtable<String, NodeInfo>();
 
 		perturbationColor = new Hashtable<String, Color>();
 	}
@@ -384,6 +389,10 @@ public class SphericalEpithelium implements Epithelium {
 			noPerturbations();
 			noInitialState();
 			noIntegrationFunctions();
+	
+			
+			for (NodeInfo node: getUnitaryModel().getNodeOrder())
+				string2Node.put(node.getNodeID(), node);
 		}
 
 	}
@@ -687,7 +696,7 @@ public class SphericalEpithelium implements Epithelium {
 	 * Set the perturbations set loaded from file.
 	 * @param a
 	 */
-	public void setLoadedPerturbations(List a) {
+	public void setLoadedPerturbations(List<AbstractPerturbation> a) {
 		loadedPerturbations = a;
 	}
 
@@ -695,7 +704,7 @@ public class SphericalEpithelium implements Epithelium {
 	 * Set the mutations set loaded from file.
 	 * @param a
 	 */	
-	public void setLoadedMutations(List a) {
+	public void setLoadedMutations(List<AbstractPerturbation> a) {
 		loadedMutations = a;
 	}
 
@@ -724,7 +733,7 @@ public class SphericalEpithelium implements Epithelium {
  */
 	public void noInitialState() {
 
-		List<NodeInfo> initialStateComponents = new ArrayList();
+		List<NodeInfo> initialStateComponents = new ArrayList<NodeInfo>();
 		for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
 			if (!isIntegrationComponent(node)) {
 				initialStateComponents.add(node);
@@ -741,7 +750,7 @@ public class SphericalEpithelium implements Epithelium {
 	 */
 	public void setInitialStateSet(String name) {
 
-		List<NodeInfo> initialStateComponents = new ArrayList();
+		List<NodeInfo> initialStateComponents = new ArrayList<NodeInfo>();
 		for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
 			if (!isIntegrationComponent(node)) {
 				initialStateComponents.add(node);
@@ -872,7 +881,7 @@ public class SphericalEpithelium implements Epithelium {
 	 * @param prioritiesClass
 	 */
 	public void setPrioritiesSet(String name,
-			List<List<NodeInfo>> prioritiesClass) {
+			List<List<String>> prioritiesClass) {
 		prioritiesSet.put(name, prioritiesClass);
 	}
 
@@ -880,7 +889,7 @@ public class SphericalEpithelium implements Epithelium {
 	 * Returns the priority sets.
 	 * @return
 	 */
-	public Hashtable<String, List<List<NodeInfo>>> getPrioritiesSet() {
+	public Hashtable<String, List<List<String>>> getPrioritiesSet() {
 		return prioritiesSet;
 	}
 

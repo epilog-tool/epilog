@@ -1,9 +1,14 @@
 package pt.igc.nmd.epilog.gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,8 +27,11 @@ import java.util.zip.ZipOutputStream;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
@@ -33,6 +41,7 @@ import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
 
+import pt.igc.nmd.epilog.Topology;
 import pt.igc.nmd.epilog.UnZip;
 
 public class StartPanel extends JPanel {
@@ -44,8 +53,13 @@ public class StartPanel extends JPanel {
 
 	private JButton newEpithelium;
 	private JButton loadEpithelium;
-	private JButton saveButton;
+	public JButton saveButton;
 	private JButton quitButton;
+	
+	private JButton loadSBML;
+
+
+	public JLabel selectedFilenameLabel;
 
 	// private JLabel iterationNumber = new JLabel();
 
@@ -95,6 +109,11 @@ public class StartPanel extends JPanel {
 		quitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainFrame.dispose();
+
+				File folder = new File("temp");
+
+				for (File fileEntry : folder.listFiles())
+					fileEntry.delete();
 				System.exit(0);
 			}
 		});
@@ -106,10 +125,10 @@ public class StartPanel extends JPanel {
 
 		newEpithelium.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
 				mainFrame.initializePanelCenter();
 				mainFrame.simulation.reset();
 				mainFrame.epithelium.setNewEpithelium(true);
+				
 			}
 		});
 
@@ -118,15 +137,21 @@ public class StartPanel extends JPanel {
 		 */
 		loadEpithelium.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
 				mainFrame.initializePanelCenter();
 				askConfigurations();
 				mainFrame.getContentPane().repaint();
 				mainFrame.simulation.reset();
 				mainFrame.epithelium.setNewEpithelium(false);
+				saveButton.setEnabled(true);
+				
+				
+				
+				
 			}
 		});
 
+		if (mainFrame.epithelium == null)
+			saveButton.setEnabled(false);
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (mainFrame.epithelium != null)
@@ -143,11 +168,177 @@ public class StartPanel extends JPanel {
 	}
 
 	/**
+	 * Repaints the left panel of Epilog's mainPanel, whenever the grid's
+	 * dimension has changed
+	 * 
+	 * @see Topology
+	 * @see DrawPolygon
+	 * @return panel left panel
+	 */
+	public JPanel gridSpecsPanel() {
+
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		JLabel setWidth = new JLabel();
+		JLabel setHeight = new JLabel();
+		loadSBML = new JButton("Load SBML");
+		JTextField userDefinedWidth = new JTextField();
+		JTextField userDefinedHeight = new JTextField();
+		selectedFilenameLabel = new JLabel();
+		
+		//labelFilename.setText("Filename: ");
+
+		setWidth.setText("Width: ");
+		setHeight.setText("Height: ");
+
+		userDefinedWidth.setPreferredSize(new Dimension(34, 26));
+		userDefinedHeight.setPreferredSize(new Dimension(34, 26));
+
+		userDefinedWidth.setHorizontalAlignment(JTextField.CENTER);
+		userDefinedHeight.setHorizontalAlignment(JTextField.CENTER);
+		userDefinedWidth.setText("" + mainFrame.topology.getWidth());
+		userDefinedHeight.setText("" + mainFrame.topology.getHeight());
+
+		userDefinedWidth.addFocusListener(new FocusListener() {
+			@Override
+			public void focusLost(FocusEvent arg0) {
+
+				if (mainFrame.epithelium.getUnitaryModel() == null) {
+					JTextField src = (JTextField) arg0.getSource();
+					mainFrame.topology.setWidth(Integer.parseInt(src.getText()));
+					mainFrame.hexagonsPanel
+							.paintComponent(mainFrame.hexagonsPanel
+									.getGraphics());
+				}
+			}
+
+			@Override
+			public void focusGained(FocusEvent arg0) {
+			}
+		});
+
+		userDefinedHeight.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+					JTextField src = (JTextField) arg0.getSource();
+
+					mainFrame.topology.setHeight(Integer.parseInt(src.getText()));
+					mainFrame.hexagonsPanel
+							.paintComponent(mainFrame.hexagonsPanel
+									.getGraphics());
+				}
+			}
+		});
+		userDefinedWidth.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+					JTextField src = (JTextField) arg0.getSource();
+
+					mainFrame.topology.setWidth(Integer.parseInt(src.getText()));
+					mainFrame.hexagonsPanel
+							.paintComponent(mainFrame.hexagonsPanel
+									.getGraphics());
+				}
+			}
+		});
+
+		userDefinedHeight.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				if (mainFrame.epithelium.getUnitaryModel() == null) {
+					JTextField src = (JTextField) arg0.getSource();
+					mainFrame.topology.setHeight(Integer.parseInt(src.getText()));
+					mainFrame.hexagonsPanel
+							.paintComponent(mainFrame.hexagonsPanel
+									.getGraphics());
+				}
+			}
+
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				// TODO Auto-generated method stub
+			}
+		});
+
+		panel.add(setWidth);
+		panel.add(userDefinedWidth);
+		panel.add(setHeight);
+		panel.add(userDefinedHeight);
+		panel.add(loadSBML);
+		if (mainFrame.epithelium.getUnitaryModel() != null) {
+			mainFrame.initializePanelCenterRight();
+
+		}
+
+		loadSBML.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (mainFrame.epithelium.getUnitaryModel() == null) {
+					askModel();
+					if (mainFrame.epithelium.getUnitaryModel()!=null)
+					mainFrame.initializePanelCenterRight();
+				}
+			}
+		});
+//		if (!isNewEpithelium)
+//			loadSBML.setEnabled(false);
+		return panel;
+	}
+
+	/**
+	 * Loads the sbml model.
+	 * 
+	 * @see startPanel.loadModel()
+	 * 
+	 */
+	private void askModel() {
+
+		FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter(
+				"sbml files (*.sbml)", "sbml");
+		fc.setFileFilter(xmlfilter);
+
+		fc.setDialogTitle("Choose file");
+
+		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			selectedFilenameLabel.setText(fc.getSelectedFile().getName());
+			selectedFilenameLabel.setForeground(Color.white);
+
+			File file = fc.getSelectedFile();
+
+			mainFrame.epithelium.setSBMLFilename(file.getName());
+			mainFrame.epithelium.setSBMLPath(file.getAbsolutePath());
+
+			loadModel(file);
+			saveButton.setEnabled(true);
+		}
+		
+	}
+
+	/**
 	 * Loads the sbml model zipped in the epithelium model
 	 * 
 	 * @param file
 	 *            sbml file with the original regulatory model
-	 *            
+	 * 
 	 * 
 	 */
 	public void loadModel(File file) {
@@ -158,8 +349,8 @@ public class StartPanel extends JPanel {
 		try {
 			logicalModel = sbmlFormat.importFile(file);
 
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			sbmlFormat.export(logicalModel, baos);
+			// ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			// sbmlFormat.export(logicalModel, baos);
 
 		} catch (IOException e) {
 			System.err.println("Cannot import file " + file.getAbsolutePath()
@@ -176,7 +367,6 @@ public class StartPanel extends JPanel {
 
 		this.mainFrame.getLogicalModelComposition().resetComposedModel();
 
-		// setupDefinitionsButton.setEnabled(true);
 		this.mainFrame.auxiliaryHexagonsPanel
 				.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		TitledBorder titleInitialConditions;
@@ -186,8 +376,9 @@ public class StartPanel extends JPanel {
 	}
 
 	/**
-	 * The user chooses a previously saved epithelium model. An sbml file and a
-	 * configurations file are loaded.
+	 * The user chooses a previously saved epithelium model. A sbml file and a
+	 * configurations file are loaded. If a composed was saved it is also
+	 * loaded.
 	 * 
 	 * @see loadModel
 	 * @see loadConfigurations
@@ -195,13 +386,18 @@ public class StartPanel extends JPanel {
 	 */
 	private void askConfigurations() {
 
+		FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter(
+				"zepi files (*.zepi)", "zepi");
+		fc.setFileFilter(xmlfilter);
+
 		fc.setDialogTitle("Choose file");
 
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			File folder = new File("temp");
 
-			// for (File file : folder.listFiles())
-			// file.delete();
+			if (folder.listFiles().length != 0)
+				for (File fileEntry : folder.listFiles())
+					fileEntry.delete();
 			UnZip.main(fc.getSelectedFile().getAbsolutePath());
 
 			for (final File fileEntry : folder.listFiles()) {
@@ -237,7 +433,7 @@ public class StartPanel extends JPanel {
 	 * @see setPerturbation
 	 */
 	private void loadConfigFile(Scanner fileIn) {
-		int numberOfSets = 0;
+//		int numberOfSets = 0;
 
 		Hashtable<String, NodeInfo> string2Node = new Hashtable<String, NodeInfo>();
 		Hashtable<Integer, AbstractPerturbation> mlist = new Hashtable<Integer, AbstractPerturbation>();
@@ -249,7 +445,7 @@ public class StartPanel extends JPanel {
 		Hashtable<String, Hashtable<NodeInfo, List<String>>> p0 = new Hashtable<String, Hashtable<NodeInfo, List<String>>>();
 
 		Hashtable<String, AbstractPerturbation[]> perturbationsSet = new Hashtable<String, AbstractPerturbation[]>();
-		List perturbationsList = new ArrayList<AbstractPerturbation>();
+		List<AbstractPerturbation> perturbationsList = new ArrayList<AbstractPerturbation>();
 
 		for (NodeInfo node : mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder()) {
@@ -287,6 +483,7 @@ public class StartPanel extends JPanel {
 				if (line.contains("name")) {
 					int key = Integer.parseInt(line.split(" ")[1]);
 					String value = line.split(":")[1];
+					value = value.replace(" ", "");
 					setInitialStateDescription.put(key, value);
 					mainFrame.epithelium.setInitialStateSet(value);
 
@@ -331,7 +528,8 @@ public class StartPanel extends JPanel {
 
 				if (line.contains("name")) {
 					int key = Integer.parseInt(line.split(" ")[1]);
-					String setName = line.split(":")[1];
+					String setName = line.split(":")[1].replace(" ", "").split("\\[")[0];
+					setName.replace(" ", "");
 
 					setInputsDescription.put(key, setName);
 					Hashtable<NodeInfo, List<String>> p1 = new Hashtable<NodeInfo, List<String>>();
@@ -340,14 +538,14 @@ public class StartPanel extends JPanel {
 
 				} else {
 
-					System.out.println(line);
+//					System.out.println(line);
 					NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
 							.getNodeOrder()
 							.get(Integer.parseInt(line.split(" ")[3]));
 
 					mainFrame.epithelium.setIntegrationComponent(
 							Integer.parseInt(line.split(" ")[3]), true);
-					byte value = (byte) Integer.parseInt(line.split(" ")[5]);
+//					byte value = (byte) Integer.parseInt(line.split(" ")[5]);
 
 					String expression = line.split(" ")[7];
 					String setName = setInputsDescription.get(Integer
@@ -378,14 +576,14 @@ public class StartPanel extends JPanel {
 				// TODO: Change to while
 
 				if (line.contains("#sets")) {
-					numberOfSets = Integer.parseInt(line.split(" ")[3]);
+//					numberOfSets = Integer.parseInt(line.split(" ")[3]);
 				} else if (line.contains("name")) {
 					int setNumber = Integer.parseInt(line.split(" ")[1]);
 					String setName = line.split(" ")[3];
 					setPrioritiesDescription.put(setNumber, setName);
 
 				} else {
-					List<List<NodeInfo>> prioritiesClass = new ArrayList<List<NodeInfo>>();
+					List<List<String>> prioritiesClass = new ArrayList<List<String>>();
 					int setNumber = Integer.parseInt(line.split(" ")[1]);
 					String priorities = line.split(":")[1];
 					priorities = priorities.replace("]]", "]");
@@ -395,11 +593,11 @@ public class StartPanel extends JPanel {
 
 					for (String aux : p1) {
 						String[] prioritiesElementsString = aux.split(",");
-						List<NodeInfo> prioritiesOfThisClass = new ArrayList<NodeInfo>();
+						List<String> prioritiesOfThisClass = new ArrayList<String>();
 						for (String aux_3 : prioritiesElementsString) {
-							NodeInfo node = string2Node.get(aux_3);
-							if (node != null)
-								prioritiesOfThisClass.add(node);
+//							NodeInfo node = string2Node.get(aux_3);
+//							if (node != null)
+								prioritiesOfThisClass.add(aux_3);
 						}
 
 						prioritiesClass.add(prioritiesOfThisClass);
@@ -470,7 +668,7 @@ public class StartPanel extends JPanel {
 					NodeInfo node = null;
 
 					for (String aux : mutationsArray) {
-						List perturbation = new ArrayList<AbstractPerturbation>();
+						List<AbstractPerturbation> perturbation = new ArrayList<AbstractPerturbation>();
 
 						if (aux.length() > 1) {
 
@@ -519,8 +717,8 @@ public class StartPanel extends JPanel {
 
 					}// Ends for (String aux : mutationsArray)
 
-					List aux = new ArrayList<AbstractPerturbation>();
-					List aux2 = new ArrayList<String>();
+					List<AbstractPerturbation> aux = new ArrayList<AbstractPerturbation>();
+					List<String> aux2 = new ArrayList<String>();
 
 					for (AbstractPerturbation a : mlist.values()) {
 
@@ -588,7 +786,6 @@ public class StartPanel extends JPanel {
 						mainFrame.epithelium.setPerturbationSet(setName,
 								perturbationsSet.get(setName));
 				}
-
 			}
 
 		}
@@ -602,7 +799,7 @@ public class StartPanel extends JPanel {
 
 		this.mainFrame.setEpithelium(this.mainFrame.epithelium);
 		this.mainFrame.repaint();
-		this.mainFrame.gridSpecsPanel();
+		gridSpecsPanel();
 		this.mainFrame.repaint();
 		this.mainFrame.hexagonsPanel
 				.paintComponent(this.mainFrame.hexagonsPanel.getGraphics());
@@ -634,14 +831,21 @@ public class StartPanel extends JPanel {
 				out.close();
 
 				String zipFile = fc.getSelectedFile().getAbsolutePath()
-						+ ".zip";
+						+ ".zepi";
 
 				String unitarySBML = "";
 				if (this.mainFrame.epithelium.isNewEpithelium()) {
 					unitarySBML = this.mainFrame.epithelium.getSBMLFilePath();
 				} else {
 					unitarySBML = this.mainFrame.epithelium.getSBMLLoadPath();
+				}
 
+				// TODO
+				if (mainFrame.epithelium.getComposedModel() != null) {
+					SBMLFormat sbmlFormat = new SBMLFormat();
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					sbmlFormat.export(mainFrame.epithelium.getComposedModel(),
+							baos);
 				}
 
 				String[] sourceFiles = { "config.txt", unitarySBML };
@@ -720,7 +924,7 @@ public class StartPanel extends JPanel {
 									.getNodeOrder().indexOf(node) + " : "
 							+ value + " ( ");
 
-					int next = 0;
+//					int next = 0;
 					int current = 0;
 					boolean start = true;
 					boolean ongoing = false;
@@ -867,7 +1071,7 @@ public class StartPanel extends JPanel {
 					out.write("PT " + setIndex + " MT " + mutationIndex + " : "
 							+ " ( ");
 
-					int next = 0;
+//					int next = 0;
 					int current = 0;
 					boolean start = true;
 					boolean ongoing = false;
@@ -940,7 +1144,8 @@ public class StartPanel extends JPanel {
 	// Auxiliary Methods
 
 	/**
-	 * Retrieves the information of the config file and re-creates the perturbation.
+	 * Retrieves the information of the config file and re-creates the
+	 * perturbation.
 	 * 
 	 * @param node
 	 *            component with the perturbation

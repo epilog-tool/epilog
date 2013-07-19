@@ -1,8 +1,10 @@
 package pt.igc.nmd.epilog.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -19,6 +21,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -59,11 +63,10 @@ public class PrioritiesPanel extends JPanel {
 	}
 
 	/**
-	 * Initializes the priorites panel.
+	 * Initializes the priorities panel.
 	 */
 	public void init() {
 
-		// Color backgroundColor = mainFrame.getBackground();
 		string2Node = new Hashtable<String, NodeInfo>();
 		setLayout(new BorderLayout());
 
@@ -77,8 +80,7 @@ public class PrioritiesPanel extends JPanel {
 
 		JButton buttonIncreaseLeft = new JButton("->");
 		JButton buttonIncreaseRight = new JButton("<-");
-		// JButton buttonRemove = new JButton("Remove");
-		priorityChosenString = new JTextField("");
+		JButton buttonDifferentiate = new JButton("Differentiate");
 
 		buttonIncreaseLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -93,32 +95,30 @@ public class PrioritiesPanel extends JPanel {
 			}
 		});
 
-		// buttonRemove.addActionListener(new ActionListener() {
-		// public void actionPerformed(ActionEvent e) {
-		// System.out.println(" ");
-		// System.out.println("Priority Classes Number: "
-		// + priorityClass.size());
-		// for (int i = 0; i < priorityClass.size(); i++) {
-		// System.out.println("@Priority " + i
-		// + "there are the nodes: ");
-		// for (int j = 0; j < priorityClass.get(i).getModel()
-		// .getSize(); j++) {
-		// System.out.print(priorityClass.get(i).getModel()
-		// .getElementAt(j)
-		// + " ");
-		// }
-		// System.out.println(" ");
-		// finalPriorities();
-		// }
-		// }
-		// });
+		buttonDifferentiate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				differentiateNode(centerPanel);
+			}
+		});
 
+		optionsPanel.add(buttonDifferentiate);
 		optionsPanel.add(buttonIncreaseLeft);
 		optionsPanel.add(buttonIncreaseRight);
-		// optionsPanel.add(buttonRemove);
-		optionsPanel.add(priorityChosenString);
 
 		add(optionsPanel, BorderLayout.PAGE_START);
+
+		// SELECTED PRIORITY DISPLAY
+
+		JPanel selectedPriority = new JPanel(new FlowLayout());
+		priorityChosenString = new JTextField("");
+		selectedPriority.add(priorityChosenString);
+
+		LineBorder border = new LineBorder(Color.black, 1, true);
+		TitledBorder south = new TitledBorder(border,
+				"Selected Priority Display", TitledBorder.LEFT,
+				TitledBorder.DEFAULT_POSITION, new Font("Arial", Font.ITALIC,
+						14), Color.black);
+		selectedPriority.setBorder(south);
 
 		// END PANEL
 
@@ -163,7 +163,10 @@ public class PrioritiesPanel extends JPanel {
 		endPanel.add(sets);
 		endPanel.add(buttonClear);
 
-		add(endPanel, BorderLayout.PAGE_END);
+		JPanel endTotal = new JPanel(new BorderLayout());
+		endTotal.add(endPanel, BorderLayout.PAGE_END);
+		endTotal.add(selectedPriority, BorderLayout.CENTER);
+		add(endTotal, BorderLayout.PAGE_END);
 
 		// CENTER PANEL
 
@@ -238,12 +241,66 @@ public class PrioritiesPanel extends JPanel {
 
 		for (NodeInfo node : nodes)
 			if (!node.isInput()) {
+				// listModel.addElement(node.getNodeID()+"+");
+				// listModel.addElement(node.getNodeID()+"-");
 				listModel.addElement(node.getNodeID());
 				string2Node.put(node.getNodeID(), node);
+				string2Node.put(node.getNodeID() + "+", node);
+				string2Node.put(node.getNodeID() + "-", node);
 			}
 		listOfListModel.add(listModel);
 		return listModel;
 
+	}
+
+	private void differentiateNode(JPanel centerPanel) {
+
+		DefaultListModel listModel = new DefaultListModel();
+
+		if (selectedIndexes.size() > 0) {
+			for (int i = 0; i < listOfListModel.get(lastClass).size(); i++) {
+				if (selectedIndexes.contains(i)) {
+
+					if (stringHasChar(listOfListModel.get(lastClass).get(i)
+							.toString(), "+")) {
+
+						listModel.addElement(listOfListModel.get(lastClass)
+								.get(i).toString());
+					} else if (stringHasChar(listOfListModel.get(lastClass)
+							.get(i).toString(), "-"))
+						listModel.addElement(listOfListModel.get(lastClass)
+								.get(i).toString());
+					else {
+						listModel.addElement(listOfListModel.get(lastClass)
+								.get(i).toString()
+								+ "+");
+						listModel.addElement(listOfListModel.get(lastClass)
+								.get(i).toString()
+								+ "-");
+					}
+				} else
+					listModel.addElement(listOfListModel.get(lastClass).get(i)
+							.toString());
+			}
+
+			for (int j = listOfListModel.get(lastClass).size() - 1; j >= 0; j--) {
+				removeItem(listOfListModel.get(lastClass),
+						listOfListModel.get(lastClass).get(j).toString());
+			}
+			for (int j = 0; j < listModel.getSize(); j++)
+				listOfListModel.get(lastClass).addElement(listModel.get(j));
+		}
+	}
+
+	private boolean stringHasChar(String string, String c) {
+		boolean found = false;
+		for (int i = 0; i < string.length(); ++i) {
+			if (string.charAt(i) == c.charAt(0)) {
+				found = true;
+				break;
+			}
+		}
+		return found;
 	}
 
 	/**
@@ -257,8 +314,11 @@ public class PrioritiesPanel extends JPanel {
 			for (int j : selectedIndexes) {
 				listOfListModel.get(lastClass - 1).addElement(
 						listOfListModel.get(lastClass).get(j).toString());
-				removeItem(listOfListModel.get(lastClass),
-						listOfListModel.get(lastClass).get(j).toString());
+			}
+			for (int j = listOfListModel.get(lastClass).size() - 1; j >= 0; j--) {
+				if (selectedIndexes.contains(j))
+					removeItem(listOfListModel.get(lastClass), listOfListModel
+							.get(lastClass).get(j).toString());
 			}
 		}
 		if (listOfListModel.get(lastClass).getSize() == 0) {
@@ -305,22 +365,23 @@ public class PrioritiesPanel extends JPanel {
 		// checks if there are any selected itens in order to create a new class
 
 		if (selectedIndexes.size() > 0) {
-			// TO CREATE a new class
+
 			if (priorityClass.size() - 1 == lastClass) {
-				// System.out.println("I have to create a new class because"
-				// + priorityClass.size() + " = " + lastClass + 1);
-				// Itens to be added
+
 				DefaultListModel listModel = new DefaultListModel();
 				for (int j : selectedIndexes) {
 
-					// System.out.println(listOfListModel.get(lastClass).get(j)
-					// .toString());
 					listModel.addElement(listOfListModel.get(lastClass).get(j)
 							.toString());
 
-					removeItem(listOfListModel.get(lastClass), listOfListModel
-							.get(lastClass).get(j).toString());
 				}
+				for (int j = listOfListModel.get(lastClass).size() - 1; j >= 0; j--) {
+					if (selectedIndexes.contains(j))
+						removeItem(listOfListModel.get(lastClass),
+								listOfListModel.get(lastClass).get(j)
+										.toString());
+				}
+
 				listOfListModel.add(listModel);
 
 				JList priority = new JList(listModel);
@@ -356,11 +417,24 @@ public class PrioritiesPanel extends JPanel {
 					String itemToG0 = listOfListModel.get(lastClass).get(j)
 							.toString();
 					listOfListModel.get(lastClass + 1).addElement(itemToG0);
-					removeItem(listOfListModel.get(lastClass), listOfListModel
-							.get(lastClass).get(j).toString());
+				}
+				for (int j = listOfListModel.get(lastClass).size() - 1; j >= 0; j--) {
+					if (selectedIndexes.contains(j))
+						removeItem(listOfListModel.get(lastClass),
+								listOfListModel.get(lastClass).get(j)
+										.toString());
 				}
 			}
 		}// Closes the if that checks if there is anything to do
+		
+		if (listOfListModel.get(0).getSize() == 0) {
+			this.listOfListModel = removeList(listOfListModel);
+			priorityClass.remove(0);
+			centerPanel.remove(0);
+			centerPanel.remove(0);
+			centerPanel.revalidate();
+			centerPanel.repaint();
+		}
 
 	}
 
@@ -384,20 +458,21 @@ public class PrioritiesPanel extends JPanel {
 
 	/**
 	 * Priority list to be saved
+	 * 
 	 * @return priority list
 	 */
-	public List<List<NodeInfo>> finalPriorities() {
+	public List<List<String>> finalPriorities() {
 
-		List<List<NodeInfo>> priorities = new ArrayList<List<NodeInfo>>();
+		List<List<String>> priorities = new ArrayList<List<String>>();
 
 		for (int j = 0; j < priorityClass.size(); j++) {
-			List<NodeInfo> nodeList = new ArrayList<NodeInfo>();
+			List<String> nodeList = new ArrayList<String>();
 
 			for (int i = 0; i < priorityClass.get(j).getModel().getSize(); i++) {
 				String element = priorityClass.get(j).getModel()
 						.getElementAt(i).toString();
-				string2Node.get(element);
-				nodeList.add(string2Node.get(element));
+				// string2Node.get(element);
+				nodeList.add(element);
 			}
 			priorities.add(nodeList);
 		}
@@ -405,10 +480,10 @@ public class PrioritiesPanel extends JPanel {
 	}
 
 	// ENd Panel Auxiliary Functions
-	
+
 	/**
-	 * Adds a priority set. If a name is already used, then the new set
-	 * replaces the old one.
+	 * Adds a priority set. If a name is already used, then the new set replaces
+	 * the old one.
 	 * 
 	 */
 	private void addElementToSet() {
@@ -425,7 +500,7 @@ public class PrioritiesPanel extends JPanel {
 	private void removeElementFromSet() {
 		String setToRemove = (String) sets.getSelectedItem();
 		mainFrame.epithelium.getPrioritiesSet().remove(setToRemove);
-		System.out.println("I want to remove: " + setToRemove);
+		// System.out.println("I want to remove: " + setToRemove);
 		setName.setText("");
 		priorityChosenString.setText("");
 		sets.removeAllItems();
@@ -433,13 +508,14 @@ public class PrioritiesPanel extends JPanel {
 			sets.addItem(string);
 
 	}
-	
+
 	/**
 	 * Load selected priority set.
 	 */
 	private void loadInitialconditions() {
 		setName.setText((String) sets.getSelectedItem());
-		List<List<NodeInfo>> priorities = new ArrayList<List<NodeInfo>>();
+
+		List<List<String>> priorities = new ArrayList<List<String>>();
 
 		if (sets.getSelectedItem() != null) {
 			if (mainFrame.epithelium.getPrioritiesSet().get(
@@ -452,9 +528,9 @@ public class PrioritiesPanel extends JPanel {
 				for (int index = 0; index < priorities.size(); index++) {
 					// DefaultListModel listModel = new DefaultListModel();
 					string = string + "[";
-					for (NodeInfo node : priorities.get(index)) {
+					for (String node : priorities.get(index)) {
 						// listModel.addElement(node.getNodeID());
-						string = string + " " + node.getNodeID();
+						string = string + " " + node;
 					}
 					string = string + "]";
 					if (index < priorities.size() - 1) {

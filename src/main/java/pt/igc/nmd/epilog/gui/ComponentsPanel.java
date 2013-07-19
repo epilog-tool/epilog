@@ -48,7 +48,7 @@ public class ComponentsPanel extends JPanel {
 
 	/**
 	 * Generates a panel composed by two panels: one with proper components and
-	 * another with environmental inputs, if there are any. Associated with each
+	 * another with environment inputs, if there are any. Associated with each
 	 * component there is a color, and a selection checkbox.
 	 * 
 	 * @see pt.igc.nmd.epilog.gui.DrawPolygon
@@ -77,7 +77,7 @@ public class ComponentsPanel extends JPanel {
 				TitledBorder.DEFAULT_POSITION, new Font("Arial", Font.ITALIC,
 						14), Color.black);
 
-		TitledBorder titleInputs = new TitledBorder(border, "Environmental Inputs",
+		TitledBorder titleInputs = new TitledBorder(border, "Environment Inputs",
 				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
 						"Arial", Font.ITALIC, 14), Color.black);
 

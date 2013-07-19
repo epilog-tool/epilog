@@ -11,7 +11,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -165,8 +164,8 @@ public class PerturbationsPanel extends JPanel {
 
 		// Right Panel
 
-		rightPanel = new JPanel();
-		rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+		rightPanel = new JPanel(new FlowLayout());
+		//rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
 
 		add(rightPanel, BorderLayout.LINE_END);
 
@@ -365,7 +364,12 @@ public class PerturbationsPanel extends JPanel {
 		centerPanel.add(centerC3);
 		centerPanel.add(centerC4);
 		centerPanel.add(centerC5);
-		add(centerPanel, BorderLayout.CENTER);
+		
+		JPanel centerMain = new JPanel(new BorderLayout());
+		
+		centerMain.add(centerPanel, BorderLayout.CENTER);
+		centerMain.add(rightPanel, BorderLayout.PAGE_END);
+		add(centerMain, BorderLayout.CENTER);
 		rightPanel = initRightPanel();
 	}
 
@@ -411,7 +415,7 @@ public class PerturbationsPanel extends JPanel {
 	private void deleteMutation() {
 
 		List<AbstractPerturbation> newList = new ArrayList<AbstractPerturbation>();
-		int index = -1;
+//		int index = -1;
 		for (int i = 0; i < mutationsListCombo.getItemCount(); i++) {
 			if (mutationsListCombo.getItemAt(i) != this.mainFrame.epithelium
 					.getActivePerturbation())
