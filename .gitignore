@@ -4,6 +4,7 @@ target
 *.png
 .settings
 .metadata
+html
 *.zip
 bin
 build
