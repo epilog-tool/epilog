@@ -304,8 +304,8 @@ public class SimulationSetupPanel extends JPanel {
 		auxiliary[3].add(prioritiesCombo);
 
 		northLineStartPanel.add(auxiliary[0], BorderLayout.PAGE_START);
-		northLineStartPanel.add(auxiliary[2], BorderLayout.LINE_START);
-		northLineStartPanel.add(auxiliary[3], BorderLayout.PAGE_END);
+		northLineStartPanel.add(auxiliary[3], BorderLayout.LINE_START);
+		northLineStartPanel.add(auxiliary[2], BorderLayout.PAGE_END);
 
 		centerLineStartPanel.add(auxiliary[1]);
 

@@ -187,8 +187,8 @@ public class StartPanel extends JPanel {
 		
 		//labelFilename.setText("Filename: ");
 
-		setWidth.setText("Width: ");
-		setHeight.setText("Height: ");
+		setWidth.setText("Height: ");
+		setHeight.setText("Width: ");
 
 		userDefinedWidth.setPreferredSize(new Dimension(34, 26));
 		userDefinedHeight.setPreferredSize(new Dimension(34, 26));

@@ -83,12 +83,12 @@ public class MainFrame extends JFrame {
 
 	private JTabbedPane tabbedPane;
 
-	//private JFileChooser fc = new JFileChooser();
-	
+	// private JFileChooser fc = new JFileChooser();
+
 	private boolean editableTab;
 	private Color backgroundColor;
 
-//	public JLabel selectedFilenameLabel;
+	// public JLabel selectedFilenameLabel;
 
 	/**
 	 * Generates the main panel.
@@ -98,7 +98,6 @@ public class MainFrame extends JFrame {
 
 		this.logicalModelComposition = new LogicalModelComposition(this);
 		initialSetupHasChanged = false;
-		
 
 		this.backgroundColor = new Color(0xD3D3D3);
 
@@ -338,9 +337,9 @@ public class MainFrame extends JFrame {
 				}
 
 				paintHexagons(i, j);
-
-				if (tabbedPane.getSelectedIndex() == 0)
-					simulation.saveLastPic();
+				if (epithelium != null && epithelium.getUnitaryModel() != null)
+					if (tabbedPane.getSelectedIndex() == 0)
+						simulation.saveLastPic();
 			}
 
 			@Override
@@ -633,132 +632,132 @@ public class MainFrame extends JFrame {
 		tabbedPane.setEnabledAt(4, !bool);
 	}
 
-//	/**
-//	 * Repaints the left panel of Epilog's mainPanel, whenever the grid's
-//	 * dimension has changed
-//	 * 
-//	 * @see Topology
-//	 * @see DrawPolygon
-//	 * @return panel left panel
-//	 */
-//	public JPanel gridSpecsPanel() {
-//
-//		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-//		JLabel setWidth = new JLabel();
-//		JLabel setHeight = new JLabel();
-//		JButton loadSBML = new JButton("Load SBML");
-//		JLabel labelFilename = new JLabel();
-//		JTextField userDefinedWidth = new JTextField();
-//		JTextField userDefinedHeight = new JTextField();
-//		selectedFilenameLabel = new JLabel();
-//
-//		labelFilename.setText("Filename: ");
-//
-//		setWidth.setText("Width: ");
-//		setHeight.setText("Height: ");
-//
-//		userDefinedWidth.setPreferredSize(new Dimension(34, 26));
-//		userDefinedHeight.setPreferredSize(new Dimension(34, 26));
-//
-//		userDefinedWidth.setHorizontalAlignment(JTextField.CENTER);
-//		userDefinedHeight.setHorizontalAlignment(JTextField.CENTER);
-//		userDefinedWidth.setText("" + topology.getWidth());
-//		userDefinedHeight.setText("" + topology.getHeight());
-//
-//		userDefinedWidth.addFocusListener(new FocusListener() {
-//			@Override
-//			public void focusLost(FocusEvent arg0) {
-//
-//				if (getEpithelium().getUnitaryModel() == null) {
-//					JTextField src = (JTextField) arg0.getSource();
-//					topology.setWidth(Integer.parseInt(src.getText()));
-//					hexagonsPanel.paintComponent(hexagonsPanel.getGraphics());
-//				}
-//			}
-//
-//			@Override
-//			public void focusGained(FocusEvent arg0) {
-//			}
-//		});
-//
-//		userDefinedHeight.addKeyListener(new KeyListener() {
-//
-//			@Override
-//			public void keyTyped(KeyEvent arg0) {
-//			}
-//
-//			@Override
-//			public void keyReleased(KeyEvent arg0) {
-//			}
-//
-//			@Override
-//			public void keyPressed(KeyEvent arg0) {
-//				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-//					JTextField src = (JTextField) arg0.getSource();
-//
-//					topology.setHeight(Integer.parseInt(src.getText()));
-//					hexagonsPanel.paintComponent(hexagonsPanel.getGraphics());
-//				}
-//			}
-//		});
-//		userDefinedWidth.addKeyListener(new KeyListener() {
-//
-//			@Override
-//			public void keyTyped(KeyEvent arg0) {
-//			}
-//
-//			@Override
-//			public void keyReleased(KeyEvent arg0) {
-//			}
-//
-//			@Override
-//			public void keyPressed(KeyEvent arg0) {
-//				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-//					JTextField src = (JTextField) arg0.getSource();
-//
-//					topology.setWidth(Integer.parseInt(src.getText()));
-//					hexagonsPanel.paintComponent(hexagonsPanel.getGraphics());
-//				}
-//			}
-//		});
-//
-//		userDefinedHeight.addFocusListener(new FocusListener() {
-//
-//			@Override
-//			public void focusLost(FocusEvent arg0) {
-//				if (getEpithelium().getUnitaryModel() == null) {
-//					JTextField src = (JTextField) arg0.getSource();
-//					topology.setHeight(Integer.parseInt(src.getText()));
-//					hexagonsPanel.paintComponent(hexagonsPanel.getGraphics());
-//				}
-//			}
-//
-//			@Override
-//			public void focusGained(FocusEvent arg0) {
-//				// TODO Auto-generated method stub
-//			}
-//		});
-//
-//		panel.add(setWidth);
-//		panel.add(userDefinedWidth);
-//		panel.add(setHeight);
-//		panel.add(userDefinedHeight);
-//		panel.add(loadSBML);
-//		if (getEpithelium().getUnitaryModel() != null) {
-//			panel.add(labelFilename);
-//			panel.add(selectedFilenameLabel);
-//			initializePanelCenterRight();
-//		}
-//
-//		loadSBML.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				askModel();
-//				initializePanelCenterRight();
-//			}
-//		});
-//
-//		return panel;
-//	}
+	// /**
+	// * Repaints the left panel of Epilog's mainPanel, whenever the grid's
+	// * dimension has changed
+	// *
+	// * @see Topology
+	// * @see DrawPolygon
+	// * @return panel left panel
+	// */
+	// public JPanel gridSpecsPanel() {
+	//
+	// JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	// JLabel setWidth = new JLabel();
+	// JLabel setHeight = new JLabel();
+	// JButton loadSBML = new JButton("Load SBML");
+	// JLabel labelFilename = new JLabel();
+	// JTextField userDefinedWidth = new JTextField();
+	// JTextField userDefinedHeight = new JTextField();
+	// selectedFilenameLabel = new JLabel();
+	//
+	// labelFilename.setText("Filename: ");
+	//
+	// setWidth.setText("Width: ");
+	// setHeight.setText("Height: ");
+	//
+	// userDefinedWidth.setPreferredSize(new Dimension(34, 26));
+	// userDefinedHeight.setPreferredSize(new Dimension(34, 26));
+	//
+	// userDefinedWidth.setHorizontalAlignment(JTextField.CENTER);
+	// userDefinedHeight.setHorizontalAlignment(JTextField.CENTER);
+	// userDefinedWidth.setText("" + topology.getWidth());
+	// userDefinedHeight.setText("" + topology.getHeight());
+	//
+	// userDefinedWidth.addFocusListener(new FocusListener() {
+	// @Override
+	// public void focusLost(FocusEvent arg0) {
+	//
+	// if (getEpithelium().getUnitaryModel() == null) {
+	// JTextField src = (JTextField) arg0.getSource();
+	// topology.setWidth(Integer.parseInt(src.getText()));
+	// hexagonsPanel.paintComponent(hexagonsPanel.getGraphics());
+	// }
+	// }
+	//
+	// @Override
+	// public void focusGained(FocusEvent arg0) {
+	// }
+	// });
+	//
+	// userDefinedHeight.addKeyListener(new KeyListener() {
+	//
+	// @Override
+	// public void keyTyped(KeyEvent arg0) {
+	// }
+	//
+	// @Override
+	// public void keyReleased(KeyEvent arg0) {
+	// }
+	//
+	// @Override
+	// public void keyPressed(KeyEvent arg0) {
+	// if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+	// JTextField src = (JTextField) arg0.getSource();
+	//
+	// topology.setHeight(Integer.parseInt(src.getText()));
+	// hexagonsPanel.paintComponent(hexagonsPanel.getGraphics());
+	// }
+	// }
+	// });
+	// userDefinedWidth.addKeyListener(new KeyListener() {
+	//
+	// @Override
+	// public void keyTyped(KeyEvent arg0) {
+	// }
+	//
+	// @Override
+	// public void keyReleased(KeyEvent arg0) {
+	// }
+	//
+	// @Override
+	// public void keyPressed(KeyEvent arg0) {
+	// if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+	// JTextField src = (JTextField) arg0.getSource();
+	//
+	// topology.setWidth(Integer.parseInt(src.getText()));
+	// hexagonsPanel.paintComponent(hexagonsPanel.getGraphics());
+	// }
+	// }
+	// });
+	//
+	// userDefinedHeight.addFocusListener(new FocusListener() {
+	//
+	// @Override
+	// public void focusLost(FocusEvent arg0) {
+	// if (getEpithelium().getUnitaryModel() == null) {
+	// JTextField src = (JTextField) arg0.getSource();
+	// topology.setHeight(Integer.parseInt(src.getText()));
+	// hexagonsPanel.paintComponent(hexagonsPanel.getGraphics());
+	// }
+	// }
+	//
+	// @Override
+	// public void focusGained(FocusEvent arg0) {
+	// // TODO Auto-generated method stub
+	// }
+	// });
+	//
+	// panel.add(setWidth);
+	// panel.add(userDefinedWidth);
+	// panel.add(setHeight);
+	// panel.add(userDefinedHeight);
+	// panel.add(loadSBML);
+	// if (getEpithelium().getUnitaryModel() != null) {
+	// panel.add(labelFilename);
+	// panel.add(selectedFilenameLabel);
+	// initializePanelCenterRight();
+	// }
+	//
+	// loadSBML.addActionListener(new ActionListener() {
+	// public void actionPerformed(ActionEvent e) {
+	// askModel();
+	// initializePanelCenterRight();
+	// }
+	// });
+	//
+	// return panel;
+	// }
 
 	// Getter, Setters and Boolean Methods
 
@@ -1149,28 +1148,28 @@ public class MainFrame extends JFrame {
 
 	// Loading Methods
 
-//	/**
-//	 * Loads the sbml model.
-//	 * 
-//	 * @see startPanel.loadModel()
-//	 * 
-//	 */
-//	private void askModel() {
-//
-//		fc.setDialogTitle("Choose file");
-//
-//		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-//			selectedFilenameLabel.setText(fc.getSelectedFile().getName());
-//			selectedFilenameLabel.setForeground(Color.white);
-//
-//			File file = fc.getSelectedFile();
-//
-//			this.epithelium.setSBMLFilename(file.getName());
-//			this.epithelium.setSBMLPath(file.getAbsolutePath());
-//
-//			startPanel.loadModel(file);
-//			startPanel.saveButton.setEnabled(true);
-//		}
-//	}
+	// /**
+	// * Loads the sbml model.
+	// *
+	// * @see startPanel.loadModel()
+	// *
+	// */
+	// private void askModel() {
+	//
+	// fc.setDialogTitle("Choose file");
+	//
+	// if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+	// selectedFilenameLabel.setText(fc.getSelectedFile().getName());
+	// selectedFilenameLabel.setForeground(Color.white);
+	//
+	// File file = fc.getSelectedFile();
+	//
+	// this.epithelium.setSBMLFilename(file.getName());
+	// this.epithelium.setSBMLPath(file.getAbsolutePath());
+	//
+	// startPanel.loadModel(file);
+	// startPanel.saveButton.setEnabled(true);
+	// }
+	// }
 
 }

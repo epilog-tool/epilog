@@ -92,7 +92,7 @@ public class Simulation {
 	public void step() {
 		this.iterationNumber++;
 		setRunning(true);
-		this.mainFrame.setBorderHexagonsPanel(iterationNumber);
+		//this.mainFrame.setBorderHexagonsPanel(iterationNumber);
 
 		this.mainFrame.simulationSetupPanel.simulationPanelsoff();
 
@@ -125,8 +125,12 @@ public class Simulation {
 			resetIterationNumber();
 			System.out.println("Stable State Found");
 		}
+		else
+			this.mainFrame.setBorderHexagonsPanel(iterationNumber);
+		
 		currentGlobalState = nextGlobalState;
-
+		
+		
 	}
 
 	/**

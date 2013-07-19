@@ -77,9 +77,10 @@ public class ComponentsPanel extends JPanel {
 				TitledBorder.DEFAULT_POSITION, new Font("Arial", Font.ITALIC,
 						14), Color.black);
 
-		TitledBorder titleInputs = new TitledBorder(border, "Environment Inputs",
-				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
-						"Arial", Font.ITALIC, 14), Color.black);
+		TitledBorder titleInputs = new TitledBorder(border,
+				"Environment Inputs", TitledBorder.LEFT,
+				TitledBorder.DEFAULT_POSITION, new Font("Arial", Font.ITALIC,
+						14), Color.black);
 
 		properComponents.setBorder(titleProperComponents);
 		inputComponents.setBorder(titleInputs);
@@ -206,20 +207,32 @@ public class ComponentsPanel extends JPanel {
 			}
 			add(properComponents, BorderLayout.CENTER);
 			add(inputComponents, BorderLayout.PAGE_END);
+			inputComponents.setVisible(checkEnvironmentInputsExistence());
+				
 
 		}
 		return this;
 	}
 	
+	private boolean checkEnvironmentInputsExistence(){
+		boolean check = false;
+		for (NodeInfo node: mainFrame.epithelium.getUnitaryModel().getNodeOrder())
+			if (node.isInput() && !mainFrame.epithelium.isIntegrationComponent(node))
+				check = true;
+		return check;
+	}
 	
+
 	/**
 	 * Changes the color associated with a component.
 	 * 
-	 * @param src button associated with a components color
+	 * @param src
+	 *            button associated with a components color
 	 * @see mainFrame.epithelium.setColor
 	 */
 	private void setNewColor(JButton src) {
-		Color newColor = JColorChooser.showDialog(src, "Color Chooser - " + button2Node.get(src).getNodeID(),
+		Color newColor = JColorChooser.showDialog(src, "Color Chooser - "
+				+ button2Node.get(src).getNodeID(),
 				this.mainFrame.epithelium.getColor(button2Node.get(src)));
 		src.setBackground(newColor);
 		this.mainFrame.epithelium.setColor(button2Node.get(src), newColor);
@@ -227,19 +240,20 @@ public class ComponentsPanel extends JPanel {
 
 	}
 
-	
 	/**
 	 * Sets the component as selected or not.
 	 * 
-	 * @param box checkbox associated with a component
-	 * @param bool boolean value: true if node selected, false otherwise
+	 * @param box
+	 *            checkbox associated with a component
+	 * @param bool
+	 *            boolean value: true if node selected, false otherwise
 	 * 
 	 * @see mainFrame.epithelium.setActiveComponent()
 	 */
 	public void fireCheckBoxChange(Boolean bool, JCheckBox box) {
 
-		this.mainFrame.epithelium.setActiveComponent(
-				jcheckbox2Node.get(box), bool);
+		this.mainFrame.epithelium.setActiveComponent(jcheckbox2Node.get(box),
+				bool);
 	}
 
 }

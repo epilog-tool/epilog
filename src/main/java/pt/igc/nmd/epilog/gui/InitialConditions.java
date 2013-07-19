@@ -313,12 +313,17 @@ public class InitialConditions extends JPanel {
 			panelStart = new JPanel();
 
 			LineBorder border = new LineBorder(Color.black, 1, true);
-			TitledBorder south = new TitledBorder(border, "Analytics @ " + "("
-					+ this.mainFrame.topology.instance2j(this.mainFrame.activeInstance)
-					+ ","
-					+this.mainFrame.topology.instance2i(this.mainFrame.activeInstance)
-					+ ")", TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION,
-					new Font("Arial", Font.ITALIC, 14), Color.black);
+			TitledBorder south = new TitledBorder(border,
+					"Analytics @ "
+							+ "("
+							+ this.mainFrame.topology
+									.instance2j(this.mainFrame.activeInstance)
+							+ ","
+							+ this.mainFrame.topology
+									.instance2i(this.mainFrame.activeInstance)
+							+ ")", TitledBorder.LEFT,
+					TitledBorder.DEFAULT_POSITION, new Font("Arial",
+							Font.ITALIC, 14), Color.black);
 			panelStart.setBorder(south);
 
 			String string = ("<html>");
@@ -327,9 +332,9 @@ public class InitialConditions extends JPanel {
 				if (!this.mainFrame.epithelium.isIntegrationComponent(node)) {
 
 					string = string
-							+ ("<br>" + "node: " + node + " -> value: "  + this.mainFrame.epithelium
-									.getGridValue(this.mainFrame.activeInstance,
-											node));
+							+ ("<br>" + "node: " + node + " -> value: " + this.mainFrame.epithelium
+									.getGridValue(
+											this.mainFrame.activeInstance, node));
 
 				}
 			}
@@ -342,9 +347,20 @@ public class InitialConditions extends JPanel {
 			panelCenterAux.add(panelStart, BorderLayout.LINE_START);
 			panelCenterAux.add(panelCenterMain, BorderLayout.CENTER);
 			panelCenterAux.add(panelEnd, BorderLayout.PAGE_END);
+			panelEnd.setVisible(checkEnvironmentInputsExistence());
 
 			add(panelCenterAux, BorderLayout.CENTER);
 		}
+	}
+
+	private boolean checkEnvironmentInputsExistence() {
+		boolean check = false;
+		for (NodeInfo node : mainFrame.epithelium.getUnitaryModel()
+				.getNodeOrder())
+			if (node.isInput()
+					&& !mainFrame.epithelium.isIntegrationComponent(node))
+				check = true;
+		return check;
 	}
 
 	// Color and Drawing
@@ -457,9 +473,11 @@ public class InitialConditions extends JPanel {
 	 */
 	private void initialConditionsAdd() {
 		String name = setName.getText();
-		name = name.replace(" ","");
-		if (name=="none")
+		name = name.replace(" ", "");
+		if (name == "none")
 			name = "none1";
+		if (!name.matches("[A-Za-z0-9]+"))
+			name = "empty_space";
 		if (!this.mainFrame.epithelium.getInitialStateSet().containsKey(name))
 			sets.addItem(name);
 		this.mainFrame.epithelium.setInitialStateSet(name);

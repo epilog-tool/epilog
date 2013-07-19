@@ -589,7 +589,7 @@ public class PerturbationsPanel extends JPanel {
 	/**
 	 * Gets the selected perturbation.
 	 * 
-	 * @return JCombox of the peturbation expression
+	 * @return JCombox of the perturbation expression
 	 */
 	private JComboBox getPerturbedExpressionCombo() {
 		JComboBox perturbedExpressionCombo = new JComboBox();
