@@ -1,0 +1,58 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="simulation">
+
+	<info>
+		<link type="guide" xref="some-index-page"/>
+		<desc>Description on how to run a simulation</desc>
+		<revision status="stub" date="2013-07-18"/>
+		<revision status="draft" date="2013-07-19"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Running a simulation</title>
+	<p>At the simulation tab (see Figure below) the
+		user can decide if there is <link xref="rollover">roll-over</link> and
+		if the simulation is to be made with a cellular automata, or a <link xref="composedmodel">composed model</link>. Another definitions
+		regarding the model are the choice of: <link
+			xref="initialconditions">initial conditions</link>, and the grid
+		will display the initial state selected; <link xref="perturbations">perturbations</link>,
+		and the perturbed hexagons have thicker edges; and the <link
+			xref="priorities">priorities</link>.
+	</p>
+
+	<figure>
+		<title>Figure 9 - Epilog's Simulation interface</title>
+		<media type="image" src="figures/simulation.png"/>
+		<desc>....</desc>
+	</figure>
+
+	<p>When choosing an input set, if there is a change in the type of
+		input ( environment to integration, or vice-versa), the panel with the
+		components is updated and only environment inputs are displayed.</p>
+
+	<p>When choosing an input set, if there is a change in the type of
+		input ( environment to integration, or vice-versa), the panel with the
+		components is updated and only environment inputs are displayed.</p>
+
+	<p>By moving the mouse over the hexagons grid the value of all
+		components and existing perturbations on a hexagon are displayed on
+		the analytics panel, with a reference to the coordinate of the
+		hexagon.</p>
+
+	<p>
+		To start the simulation just press the <link xref="step">step</link> or
+	<link xref="run">run</link> button. All other tabs and selection panels
+	are disabled at this time. The iteration number is updated on top of
+	the hexagons grid, and the user can select or deselect components
+	between iterations. During the simulation the user can also save an
+	image with the hexagons grid by clicking on any point of the grid.
+	</p>
+
+	<p>The simulation keeps going until a stable state is found,
+		however at any time the user can press "Restart" and reverts to where
+		it was before the simulation began. </p>
+
+</page>
