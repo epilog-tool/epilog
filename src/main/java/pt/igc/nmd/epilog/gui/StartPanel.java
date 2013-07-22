@@ -488,7 +488,7 @@ public class StartPanel extends JPanel {
 					String value = line.split(":")[1];
 					value = value.replace(" ", "");
 					setInitialStateDescription.put(key, value);
-					mainFrame.epithelium.setInitialStateSet(value);
+					mainFrame.epithelium.setInitialStateSet(value,mainFrame.simulation.isRunning());
 
 				} else {
 

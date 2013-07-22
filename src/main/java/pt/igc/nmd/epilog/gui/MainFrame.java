@@ -158,7 +158,7 @@ public class MainFrame extends JFrame {
 		}
 
 		this.topology = new Topology(24, 24);
-		this.epithelium = new SphericalEpithelium(this.topology);
+		this.epithelium = new SphericalEpithelium(this.topology,this);
 		this.simulation = new Simulation(this);
 
 		panelCenter = new JPanel(new BorderLayout());

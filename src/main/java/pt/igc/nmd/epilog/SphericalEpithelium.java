@@ -10,6 +10,7 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 
+import pt.igc.nmd.epilog.gui.MainFrame;
 import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionSpecification;
 import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
 
@@ -53,6 +54,7 @@ public class SphericalEpithelium implements Epithelium {
 
 
 	private Topology topology = null;
+	private MainFrame mainFrame =null;
 
 	private boolean newEpithelium;
 
@@ -61,9 +63,10 @@ public class SphericalEpithelium implements Epithelium {
 	 * 
 	 * @param topology
 	 */
-	public SphericalEpithelium(Topology topology) {
+	public SphericalEpithelium(Topology topology, MainFrame mainFrame) {
 
 		this.topology = topology;
+		this.mainFrame = mainFrame;
 		prioritiesSet = new Hashtable<String, List<List<String>>>();
 		perturbationsSet = new Hashtable<String, AbstractPerturbation[]>();
 		initialStateSet = new Hashtable<String, Grid>();
@@ -748,7 +751,8 @@ public class SphericalEpithelium implements Epithelium {
 	 * Adds an initial set.
 	 * @param name
 	 */
-	public void setInitialStateSet(String name) {
+	public void setInitialStateSet(String name, boolean simulationRunning) {
+		
 
 		List<NodeInfo> initialStateComponents = new ArrayList<NodeInfo>();
 		for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
@@ -760,12 +764,21 @@ public class SphericalEpithelium implements Epithelium {
 		Grid initialStateGrid = new Grid(topology.getNumberInstances(),
 				initialStateComponents);
 
+		if (!simulationRunning)
 		for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
 			for (NodeInfo node : initialStateComponents) {
 				byte value = getGridValue(instance, node);
 				initialStateGrid.setGrid(instance, node, value);
 			}
 		}
+		else
+			for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
+				for (NodeInfo node : initialStateComponents) {
+					byte value = (byte) mainFrame.simulation.getCurrentGlobalStateValue(instance, node);
+					//byte value = getGridValue(instance, node);
+					initialStateGrid.setGrid(instance, node, value);
+				}
+			}
 		initialStateSet.put(name, initialStateGrid);
 	}
 

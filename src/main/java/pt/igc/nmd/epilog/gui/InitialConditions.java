@@ -480,7 +480,7 @@ public class InitialConditions extends JPanel {
 			name = "empty_space";
 		if (!this.mainFrame.epithelium.getInitialStateSet().containsKey(name))
 			sets.addItem(name);
-		this.mainFrame.epithelium.setInitialStateSet(name);
+		this.mainFrame.epithelium.setInitialStateSet(name, mainFrame.simulation.isRunning());
 	}
 
 	/**

@@ -138,7 +138,7 @@ public class SimulationSetupPanel extends JPanel {
 
 		saveAsInitialState.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				
 				mainFrame.initial.initialConditionsAdd(setICName.getText());
 
 			}
