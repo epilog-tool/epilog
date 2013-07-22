@@ -280,10 +280,11 @@ public class StartPanel extends JPanel {
 			}
 		});
 
-		panel.add(setWidth);
-		panel.add(userDefinedWidth);
 		panel.add(setHeight);
+		panel.add(userDefinedWidth);
+		panel.add(setWidth);
 		panel.add(userDefinedHeight);
+
 		panel.add(loadSBML);
 		if (mainFrame.epithelium.getUnitaryModel() != null) {
 			mainFrame.initializePanelCenterRight();
@@ -294,6 +295,8 @@ public class StartPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if (mainFrame.epithelium.getUnitaryModel() == null) {
 					askModel();
+				
+					
 					if (mainFrame.epithelium.getUnitaryModel()!=null)
 					mainFrame.initializePanelCenterRight();
 				}

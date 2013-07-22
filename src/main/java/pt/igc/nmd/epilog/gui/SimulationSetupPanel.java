@@ -16,6 +16,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -40,6 +41,8 @@ public class SimulationSetupPanel extends JPanel {
 	private JButton stepButton;
 	private JButton restartButton;
 	private JPanel centerPanel;
+	private JButton saveAsInitialState;
+	private JTextField setICName;
 
 	// private boolean test = false;
 
@@ -69,12 +72,11 @@ public class SimulationSetupPanel extends JPanel {
 		layout.setAlignment(FlowLayout.LEFT);
 		setLayout(new BorderLayout());
 
-
 		// CENTER
 
 		centerPanel = mainFrame.componentsPanel.init();
 		add(centerPanel, BorderLayout.CENTER);
-		
+
 		// PAGE START PANEL
 
 		JPanel startPanel = new JPanel(layout);
@@ -126,6 +128,20 @@ public class SimulationSetupPanel extends JPanel {
 
 			}
 
+		});
+
+		// Save as initial State
+
+		saveAsInitialState = new JButton("Save Initial State");
+		setICName = new JTextField("", 15);
+		;
+
+		saveAsInitialState.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				mainFrame.initial.initialConditionsAdd(setICName.getText());
+
+			}
 		});
 
 		startPanel.add(rollOver);
@@ -199,13 +215,15 @@ public class SimulationSetupPanel extends JPanel {
 						.setBorder(titleInitialConditions);
 				runButton.setEnabled(true);
 				stepButton.setEnabled(true);
-//				removeAll();
-//				repaint();
-//				revalidate();
-//				init();
+				// removeAll();
+				// repaint();
+				// revalidate();
+				// init();
 			}
 		});
 		startPanel.add(restartButton);
+		startPanel.add(saveAsInitialState);
+		startPanel.add(setICName);
 		add(startPanel, BorderLayout.PAGE_START);
 
 		// LINE START
@@ -242,7 +260,8 @@ public class SimulationSetupPanel extends JPanel {
 				mainFrame.epithelium.setSelectedPriority((String) src
 						.getSelectedItem());
 				String string = "priorities";
-				//needToResetComposedModel(string, (String) src.getSelectedItem());
+				// needToResetComposedModel(string, (String)
+				// src.getSelectedItem());
 			}
 		});
 
@@ -319,12 +338,12 @@ public class SimulationSetupPanel extends JPanel {
 				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
 						"Arial", Font.ITALIC, 14), Color.black);
 
-
-		
 		TitledBorder south = new TitledBorder(border, "Analytics @ instance: "
-				+ ("(" + mainFrame.topology.instance2j(0)+","+ mainFrame.topology.instance2i(0) + ")"), TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION,
-				new Font("Arial", Font.ITALIC, 14), Color.black);
-		
+				+ ("(" + mainFrame.topology.instance2j(0) + ","
+						+ mainFrame.topology.instance2i(0) + ")"),
+				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
+						"Arial", Font.ITALIC, 14), Color.black);
+
 		String string = ("<html>");
 		for (NodeInfo node : mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder()) {
@@ -332,18 +351,17 @@ public class SimulationSetupPanel extends JPanel {
 
 				string = string
 						+ ("<br>" + "node: " + node + " -> value: " + mainFrame.epithelium
-								.getGridValue(0,
-										node));
+								.getGridValue(0, node));
 
 			}
 		}
-		
+
 		string = string + ("</html>");
 		JLabel f = new JLabel(string);
 		southLineStartPanel.add(f);
-		
+
 		JScrollPane nw = new JScrollPane(southLineStartPanel);
-		//nw.add(southLineStartPanel);
+		// nw.add(southLineStartPanel);
 
 		northLineStartPanel.setBorder(north);
 		centerLineStartPanel.setBorder(center);
@@ -357,15 +375,11 @@ public class SimulationSetupPanel extends JPanel {
 		lineStartPanel.add(nw, BorderLayout.PAGE_END);
 
 		add(lineStartPanel, BorderLayout.LINE_START);
-		
 
-		
 		return this;
 	}
-	
-	
-	
-	private void repaintSimulationSetupPanel(){
+
+	private void repaintSimulationSetupPanel() {
 		centerPanel.removeAll();
 		centerPanel.repaint();
 		centerPanel.revalidate();
@@ -373,10 +387,8 @@ public class SimulationSetupPanel extends JPanel {
 		JPanel aux = new JPanel();
 		aux = mainFrame.componentsPanel.init();
 		add(aux, 0);
-		
-		
+
 	}
-	
 
 	/**
 	 * Forces the creation of a new composed model, if any of the simulation
@@ -403,7 +415,7 @@ public class SimulationSetupPanel extends JPanel {
 			else
 				mainFrame.resetComposedModel = true;
 			mainFrame.previsioulySelectedInputSet = selected;
-		} 
+		}
 	}
 
 	/**
@@ -431,7 +443,7 @@ public class SimulationSetupPanel extends JPanel {
 					combo.addItem(i);
 			}
 		} else if (string == "input") {
-//			combo.addItem("none");
+			// combo.addItem("none");
 			Hashtable<String, Hashtable<NodeInfo, List<String>>> set = mainFrame.epithelium
 					.getInputsIntegrationSet();
 			for (String i : set.keySet()) {
@@ -480,7 +492,6 @@ public class SimulationSetupPanel extends JPanel {
 
 	// Tabs on or off
 
-	
 	/**
 	 * Disables all tabs, except the simulation tab.
 	 * 
@@ -494,7 +505,6 @@ public class SimulationSetupPanel extends JPanel {
 		rollOver.setEnabled(false);
 	}
 
-	
 	/**
 	 * Enables all tabs.
 	 * 

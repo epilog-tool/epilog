@@ -30,6 +30,8 @@ import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
 
+import sun.org.mozilla.javascript.internal.Node;
+
 public class PerturbationsPanel extends JPanel {
 
 	/**
@@ -225,17 +227,20 @@ public class PerturbationsPanel extends JPanel {
 			if (!node.isInput()) {
 				componentBox.addItem(node.getNodeID());
 				string2Node.put(node.getNodeID(), node);
+				int k = this.mainFrame.epithelium.getUnitaryModel().getNodeOrder().indexOf(node);
+				componentBox.setSelectedItem(this.mainFrame.epithelium
+						.getUnitaryModel().getNodeOrder().get(k).getNodeID());
+				selectedPerturbedComponent = this.mainFrame.epithelium
+						.getUnitaryModel().getNodeOrder().get(k).getNodeID();
+				
+				
+				setMinValue((byte) 0);
+				setMaxValue(this.mainFrame.epithelium.getUnitaryModel().getNodeOrder()
+						.get(k).getMax());
 			}
 		}
 
-		componentBox.setSelectedItem(this.mainFrame.epithelium
-				.getUnitaryModel().getNodeOrder().get(0).getNodeID());
-		selectedPerturbedComponent = this.mainFrame.epithelium
-				.getUnitaryModel().getNodeOrder().get(0).getNodeID();
-		setMinValue((byte) 0);
-		setMaxValue(this.mainFrame.epithelium.getUnitaryModel().getNodeOrder()
-				.get(0).getMax());
-
+		
 		JComboBox minValueBox = getPerturbedExpressionCombo();
 		JComboBox maxValueBox = getPerturbedExpressionCombo();
 

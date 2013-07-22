@@ -355,7 +355,7 @@ public class Simulation {
 		Color newColor = color;
 		float res;
 		if (value > 0) {
-			res = value / max;
+			res = (float) value / max;
 			newColor = lighter(newColor, (1 - res));
 		} else if (value == 0)
 			newColor = Color.white;
@@ -372,6 +372,7 @@ public class Simulation {
 	 */
 	public Color lighter(Color color, float fraction) {
 
+		System.out.println(fraction);
 		int red = (int) Math.round(color.getRed() * (1.0 + fraction));
 		int green = (int) Math.round(color.getGreen() * (1.0 + fraction));
 		int blue = (int) Math.round(color.getBlue() * (1.0 + fraction));

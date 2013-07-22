@@ -171,7 +171,7 @@ public class InitialConditions extends JPanel {
 				public void actionPerformed(ActionEvent e) {
 					// TODO: Add the selected grid to the sets of initial
 					// conditions with the name of the textfield
-					initialConditionsAdd();
+					initialConditionsAdd(setName.getText());
 				}
 			});
 
@@ -471,8 +471,8 @@ public class InitialConditions extends JPanel {
 	 * set replaces the old one.
 	 * 
 	 */
-	private void initialConditionsAdd() {
-		String name = setName.getText();
+	public void initialConditionsAdd(String name) {
+	//	String name = setName.getText();
 		name = name.replace(" ", "");
 		if (name == "none")
 			name = "none1";
