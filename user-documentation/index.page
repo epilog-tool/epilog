@@ -34,7 +34,7 @@
 	</title>
 
 	<p>
-	<media type="image" src="figures/GINsim_logo.png" />
+	
    	EpiLog 
    	is a tool used for qualitative simulations of <em style="strong">Epi</em>thelium <em style="strong">Log</em>ical models.
    	Simulation can made using a <link xref="composed-model">Composed Model</link> or a <link xref="cellular-automata">Cellular Automata</link> to visualize the evolution of the pattern formation.
