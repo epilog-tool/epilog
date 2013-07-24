@@ -3,9 +3,10 @@
 		id="new-epithelium">
 
 	<info>
-		<link type="guide" xref="some-index-page"/>
+									<link type="guide" xref="index#definitions"/>
+		<title type="link" role="trail">New Epithelium</title>
 		<desc>Description on how to create a new epithelium</desc>
-		<revision status="draft" date="2013-07-22"/>
+		<revision status="draft" date="2013-07-24"/>
 	</info>
 
 	<!--  TODO: series link not supported by HTML export  -->
@@ -15,9 +16,9 @@
 
 	<p>
 		When selecting a new epithelium the hexagons grid appears with the
-		standard dimensions of 24 by 24 (see Figure below ). These dimensions
+		standard dimensions of 24x24 (see Figure below). These dimensions
 		can be modified at will, except for the case of the single cell, that
-		will automatically be replaced by a 1 by 2 grid. To create an
+		will automatically be replaced by a 1x2 grid. To create an
 		epithelium model, the regulatory logical model must be loaded, by
 		pressing the
 		<link xref="load-sbml">
@@ -42,8 +43,7 @@
 		a previsouly saved epithelium model by pressing
 		<link xref="load-epithelium">
 		"Load Epithelium"
-		</link>
-		.
+		</link>.
 	</p>
 
 </page>

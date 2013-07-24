@@ -3,9 +3,10 @@
 		id="save">
 
 	<info>
-		<link type="guide" xref="some-index-page"/>
+				<link type="guide" xref="index#definitions"/>
+		<title type="link" role="trail">Save</title>
 		<desc>Description on how to save an epithelium model</desc>
-		<revision status="draft" date="2013-07-22"/>
+		<revision status="draft" date="2013-07-24"/>
 	</info>
 
 	<!--  TODO: series link not supported by HTML export  -->

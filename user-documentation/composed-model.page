@@ -3,9 +3,10 @@
 		id="composed-model">
 
 	<info>
-		<link type="guide" xref="some-index-page"/>
+				<link type="guide" xref="index#simulation"/>
+		<title type="link" role="trail">Composed Model</title>
 		<desc>Description of the composed model</desc>
-		<revision status="draft" date="2013-07-22"/>
+		<revision status="draft" date="2013-07-24"/>
 	</info>
 
 	<!--  TODO: series link not supported by HTML export  -->
@@ -13,10 +14,11 @@
 
 	<title>Simulating with the composed model</title>
 
-	<p>If the user decides to make the simulation using the composed
-		model, instead of the cellular automata (by default), then it may take
-		some extra time for the model to compose. A warning appears if the
-		estimated time for the composed model creation is higher than 2 hours.</p>
+	<p> To choose to simulate using a composed model the user must check the box before the "Create composed model" option. If the user decides to make the simulation using the composed
+		model, instead of the <link xref="cellular-automata">
+		cellular automata
+		</link> (by default), then it may take
+		some extra time for the model to compose. As a future upgrade a warning appears if the estimated time for the composed model creation is higher than 2 hours.</p>
 
 	<p>
 		If after a simulation has started, or the user pressed restart, if the
@@ -24,10 +26,8 @@
 		<link xref="perturbations">
 		perturbations
 		</link>
-		,
-		<link xref="priorities">
-		priorities</link> or <link xref="input-definitions">input definitions</link>
-		changed, then the composed model has to be created again.
+		or <link xref="input-definitions">input definitions</link>
+		changed, then the composed model has to be build again.
 	</p>
 
 

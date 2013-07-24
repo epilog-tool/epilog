@@ -3,7 +3,8 @@
 		id="input-definitions">
 
 	<info>
-		<link type="guide" xref="some-index-page"/>
+								<link type="guide" xref="index#input"/>
+		<title type="link" role="trail">Definition of inputs</title>
 		<desc>Defining inputs characteristics</desc>
 		<revision status="draft" date="2013-07-22"/>
 	</info>
@@ -27,7 +28,7 @@
 	<p>
 		The user can decide to modify an input from environmental to
 		integration by selecting the <em>int</em> option on the combo box in
-		front of the component (see Figure below ). By doing so, the component
+		front of the component (see Figure below). By doing so, the component
 		is now considered an integration input and the integration functions
 		must be specified. By pressing the button "Function" a new window
 		appears with as many lines as expression levels assumed by that
@@ -36,7 +37,7 @@
 
 	<p>
 		The integration functions obey a specific
-		<link xref="initial-conditions">
+		<link xref="integration-functions">
 		logical grammar
 		</link>
 		designed for Epilog.

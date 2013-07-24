@@ -3,9 +3,10 @@
 		id="priorities">
 
 	<info>
-		<link type="guide" xref="some-index-page"/>
+		<link type="guide" xref="index#definitions"/>
+		<title type="link" role="trail">Priorities</title>
 		<desc>Description on how to define priorities</desc>
-		<revision status="draft" date="2013-07-22"/>
+		<revision status="draft" date="2013-07-24"/>
 	</info>
 
 	<!--  TODO: series link not supported by HTML export  -->
@@ -20,15 +21,16 @@
 		higher priority components can no longer update.</p>
 
 	<p>On the left side of the tab are the components with the highest
-		priority and the user can select a component and move it to a lesser
-		(or higher) priority list (see Figure below ).</p>
+		priority. The user can select a component and move it to a lesser
+		(or higher) priority list (see Figure below), using the butons with arrows.</p>
 
 	<figure>
 		<media type="image" src="figures/priorities.png" />
 		<title>Priorities definition window.</title>
 	</figure>
 
-
+	<p> The user can distinguish between increasing and decreasing updates by selecting a component and pressing the "Split" button. The component is replaced with the component ID and a "+" for increasing update and a "-" for a decreasing update. The reverse operation is also available by selecting a splited component and pressing "Unsplit". At any time the user can reset priorities definitions, pressing "Reset" and only all components (unsplited) return to the initial state of no priorities.</p>
+	
 	<p>
 		If the user wants to save a priorities set, then at the bottom of that
 		tab the user must assign a name to that priorities set and press the
@@ -41,10 +43,11 @@
 		"save"
 		</link>
 		the epithelium model.
-	</p>
+		</p>
+		
+	
 
 	<p>All the previously saved sets can be called, just by selecting
-		then at the combo box at the bottom of the tab. the selected priority
-		set will be displayed on the top bar of the tab.</p>
-
+		then at the combo box at the bottom of the tab. The selected priority
+		set will be displayed on the top bar of the tab. Selecting a priority set and pressing "-" erases that priority set.</p>
 </page>

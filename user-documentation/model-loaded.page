@@ -3,9 +3,10 @@
 		id="model-loaded">
 
 	<info>
-		<link type="guide" xref="some-index-page"/>
+								<link type="guide" xref="index#definition"/>
+		<title type="link" role="trail">Model Loaded</title>
 		<desc>Description of Epilog's after loading a model</desc>
-		<revision status="draft" date="2013-07-22"/>
+		<revision status="draft" date="2013-07-24"/>
 	</info>
 
 	<!--  TODO: series link not supported by HTML export  -->
@@ -31,7 +32,7 @@
 		<link xref="priorities">
 		priorities
 		</link>
-		(see Figure below ). Note that there is a tab for the
+		(see Figure below). Note that there is a tab for the
 		<link xref="input-definitions">
 		input definitions
 		</link>

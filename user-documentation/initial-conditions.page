@@ -3,15 +3,16 @@
 		id="initial-conditions">
 
 	<info>
-		<link type="guide" xref="some-index-page"/>
+						<link type="guide" xref="index#definitions"/>
+		<title type="link" role="trail">Definition of initial conditions</title>
 		<desc>Defining the initial conditions</desc>
-		<revision status="draft" date="2013-07-22"/>
+		<revision status="draft" date="2013-07-24"/>
 	</info>
 
 	<!--  TODO: series link not supported by HTML export  -->
 	<links type="series"/>
 
-	<title>Initial conditions</title>
+	<title>Definition of initial conditions</title>
 
 
 	<p>All proper components and environment inputs are initialized

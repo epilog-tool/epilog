@@ -3,9 +3,10 @@
 		id="quit">
 
 	<info>
-		<link type="guide" xref="some-index-page"/>
+								<link type="guide" xref="index#definitions"/>
+		<title type="link" role="trail">Quit Epilog</title>
 		<desc>Description on how to quit Epilog</desc>
-		<revision status="draft" date="2013-07-22"/>
+		<revision status="draft" date="2013-07-24"/>
 	</info>
 
 	<!--  TODO: series link not supported by HTML export  -->

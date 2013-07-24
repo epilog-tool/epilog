@@ -3,7 +3,8 @@
 		id="perturbations">
 
 	<info>
-		<link type="guide" xref="some-index-page"/>
+									<link type="guide" xref="index#definitions"/>
+		<title type="link" role="trail">Perturbations</title>
 		<desc>Description on how to define perturbations</desc>
 		<revision status="draft" date="2013-07-22"/>
 	</info>
@@ -18,18 +19,16 @@
 		range of allowed values ([min-max]) of a proper component. After
 		creating the perturbation the user adds that perturbation to the
 		active perturbations list and a color is assigned to that
-		perturbation. If the user selects a perturbation from that list then
-		that is the active perturbation.</p>
+		perturbation. If the user selects a perturbation from that active perturbations list then that is the active perturbation.</p>
 
 	<p>When drawing on the hexagons grid, either by clicking or
 		dragging the mouse over the hexagons, those hexagons will have the
 		active perturbation associated.</p>
 
-	<p>If the user wants an hexagon to be associated with more than one
-		perturbation than on the perturbations list he only has to select all
-		the perturbations he wants to combine and then add them to the active
-		perturbations list and a multiple perturbation is created (see Figure
-		below ). At any time the user can delete a perturbation from both the
+	<p>It is possible to create a multiple perturbation, which is composed of more than one perturbation. On the perturbations list select all
+		the perturbations to combine and add them to the active
+		perturbations list to create a multiple perturbation (see Figure
+		below). At any time the user can delete a perturbation from both the
 		perturbation and active perturbation lists.</p>
 
 	<figure>
@@ -38,9 +37,9 @@
 	</figure>
 
 	<p>When drawing the perturbations the user can decide to mark all
-		hexagons with the same perturbation, remove all perturbations, or use
-		the rectangle fill button. The rectangle fill button when pressed
-		turns yellow and at the hexagons grid all the hexagons inside the
+		hexagons with the same perturbation (Apply All), remove all perturbations (Clear All), or use
+		the Rectangle Fill button. The rectangle fill button when pressed
+		turns yellow and  all the hexagons inside the
 		rectangle formed from the point where the mouse is pressed to the
 		point where it is released will be marked with the active
 		perturbation. This option remains active until the button is pressed
@@ -61,5 +60,5 @@
 	</p>
 
 	<p>All the previously saved sets can be drawn on the hexagons grid,
-		just by selecting then at the comb box at the bottom of the tab</p>
+		just by selecting then at the comb box at the bottom of the tab. Selecting a perturbation set and pressing "-" erases that set.</p>
 </page>

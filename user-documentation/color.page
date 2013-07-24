@@ -3,9 +3,10 @@
 		id="color">
 
 	<info>
-		<link type="guide" xref="some-index-page"/>
+			<link type="guide" xref="index#definitions"/>
+		<title type="link" role="trail">Choosing a Color</title>
 		<desc>Color choosing windows</desc>
-		<revision status="draft" date="2013-07-22"/>
+		<revision status="draft" date="2013-07-24"/>
 	</info>
 
 	<!--  TODO: series link not supported by HTML export  -->
@@ -23,8 +24,7 @@
 		selected a
 		<link xref="load-epithelium">
 		"Load Epithelium"
-		</link>
-		, then the color scheme previously saved is used.
+		</link>, then the color scheme previously saved is used.
 	</p>
 
 	<p>The user can change the color at any time by pressing the

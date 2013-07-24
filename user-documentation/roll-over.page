@@ -3,9 +3,10 @@
 		id="roll-over">
 
 	<info>
-		<link type="guide" xref="some-index-page"/>
+						<link type="guide" xref="index#simulation"/>
+		<title type="link" role="trail">Roll-Over</title>
 		<desc>Description of the roll-over option</desc>
-		<revision status="draft" date="2013-07-22"/>
+		<revision status="draft" date="2013-07-24"/>
 	</info>
 
 	<!--  TODO: series link not supported by HTML export  -->
@@ -13,7 +14,7 @@
 
 	<title>Roll-Over</title>
 
-	<p>If the user selects "Vertical Roll-Over" or "Horizontal
+	<p> Before the <link xref="simulation">simulation</link> the user can select if the epithelium is a cylinder ot a 2D epithelium. If the user selects "Vertical Roll-Over" or "Horizontal
 		Roll-Over" then the epithelium is a cylinder, connected by the
 		vertical, or horizontal extremes. If the user chooses "no Roll-Over",
 		then the extremes don't touch and it is just a 2D epithelium.</p>

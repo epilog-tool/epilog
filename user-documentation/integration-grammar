@@ -1,0 +1,39 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="integration-functions">
+
+	<info>
+									<link type="guide" xref="index#inputs"/>
+		<title type="link" role="trail">Integration Functions Grammar</title>
+		<desc>Description of the integration functions grammar</desc>
+		<revision status="draft" date="2013-07-24"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Integration Functions Grammar</title>
+
+
+	<p>
+		The integration function specication follows a grammar designed for thispurpose, described as any combination of logical connectors representingdisjunction (|), conjunction (&amp;) or negation (!) of atoms of the following		form:
+		
+			<list>
+		<item><p>G(t; m; M)</p></item>
+		<item><p>G(t; m; M; d)</p></item>
+		<item><p>G(t; m; M; d:D)</p></item>
+	</list>Each atom is a proposition over the required value(s) of a componentacross the neighbours at specied distances of each cell. G is the component name, <em>t</em> is the threshold level of the component, m and M are, respectively, the minimum and maximum number of neighbours meeting the threshold requirement, and <em>d</em> (resp. D) is the minimum (resp. maximum) distance from the current position at which a cell is considered to be a neighbour. The distance parameters are optional; when they are not specied, only immediate neighbours (at distance 1) are considered. The D parameter is also optional, in which case only neighbours at ex-actly distance d are considered. If both d and D are specied, all cellsat a distance within the range are considered. Parameters m and M arespecied either by exact numbers or by the symbol (underscore charac-ter), which is replaced by the actual number of neighbours, consideringthe distance parameters. The t parameter may also be specied as "_",		which denotes the maximum level of the component.
+		
+	</p>
+
+
+
+	<figure>
+		<media type="image" src="figures/integrationfunctions.png" />
+		<title>Integration functions grammar example.</title>
+	</figure>
+
+
+
+
+</page>

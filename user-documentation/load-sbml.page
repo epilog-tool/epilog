@@ -3,9 +3,10 @@
 		id="load-sbml">
 
 	<info>
-		<link type="guide" xref="some-index-page"/>
+								<link type="guide" xref="index#definition"/>
+		<title type="link" role="trail">Loading a SBML file</title>
 		<desc>Description on how to run load a sbml file</desc>
-		<revision status="draft" date="2013-07-22"/>
+		<revision status="draft" date="2013-07-24"/>
 	</info>
 
 	<!--  TODO: series link not supported by HTML export  -->

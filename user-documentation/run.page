@@ -3,9 +3,10 @@
 		id="run">
 
 	<info>
-		<link type="guide" xref="some-index-page"/>
+		<link type="guide" xref="index#simulation"/>
+		<title type="link" role="trail">Run</title>
 		<desc>Description of the simulation evolution options (Run)</desc>
-		<revision status="draft" date="2013-07-22"/>
+		<revision status="draft" date="2013-07-24"/>
 	</info>
 
 	<!--  TODO: series link not supported by HTML export  -->
@@ -13,9 +14,10 @@
 
 	<title>Simulation: run</title>
 
-	<p>The <link xref="simulation">simulation</link> continues for 30 iterations or until a stable
-		state is found. At the end of the 30 iterations, the user must press
+	<p>The <link xref="simulation">simulation</link> runs until a stable
+		state is found. There is a stopping parameter (by default 30) that acts as a safeguard if a cycle is found. when the simulations reaches a number multiple of that stottping parameter it stops. The user must press
 		either run or <link xref="step">step</link> to continue the simulation.</p>
-
+	
+	<p> If a stable state is found the user is no longer allowed to press run or <link xref="step">step</link> </p>
 
 </page>

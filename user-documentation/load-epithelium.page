@@ -3,9 +3,10 @@
 		id="load-epithelium">
 
 	<info>
-		<link type="guide" xref="some-index-page"/>
+								<link type="guide" xref="index#definitions"/>
+		<title type="link" role="trail">Loading an Epithelium</title>
 		<desc>Description on how to load an epithelium</desc>
-		<revision status="draft" date="2013-07-22"/>
+		<revision status="draft" date="2013-07-24"/>
 	</info>
 
 	<!--  TODO: series link not supported by HTML export  -->
