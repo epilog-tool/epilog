@@ -12,7 +12,7 @@
 	<!--  TODO: series link not supported by HTML export  -->
 	<links type="series"/>
 
-	<title>Inputs definitions</title>
+	<title>Definition of inputs</title>
 
 	<p>
 		The regulatory model loaded with the <em>sbml</em> has no information

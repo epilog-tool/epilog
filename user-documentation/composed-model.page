@@ -14,18 +14,18 @@
 
 	<title>Simulating with the composed model</title>
 
-	<p> To choose to simulate using a composed model the user must check the box before the "Create composed model" option. If the user decides to make the simulation using the composed
-		model, instead of the <link href="https://en.wikipedia.org/wiki/Cellular_automaton">cellular automata</link> (by default), then it may take
-		some extra time for the model to compose. As a future upgrade a warning appears if the estimated time for the composed model creation is higher than 2 hours.</p>
+	<p> To make the simulation using the composed
+		model, instead of the <link href="https://en.wikipedia.org/wiki/Cellular_automaton">cellular automata</link> (by default), check the box before the "Create composed model" option. 
+		
+		It may take some extra time for the model to compose. As a future upgrade a warning will appear if the estimated time for the composed model creation is higher than 2 hours.</p>
 
 	<p>
-		If after a simulation has started, or the user pressed restart, if the
-		choice of the set of
+		A composed model is created if it is selected and a set of
 		<link xref="perturbations">
 		perturbations
 		</link>
 		or <link xref="input-definitions">input definitions</link>
-		changed, then the composed model has to be build again.
+		is different from a previous simulation.
 	</p>
 
 
