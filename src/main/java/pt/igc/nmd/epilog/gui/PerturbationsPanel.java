@@ -30,8 +30,6 @@ import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
 
-import sun.org.mozilla.javascript.internal.Node;
-
 public class PerturbationsPanel extends JPanel {
 
 	/**

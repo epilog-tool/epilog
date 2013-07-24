@@ -2,6 +2,7 @@ package pt.igc.nmd.epilog.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -39,10 +40,12 @@ public class SimulationSetupPanel extends JPanel {
 
 	private JButton runButton;
 	private JButton stepButton;
-	private JButton restartButton;
-	private JPanel centerPanel;
-	private JButton saveAsInitialState;
-	private JTextField setICName;
+	public JButton restartButton;
+	private JPanel centerCenterPanel;
+	
+	public JTextField stopCriterium;
+//	public JButton saveAsInitialState;
+//	public JTextField setICName;
 
 	// private boolean test = false;
 
@@ -74,9 +77,15 @@ public class SimulationSetupPanel extends JPanel {
 
 		// CENTER
 
-		centerPanel = mainFrame.componentsPanel.init();
-		add(centerPanel, BorderLayout.CENTER);
+		JPanel centerPanel = new JPanel(new BorderLayout());
+		JPanel startCenterPanel = new JPanel(new FlowLayout());
 
+		centerCenterPanel = mainFrame.componentsPanel.init();
+
+		centerPanel.add(centerCenterPanel, BorderLayout.CENTER);
+		centerPanel.add(startCenterPanel,BorderLayout.PAGE_START);
+		add(centerPanel, BorderLayout.CENTER);
+		
 		// PAGE START PANEL
 
 		JPanel startPanel = new JPanel(layout);
@@ -130,20 +139,6 @@ public class SimulationSetupPanel extends JPanel {
 
 		});
 
-		// Save as initial State
-
-		saveAsInitialState = new JButton("Save Initial State");
-		setICName = new JTextField("", 15);
-		;
-
-		saveAsInitialState.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				mainFrame.initial.initialConditionsAdd(setICName.getText());
-
-			}
-		});
-
 		startPanel.add(rollOver);
 		startPanel.add(createComposedModel);
 
@@ -180,9 +175,15 @@ public class SimulationSetupPanel extends JPanel {
 				}
 			}
 		});
+		
+		stopCriterium= new JTextField();
+		stopCriterium.setPreferredSize(new Dimension(34, 26));
+		stopCriterium.setText(""+30);
 
 		startPanel.add(runButton);
+		startPanel.add(stopCriterium);
 		startPanel.add(stepButton);
+		
 
 		restartButton = new JButton("Restart");
 
@@ -215,15 +216,21 @@ public class SimulationSetupPanel extends JPanel {
 						.setBorder(titleInitialConditions);
 				runButton.setEnabled(true);
 				stepButton.setEnabled(true);
+				restartButton.setEnabled(false);
+				mainFrame.componentsPanel.saveAsInitialState.setEnabled(false);
+				mainFrame.componentsPanel.setICName.setEnabled(false);
+
 				// removeAll();
 				// repaint();
 				// revalidate();
 				// init();
 			}
 		});
+
+		restartButton.setEnabled(false);
+
+
 		startPanel.add(restartButton);
-		startPanel.add(saveAsInitialState);
-		startPanel.add(setICName);
 		add(startPanel, BorderLayout.PAGE_START);
 
 		// LINE START
@@ -380,9 +387,9 @@ public class SimulationSetupPanel extends JPanel {
 	}
 
 	private void repaintSimulationSetupPanel() {
-		centerPanel.removeAll();
-		centerPanel.repaint();
-		centerPanel.revalidate();
+		centerCenterPanel.removeAll();
+		centerCenterPanel.repaint();
+		centerCenterPanel.revalidate();
 		this.remove(0);
 		JPanel aux = new JPanel();
 		aux = mainFrame.componentsPanel.init();

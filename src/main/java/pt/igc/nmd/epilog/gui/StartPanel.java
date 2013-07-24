@@ -56,8 +56,11 @@ public class StartPanel extends JPanel {
 	public JButton saveButton;
 	private JButton quitButton;
 	
-	private JButton loadSBML;
+	
+	private JTextField userDefinedWidth;
+	private JTextField userDefinedHeight;
 
+	JButton loadSBML;
 
 	public JLabel selectedFilenameLabel;
 
@@ -128,7 +131,7 @@ public class StartPanel extends JPanel {
 				mainFrame.initializePanelCenter();
 				mainFrame.simulation.reset();
 				mainFrame.epithelium.setNewEpithelium(true);
-				
+
 			}
 		});
 
@@ -139,14 +142,14 @@ public class StartPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				mainFrame.initializePanelCenter();
 				askConfigurations();
+				int height = mainFrame.topology.getHeight();
+				userDefinedHeight.setText(height+"");
+				
 				mainFrame.getContentPane().repaint();
 				mainFrame.simulation.reset();
 				mainFrame.epithelium.setNewEpithelium(false);
 				saveButton.setEnabled(true);
-				
-				
-				
-				
+
 			}
 		});
 
@@ -154,8 +157,10 @@ public class StartPanel extends JPanel {
 			saveButton.setEnabled(false);
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (mainFrame.epithelium != null)
+				if (mainFrame.epithelium != null) {
 					saveEpitheliumModel();
+					mainFrame.setTitle("Epilog");
+				}
 			}
 		});
 
@@ -181,11 +186,11 @@ public class StartPanel extends JPanel {
 		JLabel setWidth = new JLabel();
 		JLabel setHeight = new JLabel();
 		loadSBML = new JButton("Load SBML");
-		JTextField userDefinedWidth = new JTextField();
-		JTextField userDefinedHeight = new JTextField();
+		userDefinedWidth = new JTextField();
+		userDefinedHeight = new JTextField();
 		selectedFilenameLabel = new JLabel();
-		
-		//labelFilename.setText("Filename: ");
+
+		// labelFilename.setText("Filename: ");
 
 		setWidth.setText("Height: ");
 		setHeight.setText("Width: ");
@@ -295,15 +300,14 @@ public class StartPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if (mainFrame.epithelium.getUnitaryModel() == null) {
 					askModel();
-				
-					
-					if (mainFrame.epithelium.getUnitaryModel()!=null)
-					mainFrame.initializePanelCenterRight();
+
+					if (mainFrame.epithelium.getUnitaryModel() != null)
+						mainFrame.initializePanelCenterRight();
 				}
 			}
 		});
-//		if (!isNewEpithelium)
-//			loadSBML.setEnabled(false);
+		// if (!isNewEpithelium)
+		// loadSBML.setEnabled(false);
 		return panel;
 	}
 
@@ -333,7 +337,7 @@ public class StartPanel extends JPanel {
 			loadModel(file);
 			saveButton.setEnabled(true);
 		}
-		
+
 	}
 
 	/**
@@ -436,7 +440,7 @@ public class StartPanel extends JPanel {
 	 * @see setPerturbation
 	 */
 	private void loadConfigFile(Scanner fileIn) {
-//		int numberOfSets = 0;
+		// int numberOfSets = 0;
 
 		Hashtable<String, NodeInfo> string2Node = new Hashtable<String, NodeInfo>();
 		Hashtable<Integer, AbstractPerturbation> mlist = new Hashtable<Integer, AbstractPerturbation>();
@@ -488,7 +492,8 @@ public class StartPanel extends JPanel {
 					String value = line.split(":")[1];
 					value = value.replace(" ", "");
 					setInitialStateDescription.put(key, value);
-					mainFrame.epithelium.setInitialStateSet(value,mainFrame.simulation.isRunning());
+					mainFrame.epithelium.setInitialStateSet(value,
+							mainFrame.simulation.isRunning());
 
 				} else {
 
@@ -531,7 +536,8 @@ public class StartPanel extends JPanel {
 
 				if (line.contains("name")) {
 					int key = Integer.parseInt(line.split(" ")[1]);
-					String setName = line.split(":")[1].replace(" ", "").split("\\[")[0];
+					String setName = line.split(":")[1].replace(" ", "").split(
+							"\\[")[0];
 					setName.replace(" ", "");
 
 					setInputsDescription.put(key, setName);
@@ -541,14 +547,14 @@ public class StartPanel extends JPanel {
 
 				} else {
 
-//					System.out.println(line);
+					// System.out.println(line);
 					NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
 							.getNodeOrder()
 							.get(Integer.parseInt(line.split(" ")[3]));
 
 					mainFrame.epithelium.setIntegrationComponent(
 							Integer.parseInt(line.split(" ")[3]), true);
-//					byte value = (byte) Integer.parseInt(line.split(" ")[5]);
+					// byte value = (byte) Integer.parseInt(line.split(" ")[5]);
 
 					String expression = line.split(" ")[7];
 					String setName = setInputsDescription.get(Integer
@@ -579,7 +585,7 @@ public class StartPanel extends JPanel {
 				// TODO: Change to while
 
 				if (line.contains("#sets")) {
-//					numberOfSets = Integer.parseInt(line.split(" ")[3]);
+					// numberOfSets = Integer.parseInt(line.split(" ")[3]);
 				} else if (line.contains("name")) {
 					int setNumber = Integer.parseInt(line.split(" ")[1]);
 					String setName = line.split(" ")[3];
@@ -598,9 +604,9 @@ public class StartPanel extends JPanel {
 						String[] prioritiesElementsString = aux.split(",");
 						List<String> prioritiesOfThisClass = new ArrayList<String>();
 						for (String aux_3 : prioritiesElementsString) {
-//							NodeInfo node = string2Node.get(aux_3);
-//							if (node != null)
-								prioritiesOfThisClass.add(aux_3);
+							// NodeInfo node = string2Node.get(aux_3);
+							// if (node != null)
+							prioritiesOfThisClass.add(aux_3);
 						}
 
 						prioritiesClass.add(prioritiesOfThisClass);
@@ -927,7 +933,7 @@ public class StartPanel extends JPanel {
 									.getNodeOrder().indexOf(node) + " : "
 							+ value + " ( ");
 
-//					int next = 0;
+					// int next = 0;
 					int current = 0;
 					boolean start = true;
 					boolean ongoing = false;
@@ -1074,7 +1080,7 @@ public class StartPanel extends JPanel {
 					out.write("PT " + setIndex + " MT " + mutationIndex + " : "
 							+ " ( ");
 
-//					int next = 0;
+					// int next = 0;
 					int current = 0;
 					boolean start = true;
 					boolean ongoing = false;
