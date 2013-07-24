@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -39,6 +40,9 @@ public class ComponentsPanel extends JPanel {
 	private JPanel properComponents;
 	private JPanel inputComponents;
 	private JPanel auxiliaryPanel[];
+
+	public JButton saveAsInitialState;
+	public JTextField setICName;
 
 	public ComponentsPanel(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
@@ -71,6 +75,60 @@ public class ComponentsPanel extends JPanel {
 
 		setLayout(new BorderLayout());
 
+		// PAGE START
+		JPanel options = new JPanel(layout);
+
+		saveAsInitialState = new JButton("Save State");
+		setICName = new JTextField("", 15);
+		JButton buttonDeselectAll = new JButton("Deselect all");
+		JButton buttonSelectAll = new JButton("Select all");
+
+		saveAsInitialState.setEnabled(false);
+		setICName.setEnabled(false);
+
+		saveAsInitialState.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				mainFrame.initial.initialConditionsAdd(setICName.getText());
+
+			}
+		});
+
+		buttonDeselectAll.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for (JCheckBox singleNodeBox : nodeBox) {
+					if (singleNodeBox != null) {
+						singleNodeBox.setSelected(false);
+						mainFrame.epithelium.setActiveComponent(
+								jcheckbox2Node.get(singleNodeBox), false);
+					}
+				}
+				mainFrame.fillHexagons();
+				mainFrame.repaint();
+			}
+		});
+
+		buttonSelectAll.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for (JCheckBox singleNodeBox : nodeBox) {
+					if (singleNodeBox != null) {
+						singleNodeBox.setSelected(true);
+						mainFrame.epithelium.setActiveComponent(
+								jcheckbox2Node.get(singleNodeBox), true);
+					}
+				}
+				mainFrame.fillHexagons();
+				mainFrame.repaint();
+			}
+		});
+
+		options.add(buttonSelectAll);
+		options.add(buttonDeselectAll);
+		options.add(saveAsInitialState);
+		options.add(setICName);
+
+		// CENTER AND PAGE END
+
 		LineBorder border = new LineBorder(Color.black, 1, true);
 		TitledBorder titleProperComponents = new TitledBorder(border,
 				"Proper Components", TitledBorder.LEFT,
@@ -82,8 +140,13 @@ public class ComponentsPanel extends JPanel {
 				TitledBorder.DEFAULT_POSITION, new Font("Arial", Font.ITALIC,
 						14), Color.black);
 
+		TitledBorder titleOptions = new TitledBorder(border, "Display options",
+				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
+						"Arial", Font.ITALIC, 14), Color.black);
+
 		properComponents.setBorder(titleProperComponents);
 		inputComponents.setBorder(titleInputs);
+		options.setBorder(titleOptions);
 
 		if (this.mainFrame.epithelium.getUnitaryModel() != null) {
 
@@ -167,7 +230,7 @@ public class ComponentsPanel extends JPanel {
 					jcheckbox2Node.put(nodeBox[i], listNodes.get(i));
 					colorButton[i] = new JButton("");
 
-					if (this.mainFrame.epithelium.getColor(listNodes.get(i)) != null) {
+					if (this.mainFrame.epithelium.getColor(listNodes.get(i)) == Color.white) {
 						colorButton[i].setBackground(this.mainFrame
 								.getRandomColor());
 						this.mainFrame.epithelium.setColor(listNodes.get(i),
@@ -205,23 +268,24 @@ public class ComponentsPanel extends JPanel {
 					inputComponents.add(auxiliaryPanel[i]);
 				}
 			}
+			add(options, BorderLayout.PAGE_START);
 			add(properComponents, BorderLayout.CENTER);
 			add(inputComponents, BorderLayout.PAGE_END);
 			inputComponents.setVisible(checkEnvironmentInputsExistence());
-				
 
 		}
 		return this;
 	}
-	
-	private boolean checkEnvironmentInputsExistence(){
+
+	private boolean checkEnvironmentInputsExistence() {
 		boolean check = false;
-		for (NodeInfo node: mainFrame.epithelium.getUnitaryModel().getNodeOrder())
-			if (node.isInput() && !mainFrame.epithelium.isIntegrationComponent(node))
+		for (NodeInfo node : mainFrame.epithelium.getUnitaryModel()
+				.getNodeOrder())
+			if (node.isInput()
+					&& !mainFrame.epithelium.isIntegrationComponent(node))
 				check = true;
 		return check;
 	}
-	
 
 	/**
 	 * Changes the color associated with a component.

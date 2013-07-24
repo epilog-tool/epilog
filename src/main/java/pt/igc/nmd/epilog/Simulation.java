@@ -40,9 +40,9 @@ public class Simulation {
 	 * Simulates for 30 iterations or until a stable state is found.
 	 */
 	public void run() {
-
+		runcontrol = false;
 		while (!stableStateFound
-				&& (iterationNumber % 30 != 0 || runcontrol == false)) {
+				&& (iterationNumber % Integer.parseInt(mainFrame.simulationSetupPanel.stopCriterium.getText()) != 0 || runcontrol == false)) {
 			runcontrol = true;
 			runButtonActivated = true;
 			step();
@@ -92,7 +92,10 @@ public class Simulation {
 	public void step() {
 		this.iterationNumber++;
 		setRunning(true);
-		//this.mainFrame.setBorderHexagonsPanel(iterationNumber);
+		
+		this.mainFrame.simulationSetupPanel.restartButton.setEnabled(true);
+		this.mainFrame.componentsPanel.saveAsInitialState.setEnabled(true);
+		this.mainFrame.componentsPanel.setICName.setEnabled(true);
 
 		this.mainFrame.simulationSetupPanel.simulationPanelsoff();
 
@@ -372,7 +375,7 @@ public class Simulation {
 	 */
 	public Color lighter(Color color, float fraction) {
 
-		System.out.println(fraction);
+		
 		int red = (int) Math.round(color.getRed() * (1.0 + fraction));
 		int green = (int) Math.round(color.getGreen() * (1.0 + fraction));
 		int blue = (int) Math.round(color.getBlue() * (1.0 + fraction));

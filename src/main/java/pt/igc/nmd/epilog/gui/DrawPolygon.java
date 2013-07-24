@@ -35,7 +35,7 @@ public class DrawPolygon extends JPanel {
 	 */
 	public DrawPolygon(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
-		this.setPreferredSize(new Dimension(500, 500));
+		this.setPreferredSize(new Dimension(450, 500));
 	}
 
 	/**

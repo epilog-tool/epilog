@@ -49,12 +49,11 @@ public class SphericalEpithelium implements Epithelium {
 	private Hashtable<String, Grid> initialStateSet;
 	private Hashtable<String, Grid> inputsSet;
 	public Hashtable<String, Hashtable<NodeInfo, List<String>>> integrationInputsSet;
-	
+
 	public Hashtable<String, NodeInfo> string2Node;
 
-
 	private Topology topology = null;
-	private MainFrame mainFrame =null;
+	private MainFrame mainFrame = null;
 
 	private boolean newEpithelium;
 
@@ -75,7 +74,7 @@ public class SphericalEpithelium implements Epithelium {
 		integrationInputsSet = new Hashtable<String, Hashtable<NodeInfo, List<String>>>();
 		loadedPerturbations = new ArrayList<AbstractPerturbation>();
 		loadedMutations = new ArrayList<AbstractPerturbation>();
-		
+
 		string2Node = new Hashtable<String, NodeInfo>();
 
 		perturbationColor = new Hashtable<String, Color>();
@@ -147,9 +146,11 @@ public class SphericalEpithelium implements Epithelium {
 	 */
 	private void initializeColors() {
 
-		this.nodeColor = new Color[getUnitaryModel().getNodeOrder().size()];
-		for (int i = 0; i < this.nodeColor.length; i++)
-			this.nodeColor[i] = Color.white;
+		if (nodeColor == null) {
+			this.nodeColor = new Color[getUnitaryModel().getNodeOrder().size()];
+			for (int i = 0; i < this.nodeColor.length; i++)
+				this.nodeColor[i] = Color.white;
+		}
 	}
 
 	/**
@@ -247,7 +248,8 @@ public class SphericalEpithelium implements Epithelium {
 	/**
 	 * Returns true if component is set to display, false otherwise.
 	 * 
-	 * @param i  index related to a node
+	 * @param i
+	 *            index related to a node
 	 * @return boolean value
 	 */
 	public boolean isDefinitionComponentDisplayOn(int i) {
@@ -256,10 +258,11 @@ public class SphericalEpithelium implements Epithelium {
 
 	// INTEGRATION COMPONENTS
 
-/**
- * Returns true if node is integration component, false otherwise
- * @param node
- */
+	/**
+	 * Returns true if node is integration component, false otherwise
+	 * 
+	 * @param node
+	 */
 	public boolean isIntegrationComponent(NodeInfo node) {
 		return isIntegrationComponent(getUnitaryModel().getNodeOrder().indexOf(
 				node));
@@ -267,8 +270,11 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Returns the integration function in the form of a string.
-	 * @param node node related to the integration function
-	 * @param value value related to the integration function of the node
+	 * 
+	 * @param node
+	 *            node related to the integration function
+	 * @param value
+	 *            value related to the integration function of the node
 	 * @return integration functions
 	 */
 	public String getIntegrationFunction(NodeInfo node, byte value) {
@@ -283,6 +289,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Translates an integration function from string to expression.
+	 * 
 	 * @param integrationfunctionString
 	 * @return expression
 	 */
@@ -305,6 +312,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Returns the integration expressions related to a node.
+	 * 
 	 * @param node
 	 * @return expressions
 	 */
@@ -323,6 +331,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Set a integration function related to a value of a component.
+	 * 
 	 * @param node
 	 * @param value
 	 * @param expression
@@ -339,6 +348,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Reset all integration functions of a component.
+	 * 
 	 * @param node
 	 */
 	public void resetIntegrationNode(NodeInfo node) {
@@ -355,19 +365,23 @@ public class SphericalEpithelium implements Epithelium {
 	}
 
 	/**
-	 * Set component, related to the index of a node as integration input or environment.
+	 * Set component, related to the index of a node as integration input or
+	 * environment.
+	 * 
 	 * @param i
 	 * @param bool
 	 */
 	public void setIntegrationComponent(int i, boolean bool) {
 		this.integrationcomponent[i] = bool;
 	}
+
 	/**
-	 * Returns true if component, related to the index of a node is an integration input.
+	 * Returns true if component, related to the index of a node is an
+	 * integration input.
+	 * 
 	 * @param i
 	 * @return
 	 */
-	
 
 	public boolean isIntegrationComponent(int i) {
 		return this.integrationcomponent[i];
@@ -392,9 +406,8 @@ public class SphericalEpithelium implements Epithelium {
 			noPerturbations();
 			noInitialState();
 			noIntegrationFunctions();
-	
-			
-			for (NodeInfo node: getUnitaryModel().getNodeOrder())
+
+			for (NodeInfo node : getUnitaryModel().getNodeOrder())
 				string2Node.put(node.getNodeID(), node);
 		}
 
@@ -418,6 +431,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Sets the composed model.
+	 * 
 	 * @param composedModel
 	 */
 	public void setComposedModel(LogicalModel composedModel) {
@@ -426,6 +440,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Returns the epithelium.
+	 * 
 	 * @return
 	 */
 	public SphericalEpithelium getEpithelium() {
@@ -441,6 +456,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Returns true if the user is creting a new epithelium.
+	 * 
 	 * @return
 	 */
 	public boolean isNewEpithelium() {
@@ -449,6 +465,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Load a new epithelium.
+	 * 
 	 * @param b
 	 */
 	public void setNewEpithelium(boolean b) {
@@ -459,6 +476,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Sets an initial state for an instance.
+	 * 
 	 * @param instance
 	 */
 	public void setInitialState(int instance) {
@@ -502,6 +520,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Set initial state of a node with a value.
+	 * 
 	 * @param node
 	 * @param value
 	 */
@@ -511,6 +530,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Returns the initial State of a node.
+	 * 
 	 * @param node
 	 * @return
 	 */
@@ -520,6 +540,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Sets the value of a node at instance in the grid.
+	 * 
 	 * @param instance
 	 * @param node
 	 * @param value
@@ -539,6 +560,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Returns the color associated with a perturbation.
+	 * 
 	 * @param perturbation
 	 * @return
 	 */
@@ -548,6 +570,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Sets the color associated with a perturbation.
+	 * 
 	 * @param perturbation
 	 * @param color
 	 */
@@ -565,6 +588,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Returns the active perturbation.
+	 * 
 	 * @return
 	 */
 	public AbstractPerturbation getActivePerturbation() {
@@ -573,6 +597,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Sets the active perturbation.
+	 * 
 	 * @param perturbation
 	 */
 	public void setActivePerturbation(AbstractPerturbation perturbation) {
@@ -588,6 +613,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Sets an instance as perturbed with the active perturbation.
+	 * 
 	 * @param instance
 	 */
 	public void setPerturbedInstance(int instance) {
@@ -597,6 +623,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Returns true if instance is perturbed, false otherwise.
+	 * 
 	 * @param instance
 	 * @return
 	 */
@@ -608,7 +635,9 @@ public class SphericalEpithelium implements Epithelium {
 	}
 
 	/**
-	 * Returns true if instance is perturbed, false otherwise. Applicable only when drawing.
+	 * Returns true if instance is perturbed, false otherwise. Applicable only
+	 * when drawing.
+	 * 
 	 * @param instance
 	 * @return
 	 */
@@ -618,11 +647,13 @@ public class SphericalEpithelium implements Epithelium {
 		else
 			return true;
 	}
-/**
- * Return perturbation associated with an instance
- * @param instance
- * @return perturbation
- */
+
+	/**
+	 * Return perturbation associated with an instance
+	 * 
+	 * @param instance
+	 * @return perturbation
+	 */
 	public AbstractPerturbation getInstancePerturbation(int instance) {
 
 		// if (selectedPerturbationSet != null &&
@@ -655,6 +686,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Add perturbation set.
+	 * 
 	 * @param name
 	 */
 	public void setPerturbationSet(String name) {
@@ -671,6 +703,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Add perturbation set.
+	 * 
 	 * @param name
 	 * @param perturbations_1
 	 */
@@ -681,6 +714,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Return perturbations sets.
+	 * 
 	 * @return
 	 */
 	public Hashtable<String, AbstractPerturbation[]> getPerturbationsSet() {
@@ -689,6 +723,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Return the selected perturbation set.
+	 * 
 	 * @return
 	 */
 	public String getSelectedPerturbation() {
@@ -697,6 +732,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Set the perturbations set loaded from file.
+	 * 
 	 * @param a
 	 */
 	public void setLoadedPerturbations(List<AbstractPerturbation> a) {
@@ -705,8 +741,9 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Set the mutations set loaded from file.
+	 * 
 	 * @param a
-	 */	
+	 */
 	public void setLoadedMutations(List<AbstractPerturbation> a) {
 		loadedMutations = a;
 	}
@@ -714,6 +751,7 @@ public class SphericalEpithelium implements Epithelium {
 	// Sets the selected perturbation from the saved Set
 	/**
 	 * Set the perturbations set selected by the user.
+	 * 
 	 * @param a
 	 */
 	public void setSelectedPerturbation(String string) {
@@ -723,17 +761,19 @@ public class SphericalEpithelium implements Epithelium {
 	/*
 	 * Initial State
 	 */
-	
+
 	/**
 	 * Returns the set of initial conditions
+	 * 
 	 * @return
 	 */
 	public Hashtable<String, Grid> getInitialStateSet() {
 		return initialStateSet;
 	}
-/**
- * Generates a set of inital conditions with all values as zero.
- */
+
+	/**
+	 * Generates a set of inital conditions with all values as zero.
+	 */
 	public void noInitialState() {
 
 		List<NodeInfo> initialStateComponents = new ArrayList<NodeInfo>();
@@ -749,10 +789,10 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Adds an initial set.
+	 * 
 	 * @param name
 	 */
 	public void setInitialStateSet(String name, boolean simulationRunning) {
-		
 
 		List<NodeInfo> initialStateComponents = new ArrayList<NodeInfo>();
 		for (NodeInfo node : getUnitaryModel().getNodeOrder()) {
@@ -765,17 +805,18 @@ public class SphericalEpithelium implements Epithelium {
 				initialStateComponents);
 
 		if (!simulationRunning)
-		for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
-			for (NodeInfo node : initialStateComponents) {
-				byte value = getGridValue(instance, node);
-				initialStateGrid.setGrid(instance, node, value);
+			for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
+				for (NodeInfo node : initialStateComponents) {
+					byte value = getGridValue(instance, node);
+					initialStateGrid.setGrid(instance, node, value);
+				}
 			}
-		}
 		else
 			for (int instance = 0; instance < topology.getNumberInstances(); instance++) {
 				for (NodeInfo node : initialStateComponents) {
-					byte value = (byte) mainFrame.simulation.getCurrentGlobalStateValue(instance, node);
-					//byte value = getGridValue(instance, node);
+					byte value = (byte) mainFrame.simulation
+							.getCurrentGlobalStateValue(instance, node);
+					// byte value = getGridValue(instance, node);
 					initialStateGrid.setGrid(instance, node, value);
 				}
 			}
@@ -784,6 +825,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Sets the selected initial conditions set as active.
+	 * 
 	 * @param string
 	 */
 	public void setSelectedInitialSet(String string) {
@@ -799,13 +841,13 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Returns the inputs set.
+	 * 
 	 * @return
 	 */
 	public Hashtable<String, Hashtable<NodeInfo, List<String>>> getInputsIntegrationSet() {
 		return integrationInputsSet;
 	}
 
-	
 	public void noIntegrationFunctions() {
 
 		// TODO: Solve this issue
@@ -819,6 +861,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Adds an inputs set.
+	 * 
 	 * @param name
 	 */
 	public void setIntegrationInputsSet(String name) {
@@ -840,6 +883,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Combine grids of environmental inputs and initial state inputs.
+	 * 
 	 * @param grid
 	 */
 	public void combineGrids(Grid grid) {
@@ -853,6 +897,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Set the selected input set as active.
+	 * 
 	 * @param string
 	 */
 	public void setSelectedInputSet(String string) {
@@ -890,16 +935,17 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Add a priorities set.
+	 * 
 	 * @param name
 	 * @param prioritiesClass
 	 */
-	public void setPrioritiesSet(String name,
-			List<List<String>> prioritiesClass) {
+	public void setPrioritiesSet(String name, List<List<String>> prioritiesClass) {
 		prioritiesSet.put(name, prioritiesClass);
 	}
 
 	/**
 	 * Returns the priority sets.
+	 * 
 	 * @return
 	 */
 	public Hashtable<String, List<List<String>>> getPrioritiesSet() {
@@ -908,6 +954,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Return the selected priority set.
+	 * 
 	 * @return
 	 */
 	public String getSelectedPriority() {
@@ -916,6 +963,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	/**
 	 * Set the selected priority set.
+	 * 
 	 * @param string
 	 */
 	public void setSelectedPriority(String string) {

@@ -1,16 +1,10 @@
 package pt.igc.nmd.epilog;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.LogicalModelImpl;
@@ -40,7 +34,7 @@ public class LogicalModelComposition {
 	private Map<Integer, List<NodeInfo>> instanceNodes = new HashMap<Integer, List<NodeInfo>>();
 
 	/**
-	 * Initializes the creation of the compsoed model.
+	 * Initializes the creation of the composed model.
 	 * 
 	 * @param mainPanel
 	 */

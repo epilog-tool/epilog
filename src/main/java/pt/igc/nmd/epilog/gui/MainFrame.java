@@ -41,7 +41,7 @@ public class MainFrame extends JFrame {
 	public boolean start; // variable that returns true when the user wants to
 							// create a new epithelium
 
-	private StartPanel startPanel = null;
+	public StartPanel startPanel = null;
 	private JPanel panelCenter = null;
 	public JPanel panelCenterLeft = null;
 	private JPanel panelCenterRight = null;
@@ -126,7 +126,7 @@ public class MainFrame extends JFrame {
 	 */
 	public void setupMainFrame() {
 
-		getContentPane().setPreferredSize(new Dimension(1200, 600));
+		getContentPane().setPreferredSize(new Dimension(1400, 600));
 		getContentPane().setBackground(backgroundColor);
 		getContentPane().setLayout(new BorderLayout());
 		this.setResizable(true);
@@ -879,7 +879,7 @@ public class MainFrame extends JFrame {
 		JLabel aux = new JLabel(stringTextTool);
 		LineBorder border = new LineBorder(Color.black, 1, true);
 
-		TitledBorder south = new TitledBorder(border, "Analytics @ instance: "
+		TitledBorder south = new TitledBorder(border, "Analytics @: "
 				+ ("(" + topology.instance2j(instance) + ","
 						+ topology.instance2i(instance) + ")"),
 				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(

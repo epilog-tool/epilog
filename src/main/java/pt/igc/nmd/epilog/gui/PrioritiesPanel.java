@@ -81,6 +81,8 @@ public class PrioritiesPanel extends JPanel {
 		JButton buttonIncreaseLeft = new JButton("->");
 		JButton buttonIncreaseRight = new JButton("<-");
 		JButton buttonDifferentiate = new JButton("Differentiate");
+		JButton buttonUnDifferentiate = new JButton("Undifferentiate");
+		JButton buttonRestart = new JButton("Restart");
 
 		buttonIncreaseLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -101,7 +103,21 @@ public class PrioritiesPanel extends JPanel {
 			}
 		});
 
+		buttonUnDifferentiate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				unDifferentiateNode(centerPanel);
+			}
+		});
+
+		buttonRestart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				restart();
+			}
+		});
+
 		optionsPanel.add(buttonDifferentiate);
+		optionsPanel.add(buttonUnDifferentiate);
+		optionsPanel.add(buttonRestart);
 		optionsPanel.add(buttonIncreaseLeft);
 		optionsPanel.add(buttonIncreaseRight);
 
@@ -119,6 +135,7 @@ public class PrioritiesPanel extends JPanel {
 				TitledBorder.DEFAULT_POSITION, new Font("Arial", Font.ITALIC,
 						14), Color.black);
 		selectedPriority.setBorder(south);
+		selectedPriority.add(priorityChosenString);
 
 		// END PANEL
 
@@ -155,6 +172,7 @@ public class PrioritiesPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				loadInitialconditions();
+
 			}
 		});
 
@@ -177,6 +195,18 @@ public class PrioritiesPanel extends JPanel {
 		centerPanel.add(priorityClass.get(0));
 		add(centerPanel, BorderLayout.CENTER);
 
+	}
+
+	private void restart() {
+		centerPanel.removeAll();
+
+		priorityClass = new ArrayList<JList>();
+
+		priorityClass.add(createInitialPriority());
+		centerPanel.add(priorityClass.get(0));
+		centerPanel.revalidate();
+		centerPanel.repaint();
+		add(centerPanel, BorderLayout.CENTER);
 	}
 
 	/**
@@ -292,6 +322,55 @@ public class PrioritiesPanel extends JPanel {
 		}
 	}
 
+	private void unDifferentiateNode(JPanel centerPanel) {
+
+		List<NodeInfo> nodes = new ArrayList<NodeInfo>();
+
+		if (selectedIndexes.size() > 0) {
+			for (int i = 0; i < listOfListModel.get(lastClass).size(); i++) {
+				if (selectedIndexes.contains(i)
+						&& (stringHasChar(listOfListModel.get(lastClass).get(i)
+								.toString(), "+") || stringHasChar(
+								listOfListModel.get(lastClass).get(i)
+										.toString(), "-"))) {
+					nodes.add(string2Node.get(listOfListModel.get(lastClass)
+							.get(i)));
+				}
+			}
+		}
+
+		for (int i = 0; i < listOfListModel.size(); i++) {
+			DefaultListModel listModel = new DefaultListModel();
+			for (int j = 0; j < listOfListModel.get(i).size(); j++) {
+
+				if (!nodes.contains(string2Node.get(listOfListModel.get(i).get(
+						j)))) {
+					listModel.addElement(listOfListModel.get(i).get(j));
+				}
+			}
+			for (int j = listOfListModel.get(i).size() - 1; j >= 0; j--) {
+				removeItem(listOfListModel.get(i), listOfListModel.get(i)
+						.get(j).toString());
+			}
+			for (int j = 0; j < listModel.getSize(); j++)
+				listOfListModel.get(i).addElement(listModel.get(j));
+
+			if (listOfListModel.get(i).getSize() == 0) {
+				this.listOfListModel = removeList(listOfListModel);
+				priorityClass.remove(i);
+				centerPanel.remove(centerPanel.getComponentCount() - 1);
+				centerPanel.remove(centerPanel.getComponentCount() - 1);
+				centerPanel.revalidate();
+				centerPanel.repaint();
+			}
+
+		}
+		for (NodeInfo node : nodes)
+			listOfListModel.get(0).addElement(node.getNodeID());
+		
+		checkEmptyList();
+	}
+
 	private boolean stringHasChar(String string, String c) {
 		boolean found = false;
 		for (int i = 0; i < string.length(); ++i) {
@@ -381,8 +460,9 @@ public class PrioritiesPanel extends JPanel {
 								listOfListModel.get(lastClass).get(j)
 										.toString());
 				}
-
 				listOfListModel.add(listModel);
+
+				
 
 				JList priority = new JList(listModel);
 				priority.setBackground(centerPanel.getBackground());
@@ -410,6 +490,7 @@ public class PrioritiesPanel extends JPanel {
 				centerPanel.add(priority);
 				centerPanel.repaint();
 				centerPanel.revalidate();
+				checkEmptyList();
 			}// Closes the if that creates a new list
 
 			else {
@@ -423,10 +504,12 @@ public class PrioritiesPanel extends JPanel {
 						removeItem(listOfListModel.get(lastClass),
 								listOfListModel.get(lastClass).get(j)
 										.toString());
+
 				}
+
 			}
 		}// Closes the if that checks if there is anything to do
-		
+
 		if (listOfListModel.get(0).getSize() == 0) {
 			this.listOfListModel = removeList(listOfListModel);
 			priorityClass.remove(0);
@@ -436,6 +519,80 @@ public class PrioritiesPanel extends JPanel {
 			centerPanel.repaint();
 		}
 
+	}
+
+	private void checkEmptyList() {
+
+		for (int i = 0; i < listOfListModel.size(); i++)
+			if (listOfListModel.get(i).size() == 0) {
+				remakePriorityList();
+			}
+	}
+
+	private void remakePriorityList() {
+
+		JLabel faster = new JLabel();
+		faster.setText("<");
+		centerPanel.removeAll();
+		centerPanel.revalidate();
+		centerPanel.repaint();
+		remove(centerPanel);
+		System.out.println(priorityClass.size());
+		for (int h = centerPanel.getComponentCount(); h > 0; h--)
+			centerPanel.remove(h);
+		
+		FlowLayout layout = new FlowLayout();
+		layout.setAlignment(FlowLayout.LEFT);
+		centerPanel = new JPanel(layout);
+		
+		priorityClass.removeAll(priorityClass);
+
+		priorityClass = new ArrayList<JList>();
+
+		List<DefaultListModel> listOfListModelAux = new ArrayList<DefaultListModel>();
+
+		for (int i = 0; i < listOfListModel.size(); i++)
+			if (listOfListModel.get(i).size() != 0) {
+				listOfListModelAux.add(listOfListModel.get(i));
+
+				JList priority = new JList(listOfListModel.get(i));
+				priority.setBackground(centerPanel.getBackground());
+				priority.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+				final ListSelectionModel lsm = priority.getSelectionModel();
+				priorityClass.add(priority);
+				
+				priority.addListSelectionListener(new ListSelectionListener() {
+					public void valueChanged(ListSelectionEvent e) {
+
+						selectedIndexes = new ArrayList<Integer>();
+						// Find out which indexes are selected.
+						int minIndex = lsm.getMinSelectionIndex();
+						int maxIndex = lsm.getMaxSelectionIndex();
+						for (int i = minIndex; i <= maxIndex; i++) {
+							if (lsm.isSelectedIndex(i)) {
+								selectedIndexes.add(i);
+								setPriorityClassActivated(e.getSource());
+							}
+						}
+					}
+				});// Closes the addList
+
+			}
+		System.out.println(priorityClass.size());
+
+		listOfListModel = new ArrayList<DefaultListModel>();
+		listOfListModel = listOfListModelAux;
+
+		for (int k = 0; k < priorityClass.size(); k++) {
+			centerPanel.add(faster);
+			centerPanel.add(priorityClass.get(k));
+			
+		}
+		// centerPanel.add(priorityClass.get(priorityClass.size() - 1));
+
+		centerPanel.revalidate();
+		centerPanel.repaint();
+		add(centerPanel, BorderLayout.CENTER);
 	}
 
 	/**
@@ -538,6 +695,7 @@ public class PrioritiesPanel extends JPanel {
 					}
 				}
 				priorityChosenString.setText(string);
+				repaint();
 			}
 		}
 	}
