@@ -20,15 +20,15 @@
 	
 	<figure>
 	<media type="image" src="figures/valueanalytics.png" />
-	<title>Epilog's Simulation interface.</title>
+	<title>Value Analytics panel.</title>
 </figure>
 	
 	
 	
 		<p>This panel is shown during the <link xref="simulation">
 			simulation</link>, and while drawing the <link xref="initial-conditions">
-	initial conditions
-	</link>.
+	initial conditions.
+	</link>
 		
 	</p>
 	

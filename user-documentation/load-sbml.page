@@ -3,7 +3,7 @@
 		id="load-sbml">
 
 	<info>
-								<link type="guide" xref="index#definition"/>
+		<link type="guide" xref="index#definitions"/>
 		<title type="link" role="trail">Loading a SBML file</title>
 		<desc>Description on how to run load a sbml file</desc>
 		<revision status="draft" date="2013-07-24"/>

@@ -3,7 +3,7 @@
 		id="input-definitions">
 
 	<info>
-								<link type="guide" xref="index#input"/>
+								<link type="guide" xref="index#inputs"/>
 		<title type="link" role="trail">Definition of inputs</title>
 		<desc>Defining inputs characteristics</desc>
 		<revision status="draft" date="2013-07-22"/>
@@ -18,7 +18,7 @@
 		The regulatory model loaded with the <em>sbml</em> has no information
 		if the inputs are environmental or integrative. By default they are
 		all considered as environmental inputs with zero value for all
-		instances of the epithelium. To modify them the user must go to the
+		instances of the epithelium. Environmental inputs can be setup at the
 		<link xref="initial-conditions">
 		initial conditions
 		</link>
@@ -29,10 +29,10 @@
 		The user can decide to modify an input from environmental to
 		integration by selecting the <em>int</em> option on the combo box in
 		front of the component (see Figure below). By doing so, the component
-		is now considered an integration input and the integration functions
+		is now considered an integration input and the <link xref="integration-functions">integration functions</link>
 		must be specified. By pressing the button "Function" a new window
 		appears with as many lines as expression levels assumed by that
-		component (see Figure below ).
+		component (see Figure below).
 	</p>
 
 	<p>
@@ -56,9 +56,9 @@
 	</figure>
 
 	<p>
-		If an integration is modified to an environment input then all
+		If an integration input is modified to an environment input then all
 		instances of the epithelium will have zero value for that component,
-		until the user sets the initial condition for that component. If an
+		until the user sets the initial condition for that component. Also, if an
 		environment input is modified to an integration input then that input
 		no longer appears in the
 		<link xref="components">
@@ -72,8 +72,8 @@
 	</p>
 
 	<p>
-		If the user wants to save an inputs definition set, then at the bottom
-		of that tab the user must assign a name to that inputs definition set
+		To save an inputs definition set, at the bottom
+		of that tab the user must assign a name to the inputs definition set
 		and press the "+" button. This set is saved and can be later selected
 		in the
 		<link xref="simulation">
@@ -89,6 +89,6 @@
 	<p>All the previously saved sets can be called, just by selecting
 		then at the comb box at the bottom of the tab. This will upload the
 		integration functions and the values of the environmental inputs over
-		the grid.</p>
+		the grid. Selecting a set and pressing "-" erases that set.</p>
 
 </page>

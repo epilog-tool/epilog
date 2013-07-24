@@ -15,9 +15,7 @@
 	<title>Simulating with the composed model</title>
 
 	<p> To choose to simulate using a composed model the user must check the box before the "Create composed model" option. If the user decides to make the simulation using the composed
-		model, instead of the <link xref="cellular-automata">
-		cellular automata
-		</link> (by default), then it may take
+		model, instead of the <link href="https://en.wikipedia.org/wiki/Cellular_automaton">cellular automata</link> (by default), then it may take
 		some extra time for the model to compose. As a future upgrade a warning appears if the estimated time for the composed model creation is higher than 2 hours.</p>
 
 	<p>
