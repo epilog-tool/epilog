@@ -1,0 +1,21 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="step">
+
+	<info>
+		<link type="guide" xref="some-index-page"/>
+		<desc>Description of the simulation evolution options (Step)</desc>
+		<revision status="draft" date="2013-07-22"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+		<title>Simulation: step</title>
+
+	<p>For each iteration the hexagons grid is repainted and the user
+		must press "Step" in order for the <link xref="simulation">simulation</link> to perform another
+		iteration. If a stable state is found no more iterations are possible.</p>
+
+
+</page>

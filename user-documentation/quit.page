@@ -1,0 +1,19 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="quit">
+
+	<info>
+		<link type="guide" xref="some-index-page"/>
+		<desc>Description on how to quit Epilog</desc>
+		<revision status="draft" date="2013-07-22"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Quit Epilog</title>
+
+	<p>
+Pressing quit Epilog is closed without saving any modified data since last save.
+	</p>
+</page>

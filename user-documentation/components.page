@@ -1,0 +1,20 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="components">
+
+	<info>
+		<link type="guide" xref="some-index-page"/>
+		<desc>Description on how to select components</desc>
+		<revision status="draft" date="2013-07-22"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Selecting components</title>
+
+	<p>The selected components will appear on the hexagons grid during
+		the <link xref="simulation">simulation</link>. The color associated with the components can be
+		changed by pressing the <link xref="color">colored button</link>.</p>
+
+</page>

@@ -1,0 +1,41 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="open-epilog">
+
+	<info>
+		<link type="guide" xref="some-index-page"/>
+		<desc>Description on how to lauch Epilog</desc>
+		<revision status="draft" date="2013-07-22"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Running Epilog</title>
+
+	<p>
+		When EpiLog is launched, its main window opens (see Figure below ). At
+		this moment the user chooses to create a new epithelium model,
+		selecting
+		<link xref="new-epithelium">
+		"New Epithelium"
+		</link>
+		, or to load a previously saved epithelium model, selecting
+		<link xref="load-epithelium">
+		"Load Epithelium"
+		</link>
+		. At any time the user can close this window by pressing <a
+			href="quit">"Quit"</a>. The
+		<link xref="save">
+		"Save"
+		</link>
+		button is disabled until a model is loaded.
+	</p>
+
+	<figure>
+		<media type="image" src="figures/epilogstart.png" />
+
+		<title>Epilog's main window before loading (or creating) an
+			epithelium model.</title>
+	</figure>
+</page>

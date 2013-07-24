@@ -1,0 +1,26 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="epithelium-definitions">
+
+	<info>
+		<link type="guide" xref="some-index-page"/>
+		<desc>Defining the simulation conditions</desc>
+		<revision status="draft" date="2013-07-22"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Simulation definitions</title>
+	<p>
+		The user can choose which saved sets of:
+		<link xref="initial-conditions">
+		initial conditions</link>,
+		<link xref="perturbations">
+		perturbations</link> and <link xref="priorities">priorities</link> to define
+		the <link xref="simulation">simulation</link>. By default the selected
+		is "none" which means that there all components are at zero value and
+		there are no perturbations or priorities.
+	</p>
+
+</page>

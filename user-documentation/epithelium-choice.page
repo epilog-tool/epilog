@@ -1,0 +1,26 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="epithelium-choice">
+
+	<info>
+		<link type="guide" xref="some-index-page"/>
+		<desc>Defining the epithelium to simulate</desc>
+		<revision status="draft" date="2013-07-22"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Choosing an epithelium</title>
+
+	<p>
+		The user can choose what set of previously defined
+		<link xref="input-definitions">
+		input definitions</link> to simulate with. In this case it a new epithelium
+		model is created, with either new integration inputs or new
+		environmental inputs. If the user decides to simulate with a composed
+		model, then a modification of this set will force a new composed model
+		to be created.
+	</p>
+
+</page>

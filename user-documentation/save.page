@@ -1,0 +1,33 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="save">
+
+	<info>
+		<link type="guide" xref="some-index-page"/>
+		<desc>Description on how to save an epithelium model</desc>
+		<revision status="draft" date="2013-07-22"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Saving an epithelium model</title>
+
+	<p>
+		After a model is loaded to Epilog, either with the creation of a
+		<link xref="new-epithelium">
+		new epithelium</link> or by loading a previously
+		<link xref="load-epithelium">
+		saved epithelium</link>, the user can save the current model.
+
+	</p>
+
+	<p>
+		The resulting file is an archive with the original <em>sbml</em> file,
+		the composed model (if created) and a configurations text file, that
+		the the user can edit by hand if necessary.
+	</p>
+
+
+
+</page>

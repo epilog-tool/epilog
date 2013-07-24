@@ -1,0 +1,27 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="load-sbml">
+
+	<info>
+		<link type="guide" xref="some-index-page"/>
+		<desc>Description on how to run load a sbml file</desc>
+		<revision status="draft" date="2013-07-22"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Loading an sbml file</title>
+
+	<p>
+		When creating a <link xref="new-epithelium">new epithelium</link> a <em>sbml</em> file with the logical regulatory
+		model must be loaded. This logical model is designed and created with <link xref="http://ginsim.org/">GINsim</link>.
+	</p>
+
+	<p>
+		<link xref="model-loaded">After a model is loaded</link> Epilog's
+		main window is filled with information regarding the epithelium model
+		and the simulation.
+	</p>
+
+</page>

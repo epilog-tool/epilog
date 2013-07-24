@@ -1,0 +1,93 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="input-definitions">
+
+	<info>
+		<link type="guide" xref="some-index-page"/>
+		<desc>Defining inputs characteristics</desc>
+		<revision status="draft" date="2013-07-22"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Inputs definitions</title>
+
+	<p>
+		The regulatory model loaded with the <em>sbml</em> has no information
+		if the inputs are environmental or integrative. By default they are
+		all considered as environmental inputs with zero value for all
+		instances of the epithelium. To modify them the user must go to the
+		<link xref="initial-conditions">
+		initial conditions
+		</link>
+		tab.
+	</p>
+
+	<p>
+		The user can decide to modify an input from environmental to
+		integration by selecting the <em>int</em> option on the combo box in
+		front of the component (see Figure below ). By doing so, the component
+		is now considered an integration input and the integration functions
+		must be specified. By pressing the button "Function" a new window
+		appears with as many lines as expression levels assumed by that
+		component (see Figure below ).
+	</p>
+
+	<p>
+		The integration functions obey a specific
+		<link xref="initial-conditions">
+		logical grammar
+		</link>
+		designed for Epilog.
+	</p>
+
+	<figure>
+		<media type="image" src="figures/inputdefinitions.png" />
+		<title>Input Conditions definition window.</title>
+	</figure>
+
+
+	<figure>
+
+		<media type="image" src="figures/integrationwindow.png" />
+		<title>Editing of integration functions.</title>
+	</figure>
+
+	<p>
+		If an integration is modified to an environment input then all
+		instances of the epithelium will have zero value for that component,
+		until the user sets the initial condition for that component. If an
+		environment input is modified to an integration input then that input
+		no longer appears in the
+		<link xref="components">
+		components panel
+		</link>
+		, or in the
+		<link xref="initial-conditions">
+		initial conditions
+		</link>
+		panel.
+	</p>
+
+	<p>
+		If the user wants to save an inputs definition set, then at the bottom
+		of that tab the user must assign a name to that inputs definition set
+		and press the "+" button. This set is saved and can be later selected
+		in the
+		<link xref="simulation">
+		simulation
+		</link>
+		tab. All saved sets are saved when the user decides to
+		<link xref="save">
+		"save"
+		</link>
+		the epithelium model.
+	</p>
+
+	<p>All the previously saved sets can be called, just by selecting
+		then at the comb box at the bottom of the tab. This will upload the
+		integration functions and the values of the environmental inputs over
+		the grid.</p>
+
+</page>

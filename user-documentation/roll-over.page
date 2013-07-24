@@ -1,0 +1,20 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="roll-over">
+
+	<info>
+		<link type="guide" xref="some-index-page"/>
+		<desc>Description of the roll-over option</desc>
+		<revision status="draft" date="2013-07-22"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Roll-Over</title>
+
+	<p>If the user selects "Vertical Roll-Over" or "Horizontal
+		Roll-Over" then the epithelium is a cylinder, connected by the
+		vertical, or horizontal extremes. If the user chooses "no Roll-Over",
+		then the extremes don't touch and it is just a 2D epithelium.</p>
+</page>

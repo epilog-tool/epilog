@@ -1,0 +1,21 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="run">
+
+	<info>
+		<link type="guide" xref="some-index-page"/>
+		<desc>Description of the simulation evolution options (Run)</desc>
+		<revision status="draft" date="2013-07-22"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Simulation: run</title>
+
+	<p>The <link xref="simulation">simulation</link> continues for 30 iterations or until a stable
+		state is found. At the end of the 30 iterations, the user must press
+		either run or <link xref="step">step</link> to continue the simulation.</p>
+
+
+</page>

@@ -1,0 +1,50 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="priorities">
+
+	<info>
+		<link type="guide" xref="some-index-page"/>
+		<desc>Description on how to define priorities</desc>
+		<revision status="draft" date="2013-07-22"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Defining priorities</title>
+
+
+	<p>The user may define which proper components have higher
+		priority. This means that all components with higher priority will
+		update first, and lower priority components will only update when
+		higher priority components can no longer update.</p>
+
+	<p>On the left side of the tab are the components with the highest
+		priority and the user can select a component and move it to a lesser
+		(or higher) priority list (see Figure below ).</p>
+
+	<figure>
+		<media type="image" src="figures/priorities.png" />
+		<title>Priorities definition window.</title>
+	</figure>
+
+
+	<p>
+		If the user wants to save a priorities set, then at the bottom of that
+		tab the user must assign a name to that priorities set and press the
+		"+" button. This set is saved and can be later selected in the
+		<link xref="simulation">
+		simulation
+		</link>
+		tab. All saved sets are saved when the user decides to
+		<link xref="save">
+		"save"
+		</link>
+		the epithelium model.
+	</p>
+
+	<p>All the previously saved sets can be called, just by selecting
+		then at the combo box at the bottom of the tab. the selected priority
+		set will be displayed on the top bar of the tab.</p>
+
+</page>

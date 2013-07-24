@@ -1,0 +1,20 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="value-analytics">
+
+	<info>
+		<link type="guide" xref="some-index-page"/>
+		<desc>Description of the value analytics panel</desc>
+		<revision status="draft" date="2013-07-22"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Value Analytics</title>
+
+	<p>During the simulation when the the mouse is over the hexagons
+		grid, the value of all components on that instance is displayed on
+		this panel.</p>
+
+</page>

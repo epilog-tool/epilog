@@ -1,0 +1,20 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="restart">
+
+	<info>
+		<link type="guide" xref="some-index-page"/>
+		<desc>Description on how to restart a simulation</desc>
+		<revision status="draft" date="2013-07-22"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Restart a simulation</title>
+
+<p>
+If a <link xref="simulation">simulation</link> is running, pressing restart stops the simulation and the user may start over.
+</p>
+
+</page>
