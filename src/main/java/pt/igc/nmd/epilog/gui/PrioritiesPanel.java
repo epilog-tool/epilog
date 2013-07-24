@@ -80,9 +80,9 @@ public class PrioritiesPanel extends JPanel {
 
 		JButton buttonIncreaseLeft = new JButton("->");
 		JButton buttonIncreaseRight = new JButton("<-");
-		JButton buttonDifferentiate = new JButton("Differentiate");
-		JButton buttonUnDifferentiate = new JButton("Undifferentiate");
-		JButton buttonRestart = new JButton("Restart");
+		JButton buttonDifferentiate = new JButton("Split");
+		JButton buttonUnDifferentiate = new JButton("Unsplit");
+		JButton buttonRestart = new JButton("Reset");
 
 		buttonIncreaseLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
