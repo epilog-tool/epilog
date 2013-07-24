@@ -114,7 +114,7 @@ public class MainFrame extends JFrame {
 		UIManager.setLookAndFeel(UIManager
 				.getCrossPlatformLookAndFeelClassName());
 
-		setTitle("Epilog");
+		setTitle("EpiLog");
 		setupMainFrame();
 	}
 
