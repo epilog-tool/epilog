@@ -3,7 +3,7 @@
 		id="model-loaded">
 
 	<info>
-								<link type="guide" xref="index#definition"/>
+		<link type="guide" xref="index#definitions"/>
 		<title type="link" role="trail">Model Loaded</title>
 		<desc>Description of Epilog's after loading a model</desc>
 		<revision status="draft" date="2013-07-24"/>
