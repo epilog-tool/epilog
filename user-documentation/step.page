@@ -3,7 +3,8 @@
 		id="step">
 
 	<info>
-		<link type="guide" xref="some-index-page"/>
+		<link type="guide" xref="index#simulation"/>
+		<title type="link" role="trail">Step-by-Step</title>
 		<desc>Description of the simulation evolution options (Step)</desc>
 		<revision status="draft" date="2013-07-22"/>
 	</info>
@@ -13,9 +14,9 @@
 
 		<title>Simulation: step</title>
 
-	<p>For each iteration the hexagons grid is repainted and the user
-		must press "Step" in order for the <link xref="simulation">simulation</link> to perform another
-		iteration. If a stable state is found no more iterations are possible.</p>
-
+	<p>For each iteration the hexagons grid is updated with the current state and the user must press "Step" for the <link xref="simulation">simulation</link> to perform another iteration. If a stable state is found no more iterations are possible.</p>
+	
+		<p>At the end of each iteration the user can save the current state as a set of initial conditions to use as an initial state in future simulations. Both proper components and enviromental inputs are saved.</p>
+	
 
 </page>

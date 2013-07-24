@@ -3,9 +3,10 @@
 		id="value-analytics">
 
 	<info>
-		<link type="guide" xref="some-index-page"/>
+		<link type="guide" xref="index#definitions"/>
+		<title type="link" role="trail">Value Analytics Panel</title>
 		<desc>Description of the value analytics panel</desc>
-		<revision status="draft" date="2013-07-22"/>
+		<revision status="draft" date="2013-07-24"/>
 	</info>
 
 	<!--  TODO: series link not supported by HTML export  -->
@@ -14,7 +15,14 @@
 	<title>Value Analytics</title>
 
 	<p>During the simulation when the the mouse is over the hexagons
-		grid, the value of all components on that instance is displayed on
-		this panel.</p>
-
+		grid, the current value of all components on that instance is displayed on
+		a panel on the left side of the tab. At the border of the Analytics panel, the user can see the coordinates of the instance.</p>
+	
+		<p>This panel is shown during the <link xref="simulation">
+			simulation</link>, and while drawing the <link xref="initial-conditions">
+	initial conditions
+	</link>.
+		
+	</p>
+	
 </page>
