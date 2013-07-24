@@ -143,7 +143,7 @@ public class PrioritiesPanel extends JPanel {
 
 		JButton buttonAdd = new JButton("+");
 		JButton buttonClear = new JButton("-");
-		setName = new JTextField("", 15);
+		setName = new JTextField("", 30);
 		sets = new JComboBox();
 		sets.setPreferredSize(new Dimension(setName.getPreferredSize().width,
 				sets.getPreferredSize().height));
