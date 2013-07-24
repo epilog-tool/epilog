@@ -1,7 +1,6 @@
 .DS_Store
 jsbml.log
 target
-*.png
 .settings
 .metadata
 html
