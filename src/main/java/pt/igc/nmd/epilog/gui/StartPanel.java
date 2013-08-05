@@ -132,6 +132,7 @@ public class StartPanel extends JPanel {
 						+ "New File");
 				mainFrame.simulation.reset();
 				mainFrame.epithelium.setNewEpithelium(true);
+				saveButton.setEnabled(false);
 
 			}
 		});
