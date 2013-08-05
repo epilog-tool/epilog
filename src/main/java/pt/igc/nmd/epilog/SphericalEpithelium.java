@@ -18,6 +18,7 @@ public class SphericalEpithelium implements Epithelium {
 
 	private LogicalModel unitaryModel;
 	private LogicalModel composedModel;
+	public String zepiFilename;
 	private String SBMLFilename;
 	private String SBMLFilePath;
 	private String SBMLLoadPath;

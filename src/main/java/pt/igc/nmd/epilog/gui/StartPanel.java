@@ -128,6 +128,8 @@ public class StartPanel extends JPanel {
 		newEpithelium.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainFrame.initializePanelCenter();
+				mainFrame.setTitle("Epilog - "
+						+ "New File");
 				mainFrame.simulation.reset();
 				mainFrame.epithelium.setNewEpithelium(true);
 
@@ -141,9 +143,8 @@ public class StartPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				mainFrame.initializePanelCenter();
 				askConfigurations();
-				int height = mainFrame.topology.getHeight();
-				userDefinedHeight.setText(height + "");
-
+				mainFrame.setTitle("Epilog - "
+						+ mainFrame.epithelium.zepiFilename);
 				mainFrame.getContentPane().repaint();
 				mainFrame.simulation.reset();
 				mainFrame.epithelium.setNewEpithelium(false);
@@ -158,7 +159,7 @@ public class StartPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if (mainFrame.epithelium != null) {
 					saveEpitheliumModel();
-					mainFrame.setTitle("Epilog");
+					mainFrame.setTitle("Epilog - " + mainFrame.epithelium.zepiFilename);
 				}
 			}
 		});
@@ -284,13 +285,13 @@ public class StartPanel extends JPanel {
 				// TODO Auto-generated method stub
 			}
 		});
-		
+
 		panel.add(setHeight);
 		panel.add(userDefinedWidth);
 		panel.add(setWidth);
 		panel.add(userDefinedHeight);
 		panel.add(loadSBML);
-		
+
 		if (mainFrame.epithelium.getUnitaryModel() != null) {
 			mainFrame.initializePanelCenterRight();
 
@@ -304,14 +305,12 @@ public class StartPanel extends JPanel {
 					if (mainFrame.epithelium.getUnitaryModel() != null)
 						mainFrame.initializePanelCenterRight();
 				}
-				
-		
+
 				mainFrame.gridSpecsPanel.getComponent(4).setEnabled(false);
 				mainFrame.gridSpecsPanel.getComponent(3).setEnabled(false);
 				mainFrame.gridSpecsPanel.getComponent(1).setEnabled(false);
 			}
 		});
-
 
 		return panel;
 	}
@@ -411,6 +410,7 @@ public class StartPanel extends JPanel {
 				for (File fileEntry : folder.listFiles())
 					fileEntry.delete();
 			UnZip.main(fc.getSelectedFile().getAbsolutePath());
+			mainFrame.epithelium.zepiFilename = fc.getSelectedFile().getName();
 
 			for (final File fileEntry : folder.listFiles()) {
 				if (fileEntry.getName().contains("sbml")) {
@@ -814,19 +814,17 @@ public class StartPanel extends JPanel {
 		this.mainFrame.setEpithelium(this.mainFrame.epithelium);
 		this.mainFrame.repaint();
 		JPanel panel = gridSpecsPanel();
-		
+
 		this.mainFrame.gridSpecsPanel.remove(4);
 		this.mainFrame.gridSpecsPanel.add(panel.getComponent(4), 4);
 		this.mainFrame.gridSpecsPanel.getComponent(4).setEnabled(false);
-		
+
 		this.mainFrame.gridSpecsPanel.remove(3);
 		this.mainFrame.gridSpecsPanel.add(panel.getComponent(3), 3);
 		this.mainFrame.gridSpecsPanel.getComponent(3).setEnabled(false);
 		this.mainFrame.gridSpecsPanel.remove(1);
 		this.mainFrame.gridSpecsPanel.add(panel.getComponent(1), 1);
 		this.mainFrame.gridSpecsPanel.getComponent(1).setEnabled(false);
-	
-	
 
 		this.mainFrame.repaint();
 		this.mainFrame.hexagonsPanel
@@ -860,6 +858,9 @@ public class StartPanel extends JPanel {
 
 				String zipFile = fc.getSelectedFile().getAbsolutePath()
 						+ ".zepi";
+				
+				mainFrame.epithelium.zepiFilename = fc.getSelectedFile().getName()+ ".zepi";
+			
 
 				String unitarySBML = "";
 				if (this.mainFrame.epithelium.isNewEpithelium()) {
