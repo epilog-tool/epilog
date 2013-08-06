@@ -30,6 +30,7 @@ public class IntegrationFunctionInterface extends JFrame {
 	private JButton closeIntegrationPanel;
 	private Hashtable<Byte, String> integrationFunctionStrings;
 	private SphericalEpithelium epithelium;
+	private MainFrame mainFrame;
 
 	/**
 	 * Summons the integration functions edition panel.
@@ -40,9 +41,11 @@ public class IntegrationFunctionInterface extends JFrame {
 	 *            node associated with the integration functions
 	 */
 	public IntegrationFunctionInterface(SphericalEpithelium epithelium,
-			final NodeInfo node) {
+			MainFrame mainFrame, final NodeInfo node) {
 		super("Insert Integration Function");
 		this.epithelium = epithelium;
+		this.mainFrame = mainFrame;
+
 		integrationFunctionStrings = new Hashtable<Byte, String>();
 
 		FlowLayout layout = new FlowLayout();
@@ -107,15 +110,22 @@ public class IntegrationFunctionInterface extends JFrame {
 		closeIntegrationPanel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				dispose();
-				setIntegrationFunction(node, integrationFunctionStrings);
 				// TODO: CHECK
-				checkFunction(node, integrationFunctionStrings);
+				if (checkFunction(node, integrationFunctionStrings)) {
+					setIntegrationFunction(node, integrationFunctionStrings);
+					dispose();
+					resetErrorMessage();
+				}
+				
 			}
 		});
 		pack();
 	}
 
+	private void resetErrorMessage(){
+		mainFrame.errorMessage.setText("");
+	}
+	
 	/**
 	 * Saves the integration functions written in the epithelium model.
 	 * 
@@ -135,14 +145,39 @@ public class IntegrationFunctionInterface extends JFrame {
 
 	}
 
-	private void checkFunction(NodeInfo node,
+	private boolean checkFunction(NodeInfo node,
 			Hashtable<Byte, String> integrationFunctionStrings) {
 
-		for (byte value : integrationFunctionStrings.keySet()) {
+		for (String integrationFunction : integrationFunctionStrings.values()) {
+			integrationFunction.replace(" ", "");
+			String nodeString = integrationFunction.split("\\(")[0];
 
-			String function = epithelium.getIntegrationFunction(node, value);
-			IntegrationExpression a = epithelium.string2Expression(function);
+			
+			//CHECKS IF NODE BELONGS TO NODELIST
+			String nodeList = "";
+
+			for (NodeInfo nodeAux : epithelium.getUnitaryModel().getNodeOrder())
+				if (!epithelium.isIntegrationComponent(nodeAux))
+					nodeList = nodeList + nodeAux.getNodeID() + " ";
+
+			if (!checkNode(nodeString)) {
+				mainFrame.errorMessage
+						.setText("<html><font color='red'>Error:</font> Regulating node does not exist. ( Nodes: "
+								+ nodeList + " )</html>");
+				return false;
+			}
+			
+			//CHECKS IF MINIMUM IS LOWER OR EQUAL THAN MAX
+			
 
 		}
+		return true;
+	}
+
+	private boolean checkNode(String nodeString) {
+		for (NodeInfo node : epithelium.getUnitaryModel().getNodeOrder())
+			if (nodeString.equals(node.getNodeID()))
+				return true;
+		return false;
 	}
 }

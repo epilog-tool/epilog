@@ -70,7 +70,7 @@ public class LogicalModelComposition {
 
 		
 
-		System.out.println("Starting to create the composed Model");
+		mainFrame.errorMessage.setText("<html><font color='red'>Status:</font> Starting to create the composed model</html>");
 
 		List<NodeInfo> nodeOrder = new ArrayList<NodeInfo>();
 		List<NodeInfo> newIntegrationNodes = new ArrayList<NodeInfo>();
@@ -287,7 +287,7 @@ public class LogicalModelComposition {
 		// }
 
 		mainFrame.getEpithelium().setComposedModel(composedModel);
-	
+		mainFrame.errorMessage.setText("<html><font color='red'>Status:</font> Composed model created</html>");
 		return composedModel;
 
 	}

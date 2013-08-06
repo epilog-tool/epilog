@@ -17,6 +17,7 @@ import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
@@ -309,47 +310,17 @@ public class InitialConditions extends JPanel {
 
 			} // End Center Panel
 
-			// Analytics Panel
-			panelStart = new JPanel();
-
-			LineBorder border = new LineBorder(Color.black, 1, true);
-			TitledBorder south = new TitledBorder(border,
-					"Analytics @ "
-							+ "("
-							+ this.mainFrame.topology
-									.instance2j(this.mainFrame.activeInstance)
-							+ ","
-							+ this.mainFrame.topology
-									.instance2i(this.mainFrame.activeInstance)
-							+ ")", TitledBorder.LEFT,
-					TitledBorder.DEFAULT_POSITION, new Font("Arial",
-							Font.ITALIC, 14), Color.black);
-			panelStart.setBorder(south);
-
-			String string = ("<html>");
-			for (NodeInfo node : this.mainFrame.epithelium.getUnitaryModel()
-					.getNodeOrder()) {
-				if (!this.mainFrame.epithelium.isIntegrationComponent(node)) {
-
-					string = string
-							+ ("<br>" + "node: " + node + " -> value: " + this.mainFrame.epithelium
-									.getGridValue(
-											this.mainFrame.activeInstance, node));
-
-				}
-			}
-			string = string + ("</html>");
-			JLabel f = new JLabel(string);
-			panelStart.add(f);
 
 			panelCenterMain.add(panelCenter, BorderLayout.CENTER);
 
-			panelCenterAux.add(panelStart, BorderLayout.LINE_START);
+			panelCenterAux.add(new JScrollPane(mainFrame.panelToolTip), BorderLayout.LINE_START);
+			
 			panelCenterAux.add(panelCenterMain, BorderLayout.CENTER);
 			panelCenterAux.add(panelEnd, BorderLayout.PAGE_END);
 			panelEnd.setVisible(checkEnvironmentInputsExistence());
 
 			add(panelCenterAux, BorderLayout.CENTER);
+
 		}
 	}
 

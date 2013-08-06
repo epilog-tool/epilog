@@ -251,7 +251,7 @@ public class InputsPanel extends JPanel {
 	protected void initializeIntegrationInterface(JButton src) {
 		NodeInfo node = this.mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder().get(integrationFunctionButton2Node.get(src));
-		new IntegrationFunctionInterface(this.mainFrame.epithelium, node);
+		new IntegrationFunctionInterface(this.mainFrame.epithelium, this.mainFrame, node);
 	}
 
 	/**

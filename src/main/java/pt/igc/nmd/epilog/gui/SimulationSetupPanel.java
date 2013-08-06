@@ -11,12 +11,14 @@ import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
@@ -54,7 +56,7 @@ public class SimulationSetupPanel extends JPanel {
 	public JComboBox perturbationsCombo;
 	public JComboBox prioritiesCombo;
 
-	JPanel lineStartPanel = new JPanel();
+	JPanel leftPanel = new JPanel();
 
 	public SimulationSetupPanel(MainFrame mainPanel) {
 		this.mainFrame = mainPanel;
@@ -84,7 +86,7 @@ public class SimulationSetupPanel extends JPanel {
 
 		centerPanel.add(centerCenterPanel, BorderLayout.CENTER);
 		centerPanel.add(startCenterPanel,BorderLayout.PAGE_START);
-		add(centerPanel, BorderLayout.CENTER);
+		//add(centerPanel, BorderLayout.CENTER);
 		
 		// PAGE START PANEL
 
@@ -219,6 +221,7 @@ public class SimulationSetupPanel extends JPanel {
 				restartButton.setEnabled(false);
 				mainFrame.componentsPanel.saveAsInitialState.setEnabled(false);
 				mainFrame.componentsPanel.setICName.setEnabled(false);
+				mainFrame.errorMessage.setText("");
 
 				// removeAll();
 				// repaint();
@@ -241,9 +244,7 @@ public class SimulationSetupPanel extends JPanel {
 
 		JPanel[] auxiliary = new JPanel[4];
 
-		// LineStartPanel.setLayout(new BoxLayout(LineStartPanel,
-		// BoxLayout.PAGE_AXIS));
-		lineStartPanel.setLayout(new BorderLayout());
+		leftPanel.setLayout(new BorderLayout());
 
 		initialCombo = new JComboBox();
 		inputCombo = new JComboBox();
@@ -345,47 +346,41 @@ public class SimulationSetupPanel extends JPanel {
 				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
 						"Arial", Font.ITALIC, 14), Color.black);
 
-		TitledBorder south = new TitledBorder(border, "Analytics @ instance: "
-				+ ("(" + mainFrame.topology.instance2j(0) + ","
-						+ mainFrame.topology.instance2i(0) + ")"),
-				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
-						"Arial", Font.ITALIC, 14), Color.black);
 
-		String string = ("<html>");
-		for (NodeInfo node : mainFrame.epithelium.getUnitaryModel()
-				.getNodeOrder()) {
-			if (!mainFrame.epithelium.isIntegrationComponent(node)) {
 
-				string = string
-						+ ("<br>" + "node: " + node + " -> value: " + mainFrame.epithelium
-								.getGridValue(0, node));
 
-			}
-		}
+		JScrollPane nw = new JScrollPane(mainFrame.panelToolTip);
 
-		string = string + ("</html>");
-		JLabel f = new JLabel(string);
-		southLineStartPanel.add(f);
-
-		JScrollPane nw = new JScrollPane(southLineStartPanel);
-		// nw.add(southLineStartPanel);
 
 		northLineStartPanel.setBorder(north);
 		centerLineStartPanel.setBorder(center);
-		nw.setBorder(south);
 
-		lineStartPanel.setBorder(BorderFactory
+		
+		leftPanel.setBorder(BorderFactory
 				.createEtchedBorder(EtchedBorder.LOWERED));
+		
+		
+		
+		JPanel pageStartAuxiliary = new JPanel();
+		pageStartAuxiliary.setLayout(new BoxLayout(pageStartAuxiliary, BoxLayout.Y_AXIS));
+		
+		pageStartAuxiliary.add(northLineStartPanel);
+		pageStartAuxiliary.add(centerLineStartPanel);
 
-		lineStartPanel.add(northLineStartPanel, BorderLayout.PAGE_START);
-		lineStartPanel.add(centerLineStartPanel, BorderLayout.LINE_START);
-		lineStartPanel.add(nw, BorderLayout.PAGE_END);
+		leftPanel.add(pageStartAuxiliary, BorderLayout.PAGE_START);
+		leftPanel.add(nw, BorderLayout.CENTER);
 
-		add(lineStartPanel, BorderLayout.LINE_START);
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,leftPanel,centerPanel);
+		splitPane.setDividerLocation(leftPanel.getPreferredSize().width);
+		splitPane.setDividerSize(3);
+		add(splitPane, BorderLayout.CENTER);
 
 		return this;
 	}
 
+	
+	
+	
 	private void repaintSimulationSetupPanel() {
 		centerCenterPanel.removeAll();
 		centerCenterPanel.repaint();

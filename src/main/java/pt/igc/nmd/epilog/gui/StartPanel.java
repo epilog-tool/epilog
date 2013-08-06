@@ -58,6 +58,9 @@ public class StartPanel extends JPanel {
 
 	private JTextField userDefinedWidth;
 	private JTextField userDefinedHeight;
+	
+	private boolean heightControl=true;
+	private boolean widthControl=true;
 
 	JButton loadSBML;
 
@@ -133,6 +136,7 @@ public class StartPanel extends JPanel {
 				mainFrame.simulation.reset();
 				mainFrame.epithelium.setNewEpithelium(true);
 				saveButton.setEnabled(false);
+				mainFrame.errorMessage.setText("");
 
 			}
 		});
@@ -150,6 +154,7 @@ public class StartPanel extends JPanel {
 				mainFrame.simulation.reset();
 				mainFrame.epithelium.setNewEpithelium(false);
 				saveButton.setEnabled(true);
+				mainFrame.errorMessage.setText("");
 
 			}
 		});
@@ -191,6 +196,7 @@ public class StartPanel extends JPanel {
 		userDefinedWidth = new JTextField();
 		userDefinedHeight = new JTextField();
 		selectedFilenameLabel = new JLabel();
+		final Color lighterRed = new Color(255, 120, 120);
 
 		// labelFilename.setText("Filename: ");
 
@@ -211,7 +217,19 @@ public class StartPanel extends JPanel {
 
 				if (mainFrame.epithelium.getUnitaryModel() == null) {
 					JTextField src = (JTextField) arg0.getSource();
-					mainFrame.topology.setWidth(Integer.parseInt(src.getText()));
+					
+					 try { 
+						 Integer.parseInt(src.getText()); 
+						 mainFrame.topology.setWidth(Integer.parseInt(src.getText()));
+						 widthControl=true;
+						 userDefinedWidth.setBackground(Color.white);
+						 mainFrame.errorMessage.setText("");
+					    } catch(NumberFormatException e) { 
+					    	System.out.println("Must be higher than zero"); 
+					    	userDefinedWidth.setBackground(lighterRed);
+					    	widthControl=false;
+					    	mainFrame.errorMessage.setText("<html><font color='red'>Error:</font> Dimention must be an integer</html>");
+					    }
 					mainFrame.hexagonsPanel
 							.paintComponent(mainFrame.hexagonsPanel
 									.getGraphics());
@@ -261,6 +279,7 @@ public class StartPanel extends JPanel {
 					JTextField src = (JTextField) arg0.getSource();
 
 					mainFrame.topology.setWidth(Integer.parseInt(src.getText()));
+					 
 					mainFrame.hexagonsPanel
 							.paintComponent(mainFrame.hexagonsPanel
 									.getGraphics());
@@ -274,7 +293,21 @@ public class StartPanel extends JPanel {
 			public void focusLost(FocusEvent arg0) {
 				if (mainFrame.epithelium.getUnitaryModel() == null) {
 					JTextField src = (JTextField) arg0.getSource();
-					mainFrame.topology.setHeight(Integer.parseInt(src.getText()));
+					
+					 try { 
+						 Integer.parseInt(src.getText()); 
+						 mainFrame.topology.setHeight(Integer.parseInt(src.getText()));
+						heightControl=true;
+						 userDefinedHeight.setBackground(Color.white);
+						 mainFrame.errorMessage.setText("");
+					    } catch(NumberFormatException e) { 
+					    	System.out.println("Must be higher than zero"); 
+					    	userDefinedHeight.setBackground(lighterRed);
+					    	heightControl=false;
+					    	mainFrame.errorMessage.setText("<html><font color='red'>Error:</font> Dimention must be an integer</html>");
+					    }
+				
+						
 					mainFrame.hexagonsPanel
 							.paintComponent(mainFrame.hexagonsPanel
 									.getGraphics());
@@ -283,7 +316,6 @@ public class StartPanel extends JPanel {
 
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				// TODO Auto-generated method stub
 			}
 		});
 
@@ -300,16 +332,16 @@ public class StartPanel extends JPanel {
 
 		loadSBML.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (mainFrame.epithelium.getUnitaryModel() == null) {
+				if (mainFrame.epithelium.getUnitaryModel() == null&&(heightControl&& widthControl)) {
 					askModel();
 
 					if (mainFrame.epithelium.getUnitaryModel() != null)
 						mainFrame.initializePanelCenterRight();
 				}
+				else
+					mainFrame.errorMessage.setText("<html><font color='red'>Error:</font> Dimention must be an integer</html>");
 
-				mainFrame.gridSpecsPanel.getComponent(4).setEnabled(false);
-				mainFrame.gridSpecsPanel.getComponent(3).setEnabled(false);
-				mainFrame.gridSpecsPanel.getComponent(1).setEnabled(false);
+				
 			}
 		});
 
@@ -341,6 +373,9 @@ public class StartPanel extends JPanel {
 
 			loadModel(file);
 			saveButton.setEnabled(true);
+			mainFrame.gridSpecsPanel.getComponent(4).setEnabled(false);
+			mainFrame.gridSpecsPanel.getComponent(3).setEnabled(false);
+			mainFrame.gridSpecsPanel.getComponent(1).setEnabled(false);
 		}
 
 	}

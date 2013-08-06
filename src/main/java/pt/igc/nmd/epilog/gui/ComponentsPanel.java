@@ -14,6 +14,8 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
@@ -127,7 +129,8 @@ public class ComponentsPanel extends JPanel {
 		options.add(saveAsInitialState);
 		options.add(setICName);
 
-		// CENTER AND PAGE END
+		// CENTER
+		
 
 		LineBorder border = new LineBorder(Color.black, 1, true);
 		TitledBorder titleProperComponents = new TitledBorder(border,
@@ -143,9 +146,19 @@ public class ComponentsPanel extends JPanel {
 		TitledBorder titleOptions = new TitledBorder(border, "Display options",
 				TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, new Font(
 						"Arial", Font.ITALIC, 14), Color.black);
-
-		properComponents.setBorder(titleProperComponents);
-		inputComponents.setBorder(titleInputs);
+		
+		
+		properComponents.setPreferredSize(this.getPreferredSize());
+		
+		JScrollPane properComponentsScrollPanel = new JScrollPane(properComponents);
+		JScrollPane inputComponentsScrollPanel = new JScrollPane(inputComponents);
+		inputComponentsScrollPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		inputComponentsScrollPanel.setSize(getPreferredSize().width, 0);
+		
+//		inputComponentsScrollPanel.setPreferredSize(this.getPreferredSize());
+		
+		properComponentsScrollPanel.setBorder(titleProperComponents);
+		inputComponentsScrollPanel.setBorder(titleInputs);
 		options.setBorder(titleOptions);
 
 		if (this.mainFrame.epithelium.getUnitaryModel() != null) {
@@ -269,9 +282,13 @@ public class ComponentsPanel extends JPanel {
 				}
 			}
 			add(options, BorderLayout.PAGE_START);
-			add(properComponents, BorderLayout.CENTER);
-			add(inputComponents, BorderLayout.PAGE_END);
-			inputComponents.setVisible(checkEnvironmentInputsExistence());
+			
+			JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,properComponentsScrollPanel,inputComponentsScrollPanel);
+			splitPane.setDividerLocation(200);
+			splitPane.setDividerSize(3);
+			
+			add(splitPane, BorderLayout.CENTER);
+			inputComponentsScrollPanel.setVisible(checkEnvironmentInputsExistence());
 
 		}
 		return this;
