@@ -58,9 +58,9 @@ public class StartPanel extends JPanel {
 
 	private JTextField userDefinedWidth;
 	private JTextField userDefinedHeight;
-	
-	private boolean heightControl=true;
-	private boolean widthControl=true;
+
+	private boolean heightControl = true;
+	private boolean widthControl = true;
 
 	JButton loadSBML;
 
@@ -114,11 +114,7 @@ public class StartPanel extends JPanel {
 		quitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainFrame.dispose();
-
-				File folder = new File("temp");
-
-				for (File fileEntry : folder.listFiles())
-					fileEntry.delete();
+				tempDirClean();
 				System.exit(0);
 			}
 		});
@@ -131,8 +127,7 @@ public class StartPanel extends JPanel {
 		newEpithelium.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainFrame.initializePanelCenter();
-				mainFrame.setTitle("Epilog - "
-						+ "New File");
+				mainFrame.setTitle("Epilog - " + "New File");
 				mainFrame.simulation.reset();
 				mainFrame.epithelium.setNewEpithelium(true);
 				saveButton.setEnabled(false);
@@ -165,7 +160,8 @@ public class StartPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if (mainFrame.epithelium != null) {
 					saveEpitheliumModel();
-					mainFrame.setTitle("Epilog - " + mainFrame.epithelium.zepiFilename);
+					mainFrame.setTitle("Epilog - "
+							+ mainFrame.epithelium.zepiFilename);
 				}
 			}
 		});
@@ -217,19 +213,21 @@ public class StartPanel extends JPanel {
 
 				if (mainFrame.epithelium.getUnitaryModel() == null) {
 					JTextField src = (JTextField) arg0.getSource();
-					
-					 try { 
-						 Integer.parseInt(src.getText()); 
-						 mainFrame.topology.setWidth(Integer.parseInt(src.getText()));
-						 widthControl=true;
-						 userDefinedWidth.setBackground(Color.white);
-						 mainFrame.errorMessage.setText("");
-					    } catch(NumberFormatException e) { 
-					    	System.out.println("Must be higher than zero"); 
-					    	userDefinedWidth.setBackground(lighterRed);
-					    	widthControl=false;
-					    	mainFrame.errorMessage.setText("<html><font color='red'>Error:</font> Dimention must be an integer</html>");
-					    }
+
+					try {
+						Integer.parseInt(src.getText());
+						mainFrame.topology.setWidth(Integer.parseInt(src
+								.getText()));
+						widthControl = true;
+						userDefinedWidth.setBackground(Color.white);
+						mainFrame.errorMessage.setText("");
+					} catch (NumberFormatException e) {
+						System.out.println("Must be higher than zero");
+						userDefinedWidth.setBackground(lighterRed);
+						widthControl = false;
+						mainFrame.errorMessage
+								.setText("<html><font color='red'>Error:</font> Dimention must be an integer</html>");
+					}
 					mainFrame.hexagonsPanel
 							.paintComponent(mainFrame.hexagonsPanel
 									.getGraphics());
@@ -279,7 +277,7 @@ public class StartPanel extends JPanel {
 					JTextField src = (JTextField) arg0.getSource();
 
 					mainFrame.topology.setWidth(Integer.parseInt(src.getText()));
-					 
+
 					mainFrame.hexagonsPanel
 							.paintComponent(mainFrame.hexagonsPanel
 									.getGraphics());
@@ -293,21 +291,22 @@ public class StartPanel extends JPanel {
 			public void focusLost(FocusEvent arg0) {
 				if (mainFrame.epithelium.getUnitaryModel() == null) {
 					JTextField src = (JTextField) arg0.getSource();
-					
-					 try { 
-						 Integer.parseInt(src.getText()); 
-						 mainFrame.topology.setHeight(Integer.parseInt(src.getText()));
-						heightControl=true;
-						 userDefinedHeight.setBackground(Color.white);
-						 mainFrame.errorMessage.setText("");
-					    } catch(NumberFormatException e) { 
-					    	System.out.println("Must be higher than zero"); 
-					    	userDefinedHeight.setBackground(lighterRed);
-					    	heightControl=false;
-					    	mainFrame.errorMessage.setText("<html><font color='red'>Error:</font> Dimention must be an integer</html>");
-					    }
-				
-						
+
+					try {
+						Integer.parseInt(src.getText());
+						mainFrame.topology.setHeight(Integer.parseInt(src
+								.getText()));
+						heightControl = true;
+						userDefinedHeight.setBackground(Color.white);
+						mainFrame.errorMessage.setText("");
+					} catch (NumberFormatException e) {
+						System.out.println("Must be higher than zero");
+						userDefinedHeight.setBackground(lighterRed);
+						heightControl = false;
+						mainFrame.errorMessage
+								.setText("<html><font color='red'>Error:</font> Dimention must be an integer</html>");
+					}
+
 					mainFrame.hexagonsPanel
 							.paintComponent(mainFrame.hexagonsPanel
 									.getGraphics());
@@ -332,16 +331,16 @@ public class StartPanel extends JPanel {
 
 		loadSBML.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (mainFrame.epithelium.getUnitaryModel() == null&&(heightControl&& widthControl)) {
+				if (mainFrame.epithelium.getUnitaryModel() == null
+						&& (heightControl && widthControl)) {
 					askModel();
 
 					if (mainFrame.epithelium.getUnitaryModel() != null)
 						mainFrame.initializePanelCenterRight();
-				}
-				else
-					mainFrame.errorMessage.setText("<html><font color='red'>Error:</font> Dimention must be an integer</html>");
+				} else
+					mainFrame.errorMessage
+							.setText("<html><font color='red'>Error:</font> Dimention must be an integer</html>");
 
-				
 			}
 		});
 
@@ -440,14 +439,11 @@ public class StartPanel extends JPanel {
 		fc.setDialogTitle("Choose file");
 
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-			File folder = new File("temp");
-
-			if (folder.listFiles().length != 0)
-				for (File fileEntry : folder.listFiles())
-					fileEntry.delete();
+			tempDirClean();
 			UnZip.main(fc.getSelectedFile().getAbsolutePath());
 			mainFrame.epithelium.zepiFilename = fc.getSelectedFile().getName();
 
+			File folder = new File("temp");
 			for (final File fileEntry : folder.listFiles()) {
 				if (fileEntry.getName().contains("sbml")) {
 					loadModel(fileEntry);
@@ -468,6 +464,19 @@ public class StartPanel extends JPanel {
 						e.printStackTrace();
 					}
 				}
+			}
+		}
+	}
+
+	private void tempDirClean() {
+		File temp = new File("temp");
+		if (temp == null)
+			return;
+		if (!temp.isDirectory())
+			temp.delete();
+		if (temp.isDirectory()) {
+			for (File entry : temp.listFiles()) {
+				entry.delete();
 			}
 		}
 	}
@@ -894,9 +903,9 @@ public class StartPanel extends JPanel {
 
 				String zipFile = fc.getSelectedFile().getAbsolutePath()
 						+ ".zepi";
-				
-				mainFrame.epithelium.zepiFilename = fc.getSelectedFile().getName()+ ".zepi";
-			
+
+				mainFrame.epithelium.zepiFilename = fc.getSelectedFile()
+						.getName() + ".zepi";
 
 				String unitarySBML = "";
 				if (this.mainFrame.epithelium.isNewEpithelium()) {
