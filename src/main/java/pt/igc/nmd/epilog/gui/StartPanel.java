@@ -114,7 +114,6 @@ public class StartPanel extends JPanel {
 		quitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainFrame.dispose();
-				tempDirClean();
 				System.exit(0);
 			}
 		});
@@ -439,46 +438,56 @@ public class StartPanel extends JPanel {
 		fc.setDialogTitle("Choose file");
 
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-			tempDirClean();
-			UnZip.main(fc.getSelectedFile().getAbsolutePath());
-			mainFrame.epithelium.zepiFilename = fc.getSelectedFile().getName();
+			File folder;
+			try {
+				folder = UnZip.main(fc.getSelectedFile().getAbsolutePath());
+				mainFrame.epithelium.zepiFilename = fc.getSelectedFile()
+						.getName();
 
-			File folder = new File("temp");
-			for (final File fileEntry : folder.listFiles()) {
-				if (fileEntry.getName().contains("sbml")) {
-					loadModel(fileEntry);
-					this.mainFrame.epithelium.setSBMLLoadPath(fileEntry
-							.getAbsolutePath());
-				}
-			}
-			for (final File fileEntry : folder.listFiles()) {
-				if (fileEntry.getName().contains("config")) {
-					try {
-						Scanner fileIn = new Scanner(new File(
-								fileEntry.getAbsolutePath()));
-						loadConfigFile(fileIn);
-						loadConfigurations();
-
-					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+				for (final File fileEntry : folder.listFiles()) {
+					if (fileEntry.getName().contains("sbml")) {
+						loadModel(fileEntry);
+						this.mainFrame.epithelium.setSBMLLoadPath(fileEntry
+								.getAbsolutePath());
 					}
 				}
+				for (final File fileEntry : folder.listFiles()) {
+					if (fileEntry.getName().contains("config")) {
+						try {
+							Scanner fileIn = new Scanner(new File(
+									fileEntry.getAbsolutePath()));
+							loadConfigFile(fileIn);
+							loadConfigurations();
+
+						} catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+				deleteTempDir(folder);
+			} catch (IOException e1) {
+				// TODO: send this to User Error message!!!
+				e1.printStackTrace();
 			}
+
 		}
 	}
 
-	private void tempDirClean() {
-		File temp = new File("temp");
-		if (temp == null)
+	/**
+	 * Recursive directory cleaning
+	 * 
+	 * @param fdir
+	 */
+	private void deleteTempDir(File fdir) {
+		if (fdir == null)
 			return;
-		if (!temp.isDirectory())
-			temp.delete();
-		if (temp.isDirectory()) {
-			for (File entry : temp.listFiles()) {
-				entry.delete();
+		if (fdir.isDirectory()) {
+			for (File entry : fdir.listFiles()) {
+				deleteTempDir(entry);
 			}
 		}
+		fdir.delete();
 	}
 
 	/**
