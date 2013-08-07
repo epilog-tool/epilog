@@ -221,7 +221,7 @@ public class SimulationSetupPanel extends JPanel {
 				restartButton.setEnabled(false);
 				mainFrame.componentsPanel.saveAsInitialState.setEnabled(false);
 				mainFrame.componentsPanel.setICName.setEnabled(false);
-				mainFrame.errorMessage.setText("");
+				mainFrame.setUserMessageEmpty();
 
 				// removeAll();
 				// repaint();

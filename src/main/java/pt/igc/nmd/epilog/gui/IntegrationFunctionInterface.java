@@ -123,7 +123,7 @@ public class IntegrationFunctionInterface extends JFrame {
 	}
 
 	private void resetErrorMessage(){
-		mainFrame.errorMessage.setText("");
+		mainFrame.setUserMessageEmpty();
 	}
 	
 	/**
@@ -161,9 +161,8 @@ public class IntegrationFunctionInterface extends JFrame {
 					nodeList = nodeList + nodeAux.getNodeID() + " ";
 
 			if (!checkNode(nodeString)) {
-				mainFrame.errorMessage
-						.setText("<html><font color='red'>Error:</font> Regulating node does not exist. ( Nodes: "
-								+ nodeList + " )</html>");
+				mainFrame.setUserMessage(MsgStatus.ERROR, "Regulating node does not exist. ( Nodes: "
+								+ nodeList + " )");
 				return false;
 			}
 			

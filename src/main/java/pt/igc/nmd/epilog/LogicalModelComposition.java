@@ -19,6 +19,7 @@ import org.colomoto.mddlib.operators.MDDBaseOperators;
 
 import pt.igc.nmd.composition.IntegrationFunctionMapping;
 import pt.igc.nmd.epilog.gui.MainFrame;
+import pt.igc.nmd.epilog.gui.MsgStatus;
 import pt.igc.nmd.epilog.integrationgrammar.CompositionContext;
 import pt.igc.nmd.epilog.integrationgrammar.CompositionContextImpl;
 import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionMDDFactory;
@@ -70,7 +71,7 @@ public class LogicalModelComposition {
 
 		
 
-		mainFrame.errorMessage.setText("<html><font color='red'>Status:</font> Starting to create the composed model</html>");
+		mainFrame.setUserMessage(MsgStatus.STATUS, "Starting to create the composed model");
 
 		List<NodeInfo> nodeOrder = new ArrayList<NodeInfo>();
 		List<NodeInfo> newIntegrationNodes = new ArrayList<NodeInfo>();
@@ -287,7 +288,7 @@ public class LogicalModelComposition {
 		// }
 
 		mainFrame.getEpithelium().setComposedModel(composedModel);
-		mainFrame.errorMessage.setText("<html><font color='red'>Status:</font> Composed model created</html>");
+		mainFrame.setUserMessage(MsgStatus.STATUS, "Composed model created");
 		return composedModel;
 
 	}

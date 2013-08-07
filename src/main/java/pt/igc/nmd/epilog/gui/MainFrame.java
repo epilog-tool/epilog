@@ -62,7 +62,7 @@ public class MainFrame extends JFrame {
 
 	public JPanel panelToolTip;
 
-	public JLabel errorMessage;
+	private JLabel errorMessage;
 
 	public int activeInstance;
 
@@ -131,6 +131,13 @@ public class MainFrame extends JFrame {
 		setupMainFrame();
 	}
 
+	public void setUserMessage(MsgStatus status, String message) {
+		this.errorMessage.setText(status.getMessage(message));
+	}
+	public void setUserMessageEmpty() {
+		this.errorMessage.setText(" ");
+	}
+	
 	/**
 	 * Runs the main panel for the first time and summons the creation of the
 	 * startPanel

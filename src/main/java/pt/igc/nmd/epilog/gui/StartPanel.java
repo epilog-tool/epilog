@@ -130,7 +130,7 @@ public class StartPanel extends JPanel {
 				mainFrame.simulation.reset();
 				mainFrame.epithelium.setNewEpithelium(true);
 				saveButton.setEnabled(false);
-				mainFrame.errorMessage.setText("");
+				mainFrame.setUserMessageEmpty();
 
 			}
 		});
@@ -148,7 +148,7 @@ public class StartPanel extends JPanel {
 				mainFrame.simulation.reset();
 				mainFrame.epithelium.setNewEpithelium(false);
 				saveButton.setEnabled(true);
-				mainFrame.errorMessage.setText("");
+				mainFrame.setUserMessageEmpty();
 
 			}
 		});
@@ -219,13 +219,12 @@ public class StartPanel extends JPanel {
 								.getText()));
 						widthControl = true;
 						userDefinedWidth.setBackground(Color.white);
-						mainFrame.errorMessage.setText("");
+						mainFrame.setUserMessageEmpty();
 					} catch (NumberFormatException e) {
 						System.out.println("Must be higher than zero");
 						userDefinedWidth.setBackground(lighterRed);
 						widthControl = false;
-						mainFrame.errorMessage
-								.setText("<html><font color='red'>Error:</font> Dimention must be an integer</html>");
+						mainFrame.setUserMessage(MsgStatus.ERROR, "Dimension must be an integer");
 					}
 					mainFrame.hexagonsPanel
 							.paintComponent(mainFrame.hexagonsPanel
@@ -297,13 +296,12 @@ public class StartPanel extends JPanel {
 								.getText()));
 						heightControl = true;
 						userDefinedHeight.setBackground(Color.white);
-						mainFrame.errorMessage.setText("");
+						mainFrame.setUserMessageEmpty();
 					} catch (NumberFormatException e) {
 						System.out.println("Must be higher than zero");
 						userDefinedHeight.setBackground(lighterRed);
 						heightControl = false;
-						mainFrame.errorMessage
-								.setText("<html><font color='red'>Error:</font> Dimention must be an integer</html>");
+						mainFrame.setUserMessage(MsgStatus.ERROR, "Dimension must be an integer");
 					}
 
 					mainFrame.hexagonsPanel
@@ -337,8 +335,7 @@ public class StartPanel extends JPanel {
 					if (mainFrame.epithelium.getUnitaryModel() != null)
 						mainFrame.initializePanelCenterRight();
 				} else
-					mainFrame.errorMessage
-							.setText("<html><font color='red'>Error:</font> Dimention must be an integer</html>");
+					mainFrame.setUserMessage(MsgStatus.ERROR, "Dimension must be an integer");
 
 			}
 		});
@@ -467,7 +464,7 @@ public class StartPanel extends JPanel {
 				}
 				deleteTempDir(folder);
 			} catch (IOException e1) {
-				// TODO: send this to User Error message!!!
+				// TODO: send this to User Error message!!! ptgm
 				e1.printStackTrace();
 			}
 
