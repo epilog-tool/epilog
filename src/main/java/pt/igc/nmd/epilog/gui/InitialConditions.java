@@ -15,9 +15,9 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
@@ -46,7 +46,7 @@ public class InitialConditions extends JPanel {
 
 	private JPanel auxiliaryPanel[];
 	public JPanel panelCenterAux;
-	public JPanel panelCenterMain;
+	public JPanel properComponentsPanel;
 	public JPanel panelStart;
 
 	private JButton[] colorButton;
@@ -200,12 +200,12 @@ public class InitialConditions extends JPanel {
 			add(endPanel, BorderLayout.PAGE_END);
 
 			// CENTER PANEL
-			panelCenterMain = new JPanel(new BorderLayout());
+			properComponentsPanel = new JPanel(new BorderLayout());
 			JPanel panelCenter = new JPanel();
-			JPanel panelEnd = new JPanel();
+			JPanel inputsPanel = new JPanel();
 			panelCenterAux = new JPanel(new BorderLayout());
 			panelCenter.setLayout(layout);
-			panelEnd.setLayout(layout);
+			inputsPanel.setLayout(layout);
 			List<NodeInfo> listNodes = this.mainFrame.epithelium
 					.getUnitaryModel().getNodeOrder();
 
@@ -290,7 +290,7 @@ public class InitialConditions extends JPanel {
 					auxiliaryPanel[i].setVisible(true);
 
 				if (listNodes.get(i).isInput())
-					panelEnd.add(auxiliaryPanel[i]);
+					inputsPanel.add(auxiliaryPanel[i]);
 				else
 					panelCenter.add(auxiliaryPanel[i]);
 
@@ -306,20 +306,29 @@ public class InitialConditions extends JPanel {
 								Font.ITALIC, 14), Color.black);
 
 				panelCenter.setBorder(titleProperComponents);
-				panelEnd.setBorder(titleInputs);
+				inputsPanel.setBorder(titleInputs);
 
 			} // End Center Panel
 
 
-			panelCenterMain.add(panelCenter, BorderLayout.CENTER);
+		//	properComponentsPanel.add(panelCenter, BorderLayout.CENTER);
 
-			panelCenterAux.add(new JScrollPane(mainFrame.panelToolTip), BorderLayout.LINE_START);
 			
-			panelCenterAux.add(panelCenterMain, BorderLayout.CENTER);
-			panelCenterAux.add(panelEnd, BorderLayout.PAGE_END);
-			panelEnd.setVisible(checkEnvironmentInputsExistence());
+			panelCenter.setPreferredSize(new Dimension(400,400));  
+			inputsPanel.setPreferredSize(new Dimension(400,400));  
+			
+			JSplitPane properComponentsAndValueAnalyticsSplitPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,new JScrollPane(mainFrame.panelToolTip),new JScrollPane(panelCenter));
+			properComponentsAndValueAnalyticsSplitPanel.setDividerLocation(100);
+			properComponentsAndValueAnalyticsSplitPanel.setDividerSize(3);
 
-			add(panelCenterAux, BorderLayout.CENTER);
+
+			inputsPanel.setVisible(checkEnvironmentInputsExistence());
+
+			JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,properComponentsAndValueAnalyticsSplitPanel,new JScrollPane(inputsPanel));
+			splitPane.setDividerLocation(350);
+			splitPane.setDividerSize(3);
+			
+			add(splitPane, BorderLayout.CENTER);
 
 		}
 	}

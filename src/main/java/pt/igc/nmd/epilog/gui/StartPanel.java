@@ -371,6 +371,7 @@ public class StartPanel extends JPanel {
 			mainFrame.gridSpecsPanel.getComponent(4).setEnabled(false);
 			mainFrame.gridSpecsPanel.getComponent(3).setEnabled(false);
 			mainFrame.gridSpecsPanel.getComponent(1).setEnabled(false);
+			repaint();
 		}
 
 	}

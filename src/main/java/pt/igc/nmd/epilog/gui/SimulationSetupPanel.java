@@ -238,8 +238,8 @@ public class SimulationSetupPanel extends JPanel {
 
 		// LINE START
 
-		JPanel northLineStartPanel = new JPanel(new BorderLayout());
-		JPanel centerLineStartPanel = new JPanel();
+		JPanel simulationOptionsPanel = new JPanel(new BorderLayout());
+		JPanel epitheliumOptionsPanel = new JPanel();
 		JPanel southLineStartPanel = new JPanel();
 
 		JPanel[] auxiliary = new JPanel[4];
@@ -330,11 +330,11 @@ public class SimulationSetupPanel extends JPanel {
 		auxiliary[3].add(prioritiesLabel);
 		auxiliary[3].add(prioritiesCombo);
 
-		northLineStartPanel.add(auxiliary[0], BorderLayout.PAGE_START);
-		northLineStartPanel.add(auxiliary[3], BorderLayout.CENTER);
-		northLineStartPanel.add(auxiliary[2], BorderLayout.PAGE_END);
+		simulationOptionsPanel.add(auxiliary[0], BorderLayout.PAGE_START);
+		simulationOptionsPanel.add(auxiliary[3], BorderLayout.CENTER);
+		simulationOptionsPanel.add(auxiliary[2], BorderLayout.PAGE_END);
 
-		centerLineStartPanel.add(auxiliary[1]);
+		epitheliumOptionsPanel.add(auxiliary[1]);
 
 		LineBorder border = new LineBorder(Color.black, 1, true);
 
@@ -349,26 +349,25 @@ public class SimulationSetupPanel extends JPanel {
 
 
 
-		JScrollPane nw = new JScrollPane(mainFrame.panelToolTip);
+		JScrollPane valueAnalyticsPanel = new JScrollPane(mainFrame.panelToolTip);
 
 
-		northLineStartPanel.setBorder(north);
-		centerLineStartPanel.setBorder(center);
+		simulationOptionsPanel.setBorder(north);
+		epitheliumOptionsPanel.setBorder(center);
 
 		
 		leftPanel.setBorder(BorderFactory
 				.createEtchedBorder(EtchedBorder.LOWERED));
 		
 		
+		JPanel simulationOptionsPanels = new JPanel();
+		simulationOptionsPanels.setLayout(new BoxLayout(simulationOptionsPanels, BoxLayout.Y_AXIS));
 		
-		JPanel pageStartAuxiliary = new JPanel();
-		pageStartAuxiliary.setLayout(new BoxLayout(pageStartAuxiliary, BoxLayout.Y_AXIS));
-		
-		pageStartAuxiliary.add(northLineStartPanel);
-		pageStartAuxiliary.add(centerLineStartPanel);
+		simulationOptionsPanels.add(simulationOptionsPanel);
+		simulationOptionsPanels.add(epitheliumOptionsPanel);
 
-		leftPanel.add(pageStartAuxiliary, BorderLayout.PAGE_START);
-		leftPanel.add(nw, BorderLayout.CENTER);
+		leftPanel.add(simulationOptionsPanels, BorderLayout.PAGE_START);
+		leftPanel.add(valueAnalyticsPanel, BorderLayout.CENTER);
 
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,leftPanel,centerPanel);
 		splitPane.setDividerLocation(leftPanel.getPreferredSize().width);

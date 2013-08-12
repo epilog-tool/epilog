@@ -193,7 +193,7 @@ public class PrioritiesPanel extends JPanel {
 
 		priorityClass.add(createInitialPriority());
 		centerPanel.add(priorityClass.get(0));
-		add(centerPanel, BorderLayout.CENTER);
+		add(new JScrollPane(centerPanel), BorderLayout.CENTER);
 
 	}
 
@@ -206,7 +206,7 @@ public class PrioritiesPanel extends JPanel {
 		centerPanel.add(priorityClass.get(0));
 		centerPanel.revalidate();
 		centerPanel.repaint();
-		add(centerPanel, BorderLayout.CENTER);
+		add(new JScrollPane(centerPanel), BorderLayout.CENTER);
 	}
 
 	/**
@@ -592,7 +592,7 @@ public class PrioritiesPanel extends JPanel {
 
 		centerPanel.revalidate();
 		centerPanel.repaint();
-		add(centerPanel, BorderLayout.CENTER);
+		add(new JScrollPane(centerPanel), BorderLayout.CENTER);
 	}
 
 	/**
