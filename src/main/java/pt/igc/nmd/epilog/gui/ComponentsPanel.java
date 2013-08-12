@@ -2,6 +2,7 @@ package pt.igc.nmd.epilog.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -74,6 +75,9 @@ public class ComponentsPanel extends JPanel {
 
 		properComponents.setLayout(layout);
 		inputComponents.setLayout(layout);
+		
+		properComponents.setPreferredSize(new Dimension(400,400));  
+		inputComponents.setPreferredSize(new Dimension(400,400));  
 
 		setLayout(new BorderLayout());
 
@@ -148,7 +152,7 @@ public class ComponentsPanel extends JPanel {
 						"Arial", Font.ITALIC, 14), Color.black);
 		
 		
-		properComponents.setPreferredSize(this.getPreferredSize());
+		//properComponents.setPreferredSize(this.getPreferredSize());
 		
 		JScrollPane properComponentsScrollPanel = new JScrollPane(properComponents);
 		JScrollPane inputComponentsScrollPanel = new JScrollPane(inputComponents);
