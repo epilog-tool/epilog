@@ -24,7 +24,7 @@
        <snapshots><enabled>true</enabled></snapshots>
        <releases><enabled>true</enabled></releases>
        <name>GINsim temporary repo</name>
-       <url>http://crfb.univ-mrs.fr/~naldi/maven</url>
+			 <url>http://kdbio.inesc-id.pt/ginsin/maven</url>
     </repository>
   </repositories>
 
