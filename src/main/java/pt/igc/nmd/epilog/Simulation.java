@@ -5,12 +5,14 @@ import java.awt.Container;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Hashtable;
 
 import javax.imageio.ImageIO;
 
 import org.colomoto.logicalmodel.NodeInfo;
 
 import pt.igc.nmd.epilog.gui.MainFrame;
+import pt.igc.nmd.epilog.gui.MsgStatus;
 
 public class Simulation {
 
@@ -27,6 +29,8 @@ public class Simulation {
 	private boolean stableStateFound = false;
 	private boolean runcontrol = true;
 
+	private Hashtable<Integer, Grid> statesCycleDetection;
+
 	/**
 	 * Initializes the simulation setup.
 	 * 
@@ -34,6 +38,19 @@ public class Simulation {
 	 */
 	public Simulation(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
+		statesCycleDetection = new Hashtable<Integer, Grid>();
+	}
+
+	private boolean checkCycle() {
+
+		System.out.println(currentGlobalState);
+		for (Grid state : statesCycleDetection.values())
+			if (currentGlobalState.equals(state)) {
+				mainFrame.setUserMessage(MsgStatus.STATUS, "Cycle Detected");
+				return true;
+			}
+		statesCycleDetection.put(iterationNumber, currentGlobalState);
+		return false;
 	}
 
 	/**
@@ -42,7 +59,10 @@ public class Simulation {
 	public void run() {
 		runcontrol = false;
 		while (!stableStateFound
-				&& (iterationNumber % Integer.parseInt(mainFrame.simulationSetupPanel.stopCriterium.getText()) != 0 || runcontrol == false)) {
+				&& (iterationNumber
+						% Integer
+								.parseInt(mainFrame.simulationSetupPanel.stopCriterium
+										.getText()) != 0 || runcontrol == false)) {
 			runcontrol = true;
 			runButtonActivated = true;
 			step();
@@ -92,7 +112,7 @@ public class Simulation {
 	public void step() {
 		this.iterationNumber++;
 		setRunning(true);
-		
+
 		this.mainFrame.simulationSetupPanel.restartButton.setEnabled(true);
 		this.mainFrame.componentsPanel.saveAsInitialState.setEnabled(true);
 		this.mainFrame.componentsPanel.setICName.setEnabled(true);
@@ -115,6 +135,11 @@ public class Simulation {
 
 			globalModel = new GlobalModel(this.mainFrame);
 		}
+		
+		if (iterationNumber > 30){
+			System.out.println("Estou a checkar");
+			checkCycle();
+		}
 
 		nextGlobalState = globalModel.getNextState(currentGlobalState);
 
@@ -127,13 +152,11 @@ public class Simulation {
 			stableStateFound = true;
 			resetIterationNumber();
 			System.out.println("Stable State Found");
-		}
-		else
+		} else
 			this.mainFrame.setBorderHexagonsPanel(iterationNumber);
-		
+
 		currentGlobalState = nextGlobalState;
-		
-		
+
 	}
 
 	/**
@@ -151,7 +174,7 @@ public class Simulation {
 
 					if (currentState.getValue(instance, node) != nextState
 							.getValue(instance, node)) {
-						
+
 						return false;
 					}
 			}
@@ -375,7 +398,6 @@ public class Simulation {
 	 */
 	public Color lighter(Color color, float fraction) {
 
-		
 		int red = (int) Math.round(color.getRed() * (1.0 + fraction));
 		int green = (int) Math.round(color.getGreen() * (1.0 + fraction));
 		int blue = (int) Math.round(color.getBlue() * (1.0 + fraction));

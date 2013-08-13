@@ -336,7 +336,6 @@ public class StartPanel extends JPanel {
 						mainFrame.initializePanelCenterRight();
 				} else
 					mainFrame.setUserMessage(MsgStatus.ERROR, "Dimension must be an integer");
-
 			}
 		});
 

@@ -17,7 +17,6 @@ import javax.swing.JTextField;
 import org.colomoto.logicalmodel.NodeInfo;
 
 import pt.igc.nmd.epilog.SphericalEpithelium;
-import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
 
 public class IntegrationFunctionInterface extends JFrame {
 
