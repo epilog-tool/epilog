@@ -125,6 +125,10 @@ public class MainFrame extends JFrame {
 
 		UIManager.setLookAndFeel(UIManager
 				.getCrossPlatformLookAndFeelClassName());
+		
+
+			UIManager.setLookAndFeel( "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+
 
 		setTitle("EpiLog");
 		setupMainFrame();
