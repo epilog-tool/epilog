@@ -102,7 +102,8 @@ public class MainFrame extends JFrame {
 		this.logicalModelComposition = new LogicalModelComposition(this);
 		initialSetupHasChanged = false;
 
-		this.backgroundColor = new Color(0xD3D3D3);
+	//	this.backgroundColor = new Color(0xD3D3D3);
+		this.backgroundColor = Color.white;
 
 		this.start = false;
 
@@ -125,10 +126,17 @@ public class MainFrame extends JFrame {
 
 		UIManager.setLookAndFeel(UIManager
 				.getCrossPlatformLookAndFeelClassName());
-		
 
-			UIManager.setLookAndFeel( "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		//UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+		//UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+		//UIManager.setLookAndFeel("com.apple.laf.AquaLookAndFeel");
 
+		UIManager.LookAndFeelInfo[] lafInfo = UIManager
+				.getInstalledLookAndFeels();
+
+//		for (UIManager.LookAndFeelInfo a : lafInfo)
+//			System.out.println(a.toString());
 
 		setTitle("EpiLog");
 		setupMainFrame();
@@ -137,10 +145,11 @@ public class MainFrame extends JFrame {
 	public void setUserMessage(MsgStatus status, String message) {
 		this.errorMessage.setText(status.getMessage(message));
 	}
+
 	public void setUserMessageEmpty() {
 		this.errorMessage.setText(" ");
 	}
-	
+
 	/**
 	 * Runs the main panel for the first time and summons the creation of the
 	 * startPanel
@@ -555,21 +564,19 @@ public class MainFrame extends JFrame {
 		tabbedPane = new JTabbedPane();
 		startPanel = new StartPanel(this);
 		componentsPanel = new ComponentsPanel(this);
-		
 
 		initial = new InitialConditions(this);
 		inputsPanel = new InputsPanel(this);
 		perturbationsPanel = new PerturbationsPanel(this);
 		prioritiesPanel = new PrioritiesPanel(this);
 		simulationSetupPanel = new SimulationSetupPanel(this);
-		
-		
+
 		tabbedPane.addTab("Simulation", simulationSetupPanel);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
 		tabbedPane.addTab("Initial Conditions", initial);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
-		
+
 		tabbedPane.addTab("Inputs", inputsPanel);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
@@ -647,9 +654,6 @@ public class MainFrame extends JFrame {
 
 		// panelCenterRight.add(componentsPanel, BorderLayout.CENTER);
 
-		
-		
-		
 	}
 
 	/**
@@ -673,7 +677,6 @@ public class MainFrame extends JFrame {
 		tabbedPane.setEnabledAt(3, !bool);
 		tabbedPane.setEnabledAt(4, !bool);
 	}
-
 
 	// Getter, Setters and Boolean Methods
 
