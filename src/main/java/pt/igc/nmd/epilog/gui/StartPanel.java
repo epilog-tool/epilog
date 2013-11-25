@@ -9,11 +9,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,8 +18,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Scanner;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -41,8 +36,8 @@ import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
 
+import pt.igc.nmd.epilog.FileIO;
 import pt.igc.nmd.epilog.Topology;
-import pt.igc.nmd.epilog.UnZip;
 
 public class StartPanel extends JPanel {
 
@@ -224,7 +219,8 @@ public class StartPanel extends JPanel {
 						System.out.println("Must be higher than zero");
 						userDefinedWidth.setBackground(lighterRed);
 						widthControl = false;
-						mainFrame.setUserMessage(MsgStatus.ERROR, "Dimension must be an integer");
+						mainFrame.setUserMessage(MsgStatus.ERROR,
+								"Dimension must be an integer");
 					}
 					mainFrame.hexagonsPanel
 							.paintComponent(mainFrame.hexagonsPanel
@@ -301,7 +297,8 @@ public class StartPanel extends JPanel {
 						System.out.println("Must be higher than zero");
 						userDefinedHeight.setBackground(lighterRed);
 						heightControl = false;
-						mainFrame.setUserMessage(MsgStatus.ERROR, "Dimension must be an integer");
+						mainFrame.setUserMessage(MsgStatus.ERROR,
+								"Dimension must be an integer");
 					}
 
 					mainFrame.hexagonsPanel
@@ -335,7 +332,8 @@ public class StartPanel extends JPanel {
 					if (mainFrame.epithelium.getUnitaryModel() != null)
 						mainFrame.initializePanelCenterRight();
 				} else
-					mainFrame.setUserMessage(MsgStatus.ERROR, "Dimension must be an integer");
+					mainFrame.setUserMessage(MsgStatus.ERROR,
+							"Dimension must be an integer");
 			}
 		});
 
@@ -437,22 +435,24 @@ public class StartPanel extends JPanel {
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			File folder;
 			try {
-				folder = UnZip.main(fc.getSelectedFile().getAbsolutePath());
 				mainFrame.epithelium.zepiFilename = fc.getSelectedFile()
 						.getName();
+				folder = FileIO.unzipZepiTmpDir(fc.getSelectedFile()
+						.getAbsolutePath());
 
 				for (final File fileEntry : folder.listFiles()) {
-					if (fileEntry.getName().contains("sbml")) {
+					if (fileEntry.getName().endsWith(".sbml")
+							|| fileEntry.getName().endsWith(".SBML")) {
 						loadModel(fileEntry);
 						this.mainFrame.epithelium.setSBMLLoadPath(fileEntry
 								.getAbsolutePath());
 					}
 				}
 				for (final File fileEntry : folder.listFiles()) {
-					if (fileEntry.getName().contains("config")) {
+					if (fileEntry.getName().endsWith("config.txt")
+							|| fileEntry.getName().endsWith("CONFIG.TXT")) {
 						try {
-							Scanner fileIn = new Scanner(new File(
-									fileEntry.getAbsolutePath()));
+							Scanner fileIn = new Scanner(fileEntry);
 							loadConfigFile(fileIn);
 							loadConfigurations();
 
@@ -895,65 +895,73 @@ public class StartPanel extends JPanel {
 	 * 
 	 */
 	public void saveEpitheliumModel() {
-
-		// TODO: Provisory method. It will evolve to something more elaborate
 		JFileChooser fc = new JFileChooser();
-		PrintWriter out;
-		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
 
+		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+			String newUserZipFilename = fc.getSelectedFile().getAbsolutePath();
+			newUserZipFilename += (newUserZipFilename.endsWith(".zepi")?"":".zepi");
+			
 			try {
+				// Create new Zepi temp directory
+				File newZepiTmpDir = FileIO.createTempDirectory();
 
-				out = new PrintWriter(new FileWriter("config.txt"));
-				createConfigFile(out);
-				out.close();
+				String fileSBMLName = "generated.sbml";
 
-				String zipFile = fc.getSelectedFile().getAbsolutePath()
-						+ ".zepi";
+				// On all cases we need to write the config file
+				String configFile = newZepiTmpDir.getAbsolutePath()
+						+ "/config.txt";
+				PrintWriter outConfig = new PrintWriter(new FileWriter(
+						configFile));
+				writeConfigFile(outConfig);
+				outConfig.close();
 
-				mainFrame.epithelium.zepiFilename = fc.getSelectedFile()
-						.getName() + ".zepi";
-
-				String unitarySBML = "";
+				File fNewSBML;
 				if (this.mainFrame.epithelium.isNewEpithelium()) {
-					unitarySBML = this.mainFrame.epithelium.getSBMLFilePath();
-				} else {
-					unitarySBML = this.mainFrame.epithelium.getSBMLLoadPath();
-				}
-
-				// TODO
-				if (mainFrame.epithelium.getComposedModel() != null) {
-					SBMLFormat sbmlFormat = new SBMLFormat();
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					sbmlFormat.export(mainFrame.epithelium.getComposedModel(),
-							baos);
-				}
-
-				String[] sourceFiles = { "config.txt", unitarySBML };
-
-				byte[] buffer = new byte[1024];
-				FileOutputStream fout = new FileOutputStream(zipFile);
-				ZipOutputStream zout = new ZipOutputStream(fout);
-
-				for (int i = 0; i < sourceFiles.length; i++) {
-
-					FileInputStream fin = new FileInputStream(sourceFiles[i]);
-					zout.putNextEntry(new ZipEntry(sourceFiles[i]));
-					int length;
-
-					while ((length = fin.read(buffer)) > 0) {
-						zout.write(buffer, 0, length);
+					// We might have an old SBML file
+					File fOldSBML = new File(
+							this.mainFrame.epithelium.getSBMLFilePath());
+					if (fOldSBML.isFile()) {
+						// There's an old SBML file!
+						fNewSBML = FileIO.copyFile(fOldSBML,
+								newZepiTmpDir.getAbsolutePath());
+					} else {
+						// Someone deleted my SBML :/ Export a new one
+						fNewSBML = this.mainFrame.epithelium
+								.writeModelToSBMLFile(newZepiTmpDir,
+										fileSBMLName);
 					}
-					zout.closeEntry();
-					fin.close();
+				} else {
+					File oldZepi = new File(mainFrame.epithelium.zepiFilename);
+					if (oldZepi.isFile()) {
+						// unzip zepi into a temporary directory
+						File tmppath = FileIO
+								.unzipZepiTmpDir(mainFrame.epithelium.zepiFilename);
+						// gets oldSBML path from temporary directory
+						File fOldSBML = FileIO.getSBMLfileInDir(tmppath);
+						// copy old SBML to new Zepi temporary directory
+						fNewSBML = FileIO.copyFile(fOldSBML,
+								newZepiTmpDir.getAbsolutePath());
+						// Deletes oldZepi temporary directory
+						FileIO.deleteTempDirectory(tmppath);
+					} else {
+						// Someone deleted my SBML :/ Export a new one
+						fNewSBML = this.mainFrame.epithelium
+								.writeModelToSBMLFile(newZepiTmpDir,
+										fileSBMLName);
+					}
 				}
-				zout.close();
-
-				File toDelete = new File("config.txt");
-				toDelete.delete();
+				// TODO
+				// if (mainFrame.epithelium.getComposedModel() != null) {
+				// SBMLFormat sbmlFormat = new SBMLFormat();
+				// ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				// sbmlFormat.export(mainFrame.epithelium.getComposedModel(),
+				// baos);
+				// }
+				FileIO.zipTmpDir(newZepiTmpDir, newUserZipFilename);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
+		}
 	}
 
 	/**
@@ -963,7 +971,7 @@ public class StartPanel extends JPanel {
 	 *            config file (.txt)
 	 * 
 	 */
-	private void createConfigFile(PrintWriter out) {
+	private void writeConfigFile(PrintWriter out) {
 
 		// TODO : Change PrintWriter to FileWriter - Tratamento de Excepcoes. o
 		// file writer espera ate ter uma quantiodade grande de dados para

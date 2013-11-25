@@ -1,6 +1,9 @@
 package pt.igc.nmd.epilog;
 
 import java.awt.Color;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -8,6 +11,7 @@ import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
+import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 
 import pt.igc.nmd.epilog.gui.MainFrame;
@@ -420,6 +424,22 @@ public class SphericalEpithelium implements Epithelium {
 	@Override
 	public LogicalModel getUnitaryModel() {
 		return this.unitaryModel;
+	}
+
+	public File writeModelToSBMLFile(File dir, String filename) {
+		File fNewSBML = null;
+		SBMLFormat sbmlFormat = new SBMLFormat();
+		try {
+			fNewSBML = FileIO.createTmpFileInDir(dir, filename);
+			FileOutputStream outSBML = new FileOutputStream(
+					fNewSBML);
+			sbmlFormat.export(
+					this.mainFrame.epithelium.getUnitaryModel(),
+					outSBML);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return fNewSBML;
 	}
 
 	/**
