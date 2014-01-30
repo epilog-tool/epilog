@@ -1,0 +1,31 @@
+Use cases:
+
+1. New Epithelium
+  Carrega no File -> New
+	Aparece Popup para definir
+	 . Dimensão 
+	 . Load SBML
+	Aparece outro Popup NewSimulation para seleccionar
+	 . Nome da Simulação
+	 . ICs
+	 . ITs
+	 . PTs
+	 . PRs
+	Aparece:
+	 . Esquerda: Arvore da simulação 
+   . Direita: Tab da Simulação
+
+Run Simulation
+  Verifica se existem Tabs associadas não-salvas
+	 . Se sim, aparece um popup: "Existem Tabs não salvas. Deseja continuar?"
+	   . Ok -> continua a simulação com os parametros gravados
+		 . Cancel -> Não faz nada
+
+Fechar Tab
+  Verifica se a Tab tem alterações
+	 . Se sim, aparece um Popup: "Existem Parametros nao salvos. Deseja
+	 continuar?"
+	   . Ok -> Fecha sem salvar
+		 . Cancel -> Não faz nada
+
+
