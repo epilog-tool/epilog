@@ -1,6 +1,4 @@
-Use cases:
-
-1. New Epithelium
+New Epithelium
   Carrega no File -> New
 	Aparece Popup para definir
 	 . Dimensão 
@@ -15,11 +13,13 @@ Use cases:
 	 . Esquerda: Arvore da simulação 
    . Direita: Tab da Simulação
 
+
 Run Simulation
   Verifica se existem Tabs associadas não-salvas
 	 . Se sim, aparece um popup: "Existem Tabs não salvas. Deseja continuar?"
 	   . Ok -> continua a simulação com os parametros gravados
 		 . Cancel -> Não faz nada
+
 
 Fechar Tab
   Verifica se a Tab tem alterações
@@ -28,4 +28,34 @@ Fechar Tab
 	   . Ok -> Fecha sem salvar
 		 . Cancel -> Não faz nada
 
+
+Mudar o nome do Epithelium seleccionado
+  Verificar se o nome existe
+	Se nao existir, mudar nas sub-tabs correspondentes
+
+
+Alterações a uma tab
+ Se alterarmos uma sub-tab qq, fica com o estado alterada (* no cimo da tab).
+ Só ao clicar aceitar é que as alterações são copiadas para a tab da
+ simulação.
+ Se clicarmos Reset, são copiadas as informações da simulação para a tab (é
+ inicializada a tab).
+
+
+NewEpi
+ Se houverem sub-tabs abertas por Aceitar
+   . aparece um popup: "Existem Tabs não salvas. Deseja continuar?"
+	   OK / cancel
+
+Sub-tabs
+  A grid que aparece em cada sub-tab apresenta apenas as células para o modelo
+	seleccionado, ficando as outras com o fundo o JPanel pai.
+	Existe uma combobox para alternar entre modelos.
+
+
+Funções de Integração
+  Caso eu remova um modelo da grid, cujos componentes eram referenciados por
+	componentes de outro modelo, o que fazer?
+	 . remover as FI dessas variaveis com aviso?
+	 . tentar fazer parsing?
 
