@@ -1,4 +1,4 @@
-package org.ginsim.epilog.gui;
+package org.ginsim.epilog.gui.tab;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -11,9 +11,11 @@ import org.ginsim.epilog.core.Epithelium;
 public abstract class EpiTabDefinitions extends EpiTab {
 	protected JPanel center;
 	private JPanel south;
+	private boolean changed;
 
 	protected EpiTabDefinitions(Epithelium e) {
 		super(e);
+		this.changed = false;
 		this.initializeGUI();
 	}
 	

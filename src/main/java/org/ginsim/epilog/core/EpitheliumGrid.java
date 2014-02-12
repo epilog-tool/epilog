@@ -6,6 +6,10 @@ import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 public class EpitheliumGrid {
 	private EpitheliumCell[][] cellGrid;
 
+	private EpitheliumGrid(EpitheliumCell[][] cellGrid) {
+		this.cellGrid = cellGrid;
+	}
+
 	public EpitheliumGrid(int x, int y, LogicalModel m) {
 		cellGrid = new EpitheliumCell[x][y];
 		for (int i = 0; i < x; i++) {
@@ -13,6 +17,18 @@ public class EpitheliumGrid {
 				cellGrid[i][j] = new EpitheliumCell(m);
 			}
 		}
+	}
+
+	public EpitheliumGrid clone() {
+		int x = this.cellGrid.length;
+		int y = this.cellGrid[0].length;
+		EpitheliumCell[][] newGrid = new EpitheliumCell[x][y];
+		for (int i = 0; i < x; i++) {
+			for (int j = 0; j < y; j++) {
+				newGrid[i][j] = cellGrid[i][j].clone();
+			}
+		}
+		return new EpitheliumGrid(newGrid);
 	}
 
 	public AbstractPerturbation getPerturbation(int x, int y) {

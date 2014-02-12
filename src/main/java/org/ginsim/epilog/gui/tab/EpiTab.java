@@ -1,4 +1,4 @@
-package org.ginsim.epilog.gui;
+package org.ginsim.epilog.gui.tab;
 
 import javax.swing.JPanel;
 

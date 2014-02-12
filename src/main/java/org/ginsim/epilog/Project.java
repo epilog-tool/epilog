@@ -12,4 +12,6 @@ public class Project {
 	private List<Epithelium> epitheliumList;
 	private Map<String, LogicalModel> modelMap;
 	private String zepiFilename;
+	private boolean changed;
+	
 }

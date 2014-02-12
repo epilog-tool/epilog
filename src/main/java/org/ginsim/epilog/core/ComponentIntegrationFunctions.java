@@ -13,11 +13,11 @@ public class ComponentIntegrationFunctions {
 		}
 	}
 
-	public List<String> get() {
+	public List<String> getFunctions() {
 		return this.integrationFunction;
 	}
 
-	public void set(List<String> functions) {
-		this.integrationFunction = functions;
+	public void setFunctions(List<String> f) {
+		this.integrationFunction = f;
 	}
 }

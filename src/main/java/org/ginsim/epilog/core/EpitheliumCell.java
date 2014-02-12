@@ -16,6 +16,15 @@ public class EpitheliumCell {
 		}
 		this.perturbation = null;
 	}
+	
+	public EpitheliumCell clone() {
+		EpitheliumCell newCell = new EpitheliumCell(this.model);
+		for (int i = 0; i < this.state.length; i++ ) {
+			newCell.setValue(i, this.state[i]);
+		}
+		newCell.setPerturbation(this.perturbation);
+		return newCell;
+	}
 
 	public AbstractPerturbation getPerturbation() {
 		return this.perturbation;
