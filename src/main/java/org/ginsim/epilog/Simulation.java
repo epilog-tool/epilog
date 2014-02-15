@@ -10,16 +10,33 @@ import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.core.EpitheliumIntegrationFunctions;
 import org.ginsim.epilog.core.ModelPriorityClasses;
 
+/**
+ * Initializes and implements the simulation on epilog. 
+ * 
+ * @author Pedro Monteiro and Pedro Varela
+ *
+ */
 public class Simulation {
 	private Epithelium epithelium;
 	private List<EpitheliumGrid> stateHistory;
 
+	/** 
+	 * Initializes the simulation. It is called after creating and epithelium. Creates a list of EpitheliumGrids, to allow the user to travel to a previously calculated (and saved) epitheliumGrid.
+	 * This list is initialized with the current EpitheliumGrid (the one defined in the initialConditions).
+	 * 
+	 * @param e the epithelium the user is working with.
+	 * 
+	 */
 	public Simulation(Epithelium e) {
 		this.epithelium = e;
 		this.stateHistory = new ArrayList<EpitheliumGrid>();
 		this.stateHistory.add(this.epithelium.getEpitheliumGrid());
 	}
 
+	
+	/**
+	 * This function retrieves the next step in the simulation. The first step in this 
+	 */
 	public void nextStep() {
 		//--BEGIN integration
 		
