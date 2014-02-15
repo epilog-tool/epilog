@@ -20,4 +20,8 @@ public class EpitheliumIntegrationFunctions {
 	public void removeComponent(NodeInfo c) {
 		functions.remove(c.getNodeID());
 	}
+	
+	public boolean containsKey(String component) {
+		return this.functions.containsKey(component);
+	}
 }
