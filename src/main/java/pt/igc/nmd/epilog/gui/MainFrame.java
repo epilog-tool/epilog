@@ -313,19 +313,20 @@ public class MainFrame extends JFrame {
 						// String string = ("<html>" + "instance: " + "(" +
 						// topology.instance2i(instance)+","+
 						// topology.instance2j(instance) + ")");
-						String string = ("<html>");
+						String string = ("<html><table border=0>");
 						for (NodeInfo node : epithelium.getUnitaryModel()
 								.getNodeOrder()) {
 							if (!epithelium.isIntegrationComponent(node)) {
 
 								string = string
-										+ ("<br>" + " node: " + node
-												+ " -> value: " + simulation
+										+ ("<tr><td>" + node
+												+ "</td><td>" + simulation
 													.getCurrentGlobalStateValue(
-															instance, node));
+															instance, node)) + "</td></tr>";
 							}
 						}
-
+						string += "</table>";
+						
 						// }
 						if (epithelium.isCellPerturbed(instance))
 							string = string

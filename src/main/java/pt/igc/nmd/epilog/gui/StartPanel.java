@@ -536,6 +536,7 @@ public class StartPanel extends JPanel {
 				this.mainFrame.topology.setHeight(Integer.parseInt(line
 						.split(" ")[1].split(",")[1]));
 				this.mainFrame.setEpithelium(this.mainFrame.epithelium);
+				
 
 			}
 			if (identifier.contains("RL")) {

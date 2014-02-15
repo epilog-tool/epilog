@@ -382,7 +382,7 @@ public class Simulation {
 		float res;
 		if (value > 0) {
 			res = (float) value / max;
-			newColor = lighter(newColor, (1 - res));
+			newColor = lighter(newColor, value,max);
 		} else if (value == 0)
 			newColor = Color.white;
 
@@ -396,31 +396,11 @@ public class Simulation {
 	 * @param fraction
 	 * @return lighter version of the color received
 	 */
-	public Color lighter(Color color, float fraction) {
-
-		int red = (int) Math.round(color.getRed() * (1.0 + fraction));
-		int green = (int) Math.round(color.getGreen() * (1.0 + fraction));
-		int blue = (int) Math.round(color.getBlue() * (1.0 + fraction));
-
-		if (red < 0)
-			red = 0;
-		else if (red > 255)
-			red = 255;
-		if (green < 0)
-			green = 0;
-		else if (green > 255)
-			green = 255;
-		if (blue < 0)
-			blue = 0;
-		else if (blue > 255)
-			blue = 255;
-
-		if (red == 0)
-			red = (int) Math.round(color.getRed() * (1.2 + fraction));
-		if (green == 0)
-			green = (int) Math.round(color.getGreen() * (1.2 + fraction));
-		if (blue == 0)
-			blue = (int) Math.round(color.getBlue() * (1.2 + fraction));
+	public Color lighter(Color color, int value, int max) {
+		
+		int red = 255 - (255-color.getRed())*value/max;
+		int green = 255- (255-color.getGreen())*value/max;
+		int blue = 255- (255-color.getBlue())*value/max;
 
 		int alpha = color.getAlpha();
 
