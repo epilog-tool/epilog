@@ -1,0 +1,4 @@
+Simulation.java
+
+- the user opens a project and therefore creates an epithelium. So far so Good. When creating an epithelium the following things have to happen:
+	- initialises a simulation and creates statehistory - which is an arrayList of epitheliumGrids. This list is initialised 	with the current epitheliumGrid, retrieved front the initialConditions, because the user may have load a non-empty set of 	initial conditions or perturbations.  - MESSAGE: Before initialising the simulation, initial conditions and perturbations 	have to be initialised. 
