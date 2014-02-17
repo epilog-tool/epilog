@@ -26,19 +26,9 @@ public class EpitheliumCell {
 		}
 	}
 
-	public byte getComponentValue(String component) {
-		return state[this.model.getNodeOrder().indexOf(id2Node.get(component))];
-	}
-
-	public byte getComponentMax(String component) {
-		return id2Node.get(component).getMax();
-	}
-
 	public EpitheliumCell clone() {
 		EpitheliumCell newCell = new EpitheliumCell(this.model);
-		for (int i = 0; i < this.state.length; i++) {
-			newCell.setValue(i, this.state[i]);
-		}
+		newCell.setState(this.state.clone());
 		newCell.setPerturbation(this.perturbation);
 		return newCell;
 	}
@@ -55,8 +45,8 @@ public class EpitheliumCell {
 		return this.state;
 	}
 
-	private void setValue(int index, byte v) {
-		this.state[index] = v;
+	public void setState(byte[] state) {
+		this.state = state;
 	}
 
 	public LogicalModel getModel() {

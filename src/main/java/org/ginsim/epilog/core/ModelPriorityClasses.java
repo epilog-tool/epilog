@@ -8,6 +8,7 @@ import org.colomoto.logicalmodel.NodeInfo;
 
 public class ModelPriorityClasses {
 	private LogicalModel model;
+	// This must be a String because of splitted variable names
 	private List<List<String>> priorityList;
 
 	private ModelPriorityClasses(LogicalModel m, List<List<String>> pl) {

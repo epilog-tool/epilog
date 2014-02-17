@@ -24,4 +24,8 @@ public class EpitheliumIntegrationFunctions {
 	public boolean containsKey(String component) {
 		return this.functions.containsKey(component);
 	}
+	
+	public ComponentIntegrationFunctions get(String component) {
+		return this.functions.get(component);
+	}
 }

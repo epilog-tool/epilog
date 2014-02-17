@@ -3,21 +3,47 @@ package org.ginsim.epilog.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.antlr.runtime.RecognitionException;
+
+import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionSpecification;
+import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
+
 public class ComponentIntegrationFunctions {
-	private List<String> integrationFunction;
+	private List<String> stringExpr;
+	private List<IntegrationExpression> computedExpr;
 
 	public ComponentIntegrationFunctions(int maxValue) {
-		this.integrationFunction = new ArrayList<String>();
+		this.stringExpr = new ArrayList<String>();
 		for (int i = 0; i < maxValue; i++) {
-			this.integrationFunction.add("");
+			this.stringExpr.add("");
+		}
+		this.parseExpressions();
+	}
+
+	private void parseExpressions() {
+		for (int i = 0; i < this.stringExpr.size(); i++) {
+			this.computedExpr
+					.add(this.string2Expression(this.stringExpr.get(i)));
 		}
 	}
 
+	private IntegrationExpression string2Expression(String expr) {
+		IntegrationFunctionSpecification spec = new IntegrationFunctionSpecification();
+		IntegrationExpression expression = null;
+		try {
+			expression = spec.parse(expr);
+		} catch (RecognitionException e) {
+			e.printStackTrace();
+		}
+		return expression;
+	}
+
 	public List<String> getFunctions() {
-		return this.integrationFunction;
+		return this.stringExpr;
 	}
 
 	public void setFunctions(List<String> f) {
-		this.integrationFunction = f;
+		this.stringExpr = f;
+		this.parseExpressions();
 	}
 }
