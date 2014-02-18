@@ -17,21 +17,20 @@ public class Epithelium {
 		this.perturbations = new EpitheliumAbstractPerturbations();
 	}
 
-	private Epithelium(String name) {
+	private Epithelium(String name, EpitheliumGrid grid,
+			EpitheliumIntegrationFunctions eif, EpitheliumPriorityClasses epc,
+			EpitheliumAbstractPerturbations eap) {
 		this.name = name;
+		this.grid = grid;
+		this.priorities = epc;
+		this.integrationFunctions = eif;
+		this.perturbations = eap;
 	}
 
 	public Epithelium clone() {
-		Epithelium newepi = new Epithelium("CopyOf_" + this.name);
-		newepi.setEpitheliumGrid(this.grid.clone());
-		newepi.setPriorityClasses(this.priorities.clone());
-		newepi.setIntegrationFunctions(this.integrationFunctions.clone());
-		newepi.setPerturbations(this.perturbations.clone());
-		return newepi;
-	}
-
-	public EpitheliumGrid getEpitheliumGrid() {
-		return this.grid;
+		return new Epithelium("CopyOf_" + this.name, this.grid.clone(),
+				this.integrationFunctions.clone(), this.priorities.clone(),
+				this.perturbations.clone());
 	}
 
 	public String getName() {
@@ -42,35 +41,23 @@ public class Epithelium {
 		this.name = name;
 	}
 
-	public void setEpitheliumGrid(EpitheliumGrid grid) {
-		this.grid = grid;
-	}
-
-	public void setPriorityClasses(EpitheliumPriorityClasses pc) {
-		this.priorities = pc;
-	}
-
 	public LogicalModel getModel(int x, int y) {
 		return this.grid.getModel(x, y);
+	}
+
+	public EpitheliumGrid getEpitheliumGrid() {
+		return this.grid;
 	}
 
 	public ModelPriorityClasses getPriorityClasses(LogicalModel m) {
 		return this.priorities.getModelPriorityClasses(m);
 	}
 
-	public EpitheliumIntegrationFunctions getIntegrationFunctions() {
-		return this.integrationFunctions;
+	public ComponentIntegrationFunctions getIntegrationFunctions(String c) {
+		return this.integrationFunctions.get(c);
 	}
-
-	public void setIntegrationFunctions(EpitheliumIntegrationFunctions eif) {
-		this.integrationFunctions = eif;
-	}
-
+	
 	public EpitheliumAbstractPerturbations getPerturbations() {
 		return this.perturbations;
-	}
-
-	public void setPerturbations(EpitheliumAbstractPerturbations eap) {
-		this.perturbations = eap;
 	}
 }

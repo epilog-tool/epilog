@@ -9,25 +9,25 @@ public class EpitheliumPriorityClasses {
 	private Map<LogicalModel, ModelPriorityClasses> priorityClassSet;
 
 	public EpitheliumPriorityClasses() {
-		priorityClassSet = new HashMap<LogicalModel, ModelPriorityClasses>();
+		this.priorityClassSet = new HashMap<LogicalModel, ModelPriorityClasses>();
 	}
 
 	public void addModel(LogicalModel m) {
-		priorityClassSet.put(m, new ModelPriorityClasses(m));
+		this.priorityClassSet.put(m, new ModelPriorityClasses(m));
 	}
 
 	public ModelPriorityClasses getModelPriorityClasses(LogicalModel m) {
 		return this.priorityClassSet.get(m);
 	}
 
-	public void setModelPriorityClasses(ModelPriorityClasses mpc) {
+	public void addModelPriorityClasses(ModelPriorityClasses mpc) {
 		this.priorityClassSet.put(mpc.getModel(), mpc);
 	}
 
 	public EpitheliumPriorityClasses clone() {
 		EpitheliumPriorityClasses newPCs = new EpitheliumPriorityClasses();
 		for (LogicalModel m : this.priorityClassSet.keySet()) {
-			newPCs.setModelPriorityClasses(this.getModelPriorityClasses(m)
+			newPCs.addModelPriorityClasses(this.getModelPriorityClasses(m)
 					.clone());
 		}
 		return newPCs;

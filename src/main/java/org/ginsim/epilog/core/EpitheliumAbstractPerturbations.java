@@ -8,6 +8,10 @@ import org.colomoto.logicalmodel.LogicalModel;
 public class EpitheliumAbstractPerturbations {
 	private Map<LogicalModel, ModelAbstractPerturbations> perturbations;
 
+	public EpitheliumAbstractPerturbations() {
+		this.perturbations = new HashMap<LogicalModel, ModelAbstractPerturbations>();
+	}
+
 	public EpitheliumAbstractPerturbations clone() {
 		EpitheliumAbstractPerturbations newEAP = new EpitheliumAbstractPerturbations();
 		Map<LogicalModel, ModelAbstractPerturbations> p = new HashMap<LogicalModel, ModelAbstractPerturbations>(

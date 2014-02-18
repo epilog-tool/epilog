@@ -41,7 +41,7 @@ public class ModelAbstractPerturbations {
 		return this.usedPerturbations.get(p);
 	}
 
-	public void setPerturbationColor(AbstractPerturbation p, Color c) {
+	public void addPerturbationColor(AbstractPerturbation p, Color c) {
 		this.usedPerturbations.put(p, c);
 	}
 }
