@@ -40,6 +40,14 @@ public class EpitheliumGrid {
 		}
 		id2Node.put(m, tmp);
 	}
+	
+	public int getX() {
+		return this.cellGrid.length;
+	}
+	
+	public int getY() {
+		return this.cellGrid[0].length;
+	}
 
 	public NodeInfo nodeID2Node(LogicalModel m, String id) {
 		return this.id2Node.get(m).get(id);

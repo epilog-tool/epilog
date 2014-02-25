@@ -48,16 +48,14 @@ public class Simulation {
 	 * in this
 	 */
 	public void nextStepGrid() {
-		EpitheliumIntegrationFunctions eif = this.epithelium
-				.getEpitheliumIntegrationFunctions();
 		// CompositionContext context = new CompositionContextImpl(topology,
 		// nodeOrder, translator);
 		EpitheliumGrid currGrid = this.stateHistory.get(this.stateHistory
 				.size() - 1);
 		EpitheliumGrid nextGrid = currGrid.clone();
 
-		for (int x = 0; x < this.epithelium.getX(); x++) {
-			for (int y = 0; y < this.epithelium.getY(); y++) {
+		for (int x = 0; x < currGrid.getX(); x++) {
+			for (int y = 0; y < currGrid.getY(); y++) {
 				byte[] currState = currGrid.getCellState(x, y);
 				byte[] nextState = currState.clone();
 
@@ -68,16 +66,16 @@ public class Simulation {
 
 				// 1. Update state of integration components
 				for (NodeInfo node : m.getNodeOrder()) {
+					ComponentIntegrationFunctions cif = this.epithelium.getComponentIntegrationFunctions(node.getNodeID());
 					String comp = node.getNodeID();
-					if (node.isInput() && eif.containsKey(comp)) {
+					if (node.isInput() && cif != null) {
 						// NextStepComponent (integration)
-						ComponentIntegrationFunctions cif = eif.get(comp);
 						IntegrationFunctionEvaluation evaluator[] = cif
 								.getEvaluator(context);
 
 						byte target = 0;
 						for (int pos = evaluator.length - 1; pos >= 0; pos--) {
-							if (evaluator[pos].evaluate(x, y, state)) {
+							if (evaluator[pos].evaluate(x, y, currGrid)) {
 								target = (byte) (pos + 1);
 								break;
 							}

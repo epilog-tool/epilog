@@ -53,11 +53,12 @@ public class Epithelium {
 		return this.priorities.getModelPriorityClasses(m);
 	}
 
-	public ComponentIntegrationFunctions getIntegrationFunctions(String c) {
+	public ComponentIntegrationFunctions getComponentIntegrationFunctions(String c) {
 		return this.integrationFunctions.get(c);
 	}
 	
 	public EpitheliumAbstractPerturbations getPerturbations() {
 		return this.perturbations;
 	}
+
 }
