@@ -20,7 +20,8 @@ public class Grid {
 	 * @return listNodes list of components
 	 */
 	public Grid(int instancesTotalNumber, List<NodeInfo> listNodes) {
-
+		
+		System.out.println("building a new grid (Grid(int instancesTotalNumber, List<NodeInfo> listNodes)) with : "+ instancesTotalNumber);
 		this.grid = new byte[instancesTotalNumber][];
 		this.listNodes = listNodes;
 		init();
