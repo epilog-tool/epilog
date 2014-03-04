@@ -821,7 +821,6 @@ public class SphericalEpithelium implements Epithelium {
 				initialStateComponents.add(node);
 			}
 		}
-
 		Grid initialStateGrid = new Grid(topology.getNumberInstances(),
 				initialStateComponents);
 

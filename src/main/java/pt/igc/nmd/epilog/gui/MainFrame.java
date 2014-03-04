@@ -203,7 +203,7 @@ public class MainFrame extends JFrame {
 			this.remove(panelCenter);
 		}
 
-		this.topology = new Topology(24, 24);
+		this.topology = new Topology(20, 40);
 		this.epithelium = new SphericalEpithelium(this.topology, this);
 		this.simulation = new Simulation(this);
 

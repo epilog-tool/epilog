@@ -537,18 +537,19 @@ public class StartPanel extends JPanel {
 						.split(" ")[1].split(",")[1]));
 				this.mainFrame.setEpithelium(this.mainFrame.epithelium);
 				
-
 			}
 			if (identifier.contains("RL")) {
 				this.mainFrame.topology.setRollOver(line.split(" ")[1]
 						.split(",")[0]);
 			}
 			if (identifier.contains("IS")) {
+				
 				if (line.contains("name")) {
 					int key = Integer.parseInt(line.split(" ")[1]);
 					String value = line.split(":")[1];
 					value = value.replace(" ", "");
 					setInitialStateDescription.put(key, value);
+					System.out.print(value);
 					mainFrame.epithelium.setInitialStateSet(value,
 							mainFrame.simulation.isRunning());
 
@@ -855,6 +856,8 @@ public class StartPanel extends JPanel {
 			}
 
 		}
+	System.out.print("control");
+	System.out.print(this.mainFrame.epithelium.getUnitaryModel());
 	}
 
 	/**
