@@ -2,6 +2,7 @@ package org.ginsim.epilog.core;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,11 +10,11 @@ import java.util.Map;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.ginsim.epilog.gui.color.ColorUtils;
 
-public class ModelAbstractPerturbations {
+public class ModelPerturbations {
 	private List<AbstractPerturbation> allPerturbations;
-	private Map<AbstractPerturbation, Color> usedPerturbations;
+	private Map<AbstractPerturbation, Color> usedPerturbations; // FIXME
 
-	public ModelAbstractPerturbations() {
+	public ModelPerturbations() {
 		this.allPerturbations = new ArrayList<AbstractPerturbation>();
 		this.usedPerturbations = new HashMap<AbstractPerturbation, Color>();
 	}
@@ -43,5 +44,9 @@ public class ModelAbstractPerturbations {
 
 	public void addPerturbationColor(AbstractPerturbation p, Color c) {
 		this.usedPerturbations.put(p, c);
+	}
+
+	public List<AbstractPerturbation> getAllPerturbations() {
+		return Collections.unmodifiableList(this.allPerturbations);
 	}
 }

@@ -3,6 +3,8 @@ package org.ginsim.epilog.core.topology;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.ginsim.epilog.Tuple2D;
+
 public class TopologyHexagon extends Topology {
 	private int[][] neighboursX = { { -1, 1, 0, 0, -1, -1 },
 			{ -1, 1, 0, 0, 1, 1 } };

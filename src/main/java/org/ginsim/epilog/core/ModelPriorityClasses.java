@@ -1,6 +1,7 @@
 package org.ginsim.epilog.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.colomoto.logicalmodel.LogicalModel;
@@ -40,6 +41,25 @@ public class ModelPriorityClasses {
 			newPList.add(tmp);
 		}
 		return new ModelPriorityClasses(this.model, newPList);
+	}
+
+	public void setPriorities(String pcs) {
+		// Format: varA,varB:varC,varD:varE FIXME: parsing should be on the
+		// parser!!
+		List<List<String>> newPLList = new ArrayList<List<String>>();
+		String[] saTmp = pcs.split(":");
+		for (int i = saTmp.length - 1; i >= 0; i--) {
+			List<String> pcList = new ArrayList<String>();
+			for (String comp : saTmp[i].split(",")) {
+				pcList.add(comp);
+			}
+			newPLList.add(pcList);
+		}
+		this.priorityList = newPLList;
+	}
+
+	public List<List<String>> getPriorityList() {
+		return Collections.unmodifiableList(this.priorityList);
 	}
 
 	public void incPriorities(int index, List<String> vars) {

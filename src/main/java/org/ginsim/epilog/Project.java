@@ -1,7 +1,6 @@
 package org.ginsim.epilog;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 import org.ginsim.epilog.core.Epithelium;
 
 public class Project {
@@ -17,7 +15,7 @@ public class Project {
 	private int y;
 	private List<Epithelium> epitheliumList;
 	private Map<String, LogicalModel> modelMap;
-	private String zepiFilename;
+	private String filenamePEPS;
 	private boolean changed;
 
 	public Project(int x, int y) {
@@ -25,20 +23,34 @@ public class Project {
 		this.y = y;
 		this.epitheliumList = new ArrayList<Epithelium>();
 		this.modelMap = new HashMap<String, LogicalModel>();
-		this.zepiFilename = null;
+		this.filenamePEPS = null;
 		this.changed = true;
+	}
+
+	public int getX() {
+		return this.x;
+	}
+
+	public int getY() {
+		return this.y;
+	}
+
+	public List<Epithelium> getEpitheliumList() {
+		return this.epitheliumList;
+	}
+
+	public String getFilenamePEPS() {
+		return this.filenamePEPS;
+	}
+
+	public void setFilenamePEPS(String filename) {
+		this.filenamePEPS = filename;
 	}
 
 	public void newEpithelium(String userName, String modelName) {
 		Epithelium epi = new Epithelium(this.x, this.y,
 				this.modelMap.get(modelName), userName);
 		this.epitheliumList.add(epi);
-	}
-
-	private LogicalModel loadSBMLModel(File file) throws IOException {
-		SBMLFormat sbmlFormat = new SBMLFormat();
-
-		return sbmlFormat.importFile(file);
 	}
 
 	public String getNextModelName(File file) {
@@ -55,5 +67,9 @@ public class Project {
 
 	public Set<String> getModelNames() {
 		return this.modelMap.keySet();
+	}
+
+	public LogicalModel getModel(String name) {
+		return this.modelMap.get(name);
 	}
 }

@@ -10,6 +10,11 @@ public class ColorUtils {
 		return (new Random()).nextInt(n);
 	}
 
+	public static Color getColor(String r, String g, String b) {
+		return new Color(Integer.parseInt(r), Integer.parseInt(g),
+				Integer.parseInt(b));
+	}
+
 	public static Color random() {
 		return new Color(ColorUtils.getRandomNumber(256),
 				ColorUtils.getRandomNumber(256),

@@ -66,7 +66,7 @@ public class Simulation {
 
 				// 1. Update state of integration components
 				for (NodeInfo node : m.getNodeOrder()) {
-					ComponentIntegrationFunctions cif = this.epithelium.getComponentIntegrationFunctions(node.getNodeID());
+					ComponentIntegrationFunctions cif = this.epithelium.getIntegrationFunctionsForComponent(node.getNodeID());
 					String comp = node.getNodeID();
 					if (node.isInput() && cif != null) {
 						// NextStepComponent (integration)

@@ -1,6 +1,7 @@
 package org.ginsim.epilog.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.antlr.runtime.RecognitionException;
@@ -38,12 +39,12 @@ public class ComponentIntegrationFunctions {
 		return expression;
 	}
 
-	public List<String> getFunctions() {
-		return this.stringExpr;
+	public void setFunctionAtLevel(byte value, String function) {
+		this.stringExpr.set(value - 1, function);
+		this.computedExpr.set(value - 1, this.string2Expression(function));
 	}
 
-	public void setFunctions(List<String> f) {
-		this.stringExpr = f;
-		this.parseExpressions();
+	public List<String> getFunctions() {
+		return Collections.unmodifiableList(this.stringExpr);
 	}
 }

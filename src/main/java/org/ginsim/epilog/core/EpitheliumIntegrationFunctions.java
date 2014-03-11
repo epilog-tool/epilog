@@ -1,7 +1,9 @@
 package org.ginsim.epilog.core;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.colomoto.logicalmodel.NodeInfo;
 
@@ -20,13 +22,18 @@ public class EpitheliumIntegrationFunctions {
 		return newEIF;
 	}
 
-	public void setFunctions(Map<String, ComponentIntegrationFunctions> f) {
+	private void setFunctions(Map<String, ComponentIntegrationFunctions> f) {
 		this.functions = f;
 	}
 
-	public void addComponent(NodeInfo c) {
-		functions.put(c.getNodeID(),
-				new ComponentIntegrationFunctions(c.getMax()));
+	public void setFunctionAtLevel(NodeInfo nodeInfo, byte value,
+			String function) {
+		this.functions.get(nodeInfo).setFunctionAtLevel(value, function);
+	}
+
+	public void addComponent(NodeInfo nodeInfo) {
+		functions.put(nodeInfo.getNodeID(), new ComponentIntegrationFunctions(
+				nodeInfo.getMax()));
 	}
 
 	public void removeComponent(NodeInfo c) {
@@ -35,6 +42,10 @@ public class EpitheliumIntegrationFunctions {
 
 	public boolean containsKey(String component) {
 		return this.functions.containsKey(component);
+	}
+
+	public Set<String> getComponents() {
+		return Collections.unmodifiableSet(this.functions.keySet());
 	}
 
 	public ComponentIntegrationFunctions get(String component) {
