@@ -16,7 +16,6 @@ import org.ginsim.epilog.core.topology.TopologyHexagon;
 public class EpitheliumGrid {
 	private EpitheliumCell[][] cellGrid;
 	private Topology topology;
-	private Map<LogicalModel, Map<String, NodeInfo>> id2Node;
 
 	private EpitheliumGrid(EpitheliumCell[][] cellGrid) {
 		this.cellGrid = cellGrid;
@@ -29,7 +28,6 @@ public class EpitheliumGrid {
 		for (NodeInfo node : m.getNodeOrder()) {
 			tmp.put(node.getNodeID(), node);
 		}
-		id2Node.put(m, tmp);
 	}
 	
 	public void setRollOver(RollOver r) {

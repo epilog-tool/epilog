@@ -26,29 +26,29 @@ public class EpitheliumIntegrationFunctions {
 		this.functions = f;
 	}
 
-	public void setFunctionAtLevel(NodeInfo nodeInfo, byte value,
+	public void setFunctionAtLevel(NodeInfo node, byte value,
 			String function) {
-		this.functions.get(nodeInfo).setFunctionAtLevel(value, function);
+		this.functions.get(node).setFunctionAtLevel(value, function);
 	}
 
-	public void addComponent(NodeInfo nodeInfo) {
-		functions.put(nodeInfo.getNodeID(), new ComponentIntegrationFunctions(
-				nodeInfo.getMax()));
+	public void addComponent(NodeInfo node) {
+		functions.put(node.getNodeID(), new ComponentIntegrationFunctions(
+				node.getMax()));
 	}
 
-	public void removeComponent(NodeInfo c) {
-		functions.remove(c.getNodeID());
+	public void removeComponent(NodeInfo node) {
+		functions.remove(node.getNodeID());
 	}
 
-	public boolean containsKey(String component) {
-		return this.functions.containsKey(component);
+	public boolean containsKey(String nodeID) {
+		return this.functions.containsKey(nodeID);
 	}
 
 	public Set<String> getComponents() {
 		return Collections.unmodifiableSet(this.functions.keySet());
 	}
 
-	public ComponentIntegrationFunctions get(String component) {
-		return this.functions.get(component);
+	public ComponentIntegrationFunctions getComponentIntegrationFunctions(String nodeID) {
+		return this.functions.get(nodeID);
 	}
 }

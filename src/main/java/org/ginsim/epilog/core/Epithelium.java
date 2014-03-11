@@ -116,7 +116,7 @@ public class Epithelium {
 
 	public ComponentIntegrationFunctions getIntegrationFunctionsForComponent(
 			String c) {
-		return this.integrationFunctions.get(c);
+		return this.integrationFunctions.getComponentIntegrationFunctions(c);
 	}
 
 	public Set<String> getIntegrationFunctionsComponents() {

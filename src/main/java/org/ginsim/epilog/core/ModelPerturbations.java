@@ -19,31 +19,31 @@ public class ModelPerturbations {
 		this.usedPerturbations = new HashMap<AbstractPerturbation, Color>();
 	}
 
-	public void addPerturbation(AbstractPerturbation p) {
-		this.allPerturbations.add(p);
+	public void addPerturbation(AbstractPerturbation ap) {
+		this.allPerturbations.add(ap);
 	}
 
-	public void delPerturbation(AbstractPerturbation p) {
-		this.allPerturbations.remove(p);
-		this.usedPerturbations.remove(p);
+	public void delPerturbation(AbstractPerturbation ap) {
+		this.allPerturbations.remove(ap);
+		this.usedPerturbations.remove(ap);
 	}
 
-	public void setPerturbationUsed(AbstractPerturbation p, boolean used) {
-		if (this.usedPerturbations.containsKey(p)) {
+	public void setPerturbationUsed(AbstractPerturbation ap, boolean used) {
+		if (this.usedPerturbations.containsKey(ap)) {
 			if (!used) {
-				this.usedPerturbations.remove(p);
+				this.usedPerturbations.remove(ap);
 			}
 		} else if (used) {
-			this.usedPerturbations.put(p, ColorUtils.random());
+			this.usedPerturbations.put(ap, ColorUtils.random());
 		}
 	}
 
-	public Color getPerturbationColor(AbstractPerturbation p) {
-		return this.usedPerturbations.get(p);
+	public Color getPerturbationColor(AbstractPerturbation ap) {
+		return this.usedPerturbations.get(ap);
 	}
 
-	public void addPerturbationColor(AbstractPerturbation p, Color c) {
-		this.usedPerturbations.put(p, c);
+	public void addPerturbationColor(AbstractPerturbation ap, Color c) {
+		this.usedPerturbations.put(ap, c);
 	}
 
 	public List<AbstractPerturbation> getAllPerturbations() {

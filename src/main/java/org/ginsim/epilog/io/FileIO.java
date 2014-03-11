@@ -105,7 +105,7 @@ public class FileIO {
 		return fDestDir;
 	}
 
-	public static File getSBMLfileInDir(File fdir) {
+	public static File getSBMLFileInDir(File fdir) {
 		for (File entry : fdir.listFiles()) {
 			if (entry.getName().endsWith(".sbml")
 					|| entry.getName().endsWith(".SBML")) {
@@ -193,7 +193,7 @@ public class FileIO {
 		return project;
 	}
 
-	public static void savePEPS(Project project, String newPEPSfile)
+	public static void savePEPS(Project project, String newPEPSFile)
 			throws IOException {
 		// Create new PEPS temp directory
 		File newPEPSTmpDir = FileIO.createTempDirectory();
@@ -215,6 +215,6 @@ public class FileIO {
 		}
 
 		// Save PEPS to file
-		FileIO.zipTmpDir(newPEPSTmpDir, newPEPSfile);
+		FileIO.zipTmpDir(newPEPSTmpDir, newPEPSFile);
 	}
 }
