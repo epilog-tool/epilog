@@ -36,9 +36,13 @@ public class EpitheliumCell {
 		this.state = state;
 	}
 
-	public void setValue(NodeInfo node, byte value) {
-		int i = this.model.getNodeOrder().indexOf(node);
-		state[i] = value;
+	public void setValue(String nodeID, byte value) {
+		for (int i = 0; i < this.model.getNodeOrder().size(); i++) {
+			if (this.model.getNodeOrder().get(i).equals(nodeID)) {
+				state[i] = value;
+				break;
+			}
+		}
 	}
 
 	public LogicalModel getModel() {
@@ -52,5 +56,13 @@ public class EpitheliumCell {
 			this.state[i] = 0;
 		}
 		this.perturbation = null;
+	}
+
+	public boolean hasNode(String nodeID) {
+		for (NodeInfo node : this.model.getNodeOrder()) {
+			if (node.getNodeID().equals(nodeID))
+				return true;
+		}
+		return false;
 	}
 }

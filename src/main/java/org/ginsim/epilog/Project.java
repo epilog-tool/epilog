@@ -16,7 +16,7 @@ public class Project {
 	private List<Epithelium> epitheliumList;
 	private Map<String, LogicalModel> modelMap;
 	private String filenamePEPS;
-	private boolean changed;
+	private boolean changed; // TODO
 
 	public Project(int x, int y) {
 		this.x = x;

@@ -2,19 +2,16 @@ package org.ginsim.epilog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
-import org.ginsim.epilog.core.ComponentIntegrationFunctions;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumGrid;
-import org.ginsim.epilog.core.EpitheliumIntegrationFunctions;
 import org.ginsim.epilog.core.ModelPriorityClasses;
-
-import pt.igc.nmd.epilog.integrationgrammar.CompositionContext;
-import pt.igc.nmd.epilog.integrationgrammar.CompositionContextImpl;
-import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionEvaluation;
+import org.ginsim.epilog.integration.IntegrationFunctionEvaluation;
+import org.ginsim.epilog.integration.IntegrationFunctionSpecification.IntegrationExpression;
 
 /**
  * Initializes and implements the simulation on epilog.
@@ -48,53 +45,55 @@ public class Simulation {
 	 * in this
 	 */
 	public void nextStepGrid() {
-		// CompositionContext context = new CompositionContextImpl(topology,
-		// nodeOrder, translator);
 		EpitheliumGrid currGrid = this.stateHistory.get(this.stateHistory
 				.size() - 1);
 		EpitheliumGrid nextGrid = currGrid.clone();
+
+		Set<String> sIntegComponents = this.epithelium
+				.getIntegrationFunctionsComponents();
 
 		for (int x = 0; x < currGrid.getX(); x++) {
 			for (int y = 0; y < currGrid.getY(); y++) {
 				byte[] currState = currGrid.getCellState(x, y);
 				byte[] nextState = currState.clone();
 
-				// NextStepCell
+				// 1. Apply the Cell perturbation
 				LogicalModel m = currGrid.getModel(x, y);
 				AbstractPerturbation ap = currGrid.getPerturbation(x, y);
 				LogicalModel perturbedModel = ap.apply(m);
 
-				// 1. Update state of integration components
-				for (NodeInfo node : m.getNodeOrder()) {
-					ComponentIntegrationFunctions cif = this.epithelium.getIntegrationFunctionsForComponent(node.getNodeID());
-					String comp = node.getNodeID();
-					if (node.isInput() && cif != null) {
-						// NextStepComponent (integration)
-						IntegrationFunctionEvaluation evaluator[] = cif
-								.getEvaluator(context);
-
+				// 2. Update integration components
+				for (NodeInfo node : perturbedModel.getNodeOrder()) {
+					String nodeID = node.getNodeID();
+					IntegrationFunctionEvaluation evaluator = new IntegrationFunctionEvaluation(
+							currGrid, this.epithelium.getComponentFeatures());
+					
+					if (node.isInput() && sIntegComponents.contains(nodeID)) {
+						List<IntegrationExpression> lExpressions = this.epithelium
+								.getIntegrationFunctionsForComponent(nodeID)
+								.getComputedExpressions();
 						byte target = 0;
-						for (int pos = evaluator.length - 1; pos >= 0; pos--) {
-							if (evaluator[pos].evaluate(x, y, currGrid)) {
-								target = (byte) (pos + 1);
-								break;
+						for (int i = 0; i < lExpressions.size(); i++) {
+							if (evaluator.evaluate(x, y, lExpressions.get(i))) {
+								target = (byte) (i + 1);
+								break; // The lowest value being satisfied
 							}
 						}
-						nextState[m.getNodeOrder().indexOf(node)] = target;
+						nextState[perturbedModel.getNodeOrder().indexOf(node)] = target;
 					}
 				}
 
-				// 2. Priorities...
+				// 3. Apply Priorities 
 				ModelPriorityClasses mpc = this.epithelium
 						.getPriorityClasses(m);
 				boolean hasChanged = false;
 				for (int p = 0; p < mpc.size(); p++) {
 					for (String nodeID : mpc.getVarsAtIndex(p)) {
-						// TODO: currGrid.nodeID2Node...
 						String id = (nodeID.endsWith("+") || nodeID
 								.endsWith("-")) ? nodeID.substring(-1) : nodeID;
-						NodeInfo node = currGrid.nodeID2Node(m, id);
-						int index = m.getNodeOrder().indexOf(node);
+						NodeInfo node = this.epithelium.getComponentFeatures()
+								.getNodeInfo(nodeID);
+						int index = perturbedModel.getNodeOrder().indexOf(node);
 						int target = perturbedModel.getTargetValue(index,
 								currState);
 

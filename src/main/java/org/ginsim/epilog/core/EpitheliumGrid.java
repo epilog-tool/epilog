@@ -29,11 +29,11 @@ public class EpitheliumGrid {
 			tmp.put(node.getNodeID(), node);
 		}
 	}
-	
+
 	public void setRollOver(RollOver r) {
 		this.topology.setRollOver(r);
 	}
-	
+
 	public void setModelGrid(LogicalModel m) {
 		for (int i = 0; i < this.getX(); i++) {
 			for (int j = 0; j < this.getY(); j++) {
@@ -89,8 +89,8 @@ public class EpitheliumGrid {
 		cellGrid[x][y].setState(state);
 	}
 
-	public void setCellComponentValue(int x, int y, NodeInfo node, byte value) {
-		cellGrid[x][y].setValue(node, value);
+	public void setCellComponentValue(int x, int y, String nodeID, byte value) {
+		cellGrid[x][y].setValue(nodeID, value);
 	}
 
 	public LogicalModel getModel(int x, int y) {
@@ -110,5 +110,15 @@ public class EpitheliumGrid {
 			l.add(cellGrid[tuple.getX()][tuple.getY()]);
 		}
 		return l;
+	}
+
+	public List<EpitheliumCell> filterNeighboursByComponent(
+			List<EpitheliumCell> neighbours, String nodeID) {
+		List<EpitheliumCell> filteredCells = new ArrayList<EpitheliumCell>();
+		for (EpitheliumCell cell : neighbours) {
+			if (cell.hasNode(nodeID))
+				filteredCells.add(cell);
+		}
+		return filteredCells;
 	}
 }

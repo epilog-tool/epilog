@@ -69,11 +69,10 @@ public class Epithelium {
 		}
 	}
 
-	public void setGridWithComponentValue(String comp, byte value,
+	public void setGridWithComponentValue(String nodeID, byte value,
 			List<Tuple2D> lTuples) {
 		for (Tuple2D tuple : lTuples) {
-			// this.grid.setCellComponentValue(tuple.getX(), tuple.getY(), comp,
-			// value);
+			this.grid.setCellComponentValue(tuple.getX(), tuple.getY(), nodeID, value);
 		}
 	}
 

@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.antlr.runtime.RecognitionException;
 
-import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionSpecification;
-import pt.igc.nmd.epilog.integrationgrammar.IntegrationFunctionSpecification.IntegrationExpression;
+import org.ginsim.epilog.integration.IntegrationFunctionSpecification;
+import org.ginsim.epilog.integration.IntegrationFunctionSpecification.IntegrationExpression;
 
 public class ComponentIntegrationFunctions {
 	private List<String> stringExpr;
@@ -26,6 +26,10 @@ public class ComponentIntegrationFunctions {
 			this.computedExpr
 					.add(this.string2Expression(this.stringExpr.get(i)));
 		}
+	}
+	
+	public List<IntegrationExpression> getComputedExpressions() {
+		return this.computedExpr;
 	}
 
 	private IntegrationExpression string2Expression(String expr) {
