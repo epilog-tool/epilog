@@ -52,6 +52,9 @@ public class Simulation {
 		Set<String> sIntegComponents = this.epithelium
 				.getIntegrationFunctionsComponents();
 
+		IntegrationFunctionEvaluation evaluator = new IntegrationFunctionEvaluation(
+				currGrid, this.epithelium.getComponentFeatures());
+
 		for (int x = 0; x < currGrid.getX(); x++) {
 			for (int y = 0; y < currGrid.getY(); y++) {
 				byte[] currState = currGrid.getCellState(x, y);
@@ -65,9 +68,6 @@ public class Simulation {
 				// 2. Update integration components
 				for (NodeInfo node : perturbedModel.getNodeOrder()) {
 					String nodeID = node.getNodeID();
-					IntegrationFunctionEvaluation evaluator = new IntegrationFunctionEvaluation(
-							currGrid, this.epithelium.getComponentFeatures());
-					
 					if (node.isInput() && sIntegComponents.contains(nodeID)) {
 						List<IntegrationExpression> lExpressions = this.epithelium
 								.getIntegrationFunctionsForComponent(nodeID)
@@ -83,7 +83,7 @@ public class Simulation {
 					}
 				}
 
-				// 3. Apply Priorities 
+				// 3. Apply Priorities
 				ModelPriorityClasses mpc = this.epithelium
 						.getPriorityClasses(m);
 				boolean hasChanged = false;
