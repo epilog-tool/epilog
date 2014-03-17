@@ -28,6 +28,7 @@ public class EpitheliumGrid {
 		for (NodeInfo node : m.getNodeOrder()) {
 			tmp.put(node.getNodeID(), node);
 		}
+		this.setModelGrid(m);
 	}
 
 	public void setRollOver(RollOver r) {

@@ -270,7 +270,7 @@ public class Parser {
 							lastI = currI;
 						}
 					}
-					w.println("IC " + model2Key.get(m) + " " + nodeID + " " + value + " " + join(sInsts, ","));
+					w.println("IC " + nodeID + " " + value + " " + join(sInsts, ","));
 				}
 			}
 		}

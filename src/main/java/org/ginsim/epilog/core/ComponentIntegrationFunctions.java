@@ -10,24 +10,23 @@ import org.ginsim.epilog.integration.IntegrationFunctionSpecification;
 import org.ginsim.epilog.integration.IntegrationFunctionSpecification.IntegrationExpression;
 
 public class ComponentIntegrationFunctions {
-	private List<String> stringExpr;
-	private List<IntegrationExpression> computedExpr;
+	private String[] stringExpr;
+	private IntegrationExpression[] computedExpr;
 
 	public ComponentIntegrationFunctions(int maxValue) {
-		this.stringExpr = new ArrayList<String>();
+		this.stringExpr = new String[maxValue];
 		for (int i = 0; i < maxValue; i++) {
-			this.stringExpr.add("");
+			this.stringExpr[i] = "";
 		}
-		this.parseExpressions();
+		this.computedExpr = new IntegrationExpression[maxValue];
 	}
 
 	private void parseExpressions() {
-		for (int i = 0; i < this.stringExpr.size(); i++) {
-			this.computedExpr
-					.add(this.string2Expression(this.stringExpr.get(i)));
+		for (int i = 0; i < this.stringExpr.length; i++) {
+			this.computedExpr[i] = this.string2Expression(this.stringExpr[i]);
 		}
 	}
-	
+
 	public List<IntegrationExpression> getComputedExpressions() {
 		return this.computedExpr;
 	}
@@ -44,8 +43,8 @@ public class ComponentIntegrationFunctions {
 	}
 
 	public void setFunctionAtLevel(byte value, String function) {
-		this.stringExpr.set(value - 1, function);
-		this.computedExpr.set(value - 1, this.string2Expression(function));
+		this.stringExpr[value - 1] = function;
+		this.computedExpr[value - 1] = this.string2Expression(function);
 	}
 
 	public List<String> getFunctions() {
