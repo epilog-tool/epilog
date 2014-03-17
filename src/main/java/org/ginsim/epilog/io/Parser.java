@@ -290,7 +290,7 @@ public class Parser {
 					.getIntegrationFunctionsForComponent(nodeID);
 			List<String> lFunctions = cif.getFunctions();
 			for (int i = 0; i < lFunctions.size(); i++) {
-				w.println("IT " + nodeID + " " + (i + 1) + lFunctions.get(i));
+				w.println("IT " + nodeID + " " + (i + 1) + " " + lFunctions.get(i));
 			}
 		}
 		w.println();
