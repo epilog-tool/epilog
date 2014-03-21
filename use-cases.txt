@@ -62,8 +62,3 @@ Funções de Integração
 Carregamento de um Modelo
   Independentemente da interface GUI/CML a verificação de um LogicalModel==null é feita pela interface
 
-
-Project name to display
-	If the projects name in null then the interface will display the name Òuntitled.pepsÓ, however not changing the projects name. when saving the user is forced to choose a name.
-	If the projects name is not null then the interface displays the name.
-
