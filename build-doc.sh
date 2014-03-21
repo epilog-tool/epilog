@@ -16,7 +16,7 @@ cd `dirname $0`
 # check for required commands and remove old output
 command -v xsltproc   > /dev/null || die "Command 'xsltproc' not found"
 command -v yelp-build > /dev/null || die "Command 'yelp-build' not found"
-test -e $OUT && echo "Confirm to remove '$OUT'..." && rm -Ir "$OUT"
+test -e $OUT && echo "Confirm to remove '$OUT'..." && rm -r "$OUT"
 mkdir $OUT
 
 for DOC in $DOCS
