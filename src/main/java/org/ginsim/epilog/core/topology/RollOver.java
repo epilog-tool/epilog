@@ -14,11 +14,11 @@ public enum RollOver {
 	}
 	
 	public static RollOver string2RollOver(String str) {
-		if (str.equals(HORIZONTAL))
+		if (str.equals(HORIZONTAL.toString()))
 			return HORIZONTAL;
-		else if (str.equals(VERTICAL)) 
+		else if (str.equals(VERTICAL.toString())) 
 			return VERTICAL;
-		else if (str.equals(NOROLLOVER))
+		else if (str.equals(NOROLLOVER.toString()))
 			return NOROLLOVER;
 		return null;
 	}

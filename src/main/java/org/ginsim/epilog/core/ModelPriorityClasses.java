@@ -48,7 +48,7 @@ public class ModelPriorityClasses {
 		// parser!!
 		List<List<String>> newPLList = new ArrayList<List<String>>();
 		String[] saTmp = pcs.split(":");
-		for (int i = saTmp.length - 1; i >= 0; i--) {
+		for (int i = 0; i < saTmp.length; i++) {
 			List<String> pcList = new ArrayList<String>();
 			for (String comp : saTmp[i].split(",")) {
 				pcList.add(comp);

@@ -63,7 +63,11 @@ public class Simulation {
 				// 1. Apply the Cell perturbation
 				LogicalModel m = currGrid.getModel(x, y);
 				AbstractPerturbation ap = currGrid.getPerturbation(x, y);
-				LogicalModel perturbedModel = ap.apply(m);
+				LogicalModel perturbedModel = m;
+				if (ap != null) {
+					System.out.println(x + ","+ y + " <- " + ap);
+					perturbedModel = ap.apply(m);
+				}
 
 				// 2. Update integration components
 				for (NodeInfo node : perturbedModel.getNodeOrder()) {
@@ -97,14 +101,14 @@ public class Simulation {
 						int target = perturbedModel.getTargetValue(index,
 								currState);
 
-						if (currState[index] > target) {
+						if (target > currState[index]) {
 							if (nodeID.endsWith("-"))
 								break;
 							if (currState[index] < node.getMax()) {
 								nextState[index] = (byte) (currState[index] + 1);
 								hasChanged = true;
 							}
-						} else if (currState[index] < target) {
+						} else if (target < currState[index]) {
 							if (nodeID.endsWith("+"))
 								break;
 							if (currState[index] > 0) {
@@ -121,5 +125,9 @@ public class Simulation {
 			}
 		}
 		this.stateHistory.add(nextGrid);
+	}
+	
+	public EpitheliumGrid getCurrentGrid() {
+		return stateHistory.get(stateHistory.size()-1);
 	}
 }

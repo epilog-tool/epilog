@@ -24,8 +24,8 @@ public class EpitheliumCell {
 		return this.perturbation;
 	}
 
-	public void setPerturbation(AbstractPerturbation p) {
-		this.perturbation = p;
+	public void setPerturbation(AbstractPerturbation ap) {
+		this.perturbation = ap;
 	}
 
 	public byte[] getState() {
@@ -38,7 +38,7 @@ public class EpitheliumCell {
 
 	public void setValue(String nodeID, byte value) {
 		for (int i = 0; i < this.model.getNodeOrder().size(); i++) {
-			if (this.model.getNodeOrder().get(i).equals(nodeID)) {
+			if (this.model.getNodeOrder().get(i).getNodeID().equals(nodeID)) {
 				state[i] = value;
 				break;
 			}

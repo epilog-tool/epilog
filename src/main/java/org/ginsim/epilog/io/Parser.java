@@ -74,7 +74,8 @@ public class Parser {
 				saTmp = line.split("\\s+");
 				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
 				if (currEpi == null) {
-					currEpi = project.newEpithelium(epiName, modelKey2Name.get(saTmp[1]));
+					currEpi = project.newEpithelium(epiName,
+							modelKey2Name.get(saTmp[1]));
 					currEpi.getEpitheliumGrid().setRollOver(rollover);
 				}
 				if (saTmp.length > 2) {
@@ -91,7 +92,7 @@ public class Parser {
 				currEpi.setGridWithComponentValue(saTmp[1],
 						Byte.parseByte(saTmp[2]),
 						currEpi.getEpitheliumGrid().getTopology()
-								.instances2Tuples2D(saTmp[2].split(",")));
+								.instances2Tuples2D(saTmp[3].split(",")));
 			}
 			// Component Colors
 			if (line.startsWith("CL")) {
@@ -271,7 +272,8 @@ public class Parser {
 							lastI = currI;
 						}
 					}
-					w.println("IC " + nodeID + " " + value + " " + join(sInsts, ","));
+					w.println("IC " + nodeID + " " + value + " "
+							+ join(sInsts, ","));
 				}
 			}
 		}
@@ -291,7 +293,8 @@ public class Parser {
 					.getIntegrationFunctionsForComponent(nodeID);
 			List<String> lFunctions = cif.getFunctions();
 			for (int i = 0; i < lFunctions.size(); i++) {
-				w.println("IT " + nodeID + " " + (i + 1) + " " + lFunctions.get(i));
+				w.println("IT " + nodeID + " " + (i + 1) + " "
+						+ lFunctions.get(i));
 			}
 		}
 		w.println();

@@ -18,17 +18,17 @@ public class TopologyHexagon extends Topology {
 
 	@Override
 	public Set<Tuple2D> getNeighbours(int x, int y, int minDist, int maxDist) {
-		Set<Tuple2D> setMin = new HashSet<Tuple2D>();
 		Set<Tuple2D> setComplete = new HashSet<Tuple2D>();
 		setComplete.add(new Tuple2D(x, y));
-		Set<Tuple2D> setN = setComplete;
+		Set<Tuple2D> setN = new HashSet<Tuple2D>(setComplete);
+		Set<Tuple2D> setMin = new HashSet<Tuple2D>(setComplete);
 
 		for (int i = 1; i <= maxDist; i++) {
 			for (Tuple2D tuple : setN) {
 				setComplete.addAll(this.getNeighbours(tuple, setComplete));
 			}
-			if (i == minDist) {
-				setMin = setComplete;
+			if (i == (minDist-1)) {
+				setMin = new HashSet<Tuple2D>(setComplete);
 			}
 		}
 		setComplete.removeAll(setMin);
