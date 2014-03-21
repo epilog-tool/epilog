@@ -1,3 +1,8 @@
+*.sbml
+config.txt
+*.png
+doc
+*.peps
 UML-Diagram.pdf
 .DS_Store
 jsbml.log
