@@ -452,7 +452,6 @@ public class StartPanel extends JPanel {
 					if (fileEntry.getName().endsWith("config.txt")
 							|| fileEntry.getName().endsWith("CONFIG.TXT")) {
 						try {
-
 							Scanner fileIn = new Scanner(fileEntry);
 							loadConfigFile(fileIn);
 							loadConfigurations();
@@ -510,7 +509,7 @@ public class StartPanel extends JPanel {
 
 		Hashtable<String, AbstractPerturbation[]> perturbationsSet = new Hashtable<String, AbstractPerturbation[]>();
 		List<AbstractPerturbation> perturbationsList = new ArrayList<AbstractPerturbation>();
-		
+
 		for (NodeInfo node : mainFrame.epithelium.getUnitaryModel()
 				.getNodeOrder()) {
 			string2Node.put(node.getNodeID(), node);

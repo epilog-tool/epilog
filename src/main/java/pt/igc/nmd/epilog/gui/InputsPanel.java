@@ -106,7 +106,7 @@ public class InputsPanel extends JPanel {
 
 			buttonAdd.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					inputsAdd(setName.getText());
+					inputsAdd();
 				}
 			});
 
@@ -344,13 +344,8 @@ public class InputsPanel extends JPanel {
 	 * the old one.
 	 * 
 	 */
-	private void inputsAdd(String name) {
-		//	String name = setName.getText();
-		name = name.replace(" ", "");
-		if (name == "none")
-			name = "none1";
-		if (!name.matches("[A-Za-z0-9]+"))
-			name = "empty_space";
+	private void inputsAdd() {
+		String name = setName.getText();
 		if (!this.mainFrame.epithelium.getInputsIntegrationSet().containsKey(
 				name))
 			sets.addItem(name);
