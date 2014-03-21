@@ -28,7 +28,8 @@ public class EpitheliumIntegrationFunctions {
 
 	public void setFunctionAtLevel(NodeInfo node, byte value,
 			String function) {
-		this.functions.get(node.getNodeID()).setFunctionAtLevel(value, function);
+		this.functions.get(node.getNodeID())
+				.setFunctionAtLevel(value, function);
 	}
 
 	public void addComponent(NodeInfo node) {

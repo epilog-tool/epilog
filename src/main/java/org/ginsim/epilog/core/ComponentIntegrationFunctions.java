@@ -1,11 +1,9 @@
 package org.ginsim.epilog.core;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import org.antlr.runtime.RecognitionException;
-
 import org.ginsim.epilog.integration.IntegrationFunctionSpecification;
 import org.ginsim.epilog.integration.IntegrationFunctionSpecification.IntegrationExpression;
 
@@ -21,14 +19,8 @@ public class ComponentIntegrationFunctions {
 		this.computedExpr = new IntegrationExpression[maxValue];
 	}
 
-	private void parseExpressions() {
-		for (int i = 0; i < this.stringExpr.length; i++) {
-			this.computedExpr[i] = this.string2Expression(this.stringExpr[i]);
-		}
-	}
-
 	public List<IntegrationExpression> getComputedExpressions() {
-		return this.computedExpr;
+		return Arrays.asList(this.computedExpr);
 	}
 
 	private IntegrationExpression string2Expression(String expr) {
@@ -48,6 +40,6 @@ public class ComponentIntegrationFunctions {
 	}
 
 	public List<String> getFunctions() {
-		return Collections.unmodifiableList(this.stringExpr);
+		return Arrays.asList(this.stringExpr);
 	}
 }

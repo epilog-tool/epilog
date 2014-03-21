@@ -47,10 +47,11 @@ public class Project {
 		this.filenamePEPS = filename;
 	}
 
-	public void newEpithelium(String userName, String modelName) {
+	public Epithelium newEpithelium(String userName, String modelName) {
 		Epithelium epi = new Epithelium(this.x, this.y,
 				this.modelMap.get(modelName), userName);
 		this.epitheliumList.add(epi);
+		return epi;
 	}
 
 	public String getNextModelName(File file) {

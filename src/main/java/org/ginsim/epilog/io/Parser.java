@@ -44,7 +44,8 @@ public class Parser {
 		String line, epiName = null;
 		String[] saTmp;
 
-		while ((line = br.readLine().trim()) != null) {
+		while ((line = br.readLine()) != null) {
+			line = line.trim();
 			// Initialize default grid dimensions
 			if (line.startsWith("GD")) {
 				saTmp = line.split("\\s+");
@@ -73,8 +74,7 @@ public class Parser {
 				saTmp = line.split("\\s+");
 				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
 				if (currEpi == null) {
-					currEpi = new Epithelium(project.getX(), project.getY(), m,
-							epiName);
+					currEpi = project.newEpithelium(epiName, modelKey2Name.get(saTmp[1]));
 					currEpi.getEpitheliumGrid().setRollOver(rollover);
 				}
 				if (saTmp.length > 2) {
@@ -131,6 +131,7 @@ public class Parser {
 					currEpi.usePerturbation(m, ap, c, lTuple);
 				}
 			}
+			// project add currEpi
 		}
 		br.close();
 		in.close();
