@@ -47,4 +47,6 @@ public abstract class Topology {
 		}
 		return list;
 	}
+
+	public abstract Topology clone();
 }

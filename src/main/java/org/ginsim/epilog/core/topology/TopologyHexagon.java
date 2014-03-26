@@ -27,7 +27,7 @@ public class TopologyHexagon extends Topology {
 			for (Tuple2D tuple : setN) {
 				setComplete.addAll(this.getNeighbours(tuple, setComplete));
 			}
-			if (i == (minDist-1)) {
+			if (i == (minDist - 1)) {
 				setMin = new HashSet<Tuple2D>(setComplete);
 			}
 		}
@@ -41,20 +41,20 @@ public class TopologyHexagon extends Topology {
 		for (int k = 0; k < neighboursY.length; k++) {
 			int i = elem.getX() + neighboursX[elem.getY() % 2][k];
 			int j = elem.getY() + neighboursY[k];
-			if (this.rollover != RollOver.VERTICAL && (j < 0 || j > this.maxY))
+			if (this.rollover != RollOver.VERTICAL && (j < 0 || j >= this.maxY))
 				continue;
 			if (this.rollover != RollOver.HORIZONTAL
-					&& (i < 0 || i > this.maxX))
+					&& (i < 0 || i >= this.maxX))
 				continue;
 			if (this.rollover == RollOver.VERTICAL) {
 				if (j < 0)
-					j = this.maxY;
-				else if (j > this.maxY)
+					j = (this.maxY - 1);
+				else if (j >= this.maxY)
 					j = 0;
 			} else if (this.rollover == RollOver.HORIZONTAL) {
 				if (i < 0)
-					i = this.maxX;
-				else if (i > this.maxX)
+					i = (this.maxX - 1);
+				else if (i >= this.maxX)
 					i = 0;
 			}
 			Tuple2D temp = new Tuple2D(i, j);
@@ -62,5 +62,10 @@ public class TopologyHexagon extends Topology {
 				setN.add(temp);
 		}
 		return setN;
+	}
+
+	@Override
+	public Topology clone() {
+		return new TopologyHexagon(this.maxX, this.maxY, this.rollover);
 	}
 }
