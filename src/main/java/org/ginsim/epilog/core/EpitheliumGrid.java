@@ -1,12 +1,9 @@
 package org.ginsim.epilog.core;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.ginsim.epilog.Tuple2D;
 import org.ginsim.epilog.core.topology.RollOver;
@@ -17,30 +14,23 @@ public class EpitheliumGrid {
 	private EpitheliumCell[][] cellGrid;
 	private Topology topology;
 
-	private EpitheliumGrid(EpitheliumCell[][] cellGrid) {
+	private EpitheliumGrid(EpitheliumCell[][] cellGrid, Topology topology) {
 		this.cellGrid = cellGrid;
+		this.topology = topology;
 	}
 
 	public EpitheliumGrid(int x, int y, LogicalModel m) {
-		this(new EpitheliumCell[x][y]);
+		this.cellGrid = new EpitheliumCell[x][y];
 		this.topology = new TopologyHexagon(x, y, RollOver.NOROLLOVER);
-		Map<String, NodeInfo> tmp = new HashMap<String, NodeInfo>();
-		for (NodeInfo node : m.getNodeOrder()) {
-			tmp.put(node.getNodeID(), node);
-		}
-		this.setModelGrid(m);
-	}
-
-	public void setRollOver(RollOver r) {
-		this.topology.setRollOver(r);
-	}
-
-	public void setModelGrid(LogicalModel m) {
 		for (int i = 0; i < this.getX(); i++) {
 			for (int j = 0; j < this.getY(); j++) {
 				this.cellGrid[i][j] = new EpitheliumCell(m);
 			}
 		}
+	}
+
+	public void setRollOver(RollOver r) {
+		this.topology.setRollOver(r);
 	}
 
 	// TODO: simplify getX between classes
@@ -65,7 +55,8 @@ public class EpitheliumGrid {
 				newGrid[i][j] = cellGrid[i][j].clone();
 			}
 		}
-		return new EpitheliumGrid(newGrid);
+		Topology newTop = this.topology.clone();
+		return new EpitheliumGrid(newGrid, newTop);
 	}
 
 	public AbstractPerturbation getPerturbation(int x, int y) {
@@ -121,5 +112,52 @@ public class EpitheliumGrid {
 				filteredCells.add(cell);
 		}
 		return filteredCells;
+	}
+
+	public String toString() {
+		String s = "";
+		for (int x = 0; x < this.getX(); x++) {
+			for (int y = 0; y < this.getY(); y++) {
+				byte[] currState = this.getCellState(x, y);
+				s += "[" + x + "," + y + "]:";
+				for (int i = 0; i < currState.length; i++) {
+					s += " " + currState[i];
+				}
+				s += "\n";
+			}
+		}
+		return s;
+	}
+
+	public boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof EpitheliumGrid))
+			return false;
+		if (obj == this)
+			return true;
+		EpitheliumGrid o = (EpitheliumGrid) obj;
+
+		if (this.getX() != o.getX())
+			return false;
+		if (this.getY() != o.getY())
+			return false;
+		for (int x = 0; x < this.getX(); x++) {
+			for (int y = 0; y < this.getY(); y++) {
+				if (!this.getModel(x, y).equals(o.getModel(x, y)))// FIXME <-
+																	// can be
+																	// diff?
+					return false;
+				if (this.getPerturbation(x, y) != o.getPerturbation(x, y))
+					return false;
+				byte[] thisState = this.getCellState(x, y);
+				byte[] oState = o.getCellState(x, y);
+				if (thisState.length != oState.length)
+					return false;
+				for (int i = 0; i < thisState.length; i++) {
+					if (thisState[i] != oState[i])
+						return false;
+				}
+			}
+		}
+		return true;
 	}
 }
