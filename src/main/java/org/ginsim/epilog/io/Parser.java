@@ -82,8 +82,6 @@ public class Parser {
 					currEpi.setGridWithModel(m,
 							currEpi.getEpitheliumGrid().getTopology()
 									.instances2Tuples2D(saTmp[2].split(",")));
-				} else {
-					currEpi.setGridWithModel(m);
 				}
 			}
 			// Initial Conditions grid
