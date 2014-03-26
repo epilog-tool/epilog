@@ -44,7 +44,7 @@ public class Simulation {
 	 * This function retrieves the next step in the simulation. The first step
 	 * in this
 	 */
-	public void nextStepGrid() {
+	public EpitheliumGrid nextStepGrid() {
 		EpitheliumGrid currGrid = this.stateHistory.get(this.stateHistory
 				.size() - 1);
 		EpitheliumGrid nextGrid = currGrid.clone();
@@ -63,11 +63,7 @@ public class Simulation {
 				// 1. Apply the Cell perturbation
 				LogicalModel m = currGrid.getModel(x, y);
 				AbstractPerturbation ap = currGrid.getPerturbation(x, y);
-				LogicalModel perturbedModel = m;
-				if (ap != null) {
-					System.out.println(x + ","+ y + " <- " + ap);
-					perturbedModel = ap.apply(m);
-				}
+				LogicalModel perturbedModel = (ap != null) ? ap.apply(m) : m;
 
 				// 2. Update integration components
 				for (NodeInfo node : perturbedModel.getNodeOrder()) {
@@ -125,9 +121,10 @@ public class Simulation {
 			}
 		}
 		this.stateHistory.add(nextGrid);
+		return nextGrid;
 	}
-	
+
 	public EpitheliumGrid getCurrentGrid() {
-		return stateHistory.get(stateHistory.size()-1);
+		return stateHistory.get(stateHistory.size() - 1);
 	}
 }

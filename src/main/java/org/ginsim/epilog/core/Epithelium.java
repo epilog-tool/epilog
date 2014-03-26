@@ -59,10 +59,6 @@ public class Epithelium {
 		return this.grid.getModel(x, y);
 	}
 
-	public void setGridWithModel(LogicalModel m) {
-		this.grid.setModelGrid(m);
-	}
-
 	public void setGridWithModel(LogicalModel m, List<Tuple2D> lTuples) {
 		for (Tuple2D tuple : lTuples) {
 			this.grid.setModel(tuple.getX(), tuple.getY(), m);
