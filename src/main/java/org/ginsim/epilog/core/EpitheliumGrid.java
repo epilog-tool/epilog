@@ -116,9 +116,9 @@ public class EpitheliumGrid {
 
 	public String toString() {
 		String s = "";
-		for (int x = 0; x < this.getX(); x++) {
-			s+=(x+1)+"|";
-			for (int y = 0; y < this.getY(); y++) {
+		for (int y = 0; y < this.getY(); y++) {
+			s+=(y+1)+"|";
+				for (int x = 0; x < this.getX(); x++) {
 				byte[] currState = this.getCellState(x, y);
 				for (int i = 0; i < currState.length; i++) {
 					s += currState[i];

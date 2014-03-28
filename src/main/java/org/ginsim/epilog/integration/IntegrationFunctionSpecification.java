@@ -75,7 +75,8 @@ public class IntegrationFunctionSpecification {
 	 */
 	public static class IntegrationAtom implements IntegrationExpression {
 		private String componentName = null;
-		private byte threshold = 0;
+		private byte minThreshold = 0;
+		private byte maxThreshold = 0;
 		private int minNeighbours = 0;
 		private int maxNeighbours = 0;
 		private int minDistance = 1;
@@ -84,7 +85,8 @@ public class IntegrationFunctionSpecification {
 		public IntegrationAtom(String componentName, byte threshold,
 				int minNeighbours, int maxNeighbours) {
 			this.componentName = componentName;
-			this.threshold = threshold;
+			this.minThreshold = threshold;
+			this.maxThreshold = threshold;
 			this.minNeighbours = minNeighbours;
 			this.maxNeighbours = maxNeighbours;
 			this.minDistance = 1;
@@ -94,32 +96,71 @@ public class IntegrationFunctionSpecification {
 		public IntegrationAtom(String componentName, byte threshold,
 				int minNeighbours, int maxNeighbours, int distance) {
 			this.componentName = componentName;
-			this.threshold = threshold;
+			this.minThreshold = threshold;
+			this.maxThreshold = threshold;
 			this.minNeighbours = minNeighbours;
 			this.maxNeighbours = maxNeighbours;
 			this.minDistance = distance;
 			this.maxDistance = distance;
-
 		}
 
 		public IntegrationAtom(String componentName, byte threshold,
 				int minNeighbours, int maxNeighbours, int minDistance,
 				int maxDistance) {
 			this.componentName = componentName;
-			this.threshold = threshold;
+			this.minThreshold = threshold;
+			this.maxThreshold = threshold;
 			this.minNeighbours = minNeighbours;
 			this.maxNeighbours = maxNeighbours;
 			this.minDistance = minDistance;
 			this.maxDistance = maxDistance;
+		}
 
+		public IntegrationAtom(String componentName, byte minThreshold,
+				byte maxThreshold, int minNeighbours, int maxNeighbours) {
+			this.componentName = componentName;
+			this.minThreshold = minThreshold;
+			this.maxThreshold = maxThreshold;
+			this.minNeighbours = minNeighbours;
+			this.maxNeighbours = maxNeighbours;
+			this.minDistance = 1;
+			this.maxDistance = 1;
+		}
+
+		public IntegrationAtom(String componentName, byte minThreshold,
+				byte maxThreshold, int minNeighbours, int maxNeighbours,
+				int distance) {
+			this.componentName = componentName;
+			this.minThreshold = minThreshold;
+			this.maxThreshold = maxThreshold;
+			this.minNeighbours = minNeighbours;
+			this.maxNeighbours = maxNeighbours;
+			this.minDistance = distance;
+			this.maxDistance = distance;
+		}
+
+		public IntegrationAtom(String componentName, byte minThreshold,
+				byte maxThreshold, int minNeighbours, int maxNeighbours,
+				int minDistance, int maxDistance) {
+			this.componentName = componentName;
+			this.minThreshold = minThreshold;
+			this.maxThreshold = maxThreshold;
+			this.minNeighbours = minNeighbours;
+			this.maxNeighbours = maxNeighbours;
+			this.minDistance = minDistance;
+			this.maxDistance = maxDistance;
 		}
 
 		public String getComponentName() {
 			return this.componentName;
 		}
 
-		public byte getThreshold() {
-			return this.threshold;
+		public byte getMinThreshold() {
+			return this.minThreshold;
+		}
+
+		public byte getMaxThreshold() {
+			return this.maxThreshold;
 		}
 
 		public int getMinNeighbours() {
@@ -186,15 +227,25 @@ public class IntegrationFunctionSpecification {
 			String thresholdString, String minString, String maxString,
 			String distString) {
 
-		byte threshold;
+		byte minThreshold;
+		byte maxThreshold;
 		int distance;
 		int minDistance;
 		int maxDistance;
 
-		if (thresholdString.equals("_"))
-			threshold = -1;
-		else
-			threshold = (byte) Integer.parseInt(thresholdString);
+		if (thresholdString.equals("_")) {
+			minThreshold = -1;
+			maxThreshold = -1;
+		} else if (thresholdString.contains(":")) {
+			String rangeStr[] = new String[2];
+			rangeStr = thresholdString.split(":");
+			minThreshold = Byte.parseByte(rangeStr[0]);
+			maxThreshold = Byte.parseByte(rangeStr[1]);
+		} else {
+			minThreshold = Byte.parseByte(thresholdString);
+			maxThreshold = minThreshold;
+		}
+
 		int min;
 		if (minString.equals("_"))
 			min = -1;
@@ -231,7 +282,7 @@ public class IntegrationFunctionSpecification {
 			maxDistance = distance;
 		}
 
-		return new IntegrationAtom(componentName, threshold, min, max,
+		return new IntegrationAtom(componentName, minThreshold, maxThreshold, min, max,
 				minDistance, maxDistance);
 	}
 

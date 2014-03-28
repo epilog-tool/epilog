@@ -105,31 +105,25 @@ public class IntegrationFunctionEvaluation {
 					y, atom.getMinDistance(), atom.getMaxDistance());
 			NodeInfo node = this.features.getNodeInfo(atom.getComponentName());
 
-			byte threshold = atom.getThreshold();
-			if (threshold < 0)
-				threshold = node.getMax();
+			byte minThreshold = atom.getMinThreshold();
+			if (minThreshold < 0)
+				minThreshold = node.getMax();
+			byte maxThreshold = atom.getMaxThreshold();
+			if (maxThreshold < 0)
+				maxThreshold = node.getMax();
+			if (minThreshold > maxThreshold || minThreshold > node.getMax())
+				return false;
 
 			int min = atom.getMinNeighbours();
 			if (min < 0)
 				min = neighbours.size();
-
 			int max = atom.getMaxNeighbours();
 			if (max < 0)
 				max = neighbours.size();
-
-			if (min > neighbours.size() || min > max) {
-				// condition is trivially impossible to satisfy
+			if (min > neighbours.size() || min > max)
 				return false;
-			} else if (threshold == 0 && max < neighbours.size()) {
-				// condition is trivially impossible to satisfy
-				return false;
-			} else if (min == 0 && max == neighbours.size()) {
-				// condition is trivially tautological
+			if (min == 0 && max == neighbours.size())
 				return true;
-			} else if (threshold == 0 && max == neighbours.size()) {
-				// condition is trivially tautological
-				return true;
-			}
 
 			int habilitations = 0;
 			for (Tuple2D tuple : neighbours) {
@@ -137,7 +131,9 @@ public class IntegrationFunctionEvaluation {
 						tuple.getY()).getNodeOrder();
 				for (int n = 0; n < lNodes.size(); n++) {
 					if (node.getNodeID().equals(lNodes.get(n).getNodeID())) {
-						if (this.grid.getCellState(tuple.getX(), tuple.getY())[n] >= threshold) {
+						byte state = this.grid.getCellState(tuple.getX(),
+								tuple.getY())[n];
+						if (minThreshold <= state && state <= maxThreshold) {
 							habilitations++;
 							break;
 						}

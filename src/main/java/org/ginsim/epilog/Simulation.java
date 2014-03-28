@@ -58,7 +58,6 @@ public class Simulation {
 		for (int x = 0; x < currGrid.getX(); x++) {
 			for (int y = 0; y < currGrid.getY(); y++) {
 				byte[] currState = currGrid.getCellState(x, y);
-				byte[] nextState = currState.clone();
 
 				// 1. Apply the Cell perturbation
 				LogicalModel m = currGrid.getModel(x, y);
@@ -79,16 +78,21 @@ public class Simulation {
 								break; // The lowest value being satisfied
 							}
 						}
-						nextState[perturbedModel.getNodeOrder().indexOf(node)] = target;
+						currState[perturbedModel.getNodeOrder().indexOf(node)] = target;
 					}
 				}
+				byte[] nextState = currState.clone();
 
 				// 3. Apply Priorities
 				ModelPriorityClasses mpc = this.epithelium
 						.getPriorityClasses(m);
 				boolean hasChanged = false;
 				for (int p = 0; p < mpc.size(); p++) {
+					// At least one variable has been updated in the current PC
+					if (hasChanged)
+						break;
 					for (String nodeID : mpc.getVarsAtIndex(p)) {
+						// FIXME: priorities with + or -
 						String id = (nodeID.endsWith("+") || nodeID
 								.endsWith("-")) ? nodeID.substring(-1) : nodeID;
 						NodeInfo node = this.epithelium.getComponentFeatures()
@@ -113,9 +117,6 @@ public class Simulation {
 							}
 						}
 					}
-					// At least one variable has been updated in the current PC
-					if (hasChanged)
-						break;
 				}
 				nextGrid.setCellState(x, y, nextState);
 			}

@@ -1,10 +1,7 @@
 grammar IntegrationGrammar;
 
 @header {
-//package org.ginsim.servicegui.tool.composition.integrationgrammar.output;
-//import org.ginsim.servicegui.tool.composition.integrationgrammar.IntegrationFunctionSpecification;
-package org.ginsim.servicegui.tool.composition.output;
-import org.ginsim.servicegui.tool.composition.output.IntegrationFunctionSpecification;
+package org.ginsim.epilog.integration;
 }
 
 
@@ -28,9 +25,15 @@ conjunction    returns [IntegrationFunctionSpecification.IntegrationExpression v
 atom	 returns [ IntegrationFunctionSpecification.IntegrationExpression value]
 	: id=ID '(' threshold=ENUMBER ',' min=ENUMBER ',' max=ENUMBER ')' 
 	{ $value = IntegrationFunctionSpecification.createAtom($id.text,$threshold.text,$max.text,$min.text);}
+	| id=ID '(' threshold=RANGE ',' min=ENUMBER ',' max=ENUMBER ')' 
+	{ $value = IntegrationFunctionSpecification.createAtom($id.text,$threshold.text,$max.text,$min.text);}
 	| id=ID '(' threshold=ENUMBER ',' min=ENUMBER ',' max=ENUMBER ',' dist=ENUMBER ')'
 	{ $value = IntegrationFunctionSpecification.createAtom($id.text,$threshold.text,$min.text,$max.text,$dist.text);}
+	| id=ID '(' threshold=RANGE ',' min=ENUMBER ',' max=ENUMBER ',' dist=ENUMBER ')'
+	{ $value = IntegrationFunctionSpecification.createAtom($id.text,$threshold.text,$min.text,$max.text,$dist.text);}
 	| id=ID '(' threshold=ENUMBER ',' min=ENUMBER ',' max=ENUMBER ',' dist=RANGE ')'
+	{ $value = IntegrationFunctionSpecification.createAtom($id.text,$threshold.text,$min.text,$max.text,$dist.text);}
+	| id=ID '(' threshold=RANGE ',' min=ENUMBER ',' max=ENUMBER ',' dist=RANGE ')'
 	{ $value = IntegrationFunctionSpecification.createAtom($id.text,$threshold.text,$min.text,$max.text,$dist.text);}
 	|'(' exp=expression ')' { $value = IntegrationFunctionSpecification.createAtom($exp.value);}
 	| NOT a=atom { $value = IntegrationFunctionSpecification.createNegation($a.value);}

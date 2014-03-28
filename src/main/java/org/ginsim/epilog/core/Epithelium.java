@@ -68,7 +68,8 @@ public class Epithelium {
 	public void setGridWithComponentValue(String nodeID, byte value,
 			List<Tuple2D> lTuples) {
 		for (Tuple2D tuple : lTuples) {
-			this.grid.setCellComponentValue(tuple.getX(), tuple.getY(), nodeID, value);
+			this.grid.setCellComponentValue(tuple.getX(), tuple.getY(), nodeID,
+					value);
 		}
 	}
 
@@ -83,6 +84,11 @@ public class Epithelium {
 			this.integrationFunctions.addComponent(node);
 		}
 		this.integrationFunctions.setFunctionAtLevel(node, value, function);
+	}
+
+	public void initPriorityClasses(LogicalModel m) {
+		ModelPriorityClasses mpc = new ModelPriorityClasses(m);
+		this.priorities.addModelPriorityClasses(mpc);
 	}
 
 	public void setPriorityClasses(LogicalModel m, String pcs) {

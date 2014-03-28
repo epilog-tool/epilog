@@ -46,6 +46,8 @@ public class Parser {
 
 		while ((line = br.readLine()) != null) {
 			line = line.trim();
+			if (line.startsWith("#"))
+				continue;
 			// Initialize default grid dimensions
 			if (line.startsWith("GD")) {
 				saTmp = line.split("\\s+");
@@ -82,6 +84,7 @@ public class Parser {
 					currEpi.setGridWithModel(m,
 							currEpi.getEpitheliumGrid().getTopology()
 									.instances2Tuples2D(saTmp[2].split(",")));
+					currEpi.initPriorityClasses(m);
 				}
 			}
 			// Initial Conditions grid
