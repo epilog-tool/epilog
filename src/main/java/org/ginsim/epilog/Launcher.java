@@ -41,7 +41,7 @@ public class Launcher {
 							new FlaggedOption("peps", JSAP.STRING_PARSER,
 									pepsFile, JSAP.REQUIRED, JSAP.NO_SHORTFLAG,
 									"peps",
-									"PEPS (Project Epithelium ??? ????) file location."), });
+									"PEPS (Project of Epithelium Patterning Simulation) file location."), });
 			jsapResult = jsap.parse(args);
 			if (jsap.messagePrinted())
 				System.exit(0);
