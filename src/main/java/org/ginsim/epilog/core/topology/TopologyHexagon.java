@@ -6,9 +6,9 @@ import java.util.Set;
 import org.ginsim.epilog.Tuple2D;
 
 public class TopologyHexagon extends Topology {
-	private int[] neighboursX = { 0, 0, -1, 1, -1, 1 };
-	private int[][] neighboursY = { { -1, 1, 0, 0, -1, -1 },
-			{ -1, 1, 0, 0, 1, 1 } };
+	private int[] neighboursX = { -1, -1, 0, 1, 1, 0 };
+	private int[][] neighboursY = { { -1, 0, 1, 0, -1, -1 },
+			{ 0, 1, 1, 1, 0, -1 } };
 
 	public TopologyHexagon(int maxX, int maxY, RollOver rollover) {
 		this.maxX = maxX;
@@ -38,9 +38,9 @@ public class TopologyHexagon extends Topology {
 	private Set<Tuple2D> getNeighbours(Tuple2D elem, Set<Tuple2D> setComplete) {
 		Set<Tuple2D> setN = new HashSet<Tuple2D>();
 
-		for (int k = 0; k < neighboursY.length; k++) {
+		for (int k = 0; k < neighboursX.length; k++) {
 			int i = elem.getX() + neighboursX[k];
-			int j = elem.getY() + neighboursY[elem.getY() % 2][k];
+			int j = elem.getY() + neighboursY[elem.getX() % 2][k];
 			if (this.rollover != RollOver.VERTICAL && (j < 0 || j >= this.maxY))
 				continue;
 			if (this.rollover != RollOver.HORIZONTAL
