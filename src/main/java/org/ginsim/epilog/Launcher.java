@@ -27,7 +27,9 @@ public class Launcher {
 
 		// Default values
 		int maxiter = 1000;
+		boolean bGUI = false;
 		String pepsFile = null;
+
 		try {
 			jsap = new SimpleJSAP(
 					Launcher.class.getName(),
@@ -38,6 +40,10 @@ public class Launcher {
 							new FlaggedOption("max-iter", JSAP.INTEGER_PARSER,
 									"" + maxiter, JSAP.NOT_REQUIRED, 'i',
 									"max-iter", "Maximum number of iterations."),
+							new FlaggedOption("gui", JSAP.BOOLEAN_PARSER, ""
+									+ bGUI, JSAP.NOT_REQUIRED,
+									JSAP.NO_SHORTFLAG, "gui",
+									"No Graphical User Interface, command line mode"),
 							new FlaggedOption("peps", JSAP.STRING_PARSER,
 									pepsFile, JSAP.REQUIRED, JSAP.NO_SHORTFLAG,
 									"peps",
@@ -46,12 +52,24 @@ public class Launcher {
 			if (jsap.messagePrinted())
 				System.exit(0);
 			maxiter = jsapResult.getInt("max-iter");
+			bGUI = jsapResult.getBoolean("gui");
 			pepsFile = jsapResult.getString("peps");
 		} catch (JSAPException e) {
 			System.err.println(e.getMessage());
 			System.exit(1);
 		}
 
+		if (!bGUI) {
+			// Command line
+			Launcher.commandLine(pepsFile, maxiter);
+		} else {
+			// GUI
+
+		}
+	}
+
+	private static void commandLine(String pepsFile, int maxiter)
+			throws IOException {
 		File fPEPS = new File(pepsFile);
 		Project project = FileIO.loadPEPS(fPEPS);
 
@@ -75,5 +93,6 @@ public class Launcher {
 		} while (!currGrid.equals(nextGrid));
 
 		System.out.println("Reached a stable grid!");
+
 	}
 }
