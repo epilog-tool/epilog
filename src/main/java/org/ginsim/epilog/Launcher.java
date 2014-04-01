@@ -26,7 +26,7 @@ public class Launcher {
 		JSAPResult jsapResult = null;
 
 		// Default values
-		int maxiter = 1000;
+		int maxiter = 10;
 		boolean bGUI = false;
 		String pepsFile = null;
 

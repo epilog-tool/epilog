@@ -85,6 +85,7 @@ public class Parser {
 							currEpi.getEpitheliumGrid().getTopology()
 									.instances2Tuples2D(saTmp[2].split(",")));
 					currEpi.initPriorityClasses(m);
+					currEpi.initComponentFeatures(m);
 				}
 			}
 			// Initial Conditions grid
@@ -130,7 +131,7 @@ public class Parser {
 					List<Tuple2D> lTuple = currEpi.getEpitheliumGrid()
 							.getTopology()
 							.instances2Tuples2D(saTmp[3].split(","));
-					currEpi.usePerturbation(m, ap, c, lTuple);
+					currEpi.applyPerturbation(m, ap, c, lTuple);
 				}
 			}
 			// project add currEpi

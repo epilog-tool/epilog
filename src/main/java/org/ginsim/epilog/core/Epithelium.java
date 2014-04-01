@@ -91,6 +91,10 @@ public class Epithelium {
 		this.priorities.addModelPriorityClasses(mpc);
 	}
 
+	public void initComponentFeatures(LogicalModel m) {
+		this.componentFeatures.addModel(m);
+	}
+
 	public void setPriorityClasses(LogicalModel m, String pcs) {
 		ModelPriorityClasses mpc = new ModelPriorityClasses(m);
 		mpc.setPriorities(pcs);
@@ -101,10 +105,10 @@ public class Epithelium {
 		this.perturbations.addPerturbation(m, ap);
 	}
 
-	public void usePerturbation(LogicalModel m, AbstractPerturbation ap,
+	public void applyPerturbation(LogicalModel m, AbstractPerturbation ap,
 			Color c, List<Tuple2D> lTuples) {
 		this.perturbations.addPerturbationColor(m, ap, c);
-		this.grid.setPerturbation(lTuples, ap);
+		this.grid.setPerturbation(m, lTuples, ap);
 	}
 
 	public EpitheliumGrid getEpitheliumGrid() {

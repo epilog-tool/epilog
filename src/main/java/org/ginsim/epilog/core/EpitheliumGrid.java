@@ -67,9 +67,12 @@ public class EpitheliumGrid {
 		cellGrid[x][y].setPerturbation(ap);
 	}
 
-	public void setPerturbation(List<Tuple2D> lTuples, AbstractPerturbation ap) {
+	public void setPerturbation(LogicalModel m, List<Tuple2D> lTuples,
+			AbstractPerturbation ap) {
 		for (Tuple2D tuple : lTuples) {
-			this.setPerturbation(tuple.getX(), tuple.getY(), ap);
+			if (this.cellGrid[tuple.getX()][tuple.getY()].getModel().equals(m)) {
+				this.setPerturbation(tuple.getX(), tuple.getY(), ap);
+			}
 		}
 	}
 
@@ -117,13 +120,13 @@ public class EpitheliumGrid {
 	public String toString() {
 		String s = "";
 		for (int y = 0; y < this.getY(); y++) {
-			s+=(y+1)+"|";
-				for (int x = 0; x < this.getX(); x++) {
+			s += (y + 1) + "|";
+			for (int x = 0; x < this.getX(); x++) {
 				byte[] currState = this.getCellState(x, y);
 				for (int i = 0; i < currState.length; i++) {
 					s += currState[i];
 				}
-				s+="|";
+				s += "|";
 			}
 			s += "\n";
 		}

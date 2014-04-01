@@ -95,6 +95,7 @@ public class Simulation {
 						// FIXME: priorities with + or -
 						String id = (nodeID.endsWith("+") || nodeID
 								.endsWith("-")) ? nodeID.substring(-1) : nodeID;
+								
 						NodeInfo node = this.epithelium.getComponentFeatures()
 								.getNodeInfo(nodeID);
 						int index = perturbedModel.getNodeOrder().indexOf(node);
