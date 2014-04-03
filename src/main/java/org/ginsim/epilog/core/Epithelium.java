@@ -47,7 +47,7 @@ public class Epithelium {
 		return this.componentFeatures;
 	}
 
-	public String getName() {
+	public String toString() {
 		return this.name;
 	}
 

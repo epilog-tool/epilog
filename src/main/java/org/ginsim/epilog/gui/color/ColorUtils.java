@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Random;
 
 public class ColorUtils {
-
+	public static final Color LIGHT_RED = new Color(255, 120, 120);
+	
 	private static int getRandomNumber(int n) {
 		return (new Random()).nextInt(n);
 	}
@@ -14,7 +15,7 @@ public class ColorUtils {
 		return new Color(Integer.parseInt(r), Integer.parseInt(g),
 				Integer.parseInt(b));
 	}
-
+	
 	public static Color random() {
 		return new Color(ColorUtils.getRandomNumber(256),
 				ColorUtils.getRandomNumber(256),

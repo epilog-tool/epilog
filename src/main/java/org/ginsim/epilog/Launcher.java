@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumGrid;
+import org.ginsim.epilog.gui.EpiGUI;
 import org.ginsim.epilog.io.FileIO;
 
 import com.martiansoftware.jsap.FlaggedOption;
@@ -14,6 +15,7 @@ import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.Parameter;
 import com.martiansoftware.jsap.SimpleJSAP;
+import com.martiansoftware.jsap.Switch;
 
 public class Launcher {
 
@@ -40,10 +42,7 @@ public class Launcher {
 							new FlaggedOption("max-iter", JSAP.INTEGER_PARSER,
 									"" + maxiter, JSAP.NOT_REQUIRED, 'i',
 									"max-iter", "Maximum number of iterations."),
-							new FlaggedOption("gui", JSAP.BOOLEAN_PARSER, ""
-									+ bGUI, JSAP.NOT_REQUIRED,
-									JSAP.NO_SHORTFLAG, "gui",
-									"No Graphical User Interface, command line mode"),
+							new Switch("gui", JSAP.NO_SHORTFLAG, "gui"),
 							new FlaggedOption("peps", JSAP.STRING_PARSER,
 									pepsFile, JSAP.REQUIRED, JSAP.NO_SHORTFLAG,
 									"peps",
@@ -64,7 +63,8 @@ public class Launcher {
 			Launcher.commandLine(pepsFile, maxiter);
 		} else {
 			// GUI
-
+			EpiGUI gui = new EpiGUI();
+			// gui.initialize();
 		}
 	}
 

@@ -199,7 +199,7 @@ public class Parser {
 		w.println();
 
 		// Epithelium name
-		w.println("SN " + epi.getName());
+		w.println("SN " + epi.toString());
 
 		// Rollover
 		w.println("RL " + epi.getEpitheliumGrid().getTopology().getRollOver());
