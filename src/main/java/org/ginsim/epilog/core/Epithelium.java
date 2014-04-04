@@ -36,6 +36,10 @@ public class Epithelium {
 		this.integrationFunctions = eif;
 		this.perturbations = eap;
 	}
+	
+	public boolean hasModel(LogicalModel m) {
+		return this.grid.hasModel(m);
+	}
 
 	public Epithelium clone() {
 		return new Epithelium("CopyOf_" + this.name, this.grid.clone(),

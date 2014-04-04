@@ -2,20 +2,25 @@ package org.ginsim.epilog.gui;
 
 import java.awt.Component;
 import java.awt.Dialog.ModalityType;
+import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 import java.io.IOException;
 
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
@@ -26,6 +31,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.colomoto.logicalmodel.LogicalModel;
 import org.ginsim.epilog.Project;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.gui.tab.EpiTab;
@@ -45,20 +51,49 @@ public class EpiGUI extends JFrame {
 	private JSplitPane epiMainFrame;
 	private JSplitPane epiLeftFrame;
 	private JTabbedPane epiRightFrame;
-	private JPanel projDescPanel;
+	private ProjDescPanel projDescPanel;
 	private JTree epiTree;
 	private Project project;
 	private JDialog dialog; // TODO clean in the future?
+	private JButton buttonAdd;
+	private JButton buttonRemove;
 
 	public EpiGUI() {
 		super(NAME);
 
 		this.initializeMenus();
 
+		JPanel topLeftFrame = new JPanel();
+		topLeftFrame
+				.setLayout(new BoxLayout(topLeftFrame, BoxLayout.PAGE_AXIS));
 		this.projDescPanel = new ProjDescPanel();
+		topLeftFrame.add(this.projDescPanel);
+		JPanel addRemoveModelPanel = new JPanel(new FlowLayout());
+		buttonAdd = new JButton("+");
+		buttonAdd.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					addSBML();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		addRemoveModelPanel.add(buttonAdd);
+		buttonRemove = new JButton("-");
+		buttonRemove.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removeSBML();
+			}
+		});
+		addRemoveModelPanel.add(buttonRemove);
+		topLeftFrame.add(addRemoveModelPanel);
 
 		this.epiLeftFrame = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				this.projDescPanel, null);
+				topLeftFrame, null);
 		initEpitheliumJTree();
 
 		this.epiRightFrame = new JTabbedPane();
@@ -66,12 +101,14 @@ public class EpiGUI extends JFrame {
 				this.epiLeftFrame, this.epiRightFrame);
 
 		this.add(epiMainFrame);
+
+		this.validateGUI();
 		this.pack();
 		this.setVisible(true);
 	}
 
 	private void initializeMenus() {
-		epiMenu = new JMenuBar();
+		this.epiMenu = new JMenuBar();
 
 		// File menu
 		JMenu menuFile = new JMenu("File");
@@ -79,7 +116,12 @@ public class EpiGUI extends JFrame {
 		itemNew.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				newProject();
+				try {
+					newProject();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		menuFile.add(itemNew);
@@ -93,19 +135,41 @@ public class EpiGUI extends JFrame {
 		menuFile.add(itemOpen);
 		menuFile.addSeparator();
 		JMenuItem itemSave = new JMenuItem("Save");
+		itemSave.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					savePEPS();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		menuFile.add(itemSave);
 		JMenuItem itemSaveAs = new JMenuItem("Save As");
+		itemSaveAs.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					saveAsPEPS();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		menuFile.add(itemSaveAs);
 		menuFile.addSeparator();
 		JMenuItem itemExit = new JMenuItem("Exit");
 		itemExit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.exit(EXIT_ON_CLOSE);
+				exitProject();
 			}
 		});
 		menuFile.add(itemExit);
-		epiMenu.add(menuFile);
+		this.epiMenu.add(menuFile);
 
 		// Epithelium menu
 		JMenu menuEpithelium = new JMenu("Epithelium");
@@ -117,15 +181,7 @@ public class EpiGUI extends JFrame {
 		menuEpithelium.add(itemRenameEpi);
 		JMenuItem itemCloneEpi = new JMenuItem("Clone");
 		menuEpithelium.add(itemCloneEpi);
-		epiMenu.add(menuEpithelium);
-
-		// SBML menu
-		JMenu menuSBML = new JMenu("SBML");
-		JMenuItem itemLoadSBML = new JMenuItem("Load");
-		menuSBML.add(itemLoadSBML);
-		JMenuItem itemRemoveSBML = new JMenuItem("Remove");
-		menuSBML.add(itemRemoveSBML);
-		epiMenu.add(menuSBML);
+		this.epiMenu.add(menuEpithelium);
 
 		// Help menu
 		JMenu menuHelp = new JMenu("Help");
@@ -133,14 +189,14 @@ public class EpiGUI extends JFrame {
 		menuHelp.add(itemHelpAbout);
 		JMenuItem itemHelpWWW = new JMenuItem("WWW");
 		menuHelp.add(itemHelpWWW);
-		epiMenu.add(menuHelp);
+		this.epiMenu.add(menuHelp);
 
-		this.setJMenuBar(epiMenu);
+		this.setJMenuBar(this.epiMenu);
 	}
 
-	private void newProject() {
+	private void newProject() throws IOException {
 		NewProjectDialog dialogPanel = new NewProjectDialog();
-		
+
 		Window win = SwingUtilities.getWindowAncestor(this);
 		dialog = new JDialog(win, "New Project Definitions",
 				ModalityType.APPLICATION_MODAL);
@@ -148,12 +204,54 @@ public class EpiGUI extends JFrame {
 		dialog.pack();
 		dialog.setLocationRelativeTo(null);
 		dialog.setVisible(true);
-		
+
 		if (dialogPanel.isDefined()) {
-			System.out.println(dialogPanel.getProjWidth() + " x "
-					+ dialogPanel.getProjHeight());
+			this.cleanGUI();
+			this.setTitle(NAME + " - Unsaved");
+			this.project = new Project(dialogPanel.getProjWidth(),
+					dialogPanel.getProjHeight());
+			this.projDescPanel.setDimension(dialogPanel.getProjWidth(),
+					dialogPanel.getProjHeight());
+			for (File fSBML : dialogPanel.getFileList()) {
+				LogicalModel m = FileIO.loadSBMLModel(fSBML);
+				this.project.addModel(fSBML.getName(), m);
+				this.projDescPanel.addModel(fSBML.getName());
+			}
+			this.validateGUI();
+		}
+	}
+
+	private void validateGUI() {
+		boolean bIsValid = false;
+		if (this.project != null) {
+			bIsValid = true;
+			if (this.project.hasChanged() && !this.getTitle().endsWith("*")) {
+				this.setTitle(this.getTitle() + "*");
+			}
+			if (!this.project.hasChanged() && this.getTitle().endsWith("*")) {
+				this.setTitle(this.getTitle().substring(0,
+						this.getTitle().length() - 1));
+			}
+		}
+		this.epiMenu.getMenu(1).setEnabled(bIsValid);
+		JMenu file = this.epiMenu.getMenu(0);
+		file.getItem(3).setEnabled(bIsValid && this.project.hasChanged()); // Save
+		file.getItem(4).setEnabled(bIsValid); // Save As
+		this.buttonAdd.setEnabled(bIsValid);
+		this.buttonRemove.setEnabled(bIsValid
+				&& this.projDescPanel.countModels() > 1);
+	}
+
+	private void exitProject() {
+		if (this.project.hasChanged()) {
+			int n = JOptionPane.showConfirmDialog(this,
+					"You have unsaved changes!\nDo you really want to quit?",
+					"Question", JOptionPane.YES_NO_OPTION);
+			if (n == JOptionPane.YES_OPTION) {
+				System.exit(EXIT_ON_CLOSE);
+			}
 		} else {
-			System.out.println("He canceled!!");
+			System.exit(EXIT_ON_CLOSE);
 		}
 	}
 
@@ -161,10 +259,10 @@ public class EpiGUI extends JFrame {
 		if (this.loadPEPS()) {
 			this.cleanGUI();
 			this.setTitle(NAME + " - " + this.project.getFilenamePEPS());
-			((ProjDescPanel) this.projDescPanel).setDimension(
-					this.project.getX(), this.project.getY());
+			this.projDescPanel.setDimension(this.project.getX(),
+					this.project.getY());
 			for (String sbml : this.project.getModelNames()) {
-				((ProjDescPanel) this.projDescPanel).addModel(sbml);
+				this.projDescPanel.addModel(sbml);
 			}
 
 			// TODO Epithelium Tree
@@ -196,7 +294,9 @@ public class EpiGUI extends JFrame {
 			for (int i = 0; i < this.epiTree.getRowCount(); i++) {
 				this.epiTree.expandRow(i);
 			}
-			this.epiTree.setRootVisible(false);
+			if (this.project.getEpitheliumList().size() > 0)
+				this.epiTree.setRootVisible(false);
+			this.validateGUI();
 		}
 	}
 
@@ -281,10 +381,74 @@ public class EpiGUI extends JFrame {
 		return false;
 	}
 
+	private void saveAsPEPS() throws IOException {
+		JFileChooser fc = new JFileChooser();
+
+		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+			String newUserPEPSFile = fc.getSelectedFile().getAbsolutePath();
+			newUserPEPSFile += (newUserPEPSFile.endsWith(".peps") ? ""
+					: ".peps");
+			FileIO.savePEPS(this.project, newUserPEPSFile);
+			this.project.setChanged(false);
+			this.validateGUI();
+		}
+	}
+
+	private void savePEPS() throws IOException {
+
+		String fName = this.project.getFilenamePEPS();
+		if (fName == null) {
+			saveAsPEPS();
+		} else {
+			FileIO.savePEPS(this.project, fName);
+			this.project.setChanged(false);
+			this.validateGUI();
+		}
+	}
+
+	private void addSBML() throws IOException {
+		FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter(
+				"sbml files (*.sbml)", "sbml");
+		JFileChooser fc = new JFileChooser();
+		fc.setFileFilter(xmlfilter);
+		fc.setDialogTitle("Open file");
+		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			if (this.projDescPanel.hasModel(fc.getSelectedFile().getName())) {
+				JOptionPane.showMessageDialog(this,
+						"A model with the same name '"
+								+ fc.getSelectedFile().getName()
+								+ "' already exists!", "Warning",
+						JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			this.projDescPanel.addModel(fc.getSelectedFile().getName());
+			LogicalModel m = FileIO.loadSBMLModel(fc.getSelectedFile());
+			this.project.addModel(fc.getSelectedFile().getName(), m);
+			this.validateGUI();
+		}
+	}
+
+	private void removeSBML() {
+		String model = this.projDescPanel.getSelected();
+		if (model != null) {
+			if (this.project.removeModel(model)) {
+				this.projDescPanel.removeModel(model);
+			} else {
+				JOptionPane.showMessageDialog(this, "Model '" + model
+						+ "' is being used!", "Warning",
+						JOptionPane.WARNING_MESSAGE);
+			}
+		}
+		this.validateGUI();
+	}
+
 	private void cleanGUI() {
 		// Close & delete all TABS
 		this.setTitle(NAME);
-		((ProjDescPanel) this.projDescPanel).clean();
-		this.epiTree = new JTree();
+		this.projDescPanel.clean();
+		this.initEpitheliumJTree();
+
+		this.buttonAdd.setEnabled(false);
+		this.buttonRemove.setEnabled(false);
 	}
 }

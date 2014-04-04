@@ -2,6 +2,7 @@ package org.ginsim.epilog;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ public class Project {
 	private List<Epithelium> epitheliumList;
 	private Map<String, LogicalModel> modelMap;
 	private String filenamePEPS;
-	private boolean changed; // TODO
+	private boolean bChanged; // TODO
 
 	public Project(int x, int y) {
 		this.x = x;
@@ -24,7 +25,15 @@ public class Project {
 		this.epitheliumList = new ArrayList<Epithelium>();
 		this.modelMap = new HashMap<String, LogicalModel>();
 		this.filenamePEPS = null;
-		this.changed = true;
+		this.bChanged = true;
+	}
+
+	public boolean hasChanged() {
+		return bChanged;
+	}
+
+	public void setChanged(boolean state) {
+		this.bChanged = state;
 	}
 
 	public int getX() {
@@ -37,6 +46,10 @@ public class Project {
 
 	public List<Epithelium> getEpitheliumList() {
 		return this.epitheliumList;
+	}
+
+	public Map<String, LogicalModel> getModelsMap() {
+		return Collections.unmodifiableMap(this.modelMap);
 	}
 
 	public String getFilenamePEPS() {
@@ -64,6 +77,25 @@ public class Project {
 
 	public void addModel(String name, LogicalModel m) {
 		this.modelMap.put(name, m);
+		// TODO: should the model be inserted somewhere else?
+		this.bChanged = true;
+	}
+
+	public boolean removeModel(String name) {
+		if (!this.hasModel(name)) {
+			this.modelMap.remove(name);
+			this.bChanged = true;
+			return true;
+		}
+		return false;
+	}
+
+	public boolean hasModel(String name) {
+		for (Epithelium epi : this.epitheliumList) {
+			if (epi.hasModel(this.modelMap.get(name)))
+				return true;
+		}
+		return false;
 	}
 
 	public Set<String> getModelNames() {

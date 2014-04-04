@@ -16,4 +16,6 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	private void initializeGUI() {
 		// Define center GUI components
 	}
+	
+	// TODO: Accept button -> calls epigrid.updateModelSet() 
 }

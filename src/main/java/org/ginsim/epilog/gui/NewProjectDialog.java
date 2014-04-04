@@ -2,13 +2,17 @@ package org.ginsim.epilog.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +21,9 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -32,7 +38,9 @@ public class NewProjectDialog extends JPanel {
 
 	private JTextField jtfWidth;
 	private JTextField jtfHeight;
-	private DefaultListModel<String> dlmModels;
+	private JList<String> listSBMLs;
+	private JButton buttonRemove;
+	private JButton buttonOK;
 
 	private List<File> fileList;
 	private int width;
@@ -61,6 +69,16 @@ public class NewProjectDialog extends JPanel {
 			public void keyPressed(KeyEvent e) {
 			}
 		});
+		jtfWidth.addFocusListener(new FocusListener() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				validateEvenDimension(e);
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+			}
+		});
 		top.add(jtfWidth);
 		top.add(new JLabel("Height"));
 		jtfHeight = new JTextField(DEFAULT_HEIGHT, 5);
@@ -78,55 +96,79 @@ public class NewProjectDialog extends JPanel {
 			public void keyPressed(KeyEvent e) {
 			}
 		});
+		jtfHeight.addFocusListener(new FocusListener() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				validateEvenDimension(e);
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+			}
+		});
 		top.add(jtfHeight);
 		this.add(top, BorderLayout.PAGE_START);
 
 		// CENTER begin
 		JPanel center = new JPanel(new BorderLayout());
-		dlmModels = new DefaultListModel<String>();
-		JList<String> list = new JList<String>(dlmModels);
-		center.add(list, BorderLayout.CENTER);
-		JPanel line = new JPanel(new FlowLayout());
-		JLabel label = new JLabel("Add SBML");
-		line.add(label);
-		JButton buttonChooser = new JButton("Browse");
-		buttonChooser.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				chooseSBMLFile();
-			}
-		});
-		line.add(buttonChooser);
-		center.add(line, BorderLayout.PAGE_END);
+		DefaultListModel<String> dlmModels = new DefaultListModel<String>();
+		this.listSBMLs = new JList<String>(dlmModels);
+		JScrollPane scroll = new JScrollPane(this.listSBMLs);
+		scroll.setMinimumSize(new Dimension(scroll.getSize().width, 70));
+		center.add(scroll, BorderLayout.CENTER);
 		this.add(center, BorderLayout.CENTER);
 
 		// PAGE_END begin
 		JPanel bottom = new JPanel(new FlowLayout());
-		JButton cancel = new JButton("Cancel");
-		cancel.addActionListener(new ActionListener() {
+		JButton buttonAdd = new JButton("Add SBML");
+		buttonAdd.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addSBMLFile();
+			}
+		});
+		bottom.add(buttonAdd);
+		buttonRemove = new JButton("Remove SBML");
+		buttonRemove.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					removeSBMLFile();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		bottom.add(buttonRemove);
+		JButton buttonCancel = new JButton("Cancel");
+		buttonCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				buttonAction(false);
 			}
 		});
-		bottom.add(cancel);
-		JButton next = new JButton("OK");
-		next.addActionListener(new ActionListener() {
+		bottom.add(buttonCancel);
+		buttonOK = new JButton("OK");
+		buttonOK.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				buttonAction(true);
 			}
 		});
-		bottom.add(next);
+		bottom.add(buttonOK);
 		this.add(bottom, BorderLayout.PAGE_END);
+		this.validateDialog();
 	}
 
 	private void validateTextField(KeyEvent e) {
 		JTextField jtf = (JTextField) e.getSource();
 		boolean valid = false;
 		try {
-			Integer.parseInt(jtf.getText());
-			valid = true;
+			int x = Integer.parseInt(jtf.getText());
+			if (x >= 1) {
+				valid = true;
+			}
 		} catch (NumberFormatException nfe) {
 		}
 		if (!valid) {
@@ -134,17 +176,24 @@ public class NewProjectDialog extends JPanel {
 		} else {
 			jtf.setBackground(Color.WHITE);
 		}
+		this.validateDialog();
+	}
+	
+	private void validateEvenDimension(FocusEvent e) {
+		JTextField jtf = (JTextField) e.getSource();
+		try {
+			int x = Integer.parseInt(jtf.getText());
+			if (x % 2 == 1) {
+				jtf.setText(""+(x+1));
+			}
+		} catch (NumberFormatException nfe) {
+		}
 	}
 
-	private void buttonAction(boolean option) {
-		this.bIsOK = option;
-		if (option) {
-			try {
-				this.width = Integer.parseInt(this.jtfWidth.getText());
-				this.height = Integer.parseInt(this.jtfHeight.getText());
-			} catch (NumberFormatException nfe) {
-				return;
-			}
+	private void buttonAction(boolean bIsOK) {
+		this.bIsOK = bIsOK;
+		if (bIsOK && !this.validateDialog()) {
+			return;
 		}
 		Window win = SwingUtilities.getWindowAncestor(this);
 		if (win != null) {
@@ -168,7 +217,7 @@ public class NewProjectDialog extends JPanel {
 		return this.bIsOK;
 	}
 
-	private void chooseSBMLFile() {
+	private void addSBMLFile() {
 		FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter(
 				"sbml files (*.sbml)", "sbml");
 		JFileChooser fc = new JFileChooser();
@@ -177,12 +226,53 @@ public class NewProjectDialog extends JPanel {
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			for (File f : this.fileList) {
 				if (fc.getSelectedFile().getName().equals(f.getName())) {
+					JOptionPane.showMessageDialog(this,
+							"A model with the same name '"
+									+ fc.getSelectedFile().getName()
+									+ "' already exists!", "Warning",
+							JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 			}
 			this.fileList.add(fc.getSelectedFile());
-			this.dlmModels.addElement(fc.getSelectedFile()
-					.getAbsolutePath());
+			((DefaultListModel<String>) this.listSBMLs.getModel())
+					.addElement(fc.getSelectedFile().getAbsolutePath());
 		}
+		this.validateDialog();
+	}
+
+	private void removeSBMLFile() throws IOException {
+		DefaultListModel<String> dataModel = (DefaultListModel<String>) this.listSBMLs
+				.getModel();
+		int selIndex = this.listSBMLs.getSelectedIndex();
+		if (selIndex != -1) {
+			String name = this.listSBMLs.getSelectedValue();
+			dataModel.remove(selIndex);
+			for (File f : this.fileList) {
+				if (f.getCanonicalPath().equals(name)) {
+					this.fileList.remove(f);
+					break;
+				}
+			}
+			this.validateDialog();
+		}
+	}
+
+	private boolean validateDialog() {
+		boolean isValid = false;
+		if (this.listSBMLs.getModel().getSize() > 0) {
+			isValid = true;
+		}
+		this.buttonRemove.setEnabled(isValid);
+
+		try {
+			this.width = Integer.parseInt(this.jtfWidth.getText());
+			this.height = Integer.parseInt(this.jtfHeight.getText());
+		} catch (NumberFormatException nfe) {
+			isValid = false;
+		}
+		this.buttonOK.setEnabled(isValid);
+		System.out.println("IsValid: " + isValid);
+		return isValid;
 	}
 }

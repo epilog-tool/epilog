@@ -136,6 +136,7 @@ public class Parser {
 			}
 			// project add currEpi
 		}
+		project.setChanged(false);
 		br.close();
 		in.close();
 		fstream.close();

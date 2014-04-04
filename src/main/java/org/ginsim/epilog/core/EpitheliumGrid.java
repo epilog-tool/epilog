@@ -1,7 +1,9 @@
 package org.ginsim.epilog.core;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
@@ -13,10 +15,12 @@ import org.ginsim.epilog.core.topology.TopologyHexagon;
 public class EpitheliumGrid {
 	private EpitheliumCell[][] cellGrid;
 	private Topology topology;
+	private Set<LogicalModel> modelSet;
 
-	private EpitheliumGrid(EpitheliumCell[][] cellGrid, Topology topology) {
+	private EpitheliumGrid(EpitheliumCell[][] cellGrid, Topology topology, Set<LogicalModel> modelSet) {
 		this.cellGrid = cellGrid;
 		this.topology = topology;
+		this.modelSet = modelSet;
 	}
 
 	public EpitheliumGrid(int x, int y, LogicalModel m) {
@@ -25,6 +29,21 @@ public class EpitheliumGrid {
 		for (int i = 0; i < this.getX(); i++) {
 			for (int j = 0; j < this.getY(); j++) {
 				this.cellGrid[i][j] = new EpitheliumCell(m);
+			}
+		}
+		this.modelSet = new HashSet<LogicalModel>();
+		this.modelSet.add(m);
+	}
+	
+	public boolean hasModel(LogicalModel m) {
+		return this.modelSet.contains(m);
+	}
+	
+	public void updateModelSet() {
+		this.modelSet = new HashSet<LogicalModel>();
+		for (int x = 0; x < this.cellGrid.length; x++) {
+			for (int y = 0; y < this.cellGrid[0].length; y++) {
+				this.modelSet.add(this.cellGrid[x][y].getModel());
 			}
 		}
 	}
@@ -56,7 +75,8 @@ public class EpitheliumGrid {
 			}
 		}
 		Topology newTop = this.topology.clone();
-		return new EpitheliumGrid(newGrid, newTop);
+		Set<LogicalModel> newModelSet = new HashSet<LogicalModel>(this.modelSet);
+		return new EpitheliumGrid(newGrid, newTop, newModelSet);
 	}
 
 	public AbstractPerturbation getPerturbation(int x, int y) {
