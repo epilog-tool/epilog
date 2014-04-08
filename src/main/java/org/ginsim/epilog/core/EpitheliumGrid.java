@@ -1,6 +1,7 @@
 package org.ginsim.epilog.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,7 +18,8 @@ public class EpitheliumGrid {
 	private Topology topology;
 	private Set<LogicalModel> modelSet;
 
-	private EpitheliumGrid(EpitheliumCell[][] cellGrid, Topology topology, Set<LogicalModel> modelSet) {
+	private EpitheliumGrid(EpitheliumCell[][] cellGrid, Topology topology,
+			Set<LogicalModel> modelSet) {
 		this.cellGrid = cellGrid;
 		this.topology = topology;
 		this.modelSet = modelSet;
@@ -34,11 +36,11 @@ public class EpitheliumGrid {
 		this.modelSet = new HashSet<LogicalModel>();
 		this.modelSet.add(m);
 	}
-	
+
 	public boolean hasModel(LogicalModel m) {
 		return this.modelSet.contains(m);
 	}
-	
+
 	public void updateModelSet() {
 		this.modelSet = new HashSet<LogicalModel>();
 		for (int x = 0; x < this.cellGrid.length; x++) {
@@ -46,6 +48,10 @@ public class EpitheliumGrid {
 				this.modelSet.add(this.cellGrid[x][y].getModel());
 			}
 		}
+	}
+
+	public Set<LogicalModel> getModelSet() {
+		return Collections.unmodifiableSet(this.modelSet);
 	}
 
 	public void setRollOver(RollOver r) {

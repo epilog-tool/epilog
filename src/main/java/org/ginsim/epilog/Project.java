@@ -4,12 +4,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.ginsim.epilog.core.Epithelium;
+import org.ginsim.epilog.core.EpitheliumGrid;
 
 public class Project {
 	private int x;
@@ -46,6 +48,53 @@ public class Project {
 
 	public List<Epithelium> getEpitheliumList() {
 		return this.epitheliumList;
+	}
+
+	public List<String> getEpitheliumNameList() {
+		List<String> l = new ArrayList<String>();
+		for (Epithelium epi : this.epitheliumList) {
+			l.add(epi.toString());
+		}
+		return l;
+	}
+
+	public Epithelium cloneEpithelium(Epithelium epi) {
+		Epithelium epiClone = epi.clone();
+		epiClone.setName(this.getNextAvailableName(epi.toString()));
+		this.epitheliumList.add(epiClone);
+		return epiClone;
+	}
+	
+	private String getNextAvailableName(String basename) {
+		List<String> l = new ArrayList<String>();
+		for (Epithelium epi : this.epitheliumList) {
+			l.add(epi.toString());
+		}
+		for (int i=1; true ;i++) {
+			if (!l.contains(basename + "_Cloned"+ i))
+				return basename + "_Cloned"+ i;
+		}
+	}
+
+	public void removeEpithelium(Epithelium epi) {
+		this.epitheliumList.remove(epi);
+		this.updateModelMap();
+	}
+
+	private void updateModelMap() {
+		Set<LogicalModel> newModelSet = new HashSet<LogicalModel>();
+		for (Epithelium epi : this.epitheliumList) {
+			EpitheliumGrid grid = epi.getEpitheliumGrid();
+			grid.updateModelSet();
+			newModelSet.addAll(grid.getModelSet());
+		}
+		Map<String, LogicalModel> newModelMap = new HashMap<String, LogicalModel>();
+		for (String name : this.modelMap.keySet()) {
+			if (newModelSet.contains(this.modelMap.get(name))) {
+				newModelMap.put(name, this.modelMap.get(name));
+			}
+		}
+		this.modelMap = newModelMap;
 	}
 
 	public Map<String, LogicalModel> getModelsMap() {

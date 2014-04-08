@@ -6,7 +6,6 @@ import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -26,8 +25,11 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -176,10 +178,28 @@ public class EpiGUI extends JFrame {
 		JMenuItem itemNewEpi = new JMenuItem("New");
 		menuEpithelium.add(itemNewEpi);
 		JMenuItem itemDelEpi = new JMenuItem("Delete");
+		itemDelEpi.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				deleteEpithelium();
+			}
+		});
 		menuEpithelium.add(itemDelEpi);
 		JMenuItem itemRenameEpi = new JMenuItem("Rename");
+		itemRenameEpi.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				renameEpithelium();
+			}
+		});
 		menuEpithelium.add(itemRenameEpi);
 		JMenuItem itemCloneEpi = new JMenuItem("Clone");
+		itemCloneEpi.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cloneEpithelium();
+			}
+		});
 		menuEpithelium.add(itemCloneEpi);
 		this.epiMenu.add(menuEpithelium);
 
@@ -192,6 +212,60 @@ public class EpiGUI extends JFrame {
 		this.epiMenu.add(menuHelp);
 
 		this.setJMenuBar(this.epiMenu);
+	}
+
+	private void cloneEpithelium() {
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
+				.getLastSelectedPathComponent();
+		Epithelium epi = (Epithelium) node.getUserObject();
+		Epithelium epiClone = this.project.cloneEpithelium(epi);
+		this.addEpi2JTree(epiClone);
+		this.project.setChanged(true);
+		this.validateGUI();
+	}
+
+	private void deleteEpithelium() {
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
+				.getLastSelectedPathComponent();
+		Epithelium epi = (Epithelium) node.getUserObject();
+		int result = JOptionPane.showConfirmDialog(null,
+				"Do you really want to delete " + epi + "?");
+		if (result == JOptionPane.YES_OPTION) {
+			this.project.removeEpithelium(epi);
+			DefaultTreeModel model = (DefaultTreeModel) this.epiTree.getModel();
+			DefaultMutableTreeNode root = (DefaultMutableTreeNode) model
+					.getRoot();
+			root.remove(node);
+			model.reload();
+			if (root.getChildCount() == 0) {
+				this.initEpitheliumJTree();
+			}
+			this.project.setChanged(true);
+			this.validateGUI();
+		}
+	}
+
+	private void renameEpithelium() {
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
+				.getLastSelectedPathComponent();
+		Epithelium epi = (Epithelium) node.getUserObject();
+
+		RenameEpitheliumDialog dialogPanel = new RenameEpitheliumDialog(
+				epi.toString(), this.project.getEpitheliumNameList());
+		Window win = SwingUtilities.getWindowAncestor(this);
+		dialog = new JDialog(win, "Rename Epithelium",
+				ModalityType.APPLICATION_MODAL);
+		dialog.getContentPane().add(dialogPanel);
+		dialog.pack();
+		dialog.setLocationRelativeTo(null);
+		dialog.setVisible(true);
+
+		if (dialogPanel.isDefined()
+				&& !epi.toString().equals(dialogPanel.getEpitheliumName())) {
+			this.project.setChanged(true);
+			epi.setName(dialogPanel.getEpitheliumName());
+			this.validateGUI();
+		}
 	}
 
 	private void newProject() throws IOException {
@@ -268,36 +342,36 @@ public class EpiGUI extends JFrame {
 			// TODO Epithelium Tree
 			this.initEpitheliumJTree();
 			for (Epithelium epi : this.project.getEpitheliumList()) {
-				DefaultMutableTreeNode epiNode = new DefaultMutableTreeNode(epi);
-				((DefaultMutableTreeNode) this.epiTree.getModel().getRoot())
-						.add(epiNode);
-
-				DefaultMutableTreeNode sim = new DefaultMutableTreeNode(
-						"Simulation");
-				epiNode.add(sim);
-				DefaultMutableTreeNode ic = new DefaultMutableTreeNode(
-						"Initial Conditions");
-				epiNode.add(ic);
-				DefaultMutableTreeNode it = new DefaultMutableTreeNode(
-						"Integration Components");
-				epiNode.add(it);
-				DefaultMutableTreeNode pt = new DefaultMutableTreeNode(
-						"Perturbations");
-				epiNode.add(pt);
-				DefaultMutableTreeNode pr = new DefaultMutableTreeNode(
-						"Priorities");
-				epiNode.add(pr);
-				DefaultMutableTreeNode gm = new DefaultMutableTreeNode(
-						"Model Grid");
-				epiNode.add(gm);
-			}
-			for (int i = 0; i < this.epiTree.getRowCount(); i++) {
-				this.epiTree.expandRow(i);
+				this.addEpi2JTree(epi);
 			}
 			if (this.project.getEpitheliumList().size() > 0)
 				this.epiTree.setRootVisible(false);
+			this.validateTreeNodeSelection();
 			this.validateGUI();
 		}
+	}
+
+	private void addEpi2JTree(Epithelium epi) {
+		DefaultMutableTreeNode epiNode = new DefaultMutableTreeNode(epi);
+		((DefaultMutableTreeNode) this.epiTree.getModel().getRoot())
+				.add(epiNode);
+
+		DefaultMutableTreeNode sim = new DefaultMutableTreeNode("Simulation");
+		epiNode.add(sim);
+		DefaultMutableTreeNode ic = new DefaultMutableTreeNode(
+				"Initial Conditions");
+		epiNode.add(ic);
+		DefaultMutableTreeNode it = new DefaultMutableTreeNode(
+				"Integration Components");
+		epiNode.add(it);
+		DefaultMutableTreeNode pt = new DefaultMutableTreeNode("Perturbations");
+		epiNode.add(pt);
+		DefaultMutableTreeNode pr = new DefaultMutableTreeNode("Priorities");
+		epiNode.add(pr);
+		DefaultMutableTreeNode gm = new DefaultMutableTreeNode("Model Grid");
+		epiNode.add(gm);
+		DefaultTreeModel model = (DefaultTreeModel) this.epiTree.getModel();
+		model.reload();
 	}
 
 	private void initEpitheliumJTree() {
@@ -306,12 +380,50 @@ public class EpiGUI extends JFrame {
 		this.epiTree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		this.epiLeftFrame.setRightComponent(this.epiTree);
-		MouseListener ml = new MouseAdapter() {
+		this.epiTree.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+
+			@Override
 			public void mousePressed(MouseEvent e) {
 				checkDoubleClickEpitheliumJTree(e);
 			}
-		};
-		this.epiTree.addMouseListener(ml);
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
+		});
+		this.epiTree.addTreeSelectionListener(new TreeSelectionListener() {
+			@Override
+			public void valueChanged(TreeSelectionEvent e) {
+				validateTreeNodeSelection();
+			}
+		});
+	}
+
+	private void validateTreeNodeSelection() {
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
+				.getLastSelectedPathComponent();
+		boolean bActive = true;
+		if (node == null || node.isLeaf() || node.isRoot()) {
+			bActive = false;
+		}
+		JMenu epithelium = this.epiMenu.getMenu(1);
+		epithelium.getItem(1).setEnabled(bActive);
+		epithelium.getItem(2).setEnabled(bActive);
+		epithelium.getItem(3).setEnabled(bActive);
+		for (int i = 0; i < this.epiTree.getRowCount(); i++) {
+			this.epiTree.expandRow(i);
+		}
 	}
 
 	private void checkDoubleClickEpitheliumJTree(MouseEvent e) {
@@ -321,6 +433,10 @@ public class EpiGUI extends JFrame {
 			if (e.getClickCount() == 2) {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) selPath
 						.getLastPathComponent();
+				// Only opens tabs for leafs
+				if (!node.isLeaf()) {
+					return;
+				}
 				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node
 						.getParent();
 
@@ -395,7 +511,6 @@ public class EpiGUI extends JFrame {
 	}
 
 	private void savePEPS() throws IOException {
-
 		String fName = this.project.getFilenamePEPS();
 		if (fName == null) {
 			saveAsPEPS();
