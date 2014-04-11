@@ -1,4 +1,4 @@
-package org.ginsim.epilog.gui;
+package org.ginsim.epilog.gui.dialog;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -30,7 +30,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.ginsim.epilog.gui.color.ColorUtils;
 
-public class NewProjectDialog extends JPanel {
+public class DialogNewProject extends JPanel {
 	private static final long serialVersionUID = 1877338344309723137L;
 
 	private final String DEFAULT_WIDTH = "20";
@@ -47,7 +47,7 @@ public class NewProjectDialog extends JPanel {
 	private int height;
 	private boolean bIsOK;
 
-	public NewProjectDialog() {
+	public DialogNewProject() {
 		setLayout(new BorderLayout());
 		this.fileList = new ArrayList<File>();
 

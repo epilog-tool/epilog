@@ -10,6 +10,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -36,6 +38,9 @@ import javax.swing.tree.TreeSelectionModel;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.ginsim.epilog.Project;
 import org.ginsim.epilog.core.Epithelium;
+import org.ginsim.epilog.gui.dialog.DialogNewEpithelium;
+import org.ginsim.epilog.gui.dialog.DialogNewProject;
+import org.ginsim.epilog.gui.dialog.DialogRenameEpithelium;
 import org.ginsim.epilog.gui.tab.EpiTab;
 import org.ginsim.epilog.gui.tab.EpiTabInitialConditions;
 import org.ginsim.epilog.gui.tab.EpiTabIntegrationFunctions;
@@ -176,6 +181,12 @@ public class EpiGUI extends JFrame {
 		// Epithelium menu
 		JMenu menuEpithelium = new JMenu("Epithelium");
 		JMenuItem itemNewEpi = new JMenuItem("New");
+		itemNewEpi.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				newEpithelium();
+			}
+		});
 		menuEpithelium.add(itemNewEpi);
 		JMenuItem itemDelEpi = new JMenuItem("Delete");
 		itemDelEpi.addActionListener(new ActionListener() {
@@ -214,6 +225,27 @@ public class EpiGUI extends JFrame {
 		this.setJMenuBar(this.epiMenu);
 	}
 
+	private void newEpithelium() {
+		DialogNewEpithelium dialogPanel = new DialogNewEpithelium(
+				this.project.getModelNames(),
+				this.project.getEpitheliumNameList());
+
+		Window win = SwingUtilities.getWindowAncestor(this);
+		dialog = new JDialog(win, "New Epithelium",
+				ModalityType.APPLICATION_MODAL);
+		dialog.getContentPane().add(dialogPanel);
+		dialog.pack();
+		dialog.setLocationRelativeTo(null);
+		dialog.setVisible(true);
+		if (dialogPanel.isDefined()) {
+			Epithelium newEpi = this.project.newEpithelium(dialogPanel.getEpiName(),
+					dialogPanel.getSBMLName());
+			this.addEpi2JTree(newEpi);
+			this.project.setChanged(true);
+			this.validateGUI();
+		}
+	}
+
 	private void cloneEpithelium() {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
 				.getLastSelectedPathComponent();
@@ -250,7 +282,7 @@ public class EpiGUI extends JFrame {
 				.getLastSelectedPathComponent();
 		Epithelium epi = (Epithelium) node.getUserObject();
 
-		RenameEpitheliumDialog dialogPanel = new RenameEpitheliumDialog(
+		DialogRenameEpithelium dialogPanel = new DialogRenameEpithelium(
 				epi.toString(), this.project.getEpitheliumNameList());
 		Window win = SwingUtilities.getWindowAncestor(this);
 		dialog = new JDialog(win, "Rename Epithelium",
@@ -269,7 +301,7 @@ public class EpiGUI extends JFrame {
 	}
 
 	private void newProject() throws IOException {
-		NewProjectDialog dialogPanel = new NewProjectDialog();
+		DialogNewProject dialogPanel = new DialogNewProject();
 
 		Window win = SwingUtilities.getWindowAncestor(this);
 		dialog = new JDialog(win, "New Project Definitions",

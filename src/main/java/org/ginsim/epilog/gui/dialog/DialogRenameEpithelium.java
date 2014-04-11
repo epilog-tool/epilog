@@ -1,4 +1,4 @@
-package org.ginsim.epilog.gui;
+package org.ginsim.epilog.gui.dialog;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -18,7 +18,7 @@ import javax.swing.SwingUtilities;
 
 import org.ginsim.epilog.gui.color.ColorUtils;
 
-public class RenameEpitheliumDialog extends JPanel {
+public class DialogRenameEpithelium extends JPanel {
 	private static final long serialVersionUID = 1877338344309723137L;
 
 	private final int COL_SIZE = 30;
@@ -31,7 +31,7 @@ public class RenameEpitheliumDialog extends JPanel {
 
 	private boolean bIsOK;
 
-	public RenameEpitheliumDialog(String originalName, List<String> reservedNames) {
+	public DialogRenameEpithelium(String originalName, List<String> reservedNames) {
 		setLayout(new BorderLayout());
 		this.reservedNames = reservedNames;
 		this.originalName = originalName;
