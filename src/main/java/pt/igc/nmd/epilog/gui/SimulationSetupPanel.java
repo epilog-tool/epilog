@@ -122,27 +122,27 @@ public class SimulationSetupPanel extends JPanel {
 		 * Option to create a composed Model
 		 */
 
-		createComposedModel = new JCheckBox("Create composed model");
+		//createComposedModel = new JCheckBox("Create composed model");
 
-		createComposedModel.setSelected(mainFrame.needsComposedModel);
-		createComposedModel.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent event) {
-				JCheckBox src = (JCheckBox) event.getSource();
-				if (src.isSelected()) {
-					mainFrame.needsComposedModel = true;
-				} else {
-					mainFrame.needsComposedModel = false;
-				}
-				mainFrame.hexagonsPanel.paintComponent(mainFrame.hexagonsPanel
-						.getGraphics());
-
-			}
-
-		});
+		//createComposedModel.setSelected(mainFrame.needsComposedModel);
+//		createComposedModel.addActionListener(new ActionListener() {
+//
+//			public void actionPerformed(ActionEvent event) {
+//				JCheckBox src = (JCheckBox) event.getSource();
+//				if (src.isSelected()) {
+//					mainFrame.needsComposedModel = true;
+//				} else {
+//					mainFrame.needsComposedModel = false;
+//				}
+//				mainFrame.hexagonsPanel.paintComponent(mainFrame.hexagonsPanel
+//						.getGraphics());
+//
+//			}
+//
+//		});
 
 		startPanel.add(rollOver);
-		startPanel.add(createComposedModel);
+		//startPanel.add(createComposedModel);
 
 		runButton = new JButton("Run");
 		stepButton = new JButton("Step");
@@ -292,7 +292,8 @@ public class SimulationSetupPanel extends JPanel {
 						.getSelectedItem());
 				String string = "input";
 				needToResetComposedModel(string, (String) src.getSelectedItem());
-				repaintSimulationSetupPanel();
+				//TODO check this shit
+				//repaintSimulationSetupPanel();
 
 			}
 		});
