@@ -503,7 +503,7 @@ public class SimulationSetupPanel extends JPanel {
 		inputCombo.setEnabled(false);
 		perturbationsCombo.setEnabled(false);
 		prioritiesCombo.setEnabled(false);
-		createComposedModel.setEnabled(false);
+		//createComposedModel.setEnabled(false);
 		rollOver.setEnabled(false);
 	}
 
@@ -516,7 +516,7 @@ public class SimulationSetupPanel extends JPanel {
 		inputCombo.setEnabled(true);
 		perturbationsCombo.setEnabled(true);
 		prioritiesCombo.setEnabled(true);
-		createComposedModel.setEnabled(true);
+		//createComposedModel.setEnabled(true);
 		rollOver.setEnabled(true);
 	}
 

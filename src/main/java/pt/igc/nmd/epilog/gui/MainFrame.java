@@ -69,7 +69,8 @@ public class MainFrame extends JFrame {
 	public Simulation simulation;
 	private LogicalModelComposition logicalModelComposition;
 
-	public boolean needsComposedModel;
+	//TODO
+	public boolean needsComposedModel = false;
 	public boolean resetComposedModel;
 
 	public String previsioulySelectedPeturbationSet = "none";
@@ -158,7 +159,7 @@ public class MainFrame extends JFrame {
 	 */
 	public void setupMainFrame() {
 
-		getContentPane().setPreferredSize(new Dimension(1400, 600));
+		getContentPane().setPreferredSize(new Dimension(1200, 610));
 		getContentPane().setBackground(backgroundColor);
 		getContentPane().setLayout(new BorderLayout());
 		this.setResizable(true);
@@ -203,7 +204,7 @@ public class MainFrame extends JFrame {
 			this.remove(panelCenter);
 		}
 
-		this.topology = new Topology(20, 40);
+		this.topology = new Topology(20, 30);
 		this.epithelium = new SphericalEpithelium(this.topology, this);
 		this.simulation = new Simulation(this);
 
