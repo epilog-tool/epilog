@@ -10,8 +10,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -23,9 +21,11 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -56,7 +56,7 @@ public class EpiGUI extends JFrame {
 	private final static String NAME = "Epilog";
 	private JMenuBar epiMenu;
 	private JSplitPane epiMainFrame;
-	private JSplitPane epiLeftFrame;
+	private JScrollPane scrollTree;
 	private JTabbedPane epiRightFrame;
 	private ProjDescPanel projDescPanel;
 	private JTree epiTree;
@@ -99,15 +99,16 @@ public class EpiGUI extends JFrame {
 		addRemoveModelPanel.add(buttonRemove);
 		topLeftFrame.add(addRemoveModelPanel);
 
-		this.epiLeftFrame = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				topLeftFrame, null);
+		this.scrollTree = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		JSplitPane epiLeftFrame = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+				topLeftFrame, this.scrollTree);
 		initEpitheliumJTree();
 
 		this.epiRightFrame = new JTabbedPane();
 		this.epiMainFrame = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				this.epiLeftFrame, this.epiRightFrame);
+				epiLeftFrame, this.epiRightFrame);
 
-		this.add(epiMainFrame);
+		this.add(this.epiMainFrame);
 
 		this.validateGUI();
 		this.pack();
@@ -238,8 +239,8 @@ public class EpiGUI extends JFrame {
 		dialog.setLocationRelativeTo(null);
 		dialog.setVisible(true);
 		if (dialogPanel.isDefined()) {
-			Epithelium newEpi = this.project.newEpithelium(dialogPanel.getEpiName(),
-					dialogPanel.getSBMLName());
+			Epithelium newEpi = this.project.newEpithelium(
+					dialogPanel.getEpiName(), dialogPanel.getSBMLName());
 			this.addEpi2JTree(newEpi);
 			this.project.setChanged(true);
 			this.validateGUI();
@@ -349,7 +350,7 @@ public class EpiGUI extends JFrame {
 	}
 
 	private void exitProject() {
-		if (this.project.hasChanged()) {
+		if (this.project != null && this.project.hasChanged()) {
 			int n = JOptionPane.showConfirmDialog(this,
 					"You have unsaved changes!\nDo you really want to quit?",
 					"Question", JOptionPane.YES_NO_OPTION);
@@ -411,7 +412,7 @@ public class EpiGUI extends JFrame {
 		this.epiTree = new JTree(root);
 		this.epiTree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
-		this.epiLeftFrame.setRightComponent(this.epiTree);
+		this.scrollTree.setViewportView(this.epiTree);
 		this.epiTree.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
