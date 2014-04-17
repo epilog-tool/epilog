@@ -983,6 +983,7 @@ public class MainFrame extends JFrame {
 			if (!epithelium.isIntegrationComponent(listNodes.indexOf(node)))
 				if (this.epithelium.isDefinitionComponentDisplayOn(listNodes
 						.indexOf(node))) {
+					System.out.println(node);
 
 					int value = this.epithelium.getInitialState(node);
 					if (value > 0) {
