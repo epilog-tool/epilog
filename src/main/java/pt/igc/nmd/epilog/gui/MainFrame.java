@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -203,7 +204,7 @@ public class MainFrame extends JFrame {
 			this.remove(panelCenter);
 		}
 
-		this.topology = new Topology(20, 40);
+		this.topology = new Topology(3, 3);
 		this.epithelium = new SphericalEpithelium(this.topology, this);
 		this.simulation = new Simulation(this);
 
@@ -244,35 +245,53 @@ public class MainFrame extends JFrame {
 		hexagonsPanel.addMouseMotionListener(new MouseMotionListener() {
 			@Override
 			public void mouseDragged(MouseEvent arg0) {
-				int ind_it = (int) Math.floor((arg0.getX() / (1.5 * hexagonsPanel.radius)));
-
-				double ind_yts = (arg0.getY() - (ind_it % 2)
-						* hexagonsPanel.height / 2);
-				double ind_jt = Math.floor(ind_yts / hexagonsPanel.height);
-
-				double xt = arg0.getX() - ind_it * (1.5 * hexagonsPanel.radius);
-				double yt = ind_yts - ind_jt * (hexagonsPanel.height);
-				int i = 0;
-				int j = 0;
-				int deltaj = 0;
-
-				if (yt > hexagonsPanel.height / 2)
-					deltaj = 1;
-				else
-					deltaj = 0;
-
-				if (xt > hexagonsPanel.radius
-						* Math.abs(0.5 - (yt / hexagonsPanel.height))) {
-					i = (int) ind_it;
-					j = (int) ind_jt;
-
-				} else {
-					i = (int) ind_it - 1;
-					j = (int) (ind_jt - i % 2 + deltaj);
-				}
-
-				// The mouse is over a cell that belongs to the grid
-				paintHexagons(i, j);
+				
+				int x= arg0.getX();
+				int y = arg0.getY();
+				double size=hexagonsPanel.radius;
+				
+				double q = (1/3*Math.sqrt(3)* x - 1/3 * y) / size;
+				double r = 2/3 * y / size;
+						
+				double i = hexagonsPanel.radius * Math.sqrt(3) * (x + y/2);
+				double j = hexagonsPanel.radius * (3/2) * y;
+				System.out.println(i+" "+j+ " "+ q + " "+ r);
+			
+				
+//				double s = hexagonsPanel.radius;
+//				double incX = Math.sqrt(Math.pow(s, 2)-Math.pow(s/2, 2));
+//				
+//				int ind_it = (int) Math.floor((arg0.getX() / (incX)));
+//				int ind_yts = (int) Math.floor(arg0.getY()/(1.5*s));
+//				System.out.println(arg0.getX() + " "+ ind_yts);
+//
+//				double ind_j = (arg0.getY() - (ind_it % 2)
+//						* hexagonsPanel.height / 2);
+//				double ind_jt = Math.floor(ind_yts / hexagonsPanel.height);
+//
+//				double xt = arg0.getX() - ind_it * (1.5 * hexagonsPanel.radius);
+//				double yt = ind_yts - ind_jt * (hexagonsPanel.height);
+//				int i = 0;
+//				int j = 0;
+//				int deltaj = 0;
+//
+//				if (yt > hexagonsPanel.height / 2)
+//					deltaj = 1;
+//				else
+//					deltaj = 0;
+//
+//				if (xt > hexagonsPanel.radius
+//						* Math.abs(0.5 - (yt / hexagonsPanel.height))) {
+//					i = (int) ind_it;
+//					j = (int) ind_jt;
+//
+//				} else {
+//					i = (int) ind_it - 1;
+//					j = (int) (ind_jt - i % 2 + deltaj);
+//				}
+//
+//				// The mouse is over a cell that belongs to the grid
+//				paintHexagons(i, j);
 			}
 
 			@Override
@@ -357,32 +376,57 @@ public class MainFrame extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 
-				int ind_it = (int) Math.floor((arg0.getX() / (1.5 * hexagonsPanel.radius)));
+				double s = hexagonsPanel.radius;
+				double incX = Math.sqrt(Math.pow(s, 2)-Math.pow(s/2, 2));
+				
+				double hexagonHeight = 2*s;
+				double hexagonWidth = 2*incX; 
+				double halfWidth = incX/2;
+		        // These will represent which box the mouse is in, not which hexagon!
+		        int row = (int) (arg0.getY() / hexagonHeight);
+		        int column;
 
-				double ind_yts = (arg0.getY() - (ind_it % 2)
-						* hexagonsPanel.height / 2);
-				double ind_jt = Math.floor(ind_yts / (hexagonsPanel.height));
+		        boolean rowIsOdd = row % 2 != 0;
 
-				double xt = arg0.getX() - ind_it * (1.5 * hexagonsPanel.radius);
-				double yt = ind_yts - ind_jt * (hexagonsPanel.height);
-				int i = 0, j = 0;
-				int deltaj = 0;
+		        // Is the row an even number?
+		        if (rowIsOdd) // No: Calculate normally
+		            column = (int) (arg0.getX() / hexagonWidth);
+		        else // Yes: Offset mouse.x to match the offset of the row
+		            column = (int) ((arg0.getX() + halfWidth) / hexagonWidth);
 
-				if (yt > hexagonsPanel.height / 2)
-					deltaj = 1;
-				else
-					deltaj = 0;
+		        // So far the function has been identical to the previous one
 
-				if (xt > hexagonsPanel.radius
-						* Math.abs(0.5 - (yt / hexagonsPanel.height))) {
-					i = (int) ind_it;
-					j = (int) ind_jt;
+		        // Work out the position of the mouse relative to its current box
+		        double relY = arg0.getY() - (row * hexagonHeight);
+		        double relX;
 
-				} else {
-					i = (int) ind_it - 1;
-					j = (int) (ind_jt - i % 2 + deltaj);
-				}
+		        if (rowIsOdd)
+		            relX = arg0.getX() - (column * hexagonWidth);
+		        else
+		            relX = arg0.getX() + halfWidth - (column * hexagonWidth);
 
+		        // We want to work out the y = mx + c equation for our two lines
+		        double c = Math.abs(s-incX); // The height of the point on the top of the Hexagon
+		        double m = c / halfWidth; // The ratio between c and halfWidth
+
+		        // Work out if the relative position is above either of the hexagons top edges
+		        if (relY + (m * relX) < c) // LEFT triangle
+		            {
+		                row--;
+		                if (!rowIsOdd)
+		                    column--;
+		            }
+		        else if (relY - (m * relX) < -c) // RIGHT triangle
+		            {
+		                row--;
+		                if (rowIsOdd)
+		                    column++;
+		            }
+				
+			
+				int i=row;
+				int j=column;
+				System.out.println(i+" "+j);
 				paintHexagons(i, j);
 				if (epithelium != null && epithelium.getUnitaryModel() != null)
 					if (tabbedPane.getSelectedIndex() == 0)
@@ -1078,4 +1122,7 @@ public class MainFrame extends JFrame {
 	// }
 	// }
 
+
+	
+	
 }

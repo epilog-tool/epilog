@@ -82,29 +82,28 @@ public class DrawPolygon extends JPanel {
 				height = radius * Math.sqrt(3.0);
 			}
 
-			double x = 0, y = 0, centerX = radius, centerY = 0;
+			double x = 0, y = 0, centerX = 0, centerY = radius;
 
 			super.paintComponent(g);
 			g.setColor(Color.black);
-
+			
+			double s = radius;
+			double incX = Math.sqrt(Math.pow(s, 2)-Math.pow(s/2, 2));
+			
 			for (int k = 0; k < XX; k++) {
-
-				if (k == 0)
-					centerX = radius;
-				else
-					centerX = (1.5 * radius * (k)) + radius;
-				if (k % 2 == 0)
-					centerY = radius * Math.sqrt(3.0) / 2;// h
-				else
-					centerY = radius * Math.sqrt(3.0);// h+h/2
 				for (int j = 0; j < YY; j++) {
+					if (j % 2 == 0)
+						centerX = incX*(2*k+1);
+					else
+						centerX = 2*incX*(k+1);
+					centerY=s*(1+j*1.5);
 
 					Polygon polygon2 = new Polygon();
 
 					for (int i = 0; i < 6; i++) {
 
-						x = centerX + radius * Math.cos(i * 2 * Math.PI / 6);
-						y = centerY + radius * Math.sin(i * 2 * Math.PI / 6);
+						x = centerX + radius * Math.cos(i * 2 * Math.PI / 6+Math.PI / 6);
+						y = centerY + radius * Math.sin(i * 2 * Math.PI / 6+Math.PI / 6);
 						polygon2.addPoint((int) (x), (int) (y));
 					}
 
@@ -125,10 +124,6 @@ public class DrawPolygon extends JPanel {
 								polygon2, g2);
 					}
 
-					if (k % 2 == 0)
-						centerY = (j + 1 + 0.5) * radius * Math.sqrt(3.0);
-					else
-						centerY = (j + 2) * radius * Math.sqrt(3.0);
 				}
 			}
 		} else {
@@ -153,6 +148,8 @@ public class DrawPolygon extends JPanel {
 
 		int i = this.mainFrame.topology.instance2i(instance);
 		int j = this.mainFrame.topology.instance2j(instance);
+		
+		System.out.println("i: "+i+"j: "+j);
 
 		Graphics2D g2 = (Graphics2D) g;
 		BasicStroke stroke = new BasicStroke(1.0f);
@@ -161,23 +158,22 @@ public class DrawPolygon extends JPanel {
 		if (color == null)
 			color = Color.white;
 
-		double centerX = 100, centerY = 0, x = 0, y = 0;
+		double centerX = 0, centerY = 0, x = 0, y = 0;
+		double s = radius;
+		double incX = Math.sqrt(Math.pow(s, 2)-Math.pow(s/2, 2));
 
-		if (i % 2 == 0) {
-			centerX = (1.5 * radius * (i)) + radius;
-			centerY = (j) * radius * Math.sqrt(3.0) + radius * Math.sqrt(3.0)
-					/ 2;
-		} else {
-			centerX = (1.5 * radius * (i)) + radius;
-			centerY = (j) * radius * Math.sqrt(3.0) + radius * Math.sqrt(3.0);
-		}
+		if (j % 2 == 0)
+			centerX = incX*(2*i+1);
+		else
+			centerX = 2*incX*(i+1);
+		centerY=s*(1+j*1.5);
 
 		Polygon polygon2 = new Polygon();
 
 		for (int k = 0; k < 6; k++) {
 
-			x = centerX + radius * Math.cos(k * 2 * Math.PI / 6);
-			y = centerY + radius * Math.sin(k * 2 * Math.PI / 6);
+			x = centerX + radius * Math.cos(k * 2 * Math.PI / 6+Math.PI / 6);
+			y = centerY + radius * Math.sin(k * 2 * Math.PI / 6+Math.PI / 6);
 			polygon2.addPoint((int) (x), (int) (y));
 		}
 
@@ -274,35 +270,34 @@ public class DrawPolygon extends JPanel {
 				height = radius * Math.sqrt(3.0);
 			}
 
-			double x = 0, y = 0, centerX = radius, centerY = 0;
+			double x = 0, y = 0, centerX = 0, centerY = radius;
 
+			super.paintComponent(g);
+			g.setColor(Color.black);
+			
+			double s = radius;
+			double incX = Math.sqrt(Math.pow(s, 2)-Math.pow(s/2, 2));
+			
 			for (int k = 0; k < XX; k++) {
-				g.setColor(Color.black);
-				if (k == 0)
-					centerX = radius;
-				else
-					centerX = (1.5 * radius * (k)) + radius;
-				if (k % 2 == 0)
-					centerY = radius * Math.sqrt(3.0) / 2;// h
-				else
-					centerY = radius * Math.sqrt(3.0);// h+h/2
 				for (int j = 0; j < YY; j++) {
+					if (j % 2 == 0)
+						centerX = incX*(2*k+1);
+					else
+						centerX = 2*incX*(k+1);
+					centerY=s*(1+j*1.5);
 
 					Polygon polygon2 = new Polygon();
 
 					for (int i = 0; i < 6; i++) {
 
-						x = centerX + radius * Math.cos(i * 2 * Math.PI / 6);
-						y = centerY + radius * Math.sin(i * 2 * Math.PI / 6);
+						x = centerX + radius * Math.cos(i * 2 * Math.PI / 6+Math.PI / 6);
+						y = centerY + radius * Math.sin(i * 2 * Math.PI / 6+Math.PI / 6);
 						polygon2.addPoint((int) (x), (int) (y));
 					}
 
+
 					paintHexagons(stroke, Color.white, polygon2, g2);
 
-					if (k % 2 == 0)
-						centerY = (j + 1 + 0.5) * radius * Math.sqrt(3.0);
-					else
-						centerY = (j + 2) * radius * Math.sqrt(3.0);
 				}
 			}
 		} else {
