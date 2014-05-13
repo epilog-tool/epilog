@@ -16,4 +16,16 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private void initializeGUI() {
 		// Define center GUI components
 	}
+
+	@Override
+	protected void buttonCancel() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void buttonAccept() {
+		// TODO Auto-generated method stub
+		
+	}
 }

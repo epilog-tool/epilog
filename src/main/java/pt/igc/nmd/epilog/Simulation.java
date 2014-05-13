@@ -43,7 +43,7 @@ public class Simulation {
 
 	private boolean checkCycle() {
 
-		System.out.println(currentGlobalState);
+		//System.out.println(currentGlobalState);
 		for (Grid state : statesCycleDetection.values())
 			if (currentGlobalState.equals(state)) {
 				mainFrame.setUserMessage(MsgStatus.STATUS, "Cycle Detected");
@@ -137,7 +137,7 @@ public class Simulation {
 		}
 		
 		if (iterationNumber > 30){
-			System.out.println("Estou a checkar");
+			//System.out.println("Estou a checkar");
 			checkCycle();
 		}
 

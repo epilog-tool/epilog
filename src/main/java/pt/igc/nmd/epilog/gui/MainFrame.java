@@ -70,7 +70,8 @@ public class MainFrame extends JFrame {
 	public Simulation simulation;
 	private LogicalModelComposition logicalModelComposition;
 
-	public boolean needsComposedModel;
+	//TODO
+	public boolean needsComposedModel = false;
 	public boolean resetComposedModel;
 
 	public String previsioulySelectedPeturbationSet = "none";
@@ -159,7 +160,7 @@ public class MainFrame extends JFrame {
 	 */
 	public void setupMainFrame() {
 
-		getContentPane().setPreferredSize(new Dimension(1400, 600));
+		getContentPane().setPreferredSize(new Dimension(1200, 610));
 		getContentPane().setBackground(backgroundColor);
 		getContentPane().setLayout(new BorderLayout());
 		this.setResizable(true);
@@ -204,7 +205,11 @@ public class MainFrame extends JFrame {
 			this.remove(panelCenter);
 		}
 
+<<<<<<< HEAD
 		this.topology = new Topology(3, 3);
+=======
+		this.topology = new Topology(20, 30);
+>>>>>>> c588a9104dbe812d57b4e4b863cb98608ecc340b
 		this.epithelium = new SphericalEpithelium(this.topology, this);
 		this.simulation = new Simulation(this);
 
@@ -1026,6 +1031,7 @@ public class MainFrame extends JFrame {
 			if (!epithelium.isIntegrationComponent(listNodes.indexOf(node)))
 				if (this.epithelium.isDefinitionComponentDisplayOn(listNodes
 						.indexOf(node))) {
+					System.out.println(node);
 
 					int value = this.epithelium.getInitialState(node);
 					if (value > 0) {

@@ -549,7 +549,7 @@ public class StartPanel extends JPanel {
 					String value = line.split(":")[1];
 					value = value.replace(" ", "");
 					setInitialStateDescription.put(key, value);
-					System.out.print(value);
+					//System.out.print(value);
 					mainFrame.epithelium.setInitialStateSet(value,
 							mainFrame.simulation.isRunning());
 
@@ -856,8 +856,8 @@ public class StartPanel extends JPanel {
 			}
 
 		}
-	System.out.print("control");
-	System.out.print(this.mainFrame.epithelium.getUnitaryModel());
+	//System.out.print("control");
+	//System.out.print(this.mainFrame.epithelium.getUnitaryModel());
 	}
 
 	/**
