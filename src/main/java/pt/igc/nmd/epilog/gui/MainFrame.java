@@ -317,7 +317,8 @@ public class MainFrame extends JFrame {
 						String string = ("<html><table border=0>");
 						for (NodeInfo node : epithelium.getUnitaryModel()
 								.getNodeOrder()) {
-							if (!epithelium.isIntegrationComponent(node)) {
+							//if (!epithelium.isIntegrationComponent(node)) {
+							if (1==1) {
 
 								string = string
 										+ ("<tr><td>" + node
