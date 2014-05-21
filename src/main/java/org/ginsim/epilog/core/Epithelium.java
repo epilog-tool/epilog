@@ -1,6 +1,7 @@
 package org.ginsim.epilog.core;
 
 import java.awt.Color;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Set;
 
@@ -8,6 +9,7 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.ginsim.epilog.Tuple2D;
+import org.ginsim.epilog.core.topology.RollOver;
 
 public class Epithelium {
 	private String name;
@@ -17,9 +19,9 @@ public class Epithelium {
 	private EpitheliumIntegrationFunctions integrationFunctions;
 	private EpitheliumPerturbations perturbations;
 
-	public Epithelium(int x, int y, LogicalModel m, String name) {
+	public Epithelium(int x, int y, String topologyLayout, RollOver rollover, LogicalModel m, String name) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		this.name = name;
-		this.grid = new EpitheliumGrid(x, y, m);
+		this.grid = new EpitheliumGrid(x, y, topologyLayout, rollover, m);
 		this.priorities = new EpitheliumPriorityClasses();
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
 		this.perturbations = new EpitheliumPerturbations();

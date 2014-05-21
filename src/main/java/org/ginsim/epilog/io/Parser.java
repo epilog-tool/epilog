@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +33,7 @@ import org.ginsim.epilog.gui.color.ColorUtils;
 
 public class Parser {
 
-	public static Project loadConfigurations(File fConfig) throws IOException {
+	public static Project loadConfigurations(File fConfig) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		FileInputStream fstream = new FileInputStream(fConfig);
 		DataInputStream in = new DataInputStream(fstream);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -49,10 +50,11 @@ public class Parser {
 			if (line.startsWith("#"))
 				continue;
 			// Initialize default grid dimensions
+			// Topology can be: OddQ, OddR, EvenQ, EvenR
 			if (line.startsWith("GD")) {
 				saTmp = line.split("\\s+");
 				project = new Project(Integer.parseInt(saTmp[1]),
-						Integer.parseInt(saTmp[2]));
+						Integer.parseInt(saTmp[2]), saTmp[3]);
 			}
 			// Load SBML model numerical identifiers
 			if (line.startsWith("SB")) {
@@ -65,11 +67,14 @@ public class Parser {
 			if (line.startsWith("SN")) {
 				epiName = line.split("\\s+")[1];
 				currEpi = null;
-				rollover = null;
+				rollover = RollOver.NOROLLOVER;
 			}
 			// RollOver
 			if (line.startsWith("RL")) {
 				rollover = RollOver.string2RollOver(line.split("\\s+")[1]);
+				if (currEpi != null) {
+					currEpi.getEpitheliumGrid().setRollOver(rollover);
+				}
 			}
 			// Model grid
 			if (line.startsWith("GM")) {
@@ -77,8 +82,7 @@ public class Parser {
 				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
 				if (currEpi == null) {
 					currEpi = project.newEpithelium(epiName,
-							modelKey2Name.get(saTmp[1]));
-					currEpi.getEpitheliumGrid().setRollOver(rollover);
+							modelKey2Name.get(saTmp[1]), rollover);
 				}
 				if (saTmp.length > 2) {
 					currEpi.setGridWithModel(m,

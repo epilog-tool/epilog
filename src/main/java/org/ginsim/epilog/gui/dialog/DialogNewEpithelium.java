@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -19,12 +20,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import org.ginsim.epilog.core.topology.RollOver;
 import org.ginsim.epilog.gui.color.ColorUtils;
 
 public class DialogNewEpithelium extends JPanel {
 	private static final long serialVersionUID = 1877338344309723137L;
 
-	private final String DEFAULT_WIDTH = "20";
+	private final int DEFAULT_WIDTH = 20;
 
 	private JTextField jtfEpiName;
 	private JComboBox<String> jcbSBMLs;
@@ -32,18 +34,19 @@ public class DialogNewEpithelium extends JPanel {
 	private List<String> listEpiNames;
 	private JButton buttonCancel;
 	private JButton buttonOK;
+	private JComboBox<RollOver> jcbRollover;
 
 	private boolean bIsOK;
 
 	public DialogNewEpithelium(Set<String> lSBMLs, List<String> lEpiNames) {
-		setLayout(new BorderLayout());
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		this.listSBMLs = new ArrayList<String>(lSBMLs);
 		this.listSBMLs.add(0, "---");
 		this.listEpiNames = lEpiNames;
 
-		// PAGE_START begin
-		JPanel top = new JPanel(new BorderLayout());
-		top.add(new JLabel("Name"), BorderLayout.LINE_START);
+		// Name chooser
+		JPanel jpName = new JPanel(new BorderLayout());
+		jpName.add(new JLabel("Name"), BorderLayout.LINE_START);
 		jtfEpiName = new JTextField(DEFAULT_WIDTH);
 		jtfEpiName.addKeyListener(new KeyListener() {
 			@Override
@@ -59,12 +62,12 @@ public class DialogNewEpithelium extends JPanel {
 			public void keyPressed(KeyEvent e) {
 			}
 		});
-		top.add(jtfEpiName, BorderLayout.CENTER);
-		this.add(top, BorderLayout.PAGE_START);
+		jpName.add(jtfEpiName, BorderLayout.CENTER);
+		this.add(jpName);
 
-		// CENTER begin
-		JPanel center = new JPanel(new BorderLayout());
-		center.add(new JLabel("SBML"), BorderLayout.LINE_START);
+		// SBML chooser
+		JPanel jpSBML = new JPanel(new BorderLayout());
+		jpSBML.add(new JLabel("SBML"), BorderLayout.LINE_START);
 		jcbSBMLs = new JComboBox<String>(
 				this.listSBMLs.toArray(new String[this.listSBMLs.size()]));
 		jcbSBMLs.addActionListener(new ActionListener() {
@@ -73,8 +76,16 @@ public class DialogNewEpithelium extends JPanel {
 				validateDialog();
 			}
 		});
-		center.add(jcbSBMLs, BorderLayout.CENTER);
-		this.add(center, BorderLayout.CENTER);
+		jpSBML.add(jcbSBMLs, BorderLayout.CENTER);
+		this.add(jpSBML);
+
+		// Rollover chooser
+		JPanel jpRollover = new JPanel(new BorderLayout());
+		jpRollover.add(new JLabel("Rollover"), BorderLayout.LINE_START);
+		jcbRollover = new JComboBox<RollOver>(new RollOver[] {
+				RollOver.NOROLLOVER, RollOver.HORIZONTAL, RollOver.VERTICAL });
+		jpRollover.add(jcbRollover, BorderLayout.CENTER);
+		this.add(jpRollover);
 
 		// PAGE_END begin
 		JPanel bottom = new JPanel(new FlowLayout());
@@ -94,7 +105,7 @@ public class DialogNewEpithelium extends JPanel {
 			}
 		});
 		bottom.add(buttonOK);
-		this.add(bottom, BorderLayout.PAGE_END);
+		this.add(bottom);
 		this.validateDialog();
 	}
 
@@ -104,6 +115,10 @@ public class DialogNewEpithelium extends JPanel {
 
 	public String getSBMLName() {
 		return (String) this.jcbSBMLs.getSelectedItem();
+	}
+	
+	public RollOver getRollOver() {
+		return (RollOver) this.jcbRollover.getSelectedItem();
 	}
 
 	private boolean validateTextField() {
@@ -124,7 +139,8 @@ public class DialogNewEpithelium extends JPanel {
 		if (this.jcbSBMLs.getSelectedIndex() == 0) {
 			valid = false;
 		}
-		System.out.println("jcb: " + this.jcbSBMLs.getSelectedIndex() + " valid:" + valid);
+		System.out.println("jcb: " + this.jcbSBMLs.getSelectedIndex()
+				+ " valid:" + valid);
 		return valid;
 	}
 

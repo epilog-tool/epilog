@@ -1,5 +1,7 @@
 package org.ginsim.epilog.core;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,7 +13,6 @@ import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.ginsim.epilog.Tuple2D;
 import org.ginsim.epilog.core.topology.RollOver;
 import org.ginsim.epilog.core.topology.Topology;
-import org.ginsim.epilog.core.topology.TopologyHexagon;
 
 public class EpitheliumGrid {
 	private EpitheliumCell[][] cellGrid;
@@ -25,9 +26,12 @@ public class EpitheliumGrid {
 		this.modelSet = modelSet;
 	}
 
-	public EpitheliumGrid(int x, int y, LogicalModel m) {
+	public EpitheliumGrid(int x, int y, String topologyLayout, RollOver rollover, LogicalModel m) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		this.cellGrid = new EpitheliumCell[x][y];
-		this.topology = new TopologyHexagon(x, y, RollOver.NOROLLOVER);
+		Constructor c = Class.forName(
+				"org.ginsim.epilog.core.topology.TopologyHexagon" + topologyLayout)
+				.getConstructor(Integer.TYPE, Integer.TYPE, RollOver.class);
+		this.topology = (Topology) c.newInstance(x, y, rollover);
 		for (int i = 0; i < this.getX(); i++) {
 			for (int j = 0; j < this.getY(); j++) {
 				this.cellGrid[i][j] = new EpitheliumCell(m);

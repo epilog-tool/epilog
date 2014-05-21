@@ -16,8 +16,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -38,6 +40,7 @@ public class DialogNewProject extends JPanel {
 
 	private JTextField jtfWidth;
 	private JTextField jtfHeight;
+	private JComboBox<String> jcbLayout;
 	private JList<String> listSBMLs;
 	private JButton buttonRemove;
 	private JButton buttonOK;
@@ -107,6 +110,13 @@ public class DialogNewProject extends JPanel {
 			}
 		});
 		top.add(jtfHeight);
+		DefaultComboBoxModel<String> cbModel = new DefaultComboBoxModel<String>();
+		cbModel.addElement("OddQ");
+		cbModel.addElement("OddR");
+		cbModel.addElement("EvenQ");
+		cbModel.addElement("EvenR");
+		jcbLayout = new JComboBox<String>(cbModel);
+		top.add(jcbLayout);
 		this.add(top, BorderLayout.PAGE_START);
 
 		// CENTER begin
@@ -207,6 +217,10 @@ public class DialogNewProject extends JPanel {
 
 	public int getProjHeight() {
 		return this.height;
+	}
+	
+	public String getTopologyLayout() {
+		return (String) this.jcbLayout.getSelectedItem();
 	}
 
 	public List<File> getFileList() {

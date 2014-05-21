@@ -5,16 +5,7 @@ import java.util.Set;
 
 import org.ginsim.epilog.Tuple2D;
 
-public class TopologyHexagon extends Topology {
-	private int[] neighboursX = { -1, -1, 0, 1, 1, 0 };
-	private int[][] neighboursY = { { -1, 0, 1, 0, -1, -1 },
-			{ 0, 1, 1, 1, 0, -1 } };
-
-	public TopologyHexagon(int maxX, int maxY, RollOver rollover) {
-		this.maxX = maxX;
-		this.maxY = maxY;
-		this.rollover = rollover;
-	}
+public abstract class TopologyHexagon extends Topology {
 
 	@Override
 	public Set<Tuple2D> getNeighbours(int x, int y, int minDist, int maxDist) {
@@ -35,7 +26,9 @@ public class TopologyHexagon extends Topology {
 		return setComplete;
 	}
 
-	private Set<Tuple2D> getNeighbours(Tuple2D elem, Set<Tuple2D> setComplete) {
+	public abstract Set<Tuple2D> getNeighbours(Tuple2D elem, Set<Tuple2D> setComplete);
+	
+	protected Set<Tuple2D> getNeighbours(int[] neighboursX, int[][] neighboursY, Tuple2D elem, Set<Tuple2D> setComplete) {
 		Set<Tuple2D> setN = new HashSet<Tuple2D>();
 
 		for (int k = 0; k < neighboursX.length; k++) {
@@ -62,10 +55,5 @@ public class TopologyHexagon extends Topology {
 				setN.add(temp);
 		}
 		return setN;
-	}
-
-	@Override
-	public Topology clone() {
-		return new TopologyHexagon(this.maxX, this.maxY, this.rollover);
 	}
 }

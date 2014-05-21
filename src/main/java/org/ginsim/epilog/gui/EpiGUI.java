@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -25,7 +26,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -137,7 +137,12 @@ public class EpiGUI extends JFrame {
 		itemOpen.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				loadProject();
+				try {
+					loadProject();
+				} catch (Exception e1) {
+					// TODO: handle Java reflection exception in the future
+					e1.printStackTrace();
+				}
 			}
 		});
 		menuFile.add(itemOpen);
@@ -185,7 +190,12 @@ public class EpiGUI extends JFrame {
 		itemNewEpi.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				newEpithelium();
+				try {
+					newEpithelium();
+				} catch (Exception e1) {
+					// TODO: handle java reflection in the future
+					e1.printStackTrace();
+				}
 			}
 		});
 		menuEpithelium.add(itemNewEpi);
@@ -226,7 +236,7 @@ public class EpiGUI extends JFrame {
 		this.setJMenuBar(this.epiMenu);
 	}
 
-	private void newEpithelium() {
+	private void newEpithelium() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		DialogNewEpithelium dialogPanel = new DialogNewEpithelium(
 				this.project.getModelNames(),
 				this.project.getEpitheliumNameList());
@@ -240,7 +250,7 @@ public class EpiGUI extends JFrame {
 		dialog.setVisible(true);
 		if (dialogPanel.isDefined()) {
 			Epithelium newEpi = this.project.newEpithelium(
-					dialogPanel.getEpiName(), dialogPanel.getSBMLName());
+					dialogPanel.getEpiName(), dialogPanel.getSBMLName(), dialogPanel.getRollOver());
 			this.addEpi2JTree(newEpi);
 			this.project.setChanged(true);
 			this.validateGUI();
@@ -316,7 +326,8 @@ public class EpiGUI extends JFrame {
 			this.cleanGUI();
 			this.setTitle(NAME + " - Unsaved");
 			this.project = new Project(dialogPanel.getProjWidth(),
-					dialogPanel.getProjHeight());
+					dialogPanel.getProjHeight(), dialogPanel.getTopologyLayout());
+			// TODO: receive from GUI
 			this.projDescPanel.setDimension(dialogPanel.getProjWidth(),
 					dialogPanel.getProjHeight());
 			for (File fSBML : dialogPanel.getFileList()) {
@@ -362,7 +373,7 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
-	private void loadProject() {
+	private void loadProject() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		if (this.loadPEPS()) {
 			this.cleanGUI();
 			this.setTitle(NAME + " - " + this.project.getFilenamePEPS());
@@ -481,7 +492,7 @@ public class EpiGUI extends JFrame {
 						break;
 					}
 				}
-				if (tabIndex < 0) {
+				if (tabIndex < 0 && parent != null) {
 					// Create new Tab
 					Epithelium epi = (Epithelium) parent.getUserObject();
 					JPanel epiTab = null;
@@ -511,7 +522,7 @@ public class EpiGUI extends JFrame {
 
 	}
 
-	private boolean loadPEPS() {
+	private boolean loadPEPS() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter(
 				"peps files (*.peps)", "peps");
 		JFileChooser fc = new JFileChooser();

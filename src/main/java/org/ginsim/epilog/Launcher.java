@@ -2,6 +2,7 @@ package org.ginsim.epilog;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.ginsim.epilog.core.Epithelium;
@@ -22,8 +23,15 @@ public class Launcher {
 	/**
 	 * @param args
 	 * @throws IOException
+	 * @throws ClassNotFoundException 
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		SimpleJSAP jsap = null;
 		JSAPResult jsapResult = null;
 
@@ -69,7 +77,7 @@ public class Launcher {
 	}
 
 	private static void commandLine(String pepsFile, int maxiter)
-			throws IOException {
+			throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		File fPEPS = new File(pepsFile);
 		Project project = FileIO.loadPEPS(fPEPS);
 

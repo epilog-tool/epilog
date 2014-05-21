@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -174,7 +175,7 @@ public class FileIO {
 		return sbmlFormat.importFile(file);
 	}
 
-	public static Project loadPEPS(File file) throws IOException {
+	public static Project loadPEPS(File file) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		File tmpFolder = FileIO.unzipPEPSTmpDir(file);
 
 		Project project = null;

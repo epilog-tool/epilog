@@ -12,7 +12,7 @@ public abstract class EpiTab extends JPanel {
 
 	protected Epithelium epithelium;
 	protected TreePath path;
-	protected JButton closeButton;
+	protected JButton closeButton; // TODO
 	
 	protected EpiTab(Epithelium e, TreePath path) {
 		this.epithelium = e;
