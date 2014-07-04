@@ -57,14 +57,14 @@ public class Project {
 	public List<String> getEpitheliumNameList() {
 		List<String> l = new ArrayList<String>();
 		for (Epithelium epi : this.epitheliumList) {
-			l.add(epi.toString());
+			l.add(epi.getName());
 		}
 		return l;
 	}
 
 	public Epithelium cloneEpithelium(Epithelium epi) {
 		Epithelium epiClone = epi.clone();
-		epiClone.setName(this.getNextAvailableName(epi.toString()));
+		epiClone.setName(this.getNextAvailableName(epi.getName()));
 		this.epitheliumList.add(epiClone);
 		return epiClone;
 	}
@@ -72,7 +72,7 @@ public class Project {
 	private String getNextAvailableName(String basename) {
 		List<String> l = new ArrayList<String>();
 		for (Epithelium epi : this.epitheliumList) {
-			l.add(epi.toString());
+			l.add(epi.getName());
 		}
 		for (int i=1; true ;i++) {
 			if (!l.contains(basename + "_Cloned"+ i))
@@ -105,6 +105,11 @@ public class Project {
 		return Collections.unmodifiableMap(this.modelMap);
 	}
 
+	public String getTopologyLayout() {
+		// TODO: improve this
+		return this.topologyLayout;
+	}
+	
 	public String getFilenamePEPS() {
 		return this.filenamePEPS;
 	}

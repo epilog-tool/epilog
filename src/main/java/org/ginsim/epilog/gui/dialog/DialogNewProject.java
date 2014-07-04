@@ -26,6 +26,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -151,6 +152,8 @@ public class DialogNewProject extends JPanel {
 			}
 		});
 		bottom.add(buttonRemove);
+		JSeparator sep = new JSeparator(JSeparator.VERTICAL);
+		bottom.add(sep);
 		JButton buttonCancel = new JButton("Cancel");
 		buttonCancel.addActionListener(new ActionListener() {
 			@Override

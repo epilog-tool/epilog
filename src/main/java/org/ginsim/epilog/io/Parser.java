@@ -95,6 +95,10 @@ public class Parser {
 			// Initial Conditions grid
 			if (line.startsWith("IC")) {
 				saTmp = line.split("\\s+");
+				System.out.println(currEpi);
+				System.out.println(currEpi.getEpitheliumGrid());
+				System.out.println(currEpi.getEpitheliumGrid().getTopology());
+				
 				currEpi.setGridWithComponentValue(saTmp[1],
 						Byte.parseByte(saTmp[2]),
 						currEpi.getEpitheliumGrid().getTopology()
@@ -181,7 +185,7 @@ public class Parser {
 	public static void saveConfigurations(Project project, PrintWriter w)
 			throws IOException {
 		// Grid dimensions
-		w.println("GD " + project.getX() + " " + project.getY());
+		w.println("GD " + project.getX() + " " + project.getY() + " " + project.getTopologyLayout());
 
 		// SBML numerical identifiers
 		int i = 0;
@@ -204,7 +208,7 @@ public class Parser {
 		w.println();
 
 		// Epithelium name
-		w.println("SN " + epi.toString());
+		w.println("SN " + epi.getName());
 
 		// Rollover
 		w.println("RL " + epi.getEpitheliumGrid().getTopology().getRollOver());
@@ -224,7 +228,7 @@ public class Parser {
 						lTmp.add("" + lastI);
 					} else {
 						lTmp.add(lastI + "-" + (currI - 1));
-					}
+					}// TODO: initial case not working!!
 					lastI = currI;
 				}
 				lastM = currM;

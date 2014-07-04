@@ -1,8 +1,6 @@
 package org.ginsim.epilog.gui.tab;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.tree.TreePath;
 
 import org.ginsim.epilog.core.Epithelium;
@@ -12,7 +10,6 @@ public abstract class EpiTab extends JPanel {
 
 	protected Epithelium epithelium;
 	protected TreePath path;
-	protected JButton closeButton; // TODO
 	
 	protected EpiTab(Epithelium e, TreePath path) {
 		this.epithelium = e;

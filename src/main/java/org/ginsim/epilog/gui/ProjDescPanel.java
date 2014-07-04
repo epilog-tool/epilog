@@ -1,6 +1,7 @@
 package org.ginsim.epilog.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.DefaultListModel;
@@ -19,6 +20,8 @@ public class ProjDescPanel extends JPanel {
 	private JList<String> listSBMLs;
 
 	public ProjDescPanel() {
+		this.setLayout(new BorderLayout());
+		
 		// PAGE_START
 		JPanel jpWholeLine = new JPanel(new BorderLayout());
 		JLabel jlDim = new JLabel(LABEL);
@@ -35,6 +38,7 @@ public class ProjDescPanel extends JPanel {
 		this.listSBMLs.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		JScrollPane scroll = new JScrollPane(this.listSBMLs);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scroll.setMinimumSize(new Dimension(0, 100));
 		this.add(scroll, BorderLayout.CENTER);
 
 		this.clean();

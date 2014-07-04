@@ -72,7 +72,8 @@ public class Launcher {
 		} else {
 			// GUI
 			EpiGUI gui = new EpiGUI();
-			// gui.initialize();
+			gui.loadPEPS(pepsFile);
+//			gui.initialize();
 		}
 	}
 

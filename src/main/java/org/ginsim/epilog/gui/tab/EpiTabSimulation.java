@@ -2,16 +2,17 @@ package org.ginsim.epilog.gui.tab;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.tree.TreePath;
 
 import org.ginsim.epilog.core.Epithelium;
+import org.ginsim.epilog.gui.widgets.GridPanel;
 
 public class EpiTabSimulation extends EpiTab {
 	private static final long serialVersionUID = 1394895739386499680L;
@@ -23,11 +24,23 @@ public class EpiTabSimulation extends EpiTab {
 	
 	public EpiTabSimulation(Epithelium e, TreePath path) {
 		super(e,path);
-		this.initializeGUI();
+		this.setVisible(true);
 	}
 	
-	private void initializeGUI() {
-		this.left = new JPanel();
+	public void initialize() {
+		setLayout(new FlowLayout());
+
+		this.left = new JPanel(new BorderLayout());
+		this.add(this.left);
+
+		GridPanel hexagons = new GridPanel(this.epithelium);
+		this.left.add(hexagons, BorderLayout.CENTER);
+		
+		hexagons.paintComponent(hexagons.getGraphics());
+		
+		JPanel bLeft = new JPanel();
+		bLeft.add(new JLabel("TODO: Play commands + photo"));
+		this.left.add(bLeft, BorderLayout.SOUTH);
 		
 		this.rLeft = new JPanel(new BorderLayout());
 		
@@ -55,8 +68,6 @@ public class EpiTabSimulation extends EpiTab {
 		this.right = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 				rLeft, rRight);
 		
-		setLayout(new FlowLayout());
-		add(this.left);
 		add(this.right);
 	}
 }

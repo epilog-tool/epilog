@@ -11,6 +11,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	public EpiTabInitialConditions(Epithelium e, TreePath path) {
 		super(e,path);
 		this.initializeGUI();
+		
 	}
 	
 	private void initializeGUI() {

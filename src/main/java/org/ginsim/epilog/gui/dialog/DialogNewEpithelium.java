@@ -41,12 +41,11 @@ public class DialogNewEpithelium extends JPanel {
 	public DialogNewEpithelium(Set<String> lSBMLs, List<String> lEpiNames) {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		this.listSBMLs = new ArrayList<String>(lSBMLs);
-		this.listSBMLs.add(0, "---");
 		this.listEpiNames = lEpiNames;
 
 		// Name chooser
 		JPanel jpName = new JPanel(new BorderLayout());
-		jpName.add(new JLabel("Name"), BorderLayout.LINE_START);
+		jpName.add(new JLabel("Name    "), BorderLayout.LINE_START);
 		jtfEpiName = new JTextField(DEFAULT_WIDTH);
 		jtfEpiName.addKeyListener(new KeyListener() {
 			@Override
@@ -67,7 +66,7 @@ public class DialogNewEpithelium extends JPanel {
 
 		// SBML chooser
 		JPanel jpSBML = new JPanel(new BorderLayout());
-		jpSBML.add(new JLabel("SBML"), BorderLayout.LINE_START);
+		jpSBML.add(new JLabel("SBML     "), BorderLayout.LINE_START);
 		jcbSBMLs = new JComboBox<String>(
 				this.listSBMLs.toArray(new String[this.listSBMLs.size()]));
 		jcbSBMLs.addActionListener(new ActionListener() {
@@ -136,9 +135,9 @@ public class DialogNewEpithelium extends JPanel {
 
 	private boolean validateComboBox() {
 		boolean valid = true;
-		if (this.jcbSBMLs.getSelectedIndex() == 0) {
-			valid = false;
-		}
+//		if (this.jcbSBMLs.getSelectedIndex() == 0) {
+//			valid = false;
+//		}
 		System.out.println("jcb: " + this.jcbSBMLs.getSelectedIndex()
 				+ " valid:" + valid);
 		return valid;

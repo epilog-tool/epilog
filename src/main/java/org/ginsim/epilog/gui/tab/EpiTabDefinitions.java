@@ -25,10 +25,10 @@ public abstract class EpiTabDefinitions extends EpiTab {
 	}
 
 	private void initializeGUI() {
-		center = new JPanel();
-		south = new ModificationsPanel();
 		this.setLayout(new BorderLayout());
+		center = new JPanel();
 		this.add(center, BorderLayout.CENTER);
+		south = new ModificationsPanel();
 		this.add(south, BorderLayout.SOUTH);
 	}
 
