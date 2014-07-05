@@ -33,7 +33,10 @@ import org.ginsim.epilog.gui.color.ColorUtils;
 
 public class Parser {
 
-	public static Project loadConfigurations(File fConfig) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+	public static Project loadConfigurations(File fConfig) throws IOException,
+			InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		FileInputStream fstream = new FileInputStream(fConfig);
 		DataInputStream in = new DataInputStream(fstream);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -95,10 +98,6 @@ public class Parser {
 			// Initial Conditions grid
 			if (line.startsWith("IC")) {
 				saTmp = line.split("\\s+");
-				System.out.println(currEpi);
-				System.out.println(currEpi.getEpitheliumGrid());
-				System.out.println(currEpi.getEpitheliumGrid().getTopology());
-				
 				currEpi.setGridWithComponentValue(saTmp[1],
 						Byte.parseByte(saTmp[2]),
 						currEpi.getEpitheliumGrid().getTopology()
@@ -185,7 +184,8 @@ public class Parser {
 	public static void saveConfigurations(Project project, PrintWriter w)
 			throws IOException {
 		// Grid dimensions
-		w.println("GD " + project.getX() + " " + project.getY() + " " + project.getTopologyLayout());
+		w.println("GD " + project.getX() + " " + project.getY() + " "
+				+ project.getTopologyLayout());
 
 		// SBML numerical identifiers
 		int i = 0;
@@ -228,11 +228,16 @@ public class Parser {
 						lTmp.add("" + lastI);
 					} else {
 						lTmp.add(lastI + "-" + (currI - 1));
-					}// TODO: initial case not working!!
+					}
 					lastI = currI;
 				}
 				lastM = currM;
 			}
+		}
+		if (modelInst.isEmpty()) {
+			List<String> lTmp = new ArrayList<String>();
+			lTmp.add("0-" + (grid.getX() * grid.getY() - 1));
+			modelInst.put(lastM, lTmp);
 		}
 		for (LogicalModel m : modelInst.keySet()) {
 			w.println("GM " + model2Key.get(m) + " "
@@ -258,11 +263,13 @@ public class Parser {
 						valueInst.get(currM).put(nodeID,
 								new HashMap<Byte, List<Integer>>());
 					byte value = currState[n];
-					if (!valueInst.get(currM).get(nodeID).containsKey(n))
+					if (!valueInst.get(currM).get(nodeID).containsKey(value))
 						valueInst.get(currM).get(nodeID)
 								.put(value, new ArrayList<Integer>());
 
-					valueInst.get(currM).get(nodeID).get(value).add(inst);
+					List<Integer> iTmp = valueInst.get(currM).get(nodeID).get(value);
+					iTmp.add(inst);
+					valueInst.get(currM).get(nodeID).put(value, iTmp);
 				}
 			}
 		}
@@ -282,6 +289,9 @@ public class Parser {
 							}
 							lastI = currI;
 						}
+					}
+					if (sInsts.isEmpty()) {
+						sInsts.add("0-" + (grid.getX() * grid.getY() - 1));
 					}
 					w.println("IC " + nodeID + " " + value + " "
 							+ join(sInsts, ","));
