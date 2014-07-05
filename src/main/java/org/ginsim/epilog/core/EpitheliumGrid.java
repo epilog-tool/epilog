@@ -26,12 +26,17 @@ public class EpitheliumGrid {
 		this.modelSet = modelSet;
 	}
 
-	public EpitheliumGrid(int x, int y, String topologyLayout, RollOver rollover, LogicalModel m) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
-		this.cellGrid = new EpitheliumCell[x][y];
+	public EpitheliumGrid(int x, int y, String topologyLayout,
+			RollOver rollover, LogicalModel m) throws InstantiationException,
+			IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException,
+			SecurityException, ClassNotFoundException {
 		Constructor c = Class.forName(
-				"org.ginsim.epilog.core.topology.TopologyHexagon" + topologyLayout)
-				.getConstructor(Integer.TYPE, Integer.TYPE, RollOver.class);
+				"org.ginsim.epilog.core.topology.TopologyHexagon"
+						+ topologyLayout).getConstructor(Integer.TYPE,
+				Integer.TYPE, RollOver.class);
 		this.topology = (Topology) c.newInstance(x, y, rollover);
+		this.cellGrid = new EpitheliumCell[this.getX()][this.getY()];
 		for (int i = 0; i < this.getX(); i++) {
 			for (int j = 0; j < this.getY(); j++) {
 				this.cellGrid[i][j] = new EpitheliumCell(m);
@@ -47,8 +52,8 @@ public class EpitheliumGrid {
 
 	public void updateModelSet() {
 		this.modelSet = new HashSet<LogicalModel>();
-		for (int x = 0; x < this.cellGrid.length; x++) {
-			for (int y = 0; y < this.cellGrid[0].length; y++) {
+		for (int x = 0; x < this.getX(); x++) {
+			for (int y = 0; y < this.getY(); y++) {
 				this.modelSet.add(this.cellGrid[x][y].getModel());
 			}
 		}
@@ -62,13 +67,12 @@ public class EpitheliumGrid {
 		this.topology.setRollOver(r);
 	}
 
-	// TODO: simplify getX between classes
 	public int getX() {
-		return this.cellGrid.length;
+		return this.topology.getX();
 	}
 
 	public int getY() {
-		return this.cellGrid[0].length;
+		return this.topology.getY();
 	}
 
 	public Topology getTopology() {
@@ -76,8 +80,8 @@ public class EpitheliumGrid {
 	}
 
 	public EpitheliumGrid clone() {
-		int x = this.cellGrid.length;
-		int y = this.cellGrid[0].length;
+		int x = this.getX();
+		int y = this.getY();
 		EpitheliumCell[][] newGrid = new EpitheliumCell[x][y];
 		for (int i = 0; i < x; i++) {
 			for (int j = 0; j < y; j++) {

@@ -14,6 +14,14 @@ public abstract class Topology {
 	public abstract Set<Tuple2D> getNeighbours(int x, int y, int minDist,
 			int maxDist);
 
+	public int getX() {
+		return this.maxX;
+	}
+	
+	public int getY() {
+		return this.maxY;
+	}
+
 	public RollOver getRollOver() {
 		return this.rollover;
 	}
