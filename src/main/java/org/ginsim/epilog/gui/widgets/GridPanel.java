@@ -2,26 +2,23 @@ package org.ginsim.epilog.gui.widgets;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 import org.ginsim.epilog.core.Epithelium;
+import org.ginsim.epilog.core.topology.Topology;
 
 public class GridPanel extends JPanel {
 	private static final long serialVersionUID = 6126822003689575762L;
 
-	private int x;
-	private int y;
+	private int gridX;
+	private int gridY;
 	private Epithelium epi;
-	private double height;
-	private double radius;
 
 	/**
 	 * Generates the hexagons grid.
@@ -32,11 +29,11 @@ public class GridPanel extends JPanel {
 	 * @see pt.igc.nmd.epilog.gui.MainFrame mainFrame
 	 */
 	public GridPanel(Epithelium epi) {
-		this.x = epi.getEpitheliumGrid().getX();
-		this.y = epi.getEpitheliumGrid().getY();
+		this.gridX = epi.getEpitheliumGrid().getX();
+		this.gridY = epi.getEpitheliumGrid().getY();
 		this.epi = epi;
-		this.setBorder(BorderFactory.createTitledBorder("GridPanel"));
-		this.setPreferredSize(new Dimension(500, 450));
+//		this.setBorder(BorderFactory.createTitledBorder("GridPanel"));
+		this.setSize(500, 450);
 	}
 
 	/**
@@ -50,69 +47,23 @@ public class GridPanel extends JPanel {
 		Graphics2D g2 = (Graphics2D) g;
 		BasicStroke stroke = new BasicStroke(1.0f);
 		BasicStroke perturbedStroke = new BasicStroke(3.0f);
+		Topology topology = this.epi.getEpitheliumGrid().getTopology();
 
-		int max = 0;
-		try {
-			max = Math.max(this.x, this.y);
+		double radius = topology.computeBestRadius(this.gridX, this.gridY,
+				this.getSize().width, this.getSize().height);
 
-		} catch (NumberFormatException e) {
-			System.out
-					.println("java.lang.NumberFormatException: For input string: ''");
+		for (int x = 0; x < this.gridX; x++) {
+			for (int y = 0; y < this.gridY; y++) {
+				Polygon polygon = topology.createNewPolygon(radius, x, y);
 
-		} catch (Exception e) {
-
-			e.printStackTrace();
-		}
-
-		if (this.x > 0 && this.y > 0) {
-
-			if (this.y == max) {
-
-				height = 500 / max;
-				height = (500 - 1 * height) / (max);
-				radius = height / Math.sqrt(3.0);
-			}
-
-			else {
-				radius = (500 / this.x) / 2;
-
-				height = radius * Math.sqrt(3.0);
-			}
-
-			double x = 0, y = 0, centerX = 0, centerY = radius;
-			double s = radius;
-			double incX = Math.sqrt(Math.pow(s, 2) - Math.pow(s / 2, 2));
-
-			for (int k = 0; k < this.x; k++) {
-				for (int j = 0; j < this.y; j++) {
-					if (j % 2 == 0)
-						centerX = incX * (2 * k + 1);
-					else
-						centerX = 2 * incX * (k + 1);
-					centerY = s * (1 + j * 1.5);
-
-					Polygon hexagon = new Polygon();
-
-					for (int i = 0; i < 6; i++) {
-
-						x = centerX + radius
-								* Math.cos(i * 2 * Math.PI / 6 + Math.PI / 6);
-						y = centerY + radius
-								* Math.sin(i * 2 * Math.PI / 6 + Math.PI / 6);
-						hexagon.addPoint((int) (x), (int) (y));
-					}
-
-					BasicStroke selectedStroke = stroke;
-					if (this.epi.getEpitheliumGrid().getPerturbation(k, j) != null) {
-						selectedStroke = perturbedStroke;
-					}
-					this.paintHexagon(selectedStroke,
-							this.epi.getCellColor(k, j, new ArrayList<String>()), hexagon, g2);
-
+				BasicStroke selectedStroke = stroke;
+				if (this.epi.getEpitheliumGrid().getPerturbation(x, y) != null) {
+					selectedStroke = perturbedStroke;
 				}
+				this.paintPolygon(selectedStroke,
+						this.epi.getCellColor(x, y, new ArrayList<String>()),
+						polygon, g2);
 			}
-		} else {
-			System.out.println("XX and YY must be bigger than zero");
 		}
 	}
 
@@ -185,28 +136,6 @@ public class GridPanel extends JPanel {
 	// }
 
 	/**
-	 * Paint a single Hexagon
-	 * 
-	 * @param stroke
-	 *            thickness of the hexagon edges
-	 * @param hexagon
-	 *            graphics2d of the hexagons grid
-	 * @param g
-	 *            graphic (hexagons grid)
-	 * @param color
-	 *            color to paint the instance
-	 * 
-	 * @see drawHexagon(int instance, Graphics g, Color color)
-	 */
-	private void paintHexagon(BasicStroke stroke, Color color, Polygon hexagon, Graphics2D g) {
-		g.setStroke(stroke);
-		g.setColor(color);
-		g.fillPolygon(hexagon);
-		g.setColor(Color.black);
-		g.drawPolygon(hexagon);
-	}
-
-	/**
 	 * Paints all hexagons in white.
 	 * 
 	 * @param g
@@ -215,72 +144,13 @@ public class GridPanel extends JPanel {
 	 * @see paintHexagons(BasicStroke stroke, Color color, Polygon polygon2,
 	 *      Graphics2D g2)
 	 */
-	public void clearAllCells(Graphics g) {
 
-		Graphics2D g2 = (Graphics2D) g;
-		BasicStroke stroke = new BasicStroke(1.0f);
-
-		int max = 0;
-		try {
-			max = Math.max(this.x, this.y);
-
-		} catch (NumberFormatException e) {
-			System.out
-					.println("java.lang.NumberFormatException: For input string: ''");
-
-		} catch (Exception e) {
-
-			e.printStackTrace();
-		}
-
-		if (this.x > 0 && this.y > 0) {
-
-			if (this.y == max) {
-
-				height = 500 / max;
-				height = (500 - 1 * height) / (max);
-				radius = height / Math.sqrt(3.0);
-			}
-
-			else {
-				radius = (500 / this.x) / 2;
-
-				height = radius * Math.sqrt(3.0);
-			}
-
-			double x = 0, y = 0, centerX = 0, centerY = radius;
-
-			super.paintComponent(g);
-			g.setColor(Color.black);
-
-			double s = radius;
-			double incX = Math.sqrt(Math.pow(s, 2) - Math.pow(s / 2, 2));
-
-			for (int k = 0; k < this.x; k++) {
-				for (int j = 0; j < this.y; j++) {
-					if (j % 2 == 0)
-						centerX = incX * (2 * k + 1);
-					else
-						centerX = 2 * incX * (k + 1);
-					centerY = s * (1 + j * 1.5);
-
-					Polygon polygon2 = new Polygon();
-
-					for (int i = 0; i < 6; i++) {
-
-						x = centerX + radius
-								* Math.cos(i * 2 * Math.PI / 6 + Math.PI / 6);
-						y = centerY + radius
-								* Math.sin(i * 2 * Math.PI / 6 + Math.PI / 6);
-						polygon2.addPoint((int) (x), (int) (y));
-					}
-
-					paintHexagon(stroke, Color.white, polygon2, g2);
-
-				}
-			}
-		} else {
-			System.out.println("XX and YY must be bigger than zero");
-		}
+	private void paintPolygon(BasicStroke stroke, Color color, Polygon polygon,
+			Graphics2D g) {
+		g.setStroke(stroke);
+		g.setColor(color);
+		g.fillPolygon(polygon);
+		g.setColor(Color.black);
+		g.drawPolygon(polygon);
 	}
 }

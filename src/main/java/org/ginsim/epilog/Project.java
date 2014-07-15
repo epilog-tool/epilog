@@ -1,18 +1,12 @@
 package org.ginsim.epilog;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.ginsim.epilog.core.Epithelium;
-import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.core.topology.RollOver;
 
 public class Project {
@@ -20,7 +14,7 @@ public class Project {
 	private int y;
 	private String topologyLayout;
 	private List<Epithelium> epitheliumList;
-	private Map<String, LogicalModel> modelMap;
+	private ProjectModelFeatures modelFeatures;
 	private String filenamePEPS;
 	private boolean bChanged; // TODO
 
@@ -29,7 +23,7 @@ public class Project {
 		this.y = y;
 		this.topologyLayout = topologyLayout;
 		this.epitheliumList = new ArrayList<Epithelium>();
-		this.modelMap = new HashMap<String, LogicalModel>();
+		this.modelFeatures = new ProjectModelFeatures();
 		this.filenamePEPS = null;
 		this.bChanged = true;
 	}
@@ -68,48 +62,45 @@ public class Project {
 		this.epitheliumList.add(epiClone);
 		return epiClone;
 	}
-	
+
 	private String getNextAvailableName(String basename) {
 		List<String> l = new ArrayList<String>();
 		for (Epithelium epi : this.epitheliumList) {
 			l.add(epi.getName());
 		}
-		for (int i=1; true ;i++) {
-			if (!l.contains(basename + "_Cloned"+ i))
-				return basename + "_Cloned"+ i;
+		for (int i = 1; true; i++) {
+			if (!l.contains(basename + "_Cloned" + i))
+				return basename + "_Cloned" + i;
 		}
 	}
 
 	public void removeEpithelium(Epithelium epi) {
 		this.epitheliumList.remove(epi);
-		this.updateModelMap();
+		// this.updateModelMap();
 	}
 
-	private void updateModelMap() {
-		Set<LogicalModel> newModelSet = new HashSet<LogicalModel>();
-		for (Epithelium epi : this.epitheliumList) {
-			EpitheliumGrid grid = epi.getEpitheliumGrid();
-			grid.updateModelSet();
-			newModelSet.addAll(grid.getModelSet());
-		}
-		Map<String, LogicalModel> newModelMap = new HashMap<String, LogicalModel>();
-		for (String name : this.modelMap.keySet()) {
-			if (newModelSet.contains(this.modelMap.get(name))) {
-				newModelMap.put(name, this.modelMap.get(name));
-			}
-		}
-		this.modelMap = newModelMap;
-	}
-
-	public Map<String, LogicalModel> getModelsMap() {
-		return Collections.unmodifiableMap(this.modelMap);
-	}
+	// private void updateModelMap() {
+	// Set<LogicalModel> newModelSet = new HashSet<LogicalModel>();
+	// for (Epithelium epi : this.epitheliumList) {
+	// EpitheliumGrid grid = epi.getEpitheliumGrid();
+	// grid.updateModelSet();
+	// newModelSet.addAll(grid.getModelSet());
+	// }
+	// Map<String, LogicalModel> newModelMap = new HashMap<String,
+	// LogicalModel>();
+	// for (String name : this.modelMap.keySet()) {
+	// if (newModelSet.contains(this.modelMap.get(name))) {
+	// newModelMap.put(name, this.modelMap.get(name));
+	// }
+	// }
+	// this.modelMap = newModelMap;
+	// }
 
 	public String getTopologyLayout() {
 		// TODO: improve this
 		return this.topologyLayout;
 	}
-	
+
 	public String getFilenamePEPS() {
 		return this.filenamePEPS;
 	}
@@ -118,49 +109,59 @@ public class Project {
 		this.filenamePEPS = filename;
 	}
 
-	public Epithelium newEpithelium(String userName, String modelName, RollOver rollover) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
-		Epithelium epi = new Epithelium(this.x, this.y, this.topologyLayout, rollover,
-				this.modelMap.get(modelName), userName);
+	public Epithelium newEpithelium(String userName, String modelName,
+			RollOver rollover) throws InstantiationException,
+			IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException,
+			SecurityException, ClassNotFoundException {
+		Epithelium epi = new Epithelium(this.x, this.y, this.topologyLayout,
+				rollover, this.modelFeatures.getModel(modelName), userName);
 		this.epitheliumList.add(epi);
 		return epi;
 	}
 
-	public String getNextModelName(File file) {
-		String name = file.getName().substring(0, file.getName().indexOf("."));
-		while (this.modelMap.containsKey(name)) {
-			name += "_";
-		}
-		return name;
-	}
+	// TODO: test with same name models in diff directories
+	// public String getNextModelName(File file) {
+	// String name = file.getName().substring(0, file.getName().indexOf("."));
+	// while (this.modelMap.containsKey(name)) {
+	// name += "_";
+	// }
+	// return name;
+	// }
 
 	public void addModel(String name, LogicalModel m) {
-		this.modelMap.put(name, m);
+		this.modelFeatures.addModel(name, m);
 		// TODO: should the model be inserted somewhere else?
 		this.bChanged = true;
 	}
 
 	public boolean removeModel(String name) {
-		if (!this.hasModel(name)) {
-			this.modelMap.remove(name);
+		if (!this.isUsedModel(name)) {
+			this.modelFeatures.removeModel(name);
 			this.bChanged = true;
 			return true;
 		}
 		return false;
 	}
 
-	public boolean hasModel(String name) {
+	public boolean isUsedModel(String name) {
+		LogicalModel m = this.modelFeatures.getModel(name);
 		for (Epithelium epi : this.epitheliumList) {
-			if (epi.hasModel(this.modelMap.get(name)))
+			if (epi.hasModel(m))
 				return true;
 		}
 		return false;
 	}
 
 	public Set<String> getModelNames() {
-		return this.modelMap.keySet();
+		return this.modelFeatures.getNames();
 	}
 
 	public LogicalModel getModel(String name) {
-		return this.modelMap.get(name);
+		return this.modelFeatures.getModel(name);
+	}
+	
+	public ProjectModelFeatures getModelFeatures() {
+		return this.modelFeatures;
 	}
 }

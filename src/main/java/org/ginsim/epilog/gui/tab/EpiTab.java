@@ -19,4 +19,6 @@ public abstract class EpiTab extends JPanel {
 	public boolean hasPath(TreePath path) {
 		return this.path.equals(path);
 	}
+	
+	public abstract void initialize();
 }

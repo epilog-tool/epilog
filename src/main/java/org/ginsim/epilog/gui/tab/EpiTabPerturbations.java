@@ -2,6 +2,7 @@ package org.ginsim.epilog.gui.tab;
 
 import javax.swing.tree.TreePath;
 
+import org.ginsim.epilog.ProjectModelFeatures;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumCell;
 
@@ -10,12 +11,11 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	
 	private EpitheliumCell[][] userCellGrid;
 	
-	public EpiTabPerturbations(Epithelium e, TreePath path) {
-		super(e,path);
-		this.initializeGUI();
+	public EpiTabPerturbations(Epithelium e, TreePath path, ProjectModelFeatures modelFeatures) {
+		super(e,path, modelFeatures);
 	}
 	
-	private void initializeGUI() {
+	public void initialize() {
 		// Define center GUI components
 	}
 

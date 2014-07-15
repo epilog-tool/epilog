@@ -1,5 +1,6 @@
 package org.ginsim.epilog.core.topology;
 
+import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -57,4 +58,8 @@ public abstract class Topology {
 	}
 
 	public abstract Topology clone();
+	
+	public abstract Polygon createNewPolygon(double radius, int gridX, int gridY);
+	
+	public abstract double computeBestRadius(int gridX, int gridY, double dimX, double dimY);
 }

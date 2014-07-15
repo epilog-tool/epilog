@@ -533,25 +533,31 @@ public class EpiGUI extends JFrame {
 				if (tabIndex < 0 && parent != null) {
 					// Create new Tab
 					Epithelium epi = (Epithelium) parent.getUserObject();
-					JPanel epiTab = null;
+					EpiTab epiTab = null;
 					String title = parent + ":" + node;
 					if (node.toString() == "Initial Conditions") {
-						epiTab = new EpiTabInitialConditions(epi, selPath);
+						epiTab = new EpiTabInitialConditions(epi, selPath,
+								this.project.getModelFeatures());
 					} else if (node.toString() == "Integration Components") {
-						epiTab = new EpiTabIntegrationFunctions(epi, selPath);
+						epiTab = new EpiTabIntegrationFunctions(epi, selPath,
+								this.project.getModelFeatures());
 					} else if (node.toString() == "Perturbations") {
-						epiTab = new EpiTabPerturbations(epi, selPath);
+						epiTab = new EpiTabPerturbations(epi, selPath,
+								this.project.getModelFeatures());
 					} else if (node.toString() == "Priorities") {
-						epiTab = new EpiTabPriorityClasses(epi, selPath);
+						epiTab = new EpiTabPriorityClasses(epi, selPath,
+								this.project.getModelFeatures());
 					} else if (node.toString() == "Model Grid") {
-						epiTab = new EpiTabModelGrid(epi, selPath);
+						epiTab = new EpiTabModelGrid(epi, selPath,
+								this.project.getModelFeatures());
 					} else if (node.toString() == "Simulation") {
-						epiTab = new EpiTabSimulation(epi, selPath);
+						epiTab = new EpiTabSimulation(epi, selPath,
+								this.project.getModelFeatures());
 					}
 					if (epiTab != null) {
 						this.epiRightFrame.addTab(title, epiTab);
 						tabIndex = this.epiRightFrame.getComponentCount() - 1;
-						((EpiTabSimulation) epiTab).initialize();
+						epiTab.initialize();
 
 						// -- START Button
 						// JPanel pnlTab = new JPanel(new GridBagLayout());

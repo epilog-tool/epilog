@@ -9,17 +9,20 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.tree.TreePath;
 
+import org.ginsim.epilog.ProjectModelFeatures;
 import org.ginsim.epilog.core.Epithelium;
 
 public abstract class EpiTabDefinitions extends EpiTab {
 	private static final long serialVersionUID = -2587480492648550086L;
 
+	protected ProjectModelFeatures modelFeatures;
 	protected JPanel center;
 	private JPanel south;
 	private boolean changed;
 
-	protected EpiTabDefinitions(Epithelium e, TreePath path) {
+	protected EpiTabDefinitions(Epithelium e, TreePath path, ProjectModelFeatures modelFeatures) {
 		super(e, path);
+		this.modelFeatures = modelFeatures;
 		this.changed = false;
 		this.initializeGUI();
 	}
