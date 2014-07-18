@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,5 +58,22 @@ public class EpitheliumComponentFeatures {
 					node.getMax(), value));
 		}
 		return ColorUtils.combine(cellColors);
+	}
+
+	public Set<String> getModelsComponents(List<LogicalModel> lModels,
+			boolean input) {
+		Set<String> sComps = new HashSet<String>();
+		if (!lModels.isEmpty()) {
+			System.out.println(lModels);
+			for (LogicalModel m : lModels) {
+
+				for (NodeInfo node : m.getNodeOrder()) {
+					if (!input && !node.isInput() || input && node.isInput()) {
+						sComps.add(node.getNodeID());
+					}
+				}
+			}
+		}
+		return sComps;
 	}
 }

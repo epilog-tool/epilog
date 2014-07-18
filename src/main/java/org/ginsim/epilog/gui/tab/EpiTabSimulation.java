@@ -1,9 +1,13 @@
 package org.ginsim.epilog.gui.tab;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -12,11 +16,13 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.ginsim.epilog.ProjectModelFeatures;
 import org.ginsim.epilog.core.Epithelium;
+import org.ginsim.epilog.gui.widgets.ComponentWidget;
 import org.ginsim.epilog.gui.widgets.GridPanel;
 import org.ginsim.epilog.gui.widgets.JComboCheckBox;
 
@@ -28,6 +34,7 @@ public class EpiTabSimulation extends EpiTab {
 	private JSplitPane right;
 	private JPanel rLeft;
 	private JPanel rRight;
+	private JSplitPane jspRRCenter;
 	
 	public EpiTabSimulation(Epithelium e, TreePath path, ProjectModelFeatures modelFeatures) {
 		super(e,path);
@@ -45,8 +52,17 @@ public class EpiTabSimulation extends EpiTab {
 		
 		hexagons.paintComponent(hexagons.getGraphics());
 		
-		JPanel bLeft = new JPanel();
-		bLeft.add(new JLabel("TODO: Play commands + photo"));
+		JPanel bLeft = new JPanel(new FlowLayout());
+		JButton jbBack = new JButton("back");
+		bLeft.add(jbBack);
+		JButton jbForward = new JButton("fwr");
+		bLeft.add(jbForward);
+		JTextField jtSteps = new JTextField("30");
+		bLeft.add(jtSteps);
+		JButton jbFastFwr = new JButton("fstfwr");
+		bLeft.add(jbFastFwr);
+		JButton jbPicture = new JButton("pic");
+		bLeft.add(jbPicture);
 		this.left.add(bLeft, BorderLayout.SOUTH);
 		
 		this.rLeft = new JPanel(new BorderLayout());
@@ -75,19 +91,63 @@ public class EpiTabSimulation extends EpiTab {
 		JCheckBox[] items = new JCheckBox[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
 			items[i] = new JCheckBox(this.modelFeatures.getName(modelList.get(i)));
+			items[i].setSelected(true);
 		}
 		JComboCheckBox jccb = new JComboCheckBox(items);
 		rrTop.add(jccb);
 		rrTop.setBorder(BorderFactory.createTitledBorder("Display options"));
 		this.rRight.add(rrTop, BorderLayout.NORTH);
 		
-		JSplitPane jspRRCenter = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		
+		this.jspRRCenter = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		this.rRight.add(jspRRCenter, BorderLayout.CENTER);
-		
+				
+		jccb.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JComboCheckBox jccb = (JComboCheckBox) e.getSource();
+				updateComponentList(jccb.getSelectedItems());
+			}
+		});
+
 		this.right = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 				rLeft, rRight);
 
 		this.add(this.right, BorderLayout.LINE_END);
+		updateComponentList(jccb.getSelectedItems());
+	}
+	
+	private void updateComponentList(List<String> items) {
+		this.jspRRCenter.removeAll();
+
+		List<LogicalModel> lModels = new ArrayList<LogicalModel>();
+		for (String modelName : items) {
+			lModels.add(this.modelFeatures.getModel(modelName));
+		}
+		
+		JPanel jpRRCTop = new JPanel(new FlowLayout());
+//System.out.println("updateComponentList-items: " + items);
+		Set<String> sProperCompsFromSelectedModels = this.epithelium.getComponentFeatures().getModelsComponents(lModels, false);
+		for (String nodeID : sProperCompsFromSelectedModels) {
+			Color c = this.epithelium.getComponentFeatures().getNodeColor(nodeID);
+			JPanel jpComp = ComponentWidget.getNew(nodeID, c);
+//System.out.println("updateComponentList: " + nodeID + " -> " + c.toString());
+			jpRRCTop.add(jpComp);
+		}
+		this.jspRRCenter.add(jpRRCTop);
+		
+		JPanel jpRRCBottom = new JPanel(new FlowLayout());
+		Set<String> sInputCompsFromSelectedModels = this.epithelium.getComponentFeatures().getModelsComponents(lModels, true);
+		List<String> lEnvInputCompsFromSelectedModels = new ArrayList<String>();
+		for (String nodeID : sInputCompsFromSelectedModels) {
+			if (!this.epithelium.isIntegrationComponent(nodeID)) {
+				lEnvInputCompsFromSelectedModels.add(nodeID);
+			}
+		}
+		for (String nodeID : lEnvInputCompsFromSelectedModels) {
+			Color c = this.epithelium.getComponentFeatures().getNodeColor(nodeID);
+			JPanel jpComp = ComponentWidget.getNew(nodeID, c);
+			jpRRCBottom.add(jpComp);
+		}
+		this.jspRRCenter.add(jpRRCBottom);
 	}
 }

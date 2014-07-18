@@ -2,24 +2,21 @@ package org.ginsim.epilog.gui.tab;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.ComponentOrientation;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.Map;
 
-import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.ginsim.epilog.ProjectModelFeatures;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.gui.widgets.GridPanel;
-import org.ginsim.epilog.gui.widgets.SBMLPanel;
+import org.ginsim.epilog.gui.widgets.SBMLWidget;
 
 public class EpiTabModelGrid extends EpiTabDefinitions {
 	private static final long serialVersionUID = -5262665948855829161L;
@@ -53,7 +50,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		for (String name : this.modelFeatures.getNames()) {
 			LogicalModel m = this.modelFeatures.getModel(name);
 			Color c = this.modelFeatures.getColor(m);
-			SBMLPanel p = SBMLPanel.getNew(name, c);
+			SBMLWidget p = SBMLWidget.getNew(name, c);
+			group.add(p.getRadioButton());
 			gbc.gridx = 0;
 			gbc.gridy = i++;
 			rCenter.add(p, gbc);

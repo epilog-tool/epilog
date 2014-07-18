@@ -138,10 +138,14 @@ public class Epithelium {
 		return this.integrationFunctions.getComponents();
 	}
 
+	public boolean isIntegrationComponent(String nodeID) {
+		return this.integrationFunctions.containsKey(nodeID);
+	}
+
 	public ModelPerturbations getPerturbations(LogicalModel m) {
 		return this.perturbations.getModelPerturbations(m);
 	}
-
+	
 	public Color getCellColor(int x, int y, List<String> compON) {
 		byte[] cellState = this.grid.getCellState(x, y);
 		LogicalModel m = this.grid.getModel(x, y);
