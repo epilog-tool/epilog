@@ -15,6 +15,7 @@ import javax.swing.tree.TreePath;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.ginsim.epilog.ProjectModelFeatures;
 import org.ginsim.epilog.core.Epithelium;
+import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.gui.widgets.GridPanel;
 import org.ginsim.epilog.gui.widgets.SBMLWidget;
 
@@ -31,6 +32,16 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	public void initialize() {
 		this.center.setLayout(new BorderLayout());
 		ButtonGroup group = new ButtonGroup();
+		
+		// BEGIN copy grid
+		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
+		this.modelGrid = new LogicalModel[grid.getX()][grid.getY()];
+		for (int x = 0; x < grid.getX(); x ++) {
+			for (int y = 0; y < grid.getY(); y++) {
+				this.modelGrid[x][y] = grid.getModel(x, y);
+			}
+		}
+		// END copy grid
 		
 		GridPanel hexagons = new GridPanel(this.epithelium);
 		this.center.add(hexagons, BorderLayout.CENTER);

@@ -31,7 +31,7 @@ public class TopologyHexagonEvenR extends TopologyHexagon {
 	public Polygon createNewPolygon(double radius, int gridX, int gridY) {
 		Polygon hexagon = new Polygon();
 		// TODO: simplify...
-		double incX = radius * Math.sqrt(3) / 2;
+		double incX = radius * SQRT3_2;
 		double incY = radius;
 		double x, y = incY + gridY * (3 * radius / 2);
 		if (gridY % 2 == 1)
@@ -51,8 +51,66 @@ public class TopologyHexagonEvenR extends TopologyHexagon {
 	@Override
 	public double computeBestRadius(int gridX, int gridY, double dimX,
 			double dimY) {
-		double radiusX = dimX / (Math.sqrt(3) * (gridX + 0.5));
-		double radiuxY = dimY / (gridY * 1.5 + 2);
+		double radiusX = dimX / (SQRT3 * (gridX + 0.5));
+		double radiuxY = dimY / (gridY * 1.5 + 0.5);
 		return Math.min(radiusX, radiuxY);
+	}
+	
+	@Override
+	public Tuple2D getSelectedCell(double radius, int mouseX, int mouseY) {
+		double sqH = radius * 1.5;
+		double sqW_2 = radius * SQRT3_2;
+		double sqW = 2 * sqW_2;
+		// Y
+		double y = mouseY;
+		int yDiv = (int) (y / sqH);
+		// X
+		double x = mouseX - ((yDiv % 2 == 1) ? 0 : sqW_2);
+		int xDiv = (int) (x / sqW);
+
+		double xRest = x % sqW;
+		double yRest = y % sqH;
+		if (yRest < radius / 2) {
+			// y = ax + b
+			double ax = yRest * sqH / radius;
+			
+			if (yDiv % 2 == 1) {
+				if (xRest < sqW_2) {
+					if (xRest < (-ax + sqW_2)) {
+						xDiv--;
+						yDiv--;
+					}
+				} else {
+					if (xRest > (ax + sqW_2)) {
+						yDiv--;
+					}
+				}
+			} else { // yDiv % 2 == 0
+				if (xRest < 0) {
+					if (xRest < (ax-sqW_2)) {
+						xDiv--;
+					} else {
+						yDiv--;
+					}
+				} else if (xRest < sqW_2) {
+					if (xRest < (-ax + sqW_2)) {
+						yDiv--;
+					}
+				} else {
+					if (xRest > (ax + sqW_2)) {
+						yDiv--;
+						xDiv++;
+					}
+				}
+			}
+		} else {
+			if (yDiv % 2 == 0) {
+				if (mouseX < sqW_2) {
+					xDiv--;
+				}
+			}
+		}
+		
+		return new Tuple2D(xDiv, yDiv);
 	}
 }

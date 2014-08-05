@@ -15,7 +15,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	}
 	
 	public void initialize() {
-		// Define center GUI components
+		
 	}
 
 	@Override

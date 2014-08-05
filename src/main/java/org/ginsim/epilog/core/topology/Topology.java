@@ -62,4 +62,6 @@ public abstract class Topology {
 	public abstract Polygon createNewPolygon(double radius, int gridX, int gridY);
 	
 	public abstract double computeBestRadius(int gridX, int gridY, double dimX, double dimY);
+	
+	public abstract Tuple2D getSelectedCell(double radius, int mouseX, int mouseY);
 }

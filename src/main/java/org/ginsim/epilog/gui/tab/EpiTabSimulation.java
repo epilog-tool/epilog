@@ -25,6 +25,7 @@ import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.gui.widgets.ComponentWidget;
 import org.ginsim.epilog.gui.widgets.GridPanel;
 import org.ginsim.epilog.gui.widgets.JComboCheckBox;
+import org.ginsim.epilog.io.ButtonImageLoader;
 
 public class EpiTabSimulation extends EpiTab {
 	private static final long serialVersionUID = 1394895739386499680L;
@@ -61,7 +62,7 @@ public class EpiTabSimulation extends EpiTab {
 		bLeft.add(jtSteps);
 		JButton jbFastFwr = new JButton("fstfwr");
 		bLeft.add(jbFastFwr);
-		JButton jbPicture = new JButton("pic");
+		JButton jbPicture = ButtonImageLoader.newButtonNoBorder("screenshot-16.png");
 		bLeft.add(jbPicture);
 		this.left.add(bLeft, BorderLayout.SOUTH);
 		
@@ -81,17 +82,23 @@ public class EpiTabSimulation extends EpiTab {
 		
 		this.rRight = new JPanel(new BorderLayout());
 		
-		JPanel rrTop = new JPanel(new FlowLayout());
-		JButton jbSelectAll = new JButton("Select All");
-		rrTop.add(jbSelectAll);
-		JButton jbDeselectAll = new JButton("Deselect All");
-		rrTop.add(jbDeselectAll);
+		JPanel rrTop = new JPanel();
+		rrTop.setLayout(new BoxLayout(rrTop, BoxLayout.Y_AXIS));
+		
+		JPanel rrTopSel = new JPanel();
+		rrTopSel.setLayout(new BoxLayout(rrTopSel, BoxLayout.X_AXIS));
+		JButton jbSelectAll = new JButton("SelectAll");
+		rrTopSel.add(jbSelectAll);
+		JButton jbDeselectAll = new JButton("DeselectAll");
+		rrTopSel.add(jbDeselectAll);
+		rrTop.add(rrTopSel);
+		
 		// TODO: clean afterwards
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		JCheckBox[] items = new JCheckBox[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
 			items[i] = new JCheckBox(this.modelFeatures.getName(modelList.get(i)));
-			items[i].setSelected(true);
+			items[i].setSelected(false);
 		}
 		JComboCheckBox jccb = new JComboCheckBox(items);
 		rrTop.add(jccb);
@@ -100,7 +107,6 @@ public class EpiTabSimulation extends EpiTab {
 		
 		this.jspRRCenter = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		this.rRight.add(jspRRCenter, BorderLayout.CENTER);
-				
 		jccb.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -124,7 +130,9 @@ public class EpiTabSimulation extends EpiTab {
 			lModels.add(this.modelFeatures.getModel(modelName));
 		}
 		
-		JPanel jpRRCTop = new JPanel(new FlowLayout());
+		JPanel jpRRCTop = new JPanel();
+		jpRRCTop.setLayout(new BoxLayout(jpRRCTop, BoxLayout.Y_AXIS));
+		jpRRCTop.setBorder(BorderFactory.createTitledBorder("Proper components"));
 //System.out.println("updateComponentList-items: " + items);
 		Set<String> sProperCompsFromSelectedModels = this.epithelium.getComponentFeatures().getModelsComponents(lModels, false);
 		for (String nodeID : sProperCompsFromSelectedModels) {
@@ -135,7 +143,9 @@ public class EpiTabSimulation extends EpiTab {
 		}
 		this.jspRRCenter.add(jpRRCTop);
 		
-		JPanel jpRRCBottom = new JPanel(new FlowLayout());
+		JPanel jpRRCBottom = new JPanel();
+		jpRRCBottom.setLayout(new BoxLayout(jpRRCBottom, BoxLayout.Y_AXIS));
+		jpRRCBottom.setBorder(BorderFactory.createTitledBorder("Input components"));
 		Set<String> sInputCompsFromSelectedModels = this.epithelium.getComponentFeatures().getModelsComponents(lModels, true);
 		List<String> lEnvInputCompsFromSelectedModels = new ArrayList<String>();
 		for (String nodeID : sInputCompsFromSelectedModels) {

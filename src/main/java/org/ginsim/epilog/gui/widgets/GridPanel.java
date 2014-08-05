@@ -5,11 +5,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import org.ginsim.epilog.Tuple2D;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.topology.Topology;
 
@@ -19,6 +22,9 @@ public class GridPanel extends JPanel {
 	private int gridX;
 	private int gridY;
 	private Epithelium epi;
+	private double radius;
+	
+	private Tuple2D mouseGrid;
 
 	/**
 	 * Generates the hexagons grid.
@@ -32,8 +38,28 @@ public class GridPanel extends JPanel {
 		this.gridX = epi.getEpitheliumGrid().getX();
 		this.gridY = epi.getEpitheliumGrid().getY();
 		this.epi = epi;
-//		this.setBorder(BorderFactory.createTitledBorder("GridPanel"));
-		this.setSize(500, 450);
+		// this.setBorder(BorderFactory.createTitledBorder("GridPanel"));
+		this.setSize(800, 450);
+		this.mouseGrid = new Tuple2D(-1, -1);
+		this.addMousePositionListener();
+	}
+
+	private void addMousePositionListener() {
+		addMouseMotionListener(new MouseMotionListener() {
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				Tuple2D mouseGrid = epi.getEpitheliumGrid().getTopology().getSelectedCell(radius, e.getX(), e.getY());
+				
+				System.out.println(e.getX() + "," + e.getY() + mouseGrid);
+			}
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
 	}
 
 	/**
@@ -49,12 +75,12 @@ public class GridPanel extends JPanel {
 		BasicStroke perturbedStroke = new BasicStroke(3.0f);
 		Topology topology = this.epi.getEpitheliumGrid().getTopology();
 
-		double radius = topology.computeBestRadius(this.gridX, this.gridY,
+		this.radius = topology.computeBestRadius(this.gridX, this.gridY,
 				this.getSize().width, this.getSize().height);
 
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
-				Polygon polygon = topology.createNewPolygon(radius, x, y);
+				Polygon polygon = topology.createNewPolygon(this.radius, x, y);
 
 				BasicStroke selectedStroke = stroke;
 				if (this.epi.getEpitheliumGrid().getPerturbation(x, y) != null) {
@@ -66,74 +92,6 @@ public class GridPanel extends JPanel {
 			}
 		}
 	}
-
-	/**
-	 * Paints an instance of the hexagons grid.
-	 * 
-	 * @param instance
-	 *            instance to be painted
-	 * @param g
-	 *            graphic (hexagons grid)
-	 * @param color
-	 *            color to paint the instance
-	 * 
-	 * @see paintHexagons(BasicStroke stroke, Color color, Polygon polygon2,
-	 *      Graphics2D g2)
-	 */
-	// public void drawHexagon(int i, int j, Graphics g, Color color) {
-	//
-	// System.out.println("i: "+i+"j: "+j);
-	//
-	// Graphics2D g2 = (Graphics2D) g;
-	// BasicStroke stroke = new BasicStroke(1.0f);
-	// BasicStroke perturbedStroke = new BasicStroke(3.0f);
-	//
-	// if (color == null)
-	// color = Color.white;
-	//
-	// double centerX = 0, centerY = 0, x = 0, y = 0;
-	// double s = radius;
-	// double incX = Math.sqrt(Math.pow(s, 2)-Math.pow(s/2, 2));
-	//
-	// if (j % 2 == 0)
-	// centerX = incX*(2*i+1);
-	// else
-	// centerX = 2*incX*(i+1);
-	// centerY=s*(1+j*1.5);
-	//
-	// Polygon polygon2 = new Polygon();
-	//
-	// for (int k = 0; k < 6; k++) {
-	//
-	// x = centerX + radius * Math.cos(k * 2 * Math.PI / 6+Math.PI / 6);
-	// y = centerY + radius * Math.sin(k * 2 * Math.PI / 6+Math.PI / 6);
-	// polygon2.addPoint((int) (x), (int) (y));
-	// }
-	//
-	// if (this.mainFrame.isDrawingCells()) {
-	// BasicStroke selectedStroke = stroke;
-	// paintHexagons(stroke, color, polygon2, g2);
-	//
-	// } else if (this.mainFrame.isDrawingPerturbations()) {
-	// BasicStroke selectedStroke = stroke;
-	// color = color.white;
-	// if (this.mainFrame.epithelium.isCellPerturbedDraw(instance)) {
-	// selectedStroke = perturbedStroke;
-	// if (this.mainFrame.epithelium.getActivePerturbation() != null)
-	// color = this.mainFrame.epithelium
-	// .getPerturbationColor(this.mainFrame.epithelium
-	// .getActivePerturbation().toString());
-	// }
-	// paintHexagons(selectedStroke, color, polygon2, g2);
-	//
-	// } else {
-	// if (this.mainFrame.epithelium.isCellPerturbed(instance)) {
-	// BasicStroke selectedStroke = perturbedStroke;
-	//
-	// paintHexagons(selectedStroke, color, polygon2, g2);
-	// }
-	// }
-	// }
 
 	/**
 	 * Paints all hexagons in white.

@@ -3,6 +3,8 @@ package org.ginsim.epilog.gui;
 import java.awt.Component;
 import java.awt.Dialog.ModalityType;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,6 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -27,6 +30,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -51,6 +55,7 @@ import org.ginsim.epilog.gui.tab.EpiTabPerturbations;
 import org.ginsim.epilog.gui.tab.EpiTabPriorityClasses;
 import org.ginsim.epilog.gui.tab.EpiTabSimulation;
 import org.ginsim.epilog.io.FileIO;
+import org.ginsim.epilog.io.ButtonImageLoader;
 
 public class EpiGUI extends JFrame {
 	private static final long serialVersionUID = -3266121588934662490L;
@@ -120,7 +125,7 @@ public class EpiGUI extends JFrame {
 
 		this.validateGUI();
 		this.pack();
-		this.setSize(800, 600);
+		this.setSize(1024, 768);
 		this.setVisible(true);
 	}
 
@@ -349,6 +354,7 @@ public class EpiGUI extends JFrame {
 				this.project.addModel(fSBML.getName(), m);
 				this.projDescPanel.addModel(fSBML.getName());
 			}
+			initEpitheliumJTree();
 			this.validateGUI();
 		}
 	}
@@ -523,9 +529,9 @@ public class EpiGUI extends JFrame {
 						.getParent();
 
 				int tabIndex = -1;
-				Component[] comps = this.epiRightFrame.getComponents();
-				for (int i = 0; i < comps.length; i++) {
-					if (((EpiTab) comps[i]).hasPath(selPath)) {
+				for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
+					EpiTab epi = (EpiTab) this.epiRightFrame.getComponentAt(i);
+					if (epi.containsPath(selPath)) {
 						tabIndex = i;
 						break;
 					}
@@ -556,30 +562,36 @@ public class EpiGUI extends JFrame {
 					}
 					if (epiTab != null) {
 						this.epiRightFrame.addTab(title, epiTab);
-						tabIndex = this.epiRightFrame.getComponentCount() - 1;
+						tabIndex = this.epiRightFrame.getTabCount() - 1;
 						epiTab.initialize();
 
 						// -- START Button
-						// JPanel pnlTab = new JPanel(new GridBagLayout());
-						// pnlTab.setOpaque(false);
-						// GridBagConstraints gbc = new GridBagConstraints();
-						// gbc.gridx = 0;
-						// gbc.gridy = 0;
-						// gbc.weightx = 1;
-						// pnlTab.add(new JLabel(title), gbc);
-						// gbc.gridx++;
-						// gbc.weightx = 0;
-						// JButton close = new
-						// JButton(ImageLoader.getImageIcon("button_close_gray.png"));
-						// close.addActionListener(new ActionListener() {
-						// @Override
-						// public void actionPerformed(ActionEvent e) {
-						// closeTabFromButton();
-						// }
-						// });
-						// pnlTab.add(close, gbc);
-						// this.epiRightFrame.setTabComponentAt(tabIndex,
-						// pnlTab);
+						JPanel pnlTab = new JPanel(new GridBagLayout());
+						pnlTab.setOpaque(false);
+						GridBagConstraints gbc = new GridBagConstraints();
+						gbc.gridx = 0;
+						gbc.gridy = 0;
+						gbc.weightx = 1;
+						pnlTab.add(new JLabel(title), gbc);
+						gbc.gridx++;
+						gbc.weightx = 0;
+						JButton close = ButtonImageLoader
+								.newButtonNoBorder("button_close_gray.png");
+						close.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								JButton b = (JButton) e.getSource();
+								JPanel jp = (JPanel) b.getParent();
+								for (int i = 0; i < epiRightFrame.getTabCount(); i++) {
+									if (epiRightFrame.getTabComponentAt(i)
+											.equals(jp)) {
+										epiRightFrame.removeTabAt(i);
+									}
+								}
+							}
+						});
+						pnlTab.add(close, gbc);
+						this.epiRightFrame.setTabComponentAt(tabIndex, pnlTab);
 						// -- END Button
 					}
 				}
@@ -587,13 +599,6 @@ public class EpiGUI extends JFrame {
 				this.epiRightFrame.setSelectedIndex(tabIndex);
 
 			}
-		}
-	}
-
-	private void closeTabFromButton() {
-		Component selected = this.epiRightFrame.getSelectedComponent();
-		if (selected != null) {
-			this.epiRightFrame.remove(selected);
 		}
 	}
 
