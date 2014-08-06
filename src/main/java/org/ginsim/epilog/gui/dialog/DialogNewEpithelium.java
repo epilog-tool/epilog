@@ -38,9 +38,9 @@ public class DialogNewEpithelium extends JPanel {
 
 	private boolean bIsOK;
 
-	public DialogNewEpithelium(Set<String> lSBMLs, List<String> lEpiNames) {
+	public DialogNewEpithelium(Set<String> sSBMLs, List<String> lEpiNames) {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		this.listSBMLs = new ArrayList<String>(lSBMLs);
+		this.listSBMLs = new ArrayList<String>(sSBMLs);
 		this.listEpiNames = lEpiNames;
 
 		// Name chooser

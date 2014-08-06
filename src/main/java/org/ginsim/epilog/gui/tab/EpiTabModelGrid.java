@@ -23,7 +23,6 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	private static final long serialVersionUID = -5262665948855829161L;
 	
 	private LogicalModel[][] modelGrid;
-	private Map<String, LogicalModel> modelMap;
 
 	public EpiTabModelGrid(Epithelium e, TreePath path, ProjectModelFeatures modelFeatures) {
 		super(e, path, modelFeatures);
