@@ -159,12 +159,6 @@ public class Epithelium {
 		return this.perturbations.getModelPerturbations(m);
 	}
 	
-	public Color getCellComponentColor(int x, int y, List<String> compON) {
-		byte[] cellState = this.grid.getCellState(x, y);
-		LogicalModel m = this.grid.getModel(x, y);
-		return this.componentFeatures.getCellColor(m, cellState, compON);
-	}
-	
 	public void setModel(int x, int y, LogicalModel m) {
 		this.grid.setModel(x, y, m);
 		this.isChanged = true;

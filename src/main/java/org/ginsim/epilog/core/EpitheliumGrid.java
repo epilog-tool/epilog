@@ -15,13 +15,13 @@ import org.ginsim.epilog.core.topology.RollOver;
 import org.ginsim.epilog.core.topology.Topology;
 
 public class EpitheliumGrid {
-	private EpitheliumCell[][] cellGrid;
+	private EpitheliumCell[][] gridEpiCell;
 	private Topology topology;
 	private Set<LogicalModel> modelSet;
 
-	private EpitheliumGrid(EpitheliumCell[][] cellGrid, Topology topology,
+	private EpitheliumGrid(EpitheliumCell[][] gridEpiCell, Topology topology,
 			Set<LogicalModel> modelSet) {
-		this.cellGrid = cellGrid;
+		this.gridEpiCell = gridEpiCell;
 		this.topology = topology;
 		this.modelSet = modelSet;
 	}
@@ -36,10 +36,10 @@ public class EpitheliumGrid {
 						+ topologyLayout).getConstructor(Integer.TYPE,
 				Integer.TYPE, RollOver.class);
 		this.topology = (Topology) c.newInstance(x, y, rollover);
-		this.cellGrid = new EpitheliumCell[this.getX()][this.getY()];
+		this.gridEpiCell = new EpitheliumCell[this.getX()][this.getY()];
 		for (int i = 0; i < this.getX(); i++) {
 			for (int j = 0; j < this.getY(); j++) {
-				this.cellGrid[i][j] = new EpitheliumCell(m);
+				this.gridEpiCell[i][j] = new EpitheliumCell(m);
 			}
 		}
 		this.modelSet = new HashSet<LogicalModel>();
@@ -54,7 +54,7 @@ public class EpitheliumGrid {
 		this.modelSet = new HashSet<LogicalModel>();
 		for (int x = 0; x < this.getX(); x++) {
 			for (int y = 0; y < this.getY(); y++) {
-				this.modelSet.add(this.cellGrid[x][y].getModel());
+				this.modelSet.add(this.gridEpiCell[x][y].getModel());
 			}
 		}
 	}
@@ -85,7 +85,7 @@ public class EpitheliumGrid {
 		EpitheliumCell[][] newGrid = new EpitheliumCell[x][y];
 		for (int i = 0; i < x; i++) {
 			for (int j = 0; j < y; j++) {
-				newGrid[i][j] = cellGrid[i][j].clone();
+				newGrid[i][j] = gridEpiCell[i][j].clone();
 			}
 		}
 		Topology newTop = this.topology.clone();
@@ -94,40 +94,41 @@ public class EpitheliumGrid {
 	}
 
 	public AbstractPerturbation getPerturbation(int x, int y) {
-		return cellGrid[x][y].getPerturbation();
+		return gridEpiCell[x][y].getPerturbation();
 	}
 
 	public void setPerturbation(int x, int y, AbstractPerturbation ap) {
-		cellGrid[x][y].setPerturbation(ap);
+		gridEpiCell[x][y].setPerturbation(ap);
 	}
 
 	public void setPerturbation(LogicalModel m, List<Tuple2D> lTuples,
 			AbstractPerturbation ap) {
 		for (Tuple2D tuple : lTuples) {
-			if (this.cellGrid[tuple.getX()][tuple.getY()].getModel().equals(m)) {
+			if (this.gridEpiCell[tuple.getX()][tuple.getY()].getModel().equals(
+					m)) {
 				this.setPerturbation(tuple.getX(), tuple.getY(), ap);
 			}
 		}
 	}
 
 	public byte[] getCellState(int x, int y) {
-		return cellGrid[x][y].getState();
+		return gridEpiCell[x][y].getState();
 	}
 
 	public void setCellState(int x, int y, byte[] state) {
-		cellGrid[x][y].setState(state);
+		gridEpiCell[x][y].setState(state);
 	}
 
 	public void setCellComponentValue(int x, int y, String nodeID, byte value) {
-		cellGrid[x][y].setValue(nodeID, value);
+		gridEpiCell[x][y].setValue(nodeID, value);
 	}
 
 	public LogicalModel getModel(int x, int y) {
-		return cellGrid[x][y].getModel();
+		return gridEpiCell[x][y].getModel();
 	}
 
 	public void setModel(int x, int y, LogicalModel m) {
-		cellGrid[x][y].setModel(m);
+		gridEpiCell[x][y].setModel(m);
 	}
 
 	public List<EpitheliumCell> getNeighbours(int x, int y, int minDist,
@@ -136,7 +137,7 @@ public class EpitheliumGrid {
 
 		for (Tuple2D tuple : this.topology
 				.getNeighbours(x, y, minDist, maxDist)) {
-			l.add(cellGrid[tuple.getX()][tuple.getY()]);
+			l.add(gridEpiCell[tuple.getX()][tuple.getY()]);
 		}
 		return l;
 	}
@@ -145,7 +146,7 @@ public class EpitheliumGrid {
 			List<EpitheliumCell> neighbours, String nodeID) {
 		List<EpitheliumCell> filteredCells = new ArrayList<EpitheliumCell>();
 		for (EpitheliumCell cell : neighbours) {
-			if (cell.hasNode(nodeID))
+			if (cell.getNodeIndex(nodeID) > 0)
 				filteredCells.add(cell);
 		}
 		return filteredCells;
@@ -197,5 +198,9 @@ public class EpitheliumGrid {
 			}
 		}
 		return true;
+	}
+
+	public int getNodeIndex(int x, int y, String nodeID) {
+		return this.gridEpiCell[x][y].getNodeIndex(nodeID);
 	}
 }

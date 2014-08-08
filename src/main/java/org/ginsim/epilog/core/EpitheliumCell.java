@@ -58,11 +58,11 @@ public class EpitheliumCell {
 		this.perturbation = null;
 	}
 
-	public boolean hasNode(String nodeID) {
-		for (NodeInfo node : this.model.getNodeOrder()) {
-			if (node.getNodeID().equals(nodeID))
-				return true;
+	public int getNodeIndex(String nodeID) {
+		for (int i = 0; i < this.model.getNodeOrder().size(); i ++) {
+			if (this.model.getNodeOrder().get(i).getNodeID().equals(nodeID))
+				return i;
 		}
-		return false;
+		return -1;
 	}
 }

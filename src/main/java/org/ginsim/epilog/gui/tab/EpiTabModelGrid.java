@@ -42,7 +42,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	public void initialize() {
 		this.center.setLayout(new BorderLayout());
 		ButtonGroup group = new ButtonGroup();
-		
+
 		this.mapSBMLMiniPanels = new HashMap<JRadioButton, JButton>();
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
 		this.modelGridClone = new LogicalModel[grid.getX()][grid.getY()];
@@ -172,7 +172,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		// Copy colorMapClone to ProjecModelFeatures
 		for (JRadioButton jrb : this.mapSBMLMiniPanels.keySet()) {
 			String modelName = jrb.getText();
-			this.modelFeatures.setColor(modelName, this.mapSBMLMiniPanels.get(jrb).getBackground());
+			this.modelFeatures.setColor(modelName,
+					this.mapSBMLMiniPanels.get(jrb).getBackground());
 		}
 	}
 
@@ -181,7 +182,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		// Check modifications on model
 		for (int x = 0; x < this.modelGridClone.length; x++) {
 			for (int y = 0; y < this.modelGridClone[0].length; y++) {
-				if (!this.modelGridClone[x][y].equals(this.epithelium.getModel(x, y))) {
+				if (!this.modelGridClone[x][y].equals(this.epithelium.getModel(
+						x, y))) {
 					return true;
 				}
 			}

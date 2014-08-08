@@ -48,18 +48,6 @@ public class EpitheliumComponentFeatures {
 		this.nodeColor.put(nodeID, color);
 	}
 
-	public Color getCellColor(LogicalModel cellModel, byte[] cellState,
-			List<String> components) {
-		List<Color> cellColors = new ArrayList<Color>();
-		for (String comp : components) {
-			NodeInfo node = this.nodeID2Info.get(comp);
-			byte value = cellState[cellModel.getNodeOrder().indexOf(node)];
-			cellColors.add(ColorUtils.getColorAtValue(this.nodeColor.get(comp),
-					node.getMax(), value));
-		}
-		return ColorUtils.combine(cellColors);
-	}
-
 	public Set<String> getModelsComponents(List<LogicalModel> lModels,
 			boolean input) {
 		Set<String> sComps = new HashSet<String>();

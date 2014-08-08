@@ -56,8 +56,8 @@ public class EpitheliumCellTest {
 
 	@Test
 	public void hasNodeTest() {
-		assertTrue(epicell.hasNode("G0"));
-		assertFalse(epicell.hasNode("XPTO"));
+		assertTrue(epicell.getNodeIndex("G0"));
+		assertFalse(epicell.getNodeIndex("XPTO"));
 	}
 
 	@Test
