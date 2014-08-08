@@ -20,7 +20,7 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 	}
 
 	@Override
-	protected void buttonCancel() {
+	protected void buttonReset() {
 		// TODO Auto-generated method stub
 		
 	}

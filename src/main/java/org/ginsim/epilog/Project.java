@@ -16,7 +16,7 @@ public class Project {
 	private List<Epithelium> epitheliumList;
 	private ProjectModelFeatures modelFeatures;
 	private String filenamePEPS;
-	private boolean bChanged; // TODO
+	private boolean isChanged;
 
 	public Project(int x, int y, String topologyLayout) {
 		this.x = x;
@@ -25,15 +25,15 @@ public class Project {
 		this.epitheliumList = new ArrayList<Epithelium>();
 		this.modelFeatures = new ProjectModelFeatures();
 		this.filenamePEPS = null;
-		this.bChanged = true;
+		this.isChanged = true;
 	}
 
 	public boolean hasChanged() {
-		return bChanged;
+		return isChanged;
 	}
 
 	public void setChanged(boolean state) {
-		this.bChanged = state;
+		this.isChanged = state;
 	}
 
 	public int getX() {
@@ -132,13 +132,13 @@ public class Project {
 	public void addModel(String name, LogicalModel m) {
 		this.modelFeatures.addModel(name, m);
 		// TODO: should the model be inserted somewhere else?
-		this.bChanged = true;
+		this.isChanged = true;
 	}
 
 	public boolean removeModel(String name) {
 		if (!this.isUsedModel(name)) {
 			this.modelFeatures.removeModel(name);
-			this.bChanged = true;
+			this.isChanged = true;
 			return true;
 		}
 		return false;

@@ -585,7 +585,11 @@ public class EpiGUI extends JFrame {
 								for (int i = 0; i < epiRightFrame.getTabCount(); i++) {
 									if (epiRightFrame.getTabComponentAt(i)
 											.equals(jp)) {
-										epiRightFrame.removeTabAt(i);
+										EpiTab epi = (EpiTab) epiRightFrame
+												.getComponentAt(i);
+										if (epi.canClose()) {
+											epiRightFrame.removeTabAt(i);
+										}
 									}
 								}
 							}

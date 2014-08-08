@@ -21,6 +21,7 @@ import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
 import org.ginsim.epilog.Project;
+import org.ginsim.epilog.ProjectModelFeatures;
 import org.ginsim.epilog.Tuple2D;
 import org.ginsim.epilog.core.ComponentIntegrationFunctions;
 import org.ginsim.epilog.core.Epithelium;
@@ -65,6 +66,9 @@ public class Parser {
 				File fSBML = new File(fConfig.getParent() + "/" + saTmp[2]);
 				project.addModel(fSBML.getName(), FileIO.loadSBMLModel(fSBML));
 				modelKey2Name.put(saTmp[1], saTmp[2]);
+				Color modelColor = ColorUtils.getColor(saTmp[3], saTmp[4],
+						saTmp[5]);
+				project.getModelFeatures().changeColor(saTmp[2], modelColor);
 			}
 			// Epithelium name
 			if (line.startsWith("SN")) {
@@ -191,8 +195,11 @@ public class Parser {
 		int i = 0;
 		Map<LogicalModel, Integer> model2Key = new HashMap<LogicalModel, Integer>();
 		for (String sbml : project.getModelNames()) {
-			model2Key.put(project.getModel(sbml), i);
-			w.println("SB " + i + " " + sbml);
+			LogicalModel m = project.getModel(sbml);
+			model2Key.put(m, i);
+			Color c = project.getModelFeatures().getColor(m);
+			w.println("SB " + i + " " + sbml + " " + c.getRed() + " "
+					+ c.getGreen() + " " + c.getBlue());
 			i++;
 		}
 		w.println();
@@ -267,7 +274,8 @@ public class Parser {
 						valueInst.get(currM).get(nodeID)
 								.put(value, new ArrayList<Integer>());
 
-					List<Integer> iTmp = valueInst.get(currM).get(nodeID).get(value);
+					List<Integer> iTmp = valueInst.get(currM).get(nodeID)
+							.get(value);
 					iTmp.add(inst);
 					valueInst.get(currM).get(nodeID).put(value, iTmp);
 				}

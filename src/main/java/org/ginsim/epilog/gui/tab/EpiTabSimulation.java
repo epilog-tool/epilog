@@ -23,7 +23,7 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.ginsim.epilog.ProjectModelFeatures;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.gui.widgets.ComponentWidget;
-import org.ginsim.epilog.gui.widgets.GridPanel;
+import org.ginsim.epilog.gui.widgets.VisualGrid;
 import org.ginsim.epilog.gui.widgets.JComboCheckBox;
 import org.ginsim.epilog.io.ButtonImageLoader;
 
@@ -48,7 +48,7 @@ public class EpiTabSimulation extends EpiTab {
 		this.left = new JPanel(new BorderLayout());
 		this.add(this.left, BorderLayout.CENTER);
 
-		GridPanel hexagons = new GridPanel(this.epithelium);
+		VisualGrid hexagons = new VisualGrid(this.epithelium);
 		this.left.add(hexagons, BorderLayout.CENTER);
 		
 		hexagons.paintComponent(hexagons.getGraphics());
@@ -159,5 +159,10 @@ public class EpiTabSimulation extends EpiTab {
 			jpRRCBottom.add(jpComp);
 		}
 		this.jspRRCenter.add(jpRRCBottom);
+	}
+
+	@Override
+	public boolean canClose() {
+		return true;
 	}
 }

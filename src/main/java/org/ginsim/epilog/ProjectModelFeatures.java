@@ -46,15 +46,23 @@ public class ProjectModelFeatures {
 		return this.string2Model.get(name);
 	}
 
+	public void setColor(String name, Color c) {
+		this.colorMap.put(this.getModel(name), c);
+	}
+
+	public Color getColor(String name) {
+		return this.getColor(this.string2Model.get(name));
+	}
+
 	public Color getColor(LogicalModel m) {
 		return this.colorMap.get(m);
 	}
 
-	public void changeColor(LogicalModel m, Color c) {
-		this.colorMap.put(m, c);
+	public void changeColor(String name, Color c) {
+		this.colorMap.put(this.getModel(name), c);
 	}
-	
-	public String getName(LogicalModel m ) {
+
+	public String getName(LogicalModel m) {
 		return this.model2String.get(m);
 	}
 

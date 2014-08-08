@@ -18,6 +18,7 @@ public class Epithelium {
 	private EpitheliumPriorityClasses priorities;
 	private EpitheliumIntegrationFunctions integrationFunctions;
 	private EpitheliumPerturbations perturbations;
+	private boolean isChanged;
 
 	public Epithelium(int x, int y, String topologyLayout, RollOver rollover, LogicalModel m, String name) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		this.name = name;
@@ -27,6 +28,7 @@ public class Epithelium {
 		this.perturbations = new EpitheliumPerturbations();
 		this.componentFeatures = new EpitheliumComponentFeatures();
 		this.componentFeatures.addModel(m);
+		this.isChanged = false;
 	}
 
 	private Epithelium(String name, EpitheliumGrid grid,
@@ -37,6 +39,7 @@ public class Epithelium {
 		this.priorities = epc;
 		this.integrationFunctions = eif;
 		this.perturbations = eap;
+		this.isChanged = false;
 	}
 	
 	public boolean hasModel(LogicalModel m) {
@@ -63,6 +66,7 @@ public class Epithelium {
 
 	public void setName(String name) {
 		this.name = name;
+		this.isChanged = true;
 	}
 
 	public LogicalModel getModel(int x, int y) {
@@ -73,6 +77,7 @@ public class Epithelium {
 		for (Tuple2D tuple : lTuples) {
 			this.grid.setModel(tuple.getX(), tuple.getY(), m);
 		}
+		this.isChanged = true;
 	}
 
 	public void setGridWithComponentValue(String nodeID, byte value,
@@ -81,10 +86,12 @@ public class Epithelium {
 			this.grid.setCellComponentValue(tuple.getX(), tuple.getY(), nodeID,
 					value);
 		}
+		this.isChanged = true;
 	}
 
 	public void setComponentColor(String nodeID, Color color) {
 		this.componentFeatures.setNodeColor(nodeID, color);
+		this.isChanged = true;
 	}
 
 	public void setIntegrationFunction(String nodeID, byte value,
@@ -94,31 +101,37 @@ public class Epithelium {
 			this.integrationFunctions.addComponent(node);
 		}
 		this.integrationFunctions.setFunctionAtLevel(node, value, function);
+		this.isChanged = true;
 	}
 
 	public void initPriorityClasses(LogicalModel m) {
 		ModelPriorityClasses mpc = new ModelPriorityClasses(m);
 		this.priorities.addModelPriorityClasses(mpc);
+		// TODO: this.isChanged = true;
 	}
 
 	public void initComponentFeatures(LogicalModel m) {
 		this.componentFeatures.addModel(m);
+		// TODO: this.isChanged = true;
 	}
 
 	public void setPriorityClasses(LogicalModel m, String pcs) {
 		ModelPriorityClasses mpc = new ModelPriorityClasses(m);
 		mpc.setPriorities(pcs);
 		this.priorities.addModelPriorityClasses(mpc);
+		this.isChanged = true;
 	}
 
 	public void addPerturbation(LogicalModel m, AbstractPerturbation ap) {
 		this.perturbations.addPerturbation(m, ap);
+		this.isChanged = true;
 	}
 
 	public void applyPerturbation(LogicalModel m, AbstractPerturbation ap,
 			Color c, List<Tuple2D> lTuples) {
 		this.perturbations.addPerturbationColor(m, ap, c);
 		this.grid.setPerturbation(m, lTuples, ap);
+		this.isChanged = true;
 	}
 
 	public EpitheliumGrid getEpitheliumGrid() {
@@ -146,10 +159,15 @@ public class Epithelium {
 		return this.perturbations.getModelPerturbations(m);
 	}
 	
-	public Color getCellColor(int x, int y, List<String> compON) {
+	public Color getCellComponentColor(int x, int y, List<String> compON) {
 		byte[] cellState = this.grid.getCellState(x, y);
 		LogicalModel m = this.grid.getModel(x, y);
 		return this.componentFeatures.getCellColor(m, cellState, compON);
+	}
+	
+	public void setModel(int x, int y, LogicalModel m) {
+		this.grid.setModel(x, y, m);
+		this.isChanged = true;
 	}
 
 }

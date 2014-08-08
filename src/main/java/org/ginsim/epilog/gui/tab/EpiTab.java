@@ -21,4 +21,6 @@ public abstract class EpiTab extends JPanel {
 	}
 	
 	public abstract void initialize();
+	
+	public abstract boolean canClose();
 }

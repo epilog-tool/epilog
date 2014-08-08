@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.tree.TreePath;
 
@@ -18,12 +19,10 @@ public abstract class EpiTabDefinitions extends EpiTab {
 	protected ProjectModelFeatures modelFeatures;
 	protected JPanel center;
 	private JPanel south;
-	private boolean changed;
 
 	protected EpiTabDefinitions(Epithelium e, TreePath path, ProjectModelFeatures modelFeatures) {
 		super(e, path);
 		this.modelFeatures = modelFeatures;
-		this.changed = false;
 		this.initializeGUI();
 	}
 
@@ -39,20 +38,19 @@ public abstract class EpiTabDefinitions extends EpiTab {
 		private static final long serialVersionUID = -2133956602678321512L;
 
 		private JButton accept;
-		private JButton cancel;
+		private JButton reset;
 
 		public ModificationsPanel() {
 			this.setLayout(new FlowLayout());
-			this.cancel = new JButton("Cancel");
-			this.cancel.addActionListener(new ActionListener() {
+			this.reset = new JButton("Reset");
+			this.reset.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					buttonCancel();
+					buttonReset();
 				}
 			});
-			this.add(cancel);
+			this.add(reset);
 			this.accept = new JButton("Accept");
-			this.accept.setEnabled(false);
 			this.accept.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -63,7 +61,21 @@ public abstract class EpiTabDefinitions extends EpiTab {
 		}
 	}
 
-	abstract protected void buttonCancel();
+	abstract protected void buttonReset();
 
 	abstract protected void buttonAccept();
+	
+	abstract protected boolean isChanged();
+	
+	public boolean canClose() {
+		if (!this.isChanged())
+			return true;
+		int n = JOptionPane.showConfirmDialog(this,
+				"Modifications in this Tab have not been accepted yet!\nDo you really want to close?",
+				"Question", JOptionPane.YES_NO_OPTION);
+		if (n == JOptionPane.YES_OPTION) {
+			return true;
+		}
+		return false;
+	}
 }
