@@ -26,7 +26,9 @@ public class VisualGridModel extends VisualGrid {
 	private Tuple2D initialRectPos;
 
 	public VisualGridModel(int gridX, int gridY, Topology topology,
-			LogicalModel[][] modelGridClone, Map<LogicalModel, Color> colorMapClone, ProjectModelFeatures modelFeatures) {
+			LogicalModel[][] modelGridClone,
+			Map<LogicalModel, Color> colorMapClone,
+			ProjectModelFeatures modelFeatures) {
 		super(gridX, gridY, topology);
 		this.modelGridClone = modelGridClone;
 		this.colorMapClone = colorMapClone;
@@ -45,7 +47,7 @@ public class VisualGridModel extends VisualGrid {
 			public void mouseDragged(MouseEvent e) {
 				mousePosition2Grid(e);
 				if (isRectFill) {
-					paintMouseRectangle();
+					drawRectangleOverSelectedCells();
 				} else {
 					paintClickedCell();
 				}
@@ -88,12 +90,14 @@ public class VisualGridModel extends VisualGrid {
 				&& pos.getY() >= 0 && pos.getY() < this.gridY);
 	}
 
-	private void paintMouseRectangle() {
+	private void drawRectangleOverSelectedCells() {
 		if (!isInGrid(this.initialRectPos) || !isInGrid(this.mouseGrid))
 			return;
+		this.paintComponent(this.getGraphics());
 		double incX = radius;
 		double incY = radius * Math.sqrt(3) / 2;
-		double initY, initX = incX + this.initialRectPos.getX() * (3 * radius / 2);
+		double initY, initX = incX + this.initialRectPos.getX()
+				* (3 * radius / 2);
 		if (this.initialRectPos.getX() % 2 == 0)
 			initY = incY + this.initialRectPos.getY() * 2 * incY;
 		else
@@ -103,18 +107,29 @@ public class VisualGridModel extends VisualGrid {
 			finalY = incY + this.mouseGrid.getY() * 2 * incY;
 		else
 			finalY = 2 * incY + this.mouseGrid.getY() * 2 * incY;
+		if (this.initialRectPos.getX() == this.mouseGrid.getX()
+				&& this.initialRectPos.getY() == this.mouseGrid.getY()) {
+			initX -= incX / 10;
+			initY -= incY / 10;
+			finalY += incY / 10;
+			finalX += incX / 10;
+		}
 		Polygon square = new Polygon();
-		square.addPoint((int)initX, (int)initY);
-		square.addPoint((int)initX, (int)finalY);
-		square.addPoint((int)finalX, (int)finalY);
-		square.addPoint((int)finalX, (int)initY);
-		
-		Graphics2D g = (Graphics2D)this.getGraphics();
-		g.setStroke(new BasicStroke(3.0f));
-		g.setColor(Color.RED);
+		square.addPoint((int) initX, (int) initY);
+		square.addPoint((int) initX, (int) finalY);
+		square.addPoint((int) finalX, (int) finalY);
+		square.addPoint((int) finalX, (int) initY);
+
+		// Get selected model color
+		LogicalModel m = this.modelFeatures.getModel(this.selModelName);
+		Color c = this.colorMapClone.get(m);
+		// Paint the rectangle
+		Graphics2D g = (Graphics2D) this.getGraphics();
+		g.setStroke(new BasicStroke(4.0f));
+		g.setColor(c);
 		g.drawPolygon(square);
 	}
-	
+
 	private void paintSelectedRectangleCells() {
 		if (!isInGrid(this.initialRectPos) || !isInGrid(this.mouseGrid))
 			return;
@@ -130,7 +145,7 @@ public class VisualGridModel extends VisualGrid {
 			maxY = this.initialRectPos.getY();
 			minY = this.mouseGrid.getY();
 		}
-		
+
 		LogicalModel m = this.modelFeatures.getModel(this.selModelName);
 		for (int x = minX; x <= maxX; x++) {
 			for (int y = minY; y <= maxY; y++) {
