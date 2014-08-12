@@ -1,6 +1,5 @@
 package org.ginsim.epilog.gui;
 
-import java.awt.Component;
 import java.awt.Dialog.ModalityType;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -30,7 +29,6 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -54,8 +52,8 @@ import org.ginsim.epilog.gui.tab.EpiTabModelGrid;
 import org.ginsim.epilog.gui.tab.EpiTabPerturbations;
 import org.ginsim.epilog.gui.tab.EpiTabPriorityClasses;
 import org.ginsim.epilog.gui.tab.EpiTabSimulation;
-import org.ginsim.epilog.io.FileIO;
 import org.ginsim.epilog.io.ButtonImageLoader;
+import org.ginsim.epilog.io.FileIO;
 
 public class EpiGUI extends JFrame {
 	private static final long serialVersionUID = -3266121588934662490L;

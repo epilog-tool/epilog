@@ -69,7 +69,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		jbApplyAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				visualGridModel.makeModelUbiquitus();
+				visualGridModel.applyDataToAll();
 			}
 		});
 		rTop.add(jbApplyAll);
@@ -169,7 +169,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 				this.epithelium.setModel(x, y, this.modelGridClone[x][y]);
 			}
 		}
-		// Copy colorMapClone to ProjecModelFeatures
+		// Copy colorMapClone to ProjectModelFeatures
 		for (JRadioButton jrb : this.mapSBMLMiniPanels.keySet()) {
 			String modelName = jrb.getText();
 			this.modelFeatures.setColor(modelName,
@@ -198,5 +198,4 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		}
 		return false;
 	}
-
 }

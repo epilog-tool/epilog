@@ -37,6 +37,7 @@ public class EpiTabSimulation extends EpiTab {
 
 	private VisualGridSimulation visualGridSimulation;
 	private Map<String, Boolean> mSelCheckboxes;
+	private Map<String, JCheckBox> mNodeID2Checkbox;
 	private ProjectModelFeatures modelFeatures;
 	private List<String> lPresentComps;
 	private List<String> lCompON;
@@ -62,6 +63,7 @@ public class EpiTabSimulation extends EpiTab {
 
 		this.lCompON = new ArrayList<String>();
 		this.mSelCheckboxes = new HashMap<String, Boolean>();
+		this.mNodeID2Checkbox = new HashMap<String, JCheckBox>();
 		this.colorButton2Node = new HashMap<JButton, String>();
 		for (LogicalModel m : this.epithelium.getEpitheliumGrid().getModelSet()) {
 			for (NodeInfo node : m.getNodeOrder()) {
@@ -112,12 +114,40 @@ public class EpiTabSimulation extends EpiTab {
 		JPanel rrTopSel = new JPanel();
 		rrTopSel.setLayout(new BoxLayout(rrTopSel, BoxLayout.X_AXIS));
 		JButton jbSelectAll = new JButton("SelectAll");
+		jbSelectAll.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				for (String nodeID : lPresentComps) {
+					if (mNodeID2Checkbox.containsKey(nodeID)) {
+						mNodeID2Checkbox.get(nodeID).setSelected(true);
+					}
+					mSelCheckboxes.put(nodeID, true);
+					if (!lCompON.contains(nodeID))
+						lCompON.add(nodeID);
+				}
+				visualGridSimulation.paintComponent(visualGridSimulation
+						.getGraphics());
+			}
+		});
 		rrTopSel.add(jbSelectAll);
 		JButton jbDeselectAll = new JButton("DeselectAll");
+		jbDeselectAll.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				for (String nodeID : lPresentComps) {
+					if (mNodeID2Checkbox.containsKey(nodeID)) {
+						mNodeID2Checkbox.get(nodeID).setSelected(false);
+					}
+					mSelCheckboxes.put(nodeID, false);
+					lCompON.remove(nodeID);
+				}
+				visualGridSimulation.paintComponent(visualGridSimulation
+						.getGraphics());
+			}
+		});
 		rrTopSel.add(jbDeselectAll);
 		rrTop.add(rrTopSel);
 
-		// TODO: clean afterwards
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
 				this.epithelium.getEpitheliumGrid().getModelSet());
 		JCheckBox[] items = new JCheckBox[modelList.size()];
@@ -153,21 +183,25 @@ public class EpiTabSimulation extends EpiTab {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		JCheckBox jcb = new JCheckBox(nodeID, mSelCheckboxes.get(nodeID));
-		jcb.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JCheckBox jcb = (JCheckBox) e.getSource();
-				mSelCheckboxes.put(jcb.getText(), jcb.isSelected());
-				if (jcb.isSelected()) {
-					lCompON.add(jcb.getText());
-				} else {
-					lCompON.remove(jcb.getText());
+		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
+		if (jcb == null) {
+			jcb = new JCheckBox(nodeID, mSelCheckboxes.get(nodeID));
+			jcb.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JCheckBox jcb = (JCheckBox) e.getSource();
+					mSelCheckboxes.put(jcb.getText(), jcb.isSelected());
+					if (jcb.isSelected()) {
+						lCompON.add(jcb.getText());
+					} else {
+						lCompON.remove(jcb.getText());
+					}
+					visualGridSimulation.paintComponent(visualGridSimulation
+							.getGraphics());
 				}
-				visualGridSimulation.paintComponent(visualGridSimulation
-						.getGraphics());
-			}
-		});
+			});
+			this.mNodeID2Checkbox.put(nodeID, jcb);
+		}
 		jp.add(jcb, gbc);
 		gbc.gridx = 1;
 		gbc.gridy = 0;
