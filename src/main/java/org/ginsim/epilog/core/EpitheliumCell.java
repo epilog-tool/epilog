@@ -1,7 +1,6 @@
 package org.ginsim.epilog.core;
 
 import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 
 public class EpitheliumCell {
@@ -37,12 +36,10 @@ public class EpitheliumCell {
 	}
 
 	public void setValue(String nodeID, byte value) {
-		for (int i = 0; i < this.model.getNodeOrder().size(); i++) {
-			if (this.model.getNodeOrder().get(i).getNodeID().equals(nodeID)) {
-				state[i] = value;
-				break;
-			}
-		}
+		int index = this.getNodeIndex(nodeID);
+		if (index < 0)
+			return;
+		state[index] = value;
 	}
 
 	public LogicalModel getModel() {
@@ -59,7 +56,7 @@ public class EpitheliumCell {
 	}
 
 	public int getNodeIndex(String nodeID) {
-		for (int i = 0; i < this.model.getNodeOrder().size(); i ++) {
+		for (int i = 0; i < this.model.getNodeOrder().size(); i++) {
 			if (this.model.getNodeOrder().get(i).getNodeID().equals(nodeID))
 				return i;
 		}

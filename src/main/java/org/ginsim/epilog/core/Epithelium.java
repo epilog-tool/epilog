@@ -20,7 +20,11 @@ public class Epithelium {
 	private EpitheliumPerturbations perturbations;
 	private boolean isChanged;
 
-	public Epithelium(int x, int y, String topologyLayout, RollOver rollover, LogicalModel m, String name) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+	public Epithelium(int x, int y, String topologyLayout, RollOver rollover,
+			LogicalModel m, String name) throws InstantiationException,
+			IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException,
+			SecurityException, ClassNotFoundException {
 		this.name = name;
 		this.grid = new EpitheliumGrid(x, y, topologyLayout, rollover, m);
 		this.priorities = new EpitheliumPriorityClasses();
@@ -41,7 +45,7 @@ public class Epithelium {
 		this.perturbations = eap;
 		this.isChanged = false;
 	}
-	
+
 	public boolean hasModel(LogicalModel m) {
 		return this.grid.hasModel(m);
 	}
@@ -57,9 +61,10 @@ public class Epithelium {
 	}
 
 	public String toString() {
-		return this.name + " - " + this.grid.getTopology().getRollOver().toString();
+		return this.name + " ("
+				+ this.grid.getTopology().getRollOver().toString() + ")";
 	}
-	
+
 	public String getName() {
 		return this.name;
 	}
@@ -130,7 +135,9 @@ public class Epithelium {
 	public void applyPerturbation(LogicalModel m, AbstractPerturbation ap,
 			Color c, List<Tuple2D> lTuples) {
 		this.perturbations.addPerturbationColor(m, ap, c);
-		this.grid.setPerturbation(m, lTuples, ap);
+		if (lTuples != null) {
+			this.grid.setPerturbation(m, lTuples, ap);
+		}
 		this.isChanged = true;
 	}
 
@@ -158,7 +165,7 @@ public class Epithelium {
 	public ModelPerturbations getPerturbations(LogicalModel m) {
 		return this.perturbations.getModelPerturbations(m);
 	}
-	
+
 	public void setModel(int x, int y, LogicalModel m) {
 		this.grid.setModel(x, y, m);
 		this.isChanged = true;

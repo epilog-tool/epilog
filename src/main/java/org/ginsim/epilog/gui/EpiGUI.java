@@ -4,6 +4,7 @@ import java.awt.Dialog.ModalityType;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -52,7 +53,7 @@ import org.ginsim.epilog.gui.tab.EpiTabModelGrid;
 import org.ginsim.epilog.gui.tab.EpiTabPerturbations;
 import org.ginsim.epilog.gui.tab.EpiTabPriorityClasses;
 import org.ginsim.epilog.gui.tab.EpiTabSimulation;
-import org.ginsim.epilog.io.ButtonImageLoader;
+import org.ginsim.epilog.io.ButtonFactory;
 import org.ginsim.epilog.io.FileIO;
 
 public class EpiGUI extends JFrame {
@@ -83,7 +84,8 @@ public class EpiGUI extends JFrame {
 		this.projDescPanel = new ProjDescPanel();
 		topLeftFrame.add(this.projDescPanel);
 		JPanel addRemoveModelPanel = new JPanel(new FlowLayout());
-		buttonAdd = new JButton("+");
+		buttonAdd = new JButton("Add");
+		buttonAdd.setMargin(new Insets(0, 10, 0, 10));
 		buttonAdd.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -96,7 +98,8 @@ public class EpiGUI extends JFrame {
 			}
 		});
 		addRemoveModelPanel.add(buttonAdd);
-		buttonRemove = new JButton("-");
+		buttonRemove = new JButton("Delete");
+		buttonRemove.setMargin(new Insets(0, 10, 0, 10));
 		buttonRemove.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -422,7 +425,7 @@ public class EpiGUI extends JFrame {
 				.add(epiNode);
 
 		DefaultMutableTreeNode ic = new DefaultMutableTreeNode(
-				"Initial Conditions");
+				"Initial Condition");
 		epiNode.add(ic);
 		DefaultMutableTreeNode it = new DefaultMutableTreeNode(
 				"Integration Components");
@@ -538,8 +541,8 @@ public class EpiGUI extends JFrame {
 					// Create new Tab
 					Epithelium epi = (Epithelium) parent.getUserObject();
 					EpiTab epiTab = null;
-					String title = parent + ":" + node;
-					if (node.toString() == "Initial Conditions") {
+					String title = ((Epithelium)parent.getUserObject()).getName() + ":" + node;
+					if (node.toString() == "Initial Condition") {
 						epiTab = new EpiTabInitialConditions(epi, selPath,
 								this.project.getModelFeatures());
 					} else if (node.toString() == "Integration Components") {
@@ -573,8 +576,8 @@ public class EpiGUI extends JFrame {
 						pnlTab.add(new JLabel(title), gbc);
 						gbc.gridx++;
 						gbc.weightx = 0;
-						JButton close = ButtonImageLoader
-								.newButtonNoBorder("button_close_gray.png");
+						JButton close = ButtonFactory
+								.getImageNoBorder("button_close_gray.png");
 						close.addActionListener(new ActionListener() {
 							@Override
 							public void actionPerformed(ActionEvent e) {

@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -12,6 +13,7 @@ import java.awt.event.ItemListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -48,15 +50,18 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		this.modelGridClone = new LogicalModel[grid.getX()][grid.getY()];
 		this.colorMapClone = new HashMap<LogicalModel, Color>();
 
-		this.visualGridModel = new VisualGridModel(this.epithelium
-				.getEpitheliumGrid().getX(), this.epithelium
-				.getEpitheliumGrid().getY(), this.epithelium
-				.getEpitheliumGrid().getTopology(), this.modelGridClone,
-				this.colorMapClone, this.modelFeatures);
-		this.center.add(this.visualGridModel, BorderLayout.CENTER);
-
-		JPanel rTop = new JPanel(new FlowLayout());
+		JPanel lTopButtons = new JPanel(new FlowLayout());
+		JButton jbApplyAll = new JButton("Apply All");
+		jbApplyAll.setMargin(new Insets(0, 0, 0, 0));
+		jbApplyAll.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				visualGridModel.applyDataToAll();
+			}
+		});
+		lTopButtons.add(jbApplyAll);
 		JToggleButton jtbRectFill = new JToggleButton("Rectangle Fill", false);
+		jtbRectFill.setMargin(new Insets(0, 0, 0, 0));
 		jtbRectFill.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -64,64 +69,57 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 				visualGridModel.isRectangleFill(jtb.isSelected());
 			}
 		});
-		rTop.add(jtbRectFill);
-		JButton jbApplyAll = new JButton("Apply All");
-		jbApplyAll.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				visualGridModel.applyDataToAll();
-			}
-		});
-		rTop.add(jbApplyAll);
+		lTopButtons.add(jtbRectFill);
 
-		JPanel rCenter = new JPanel();
-		rCenter.setLayout(new GridBagLayout());
+		JPanel lCenter = new JPanel(new GridBagLayout());
+		lCenter.setBorder(BorderFactory.createTitledBorder("Model selection"));
 		GridBagConstraints gbc = new GridBagConstraints();
-		int i = 0;
+		gbc.insets = new Insets(1, 5, 1, 0);
+		int y = 0;
 		for (String name : this.modelFeatures.getNames()) {
-			JPanel jp = this.getSBMLMiniPanel(group, name);
+			gbc.gridy = y;
+			y++;
 			gbc.gridx = 0;
-			gbc.gridy = i++;
-			rCenter.add(jp, gbc);
+			gbc.anchor = GridBagConstraints.WEST;
+			JRadioButton jrButton = new JRadioButton(name);
+			jrButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JRadioButton jrb = (JRadioButton) e.getSource();
+					visualGridModel.setSelModelName(jrb.getText());
+				}
+			});
+			lCenter.add(jrButton, gbc);
+			group.add(jrButton);
+
+			gbc.gridx = 1;
+			JButton jbColor = new JButton();
+			jbColor.setBackground(this.modelFeatures.getColor(name));
+			jbColor.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					setNewColor((JButton) e.getSource());
+				}
+			});
+			lCenter.add(jbColor, gbc);
+			this.mapSBMLMiniPanels.put(jrButton, jbColor);
 		}
 
-		JPanel right = new JPanel(new BorderLayout());
-		right.add(rTop, BorderLayout.NORTH);
-		right.add(rCenter, BorderLayout.CENTER);
-		this.center.add(right, BorderLayout.LINE_END);
+		JPanel left = new JPanel(new BorderLayout());
+		JPanel lTop = new JPanel(new BorderLayout());
+		lTop.add(lTopButtons, BorderLayout.NORTH);
+		lTop.add(lCenter, BorderLayout.CENTER);
+		left.add(lTop, BorderLayout.PAGE_START);
+		this.center.add(left, BorderLayout.LINE_START);
+
+		this.visualGridModel = new VisualGridModel(this.epithelium
+				.getEpitheliumGrid().getX(), this.epithelium
+				.getEpitheliumGrid().getY(), this.epithelium
+				.getEpitheliumGrid().getTopology(), this.modelGridClone,
+				this.colorMapClone, this.modelFeatures);
+		this.center.add(this.visualGridModel, BorderLayout.CENTER);
+
 		this.buttonReset();
-	}
-
-	private JPanel getSBMLMiniPanel(ButtonGroup group, String name) {
-		JPanel jp = new JPanel();
-		jp.setLayout(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		JRadioButton jrButton = new JRadioButton(name);
-		jrButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JRadioButton jrb = (JRadioButton) e.getSource();
-				visualGridModel.setSelModelName(jrb.getText());
-			}
-		});
-		jp.add(jrButton, gbc);
-		group.add(jrButton);
-
-		gbc.gridx = 1;
-		gbc.gridy = 0;
-		JButton jbColor = new JButton();
-		jbColor.setBackground(this.modelFeatures.getColor(name));
-		jbColor.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				setNewColor((JButton) e.getSource());
-			}
-		});
-		jp.add(jbColor, gbc);
-		this.mapSBMLMiniPanels.put(jrButton, jbColor);
-		return jp;
 	}
 
 	private void setNewColor(JButton jb) {
@@ -166,7 +164,10 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		// Copy modelClone to modelGrid
 		for (int x = 0; x < this.modelGridClone.length; x++) {
 			for (int y = 0; y < this.modelGridClone[0].length; y++) {
-				this.epithelium.setModel(x, y, this.modelGridClone[x][y]);
+				if (!this.epithelium.getModel(x, y).equals(
+						this.modelGridClone[x][y])) {
+					this.epithelium.setModel(x, y, this.modelGridClone[x][y]);
+				}
 			}
 		}
 		// Copy colorMapClone to ProjectModelFeatures
@@ -175,6 +176,9 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 			this.modelFeatures.setColor(modelName,
 					this.mapSBMLMiniPanels.get(jrb).getBackground());
 		}
+		// Make Epithelium structures coherent
+		this.epithelium.getEpitheliumGrid().updateModelSet();
+		// TODO this.epithelium.getComponentFeatures()
 	}
 
 	@Override

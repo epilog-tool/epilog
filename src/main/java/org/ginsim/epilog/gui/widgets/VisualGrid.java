@@ -15,8 +15,9 @@ import org.ginsim.epilog.core.topology.Topology;
 public abstract class VisualGrid extends JPanel {
 	private static final long serialVersionUID = 6126822003689575762L;
 
-	protected final BasicStroke basicStroke = new BasicStroke(1.0f);
-	protected final BasicStroke rectStroke = new BasicStroke(4.0f);
+	protected final BasicStroke strokeBasic = new BasicStroke(1.0f);
+	protected final BasicStroke strokePerturb = new BasicStroke(2.0f);
+	protected final BasicStroke strokeRect = new BasicStroke(4.0f);
 
 	protected int gridX;
 	protected int gridY;
@@ -69,17 +70,18 @@ public abstract class VisualGrid extends JPanel {
 
 		Graphics2D g = (Graphics2D) this.getGraphics();
 		// Paint the rectangle
-		g.setStroke(this.rectStroke);
+		g.setStroke(this.strokeRect);
 		g.setColor(c);
 		g.drawPolygon(square);
 	}
 
 	protected void paintCellsAtRectangle(Tuple2D init, Tuple2D end) {
-		if (!isInGrid(init) || !isInGrid(end))
+		if (!isInGrid(init) || !isInGrid(end)) {
+			this.paintComponent(this.getGraphics());
 			return;
+		}
 		Tuple2D min = init.getMin(end);
 		Tuple2D max = init.getMax(end);
-
 		for (int x = min.getX(); x <= max.getX(); x++) {
 			for (int y = min.getY(); y <= max.getY(); y++) {
 				this.applyDataAt(x, y);
@@ -93,7 +95,7 @@ public abstract class VisualGrid extends JPanel {
 		if (!this.isInGrid(pos))
 			return;
 
-		this.applyDataAt(this.mouseGrid.getX(), this.mouseGrid.getY());
+		this.applyDataAt(pos.getX(), pos.getY());
 		this.paintComponent(this.getGraphics());
 	}
 

@@ -55,8 +55,8 @@ public class Simulation {
 		IntegrationFunctionEvaluation evaluator = new IntegrationFunctionEvaluation(
 				currGrid, this.epithelium.getComponentFeatures());
 
-		for (int x = 0; x < currGrid.getX(); x++) {
-			for (int y = 0; y < currGrid.getY(); y++) {
+		for (int y = 0; y < currGrid.getY(); y++) {
+			for (int x = 0; x < currGrid.getX(); x++) {
 				byte[] currState = currGrid.getCellState(x, y);
 
 				// 1. Apply the Cell perturbation
@@ -95,7 +95,7 @@ public class Simulation {
 						// FIXME: priorities with + or -
 						String id = (nodeID.endsWith("+") || nodeID
 								.endsWith("-")) ? nodeID.substring(-1) : nodeID;
-								
+
 						NodeInfo node = this.epithelium.getComponentFeatures()
 								.getNodeInfo(nodeID);
 						int index = perturbedModel.getNodeOrder().indexOf(node);

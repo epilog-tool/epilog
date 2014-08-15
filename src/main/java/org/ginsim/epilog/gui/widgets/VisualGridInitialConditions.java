@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.colomoto.logicalmodel.LogicalModel;
 import org.ginsim.epilog.Tuple2D;
 import org.ginsim.epilog.core.EpitheliumCell;
 import org.ginsim.epilog.core.topology.Topology;
@@ -24,6 +25,7 @@ public class VisualGridInitialConditions extends VisualGrid {
 	private Map<String, Color> colorMapClone;
 	private boolean isRectFill;
 	private Tuple2D initialRectPos;
+	private LogicalModel selectedModel;
 
 	public VisualGridInitialConditions(int gridX, int gridY, Topology topology,
 			EpitheliumCell[][] cellGridClone, Map<String, Color> colorMapClone,
@@ -34,6 +36,7 @@ public class VisualGridInitialConditions extends VisualGrid {
 		this.mNode2ValueSelected = mNode2ValueSelected;
 		this.isRectFill = false;
 		this.initialRectPos = null;
+		this.selectedModel = null;
 
 		this.addMouseMotionListener(new MouseMotionListener() {
 			@Override
@@ -82,8 +85,11 @@ public class VisualGridInitialConditions extends VisualGrid {
 		});
 	}
 
+	public void setModel(LogicalModel m) {
+		this.selectedModel = m;
+	}
+
 	private void drawRectangleOverSelectedCells() {
-		// TODO: which color to draw ?
 		Color c = Color.BLACK;
 
 		// Paint the rectangle
@@ -111,26 +117,27 @@ public class VisualGridInitialConditions extends VisualGrid {
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
 				Polygon polygon = topology.createNewPolygon(this.radius, x, y);
-				List<Color> lColors = new ArrayList<Color>();
-				for (String nodeID : this.mNode2ValueSelected.keySet()) {
-					int index = this.cellGridClone[x][y].getNodeIndex(nodeID);
-					if (index > 0) { // if cell has nodeID
-						Color cBase = this.colorMapClone.get(nodeID);
-						if (cBase == null) {
-							System.out.println("[" + x + "," + y + "] "
-									+ nodeID + " : " + cBase);
-						}
-						byte value = this.cellGridClone[x][y].getState()[index];
-						if (value > 0) {
-							byte max = this.cellGridClone[x][y].getModel()
-									.getNodeOrder().get(index).getMax();
-							lColors.add(ColorUtils.getColorAtValue(cBase, max,
-									value));
+				Color cCombined;
+				if (this.cellGridClone[x][y].getModel().equals(this.selectedModel)) {
+					List<Color> lColors = new ArrayList<Color>();
+					for (String nodeID : this.mNode2ValueSelected.keySet()) {
+						int index = this.cellGridClone[x][y].getNodeIndex(nodeID);
+						if (index >= 0) { // if cell has nodeID
+							Color cBase = this.colorMapClone.get(nodeID);
+							byte value = this.cellGridClone[x][y].getState()[index];
+							if (value > 0) {
+								byte max = this.cellGridClone[x][y].getModel()
+										.getNodeOrder().get(index).getMax();
+								lColors.add(ColorUtils.getColorAtValue(cBase, max,
+										value));
+							}
 						}
 					}
+					cCombined = ColorUtils.combine(lColors);
+				} else {
+					cCombined = this.getParent().getBackground();
 				}
-				Color cCombined = ColorUtils.combine(lColors);
-				this.paintPolygon(this.basicStroke, cCombined, polygon, g2);
+				this.paintPolygon(this.strokeBasic, cCombined, polygon, g2);
 			}
 		}
 	}

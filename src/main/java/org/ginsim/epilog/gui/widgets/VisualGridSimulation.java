@@ -39,7 +39,7 @@ public class VisualGridSimulation extends VisualGrid {
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
 				Polygon polygon = topology.createNewPolygon(this.radius, x, y);
-				BasicStroke stroke = this.basicStroke;
+				BasicStroke stroke = this.strokeBasic;
 				if (this.epiGrid.getPerturbation(x, y) != null) {
 					stroke = new BasicStroke(4.0f);
 				}
@@ -61,6 +61,11 @@ public class VisualGridSimulation extends VisualGrid {
 				this.paintPolygon(stroke, cCombined, polygon, g2);
 			}
 		}
+	}
+
+	@Override
+	protected void applyDataAt(int x, int y) {
+		// TODO Auto-generated method stub
 	}
 
 }

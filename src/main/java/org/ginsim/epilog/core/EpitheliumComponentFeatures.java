@@ -1,7 +1,6 @@
 package org.ginsim.epilog.core;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,18 +47,21 @@ public class EpitheliumComponentFeatures {
 		this.nodeColor.put(nodeID, color);
 	}
 
+	public Set<String> getModelComponents(LogicalModel m, boolean input) {
+		Set<String> sComps = new HashSet<String>();
+		for (NodeInfo node : m.getNodeOrder()) {
+			if (!input && !node.isInput() || input && node.isInput()) {
+				sComps.add(node.getNodeID());
+			}
+		}
+		return sComps;
+	}
 	public Set<String> getModelsComponents(List<LogicalModel> lModels,
 			boolean input) {
 		Set<String> sComps = new HashSet<String>();
 		if (!lModels.isEmpty()) {
-			System.out.println(lModels);
 			for (LogicalModel m : lModels) {
-
-				for (NodeInfo node : m.getNodeOrder()) {
-					if (!input && !node.isInput() || input && node.isInput()) {
-						sComps.add(node.getNodeID());
-					}
-				}
+				sComps.addAll(this.getModelComponents(m, input));
 			}
 		}
 		return sComps;

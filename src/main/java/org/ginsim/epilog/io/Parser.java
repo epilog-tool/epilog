@@ -21,7 +21,6 @@ import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
 import org.ginsim.epilog.Project;
-import org.ginsim.epilog.ProjectModelFeatures;
 import org.ginsim.epilog.Tuple2D;
 import org.ginsim.epilog.core.ComponentIntegrationFunctions;
 import org.ginsim.epilog.core.Epithelium;
@@ -139,9 +138,11 @@ public class Parser {
 				if (!rest.isEmpty()) {
 					saTmp = rest.split("\\s+");
 					Color c = ColorUtils.getColor(saTmp[0], saTmp[1], saTmp[2]);
-					List<Tuple2D> lTuple = currEpi.getEpitheliumGrid()
-							.getTopology()
-							.instances2Tuples2D(saTmp[3].split(","));
+					List<Tuple2D> lTuple = null;
+					if (saTmp.length > 3) {
+						lTuple = currEpi.getEpitheliumGrid().getTopology()
+								.instances2Tuples2D(saTmp[3].split(","));
+					}
 					currEpi.applyPerturbation(m, ap, c, lTuple);
 				}
 			}
@@ -228,9 +229,9 @@ public class Parser {
 			for (int x = 0; x < grid.getX(); x++, currI++) {
 				LogicalModel currM = grid.getModel(x, y);
 				if (!currM.equals(lastM)) {
-					if (!modelInst.containsKey(currM))
-						modelInst.put(currM, new ArrayList<String>());
-					List<String> lTmp = modelInst.get(currM);
+					if (!modelInst.containsKey(lastM))
+						modelInst.put(lastM, new ArrayList<String>());
+					List<String> lTmp = modelInst.get(lastM);
 					if ((currI - 1) == lastI) {
 						lTmp.add("" + lastI);
 					} else {
@@ -239,12 +240,17 @@ public class Parser {
 					lastI = currI;
 				}
 				lastM = currM;
+				if (x == (grid.getX() - 1) && y == (grid.getY() - 1)) {
+					if (!modelInst.containsKey(lastM))
+						modelInst.put(lastM, new ArrayList<String>());
+					List<String> lTmp = modelInst.get(lastM);
+					if (currI == lastI) {
+						lTmp.add("" + lastI);
+					} else {
+						lTmp.add(lastI + "-" + currI);
+					}
+				}
 			}
-		}
-		if (modelInst.isEmpty()) {
-			List<String> lTmp = new ArrayList<String>();
-			lTmp.add("0-" + (grid.getX() * grid.getY() - 1));
-			modelInst.put(lastM, lTmp);
 		}
 		for (LogicalModel m : modelInst.keySet()) {
 			w.println("GM " + model2Key.get(m) + " "
@@ -284,23 +290,8 @@ public class Parser {
 		for (LogicalModel m : valueInst.keySet()) {
 			for (String nodeID : valueInst.get(m).keySet()) {
 				for (byte value : valueInst.get(m).get(nodeID).keySet()) {
-					List<Integer> iInsts = valueInst.get(m).get(nodeID)
-							.get(value);
-					List<String> sInsts = new ArrayList<String>();
-					for (int currI = 1, lastI = 0; currI < iInsts.size(); currI++) {
-						if ((iInsts.get(currI - 1) + 1) != iInsts.get(currI)) {
-							if (lastI == (currI)) {
-								sInsts.add("" + iInsts.get(currI));
-							} else {
-								sInsts.add(iInsts.get(lastI) + "-"
-										+ iInsts.get(currI - 1));
-							}
-							lastI = currI;
-						}
-					}
-					if (sInsts.isEmpty()) {
-						sInsts.add("0-" + (grid.getX() * grid.getY() - 1));
-					}
+					List<String> sInsts = compactIntegerSequences(valueInst
+							.get(m).get(nodeID).get(value));
 					w.println("IC " + nodeID + " " + value + " "
 							+ join(sInsts, ","));
 				}
@@ -379,6 +370,27 @@ public class Parser {
 				w.println();
 			}
 		}
+	}
+
+	private static List<String> compactIntegerSequences(List<Integer> iInsts) {
+		List<String> sInsts = new ArrayList<String>();
+		for (int currI = 1, lastI = 0; currI < iInsts.size(); currI++) {
+			if ((iInsts.get(currI - 1) + 1) == iInsts.get(currI))
+				continue;
+			if ((currI - 1) == lastI)
+				sInsts.add("" + iInsts.get(lastI));
+			else
+				sInsts.add(iInsts.get(lastI) + "-" + iInsts.get(currI - 1));
+			if ((currI + 1) == iInsts.size()) { // It's at the last position
+				if ((iInsts.get(currI - 1) + 1) == iInsts.get(currI))
+					sInsts.add(iInsts.get(lastI) + "-" + iInsts.get(currI));
+				else {
+					sInsts.add("" + iInsts.get(currI));
+				}
+			}
+			lastI = currI;
+		}
+		return sInsts;
 	}
 
 	private static String join(List<String> list, String sep) {

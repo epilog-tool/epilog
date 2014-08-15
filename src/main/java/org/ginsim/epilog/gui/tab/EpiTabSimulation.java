@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ import org.ginsim.epilog.ProjectModelFeatures;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.gui.widgets.JComboCheckBox;
 import org.ginsim.epilog.gui.widgets.VisualGridSimulation;
-import org.ginsim.epilog.io.ButtonImageLoader;
+import org.ginsim.epilog.io.ButtonFactory;
 
 public class EpiTabSimulation extends EpiTab {
 	private static final long serialVersionUID = 1394895739386499680L;
@@ -43,10 +44,10 @@ public class EpiTabSimulation extends EpiTab {
 	private List<String> lCompON;
 	private Map<JButton, String> colorButton2Node;
 
-	private JPanel left;
-	private JSplitPane right;
-	private JPanel rLeft;
-	private JPanel rRight;
+	private JPanel jpRight;
+	private JSplitPane jspLeft;
+	private JPanel lRight;
+	private JPanel lLeft;
 	private JSplitPane jspRRCenter;
 
 	public EpiTabSimulation(Epithelium e, TreePath path,
@@ -58,8 +59,8 @@ public class EpiTabSimulation extends EpiTab {
 	public void initialize() {
 		setLayout(new BorderLayout());
 
-		this.left = new JPanel(new BorderLayout());
-		this.add(this.left, BorderLayout.CENTER);
+		this.jpRight = new JPanel(new BorderLayout());
+		this.add(this.jpRight, BorderLayout.CENTER);
 
 		this.lCompON = new ArrayList<String>();
 		this.mSelCheckboxes = new HashMap<String, Boolean>();
@@ -76,7 +77,7 @@ public class EpiTabSimulation extends EpiTab {
 				.getEpitheliumGrid().getTopology(),
 				this.epithelium.getComponentFeatures(),
 				this.epithelium.getEpitheliumGrid(), this.lCompON);
-		this.left.add(this.visualGridSimulation, BorderLayout.CENTER);
+		this.jpRight.add(this.visualGridSimulation, BorderLayout.CENTER);
 
 		JPanel bLeft = new JPanel(new FlowLayout());
 		JButton jbBack = new JButton("back");
@@ -87,12 +88,12 @@ public class EpiTabSimulation extends EpiTab {
 		bLeft.add(jtSteps);
 		JButton jbFastFwr = new JButton("fstfwr");
 		bLeft.add(jbFastFwr);
-		JButton jbPicture = ButtonImageLoader
-				.newButtonNoBorder("screenshot-16.png");
+		JButton jbPicture = ButtonFactory
+				.getImageNoBorder("screenshot-16.png");
 		bLeft.add(jbPicture);
-		this.left.add(bLeft, BorderLayout.SOUTH);
+		this.jpRight.add(bLeft, BorderLayout.SOUTH);
 
-		this.rLeft = new JPanel(new BorderLayout());
+		this.lRight = new JPanel(new BorderLayout());
 
 		JPanel rlTop = new JPanel();
 		rlTop.setLayout(new BoxLayout(rlTop, BoxLayout.Y_AXIS));
@@ -100,20 +101,33 @@ public class EpiTabSimulation extends EpiTab {
 		rlTop.add(jbReset);
 		JButton jbClone = new JButton("Clone");
 		rlTop.add(jbClone);
-		this.rLeft.add(rlTop, BorderLayout.PAGE_START);
+		this.lRight.add(rlTop, BorderLayout.PAGE_START);
 
 		JPanel rlBottom = new JPanel();
 		rlBottom.add(new JLabel("TODO: Analytics"));
-		this.rLeft.add(rlBottom, BorderLayout.CENTER);
+		this.lRight.add(rlBottom, BorderLayout.CENTER);
 
-		this.rRight = new JPanel(new BorderLayout());
+		this.lLeft = new JPanel(new BorderLayout());
 
 		JPanel rrTop = new JPanel();
 		rrTop.setLayout(new BoxLayout(rrTop, BoxLayout.Y_AXIS));
 
-		JPanel rrTopSel = new JPanel();
-		rrTopSel.setLayout(new BoxLayout(rrTopSel, BoxLayout.X_AXIS));
+		// Model combobox
+		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
+				this.epithelium.getEpitheliumGrid().getModelSet());
+		JCheckBox[] items = new JCheckBox[modelList.size()];
+		for (int i = 0; i < modelList.size(); i++) {
+			items[i] = new JCheckBox(this.modelFeatures.getName(modelList
+					.get(i)));
+			items[i].setSelected(false);
+		}
+		JComboCheckBox jccb = new JComboCheckBox(items);
+		rrTop.add(jccb);
+
+		// Select/Deselect buttons
+		JPanel rrTopSel = new JPanel(new FlowLayout());
 		JButton jbSelectAll = new JButton("SelectAll");
+		jbSelectAll.setMargin(new Insets(0, 0, 0, 0));
 		jbSelectAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -131,6 +145,7 @@ public class EpiTabSimulation extends EpiTab {
 		});
 		rrTopSel.add(jbSelectAll);
 		JButton jbDeselectAll = new JButton("DeselectAll");
+		jbDeselectAll.setMargin(new Insets(0, 0, 0, 0));
 		jbDeselectAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -148,21 +163,11 @@ public class EpiTabSimulation extends EpiTab {
 		rrTopSel.add(jbDeselectAll);
 		rrTop.add(rrTopSel);
 
-		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
-				this.epithelium.getEpitheliumGrid().getModelSet());
-		JCheckBox[] items = new JCheckBox[modelList.size()];
-		for (int i = 0; i < modelList.size(); i++) {
-			items[i] = new JCheckBox(this.modelFeatures.getName(modelList
-					.get(i)));
-			items[i].setSelected(false);
-		}
-		JComboCheckBox jccb = new JComboCheckBox(items);
-		rrTop.add(jccb);
 		rrTop.setBorder(BorderFactory.createTitledBorder("Display options"));
-		this.rRight.add(rrTop, BorderLayout.NORTH);
+		this.lLeft.add(rrTop, BorderLayout.NORTH);
 
 		this.jspRRCenter = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		this.rRight.add(jspRRCenter, BorderLayout.CENTER);
+		this.lLeft.add(jspRRCenter, BorderLayout.CENTER);
 		jccb.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -171,18 +176,18 @@ public class EpiTabSimulation extends EpiTab {
 			}
 		});
 
-		this.right = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, rLeft, rRight);
+		this.jspLeft = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, lLeft,
+				lRight);
 
-		this.add(this.right, BorderLayout.LINE_END);
+		this.add(this.jspLeft, BorderLayout.LINE_START);
 		updateComponentList(jccb.getSelectedItems());
 	}
 
-	private JPanel getCompMiniPanel(String nodeID) {
-		JPanel jp = new JPanel();
-		jp.setLayout(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
+	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y,
+			String nodeID) {
+		gbc.gridy = y;
 		gbc.gridx = 0;
-		gbc.gridy = 0;
+		gbc.anchor = GridBagConstraints.WEST;
 		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
 		if (jcb == null) {
 			jcb = new JCheckBox(nodeID, mSelCheckboxes.get(nodeID));
@@ -204,7 +209,6 @@ public class EpiTabSimulation extends EpiTab {
 		}
 		jp.add(jcb, gbc);
 		gbc.gridx = 1;
-		gbc.gridy = 0;
 		JButton jbColor = new JButton();
 		jbColor.setBackground(this.epithelium.getComponentFeatures()
 				.getNodeColor(nodeID));
@@ -216,7 +220,6 @@ public class EpiTabSimulation extends EpiTab {
 		});
 		jp.add(jbColor, gbc);
 		this.colorButton2Node.put(jbColor, nodeID);
-		return jp;
 	}
 
 	private void setNewColor(JButton jb) {
@@ -244,25 +247,28 @@ public class EpiTabSimulation extends EpiTab {
 		this.lPresentComps = new ArrayList<String>();
 
 		// Proper components
-		JPanel jpRRCTop = new JPanel();
-		jpRRCTop.setLayout(new BoxLayout(jpRRCTop, BoxLayout.Y_AXIS));
+		JPanel jpRRCTop = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(1, 5, 1, 0);
 		jpRRCTop.setBorder(BorderFactory
 				.createTitledBorder("Proper components"));
 		Set<String> sProperCompsFromSelectedModels = this.epithelium
 				.getComponentFeatures().getModelsComponents(lModels, false);
+		int y = 0;
 		for (String nodeID : sProperCompsFromSelectedModels) {
 			this.lPresentComps.add(nodeID);
 			if (mSelCheckboxes.get(nodeID)) {
 				this.lCompON.add(nodeID);
 			}
-			JPanel jpComp = this.getCompMiniPanel(nodeID);
-			jpRRCTop.add(jpComp);
+			this.getCompMiniPanel(jpRRCTop, gbc, y, nodeID);
+			y++;
 		}
 		this.jspRRCenter.add(jpRRCTop);
 
 		// Input components
-		JPanel jpRRCBottom = new JPanel();
-		jpRRCBottom.setLayout(new BoxLayout(jpRRCBottom, BoxLayout.Y_AXIS));
+		JPanel jpRRCBottom = new JPanel(new GridBagLayout());
+		gbc = new GridBagConstraints();
+		gbc.insets = new Insets(1, 5, 1, 0);
 		jpRRCBottom.setBorder(BorderFactory
 				.createTitledBorder("Input components"));
 		Set<String> sInputCompsFromSelectedModels = this.epithelium
@@ -273,13 +279,14 @@ public class EpiTabSimulation extends EpiTab {
 				lEnvInputCompsFromSelectedModels.add(nodeID);
 			}
 		}
+		y = 0;
 		for (String nodeID : lEnvInputCompsFromSelectedModels) {
 			this.lPresentComps.add(nodeID);
 			if (mSelCheckboxes.get(nodeID)) {
 				this.lCompON.add(nodeID);
 			}
-			JPanel jpComp = this.getCompMiniPanel(nodeID);
-			jpRRCBottom.add(jpComp);
+			this.getCompMiniPanel(jpRRCBottom, gbc, y, nodeID);
+			y++;
 		}
 		this.jspRRCenter.add(jpRRCBottom);
 		this.visualGridSimulation.paintComponent(this.visualGridSimulation

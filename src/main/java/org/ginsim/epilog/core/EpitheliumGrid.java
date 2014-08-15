@@ -26,7 +26,7 @@ public class EpitheliumGrid {
 		this.modelSet = modelSet;
 	}
 
-	public EpitheliumGrid(int x, int y, String topologyLayout,
+	public EpitheliumGrid(int gridX, int gridY, String topologyLayout,
 			RollOver rollover, LogicalModel m) throws InstantiationException,
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
@@ -35,11 +35,11 @@ public class EpitheliumGrid {
 				"org.ginsim.epilog.core.topology.TopologyHexagon"
 						+ topologyLayout).getConstructor(Integer.TYPE,
 				Integer.TYPE, RollOver.class);
-		this.topology = (Topology) c.newInstance(x, y, rollover);
-		this.gridEpiCell = new EpitheliumCell[this.getX()][this.getY()];
-		for (int i = 0; i < this.getX(); i++) {
-			for (int j = 0; j < this.getY(); j++) {
-				this.gridEpiCell[i][j] = new EpitheliumCell(m);
+		this.topology = (Topology) c.newInstance(gridX, gridY, rollover);
+		this.gridEpiCell = new EpitheliumCell[gridX][gridY];
+		for (int y = 0; y < gridY; y++) {
+			for (int x = 0; x < gridX; x++) {
+				this.gridEpiCell[x][y] = new EpitheliumCell(m);
 			}
 		}
 		this.modelSet = new HashSet<LogicalModel>();
@@ -52,8 +52,8 @@ public class EpitheliumGrid {
 
 	public void updateModelSet() {
 		this.modelSet = new HashSet<LogicalModel>();
-		for (int x = 0; x < this.getX(); x++) {
-			for (int y = 0; y < this.getY(); y++) {
+		for (int y = 0; y < this.getY(); y++) {
+			for (int x = 0; x < this.getX(); x++) {
 				this.modelSet.add(this.gridEpiCell[x][y].getModel());
 			}
 		}
@@ -80,17 +80,20 @@ public class EpitheliumGrid {
 	}
 
 	public EpitheliumGrid clone() {
-		int x = this.getX();
-		int y = this.getY();
-		EpitheliumCell[][] newGrid = new EpitheliumCell[x][y];
-		for (int i = 0; i < x; i++) {
-			for (int j = 0; j < y; j++) {
-				newGrid[i][j] = gridEpiCell[i][j].clone();
+		EpitheliumCell[][] newGrid = new EpitheliumCell[this.getX()][this
+				.getY()];
+		for (int y = 0; y < this.getY(); y++) {
+			for (int x = 0; x < this.getX(); x++) {
+				newGrid[x][y] = this.gridEpiCell[x][y].clone();
 			}
 		}
 		Topology newTop = this.topology.clone();
 		Set<LogicalModel> newModelSet = new HashSet<LogicalModel>(this.modelSet);
 		return new EpitheliumGrid(newGrid, newTop, newModelSet);
+	}
+
+	public EpitheliumCell cloneEpitheliumCellAt(int x, int y) {
+		return this.gridEpiCell[x][y].clone();
 	}
 
 	public AbstractPerturbation getPerturbation(int x, int y) {
@@ -129,6 +132,7 @@ public class EpitheliumGrid {
 
 	public void setModel(int x, int y, LogicalModel m) {
 		gridEpiCell[x][y].setModel(m);
+		this.modelSet.add(m);
 	}
 
 	public List<EpitheliumCell> getNeighbours(int x, int y, int minDist,
@@ -179,11 +183,10 @@ public class EpitheliumGrid {
 			return false;
 		if (this.getY() != o.getY())
 			return false;
-		for (int x = 0; x < this.getX(); x++) {
-			for (int y = 0; y < this.getY(); y++) {
-				if (!this.getModel(x, y).equals(o.getModel(x, y)))// FIXME <-
-																	// can be
-																	// diff?
+		for (int y = 0; y < this.getY(); y++) {
+			for (int x = 0; x < this.getX(); x++) {
+				// FIXME <- can be diff ?
+				if (!this.getModel(x, y).equals(o.getModel(x, y)))
 					return false;
 				if (this.getPerturbation(x, y) != o.getPerturbation(x, y))
 					return false;

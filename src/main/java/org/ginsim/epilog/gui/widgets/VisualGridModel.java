@@ -117,7 +117,7 @@ public class VisualGridModel extends VisualGrid {
 			for (int y = 0; y < this.gridY; y++) {
 				Polygon polygon = topology.createNewPolygon(this.radius, x, y);
 				Color c = this.colorMapClone.get(this.modelGridClone[x][y]);
-				this.paintPolygon(this.basicStroke, c, polygon, g2);
+				this.paintPolygon(this.strokeBasic, c, polygon, g2);
 			}
 		}
 	}
