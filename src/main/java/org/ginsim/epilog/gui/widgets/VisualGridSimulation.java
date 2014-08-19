@@ -28,6 +28,10 @@ public class VisualGridSimulation extends VisualGrid {
 		this.epiGrid = epiGrid;
 		this.lCompON = lCompON;
 	}
+	
+	public void setEpitheliumGrid(EpitheliumGrid grid) {
+		this.epiGrid = grid;
+	}
 
 	@Override
 	public void paintComponent(Graphics g) {
@@ -41,7 +45,7 @@ public class VisualGridSimulation extends VisualGrid {
 				Polygon polygon = topology.createNewPolygon(this.radius, x, y);
 				BasicStroke stroke = this.strokeBasic;
 				if (this.epiGrid.getPerturbation(x, y) != null) {
-					stroke = new BasicStroke(4.0f);
+					stroke = this.strokePerturb;
 				}
 				List<Color> lColors = new ArrayList<Color>();
 				for (String nodeID : this.lCompON) {

@@ -26,6 +26,7 @@ public class ButtonFactory {
 			public void setBorder(Border border) {
 			}
 		};
+//		button.setMargin(new Insets(0, 0, 0, 0));
 		return button;
 	}
 

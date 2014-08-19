@@ -8,6 +8,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +30,10 @@ import javax.swing.tree.TreePath;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.ginsim.epilog.ProjectModelFeatures;
+import org.ginsim.epilog.Simulation;
 import org.ginsim.epilog.core.Epithelium;
+import org.ginsim.epilog.core.EpitheliumGrid;
+import org.ginsim.epilog.gui.color.ColorUtils;
 import org.ginsim.epilog.gui.widgets.JComboCheckBox;
 import org.ginsim.epilog.gui.widgets.VisualGridSimulation;
 import org.ginsim.epilog.io.ButtonFactory;
@@ -37,12 +42,16 @@ public class EpiTabSimulation extends EpiTab {
 	private static final long serialVersionUID = 1394895739386499680L;
 
 	private VisualGridSimulation visualGridSimulation;
+	private Simulation simulation;
 	private Map<String, Boolean> mSelCheckboxes;
 	private Map<String, JCheckBox> mNodeID2Checkbox;
 	private ProjectModelFeatures modelFeatures;
 	private List<String> lPresentComps;
 	private List<String> lCompON;
 	private Map<JButton, String> colorButton2Node;
+	private int iUserBurst;
+	private int iCurrSimIter;
+	private JLabel jlStep;
 
 	private JPanel jpRight;
 	private JSplitPane jspLeft;
@@ -59,6 +68,9 @@ public class EpiTabSimulation extends EpiTab {
 	public void initialize() {
 		setLayout(new BorderLayout());
 
+		this.iUserBurst = 30;
+		this.iCurrSimIter = 0;
+		this.simulation = new Simulation(this.epithelium);
 		this.jpRight = new JPanel(new BorderLayout());
 		this.add(this.jpRight, BorderLayout.CENTER);
 
@@ -79,19 +91,95 @@ public class EpiTabSimulation extends EpiTab {
 				this.epithelium.getEpitheliumGrid(), this.lCompON);
 		this.jpRight.add(this.visualGridSimulation, BorderLayout.CENTER);
 
-		JPanel bLeft = new JPanel(new FlowLayout());
-		JButton jbBack = new JButton("back");
+		JPanel jpButtons = new JPanel(new BorderLayout());
+		JPanel bLeft = new JPanel();
+		jpButtons.add(bLeft, BorderLayout.CENTER);
+
+		JButton jbRewind = ButtonFactory
+				.getImageNoBorder("media_rewind-26x24.png");
+		jbRewind.setToolTipText("Go back to the beginning of the simulation");
+		jbRewind.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				simulationRewind();
+			}
+		});
+		bLeft.add(jbRewind);
+		JButton jbBack = ButtonFactory
+				.getImageNoBorder("media_step_back-24x24.png");
+		jbBack.setToolTipText("Go back one step");
+		jbBack.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				simulationStepBack();
+			}
+		});
 		bLeft.add(jbBack);
-		JButton jbForward = new JButton("fwr");
+		JButton jbForward = ButtonFactory
+				.getImageNoBorder("media_step_forward-24x24.png");
+		jbForward.setToolTipText("Go forward one step");
+		jbForward.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				simulationStepFwr();
+			}
+		});
 		bLeft.add(jbForward);
-		JTextField jtSteps = new JTextField("30");
+		JTextField jtSteps = new JTextField("" + this.iUserBurst);
+		jtSteps.setToolTipText("Define the number of steps of a burst");
+		jtSteps.setColumns(3);
+		jtSteps.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				JTextField jtf = (JTextField) e.getSource();
+				try {
+					iUserBurst = Integer.parseInt(jtf.getText());
+					jtf.setBackground(Color.WHITE);
+				} catch (NumberFormatException nfe) {
+					jtf.setBackground(ColorUtils.LIGHT_RED);
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+		});
 		bLeft.add(jtSteps);
-		JButton jbFastFwr = new JButton("fstfwr");
+		JButton jbFastFwr = ButtonFactory
+				.getImageNoBorder("media_fast_forward-26x24.png");
+		jbFastFwr.setToolTipText("Go forward a burst of 'n' steps");
+		jbFastFwr.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				simulationFastFwr();
+			}
+		});
 		bLeft.add(jbFastFwr);
+		this.jlStep = new JLabel("Step: " + this.iCurrSimIter);
+		bLeft.add(this.jlStep);
+
+		JPanel bRight = new JPanel();
+		JButton jbClone = ButtonFactory.getNoMargins("Clone");
+		jbClone.setToolTipText("Create a new Epithelium with initial conditions as the current grid");
+		jbClone.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cloneEpiWithCurrGrid();
+			}
+		});
+		bRight.add(jbClone);
 		JButton jbPicture = ButtonFactory
-				.getImageNoBorder("screenshot-16.png");
-		bLeft.add(jbPicture);
-		this.jpRight.add(bLeft, BorderLayout.SOUTH);
+				.getImageNoBorder("fotography-24x24.png");
+		jbPicture.setSize(24, 24);
+		jbPicture.setToolTipText("Save the image of the current grid to file");
+		bRight.add(jbPicture);
+
+		jpButtons.add(bRight, BorderLayout.LINE_END);
+		this.jpRight.add(jpButtons, BorderLayout.SOUTH);
 
 		this.lRight = new JPanel(new BorderLayout());
 
@@ -99,8 +187,6 @@ public class EpiTabSimulation extends EpiTab {
 		rlTop.setLayout(new BoxLayout(rlTop, BoxLayout.Y_AXIS));
 		JButton jbReset = new JButton("Reset");
 		rlTop.add(jbReset);
-		JButton jbClone = new JButton("Clone");
-		rlTop.add(jbClone);
 		this.lRight.add(rlTop, BorderLayout.PAGE_START);
 
 		JPanel rlBottom = new JPanel();
@@ -181,6 +267,59 @@ public class EpiTabSimulation extends EpiTab {
 
 		this.add(this.jspLeft, BorderLayout.LINE_START);
 		updateComponentList(jccb.getSelectedItems());
+	}
+
+	private void simulationRewind() {
+		this.iCurrSimIter = 0;
+		this.jlStep.setText("Step: " + this.iCurrSimIter);
+		EpitheliumGrid firstGrid = this.simulation.getGridAt(this.iCurrSimIter);
+		this.visualGridSimulation.setEpitheliumGrid(firstGrid);
+		// Re-Paint
+		this.repaint();
+	}
+
+	private void cloneEpiWithCurrGrid() {
+		// TODO get project!?!?
+	}
+
+	private void simulationStepBack() {
+		if (this.iCurrSimIter == 0)
+			return;
+		EpitheliumGrid prevGrid = this.simulation
+				.getGridAt(--this.iCurrSimIter);
+		this.jlStep.setText("Step: " + this.iCurrSimIter);
+		this.visualGridSimulation.setEpitheliumGrid(prevGrid);
+		// Re-Paint
+		this.repaint();
+	}
+
+	private void simulationStepFwr() {
+		EpitheliumGrid prevGrid = this.simulation.getGridAt(this.iCurrSimIter);
+		EpitheliumGrid nextGrid = this.simulation
+				.getGridAt(this.iCurrSimIter + 1);
+		if (!nextGrid.equals(prevGrid)) {
+			this.visualGridSimulation.setEpitheliumGrid(nextGrid);
+			this.jlStep.setText("Step: " + ++this.iCurrSimIter);
+		}
+		// Re-Paint
+		this.repaint();
+	}
+
+	private void simulationFastFwr() {
+		EpitheliumGrid prevGrid = this.simulation.getGridAt(this.iCurrSimIter);
+		EpitheliumGrid nextGrid = prevGrid;
+		for (int i = 0; i < this.iUserBurst; i++) {
+			nextGrid = this.simulation.getGridAt(this.iCurrSimIter + 1);
+			if (nextGrid.equals(prevGrid)) {
+				break;
+			}
+			prevGrid = nextGrid;
+			this.iCurrSimIter++;
+		}
+		this.visualGridSimulation.setEpitheliumGrid(nextGrid);
+		this.jlStep.setText("Step: " + this.iCurrSimIter);
+		// Re-Paint
+		this.repaint();
 	}
 
 	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y,

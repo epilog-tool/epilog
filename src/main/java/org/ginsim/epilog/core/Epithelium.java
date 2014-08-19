@@ -132,6 +132,11 @@ public class Epithelium {
 		this.isChanged = true;
 	}
 
+	public void delPerturbation(LogicalModel m, AbstractPerturbation ap) {
+		this.perturbations.delPerturbation(m, ap);
+		this.isChanged = true;
+	}
+
 	public void applyPerturbation(LogicalModel m, AbstractPerturbation ap,
 			Color c, List<Tuple2D> lTuples) {
 		this.perturbations.addPerturbationColor(m, ap, c);
@@ -162,8 +167,12 @@ public class Epithelium {
 		return this.integrationFunctions.containsKey(nodeID);
 	}
 
-	public ModelPerturbations getPerturbations(LogicalModel m) {
+	public ModelPerturbations getModelPerturbations(LogicalModel m) {
 		return this.perturbations.getModelPerturbations(m);
+	}
+
+	public EpitheliumPerturbations getEpitheliumPerturbations() {
+		return this.perturbations;
 	}
 
 	public void setModel(int x, int y, LogicalModel m) {

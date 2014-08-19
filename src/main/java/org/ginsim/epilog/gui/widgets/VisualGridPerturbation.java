@@ -23,8 +23,8 @@ public class VisualGridPerturbation extends VisualGrid {
 	private Map<AbstractPerturbation, Color> colorMapClone;
 	private boolean isRectFill;
 	private Tuple2D initialRectPos;
-	private LogicalModel selectedModel;
 
+	private LogicalModel selectedModel;
 	private AbstractPerturbation selAbsPerturb;
 
 	public VisualGridPerturbation(int gridX, int gridY, Topology topology,
@@ -34,6 +34,7 @@ public class VisualGridPerturbation extends VisualGrid {
 		this.cellGridClone = cellGridClone;
 		this.colorMapClone = colorMapClone;
 		this.selectedModel = null;
+		this.selAbsPerturb = null;
 		this.isRectFill = false;
 		this.initialRectPos = null;
 
@@ -110,6 +111,19 @@ public class VisualGridPerturbation extends VisualGrid {
 		}
 	}
 
+	public void clearDataFromAll() {
+		for (int x = 0; x < this.gridX; x++) {
+			for (int y = 0; y < this.gridY; y++) {
+				AbstractPerturbation ap = this.cellGridClone[x][y]
+						.getPerturbation();
+				if (ap != null && ap.equals(selAbsPerturb)) {
+					this.cellGridClone[x][y].setPerturbation(null);
+				}
+			}
+		}
+		this.paintComponent(this.getGraphics());
+	}
+
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 
@@ -120,15 +134,16 @@ public class VisualGridPerturbation extends VisualGrid {
 			for (int y = 0; y < this.gridY; y++) {
 				Polygon polygon = topology.createNewPolygon(this.radius, x, y);
 				BasicStroke stroke = this.strokeBasic;
-				Color cPerturb;
+				Color cPerturb = this.getParent().getBackground();
 				if (this.cellGridClone[x][y].getModel().equals(
 						this.selectedModel)) {
-					stroke = this.strokePerturb;
 					AbstractPerturbation ap = this.cellGridClone[x][y]
 							.getPerturbation();
-					cPerturb = this.colorMapClone.get(ap);
-				} else {
-					cPerturb = this.getParent().getBackground();
+					if (ap != null) {
+						cPerturb = this.colorMapClone.get(ap);
+						stroke = this.strokePerturb;
+					} else
+						cPerturb = Color.WHITE;
 				}
 				this.paintPolygon(stroke, cPerturb, polygon, g2);
 			}

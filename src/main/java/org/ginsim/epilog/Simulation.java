@@ -126,6 +126,13 @@ public class Simulation {
 		return nextGrid;
 	}
 
+	public EpitheliumGrid getGridAt(int i) {
+		if (i < this.stateHistory.size()) {
+			return this.stateHistory.get(i);
+		}
+		return this.nextStepGrid();
+	}
+
 	public EpitheliumGrid getCurrentGrid() {
 		return stateHistory.get(stateHistory.size() - 1);
 	}

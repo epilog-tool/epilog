@@ -16,7 +16,7 @@ public abstract class VisualGrid extends JPanel {
 	private static final long serialVersionUID = 6126822003689575762L;
 
 	protected final BasicStroke strokeBasic = new BasicStroke(1.0f);
-	protected final BasicStroke strokePerturb = new BasicStroke(2.0f);
+	protected final BasicStroke strokePerturb = new BasicStroke(3.0f);
 	protected final BasicStroke strokeRect = new BasicStroke(4.0f);
 
 	protected int gridX;
