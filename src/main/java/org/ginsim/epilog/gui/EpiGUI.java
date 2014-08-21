@@ -43,6 +43,7 @@ import javax.swing.tree.TreeSelectionModel;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.ginsim.epilog.Project;
 import org.ginsim.epilog.core.Epithelium;
+import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.gui.dialog.DialogNewEpithelium;
 import org.ginsim.epilog.gui.dialog.DialogNewProject;
 import org.ginsim.epilog.gui.dialog.DialogRenameEpithelium;
@@ -281,6 +282,10 @@ public class EpiGUI extends JFrame {
 				.getLastSelectedPathComponent();
 		Epithelium epi = (Epithelium) node.getUserObject();
 		Epithelium epiClone = this.project.cloneEpithelium(epi);
+		this.addEpithelium2JTree(epiClone);
+	}
+
+	private void addEpithelium2JTree(Epithelium epiClone) {
 		this.addEpi2JTree(epiClone);
 		this.project.setChanged(true);
 		this.validateGUI();
@@ -541,7 +546,8 @@ public class EpiGUI extends JFrame {
 					// Create new Tab
 					Epithelium epi = (Epithelium) parent.getUserObject();
 					EpiTab epiTab = null;
-					String title = ((Epithelium)parent.getUserObject()).getName() + ":" + node;
+					String title = ((Epithelium) parent.getUserObject())
+							.getName() + ":" + node;
 					if (node.toString() == "Initial Condition") {
 						epiTab = new EpiTabInitialConditions(epi, selPath,
 								this.project.getModelFeatures());
@@ -559,7 +565,7 @@ public class EpiGUI extends JFrame {
 								this.project.getModelFeatures());
 					} else if (node.toString() == "Simulation") {
 						epiTab = new EpiTabSimulation(epi, selPath,
-								this.project.getModelFeatures());
+								this.project.getModelFeatures(), new SimulationEpiClone());
 					}
 					if (epiTab != null) {
 						this.epiRightFrame.addTab(title, epiTab);
@@ -723,5 +729,21 @@ public class EpiGUI extends JFrame {
 
 		this.buttonAdd.setEnabled(false);
 		this.buttonRemove.setEnabled(false);
+	}
+
+	public class SimulationEpiClone {
+		public SimulationEpiClone() {
+		}
+
+		public void cloneEpithelium(Epithelium epi, EpitheliumGrid currGrid) {
+			Epithelium epiClone = project.cloneEpithelium(epi);
+			for (int x = 0; x < currGrid.getX(); x++) {
+				for (int y = 0; y < currGrid.getY(); y++) {
+					byte[] stateClone = currGrid.getCellState(x, y).clone();
+					epiClone.getEpitheliumGrid().setCellState(x, y, stateClone);
+				}
+			}
+			addEpithelium2JTree(epiClone);
+		}
 	}
 }

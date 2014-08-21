@@ -39,6 +39,12 @@ public class ComponentIntegrationFunctions {
 		this.computedExpr[value - 1] = this.string2Expression(function);
 	}
 
+	public boolean isValidAtLevel(byte level) {
+		//TODO 1: use parser to validate syntax
+		// TODO 2: use nodeID to validate semantics (nodeID, values, ...)
+		return true;
+	}
+
 	public List<String> getFunctions() {
 		return Arrays.asList(this.stringExpr);
 	}

@@ -2,6 +2,7 @@ package org.ginsim.epilog.core;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.colomoto.logicalmodel.LogicalModel;
@@ -21,9 +22,16 @@ public class ModelPriorityClasses {
 		this.model = m;
 		List<String> vars = new ArrayList<String>();
 		for (NodeInfo node : m.getNodeOrder()) {
+			if (node.isInput())
+				continue;
 			vars.add(node.getNodeID());
 		}
 		this.priorityList = new ArrayList<List<String>>();
+		Collections.sort(vars, new Comparator<String>() {
+			public int compare(String s1, String s2) {
+				return s1.compareToIgnoreCase(s2);
+			}
+		});
 		this.priorityList.add(vars);
 	}
 
@@ -44,8 +52,8 @@ public class ModelPriorityClasses {
 	}
 
 	public void setPriorities(String pcs) {
-		// Format: varA,varB:varC,varD:varE FIXME: parsing should be on the
-		// parser!!
+		// Format: varA,varB:varC,varD:varE
+		// FIXME: parsing should be on the parser!!
 		List<List<String>> newPLList = new ArrayList<List<String>>();
 		String[] saTmp = pcs.split(":");
 		for (int i = 0; i < saTmp.length; i++) {
@@ -62,7 +70,7 @@ public class ModelPriorityClasses {
 		return Collections.unmodifiableList(this.priorityList);
 	}
 
-	public void incPriorities(int index, List<String> vars) {
+	public void decPriorities(int index, List<String> vars) {
 		if (vars.size() < this.priorityList.get(index).size()) {
 			this.priorityList.get(index).removeAll(vars);
 			if (this.priorityList.size() == (index + 1)) {
@@ -72,14 +80,36 @@ public class ModelPriorityClasses {
 		}
 	}
 
-	public void decPriorities(int index, List<String> vars) {
+	public void incPriorities(int index, List<String> vars) {
 		if (index > 0) {
 			this.priorityList.get(index).removeAll(vars);
 			this.priorityList.get(index - 1).addAll(vars);
+			// TODO
+//			Collections.sort(this.priorityList.get(index - 1), new Comparator<String>() {
+//				public int compare(String s1, String s2) {
+//					return s1.compareToIgnoreCase(s2);
+//				}
+//			});
 			if (this.priorityList.get(index).size() == 0) {
 				this.priorityList.remove(index);
 			}
 		}
+	}
+
+	public void singlePriorityClass() {
+		List<String> firstClass = this.priorityList.get(0);
+		for (int i = 1; i < this.priorityList.size(); i++) {
+			for (String var : this.priorityList.get(i)) {
+				firstClass.add(var);
+			}
+		}
+		this.priorityList = new ArrayList<List<String>>();
+		Collections.sort(firstClass, new Comparator<String>() {
+			public int compare(String s1, String s2) {
+				return s1.compareToIgnoreCase(s2);
+			}
+		});
+		this.priorityList.add(firstClass);
 	}
 
 	public int size() {
@@ -96,10 +126,10 @@ public class ModelPriorityClasses {
 
 	public void split(int index, String var) {
 		for (NodeInfo node : this.model.getNodeOrder()) {
-			if (node.getNodeID() == var) {
+			if (node.getNodeID().equals(var)) {
 				this.priorityList.get(index).remove(var);
-				this.priorityList.get(index).add(var + "+");
-				this.priorityList.get(index).add(var + "-");
+				this.priorityList.get(index).add(var + "[+]");
+				this.priorityList.get(index).add(var + "[-]");
 				return;
 			}
 		}
@@ -107,14 +137,14 @@ public class ModelPriorityClasses {
 
 	public void unsplit(int index, String varMm) {
 		for (NodeInfo node : this.model.getNodeOrder()) {
-			if (node.getNodeID() == varMm) {
+			if (node.getNodeID().equals(varMm)) {
 				return;
 			}
 		}
-		String var = varMm.substring(0, -1);
+		String var = varMm.substring(0, -3);
 		this.priorityList.get(index).remove(varMm);
 		this.priorityList.get(index).add(var);
-		var = var + (varMm.substring(-1).equals("+") ? "-" : "+");
+		var = var + (varMm.substring(-3).equals("[+]") ? "[-]" : "[+]");
 		for (int i = 0; i < this.priorityList.size(); i++) {
 			if (this.priorityList.get(i).contains(var)) {
 				this.priorityList.get(i).remove(var);

@@ -1,5 +1,7 @@
 package org.ginsim.epilog.io;
 
+import java.awt.Container;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -13,10 +15,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import javax.imageio.ImageIO;
+
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 import org.ginsim.epilog.Project;
-
+import org.ginsim.epilog.core.EpitheliumGrid;
 
 public class FileIO {
 
@@ -116,14 +120,6 @@ public class FileIO {
 		return null;
 	}
 
-	/**
-	 * Unzip it
-	 * 
-	 * @param zipFile
-	 *            input zip file
-	 * @param output
-	 *            zip file output folder
-	 */
 	private static void unZipIt(File zipFile, File folder) {
 
 		byte[] buffer = new byte[1024];
@@ -175,7 +171,10 @@ public class FileIO {
 		return sbmlFormat.importFile(file);
 	}
 
-	public static Project loadPEPS(File file) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+	public static Project loadPEPS(File file) throws IOException,
+			InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		File tmpFolder = FileIO.unzipPEPSTmpDir(file);
 
 		Project project = null;
@@ -217,5 +216,19 @@ public class FileIO {
 
 		// Save PEPS to file
 		FileIO.zipTmpDir(newPEPSTmpDir, newPEPSFile);
+	}
+
+	public static void writeEpitheliumGrid2File(EpitheliumGrid grid,
+			String file, Container c) {
+		BufferedImage dest = new BufferedImage(c.getWidth(), c.getHeight(),
+				BufferedImage.TYPE_INT_ARGB);
+		c.paint(dest.getGraphics());
+		File fOutput = new File(file);
+		try {
+			ImageIO.write(dest, "png", fOutput);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

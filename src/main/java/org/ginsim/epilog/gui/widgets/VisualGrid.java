@@ -34,7 +34,7 @@ public abstract class VisualGrid extends JPanel {
 		this.mouseGrid = new Tuple2D(-1, -1);
 	}
 
-	private boolean isInGrid(Tuple2D pos) {
+	protected boolean isInGrid(Tuple2D pos) {
 		return (pos != null && pos.getX() >= 0 && pos.getX() < this.gridX
 				&& pos.getY() >= 0 && pos.getY() < this.gridY);
 	}

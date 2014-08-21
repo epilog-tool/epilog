@@ -12,10 +12,11 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -287,10 +288,15 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		gbc.insets = new Insets(1, 5, 1, 0);
 		jpRRCTop.setBorder(BorderFactory
 				.createTitledBorder("Proper components"));
-		Set<String> sProperCompsFromSelectedModels = this.epithelium
-				.getComponentFeatures().getModelComponents(m, false);
+		List<String> lProper = new ArrayList<String>(this.epithelium
+				.getComponentFeatures().getModelComponents(m, false));
+		Collections.sort(lProper, new Comparator<String>() {
+			public int compare(String s1, String s2) {
+				return s1.compareToIgnoreCase(s2);
+			}
+		});
 		int y = 0;
-		for (String nodeID : sProperCompsFromSelectedModels) {
+		for (String nodeID : lProper) {
 			gbc.gridy = y;
 			y++;
 			this.lNodeInPanel.add(nodeID);
@@ -314,10 +320,15 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		gbc.insets = new Insets(1, 5, 1, 0);
 		jpRRCBottom.setBorder(BorderFactory
 				.createTitledBorder("Input components"));
-		Set<String> sInputCompsFromSelectedModels = this.epithelium
-				.getComponentFeatures().getModelComponents(m, true);
+		List<String> lInputs = new ArrayList<String>(this.epithelium
+				.getComponentFeatures().getModelComponents(m, true));
+		Collections.sort(lInputs, new Comparator<String>() {
+			public int compare(String s1, String s2) {
+				return s1.compareToIgnoreCase(s2);
+			}
+		});
 		List<String> lEnvInputCompsFromSelectedModels = new ArrayList<String>();
-		for (String nodeID : sInputCompsFromSelectedModels) {
+		for (String nodeID : lInputs) {
 			if (!this.epithelium.isIntegrationComponent(nodeID)) {
 				lEnvInputCompsFromSelectedModels.add(nodeID);
 			}

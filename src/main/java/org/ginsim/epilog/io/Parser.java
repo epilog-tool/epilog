@@ -115,8 +115,9 @@ public class Parser {
 			// Component Integration Functions
 			if (line.startsWith("IT")) {
 				saTmp = line.split("\\s+");
-				currEpi.setIntegrationFunction(saTmp[1],
-						Byte.parseByte(saTmp[2]), saTmp[3]);
+				currEpi.setIntegrationFunction(saTmp[1], Byte
+						.parseByte(saTmp[2]), (saTmp.length > 3) ? saTmp[3]
+						: "");
 			}
 			// Model Priority classes
 			if (line.startsWith("PR")) {
@@ -357,7 +358,7 @@ public class Parser {
 			}
 		}
 		for (LogicalModel m : model2Key.keySet()) {
-			ModelPerturbations mp = epi.getPerturbations(m);
+			ModelPerturbations mp = epi.getModelPerturbations(m);
 			if (mp == null)
 				continue;
 			for (AbstractPerturbation ap : mp.getAllPerturbations()) {

@@ -37,8 +37,8 @@ public class EpitheliumIntegrationFunctions {
 				node.getMax()));
 	}
 
-	public void removeComponent(NodeInfo node) {
-		functions.remove(node.getNodeID());
+	public void removeComponent(String nodeID) {
+		functions.remove(nodeID);
 	}
 
 	public boolean containsKey(String nodeID) {

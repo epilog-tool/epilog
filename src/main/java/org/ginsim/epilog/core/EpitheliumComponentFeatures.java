@@ -20,7 +20,22 @@ public class EpitheliumComponentFeatures {
 		this.nodeID2Info = new HashMap<String, NodeInfo>();
 		this.nodeColor = new HashMap<String, Color>();
 	}
+	
+	public EpitheliumComponentFeatures clone() {
+		EpitheliumComponentFeatures ecf = new EpitheliumComponentFeatures();
+		for (String nodeID : this.nodeColor.keySet()) {
+			ecf.setNodeColor(nodeID, this.nodeColor.get(nodeID));
+		}
+		ecf.cloneNode2Info(this.nodeID2Info);
+		return ecf;
+	}
 
+	private void cloneNode2Info(Map<String, NodeInfo> old) {
+		for (String nodeID : old.keySet()) {
+			this.nodeID2Info.put(nodeID, old.get(nodeID));
+		}
+	}
+	
 	public void addModel(LogicalModel m) {
 		for (NodeInfo node : m.getNodeOrder()) {
 			if (!nodeID2Info.containsKey(node.getNodeID())) {

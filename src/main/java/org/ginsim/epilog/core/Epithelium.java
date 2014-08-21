@@ -28,6 +28,7 @@ public class Epithelium {
 		this.name = name;
 		this.grid = new EpitheliumGrid(x, y, topologyLayout, rollover, m);
 		this.priorities = new EpitheliumPriorityClasses();
+		this.priorities.addModel(m);
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
 		this.perturbations = new EpitheliumPerturbations();
 		this.componentFeatures = new EpitheliumComponentFeatures();
@@ -37,11 +38,12 @@ public class Epithelium {
 
 	private Epithelium(String name, EpitheliumGrid grid,
 			EpitheliumIntegrationFunctions eif, EpitheliumPriorityClasses epc,
-			EpitheliumPerturbations eap) {
+			EpitheliumPerturbations eap, EpitheliumComponentFeatures ecf) {
 		this.name = name;
 		this.grid = grid;
 		this.priorities = epc;
 		this.integrationFunctions = eif;
+		this.componentFeatures = ecf;
 		this.perturbations = eap;
 		this.isChanged = false;
 	}
@@ -53,7 +55,7 @@ public class Epithelium {
 	public Epithelium clone() {
 		return new Epithelium("CopyOf_" + this.name, this.grid.clone(),
 				this.integrationFunctions.clone(), this.priorities.clone(),
-				this.perturbations.clone());
+				this.perturbations.clone(), this.componentFeatures.clone());
 	}
 
 	public EpitheliumComponentFeatures getComponentFeatures() {
@@ -155,8 +157,8 @@ public class Epithelium {
 	}
 
 	public ComponentIntegrationFunctions getIntegrationFunctionsForComponent(
-			String c) {
-		return this.integrationFunctions.getComponentIntegrationFunctions(c);
+			String nodeID) {
+		return this.integrationFunctions.getComponentIntegrationFunctions(nodeID);
 	}
 
 	public Set<String> getIntegrationFunctionsComponents() {
@@ -165,6 +167,10 @@ public class Epithelium {
 
 	public boolean isIntegrationComponent(String nodeID) {
 		return this.integrationFunctions.containsKey(nodeID);
+	}
+
+	public EpitheliumIntegrationFunctions getIntegrationFunctions() {
+		return this.integrationFunctions;
 	}
 
 	public ModelPerturbations getModelPerturbations(LogicalModel m) {

@@ -5,13 +5,18 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ginsim.epilog.Tuple2D;
 import org.ginsim.epilog.core.EpitheliumComponentFeatures;
 import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.core.topology.Topology;
 import org.ginsim.epilog.gui.color.ColorUtils;
+import org.ginsim.epilog.gui.tab.EpiTabSimulation.GridComponentValues;
 
 public class VisualGridSimulation extends VisualGrid {
 	private static final long serialVersionUID = -3880244278613986980L;
@@ -19,16 +24,66 @@ public class VisualGridSimulation extends VisualGrid {
 	private EpitheliumComponentFeatures componentFeatures;
 	private EpitheliumGrid epiGrid;
 	private List<String> lCompON;
+	private GridComponentValues valuePanel;
 
 	public VisualGridSimulation(int gridX, int gridY, Topology topology,
 			EpitheliumComponentFeatures componentFeatures,
-			EpitheliumGrid epiGrid, List<String> lCompON) {
+			EpitheliumGrid epiGrid, List<String> lCompON,
+			GridComponentValues valuePanel) {
 		super(gridX, gridY, topology);
 		this.componentFeatures = componentFeatures;
 		this.epiGrid = epiGrid;
 		this.lCompON = lCompON;
+		this.valuePanel = valuePanel;
+
+		this.addMouseMotionListener(new MouseMotionListener() {
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				mousePosition2Grid(e);
+			}
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				mousePosition2Grid(e);
+				updateComponentValues(mouseGrid);
+			}
+		});
+		this.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				updateComponentValues(mouseGrid);
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
+		});
 	}
-	
+
+	@Override
+	protected void applyDataAt(int x, int y) {
+		// Does not need to apply data
+	}
+
+	private void updateComponentValues(Tuple2D pos) {
+		if (!isInGrid(pos))
+			return;
+
+		this.valuePanel.updateValues(pos.getX(), pos.getY(), this.epiGrid);
+	}
+
 	public void setEpitheliumGrid(EpitheliumGrid grid) {
 		this.epiGrid = grid;
 	}
@@ -66,10 +121,4 @@ public class VisualGridSimulation extends VisualGrid {
 			}
 		}
 	}
-
-	@Override
-	protected void applyDataAt(int x, int y) {
-		// TODO Auto-generated method stub
-	}
-
 }
