@@ -37,7 +37,7 @@ public class Launcher {
 
 		// Default values
 		int maxiter = 10;
-		boolean bGUI = false;
+		boolean bCMD = false;
 		String pepsFile = null;
 
 		try {
@@ -50,29 +50,33 @@ public class Launcher {
 							new FlaggedOption("max-iter", JSAP.INTEGER_PARSER,
 									"" + maxiter, JSAP.NOT_REQUIRED, 'i',
 									"max-iter", "Maximum number of iterations."),
-							new Switch("gui", JSAP.NO_SHORTFLAG, "gui"),
+							new Switch("cmd", JSAP.NO_SHORTFLAG, "cmd"),
 							new FlaggedOption("peps", JSAP.STRING_PARSER,
-									pepsFile, JSAP.REQUIRED, JSAP.NO_SHORTFLAG,
+									pepsFile, JSAP.NOT_REQUIRED, JSAP.NO_SHORTFLAG,
 									"peps",
 									"PEPS (Project of Epithelium Patterning Simulation) file location."), });
 			jsapResult = jsap.parse(args);
 			if (jsap.messagePrinted())
 				System.exit(0);
 			maxiter = jsapResult.getInt("max-iter");
-			bGUI = jsapResult.getBoolean("gui");
+			bCMD = jsapResult.getBoolean("cmd");
 			pepsFile = jsapResult.getString("peps");
 		} catch (JSAPException e) {
 			System.err.println(e.getMessage());
 			System.exit(1);
 		}
 
-		if (!bGUI) {
+		if (bCMD) {
 			// Command line
 			Launcher.commandLine(pepsFile, maxiter);
 		} else {
 			// GUI
 			EpiGUI gui = new EpiGUI();
-			gui.loadPEPS(pepsFile);
+			if (pepsFile != null) {
+				File f = new File(pepsFile);
+				if (f.exists())
+					gui.loadPEPS(pepsFile);
+			}
 //			gui.initialize();
 		}
 	}
