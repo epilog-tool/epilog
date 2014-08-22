@@ -7,7 +7,11 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.event.MouseEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 
 import org.ginsim.epilog.Tuple2D;
 import org.ginsim.epilog.core.topology.Topology;
@@ -29,9 +33,14 @@ public abstract class VisualGrid extends JPanel {
 		this.gridX = gridX;
 		this.gridY = gridY;
 		this.topology = topology;
-		// this.setBorder(BorderFactory.createTitledBorder("GridPanel"));
 		this.setSize(800, 450);
 		this.mouseGrid = new Tuple2D(-1, -1);
+		// Border
+		// TODO: define offset all around
+//		this.setBorder(BorderFactory.createTitledBorder("GridPanel"));
+//		Border border = this.getBorder();
+//		Border margin = new EmptyBorder(10,10,10,10);
+//		this.setBorder(new CompoundBorder(border, margin));
 	}
 
 	protected boolean isInGrid(Tuple2D pos) {
