@@ -11,14 +11,16 @@ public class EpitheliumIntegrationFunctions {
 	private Map<String, ComponentIntegrationFunctions> functions;
 
 	public EpitheliumIntegrationFunctions() {
-		functions = new HashMap<String, ComponentIntegrationFunctions>();
+		this.functions = new HashMap<String, ComponentIntegrationFunctions>();
 	}
 
 	public EpitheliumIntegrationFunctions clone() {
 		EpitheliumIntegrationFunctions newEIF = new EpitheliumIntegrationFunctions();
-		Map<String, ComponentIntegrationFunctions> f = new HashMap<String, ComponentIntegrationFunctions>(
-				this.functions);
-		newEIF.setFunctions(f);
+		Map<String, ComponentIntegrationFunctions> newFuncs = new HashMap<String, ComponentIntegrationFunctions>();
+		for (String nodeID : this.functions.keySet()) {
+			newFuncs.put(nodeID, this.functions.get(nodeID).clone());
+		}
+		newEIF.setFunctions(newFuncs);
 		return newEIF;
 	}
 
@@ -33,12 +35,12 @@ public class EpitheliumIntegrationFunctions {
 	}
 
 	public void addComponent(NodeInfo node) {
-		functions.put(node.getNodeID(), new ComponentIntegrationFunctions(
+		this.functions.put(node.getNodeID(), new ComponentIntegrationFunctions(
 				node.getMax()));
 	}
 
 	public void removeComponent(String nodeID) {
-		functions.remove(nodeID);
+		this.functions.remove(nodeID);
 	}
 
 	public boolean containsKey(String nodeID) {

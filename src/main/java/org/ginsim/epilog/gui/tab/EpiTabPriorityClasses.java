@@ -19,8 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
@@ -35,7 +33,7 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 
 	private EpitheliumPriorityClasses userPriorityClasses;
 	private LogicalModel selectedModel;
-	private List<JList> guiClasses;
+	private List<JList<String>> guiClasses;
 
 	private JPanel jpBottom;
 
@@ -53,7 +51,7 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 			this.userPriorityClasses.addModelPriorityClasses(this.epithelium
 					.getPriorityClasses(m).clone());
 		}
-		this.guiClasses = new ArrayList<JList>();
+		this.guiClasses = new ArrayList<JList<String>>();
 
 		JPanel jpTop = new JPanel(new BorderLayout());
 		jpTop.setBorder(BorderFactory.createTitledBorder("jpTop"));
@@ -265,24 +263,38 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 			this.guiClasses.add(jList);
 			this.jpBottom.add(jList, gbc);
 		}
-
 	}
 
 	@Override
 	protected void buttonReset() {
-		// TODO Auto-generated method stub
-
+		this.userPriorityClasses = new EpitheliumPriorityClasses();
+		for (LogicalModel m : this.epithelium.getEpitheliumGrid().getModelSet()) {
+			this.userPriorityClasses.addModelPriorityClasses(this.epithelium
+					.getPriorityClasses(m).clone());
+		}
+		this.updatePriorityList(this.selectedModel);
+		// Repaint
+		this.getParent().repaint();
 	}
 
 	@Override
 	protected void buttonAccept() {
-		// TODO Auto-generated method stub
-
+		for (LogicalModel m : this.userPriorityClasses.getModelSet()) {
+			ModelPriorityClasses clone = this.userPriorityClasses
+					.getModelPriorityClasses(m).clone();
+			this.epithelium.setPriorityClasses(clone);
+		}
 	}
 
 	@Override
 	protected boolean isChanged() {
-		// TODO Auto-generated method stub
+		for (LogicalModel m : this.epithelium.getEpitheliumGrid().getModelSet()) {
+			ModelPriorityClasses clone = this.userPriorityClasses
+					.getModelPriorityClasses(m);
+			ModelPriorityClasses orig = this.epithelium.getPriorityClasses(m);
+			if (!clone.equals(orig))
+				return true;
+		}
 		return false;
 	}
 }

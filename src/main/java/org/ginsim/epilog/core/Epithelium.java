@@ -2,6 +2,7 @@ package org.ginsim.epilog.core;
 
 import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -31,6 +32,7 @@ public class Epithelium {
 		this.priorities.addModel(m);
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
 		this.perturbations = new EpitheliumPerturbations();
+		this.perturbations.addModel(m);
 		this.componentFeatures = new EpitheliumComponentFeatures();
 		this.componentFeatures.addModel(m);
 		this.isChanged = false;
@@ -56,6 +58,52 @@ public class Epithelium {
 		return new Epithelium("CopyOf_" + this.name, this.grid.clone(),
 				this.integrationFunctions.clone(), this.priorities.clone(),
 				this.perturbations.clone(), this.componentFeatures.clone());
+	}
+	
+	public void update() {
+		this.grid.updateModelSet();
+		Set<LogicalModel> modelSet = this.grid.getModelSet();
+		
+		// Add to Epithelium state new models from modelSet
+		for (LogicalModel mSet : modelSet) {
+			// Priority classes
+			if (this.priorities.getModelPriorityClasses(mSet) == null) {
+				this.priorities.addModel(mSet);
+			}
+			// Component features
+			this.componentFeatures.addModel(mSet);
+			// Perturbations
+			this.perturbations.addModel(mSet);
+		}
+		
+		// Remove from Epithelium state absent models from modelSet
+		for (LogicalModel mPriorities : this.priorities.getModelSet()) {
+			if (!modelSet.contains(mPriorities)) {
+				this.priorities.removeModel(mPriorities);
+			}
+		}
+		for (LogicalModel mPerturbation : this.perturbations.getModelSet()) {
+			if (!modelSet.contains(mPerturbation)) {
+				this.perturbations.removeModel(mPerturbation);
+			}
+		}
+		
+		// Create list with all existing Components
+		Set<String> sNodeIDs = new HashSet<String>();
+		for (LogicalModel m : modelSet) {
+			for (NodeInfo node : m.getNodeOrder()) {
+				sNodeIDs.add(node.getNodeID());
+			}
+		}
+		// Clean Epithelium components
+		for (String oldNodeID : this.componentFeatures.getComponents()) {
+			if (!sNodeIDs.contains(oldNodeID)) {
+				this.componentFeatures.removeComponent(oldNodeID);
+				if (this.isIntegrationComponent(oldNodeID)) {
+					this.integrationFunctions.removeComponent(oldNodeID);
+				}
+			}
+		}
 	}
 
 	public EpitheliumComponentFeatures getComponentFeatures() {
@@ -127,6 +175,10 @@ public class Epithelium {
 		mpc.setPriorities(pcs);
 		this.priorities.addModelPriorityClasses(mpc);
 		this.isChanged = true;
+	}
+	
+	public void setPriorityClasses(ModelPriorityClasses mpc) {
+		this.priorities.addModelPriorityClasses(mpc);
 	}
 
 	public void addPerturbation(LogicalModel m, AbstractPerturbation ap) {

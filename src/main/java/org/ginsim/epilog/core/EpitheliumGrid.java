@@ -132,7 +132,6 @@ public class EpitheliumGrid {
 
 	public void setModel(int x, int y, LogicalModel m) {
 		gridEpiCell[x][y].setModel(m);
-		this.modelSet.add(m);
 	}
 
 	public List<EpitheliumCell> getNeighbours(int x, int y, int minDist,

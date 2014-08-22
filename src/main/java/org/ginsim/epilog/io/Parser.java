@@ -149,6 +149,10 @@ public class Parser {
 			}
 			// project add currEpi
 		}
+		// Ensure coherence of epitheliums
+		for (Epithelium epi : project.getEpitheliumList()) {
+			epi.update();
+		}
 		project.setChanged(false);
 		br.close();
 		in.close();

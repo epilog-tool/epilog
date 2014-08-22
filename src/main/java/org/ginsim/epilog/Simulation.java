@@ -91,10 +91,13 @@ public class Simulation {
 					// At least one variable has been updated in the current PC
 					if (hasChanged)
 						break;
-					for (String nodeID : mpc.getVarsAtIndex(p)) {
-						// FIXME: priorities with + or -
-						String id = (nodeID.endsWith("+") || nodeID
-								.endsWith("-")) ? nodeID.substring(-1) : nodeID;
+					for (String varID : mpc.getVarsAtIndex(p)) {
+						String nodeID = (varID
+								.endsWith(ModelPriorityClasses.INC) || varID
+								.endsWith(ModelPriorityClasses.DEC)) ? varID
+								.substring(0, varID.length()
+										- ModelPriorityClasses.INC.length())
+								: varID;
 
 						NodeInfo node = this.epithelium.getComponentFeatures()
 								.getNodeInfo(nodeID);
@@ -103,14 +106,14 @@ public class Simulation {
 								currState);
 
 						if (target > currState[index]) {
-							if (nodeID.endsWith("-"))
+							if (varID.endsWith(ModelPriorityClasses.DEC))
 								break;
 							if (currState[index] < node.getMax()) {
 								nextState[index] = (byte) (currState[index] + 1);
 								hasChanged = true;
 							}
 						} else if (target < currState[index]) {
-							if (nodeID.endsWith("+"))
+							if (varID.endsWith(ModelPriorityClasses.INC))
 								break;
 							if (currState[index] > 0) {
 								nextState[index] = (byte) (currState[index] - 1);

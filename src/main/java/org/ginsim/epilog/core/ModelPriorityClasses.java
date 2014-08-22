@@ -9,6 +9,10 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 
 public class ModelPriorityClasses {
+	
+	public static final String INC = "[+]";
+	public static final String DEC = "[-]";
+	
 	private LogicalModel model;
 	// This must be a String because of splitted variable names
 	private List<List<String>> priorityList;
@@ -61,6 +65,11 @@ public class ModelPriorityClasses {
 			for (String comp : saTmp[i].split(",")) {
 				pcList.add(comp);
 			}
+			Collections.sort(pcList, new Comparator<String>() {
+				public int compare(String s1, String s2) {
+					return s1.compareToIgnoreCase(s2);
+				}
+			});
 			newPLList.add(pcList);
 		}
 		this.priorityList = newPLList;
@@ -77,6 +86,13 @@ public class ModelPriorityClasses {
 				this.priorityList.add(new ArrayList<String>());
 			}
 			this.priorityList.get(index + 1).addAll(vars);
+			Collections.sort(this.priorityList.get(index + 1),
+					new Comparator<String>() {
+						public int compare(String s1, String s2) {
+							return s1.compareToIgnoreCase(s2);
+						}
+					});
+
 		}
 	}
 
@@ -84,12 +100,12 @@ public class ModelPriorityClasses {
 		if (index > 0) {
 			this.priorityList.get(index).removeAll(vars);
 			this.priorityList.get(index - 1).addAll(vars);
-			// TODO
-//			Collections.sort(this.priorityList.get(index - 1), new Comparator<String>() {
-//				public int compare(String s1, String s2) {
-//					return s1.compareToIgnoreCase(s2);
-//				}
-//			});
+			Collections.sort(this.priorityList.get(index - 1),
+					new Comparator<String>() {
+						public int compare(String s1, String s2) {
+							return s1.compareToIgnoreCase(s2);
+						}
+					});
 			if (this.priorityList.get(index).size() == 0) {
 				this.priorityList.remove(index);
 			}
@@ -128,8 +144,14 @@ public class ModelPriorityClasses {
 		for (NodeInfo node : this.model.getNodeOrder()) {
 			if (node.getNodeID().equals(var)) {
 				this.priorityList.get(index).remove(var);
-				this.priorityList.get(index).add(var + "[+]");
-				this.priorityList.get(index).add(var + "[-]");
+				this.priorityList.get(index).add(var + INC);
+				this.priorityList.get(index).add(var + DEC);
+				Collections.sort(this.priorityList.get(index),
+						new Comparator<String>() {
+							public int compare(String s1, String s2) {
+								return s1.compareToIgnoreCase(s2);
+							}
+						});
 				return;
 			}
 		}
@@ -141,18 +163,41 @@ public class ModelPriorityClasses {
 				return;
 			}
 		}
-		String var = varMm.substring(0, -3);
+		String var = varMm.substring(0, varMm.length() - INC.length());
 		this.priorityList.get(index).remove(varMm);
 		this.priorityList.get(index).add(var);
-		var = var + (varMm.substring(-3).equals("[+]") ? "[-]" : "[+]");
+		var = var
+				+ (varMm.substring(var.length()).equals(INC) ? DEC : INC);
 		for (int i = 0; i < this.priorityList.size(); i++) {
 			if (this.priorityList.get(i).contains(var)) {
 				this.priorityList.get(i).remove(var);
 				if (this.priorityList.get(i).isEmpty()) {
 					this.priorityList.remove(i);
 				}
+				Collections.sort(this.priorityList.get(index),
+						new Comparator<String>() {
+							public int compare(String s1, String s2) {
+								return s1.compareToIgnoreCase(s2);
+							}
+						});
 				return;
 			}
 		}
+	}
+
+	public boolean equals(Object o) {
+		List<List<String>> outList = ((ModelPriorityClasses) o)
+				.getPriorityList();
+		for (int i = 0; i < this.priorityList.size(); i++) {
+			for (int j = 0; j < this.priorityList.get(i).size(); j++) {
+				if (outList.get(i) == null
+						|| outList.get(i).get(j) == null
+						|| !this.priorityList.get(i).get(j)
+								.equals(outList.get(i).get(j))) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }

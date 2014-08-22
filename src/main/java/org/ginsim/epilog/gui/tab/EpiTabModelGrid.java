@@ -177,8 +177,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 					this.mapSBMLMiniPanels.get(jrb).getBackground());
 		}
 		// Make Epithelium structures coherent
-		this.epithelium.getEpitheliumGrid().updateModelSet();
-		// TODO this.epithelium.getComponentFeatures()
+		this.epithelium.update();
 	}
 
 	@Override

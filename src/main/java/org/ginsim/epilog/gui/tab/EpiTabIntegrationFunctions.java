@@ -171,14 +171,15 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	private void paintIntegrationPanel(String nodeID) {
 		// GUI
 		this.jpNRBottom.removeAll();
-		
+
 		if (!this.userIntegrationFunctions.containsKey(nodeID)) {
-			NodeInfo node = this.epithelium.getComponentFeatures().getNodeInfo(nodeID);
+			NodeInfo node = this.epithelium.getComponentFeatures().getNodeInfo(
+					nodeID);
 			this.userIntegrationFunctions.addComponent(node);
 		}
 		ComponentIntegrationFunctions cfi = this.userIntegrationFunctions
 				.getComponentIntegrationFunctions(nodeID);
-		
+
 		List<String> functions = cfi.getFunctions();
 		GridBagConstraints gbc = new GridBagConstraints();
 		for (int i = 0; i < functions.size(); i++) {
@@ -222,7 +223,8 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	private void validateIntegrationFunction(JTextField jtf) {
 		ComponentIntegrationFunctions cif = this.userIntegrationFunctions
 				.getComponentIntegrationFunctions(this.activeNodeID);
-System.out.println(this.activeNodeID + " at " + jtf.getToolTipText() + ": [" + cif + "]");
+		System.out.println(this.activeNodeID + " at " + jtf.getToolTipText()
+				+ ": [" + cif + "]");
 		byte value = Byte.parseByte(jtf.getToolTipText());
 		if (jtf.getText().trim().isEmpty() || cif.isValidAtLevel(value)) {
 			jtf.setBackground(Color.WHITE);
@@ -266,8 +268,11 @@ System.out.println(this.activeNodeID + " at " + jtf.getToolTipText() + ": [" + c
 
 	@Override
 	protected void buttonReset() {
-		// TODO Auto-generated method stub
-
+		this.userIntegrationFunctions = this.epithelium
+				.getIntegrationFunctions().clone();
+		this.updateNodeID(this.activeNodeID);
+		// Repaint
+		this.getParent().repaint();
 	}
 
 	@Override
@@ -294,7 +299,21 @@ System.out.println(this.activeNodeID + " at " + jtf.getToolTipText() + ": [" + c
 
 	@Override
 	protected boolean isChanged() {
-		// TODO Auto-generated method stub
+		for (String nodeID : mNode2RadioButton.keySet()) {
+			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions
+					.getComponentIntegrationFunctions(nodeID);
+			ComponentIntegrationFunctions cifOrig = this.epithelium
+					.getIntegrationFunctions()
+					.getComponentIntegrationFunctions(nodeID);
+			System.out.println(nodeID);
+			if (cifClone == null && cifOrig == null)
+				continue;
+			if (cifClone == null && cifOrig != null || cifClone != null
+					&& cifOrig == null)
+				return true;
+			if (!cifOrig.equals(cifClone))
+				return true;
+		}
 		return false;
 	}
 }
