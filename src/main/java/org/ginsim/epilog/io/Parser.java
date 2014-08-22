@@ -380,8 +380,16 @@ public class Parser {
 	private static List<String> compactIntegerSequences(List<Integer> iInsts) {
 		List<String> sInsts = new ArrayList<String>();
 		for (int currI = 1, lastI = 0; currI < iInsts.size(); currI++) {
-			if ((iInsts.get(currI - 1) + 1) == iInsts.get(currI))
+			if ((iInsts.get(currI - 1) + 1) == iInsts.get(currI)) {
+				if ((currI + 1) == iInsts.size()) { // It's at the last position
+					if ((iInsts.get(currI - 1) + 1) == iInsts.get(currI))
+						sInsts.add(iInsts.get(lastI) + "-" + iInsts.get(currI));
+					else {
+						sInsts.add("" + iInsts.get(currI));
+					}
+				}
 				continue;
+			}
 			if ((currI - 1) == lastI)
 				sInsts.add("" + iInsts.get(lastI));
 			else
