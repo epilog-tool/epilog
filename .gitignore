@@ -1,6 +1,5 @@
 *.sbml
 config.txt
-*.png
 doc
 UML-Diagram.pdf
 .DS_Store
