@@ -180,8 +180,8 @@ public class FileIO {
 		Project project = null;
 		// Loads all the epithelium from the config.txt configuration file
 		for (final File fileEntry : tmpFolder.listFiles()) {
-			if (fileEntry.getName().endsWith("config.txt")
-					|| fileEntry.getName().endsWith("CONFIG.TXT")) {
+			if (fileEntry.getName().equals("config.txt")
+					|| fileEntry.getName().equals("CONFIG.TXT")) {
 				project = Parser.loadConfigurations(fileEntry);
 				break;
 			}
