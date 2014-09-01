@@ -35,6 +35,7 @@ public class VisualGridSimulation extends VisualGrid {
 		this.epiGrid = epiGrid;
 		this.lCompON = lCompON;
 		this.valuePanel = valuePanel;
+		
 
 		this.addMouseMotionListener(new MouseMotionListener() {
 			@Override
@@ -91,6 +92,7 @@ public class VisualGridSimulation extends VisualGrid {
 	@Override
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
+		
 
 		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY,
 				this.getSize().width, this.getSize().height);
@@ -104,11 +106,14 @@ public class VisualGridSimulation extends VisualGrid {
 				}
 				List<Color> lColors = new ArrayList<Color>();
 				for (String nodeID : this.lCompON) {
+
 					Color cBase = this.componentFeatures.getNodeColor(nodeID);
 					byte max = this.componentFeatures.getNodeInfo(nodeID)
 							.getMax();
+
 					int index = this.epiGrid.getNodeIndex(x, y, nodeID);
-					if (index > 0) { // if cell has nodeID
+					System.out.println(index);
+					if (index >= 0) { // if cell has nodeID
 						byte value = this.epiGrid.getCellState(x, y)[index];
 						if (value > 0) {
 							lColors.add(ColorUtils.getColorAtValue(cBase, max,
