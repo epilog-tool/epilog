@@ -97,6 +97,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 					public void actionPerformed(ActionEvent e) {
 						JRadioButton jrb = (JRadioButton) e.getSource();
 						updateNodeID(jrb.getText());
+						activeNodeID = jrb.getText();
 						// Re-Paint
 						getParent().repaint();
 					}
@@ -199,6 +200,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 				public void keyReleased(KeyEvent e) {
 					JTextField jtf = (JTextField) e.getSource();
 					byte value = Byte.parseByte(jtf.getToolTipText());
+
 					setIntegrationFunction(activeNodeID, value, jtf.getText());
 					validateIntegrationFunction(jtf);
 				}
@@ -215,6 +217,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 
 	private void setIntegrationFunction(String nodeID, byte level,
 			String function) {
+
 		ComponentIntegrationFunctions cif = this.userIntegrationFunctions
 				.getComponentIntegrationFunctions(nodeID);
 		cif.setFunctionAtLevel(level, function);
@@ -223,8 +226,8 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	private void validateIntegrationFunction(JTextField jtf) {
 		ComponentIntegrationFunctions cif = this.userIntegrationFunctions
 				.getComponentIntegrationFunctions(this.activeNodeID);
-		System.out.println(this.activeNodeID + " at " + jtf.getToolTipText()
-				+ ": [" + cif + "]");
+		//System.out.println(this.activeNodeID + " at " + jtf.getToolTipText()
+		//		+ ": [" + cif + "]");
 		byte value = Byte.parseByte(jtf.getToolTipText());
 		if (jtf.getText().trim().isEmpty() || cif.isValidAtLevel(value)) {
 			jtf.setBackground(Color.WHITE);
