@@ -112,7 +112,6 @@ public class VisualGridSimulation extends VisualGrid {
 							.getMax();
 
 					int index = this.epiGrid.getNodeIndex(x, y, nodeID);
-					System.out.println(index);
 					if (index >= 0) { // if cell has nodeID
 						byte value = this.epiGrid.getCellState(x, y)[index];
 						if (value > 0) {
