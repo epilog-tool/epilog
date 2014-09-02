@@ -7,9 +7,9 @@ import org.ginsim.epilog.Tuple2D;
 
 public class TopologyHexagonOddR extends TopologyHexagon {
 
-	private int[] neighboursX = { 0, 1, 1, 1, 0, -1 };
-	private int[][] neighboursY = { { 1, -1, 0, 1, 1, 0 },
-			{ -1, 1, 0, 1, 1, 0 } };
+	private int[] neighboursY = { 0, 0, -1, -1, +1, +1 };
+	private int[][] neighboursX = { { 1, -1, 0, -1, 0, -1 },
+			{ 1, -1, 0, 1, 0, 1 } };
 
 	public TopologyHexagonOddR(int maxX, int maxY, RollOver rollover) {
 		this.maxX = maxX;
@@ -18,7 +18,7 @@ public class TopologyHexagonOddR extends TopologyHexagon {
 	}
 
 	public Set<Tuple2D> getNeighbours(Tuple2D elem, Set<Tuple2D> setComplete) {
-		return getNeighbours(this.neighboursX, this.neighboursY, elem,
+		return getNeighboursODDR(this.neighboursX, this.neighboursY, elem,
 				setComplete);
 	}
 
@@ -113,4 +113,5 @@ public class TopologyHexagonOddR extends TopologyHexagon {
 		
 		return new Tuple2D(xDiv, yDiv);
 	}
+
 }
