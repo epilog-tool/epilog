@@ -40,7 +40,6 @@ public class ColorUtils {
 				sumB += c.getBlue();
 				blueIndex +=1; }
 		}
-		System.out.println(sumR + " " + sumG + " " + sumB);
 		
 		if (redIndex==0)
 			sumR = 255;
