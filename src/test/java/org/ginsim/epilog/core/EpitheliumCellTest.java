@@ -1,10 +1,8 @@
 package org.ginsim.epilog.core;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,8 +54,8 @@ public class EpitheliumCellTest {
 
 	@Test
 	public void hasNodeTest() {
-		assertTrue(epicell.getNodeIndex("G0"));
-		assertFalse(epicell.getNodeIndex("XPTO"));
+		assertEquals(epicell.getNodeIndex("G0"), 0);
+		assertEquals(epicell.getNodeIndex("XPTO"), -1);
 	}
 
 	@Test
