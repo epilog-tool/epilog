@@ -23,16 +23,39 @@ public class ColorUtils {
 	}
 
 	public static Color combine(List<Color> l) {
-		int sumR = 255, sumG = 255, sumB = 255;
+		int sumR = 0, sumG = 0, sumB = 0;
+		int redIndex = 0;
+		int blueIndex = 0;
+		int greenIndex = 0;
 
 		for (Color c : l) {
-			sumR += c.getRed();
-			sumG += c.getGreen();
-			sumB += c.getBlue();
+			
+			if (c.getRed() !=255){
+				sumR += c.getRed();
+				redIndex +=1; }
+			if (c.getGreen() !=255){
+				sumG += c.getGreen();
+				greenIndex +=1; }
+			if (c.getBlue() !=255){
+				sumB += c.getBlue();
+				blueIndex +=1; }
 		}
-		sumR /= (l.size() + 1);
-		sumG /= (l.size() + 1);
-		sumB /= (l.size() + 1);
+		System.out.println(sumR + " " + sumG + " " + sumB);
+		
+		if (redIndex==0)
+			sumR = 255;
+		else
+			sumR /= redIndex;
+		
+		if (greenIndex==0)
+			sumG = 255;
+		else
+			sumG /= greenIndex;
+		
+		if (blueIndex==0)
+			sumB = 255;
+		else
+			sumB /= blueIndex;
 		return new Color(sumR, sumG, sumB);
 	}
 
