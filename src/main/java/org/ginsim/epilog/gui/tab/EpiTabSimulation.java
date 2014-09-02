@@ -288,6 +288,9 @@ public class EpiTabSimulation extends EpiTab {
 		updateComponentList(jccb.getSelectedItems());
 	}
 
+	
+	
+	
 	private void saveEpiGrid2File() {
 		JFileChooser fc = new JFileChooser();
 		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -486,6 +489,7 @@ public class EpiTabSimulation extends EpiTab {
 		List<String> lEnvInputCompsFromSelectedModels = new ArrayList<String>();
 		for (String nodeID : lInputs) {
 			if (!this.epithelium.isIntegrationComponent(nodeID)) {
+
 				lEnvInputCompsFromSelectedModels.add(nodeID);
 			}
 		}
@@ -508,6 +512,8 @@ public class EpiTabSimulation extends EpiTab {
 		return true;
 	}
 
+	
+	//Panel with information about the cell. It is activated when the mouse is pressed over the grid.
 	public class GridComponentValues extends JPanel {
 		private static final long serialVersionUID = -1449994132920814592L;
 
@@ -525,9 +531,9 @@ public class EpiTabSimulation extends EpiTab {
 			jlTmp.setForeground(this.getBackground());
 			this.add(jlTmp, gbc);
 		}
-
+		
 		public void updateValues(int posX, int posY, EpitheliumGrid grid) {
-			// LogicalModel m, AbstractPerturbation ap, byte[] state) {
+			// TODO: LogicalModel m, AbstractPerturbation ap, byte[] state) {
 			this.removeAll();
 			JLabel jlTmp;
 			GridBagConstraints gbc = new GridBagConstraints();
@@ -628,7 +634,8 @@ public class EpiTabSimulation extends EpiTab {
 				gbc.gridwidth = 1;
 				for (String nodeID : lAllNodeIDs) {
 					if (!epithelium.getComponentFeatures().getNodeInfo(nodeID)
-							.isInput() || epithelium.isIntegrationComponent(nodeID))
+							.isInput()
+							|| epithelium.isIntegrationComponent(nodeID))
 						continue;
 					gbc.gridy = ++y;
 					gbc.gridx = 0;
