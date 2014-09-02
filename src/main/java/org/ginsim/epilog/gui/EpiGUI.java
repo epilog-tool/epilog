@@ -10,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -58,8 +60,6 @@ import org.ginsim.epilog.gui.tab.EpiTabPriorityClasses;
 import org.ginsim.epilog.gui.tab.EpiTabSimulation;
 import org.ginsim.epilog.io.ButtonFactory;
 import org.ginsim.epilog.io.FileIO;
-
-import javax.swing.UIManager;
 
 public class EpiGUI extends JFrame {
 	private static final long serialVersionUID = -3266121588934662490L;
@@ -148,6 +148,39 @@ public class EpiGUI extends JFrame {
 
 		this.add(this.epiMainFrame);
 
+		// JFrame close button
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.addWindowListener(new WindowListener() {
+			@Override
+			public void windowOpened(WindowEvent e) {
+			}
+
+			@Override
+			public void windowIconified(WindowEvent e) {
+			}
+
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+			}
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				exitProject();
+			}
+
+			@Override
+			public void windowClosed(WindowEvent e) {
+			}
+
+			@Override
+			public void windowActivated(WindowEvent e) {
+			}
+		});
+		
 		this.validateGUI();
 		this.pack();
 		this.setSize(1024, 768);
