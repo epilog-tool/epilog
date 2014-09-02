@@ -138,6 +138,7 @@ public class DialogNewEpithelium extends JPanel {
 //		if (this.jcbSBMLs.getSelectedIndex() == 0) {
 //			valid = false;
 //		}
+		// TODO: method necessary ?
 		System.out.println("jcb: " + this.jcbSBMLs.getSelectedIndex()
 				+ " valid:" + valid);
 		return valid;
@@ -163,7 +164,6 @@ public class DialogNewEpithelium extends JPanel {
 		if (this.validateTextField() && this.validateComboBox()) {
 			isValid = true;
 		}
-		System.out.println("dialog: " + isValid);
 		this.buttonOK.setEnabled(isValid);
 		return isValid;
 	}

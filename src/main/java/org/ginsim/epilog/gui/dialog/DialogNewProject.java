@@ -289,7 +289,6 @@ public class DialogNewProject extends JPanel {
 			isValid = false;
 		}
 		this.buttonOK.setEnabled(isValid);
-		System.out.println("IsValid: " + isValid);
 		return isValid;
 	}
 }
