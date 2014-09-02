@@ -30,6 +30,8 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -57,6 +59,8 @@ import org.ginsim.epilog.gui.tab.EpiTabSimulation;
 import org.ginsim.epilog.io.ButtonFactory;
 import org.ginsim.epilog.io.FileIO;
 
+import javax.swing.UIManager;
+
 public class EpiGUI extends JFrame {
 	private static final long serialVersionUID = -3266121588934662490L;
 
@@ -76,6 +80,25 @@ public class EpiGUI extends JFrame {
 
 	public EpiGUI() {
 		super(NAME);
+
+		try {
+			UIManager.setLookAndFeel(UIManager
+					.getCrossPlatformLookAndFeelClassName());
+			UIManager
+					.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (ClassNotFoundException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (InstantiationException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IllegalAccessException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 
 		this.initializeMenus();
 
@@ -565,7 +588,8 @@ public class EpiGUI extends JFrame {
 								this.project.getModelFeatures());
 					} else if (node.toString() == "Simulation") {
 						epiTab = new EpiTabSimulation(epi, selPath,
-								this.project.getModelFeatures(), new SimulationEpiClone());
+								this.project.getModelFeatures(),
+								new SimulationEpiClone());
 					}
 					if (epiTab != null) {
 						this.epiRightFrame.addTab(title, epiTab);
@@ -574,7 +598,7 @@ public class EpiGUI extends JFrame {
 
 						// -- START Button
 						JPanel pnlTab = new JPanel(new GridBagLayout());
-						pnlTab.setOpaque(false);
+						// pnlTab.setOpaque(false);
 						GridBagConstraints gbc = new GridBagConstraints();
 						gbc.gridx = 0;
 						gbc.gridy = 0;
