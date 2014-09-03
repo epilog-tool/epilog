@@ -12,6 +12,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -156,8 +157,10 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		gbc.gridx = 0;
 		gbc.anchor = GridBagConstraints.WEST;
 		jpPerturbTop.add(new JLabel("Component:"), gbc);
+
 		Set<String> sProper = this.epithelium.getComponentFeatures()
 				.getModelComponents(m, false);
+
 		String[] saProper = new String[sProper.size()];
 		int i = 0;
 		for (String nodeID : sProper)
