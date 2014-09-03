@@ -54,7 +54,7 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 		this.guiClasses = new ArrayList<JList<String>>();
 
 		JPanel jpTop = new JPanel(new BorderLayout());
-		jpTop.setBorder(BorderFactory.createTitledBorder("Navegation"));
+		jpTop.setBorder(BorderFactory.createTitledBorder("Navigation"));
 		this.center.add(jpTop, BorderLayout.NORTH);
 		JPanel jpTLeft = new JPanel();
 		jpTop.add(jpTLeft, BorderLayout.LINE_START);
@@ -134,7 +134,7 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 		jpTRight.add(jbSingle);
 
 		this.jpBottom = new JPanel(new GridBagLayout());
-		this.jpBottom.setBorder(BorderFactory.createTitledBorder("Priority set"));
+		this.jpBottom.setBorder(BorderFactory.createTitledBorder("Priority sets"));
 		this.center.add(jpBottom, BorderLayout.CENTER);
 		LogicalModel m = this.modelFeatures.getModel((String) jcbSBML
 				.getSelectedItem());
