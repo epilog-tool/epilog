@@ -527,7 +527,7 @@ public class EpiTabSimulation extends EpiTab {
 			gbc.gridy = y;
 			gbc.gridx = 0;
 			gbc.gridwidth = 2;
-			JLabel jlTmp = new JLabel("Perturbation:      ");
+			JLabel jlTmp = new JLabel("                              ");
 			jlTmp.setForeground(this.getBackground());
 			this.add(jlTmp, gbc);
 		}
@@ -584,8 +584,8 @@ public class EpiTabSimulation extends EpiTab {
 				gbc.gridx = 0;
 				gbc.gridwidth = 2;
 				gbc.anchor = GridBagConstraints.WEST;
-				//jlTmp = new JLabel("Perturbation:");
-				//this.add(jlTmp, gbc);
+				jlTmp = new JLabel("Perturbation:");
+				this.add(jlTmp, gbc);
 				gbc.gridy = ++y;
 				gbc.gridx = 0;
 				gbc.gridwidth = 2;
