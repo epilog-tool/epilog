@@ -202,7 +202,7 @@ public class EpiTabSimulation extends EpiTab {
 		jpButtons.add(jpButtonsR, BorderLayout.LINE_END);
 
 		JPanel jpButtonsL = new JPanel();
-		this.jlStep = new JLabel("Step: " + this.iCurrSimIter);
+		this.jlStep = new JLabel("Iteration: " + this.iCurrSimIter);
 		jpButtonsL.add(this.jlStep);
 		this.jlStable = new JLabel("Stable!");
 		this.setGridGUIStable(false);
@@ -309,7 +309,7 @@ public class EpiTabSimulation extends EpiTab {
 
 	private void simulationRewind() {
 		this.iCurrSimIter = 0;
-		this.jlStep.setText("Step: " + this.iCurrSimIter);
+		this.jlStep.setText("Iteration: " + this.iCurrSimIter);
 		EpitheliumGrid firstGrid = this.simulation.getGridAt(this.iCurrSimIter);
 		this.visualGridSimulation.setEpitheliumGrid(firstGrid);
 		setGridGUIStable(false);
@@ -327,7 +327,7 @@ public class EpiTabSimulation extends EpiTab {
 		}
 		EpitheliumGrid prevGrid = this.simulation
 				.getGridAt(--this.iCurrSimIter);
-		this.jlStep.setText("Step: " + this.iCurrSimIter);
+		this.jlStep.setText("Iteration: " + this.iCurrSimIter);
 		this.visualGridSimulation.setEpitheliumGrid(prevGrid);
 		setGridGUIStable(false);
 		if (this.iCurrSimIter == 0) {
@@ -356,7 +356,7 @@ public class EpiTabSimulation extends EpiTab {
 				.getGridAt(this.iCurrSimIter + 1);
 		if (!nextGrid.equals(prevGrid)) {
 			this.visualGridSimulation.setEpitheliumGrid(nextGrid);
-			this.jlStep.setText("Step: " + ++this.iCurrSimIter);
+			this.jlStep.setText("Iteration: " + ++this.iCurrSimIter);
 		} else {
 			setGridGUIStable(true);
 		}
@@ -379,7 +379,7 @@ public class EpiTabSimulation extends EpiTab {
 			this.iCurrSimIter++;
 		}
 		this.visualGridSimulation.setEpitheliumGrid(nextGrid);
-		this.jlStep.setText("Step: " + this.iCurrSimIter);
+		this.jlStep.setText("Iteration: " + this.iCurrSimIter);
 		this.jbRewind.setEnabled(true);
 		this.jbBack.setEnabled(true);
 		// Re-Paint
@@ -584,8 +584,8 @@ public class EpiTabSimulation extends EpiTab {
 				gbc.gridx = 0;
 				gbc.gridwidth = 2;
 				gbc.anchor = GridBagConstraints.WEST;
-				jlTmp = new JLabel("Perturbation:");
-				this.add(jlTmp, gbc);
+				//jlTmp = new JLabel("Perturbation:");
+				//this.add(jlTmp, gbc);
 				gbc.gridy = ++y;
 				gbc.gridx = 0;
 				gbc.gridwidth = 2;
