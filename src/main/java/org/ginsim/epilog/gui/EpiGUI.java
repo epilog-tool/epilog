@@ -180,7 +180,7 @@ public class EpiGUI extends JFrame {
 			public void windowActivated(WindowEvent e) {
 			}
 		});
-		
+
 		this.validateGUI();
 		this.pack();
 		this.setSize(1024, 768);
@@ -354,7 +354,16 @@ public class EpiGUI extends JFrame {
 		int result = JOptionPane.showConfirmDialog(null,
 				"Do you really want to delete " + epi + "?");
 		if (result == JOptionPane.YES_OPTION) {
+			// Remove from core
 			this.project.removeEpithelium(epi);
+			// Remove from EpiTabs
+			for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
+				EpiTab epitab = (EpiTab) this.epiRightFrame.getComponentAt(i);
+				if (epitab.containsEpithelium(epi)) {
+					epiRightFrame.removeTabAt(i);
+				}
+			}
+			// Remove from JTree
 			DefaultTreeModel model = (DefaultTreeModel) this.epiTree.getModel();
 			DefaultMutableTreeNode root = (DefaultMutableTreeNode) model
 					.getRoot();
@@ -577,97 +586,96 @@ public class EpiGUI extends JFrame {
 	}
 
 	private void checkDoubleClickEpitheliumJTree(MouseEvent e) {
+		if (e.getClickCount() != 2)
+			return;
 		int selRow = this.epiTree.getRowForLocation(e.getX(), e.getY());
+		if (selRow == -1)
+			return;
+
 		TreePath selPath = this.epiTree.getPathForLocation(e.getX(), e.getY());
-		if (selRow != -1) {
-			if (e.getClickCount() == 2) {
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode) selPath
-						.getLastPathComponent();
-				// Only opens tabs for leafs
-				if (!node.isLeaf()) {
-					return;
-				}
-				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node
-						.getParent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selPath
+				.getLastPathComponent();
+		// Only opens tabs for leafs
+		if (!node.isLeaf()) {
+			return;
+		}
+		DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node
+				.getParent();
 
-				int tabIndex = -1;
-				for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
-					EpiTab epi = (EpiTab) this.epiRightFrame.getComponentAt(i);
-					if (epi.containsPath(selPath)) {
-						tabIndex = i;
-						break;
-					}
-				}
-				if (tabIndex < 0 && parent != null) {
-					// Create new Tab
-					Epithelium epi = (Epithelium) parent.getUserObject();
-					EpiTab epiTab = null;
-					String title = ((Epithelium) parent.getUserObject())
-							.getName() + ":" + node;
-					if (node.toString() == "Initial Condition") {
-						epiTab = new EpiTabInitialConditions(epi, selPath,
-								this.project.getModelFeatures());
-					} else if (node.toString() == "Integration Components") {
-						epiTab = new EpiTabIntegrationFunctions(epi, selPath,
-								this.project.getModelFeatures());
-					} else if (node.toString() == "Perturbations") {
-						epiTab = new EpiTabPerturbations(epi, selPath,
-								this.project.getModelFeatures());
-					} else if (node.toString() == "Priorities") {
-						epiTab = new EpiTabPriorityClasses(epi, selPath,
-								this.project.getModelFeatures());
-					} else if (node.toString() == "Model Grid") {
-						epiTab = new EpiTabModelGrid(epi, selPath,
-								this.project.getModelFeatures());
-					} else if (node.toString() == "Simulation") {
-						epiTab = new EpiTabSimulation(epi, selPath,
-								this.project.getModelFeatures(),
-								new SimulationEpiClone());
-					}
-					if (epiTab != null) {
-						this.epiRightFrame.addTab(title, epiTab);
-						tabIndex = this.epiRightFrame.getTabCount() - 1;
-						epiTab.initialize();
-
-						// -- START Button
-						JPanel pnlTab = new JPanel(new GridBagLayout());
-						// pnlTab.setOpaque(false);
-						GridBagConstraints gbc = new GridBagConstraints();
-						gbc.gridx = 0;
-						gbc.gridy = 0;
-						gbc.weightx = 1;
-						pnlTab.add(new JLabel(title), gbc);
-						gbc.gridx++;
-						gbc.weightx = 0;
-						JButton close = ButtonFactory
-								.getImageNoBorder("button_close_gray.png");
-						close.addActionListener(new ActionListener() {
-							@Override
-							public void actionPerformed(ActionEvent e) {
-								JButton b = (JButton) e.getSource();
-								JPanel jp = (JPanel) b.getParent();
-								for (int i = 0; i < epiRightFrame.getTabCount(); i++) {
-									if (epiRightFrame.getTabComponentAt(i)
-											.equals(jp)) {
-										EpiTab epi = (EpiTab) epiRightFrame
-												.getComponentAt(i);
-										if (epi.canClose()) {
-											epiRightFrame.removeTabAt(i);
-										}
-									}
-								}
-							}
-						});
-						pnlTab.add(close, gbc);
-						this.epiRightFrame.setTabComponentAt(tabIndex, pnlTab);
-						// -- END Button
-					}
-				}
-				// Select existing Tab
-				this.epiRightFrame.setSelectedIndex(tabIndex);
-
+		int tabIndex = -1;
+		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
+			EpiTab epi = (EpiTab) this.epiRightFrame.getComponentAt(i);
+			if (epi.containsPath(selPath)) {
+				tabIndex = i;
+				break;
 			}
 		}
+		if (tabIndex < 0 && parent != null) {
+			// Create new Tab
+			Epithelium epi = (Epithelium) parent.getUserObject();
+			EpiTab epiTab = null;
+			String title = ((Epithelium) parent.getUserObject()).getName()
+					+ ":" + node;
+			if (node.toString() == "Initial Condition") {
+				epiTab = new EpiTabInitialConditions(epi, selPath,
+						this.project.getModelFeatures());
+			} else if (node.toString() == "Integration Components") {
+				epiTab = new EpiTabIntegrationFunctions(epi, selPath,
+						this.project.getModelFeatures());
+			} else if (node.toString() == "Perturbations") {
+				epiTab = new EpiTabPerturbations(epi, selPath,
+						this.project.getModelFeatures());
+			} else if (node.toString() == "Priorities") {
+				epiTab = new EpiTabPriorityClasses(epi, selPath,
+						this.project.getModelFeatures());
+			} else if (node.toString() == "Model Grid") {
+				epiTab = new EpiTabModelGrid(epi, selPath,
+						this.project.getModelFeatures());
+			} else if (node.toString() == "Simulation") {
+				epiTab = new EpiTabSimulation(epi, selPath,
+						this.project.getModelFeatures(),
+						new SimulationEpiClone());
+			}
+			if (epiTab != null) {
+				this.epiRightFrame.addTab(title, epiTab);
+				tabIndex = this.epiRightFrame.getTabCount() - 1;
+				epiTab.initialize();
+
+				// -- START Button
+				JPanel pnlTab = new JPanel(new GridBagLayout());
+				// pnlTab.setOpaque(false);
+				GridBagConstraints gbc = new GridBagConstraints();
+				gbc.gridx = 0;
+				gbc.gridy = 0;
+				gbc.weightx = 1;
+				pnlTab.add(new JLabel(title), gbc);
+				gbc.gridx++;
+				gbc.weightx = 0;
+				JButton close = ButtonFactory
+						.getImageNoBorder("button_close_gray.png");
+				close.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						JButton b = (JButton) e.getSource();
+						JPanel jp = (JPanel) b.getParent();
+						for (int i = 0; i < epiRightFrame.getTabCount(); i++) {
+							if (epiRightFrame.getTabComponentAt(i).equals(jp)) {
+								EpiTab epi = (EpiTab) epiRightFrame
+										.getComponentAt(i);
+								if (epi.canClose()) {
+									epiRightFrame.removeTabAt(i);
+								}
+							}
+						}
+					}
+				});
+				pnlTab.add(close, gbc);
+				this.epiRightFrame.setTabComponentAt(tabIndex, pnlTab);
+				// -- END Button
+			}
+		}
+		// Select existing Tab
+		this.epiRightFrame.setSelectedIndex(tabIndex);
 	}
 
 	private boolean loadPEPS() throws InstantiationException,

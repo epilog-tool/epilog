@@ -10,7 +10,7 @@ public abstract class EpiTab extends JPanel {
 
 	protected Epithelium epithelium;
 	protected TreePath path;
-	
+
 	protected EpiTab(Epithelium e, TreePath path) {
 		this.epithelium = e;
 		this.path = path;
@@ -19,8 +19,12 @@ public abstract class EpiTab extends JPanel {
 	public boolean containsPath(TreePath path) {
 		return this.path.equals(path);
 	}
-	
+
+	public boolean containsEpithelium(Epithelium epi) {
+		return (this.epithelium == epi); // TODO: PTGM: not necessary to do .equals()
+	}
+
 	public abstract void initialize();
-	
+
 	public abstract boolean canClose();
 }
