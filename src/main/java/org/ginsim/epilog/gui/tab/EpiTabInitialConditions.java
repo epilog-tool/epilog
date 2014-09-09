@@ -34,8 +34,8 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.ginsim.epilog.ProjectModelFeatures;
 import org.ginsim.epilog.core.Epithelium;
-import org.ginsim.epilog.core.EpitheliumCell;
 import org.ginsim.epilog.core.EpitheliumGrid;
+import org.ginsim.epilog.gui.widgets.GridInformation;
 import org.ginsim.epilog.gui.widgets.VisualGridInitialConditions;
 import org.ginsim.epilog.io.ButtonFactory;
 
@@ -43,7 +43,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private static final long serialVersionUID = -3626371381385041594L;
 
 	private VisualGridInitialConditions visualGridICs;
-	private EpitheliumCell[][] cellGridClone;
+	private EpitheliumGrid epiGridClone;
 	private List<String> lNodeInPanel;
 	private Map<String, Byte> mNode2ValueSelected;
 	// Reference for all Nodes
@@ -52,7 +52,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private Map<String, JCheckBox> mNode2Checkbox;
 	private Map<String, JComboBox<Byte>> mNode2Combobox;
 
-	private JPanel jspRCenter;
+	private JPanel jpRCenter;
+	private GridInformation lRight;
 
 	public EpiTabInitialConditions(Epithelium e, TreePath path,
 			ProjectModelFeatures modelFeatures) {
@@ -63,12 +64,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.center.setLayout(new BorderLayout());
 
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
-		this.cellGridClone = new EpitheliumCell[grid.getX()][grid.getY()];
-		for (int x = 0; x < this.cellGridClone.length; x++) {
-			for (int y = 0; y < this.cellGridClone[0].length; y++) {
-				this.cellGridClone[x][y] = grid.cloneEpitheliumCellAt(x, y);
-			}
-		}
+		this.epiGridClone = grid.clone();
 
 		this.mNode2ValueSelected = new HashMap<String, Byte>();
 		this.lNodeInPanel = new ArrayList<String>();
@@ -136,11 +132,12 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			}
 		}
 
-		this.visualGridICs = new VisualGridInitialConditions(this.epithelium
-				.getEpitheliumGrid().getX(), this.epithelium
-				.getEpitheliumGrid().getY(), this.epithelium
-				.getEpitheliumGrid().getTopology(), this.cellGridClone,
-				this.mNode2Color, this.mNode2ValueSelected);
+		this.lRight = new GridInformation(
+				this.epithelium.getComponentFeatures(),
+				this.epithelium.getIntegrationFunctions(), this.modelFeatures);
+
+		this.visualGridICs = new VisualGridInitialConditions(this.epiGridClone,
+				this.mNode2Color, this.mNode2ValueSelected, this.lRight);
 		this.center.add(this.visualGridICs, BorderLayout.CENTER);
 
 		JPanel left = new JPanel(new BorderLayout());
@@ -202,10 +199,10 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		rTop.setBorder(BorderFactory.createTitledBorder("Display options"));
 		left.add(rTop, BorderLayout.NORTH);
 
-		this.jspRCenter = new JPanel();
-		this.jspRCenter.setLayout(new BoxLayout(jspRCenter, BoxLayout.Y_AXIS));
-		JScrollPane jscroll = new JScrollPane(this.jspRCenter);
-		jscroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		this.jpRCenter = new JPanel();
+		this.jpRCenter.setLayout(new BoxLayout(jpRCenter, BoxLayout.Y_AXIS));
+		JScrollPane jscroll = new JScrollPane(this.jpRCenter);
+		jscroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		left.add(jscroll, BorderLayout.CENTER);
 
 		// Apply/Clear/Rectangle buttons
@@ -255,7 +252,11 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		rBottom.add(rBottomRect);
 		left.add(rBottom, BorderLayout.SOUTH);
 
-		this.center.add(left, BorderLayout.LINE_START);
+		JPanel jpLeftAggreg = new JPanel(new BorderLayout());
+		jpLeftAggreg.add(left, BorderLayout.LINE_START);
+		jpLeftAggreg.add(this.lRight, BorderLayout.LINE_END);
+
+		this.center.add(jpLeftAggreg, BorderLayout.LINE_START);
 		updateComponentList((String) jcbSBML.getSelectedItem());
 	}
 
@@ -275,7 +276,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	}
 
 	private void updateComponentList(String sModel) {
-		this.jspRCenter.removeAll();
+		this.jpRCenter.removeAll();
 		this.mNode2ValueSelected.clear();
 		this.lNodeInPanel.clear();
 
@@ -312,7 +313,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			gbc.gridx = 2;
 			jpRRCTop.add(this.mNode2JButton.get(nodeID), gbc);
 		}
-		this.jspRCenter.add(jpRRCTop);
+		this.jpRCenter.add(jpRRCTop);
 
 		// Input components
 		JPanel jpRRCBottom = new JPanel(new GridBagLayout());
@@ -350,7 +351,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			gbc.gridx = 2;
 			jpRRCBottom.add(this.mNode2JButton.get(nodeID), gbc);
 		}
-		this.jspRCenter.add(jpRRCBottom);
+		this.jpRCenter.add(jpRRCBottom);
 
 		// Re-Paint
 		this.getParent().repaint();
@@ -360,14 +361,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	protected void buttonReset() {
 		// Cancel CellGrid
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
-		for (int x = 0; x < this.cellGridClone.length; x++) {
-			for (int y = 0; y < this.cellGridClone[0].length; y++) {
-				this.cellGridClone[x][y] = new EpitheliumCell(grid.getModel(x,
-						y));
-				this.cellGridClone[x][y].setState(this.epithelium
-						.getEpitheliumGrid().getCellState(x, y));
-			}
-		}
+		this.epiGridClone = grid.clone();
+
 		// Cancel Colors
 		ArrayList<String> lTmp = new ArrayList<String>(
 				this.mNode2Color.keySet());
@@ -385,13 +380,13 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	@Override
 	protected void buttonAccept() {
 		// Copy cellGridClone to EpitheliumGrid
-		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
-		for (int x = 0; x < this.cellGridClone.length; x++) {
-			for (int y = 0; y < this.cellGridClone[0].length; y++) {
-				byte[] stateClone = this.cellGridClone[x][y].getState();
-				byte[] stateOrig = grid.getCellState(x, y);
+		EpitheliumGrid gridOrig = this.epithelium.getEpitheliumGrid();
+		for (int x = 0; x < this.epiGridClone.getX(); x++) {
+			for (int y = 0; y < this.epiGridClone.getY(); y++) {
+				byte[] stateClone = this.epiGridClone.getCellState(x, y);
+				byte[] stateOrig = gridOrig.getCellState(x, y);
 				if (!Arrays.equals(stateOrig, stateClone)) {
-					grid.setCellState(x, y, stateClone);
+					gridOrig.setCellState(x, y, stateClone);
 				}
 			}
 		}
@@ -406,9 +401,9 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	protected boolean isChanged() {
 		// Check modifications on state
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
-		for (int x = 0; x < this.cellGridClone.length; x++) {
-			for (int y = 0; y < this.cellGridClone[0].length; y++) {
-				byte[] stateClone = this.cellGridClone[x][y].getState();
+		for (int x = 0; x < this.epiGridClone.getX(); x++) {
+			for (int y = 0; y < this.epiGridClone.getY(); y++) {
+				byte[] stateClone = this.epiGridClone.getCellState(x, y);
 				byte[] stateOrig = grid.getCellState(x, y);
 				if (!Arrays.equals(stateOrig, stateClone)) {
 					return true;

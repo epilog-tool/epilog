@@ -13,35 +13,37 @@ import java.util.Map;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.ginsim.epilog.Tuple2D;
-import org.ginsim.epilog.core.EpitheliumCell;
-import org.ginsim.epilog.core.topology.Topology;
+import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.gui.color.ColorUtils;
 
 public class VisualGridInitialConditions extends VisualGrid {
 	private static final long serialVersionUID = 7590023855645466271L;
 
-	private EpitheliumCell[][] cellGridClone;
+	private EpitheliumGrid epiGrid;
 	private Map<String, Byte> mNode2ValueSelected;
 	private Map<String, Color> colorMapClone;
 	private boolean isRectFill;
 	private Tuple2D initialRectPos;
 	private LogicalModel selectedModel;
+	private GridInformation valuePanel;
 
-	public VisualGridInitialConditions(int gridX, int gridY, Topology topology,
-			EpitheliumCell[][] cellGridClone, Map<String, Color> colorMapClone,
-			Map<String, Byte> mNode2ValueSelected) {
-		super(gridX, gridY, topology);
-		this.cellGridClone = cellGridClone;
+	public VisualGridInitialConditions(EpitheliumGrid gridClone,
+			Map<String, Color> colorMapClone,
+			Map<String, Byte> mNode2ValueSelected, GridInformation valuePanel) {
+		super(gridClone.getX(), gridClone.getY(), gridClone.getTopology());
+		this.epiGrid = gridClone;
 		this.colorMapClone = colorMapClone;
 		this.mNode2ValueSelected = mNode2ValueSelected;
 		this.isRectFill = false;
 		this.initialRectPos = null;
 		this.selectedModel = null;
+		this.valuePanel = valuePanel;
 
 		this.addMouseMotionListener(new MouseMotionListener() {
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				mousePosition2Grid(e);
+				updateComponentValues(mouseGrid);
 			}
 
 			@Override
@@ -85,6 +87,13 @@ public class VisualGridInitialConditions extends VisualGrid {
 		});
 	}
 
+	private void updateComponentValues(Tuple2D pos) {
+		if (!isInGrid(pos))
+			return;
+
+		this.valuePanel.updateValues(pos.getX(), pos.getY(), this.epiGrid);
+	}
+
 	public void setModel(LogicalModel m) {
 		this.selectedModel = m;
 	}
@@ -102,7 +111,7 @@ public class VisualGridInitialConditions extends VisualGrid {
 
 	protected void applyDataAt(int x, int y) {
 		for (String nodeID : this.mNode2ValueSelected.keySet()) {
-			this.cellGridClone[x][y].setValue(nodeID,
+			this.epiGrid.setCellComponentValue(x, y, nodeID,
 					this.mNode2ValueSelected.get(nodeID));
 		}
 	}
@@ -118,18 +127,18 @@ public class VisualGridInitialConditions extends VisualGrid {
 			for (int y = 0; y < this.gridY; y++) {
 				Polygon polygon = topology.createNewPolygon(this.radius, x, y);
 				Color cCombined;
-				if (this.cellGridClone[x][y].getModel().equals(this.selectedModel)) {
+				if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
 					List<Color> lColors = new ArrayList<Color>();
 					for (String nodeID : this.mNode2ValueSelected.keySet()) {
-						int index = this.cellGridClone[x][y].getNodeIndex(nodeID);
+						int index = this.epiGrid.getNodeIndex(x, y, nodeID);
 						if (index >= 0) { // if cell has nodeID
 							Color cBase = this.colorMapClone.get(nodeID);
-							byte value = this.cellGridClone[x][y].getState()[index];
+							byte value = this.epiGrid.getCellState(x, y)[index];
 							if (value > 0) {
-								byte max = this.cellGridClone[x][y].getModel()
+								byte max = this.epiGrid.getModel(x, y)
 										.getNodeOrder().get(index).getMax();
-								lColors.add(ColorUtils.getColorAtValue(cBase, max,
-										value));
+								lColors.add(ColorUtils.getColorAtValue(cBase,
+										max, value));
 							}
 						}
 					}

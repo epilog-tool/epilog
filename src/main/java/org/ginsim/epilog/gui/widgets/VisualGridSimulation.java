@@ -14,9 +14,7 @@ import java.util.List;
 import org.ginsim.epilog.Tuple2D;
 import org.ginsim.epilog.core.EpitheliumComponentFeatures;
 import org.ginsim.epilog.core.EpitheliumGrid;
-import org.ginsim.epilog.core.topology.Topology;
 import org.ginsim.epilog.gui.color.ColorUtils;
-import org.ginsim.epilog.gui.tab.EpiTabSimulation.GridComponentValues;
 
 public class VisualGridSimulation extends VisualGrid {
 	private static final long serialVersionUID = -3880244278613986980L;
@@ -24,18 +22,16 @@ public class VisualGridSimulation extends VisualGrid {
 	private EpitheliumComponentFeatures componentFeatures;
 	private EpitheliumGrid epiGrid;
 	private List<String> lCompON;
-	private GridComponentValues valuePanel;
+	private GridInformation valuePanel;
 
-	public VisualGridSimulation(int gridX, int gridY, Topology topology,
-			EpitheliumComponentFeatures componentFeatures,
-			EpitheliumGrid epiGrid, List<String> lCompON,
-			GridComponentValues valuePanel) {
-		super(gridX, gridY, topology);
+	public VisualGridSimulation(EpitheliumGrid epiGrid,
+			EpitheliumComponentFeatures componentFeatures, List<String> lCompON,
+			GridInformation valuePanel) {
+		super(epiGrid.getX(), epiGrid.getY(), epiGrid.getTopology());
 		this.componentFeatures = componentFeatures;
 		this.epiGrid = epiGrid;
 		this.lCompON = lCompON;
 		this.valuePanel = valuePanel;
-		
 
 		this.addMouseMotionListener(new MouseMotionListener() {
 			@Override

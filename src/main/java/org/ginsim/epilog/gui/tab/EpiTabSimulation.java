@@ -25,19 +25,20 @@ import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSplitPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
-import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.ginsim.epilog.ProjectModelFeatures;
 import org.ginsim.epilog.Simulation;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.gui.EpiGUI.SimulationEpiClone;
 import org.ginsim.epilog.gui.color.ColorUtils;
+import org.ginsim.epilog.gui.widgets.GridInformation;
 import org.ginsim.epilog.gui.widgets.JComboCheckBox;
 import org.ginsim.epilog.gui.widgets.VisualGridSimulation;
 import org.ginsim.epilog.io.ButtonFactory;
@@ -66,10 +67,9 @@ public class EpiTabSimulation extends EpiTab {
 	private JButton jbFastFwr;
 
 	private JPanel jpRight;
-	private JPanel jpLeftAggreg;
-	private GridComponentValues lRight;
+	private GridInformation lRight;
 	private JPanel lLeft;
-	private JSplitPane jspRRCenter;
+	private JPanel jpRRCenter;
 
 	public EpiTabSimulation(Epithelium e, TreePath path,
 			ProjectModelFeatures modelFeatures, SimulationEpiClone simEpiClone) {
@@ -96,14 +96,14 @@ public class EpiTabSimulation extends EpiTab {
 				this.mSelCheckboxes.put(node.getNodeID(), false);
 			}
 		}
-		this.lRight = new GridComponentValues();
-
-		this.visualGridSimulation = new VisualGridSimulation(this.epithelium
-				.getEpitheliumGrid().getX(), this.epithelium
-				.getEpitheliumGrid().getY(), this.epithelium
-				.getEpitheliumGrid().getTopology(),
+		this.lRight = new GridInformation(
 				this.epithelium.getComponentFeatures(),
-				this.epithelium.getEpitheliumGrid(), this.lCompON, this.lRight);
+				this.epithelium.getIntegrationFunctions(), this.modelFeatures);
+
+		this.visualGridSimulation = new VisualGridSimulation(
+				this.epithelium.getEpitheliumGrid(),
+				this.epithelium.getComponentFeatures(), this.lCompON,
+				this.lRight);
 		this.jpRight.add(this.visualGridSimulation, BorderLayout.CENTER);
 
 		JPanel jpButtons = new JPanel(new BorderLayout());
@@ -270,8 +270,11 @@ public class EpiTabSimulation extends EpiTab {
 		rrTop.setBorder(BorderFactory.createTitledBorder("Display options"));
 		this.lLeft.add(rrTop, BorderLayout.NORTH);
 
-		this.jspRRCenter = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		this.lLeft.add(jspRRCenter, BorderLayout.CENTER);
+		this.jpRRCenter = new JPanel();
+		this.jpRRCenter.setLayout(new BoxLayout(jpRRCenter, BoxLayout.Y_AXIS));
+		JScrollPane jscroll = new JScrollPane(this.jpRRCenter);
+		jscroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		this.lLeft.add(jscroll, BorderLayout.CENTER);
 		jccb.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -280,17 +283,14 @@ public class EpiTabSimulation extends EpiTab {
 			}
 		});
 
-		this.jpLeftAggreg = new JPanel(new BorderLayout());
+		JPanel jpLeftAggreg = new JPanel(new BorderLayout());
 		jpLeftAggreg.add(this.lLeft, BorderLayout.LINE_START);
 		jpLeftAggreg.add(this.lRight, BorderLayout.LINE_END);
 
-		this.add(this.jpLeftAggreg, BorderLayout.LINE_START);
+		this.add(jpLeftAggreg, BorderLayout.LINE_START);
 		updateComponentList(jccb.getSelectedItems());
 	}
 
-	
-	
-	
 	private void saveEpiGrid2File() {
 		JFileChooser fc = new JFileChooser();
 		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -439,7 +439,7 @@ public class EpiTabSimulation extends EpiTab {
 	}
 
 	private void updateComponentList(List<String> items) {
-		this.jspRRCenter.removeAll();
+		this.jpRRCenter.removeAll();
 		this.lCompON.clear();
 		this.colorButton2Node.clear();
 
@@ -452,7 +452,7 @@ public class EpiTabSimulation extends EpiTab {
 		// Proper components
 		JPanel jpRRCTop = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(1, 5, 1, 0);
+		gbc.insets = new Insets(5, 5, 4, 0);
 		jpRRCTop.setBorder(BorderFactory
 				.createTitledBorder("Proper components"));
 		List<String> lProper = new ArrayList<String>(this.epithelium
@@ -471,12 +471,12 @@ public class EpiTabSimulation extends EpiTab {
 			this.getCompMiniPanel(jpRRCTop, gbc, y, nodeID);
 			y++;
 		}
-		this.jspRRCenter.add(jpRRCTop);
+		this.jpRRCenter.add(jpRRCTop);
 
 		// Input components
 		JPanel jpRRCBottom = new JPanel(new GridBagLayout());
 		gbc = new GridBagConstraints();
-		gbc.insets = new Insets(1, 5, 1, 0);
+		gbc.insets = new Insets(5, 5, 4, 0);
 		jpRRCBottom.setBorder(BorderFactory
 				.createTitledBorder("Input components"));
 		List<String> lInputs = new ArrayList<String>(this.epithelium
@@ -502,7 +502,7 @@ public class EpiTabSimulation extends EpiTab {
 			this.getCompMiniPanel(jpRRCBottom, gbc, y, nodeID);
 			y++;
 		}
-		this.jspRRCenter.add(jpRRCBottom);
+		this.jpRRCenter.add(jpRRCBottom);
 		this.visualGridSimulation.paintComponent(this.visualGridSimulation
 				.getGraphics());
 	}
@@ -510,164 +510,5 @@ public class EpiTabSimulation extends EpiTab {
 	@Override
 	public boolean canClose() {
 		return true;
-	}
-
-	
-	//Panel with information about the cell. It is activated when the mouse is pressed over the grid.
-	public class GridComponentValues extends JPanel {
-		private static final long serialVersionUID = -1449994132920814592L;
-
-		public GridComponentValues() {
-			this.setLayout(new GridBagLayout());
-			this.setBorder(BorderFactory.createTitledBorder("Grid information"));
-			this.updateValues(0, 0, null);
-		}
-
-		private void minimalSpace(GridBagConstraints gbc, int y) {
-			gbc.gridy = y;
-			gbc.gridx = 0;
-			gbc.gridwidth = 2;
-			JLabel jlTmp = new JLabel("                              ");
-			jlTmp.setForeground(this.getBackground());
-			this.add(jlTmp, gbc);
-		}
-		
-		public void updateValues(int posX, int posY, EpitheliumGrid grid) {
-			// TODO: LogicalModel m, AbstractPerturbation ap, byte[] state) {
-			this.removeAll();
-			JLabel jlTmp;
-			GridBagConstraints gbc = new GridBagConstraints();
-			gbc.fill = GridBagConstraints.HORIZONTAL;
-			int y = 0;
-
-			// Separation
-			this.minimalSpace(gbc, y);
-			if (grid != null) {
-				List<String> lAllNodeIDs = new ArrayList<String>(epithelium
-						.getComponentFeatures().getComponents());
-				Collections.sort(lAllNodeIDs, new Comparator<String>() {
-					public int compare(String s1, String s2) {
-						return s1.compareToIgnoreCase(s2);
-					}
-				});
-				LogicalModel m = grid.getModel(posX, posY);
-
-				// Cell Position
-				gbc.gridy = ++y;
-				gbc.gridx = 0;
-				gbc.gridwidth = 2;
-				gbc.anchor = GridBagConstraints.WEST;
-				jlTmp = new JLabel("Cell: " + posX + "," + posY);
-				this.add(jlTmp, gbc);
-
-				// Separation
-				this.minimalSpace(gbc, ++y);
-
-				// Cell Model
-				gbc.gridy = ++y;
-				gbc.gridx = 0;
-				gbc.gridwidth = 2;
-				gbc.anchor = GridBagConstraints.WEST;
-				jlTmp = new JLabel("Model:");
-				this.add(jlTmp, gbc);
-				gbc.gridy = ++y;
-				gbc.gridx = 0;
-				gbc.gridwidth = 2;
-				jlTmp = new JLabel("  " + modelFeatures.getName(m));
-				this.add(jlTmp, gbc);
-
-				// Separation
-				this.minimalSpace(gbc, ++y);
-
-				// Perturbations
-				gbc.gridy = ++y;
-				gbc.gridx = 0;
-				gbc.gridwidth = 2;
-				gbc.anchor = GridBagConstraints.WEST;
-				jlTmp = new JLabel("Perturbation:");
-				this.add(jlTmp, gbc);
-				gbc.gridy = ++y;
-				gbc.gridx = 0;
-				gbc.gridwidth = 2;
-				AbstractPerturbation ap = grid.getPerturbation(posX, posY);
-				jlTmp = new JLabel("  "
-						+ ((ap == null) ? "none" : ap.toString()));
-				this.add(jlTmp, gbc);
-
-				// Separation
-				this.minimalSpace(gbc, ++y);
-
-				// Proper values
-				gbc.gridy = ++y;
-				gbc.gridx = 0;
-				gbc.gridwidth = 1;
-				jlTmp = new JLabel("Proper:");
-				this.add(jlTmp, gbc);
-				gbc.gridwidth = 1;
-				for (String nodeID : lAllNodeIDs) {
-					if (epithelium.getComponentFeatures().getNodeInfo(nodeID)
-							.isInput())
-						continue;
-					gbc.gridy = ++y;
-					gbc.gridx = 0;
-					gbc.anchor = GridBagConstraints.WEST;
-					jlTmp = new JLabel(nodeID + " ");
-					this.add(jlTmp, gbc);
-					int index = grid.getNodeIndex(posX, posY, nodeID);
-					if (index < 0)
-						continue;
-					gbc.gridx = 1;
-					jlTmp = new JLabel(": "
-							+ grid.getCellState(posX, posY)[index]);
-					this.add(jlTmp, gbc);
-				}
-
-				// Separation
-				this.minimalSpace(gbc, ++y);
-
-				// Input values
-				gbc.gridy = ++y;
-				gbc.gridx = 0;
-				gbc.gridwidth = 1;
-				jlTmp = new JLabel("Input:");
-				this.add(jlTmp, gbc);
-				gbc.gridwidth = 1;
-				for (String nodeID : lAllNodeIDs) {
-					if (!epithelium.getComponentFeatures().getNodeInfo(nodeID)
-							.isInput()
-							|| epithelium.isIntegrationComponent(nodeID))
-						continue;
-					gbc.gridy = ++y;
-					gbc.gridx = 0;
-					gbc.anchor = GridBagConstraints.WEST;
-					jlTmp = new JLabel(nodeID + " ");
-					this.add(jlTmp, gbc);
-					int index = grid.getNodeIndex(posX, posY, nodeID);
-					if (index < 0)
-						continue;
-					gbc.gridx = 1;
-					jlTmp = new JLabel(": "
-							+ grid.getCellState(posX, posY)[index]);
-					this.add(jlTmp, gbc);
-				}
-
-				gbc.anchor = GridBagConstraints.PAGE_END;
-				// Separation
-				this.minimalSpace(gbc, ++y);
-			}
-
-			gbc.weighty = 1.0;
-			gbc.anchor = GridBagConstraints.PAGE_END;
-			gbc.gridy = ++y;
-			gbc.gridx = 0;
-			gbc.gridwidth = 2;
-			jlTmp = new JLabel(" ");
-			this.add(jlTmp, gbc);
-
-			// Repaint
-			// TODO: this.setSize(this.getPreferredSize());
-			this.revalidate();
-			this.repaint();
-		}
 	}
 }
