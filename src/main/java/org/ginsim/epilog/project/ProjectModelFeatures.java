@@ -1,4 +1,4 @@
-package org.ginsim.epilog;
+package org.ginsim.epilog.project;
 
 import java.awt.Color;
 import java.util.Collections;

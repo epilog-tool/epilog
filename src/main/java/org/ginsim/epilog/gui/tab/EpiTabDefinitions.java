@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.tree.TreePath;
 
-import org.ginsim.epilog.ProjectModelFeatures;
+import org.ginsim.epilog.project.ProjectModelFeatures;
 import org.ginsim.epilog.core.Epithelium;
 
 public abstract class EpiTabDefinitions extends EpiTab {

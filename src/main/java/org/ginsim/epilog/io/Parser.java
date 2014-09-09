@@ -20,7 +20,7 @@ import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
-import org.ginsim.epilog.Project;
+import org.ginsim.epilog.project.Project;
 import org.ginsim.epilog.common.Tuple2D;
 import org.ginsim.epilog.core.ComponentIntegrationFunctions;
 import org.ginsim.epilog.core.Epithelium;

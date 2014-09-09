@@ -45,7 +45,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.colomoto.logicalmodel.LogicalModel;
-import org.ginsim.epilog.Project;
+import org.ginsim.epilog.project.Project;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.gui.dialog.DialogNewEpithelium;

@@ -38,7 +38,7 @@ import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
-import org.ginsim.epilog.ProjectModelFeatures;
+import org.ginsim.epilog.project.ProjectModelFeatures;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumCell;
 import org.ginsim.epilog.core.EpitheliumGrid;

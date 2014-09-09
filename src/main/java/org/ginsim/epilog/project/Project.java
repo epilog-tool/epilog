@@ -1,4 +1,4 @@
-package org.ginsim.epilog;
+package org.ginsim.epilog.project;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;

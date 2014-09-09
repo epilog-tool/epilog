@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
-import org.ginsim.epilog.ProjectModelFeatures;
+import org.ginsim.epilog.project.ProjectModelFeatures;
 import org.ginsim.epilog.core.EpitheliumComponentFeatures;
 import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.core.EpitheliumIntegrationFunctions;

@@ -10,7 +10,7 @@ import java.awt.event.MouseMotionListener;
 import java.util.Map;
 
 import org.colomoto.logicalmodel.LogicalModel;
-import org.ginsim.epilog.ProjectModelFeatures;
+import org.ginsim.epilog.project.ProjectModelFeatures;
 import org.ginsim.epilog.common.Tuple2D;
 import org.ginsim.epilog.core.topology.Topology;
 

@@ -32,7 +32,7 @@ import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
-import org.ginsim.epilog.ProjectModelFeatures;
+import org.ginsim.epilog.project.ProjectModelFeatures;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.gui.widgets.GridInformation;

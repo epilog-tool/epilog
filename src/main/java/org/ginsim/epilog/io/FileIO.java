@@ -19,7 +19,7 @@ import javax.imageio.ImageIO;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
-import org.ginsim.epilog.Project;
+import org.ginsim.epilog.project.Project;
 import org.ginsim.epilog.core.EpitheliumGrid;
 
 public class FileIO {

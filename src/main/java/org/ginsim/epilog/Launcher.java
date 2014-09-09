@@ -9,6 +9,8 @@ import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.gui.EpiGUI;
 import org.ginsim.epilog.io.FileIO;
+import org.ginsim.epilog.project.Project;
+import org.ginsim.epilog.project.Simulation;
 
 import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
