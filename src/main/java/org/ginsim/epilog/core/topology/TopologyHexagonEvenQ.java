@@ -3,7 +3,7 @@ package org.ginsim.epilog.core.topology;
 import java.awt.Polygon;
 import java.util.Set;
 
-import org.ginsim.epilog.Tuple2D;
+import org.ginsim.epilog.common.Tuple2D;
 
 public class TopologyHexagonEvenQ extends TopologyHexagon {
 

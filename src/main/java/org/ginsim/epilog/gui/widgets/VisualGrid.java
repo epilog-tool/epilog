@@ -9,7 +9,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JPanel;
 
-import org.ginsim.epilog.Tuple2D;
+import org.ginsim.epilog.common.Tuple2D;
 import org.ginsim.epilog.core.topology.Topology;
 
 public abstract class VisualGrid extends JPanel {

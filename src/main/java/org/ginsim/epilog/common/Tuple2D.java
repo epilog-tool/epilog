@@ -1,4 +1,4 @@
-package org.ginsim.epilog;
+package org.ginsim.epilog.common;
 
 public class Tuple2D {
 	private int x;

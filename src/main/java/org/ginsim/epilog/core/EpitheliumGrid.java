@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
-import org.ginsim.epilog.Tuple2D;
+import org.ginsim.epilog.common.Tuple2D;
 import org.ginsim.epilog.core.topology.RollOver;
 import org.ginsim.epilog.core.topology.Topology;
 

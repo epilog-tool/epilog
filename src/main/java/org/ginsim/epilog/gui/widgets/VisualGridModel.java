@@ -11,7 +11,7 @@ import java.util.Map;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.ginsim.epilog.ProjectModelFeatures;
-import org.ginsim.epilog.Tuple2D;
+import org.ginsim.epilog.common.Tuple2D;
 import org.ginsim.epilog.core.topology.Topology;
 
 public class VisualGridModel extends VisualGrid {

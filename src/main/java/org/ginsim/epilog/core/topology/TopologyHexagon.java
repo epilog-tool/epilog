@@ -3,7 +3,7 @@ package org.ginsim.epilog.core.topology;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.ginsim.epilog.Tuple2D;
+import org.ginsim.epilog.common.Tuple2D;
 
 public abstract class TopologyHexagon extends Topology {
 

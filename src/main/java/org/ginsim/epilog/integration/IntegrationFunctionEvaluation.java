@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.colomoto.logicalmodel.NodeInfo;
-import org.ginsim.epilog.Tuple2D;
+import org.ginsim.epilog.common.Tuple2D;
 import org.ginsim.epilog.core.EpitheliumComponentFeatures;
 import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.integration.IntegrationFunctionSpecification.IntegrationAtom;

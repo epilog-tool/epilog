@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.colomoto.logicalmodel.LogicalModel;
-import org.ginsim.epilog.Tuple2D;
+import org.ginsim.epilog.common.Tuple2D;
 import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.gui.color.ColorUtils;
 
