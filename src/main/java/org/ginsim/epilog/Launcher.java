@@ -25,15 +25,18 @@ public class Launcher {
 	/**
 	 * @param args
 	 * @throws IOException
-	 * @throws ClassNotFoundException 
-	 * @throws SecurityException 
-	 * @throws NoSuchMethodException 
-	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * @throws ClassNotFoundException
+	 * @throws SecurityException
+	 * @throws NoSuchMethodException
+	 * @throws InvocationTargetException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
-	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+	public static void main(String[] args) throws IOException,
+			InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		SimpleJSAP jsap = null;
 		JSAPResult jsapResult = null;
 
@@ -54,8 +57,8 @@ public class Launcher {
 									"max-iter", "Maximum number of iterations."),
 							new Switch("cmd", JSAP.NO_SHORTFLAG, "cmd"),
 							new FlaggedOption("peps", JSAP.STRING_PARSER,
-									pepsFile, JSAP.NOT_REQUIRED, JSAP.NO_SHORTFLAG,
-									"peps",
+									pepsFile, JSAP.NOT_REQUIRED,
+									JSAP.NO_SHORTFLAG, "peps",
 									"PEPS (Project of Epithelium Patterning Simulation) file location."), });
 			jsapResult = jsap.parse(args);
 			if (jsap.messagePrinted())
@@ -70,7 +73,12 @@ public class Launcher {
 
 		if (bCMD) {
 			// Command line
-			Launcher.commandLine(pepsFile, maxiter);
+			if (pepsFile != null) {
+				Launcher.commandLine(pepsFile, maxiter);
+			} else {
+				System.err
+						.println("Epilog needs a PEPS file when called non-gui mode.");
+			}
 		} else {
 			// GUI
 			EpiGUI gui = new EpiGUI();
@@ -79,12 +87,14 @@ public class Launcher {
 				if (f.exists())
 					gui.loadPEPS(pepsFile);
 			}
-//			gui.initialize();
+			// gui.initialize();
 		}
 	}
 
 	private static void commandLine(String pepsFile, int maxiter)
-			throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+			throws IOException, InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		File fPEPS = new File(pepsFile);
 		Project project = FileIO.loadPEPS(fPEPS);
 

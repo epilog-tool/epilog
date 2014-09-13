@@ -32,6 +32,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.ginsim.epilog.gui.color.ColorUtils;
+import org.ginsim.epilog.services.TopologyService;
 
 public class DialogNewProject extends JPanel {
 	private static final long serialVersionUID = 1877338344309723137L;
@@ -57,8 +58,8 @@ public class DialogNewProject extends JPanel {
 
 		// PAGE_START begin
 		JPanel top = new JPanel(new FlowLayout());
-		top.add(new JLabel("Width"));
-		jtfWidth = new JTextField(DEFAULT_WIDTH, 5);
+		top.add(new JLabel("Width:"));
+		jtfWidth = new JTextField(DEFAULT_WIDTH, 3);
 		jtfWidth.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -78,14 +79,14 @@ public class DialogNewProject extends JPanel {
 			public void focusLost(FocusEvent e) {
 				validateEvenDimension(e);
 			}
-			
+
 			@Override
 			public void focusGained(FocusEvent e) {
 			}
 		});
 		top.add(jtfWidth);
-		top.add(new JLabel("Height"));
-		jtfHeight = new JTextField(DEFAULT_HEIGHT, 5);
+		top.add(new JLabel("Height:"));
+		jtfHeight = new JTextField(DEFAULT_HEIGHT, 3);
 		jtfHeight.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -105,17 +106,18 @@ public class DialogNewProject extends JPanel {
 			public void focusLost(FocusEvent e) {
 				validateEvenDimension(e);
 			}
-			
+
 			@Override
 			public void focusGained(FocusEvent e) {
 			}
 		});
 		top.add(jtfHeight);
+		top.add(new JLabel("Topology:"));
 		DefaultComboBoxModel<String> cbModel = new DefaultComboBoxModel<String>();
-		cbModel.addElement("OddQ");
-		cbModel.addElement("OddR");
-		cbModel.addElement("EvenQ");
-		cbModel.addElement("EvenR");
+		// Dynamically loads Topologies in the classpath
+		for (String name : TopologyService.getManager().getTopologyNames()) {
+			cbModel.addElement(name);
+		}
 		jcbLayout = new JComboBox<String>(cbModel);
 		top.add(jcbLayout);
 		this.add(top, BorderLayout.PAGE_START);
@@ -191,13 +193,13 @@ public class DialogNewProject extends JPanel {
 		}
 		this.validateDialog();
 	}
-	
+
 	private void validateEvenDimension(FocusEvent e) {
 		JTextField jtf = (JTextField) e.getSource();
 		try {
 			int x = Integer.parseInt(jtf.getText());
 			if (x % 2 == 1) {
-				jtf.setText(""+(x+1));
+				jtf.setText("" + (x + 1));
 			}
 		} catch (NumberFormatException nfe) {
 		}
@@ -221,7 +223,7 @@ public class DialogNewProject extends JPanel {
 	public int getProjHeight() {
 		return this.height;
 	}
-	
+
 	public String getTopologyLayout() {
 		return (String) this.jcbLayout.getSelectedItem();
 	}

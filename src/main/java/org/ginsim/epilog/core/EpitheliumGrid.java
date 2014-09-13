@@ -13,6 +13,7 @@ import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.ginsim.epilog.common.Tuple2D;
 import org.ginsim.epilog.core.topology.RollOver;
 import org.ginsim.epilog.core.topology.Topology;
+import org.ginsim.epilog.services.TopologyService;
 
 public class EpitheliumGrid {
 	private EpitheliumCell[][] gridEpiCell;
@@ -31,10 +32,8 @@ public class EpitheliumGrid {
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException {
-		Constructor c = Class.forName(
-				"org.ginsim.epilog.core.topology.TopologyHexagon"
-						+ topologyLayout).getConstructor(Integer.TYPE,
-				Integer.TYPE, RollOver.class);
+		Constructor c = Class.forName(TopologyService.FILTER_DOT + topologyLayout)
+				.getConstructor(Integer.TYPE, Integer.TYPE, RollOver.class);
 		this.topology = (Topology) c.newInstance(gridX, gridY, rollover);
 		this.gridEpiCell = new EpitheliumCell[gridX][gridY];
 		for (int y = 0; y < gridY; y++) {
