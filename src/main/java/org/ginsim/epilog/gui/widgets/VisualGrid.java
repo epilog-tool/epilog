@@ -44,43 +44,35 @@ public abstract class VisualGrid extends JPanel {
 				&& pos.getY() >= 0 && pos.getY() < this.gridY);
 	}
 
-	protected void drawRectangleOverCells(Tuple2D init, Tuple2D end, Color c) {
+	protected void highlightCellsOverRectangle(Tuple2D init, Tuple2D end, Color c) {
 		if (!isInGrid(init) || !isInGrid(end))
 			return;
-		this.paintComponent(this.getGraphics());
-
-		double incX = radius;
-		double incY = radius * Math.sqrt(3) / 2;
-		double initY, initX = incX + init.getX() * (3 * radius / 2);
-		if (init.getX() % 2 == 0)
-			initY = incY + init.getY() * 2 * incY;
-		else
-			initY = 2 * incY + init.getY() * 2 * incY;
-		double finalY, finalX = incX + end.getX() * (3 * radius / 2);
-		if (end.getX() % 2 == 0)
-			finalY = incY + end.getY() * 2 * incY;
-		else
-			finalY = 2 * incY + end.getY() * 2 * incY;
-		if (init.getX() == end.getX() && init.getY() == end.getY()) {
-			initX -= incX / 10;
-			initY -= incY / 10;
-			finalY += incY / 10;
-			finalX += incX / 10;
+		Graphics g = this.getGraphics();
+		Graphics2D g2 = (Graphics2D) g;
+		this.paintComponent(g);
+		
+		int minX = init.getX();
+		int minY = init.getY();
+		int maxX = end.getX();
+		int maxY = end.getY();
+		if (minX > maxX) {
+			minX = end.getX();
+			maxX = init.getX();
 		}
-		Polygon square = new Polygon();
-		square.addPoint((int) initX, (int) initY);
-		square.addPoint((int) initX, (int) finalY);
-		square.addPoint((int) finalX, (int) finalY);
-		square.addPoint((int) finalX, (int) initY);
-
-		Graphics2D g = (Graphics2D) this.getGraphics();
-		// Paint the rectangle
-		g.setStroke(this.strokeRect);
-		g.setColor(c);
-		g.drawPolygon(square);
+		if (minY > maxY) {
+			minY = end.getY();
+			maxY = init.getY();
+		}
+		
+		for (int x = minX; x <= maxX; x++) {
+			for (int y = minY; y <= maxY; y++) {
+				Polygon polygon = topology.createNewPolygon(this.radius, x, y);
+				this.paintPolygon(this.strokeBasic, c, polygon, g2);
+			}
+		}
 	}
 
-	protected void paintCellsAtRectangle(Tuple2D init, Tuple2D end) {
+	protected void applyRectangleOnCells(Tuple2D init, Tuple2D end) {
 		if (!isInGrid(init) || !isInGrid(end)) {
 			this.paintComponent(this.getGraphics());
 			return;

@@ -60,7 +60,7 @@ public class VisualGridInitialConditions extends VisualGrid {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				if (isRectFill) {
-					paintCellsAtRectangle(initialRectPos, mouseGrid);
+					applyRectangleOnCells(initialRectPos, mouseGrid);
 				}
 			}
 
@@ -99,10 +99,14 @@ public class VisualGridInitialConditions extends VisualGrid {
 	}
 
 	private void drawRectangleOverSelectedCells() {
-		Color c = Color.BLACK;
+		// It would be difficult to compute the color of a rectangle since
+		// selected components could not be present in some of the cells over
+		// the rectangle
+		Color c = Color.LIGHT_GRAY;
 
 		// Paint the rectangle
-		super.drawRectangleOverCells(this.initialRectPos, this.mouseGrid, c);
+		super.highlightCellsOverRectangle(this.initialRectPos, this.mouseGrid,
+				c);
 	}
 
 	public void isRectangleFill(boolean fill) {

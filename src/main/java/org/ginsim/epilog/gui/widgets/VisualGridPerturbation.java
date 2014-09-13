@@ -58,7 +58,7 @@ public class VisualGridPerturbation extends VisualGrid {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				if (isRectFill) {
-					paintCellsAtRectangle(initialRectPos, mouseGrid);
+					applyRectangleOnCells(initialRectPos, mouseGrid);
 				}
 			}
 
@@ -94,7 +94,7 @@ public class VisualGridPerturbation extends VisualGrid {
 		Color c = this.colorMapClone.get(this.selAbsPerturb);
 
 		// Paint the rectangle
-		super.drawRectangleOverCells(this.initialRectPos, this.mouseGrid, c);
+		super.highlightCellsOverRectangle(this.initialRectPos, this.mouseGrid, c);
 	}
 
 	public void setSelAbsPerturb(AbstractPerturbation ap) {
