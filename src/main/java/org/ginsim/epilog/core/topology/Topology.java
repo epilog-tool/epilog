@@ -12,13 +12,15 @@ public abstract class Topology {
 	protected int maxY;
 	protected RollOver rollover;
 
+	public abstract String getDescription();
+
 	public abstract Set<Tuple2D> getNeighbours(int x, int y, int minDist,
 			int maxDist);
 
 	public int getX() {
 		return this.maxX;
 	}
-	
+
 	public int getY() {
 		return this.maxY;
 	}
@@ -58,10 +60,12 @@ public abstract class Topology {
 	}
 
 	public abstract Topology clone();
-	
+
 	public abstract Polygon createNewPolygon(double radius, int gridX, int gridY);
-	
-	public abstract double computeBestRadius(int gridX, int gridY, double dimX, double dimY);
-	
-	public abstract Tuple2D getSelectedCell(double radius, int mouseX, int mouseY);
+
+	public abstract double computeBestRadius(int gridX, int gridY, double dimX,
+			double dimY);
+
+	public abstract Tuple2D getSelectedCell(double radius, int mouseX,
+			int mouseY);
 }

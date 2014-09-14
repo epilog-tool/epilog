@@ -1,6 +1,5 @@
 package org.ginsim.epilog.core;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,9 +31,8 @@ public class EpitheliumGrid {
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException {
-		Constructor c = Class.forName(TopologyService.FILTER_DOT + topologyLayout)
-				.getConstructor(Integer.TYPE, Integer.TYPE, RollOver.class);
-		this.topology = (Topology) c.newInstance(gridX, gridY, rollover);
+		this.topology = TopologyService.getManager().getNewTopology(
+				topologyLayout, gridX, gridY, rollover);
 		this.gridEpiCell = new EpitheliumCell[gridX][gridY];
 		for (int y = 0; y < gridY; y++) {
 			for (int x = 0; x < gridX; x++) {

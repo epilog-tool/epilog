@@ -16,6 +16,10 @@ public class TopologyHexagonOddR extends TopologyHexagon {
 		this.maxY = maxY;
 		this.rollover = rollover;
 	}
+	
+	public String getDescription() {
+		return "Hexagon-Odd-PointyTopped";
+	}
 
 	public Set<Tuple2D> getNeighbours(Tuple2D elem, Set<Tuple2D> setComplete) {
 		return getNeighboursODDR(this.neighboursX, this.neighboursY, elem,

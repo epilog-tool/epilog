@@ -115,8 +115,9 @@ public class DialogNewProject extends JPanel {
 		top.add(new JLabel("Topology:"));
 		DefaultComboBoxModel<String> cbModel = new DefaultComboBoxModel<String>();
 		// Dynamically loads Topologies in the classpath
-		for (String name : TopologyService.getManager().getTopologyNames()) {
-			cbModel.addElement(name);
+		for (String topID : TopologyService.getManager()
+				.getTopologyDescriptions()) {
+			cbModel.addElement(topID);
 		}
 		jcbLayout = new JComboBox<String>(cbModel);
 		top.add(jcbLayout);
@@ -225,7 +226,8 @@ public class DialogNewProject extends JPanel {
 	}
 
 	public String getTopologyLayout() {
-		return (String) this.jcbLayout.getSelectedItem();
+		String desc = (String) this.jcbLayout.getSelectedItem();
+		return TopologyService.getManager().getTopologyID(desc);
 	}
 
 	public List<File> getFileList() {

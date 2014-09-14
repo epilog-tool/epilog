@@ -16,6 +16,10 @@ public class TopologyHexagonOddQ extends TopologyHexagon {
 		this.maxY = maxY;
 		this.rollover = rollover;
 	}
+	
+	public String getDescription() {
+		return "Hexagon-Odd-FlatTopped";
+	}
 
 	public Set<Tuple2D> getNeighbours(Tuple2D elem, Set<Tuple2D> setComplete) {
 		return getNeighbours(this.neighboursX, this.neighboursY, elem,
