@@ -163,11 +163,13 @@ public class ModelPriorityClasses {
 				return;
 			}
 		}
+		// Corrects bug when Var[+] & Var[-] are both selected on the same JList
+		if (!this.priorityList.get(index).contains(varMm))
+			return;
 		String var = varMm.substring(0, varMm.length() - INC.length());
 		this.priorityList.get(index).remove(varMm);
 		this.priorityList.get(index).add(var);
-		var = var
-				+ (varMm.substring(var.length()).equals(INC) ? DEC : INC);
+		var = var + (varMm.substring(var.length()).equals(INC) ? DEC : INC);
 		for (int i = 0; i < this.priorityList.size(); i++) {
 			if (this.priorityList.get(i).contains(var)) {
 				this.priorityList.get(i).remove(var);
