@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -28,15 +27,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.ginsim.epilog.gui.color.ColorUtils;
 import org.ginsim.epilog.services.TopologyService;
 
-public class DialogNewProject extends JPanel {
+public class DialogNewProject extends EscapableDialog {
 	private static final long serialVersionUID = 1877338344309723137L;
-
+	
 	private final String DEFAULT_WIDTH = "20";
 	private final String DEFAULT_HEIGHT = "20";
 
@@ -211,10 +209,7 @@ public class DialogNewProject extends JPanel {
 		if (bIsOK && !this.validateDialog()) {
 			return;
 		}
-		Window win = SwingUtilities.getWindowAncestor(this);
-		if (win != null) {
-			win.dispose();
-		}
+		this.dispose();
 	}
 
 	public int getProjWidth() {

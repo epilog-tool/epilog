@@ -3,7 +3,6 @@ package org.ginsim.epilog.gui.dialog;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -18,12 +17,11 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 
 import org.ginsim.epilog.core.topology.RollOver;
 import org.ginsim.epilog.gui.color.ColorUtils;
 
-public class DialogNewEpithelium extends JPanel {
+public class DialogNewEpithelium extends EscapableDialog {
 	private static final long serialVersionUID = 1877338344309723137L;
 
 	private final int DEFAULT_WIDTH = 20;
@@ -149,10 +147,7 @@ public class DialogNewEpithelium extends JPanel {
 		if (bIsOK && !this.validateDialog()) {
 			return;
 		}
-		Window win = SwingUtilities.getWindowAncestor(this);
-		if (win != null) {
-			win.dispose();
-		}
+		this.dispose();
 	}
 
 	public boolean isDefined() {
