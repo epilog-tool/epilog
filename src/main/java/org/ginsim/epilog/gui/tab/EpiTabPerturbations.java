@@ -12,7 +12,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +37,6 @@ import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
-import org.ginsim.epilog.project.ProjectModelFeatures;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumCell;
 import org.ginsim.epilog.core.EpitheliumGrid;
@@ -47,6 +45,7 @@ import org.ginsim.epilog.core.ModelPerturbations;
 import org.ginsim.epilog.gui.color.ColorUtils;
 import org.ginsim.epilog.gui.widgets.VisualGridPerturbation;
 import org.ginsim.epilog.io.ButtonFactory;
+import org.ginsim.epilog.project.ProjectModelFeatures;
 
 public class EpiTabPerturbations extends EpiTabDefinitions {
 	private static final long serialVersionUID = -1795100027288146018L;
@@ -138,7 +137,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 
 	private void updatePanelsWithModel(LogicalModel m) {
 		this.selModel = m;
-		this.visualGridPerturb.setModel(m);
+		this.visualGridPerturb.setModel(this.selModel);
 		this.mAP2RadioButton.clear();
 		for (JButton jb : this.mAP2JButton.values())
 			this.jrbGroup.remove(jb);
@@ -159,7 +158,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		jpPerturbTop.add(new JLabel("Component:"), gbc);
 
 		Set<String> sProper = this.epithelium.getComponentFeatures()
-				.getModelComponents(m, false);
+				.getModelComponents(this.selModel, false);
 
 		String[] saProper = new String[sProper.size()];
 		int i = 0;
@@ -229,10 +228,17 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 				DefaultListModel<AbstractPerturbation> lm = (DefaultListModel<AbstractPerturbation>) jlPerturb
 						.getModel();
 				int[] selIndex = jlPerturb.getSelectedIndices();
+				List<Integer> lOkIndex = new ArrayList<Integer>();
 				for (int i = selIndex.length - 1; i >= 0; i--) {
 					AbstractPerturbation ap = lm.getElementAt(selIndex[i]);
+					if (!mAP2RadioButton.containsKey(ap)&& !hasCellGridClone(ap)) {
+						lOkIndex.add(i);
+					}
+				}
+				for (int i = 0; i < lOkIndex.size(); i++) {
+					AbstractPerturbation ap = lm.getElementAt(lOkIndex.get(i));
 					epiPerturbClone.delPerturbation(selModel, ap);
-					lm.removeElementAt(selIndex[i]);
+					lm.removeElementAt(lOkIndex.get(i));
 					mID2AP.remove(ap.toString());
 					// TODO: Delete colors radio buttons
 					// TODO: delete AP from the grid!!
@@ -250,9 +256,12 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 
 		DefaultListModel<AbstractPerturbation> dlmAPs = new DefaultListModel<AbstractPerturbation>();
 
-		ModelPerturbations mp = this.epiPerturbClone.getModelPerturbations(m);
+		ModelPerturbations mp = this.epiPerturbClone
+				.getModelPerturbations(this.selModel);
+		System.out.println("MP: " + mp);
 		if (mp != null)
 			for (AbstractPerturbation ap : mp.getAllPerturbations()) {
+				System.out.println("  ap: " + ap);
 				dlmAPs.addElement(ap);
 				this.mID2AP.put(ap.toString(), ap);
 			}
@@ -276,7 +285,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 				for (int i = 0; i < selIndex.length; i++) {
 					lAPs.add(lm.getElementAt(selIndex[i]));
 				}
-				MultiplePerturbation mp = new MultiplePerturbation(lAPs);
+				MultiplePerturbation<AbstractPerturbation> mp = new MultiplePerturbation<AbstractPerturbation>(
+						lAPs);
 				if (!lm.contains(mp)) {
 					lm.addElement(mp);
 					epiPerturbClone.addPerturbation(selModel, mp);
@@ -413,15 +423,23 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		GridBagConstraints gbc = new GridBagConstraints();
 		int y = 0;
 		for (AbstractPerturbation ap : this.colorMapClone.keySet()) {
+			if (this.epiPerturbClone.getModelPerturbations(this.selModel)
+					.getPerturbationColor(ap) == null)
+				continue;
 			gbc.gridy = y;
 			gbc.gridx = 0;
 			gbc.anchor = GridBagConstraints.WEST;
+			System.out.println("--ap: " + ap);
+			System.out.println("--Hs: " + this.mAP2RadioButton);
+			System.out.println("--rb: " + this.mAP2RadioButton.get(ap));
+			System.out.println("--cl: " + this.jpRBColor);
+
 			this.jpRBColor.add(this.mAP2RadioButton.get(ap), gbc);
 			gbc.gridx = 1;
 			this.jpRBColor.add(this.mAP2JButton.get(ap), gbc);
 			y++;
 		}
-		
+
 		JRadioButton jrDel = new JRadioButton("Clear cell");
 		jrDel.addActionListener(new ActionListener() {
 			@Override
@@ -435,7 +453,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.gridwidth = 2;
 		this.jpRBColor.add(jrDel, gbc);
-		
+
 		this.jpRBColor.revalidate();
 		this.jpRBColor.repaint();
 	}
@@ -531,7 +549,11 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 			for (int y = 0; y < this.cellGridClone[0].length; y++) {
 				AbstractPerturbation apClone = this.cellGridClone[x][y]
 						.getPerturbation();
-				if (apClone != grid.getPerturbation(x, y)
+				if (apClone != null && grid.getPerturbation(x, y) == null
+						|| apClone == null
+						&& grid.getPerturbation(x, y) != null
+						|| apClone != null
+						&& grid.getPerturbation(x, y) != null
 						&& !grid.getPerturbation(x, y).equals(apClone)) {
 					return true;
 				}
