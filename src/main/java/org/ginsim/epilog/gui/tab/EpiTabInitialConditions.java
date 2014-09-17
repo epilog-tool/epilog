@@ -230,6 +230,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				for (String nodeID : lNodeInPanel) {
 					if (mNode2Checkbox.get(nodeID).isSelected()) {
 						mNode2ValueSelected.put(nodeID, (byte) 0);
+						mNode2Combobox.get(nodeID).setSelectedIndex(0);
 					}
 				}
 				visualGridICs.applyDataToAll();
