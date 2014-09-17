@@ -31,19 +31,13 @@ public abstract class VisualGrid extends JPanel {
 		this.topology = topology;
 		this.setSize(800, 450);
 		this.mouseGrid = new Tuple2D(-1, -1);
-		// Border
-		// TODO: define offset all around
-//		this.setBorder(BorderFactory.createTitledBorder("GridPanel"));
-//		Border border = this.getBorder();
-//		Border margin = new EmptyBorder(10,10,10,10);
-//		this.setBorder(new CompoundBorder(border, margin));
 	}
 
 	protected boolean isInGrid(Tuple2D pos) {
 		return (pos != null && pos.getX() >= 0 && pos.getX() < this.gridX
 				&& pos.getY() >= 0 && pos.getY() < this.gridY);
 	}
-
+	
 	protected void highlightCellsOverRectangle(Tuple2D init, Tuple2D end, Color c) {
 		if (!isInGrid(init) || !isInGrid(end))
 			return;
