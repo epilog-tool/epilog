@@ -1,9 +1,8 @@
 package org.ginsim.epilog.gui.tab;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -12,24 +11,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
-import org.ginsim.epilog.project.ProjectModelFeatures;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumPriorityClasses;
 import org.ginsim.epilog.core.ModelPriorityClasses;
 import org.ginsim.epilog.io.ButtonFactory;
+import org.ginsim.epilog.project.ProjectModelFeatures;
 
 public class EpiTabPriorityClasses extends EpiTabDefinitions {
 	private static final long serialVersionUID = 1176575422084167530L;
+
+	private final int JLIST_LINES = 10;
+	private final int JLIST_WIDTH = 65;
+	private final int JLIST_SPACING = 15;
 
 	private EpitheliumPriorityClasses userPriorityClasses;
 	private LogicalModel selectedModel;
@@ -133,9 +140,11 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 		});
 		jpTRight.add(jbSingle);
 
-		this.jpBottom = new JPanel(new GridBagLayout());
-		this.jpBottom.setBorder(BorderFactory.createTitledBorder("Priority sets"));
-		this.center.add(jpBottom, BorderLayout.CENTER);
+		this.jpBottom = new JPanel(new FlowLayout());
+		this.jpBottom.setBorder(BorderFactory
+				.createTitledBorder("Priority sets"));
+		this.center.add(this.jpBottom, BorderLayout.CENTER);
+
 		LogicalModel m = this.modelFeatures.getModel((String) jcbSBML
 				.getSelectedItem());
 		this.updatePriorityList(m);
@@ -213,30 +222,24 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 				.getModelPriorityClasses(m);
 		List<List<String>> priorities = mpc.getPriorityList();
 
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.anchor = GridBagConstraints.NORTHWEST;
-		gbc.weightx = 0.2;
-		gbc.weighty = 1;
 		for (int i = 0; i < priorities.size(); i++) {
-			gbc.gridx = i;
-			gbc.gridy = 0;
-			JLabel jlTmp = new JLabel("Rank " + (i + 1));
-			this.jpBottom.add(jlTmp, gbc);
+			JPanel jpRankBlock = new JPanel(new BorderLayout());
+			JLabel jlTmp = new JLabel("Rank " + (i + 1), SwingConstants.CENTER);
+			jpRankBlock.add(jlTmp, BorderLayout.NORTH);
 
 			DefaultListModel<String> lModel = new DefaultListModel<String>();
 			for (int v = 0; v < priorities.get(i).size(); v++) {
 				lModel.addElement(priorities.get(i).get(v));
 			}
-			gbc.gridy = 1;
 			JList<String> jList = new JList<String>(lModel);
+			jList.setVisibleRowCount(this.JLIST_LINES);
+			jList.setFixedCellWidth(this.JLIST_WIDTH);
 			jList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 			jList.addMouseListener(new MouseListener() {
 				@Override
 				public void mouseReleased(MouseEvent e) {
 					@SuppressWarnings("unchecked")
 					JList<String> selJList = (JList<String>) e.getSource();
-					System.out.println(selJList.getSelectedIndex() + " : "
-							+ selJList.getSelectedValue());
 					for (JList<String> list : guiClasses) {
 						if (!list.equals(selJList)) {
 							list.clearSelection();
@@ -261,7 +264,24 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 				}
 			});
 			this.guiClasses.add(jList);
-			this.jpBottom.add(jList, gbc);
+
+			JScrollPane jScroll = new JScrollPane(jList);
+			jScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+			jpRankBlock.add(jScroll, BorderLayout.CENTER);
+
+			String label = "  ";
+			if (priorities.size() > 1) {
+				if (i == 0)
+					label = "Fastest";
+				else if (i == (priorities.size() - 1))
+					label = "Slowest";
+			}
+			jpRankBlock.add(new JLabel(label, SwingConstants.CENTER),
+					BorderLayout.SOUTH);
+
+			this.jpBottom.add(jpRankBlock);
+			this.jpBottom.add(Box.createRigidArea(new Dimension(
+					this.JLIST_SPACING, 10)));
 		}
 	}
 
