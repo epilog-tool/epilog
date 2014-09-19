@@ -20,7 +20,8 @@ public abstract class EpiTabDefinitions extends EpiTab {
 	protected JPanel center;
 	private JPanel south;
 
-	protected EpiTabDefinitions(Epithelium e, TreePath path, ProjectModelFeatures modelFeatures) {
+	protected EpiTabDefinitions(Epithelium e, TreePath path,
+			ProjectModelFeatures modelFeatures) {
 		super(e, path);
 		this.modelFeatures = modelFeatures;
 		this.initializeGUI();
@@ -64,18 +65,16 @@ public abstract class EpiTabDefinitions extends EpiTab {
 	abstract protected void buttonReset();
 
 	abstract protected void buttonAccept();
-	
+
 	abstract protected boolean isChanged();
-	
+
 	public boolean canClose() {
 		if (!this.isChanged())
 			return true;
 		int n = JOptionPane.showConfirmDialog(this,
-				"Modifications in this Tab have not been accepted yet!\nDo you really want to close?",
+				"Do you really want to close?\n"
+						+ "You'll lose all modifications in this Tab!",
 				"Question", JOptionPane.YES_NO_OPTION);
-		if (n == JOptionPane.YES_OPTION) {
-			return true;
-		}
-		return false;
+		return (n == JOptionPane.YES_OPTION);
 	}
 }
