@@ -2,6 +2,7 @@ package org.ginsim.epilog.core;
 
 import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -77,7 +78,7 @@ public class Epithelium {
 		}
 		
 		// Remove from Epithelium state absent models from modelSet
-		for (LogicalModel mPriorities : this.priorities.getModelSet()) {
+		for (LogicalModel mPriorities : new ArrayList<LogicalModel>(this.priorities.getModelSet())) {
 			if (!modelSet.contains(mPriorities)) {
 				this.priorities.removeModel(mPriorities);
 			}
@@ -96,7 +97,7 @@ public class Epithelium {
 			}
 		}
 		// Clean Epithelium components
-		for (String oldNodeID : this.componentFeatures.getComponents()) {
+		for (String oldNodeID : new ArrayList<String>(this.componentFeatures.getComponents())) {
 			if (!sNodeIDs.contains(oldNodeID)) {
 				this.componentFeatures.removeComponent(oldNodeID);
 				if (this.isIntegrationComponent(oldNodeID)) {
