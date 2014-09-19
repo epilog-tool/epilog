@@ -74,7 +74,8 @@ public class Epithelium {
 			// Component features
 			this.componentFeatures.addModel(mSet);
 			// Perturbations
-			this.perturbations.addModel(mSet);
+			if (!this.perturbations.hasModel(mSet))
+				this.perturbations.addModel(mSet);
 		}
 		
 		// Remove from Epithelium state absent models from modelSet

@@ -149,7 +149,7 @@ public class Parser {
 			}
 			// project add currEpi
 		}
-		// Ensure coherence of epitheliums
+		// Ensure coherence of all epithelia
 		for (Epithelium epi : project.getEpitheliumList()) {
 			epi.update();
 		}
@@ -367,10 +367,13 @@ public class Parser {
 				continue;
 			for (AbstractPerturbation ap : mp.getAllPerturbations()) {
 				w.print("PT " + model2Key.get(m) + " (" + ap + ")");
-				if (apInst.containsKey(ap)) {
-					Color c = mp.getPerturbationColor(ap);
+				Color c = mp.getPerturbationColor(ap);
+				if (c != null) {
 					w.print(" " + c.getRed() + " " + c.getGreen() + " "
-							+ c.getBlue() + " " + join(apInst.get(ap), ","));
+							+ c.getBlue());
+					if (apInst.containsKey(ap)) {
+						w.print(" " + join(apInst.get(ap), ","));
+					}
 				}
 				w.println();
 			}

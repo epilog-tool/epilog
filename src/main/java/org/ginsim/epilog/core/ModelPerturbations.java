@@ -8,17 +8,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
-import org.ginsim.epilog.gui.color.ColorUtils;
 
 public class ModelPerturbations {
 	private List<AbstractPerturbation> allPerturbations;
-	private Map<AbstractPerturbation, Color> usedPerturbations; // FIXME
+	private Map<AbstractPerturbation, Color> usedPerturbations;
 
 	public ModelPerturbations() {
 		this.allPerturbations = new ArrayList<AbstractPerturbation>();
 		this.usedPerturbations = new HashMap<AbstractPerturbation, Color>();
 	}
-	
+
 	public ModelPerturbations clone() {
 		ModelPerturbations mp = new ModelPerturbations();
 		for (AbstractPerturbation ap : this.allPerturbations)
@@ -37,22 +36,16 @@ public class ModelPerturbations {
 		this.usedPerturbations.remove(ap);
 	}
 
-	public void setPerturbationUsed(AbstractPerturbation ap, boolean used) {
-		if (this.usedPerturbations.containsKey(ap)) {
-			if (!used) {
-				this.usedPerturbations.remove(ap);
-			}
-		} else if (used) {
-			this.usedPerturbations.put(ap, ColorUtils.random());
-		}
-	}
-
 	public Color getPerturbationColor(AbstractPerturbation ap) {
 		return this.usedPerturbations.get(ap);
 	}
 
 	public void addPerturbationColor(AbstractPerturbation ap, Color c) {
 		this.usedPerturbations.put(ap, c);
+	}
+
+	public void delPerturbationColor(AbstractPerturbation ap) {
+		this.usedPerturbations.remove(ap);
 	}
 
 	public List<AbstractPerturbation> getAllPerturbations() {

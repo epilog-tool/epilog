@@ -1,6 +1,7 @@
 package org.ginsim.epilog.core;
 
 import java.awt.Color;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -19,25 +20,30 @@ public class EpitheliumPerturbations {
 	public EpitheliumPerturbations clone() {
 		EpitheliumPerturbations epiPerturb = new EpitheliumPerturbations();
 		for (LogicalModel m : this.getModelSet())
-			epiPerturb.addModelPerturbation(m, this.getModelPerturbations(m).clone());
+			epiPerturb.addModelPerturbation(m, this.getModelPerturbations(m)
+					.clone());
 		return epiPerturb;
 	}
-	
+
+	public boolean hasModel(LogicalModel m) {
+		return this.perturbations.containsKey(m);
+	}
+
 	public void addModel(LogicalModel m) {
 		this.perturbations.put(m, new ModelPerturbations());
 	}
 
-	private void addModelPerturbation(LogicalModel m, ModelPerturbations mp) {
+	public void addModelPerturbation(LogicalModel m, ModelPerturbations mp) {
 		this.perturbations.put(m, mp);
 	}
-	
+
 	public void removeModel(LogicalModel m) {
 		if (this.perturbations.containsKey(m))
 			this.perturbations.remove(m);
 	}
 
 	public Set<LogicalModel> getModelSet() {
-		return this.perturbations.keySet();
+		return Collections.unmodifiableSet(this.perturbations.keySet());
 	}
 
 	public void addPerturbation(LogicalModel m, AbstractPerturbation ap) {

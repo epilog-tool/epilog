@@ -231,8 +231,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 				List<Integer> lOkIndex = new ArrayList<Integer>();
 				for (int i = selIndex.length - 1; i >= 0; i--) {
 					AbstractPerturbation ap = lm.getElementAt(selIndex[i]);
-					if (!mAP2RadioButton.containsKey(ap)&& !hasCellGridClone(ap)) {
-						lOkIndex.add(i);
+					if (!hasCellGridClone(ap)) {
+						lOkIndex.add(selIndex[i]);
 					}
 				}
 				for (int i = 0; i < lOkIndex.size(); i++) {
@@ -240,9 +240,9 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 					epiPerturbClone.delPerturbation(selModel, ap);
 					lm.removeElementAt(lOkIndex.get(i));
 					mID2AP.remove(ap.toString());
-					// TODO: Delete colors radio buttons
-					// TODO: delete AP from the grid!!
+					mAP2RadioButton.remove(ap);
 				}
+				repaintAPColorsPanel();
 			}
 		});
 		jpTmp.add(jbDelete);
@@ -258,7 +258,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 
 		ModelPerturbations mp = this.epiPerturbClone
 				.getModelPerturbations(this.selModel);
-		System.out.println("MP: " + mp);
 		if (mp != null)
 			for (AbstractPerturbation ap : mp.getAllPerturbations()) {
 				System.out.println("  ap: " + ap);
@@ -337,6 +336,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 						jrbGroup.remove(mAP2JButton.get(ap));
 						mAP2JButton.remove(ap);
 						colorMapClone.remove(ap);
+						epiPerturbClone.getModelPerturbations(selModel)
+								.delPerturbationColor(ap);
 						repaintAPColorsPanel();
 						return;
 					}
@@ -429,11 +430,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 			gbc.gridy = y;
 			gbc.gridx = 0;
 			gbc.anchor = GridBagConstraints.WEST;
-			System.out.println("--ap: " + ap);
-			System.out.println("--Hs: " + this.mAP2RadioButton);
-			System.out.println("--rb: " + this.mAP2RadioButton.get(ap));
-			System.out.println("--cl: " + this.jpRBColor);
-
 			this.jpRBColor.add(this.mAP2RadioButton.get(ap), gbc);
 			gbc.gridx = 1;
 			this.jpRBColor.add(this.mAP2JButton.get(ap), gbc);
@@ -524,8 +520,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		this.epiPerturbClone = this.epithelium.getEpitheliumPerturbations()
 				.clone();
 		updatePanelsWithModel(this.selModel);
-		// Repaint
-		// this.visualGridPerturb.paintComponent(this.visualGridPerturb.getGraphics());
 	}
 
 	@Override
@@ -538,6 +532,17 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 						.getPerturbation();
 				grid.setPerturbation(x, y, apClone);
 			}
+		}
+		// Check modifications on ModelPerturbations
+		EpitheliumPerturbations epOrig = this.epithelium
+				.getEpitheliumPerturbations();
+		// Remove all ModelPerturbations
+		for (LogicalModel m : new ArrayList<LogicalModel>(epOrig.getModelSet()))
+			epOrig.removeModel(m);
+		// Add the new ones
+		for (LogicalModel m : this.epiPerturbClone.getModelSet()) {
+			epOrig.addModelPerturbation(m, this.epiPerturbClone
+					.getModelPerturbations(m).clone());
 		}
 	}
 
