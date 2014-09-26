@@ -2,6 +2,8 @@ package org.ginsim.epilog.gui.dialog;
 
 import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -23,6 +25,16 @@ public abstract class EscapableDialog extends JPanel {
 		};
 		this.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "ESCAPE");
 		this.getActionMap().put("ESCAPE", a);
+		this.addFocusListener(new FocusListener() {
+			@Override
+			public void focusLost(FocusEvent e) {
+			}
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				focusComponentOnLoad();
+			}
+		});
 	}
 
 	protected void dispose() {
@@ -31,4 +43,6 @@ public abstract class EscapableDialog extends JPanel {
 			win.dispose();
 		}
 	}
+
+	public abstract void focusComponentOnLoad();
 }

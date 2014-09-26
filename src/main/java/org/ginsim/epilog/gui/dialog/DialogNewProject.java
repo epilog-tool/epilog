@@ -290,4 +290,9 @@ public class DialogNewProject extends EscapableDialog {
 		this.buttonOK.setEnabled(isValid);
 		return isValid;
 	}
+
+	@Override
+	public void focusComponentOnLoad() {
+		this.jtfWidth.requestFocusInWindow();
+	}
 }

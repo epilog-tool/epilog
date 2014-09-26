@@ -19,7 +19,7 @@ import org.ginsim.epilog.gui.color.ColorUtils;
 public class DialogRenameEpithelium extends EscapableDialog {
 	private static final long serialVersionUID = 1877338344309723137L;
 
-	private final int COL_SIZE = 30;
+	private final int COL_SIZE = 20;
 	private JTextField jtfName;
 	private JLabel errorMsg;
 	private List<String> reservedNames;
@@ -42,7 +42,7 @@ public class DialogRenameEpithelium extends EscapableDialog {
 		// CENTER begin
 		JPanel center = new JPanel(new FlowLayout());
 		center.add(new JLabel("Name:"));
-		this.jtfName = new JTextField();//COL_SIZE);
+		this.jtfName = new JTextField(COL_SIZE);
 		this.jtfName.addKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -120,5 +120,10 @@ public class DialogRenameEpithelium extends EscapableDialog {
 		this.buttonOK.setEnabled(isValid);
 		this.errorMsg.setText(msg);
 		return isValid;
+	}
+
+	@Override
+	public void focusComponentOnLoad() {
+		this.jtfName.requestFocusInWindow();
 	}
 }

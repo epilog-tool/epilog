@@ -113,7 +113,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 	public String getSBMLName() {
 		return (String) this.jcbSBMLs.getSelectedItem();
 	}
-	
+
 	public RollOver getRollOver() {
 		return (RollOver) this.jcbRollover.getSelectedItem();
 	}
@@ -133,9 +133,9 @@ public class DialogNewEpithelium extends EscapableDialog {
 
 	private boolean validateComboBox() {
 		boolean valid = true;
-//		if (this.jcbSBMLs.getSelectedIndex() == 0) {
-//			valid = false;
-//		}
+		// if (this.jcbSBMLs.getSelectedIndex() == 0) {
+		// valid = false;
+		// }
 		// TODO: method necessary ?
 		System.out.println("jcb: " + this.jcbSBMLs.getSelectedIndex()
 				+ " valid:" + valid);
@@ -161,5 +161,10 @@ public class DialogNewEpithelium extends EscapableDialog {
 		}
 		this.buttonOK.setEnabled(isValid);
 		return isValid;
+	}
+
+	@Override
+	public void focusComponentOnLoad() {
+		this.jtfEpiName.requestFocusInWindow();
 	}
 }
