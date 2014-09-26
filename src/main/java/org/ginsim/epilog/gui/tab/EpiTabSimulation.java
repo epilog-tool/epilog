@@ -298,10 +298,11 @@ public class EpiTabSimulation extends EpiTab {
 		fc.setFileFilter(new EpilogFileFilter("png"));
 		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 			String file = fc.getSelectedFile().getAbsolutePath();
-			file += (file.endsWith(".png") ? "" : ".png");
+			String ext = ".png";
+			file += (file.endsWith(ext) ? "" : ext);
 			FileIO.writeEpitheliumGrid2File(
 					this.simulation.getGridAt(this.iCurrSimIter), file,
-					this.visualGridSimulation);
+					this.visualGridSimulation, ext);
 		}
 	}
 

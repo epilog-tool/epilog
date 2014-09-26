@@ -219,13 +219,13 @@ public class FileIO {
 	}
 
 	public static void writeEpitheliumGrid2File(EpitheliumGrid grid,
-			String file, Container c) {
+			String file, Container c, String ext) {
 		BufferedImage dest = new BufferedImage(c.getWidth(), c.getHeight(),
 				BufferedImage.TYPE_INT_ARGB);
 		c.paint(dest.getGraphics());
 		File fOutput = new File(file);
 		try {
-			ImageIO.write(dest, "png", fOutput);
+			ImageIO.write(dest, ext, fOutput);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
