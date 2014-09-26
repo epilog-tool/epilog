@@ -32,8 +32,6 @@ import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
-import org.ginsim.epilog.project.ProjectModelFeatures;
-import org.ginsim.epilog.project.Simulation;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.gui.EpiGUI.SimulationEpiClone;
@@ -42,7 +40,10 @@ import org.ginsim.epilog.gui.widgets.GridInformation;
 import org.ginsim.epilog.gui.widgets.JComboCheckBox;
 import org.ginsim.epilog.gui.widgets.VisualGridSimulation;
 import org.ginsim.epilog.io.ButtonFactory;
+import org.ginsim.epilog.io.EpilogFileFilter;
 import org.ginsim.epilog.io.FileIO;
+import org.ginsim.epilog.project.ProjectModelFeatures;
+import org.ginsim.epilog.project.Simulation;
 
 public class EpiTabSimulation extends EpiTab {
 	private static final long serialVersionUID = 1394895739386499680L;
@@ -205,6 +206,7 @@ public class EpiTabSimulation extends EpiTab {
 		this.jlStep = new JLabel("Iteration: " + this.iCurrSimIter);
 		jpButtonsL.add(this.jlStep);
 		this.jlStable = new JLabel("Stable!");
+		this.jlStable.setForeground(Color.RED);
 		this.setGridGUIStable(false);
 		jpButtonsL.add(this.jlStable);
 
@@ -293,6 +295,7 @@ public class EpiTabSimulation extends EpiTab {
 
 	private void saveEpiGrid2File() {
 		JFileChooser fc = new JFileChooser();
+		fc.setFileFilter(new EpilogFileFilter("png"));
 		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 			String file = fc.getSelectedFile().getAbsolutePath();
 			file += (file.endsWith(".png") ? "" : ".png");
@@ -342,11 +345,11 @@ public class EpiTabSimulation extends EpiTab {
 
 	private void setGridGUIStable(boolean stable) {
 		if (stable) {
-			this.jlStable.setForeground(Color.RED);
+			this.jlStable.setText("Stable!");
 			this.jbForward.setEnabled(false);
 			this.jbFastFwr.setEnabled(false);
 		} else {
-			this.jlStable.setForeground(this.jlStep.getBackground());
+			this.jlStable.setText("           ");
 		}
 	}
 
@@ -505,6 +508,8 @@ public class EpiTabSimulation extends EpiTab {
 		this.jpRRCenter.add(jpRRCBottom);
 		this.visualGridSimulation.paintComponent(this.visualGridSimulation
 				.getGraphics());
+		this.jpRRCenter.revalidate();
+		this.jpRRCenter.repaint();
 	}
 
 	@Override
