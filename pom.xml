@@ -18,7 +18,7 @@
   </properties>
 
   <repositories>
-    <!-- GINsim repository provides ready-to-use jars for MDDlib, JSBML and mangosdk.spi  -->
+    <!-- GINsim repository provides ready-to-use jars for MDDlib, JSBML -->
 		<repository>
 			<id>ginsim_snapshot</id>
 			<snapshots><enabled>true</enabled></snapshots>
