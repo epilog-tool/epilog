@@ -4,10 +4,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <!-- Project Description -->
-  <groupId>org.ginsim.epilog</groupId>
+  <groupId>pt.igc.nmd.epilog</groupId>
   <artifactId>Epilog</artifactId>
   <name>Epilog</name>
-  <version>0.3-SNAPSHOT</version>
+  <version>0.2-SNAPSHOT</version>
 	<description>Epilog: a software for the logical modelling of epithelial patterning</description>
   <inceptionYear>2013</inceptionYear>
   <packaging>jar</packaging>
@@ -92,7 +92,7 @@
 					<configuration>
 						<archive>
 							<manifest>
-								<mainClass>org.ginsim.epilog.Launcher</mainClass>
+								<mainClass>pt.igc.nmd.epilog.Epilog</mainClass>
 							</manifest>
 						</archive>
 						<descriptorRefs>
@@ -128,7 +128,7 @@
 								<addClasspath>true</addClasspath>
 								<classpathPrefix>lib/</classpathPrefix>
 								<useUniqueVersions>false</useUniqueVersions>
-								<mainClass>org.ginsim.epilog.Launcher</mainClass>
+								<mainClass>pt.igc.nmd.epilog.Epilog</mainClass>
 							</manifest>
 						</archive>
 					</configuration>
