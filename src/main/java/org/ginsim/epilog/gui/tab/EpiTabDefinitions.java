@@ -55,7 +55,9 @@ public abstract class EpiTabDefinitions extends EpiTab {
 			this.accept.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					buttonAccept();
+					if (isChanged()) {
+						buttonAccept();
+					}
 				}
 			});
 			this.add(accept);
