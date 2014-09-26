@@ -2,8 +2,6 @@ package org.ginsim.epilog.gui;
 
 import java.awt.Dialog.ModalityType;
 import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -21,7 +19,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -45,7 +42,6 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.colomoto.logicalmodel.LogicalModel;
-import org.ginsim.epilog.project.Project;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.gui.dialog.DialogNewEpithelium;
@@ -58,8 +54,10 @@ import org.ginsim.epilog.gui.tab.EpiTabModelGrid;
 import org.ginsim.epilog.gui.tab.EpiTabPerturbations;
 import org.ginsim.epilog.gui.tab.EpiTabPriorityClasses;
 import org.ginsim.epilog.gui.tab.EpiTabSimulation;
-import org.ginsim.epilog.io.ButtonFactory;
+import org.ginsim.epilog.gui.widgets.CloseTabButton;
+import org.ginsim.epilog.io.EpilogFileFilter;
 import org.ginsim.epilog.io.FileIO;
+import org.ginsim.epilog.project.Project;
 
 public class EpiGUI extends JFrame {
 	private static final long serialVersionUID = -3266121588934662490L;
@@ -453,15 +451,23 @@ public class EpiGUI extends JFrame {
 		this.validateJTreeExpansion();
 	}
 
-	private void exitProject() {
+	private boolean canClose() {
 		if (this.project != null && this.project.hasChanged()) {
 			int n = JOptionPane.showConfirmDialog(this,
 					"You have unsaved changes!\nDo you really want to quit?",
 					"Question", JOptionPane.YES_NO_OPTION);
 			if (n == JOptionPane.YES_OPTION) {
-				System.exit(EXIT_ON_CLOSE);
+				return true;
+			} else {
+				return false;
 			}
 		} else {
+			return true;
+		}
+	}
+
+	private void exitProject() {
+		if (this.canClose()) {
 			System.exit(EXIT_ON_CLOSE);
 		}
 	}
@@ -641,37 +647,9 @@ public class EpiGUI extends JFrame {
 				tabIndex = this.epiRightFrame.getTabCount() - 1;
 				epiTab.initialize();
 
-				// -- START Button
-				JPanel pnlTab = new JPanel(new GridBagLayout());
-				// pnlTab.setOpaque(false);
-				GridBagConstraints gbc = new GridBagConstraints();
-				gbc.gridx = 0;
-				gbc.gridy = 0;
-				gbc.weightx = 1;
-				pnlTab.add(new JLabel(title), gbc);
-				gbc.gridx++;
-				gbc.weightx = 0;
-				JButton close = ButtonFactory
-						.getImageNoBorder("button_close_gray.png");
-				close.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						JButton b = (JButton) e.getSource();
-						JPanel jp = (JPanel) b.getParent();
-						for (int i = 0; i < epiRightFrame.getTabCount(); i++) {
-							if (epiRightFrame.getTabComponentAt(i).equals(jp)) {
-								EpiTab epi = (EpiTab) epiRightFrame
-										.getComponentAt(i);
-								if (epi.canClose()) {
-									epiRightFrame.removeTabAt(i);
-								}
-							}
-						}
-					}
-				});
-				pnlTab.add(close, gbc);
-				this.epiRightFrame.setTabComponentAt(tabIndex, pnlTab);
-				// -- END Button
+				CloseTabButton tabButton = new CloseTabButton(title,
+						this.epiRightFrame);
+				this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
 			}
 		}
 		// Select existing Tab
@@ -682,10 +660,8 @@ public class EpiGUI extends JFrame {
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException {
-		FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter(
-				"peps files (*.peps)", "peps");
 		JFileChooser fc = new JFileChooser();
-		fc.setFileFilter(xmlfilter);
+		fc.setFileFilter(new EpilogFileFilter("peps"));
 
 		fc.setDialogTitle("Open file");
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
