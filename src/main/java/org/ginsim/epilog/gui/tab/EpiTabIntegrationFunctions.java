@@ -96,8 +96,8 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						JRadioButton jrb = (JRadioButton) e.getSource();
-						updateNodeID(jrb.getText());
 						activeNodeID = jrb.getText();
+						updateNodeID(jrb.getText());
 						// Re-Paint
 						getParent().repaint();
 					}
@@ -131,7 +131,6 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 
 	private void updateNodeID(String nodeID) {
 		this.jpNRTop.removeAll();
-		// TODO fix memory leak
 		ButtonGroup group = new ButtonGroup();
 		this.jpNRTop.add(new JLabel(nodeID + ": "));
 		JRadioButton jrEnv = new JRadioButton("Environment");
@@ -226,8 +225,6 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	private void validateIntegrationFunction(JTextField jtf) {
 		ComponentIntegrationFunctions cif = this.userIntegrationFunctions
 				.getComponentIntegrationFunctions(this.activeNodeID);
-		//System.out.println(this.activeNodeID + " at " + jtf.getToolTipText()
-		//		+ ": [" + cif + "]");
 		byte value = Byte.parseByte(jtf.getToolTipText());
 		if (jtf.getText().trim().isEmpty() || cif.isValidAtLevel(value)) {
 			jtf.setBackground(Color.WHITE);
