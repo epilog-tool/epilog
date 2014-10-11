@@ -38,6 +38,10 @@ public class ProjectModelFeatures {
 		this.string2Model.remove(name);
 	}
 
+	public boolean hasModel(LogicalModel m) {
+		return this.model2String.containsKey(m);
+	}
+
 	public Set<String> getNames() {
 		return Collections.unmodifiableSet(this.string2Model.keySet());
 	}

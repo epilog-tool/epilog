@@ -1,5 +1,6 @@
 package org.ginsim.epilog.gui;
 
+import java.awt.Component;
 import java.awt.Dialog.ModalityType;
 import java.awt.FlowLayout;
 import java.awt.Insets;
@@ -31,6 +32,8 @@ import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -140,6 +143,16 @@ public class EpiGUI extends JFrame {
 		initEpitheliumJTree();
 
 		this.epiRightFrame = new JTabbedPane();
+		this.epiRightFrame.addChangeListener(new ChangeListener() { // TODO: REMOVE!
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				JTabbedPane jtp = (JTabbedPane) e.getSource();
+				int i = jtp.getSelectedIndex();
+				System.out.println("Selected: " + i);
+//				EpiTab epitab = (EpiTab) epiRightFrame.getTabComponentAt(i);
+//				epitab.notifyChange();
+			}
+		});
 		this.epiMainFrame = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 				epiLeftFrame, this.epiRightFrame);
 		this.epiMainFrame.setDividerSize(DIVIDER_SIZE);
@@ -744,6 +757,7 @@ public class EpiGUI extends JFrame {
 			this.projDescPanel.addModel(fc.getSelectedFile().getName());
 			LogicalModel m = FileIO.loadSBMLModel(fc.getSelectedFile());
 			this.project.addModel(fc.getSelectedFile().getName(), m);
+			this.notifyEpiModelGrids();
 			this.validateGUI();
 		}
 	}
@@ -753,6 +767,7 @@ public class EpiGUI extends JFrame {
 		if (model != null) {
 			if (this.project.removeModel(model)) {
 				this.projDescPanel.removeModel(model);
+				this.notifyEpiModelGrids();
 			} else {
 				JOptionPane.showMessageDialog(this, "Model '" + model
 						+ "' is being used!", "Warning",
@@ -760,6 +775,15 @@ public class EpiGUI extends JFrame {
 			}
 		}
 		this.validateGUI();
+	}
+	
+	private void notifyEpiModelGrids() {
+		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
+			Component c = this.epiRightFrame.getComponentAt(i);
+			if (c instanceof EpiTabModelGrid) {
+				((EpiTabModelGrid)c).notifyChange();
+			}
+		}
 	}
 
 	private void cleanGUI() {

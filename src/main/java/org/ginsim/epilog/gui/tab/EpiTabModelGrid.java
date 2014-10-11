@@ -35,6 +35,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	private Map<JRadioButton, JButton> mapSBMLMiniPanels;
 	private LogicalModel[][] modelGridClone;
 	private Map<LogicalModel, Color> colorMapClone;
+	private JPanel lCenter;
 
 	public EpiTabModelGrid(Epithelium e, TreePath path,
 			ProjectModelFeatures modelFeatures) {
@@ -43,7 +44,6 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 	public void initialize() {
 		this.center.setLayout(new BorderLayout());
-		ButtonGroup group = new ButtonGroup();
 
 		this.mapSBMLMiniPanels = new HashMap<JRadioButton, JButton>();
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
@@ -71,44 +71,14 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		});
 		lTopButtons.add(jtbRectFill);
 
-		JPanel lCenter = new JPanel(new GridBagLayout());
-		lCenter.setBorder(BorderFactory.createTitledBorder("Model selection"));
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(1, 5, 1, 0);
-		int y = 0;
-		for (String name : this.modelFeatures.getNames()) {
-			gbc.gridy = y;
-			y++;
-			gbc.gridx = 0;
-			gbc.anchor = GridBagConstraints.WEST;
-			JRadioButton jrButton = new JRadioButton(name);
-			jrButton.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					JRadioButton jrb = (JRadioButton) e.getSource();
-					visualGridModel.setSelModelName(jrb.getText());
-				}
-			});
-			lCenter.add(jrButton, gbc);
-			group.add(jrButton);
-
-			gbc.gridx = 1;
-			JButton jbColor = new JButton();
-			jbColor.setBackground(this.modelFeatures.getColor(name));
-			jbColor.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					setNewColor((JButton) e.getSource());
-				}
-			});
-			lCenter.add(jbColor, gbc);
-			this.mapSBMLMiniPanels.put(jrButton, jbColor);
-		}
+		this.lCenter = new JPanel(new GridBagLayout());
+		this.lCenter.setBorder(BorderFactory
+				.createTitledBorder("Model selection"));
 
 		JPanel left = new JPanel(new BorderLayout());
 		JPanel lTop = new JPanel(new BorderLayout());
 		lTop.add(lTopButtons, BorderLayout.NORTH);
-		lTop.add(lCenter, BorderLayout.CENTER);
+		lTop.add(this.lCenter, BorderLayout.CENTER);
 		left.add(lTop, BorderLayout.PAGE_START);
 		this.center.add(left, BorderLayout.LINE_START);
 
@@ -120,6 +90,59 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		this.center.add(this.visualGridModel, BorderLayout.CENTER);
 
 		this.buttonReset();
+		this.updateModelList();
+
+	}
+
+	private void updateModelList() {
+		this.lCenter.removeAll();
+		ButtonGroup group = new ButtonGroup();
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(1, 5, 1, 0);
+		int i = 0;
+		for (String name : this.modelFeatures.getNames()) {
+			gbc.gridy = i;
+			i++;
+			gbc.gridx = 0;
+			gbc.anchor = GridBagConstraints.WEST;
+			JRadioButton jrButton = new JRadioButton(name);
+			jrButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JRadioButton jrb = (JRadioButton) e.getSource();
+					visualGridModel.setSelModelName(jrb.getText());
+				}
+			});
+			this.lCenter.add(jrButton, gbc);
+			group.add(jrButton);
+
+			gbc.gridx = 1;
+			Color newColor = this.modelFeatures.getColor(name);
+			this.colorMapClone.put(this.modelFeatures.getModel(name), newColor);
+			JButton jbColor = new JButton();
+			jbColor.setBackground(newColor);
+			jbColor.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					setNewColor((JButton) e.getSource());
+				}
+			});
+			this.lCenter.add(jbColor, gbc);
+			this.mapSBMLMiniPanels.put(jrButton, jbColor);
+		}
+		// Clean grid of models that were deleted before an accept
+		String defaultModel = this.modelFeatures.getNames().iterator().next();
+		for (int x = 0; x < this.modelGridClone.length; x++) {
+			for (int y = 0; y < this.modelGridClone[0].length; y++) {
+				if (!this.modelFeatures.hasModel(this.modelGridClone[x][y])) {
+					this.modelGridClone[x][y] = this.modelFeatures
+							.getModel(defaultModel);
+				}
+			}
+		}
+		visualGridModel.setSelModelName(null);
+		this.revalidate();
+		this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
 	}
 
 	private void setNewColor(JButton jb) {
@@ -201,5 +224,10 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void notifyChange() {
+		this.updateModelList();
 	}
 }
