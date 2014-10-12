@@ -43,6 +43,7 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 	private List<JList<String>> guiClasses;
 
 	private JPanel jpBottom;
+	private JPanel jpTLeft;
 
 	public EpiTabPriorityClasses(Epithelium e, TreePath path,
 			ProjectModelFeatures modelFeatures) {
@@ -63,30 +64,13 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 		JPanel jpTop = new JPanel(new BorderLayout());
 		jpTop.setBorder(BorderFactory.createTitledBorder("Navigation"));
 		this.center.add(jpTop, BorderLayout.NORTH);
-		JPanel jpTLeft = new JPanel();
-		jpTop.add(jpTLeft, BorderLayout.LINE_START);
+		this.jpTLeft = new JPanel();
+		jpTop.add(this.jpTLeft, BorderLayout.LINE_START);
 		JPanel jpTRight = new JPanel(new FlowLayout());
 		jpTop.add(jpTRight, BorderLayout.CENTER);
 
-		// Model selection list
-		String[] saSBML = new String[modelList.size()];
-		for (int i = 0; i < modelList.size(); i++) {
-			saSBML[i] = this.modelFeatures.getName(modelList.get(i));
-		}
-		JComboBox<String> jcbSBML = new JComboBox<String>(saSBML);
-		jcbSBML.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				@SuppressWarnings("unchecked")
-				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
-				LogicalModel m = modelFeatures.getModel((String) jcb
-						.getSelectedItem());
-				updatePriorityList(m);
-				// Re-Paint
-				getParent().repaint();
-			}
-		});
-		jpTLeft.add(jcbSBML);
+		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
+		this.jpTLeft.add(jcbSBML);
 
 		// Button display options
 		JButton jbSplit = ButtonFactory.getNoMargins("Split");
@@ -148,6 +132,29 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 		LogicalModel m = this.modelFeatures.getModel((String) jcbSBML
 				.getSelectedItem());
 		this.updatePriorityList(m);
+		this.isInitialized = true;
+	}
+
+	private JComboBox<String> newModelCombobox(List<LogicalModel> modelList) {
+		// Model selection list
+		String[] saSBML = new String[modelList.size()];
+		for (int i = 0; i < modelList.size(); i++) {
+			saSBML[i] = this.modelFeatures.getName(modelList.get(i));
+		}
+		JComboBox<String> jcb = new JComboBox<String>(saSBML);
+		jcb.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				@SuppressWarnings("unchecked")
+				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
+				LogicalModel m = modelFeatures.getModel((String) jcb
+						.getSelectedItem());
+				updatePriorityList(m);
+				// Re-Paint
+				getParent().repaint();
+			}
+		});
+		return jcb;
 	}
 
 	private void splitSelVars() {
@@ -316,5 +323,28 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 				return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void notifyChange() {
+		if (!this.isInitialized)
+			return;
+		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
+				this.epithelium.getEpitheliumGrid().getModelSet());
+		EpitheliumPriorityClasses newPCs = new EpitheliumPriorityClasses();
+		for (LogicalModel m : modelList) {
+			if (this.userPriorityClasses.getModelSet().contains(m)) {
+				// Already exists
+				newPCs.addModelPriorityClasses(this.userPriorityClasses
+						.getModelPriorityClasses(m));
+			} else {
+				// Adds a new one
+				newPCs.addModel(m);
+			}
+		}
+		this.userPriorityClasses = newPCs;
+		this.jpTLeft.removeAll();
+		this.jpTLeft.add(this.newModelCombobox(modelList));
+		this.updatePriorityList(modelList.get(0));
 	}
 }

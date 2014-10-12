@@ -91,7 +91,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 		this.buttonReset();
 		this.updateModelList();
-
+		this.isInitialized = true;
 	}
 
 	private void updateModelList() {
@@ -228,6 +228,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 	@Override
 	public void notifyChange() {
+		if (!this.isInitialized)
+			return;
 		this.updateModelList();
 	}
 }

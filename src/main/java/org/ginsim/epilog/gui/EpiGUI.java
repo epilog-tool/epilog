@@ -143,14 +143,17 @@ public class EpiGUI extends JFrame {
 		initEpitheliumJTree();
 
 		this.epiRightFrame = new JTabbedPane();
-		this.epiRightFrame.addChangeListener(new ChangeListener() { // TODO: REMOVE!
+		this.epiRightFrame.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				JTabbedPane jtp = (JTabbedPane) e.getSource();
+				if (jtp.getTabCount() == 0)
+					return;
 				int i = jtp.getSelectedIndex();
-				System.out.println("Selected: " + i);
-//				EpiTab epitab = (EpiTab) epiRightFrame.getTabComponentAt(i);
-//				epitab.notifyChange();
+				EpiTab epitab = (EpiTab) epiRightFrame.getComponentAt(i);
+				if (epitab == null)
+					return;
+				epitab.notifyChange();
 			}
 		});
 		this.epiMainFrame = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -657,11 +660,11 @@ public class EpiGUI extends JFrame {
 			}
 			if (epiTab != null) {
 				this.epiRightFrame.addTab(title, epiTab);
-				tabIndex = this.epiRightFrame.getTabCount() - 1;
 				epiTab.initialize();
-
+				
 				CloseTabButton tabButton = new CloseTabButton(title,
 						this.epiRightFrame);
+				tabIndex = this.epiRightFrame.getTabCount() - 1;
 				this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
 			}
 		}
@@ -682,7 +685,6 @@ public class EpiGUI extends JFrame {
 				this.project = FileIO.loadPEPS(fc.getSelectedFile());
 				return true;
 			} catch (IOException e1) {
-				// TODO: send this to User Error message!!! ptgm
 				e1.printStackTrace();
 			}
 		}
@@ -776,12 +778,12 @@ public class EpiGUI extends JFrame {
 		}
 		this.validateGUI();
 	}
-	
+
 	private void notifyEpiModelGrids() {
 		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
 			Component c = this.epiRightFrame.getComponentAt(i);
 			if (c instanceof EpiTabModelGrid) {
-				((EpiTabModelGrid)c).notifyChange();
+				((EpiTabModelGrid) c).notifyChange();
 			}
 		}
 	}

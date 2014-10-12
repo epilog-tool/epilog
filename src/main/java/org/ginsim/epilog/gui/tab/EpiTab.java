@@ -10,10 +10,12 @@ public abstract class EpiTab extends JPanel {
 
 	protected Epithelium epithelium;
 	protected TreePath path;
+	protected boolean isInitialized;
 
 	protected EpiTab(Epithelium e, TreePath path) {
 		this.epithelium = e;
 		this.path = path;
+		this.isInitialized = false;
 	}
 
 	public boolean containsPath(TreePath path) {
