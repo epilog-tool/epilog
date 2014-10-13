@@ -67,6 +67,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	private JComboBox<Byte> jcbMaxVal;
 	private JList<AbstractPerturbation> jlPerturb;
 	private JPanel jpRBColor;
+	private JPanel lTop;
 
 	public EpiTabPerturbations(Epithelium e, TreePath path,
 			ProjectModelFeatures modelFeatures) {
@@ -105,15 +106,31 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		JPanel left = new JPanel(new BorderLayout());
 
 		// Model selection Panel
-		JPanel lTop = new JPanel(new FlowLayout());
+		this.lTop = new JPanel(new FlowLayout());
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
 				this.epithelium.getEpitheliumGrid().getModelSet());
+		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
+		this.lTop.add(jcbSBML);
+		this.lTop.setBorder(BorderFactory.createTitledBorder("Model selection"));
+		left.add(this.lTop, BorderLayout.NORTH);
+
+		this.jpCenter = new JPanel(new BorderLayout());
+		left.add(jpCenter, BorderLayout.CENTER);
+		this.center.add(left, BorderLayout.LINE_START);
+		LogicalModel m = this.modelFeatures.getModel((String) jcbSBML
+				.getSelectedItem());
+		updatePanelsWithModel(m);
+		this.isInitialized = true;
+	}
+
+	private JComboBox<String> newModelCombobox(List<LogicalModel> modelList) {
+		// Model selection list
 		String[] saSBML = new String[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
 			saSBML[i] = this.modelFeatures.getName(modelList.get(i));
 		}
-		JComboBox<String> jcbSBML = new JComboBox<String>(saSBML);
-		jcbSBML.addActionListener(new ActionListener() {
+		JComboBox<String> jcb = new JComboBox<String>(saSBML);
+		jcb.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
@@ -123,18 +140,9 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 				updatePanelsWithModel(m);
 			}
 		});
-		lTop.add(jcbSBML);
-		lTop.setBorder(BorderFactory.createTitledBorder("Model selection"));
-		left.add(lTop, BorderLayout.NORTH);
-
-		this.jpCenter = new JPanel(new BorderLayout());
-		left.add(jpCenter, BorderLayout.CENTER);
-		this.center.add(left, BorderLayout.LINE_START);
-		LogicalModel m = this.modelFeatures.getModel((String) jcbSBML
-				.getSelectedItem());
-		updatePanelsWithModel(m);
+		return jcb;
 	}
-
+	
 	private void updatePanelsWithModel(LogicalModel m) {
 		this.selModel = m;
 		this.visualGridPerturb.setModel(this.selModel);
@@ -567,5 +575,36 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		// Check modifications on ModelPerturbations
 		return !this.epithelium.getEpitheliumPerturbations().equals(
 				this.epiPerturbClone);
+	}
+
+	@Override
+	public void notifyChange() {
+		if (!this.isInitialized)
+			return;
+		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
+				this.epithelium.getEpitheliumGrid().getModelSet());
+		EpitheliumPerturbations newPerturbs = new EpitheliumPerturbations();
+		for (LogicalModel m : modelList) {
+			if (this.epiPerturbClone.hasModel(m)) {
+				// Already exists
+				newPerturbs.addModelPerturbation(m, this.epiPerturbClone.getModelPerturbations(m));
+			} else {
+				// Adds a new one
+				newPerturbs.addModel(m);
+			}
+		}
+		this.epiPerturbClone = newPerturbs;
+		this.lTop.removeAll();
+		this.lTop.add(this.newModelCombobox(modelList));
+		// Update grid
+		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
+		for (int x = 0; x < this.cellGridClone.length; x++) {
+			for (int y = 0; y < this.cellGridClone[0].length; y++) {
+				if (!grid.getModel(x, y).equals(this.cellGridClone[x][y].getModel())) {
+					this.cellGridClone[x][y] = grid.cloneEpitheliumCellAt(x, y);
+				}
+			}
+		}
+		this.updatePanelsWithModel(modelList.get(0));
 	}
 }
