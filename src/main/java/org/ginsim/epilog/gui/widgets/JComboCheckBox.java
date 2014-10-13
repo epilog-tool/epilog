@@ -52,12 +52,9 @@ public class JComboCheckBox extends JComboBox {
 		itemSelected();
 		
 		List<String> sItems = new ArrayList<String>();
-		System.out.println("Model Size: " + this.getModel().getSize());
 
 		for (int i = 0; i < this.getModel().getSize(); i++) {
 			JCheckBox jcb = (JCheckBox) this.getModel().getElementAt(i);
-			System.out.println(jcb.getText() + " is "
-					+ (jcb.isSelected() ? "" : "not") + " selected");
 			if (jcb.isSelected()) {
 				sItems.add(jcb.getText());
 			}
