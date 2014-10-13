@@ -32,12 +32,12 @@ import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
-import org.ginsim.epilog.project.ProjectModelFeatures;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.gui.widgets.GridInformation;
 import org.ginsim.epilog.gui.widgets.VisualGridInitialConditions;
 import org.ginsim.epilog.io.ButtonFactory;
+import org.ginsim.epilog.project.ProjectModelFeatures;
 
 public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private static final long serialVersionUID = -3626371381385041594L;
@@ -54,6 +54,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 	private JPanel jpRCenter;
 	private GridInformation lRight;
+	private JPanel rTop;
 
 	public EpiTabInitialConditions(Epithelium e, TreePath path,
 			ProjectModelFeatures modelFeatures) {
@@ -63,8 +64,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	public void initialize() {
 		this.center.setLayout(new BorderLayout());
 
-		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
-		this.epiGridClone = grid.clone();
+		this.epiGridClone = this.epithelium.getEpitheliumGrid().clone();
 
 		this.mNode2ValueSelected = new HashMap<String, Byte>();
 		this.lNodeInPanel = new ArrayList<String>();
@@ -73,63 +73,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.mNode2JButton = new HashMap<String, JButton>();
 		this.mNode2Checkbox = new HashMap<String, JCheckBox>();
 		this.mNode2Combobox = new HashMap<String, JComboBox<Byte>>();
-		for (LogicalModel m : grid.getModelSet()) {
-			for (NodeInfo node : m.getNodeOrder()) {
-				String nodeID = node.getNodeID();
-				// Color
-				this.mNode2Color.put(nodeID, this.epithelium
-						.getComponentFeatures().getNodeColor(nodeID));
-				JButton jButton = new JButton();
-				jButton.setBackground(this.mNode2Color.get(nodeID));
-				jButton.setToolTipText(nodeID);
-				jButton.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						setNewColor((JButton) e.getSource());
-					}
-				});
-				this.mNode2JButton.put(nodeID, jButton);
-				// Checkbox
-				JCheckBox jcheckb = new JCheckBox(nodeID, false);
-				jcheckb.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						JCheckBox jcb = (JCheckBox) e.getSource();
-						String nodeID = jcb.getText();
-						if (jcb.isSelected()) {
-							mNode2ValueSelected.put(nodeID,
-									(Byte) mNode2Combobox.get(nodeID)
-											.getSelectedItem());
-						} else {
-							mNode2ValueSelected.remove(nodeID);
-						}
-						// Repaint
-						visualGridICs.paintComponent(visualGridICs
-								.getGraphics());
-					}
-				});
-				this.mNode2Checkbox.put(nodeID, jcheckb);
-				// Combobox
-				int max = this.epithelium.getComponentFeatures()
-						.getNodeInfo(nodeID).getMax();
-				JComboBox<Byte> jcombob = new JComboBox<Byte>();
-				jcombob.setToolTipText(nodeID);
-				for (byte i = 0; i <= max; i++)
-					jcombob.addItem(i);
-				jcombob.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						@SuppressWarnings("unchecked")
-						JComboBox<Byte> jcb = (JComboBox<Byte>) e.getSource();
-						String nodeID = jcb.getToolTipText();
-						if (mNode2ValueSelected.containsKey(nodeID)) {
-							mNode2ValueSelected.put(nodeID,
-									(Byte) jcb.getSelectedItem());
-						}
-					}
-				});
-				this.mNode2Combobox.put(nodeID, jcombob);
-			}
+		for (LogicalModel m : this.epiGridClone.getModelSet()) {
+			this.createGUIForModel(m);
 		}
 
 		this.lRight = new GridInformation(
@@ -142,26 +87,14 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		JPanel left = new JPanel(new BorderLayout());
 
-		JPanel rTop = new JPanel();
-		rTop.setLayout(new BoxLayout(rTop, BoxLayout.Y_AXIS));
+		this.rTop = new JPanel();
+		this.rTop.setLayout(new BoxLayout(this.rTop, BoxLayout.Y_AXIS));
 
 		// Model selection list
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
 				this.epithelium.getEpitheliumGrid().getModelSet());
-		String[] saSBML = new String[modelList.size()];
-		for (int i = 0; i < modelList.size(); i++) {
-			saSBML[i] = this.modelFeatures.getName(modelList.get(i));
-		}
-		JComboBox<String> jcbSBML = new JComboBox<String>(saSBML);
-		jcbSBML.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				@SuppressWarnings("unchecked")
-				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
-				updateComponentList((String) jcb.getSelectedItem());
-			}
-		});
-		rTop.add(jcbSBML);
+		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
+		this.rTop.add(jcbSBML);
 
 		// Select / Deselect buttons
 		JPanel rTopSel = new JPanel(new FlowLayout());
@@ -194,10 +127,11 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			}
 		});
 		rTopSel.add(jbDeselectAll);
-		rTop.add(rTopSel);
+		this.rTop.add(rTopSel);
 
-		rTop.setBorder(BorderFactory.createTitledBorder("Display options"));
-		left.add(rTop, BorderLayout.NORTH);
+		this.rTop
+				.setBorder(BorderFactory.createTitledBorder("Display options"));
+		left.add(this.rTop, BorderLayout.NORTH);
 
 		this.jpRCenter = new JPanel();
 		this.jpRCenter.setLayout(new BoxLayout(jpRCenter, BoxLayout.Y_AXIS));
@@ -259,6 +193,84 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		this.center.add(jpLeftAggreg, BorderLayout.LINE_START);
 		updateComponentList((String) jcbSBML.getSelectedItem());
+		this.isInitialized = true;
+	}
+	
+	private void createGUIForModel(LogicalModel m) {
+		for (NodeInfo node : m.getNodeOrder()) {
+			String nodeID = node.getNodeID();
+			// Color
+			this.mNode2Color.put(nodeID, this.epithelium
+					.getComponentFeatures().getNodeColor(nodeID));
+			JButton jButton = new JButton();
+			jButton.setBackground(this.mNode2Color.get(nodeID));
+			jButton.setToolTipText(nodeID);
+			jButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					setNewColor((JButton) e.getSource());
+				}
+			});
+			this.mNode2JButton.put(nodeID, jButton);
+			// Checkbox
+			JCheckBox jcheckb = new JCheckBox(nodeID, false);
+			jcheckb.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JCheckBox jcb = (JCheckBox) e.getSource();
+					String nodeID = jcb.getText();
+					if (jcb.isSelected()) {
+						mNode2ValueSelected.put(nodeID,
+								(Byte) mNode2Combobox.get(nodeID)
+										.getSelectedItem());
+					} else {
+						mNode2ValueSelected.remove(nodeID);
+					}
+					// Repaint
+					visualGridICs.paintComponent(visualGridICs
+							.getGraphics());
+				}
+			});
+			this.mNode2Checkbox.put(nodeID, jcheckb);
+			// Combobox
+			int max = this.epithelium.getComponentFeatures()
+					.getNodeInfo(nodeID).getMax();
+			JComboBox<Byte> jcombob = new JComboBox<Byte>();
+			jcombob.setToolTipText(nodeID);
+			for (byte i = 0; i <= max; i++)
+				jcombob.addItem(i);
+			jcombob.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					@SuppressWarnings("unchecked")
+					JComboBox<Byte> jcb = (JComboBox<Byte>) e.getSource();
+					String nodeID = jcb.getToolTipText();
+					if (mNode2ValueSelected.containsKey(nodeID)) {
+						mNode2ValueSelected.put(nodeID,
+								(Byte) jcb.getSelectedItem());
+					}
+				}
+			});
+			this.mNode2Combobox.put(nodeID, jcombob);
+		}
+	}
+
+	private JComboBox<String> newModelCombobox(List<LogicalModel> modelList) {
+		// Model selection list
+		String[] saSBML = new String[modelList.size()];
+		for (int i = 0; i < modelList.size(); i++) {
+			saSBML[i] = this.modelFeatures.getName(modelList.get(i));
+		}
+		JComboBox<String> jcb = new JComboBox<String>(saSBML);
+		jcb.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				@SuppressWarnings("unchecked")
+				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
+				updateComponentList((String) jcb.getSelectedItem());
+			}
+		});
+		return jcb;
 	}
 
 	private void setNewColor(JButton jb) {
@@ -420,5 +432,30 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void notifyChange() {
+		if (!this.isInitialized)
+			return;
+		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
+				this.epithelium.getEpitheliumGrid().getModelSet());
+		// Update grid
+		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
+		for (int x = 0; x < this.epiGridClone.getX(); x++) {
+			for (int y = 0; y < this.epiGridClone.getY(); y++) {
+				LogicalModel newModel = grid.getModel(x, y);
+				if (!this.epiGridClone.getModel(x, y).equals(newModel)) {
+					if (!this.epiGridClone.getModelSet().contains(newModel)) {
+						this.createGUIForModel(newModel);
+					}
+					this.epiGridClone.setModel(x, y, grid.getModel(x, y));
+				}
+			}
+		}
+
+		this.rTop.remove(0);
+		this.rTop.add(this.newModelCombobox(modelList), 0);
+		this.updateComponentList(this.modelFeatures.getName(modelList.get(0)));
 	}
 }
