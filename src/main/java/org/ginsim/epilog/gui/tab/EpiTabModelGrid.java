@@ -51,6 +51,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		this.colorMapClone = new HashMap<LogicalModel, Color>();
 
 		JPanel lTopButtons = new JPanel(new FlowLayout());
+		lTopButtons.setBorder(BorderFactory
+				.createTitledBorder("Apply selection"));
 		JButton jbApplyAll = new JButton("Apply All");
 		jbApplyAll.setMargin(new Insets(0, 0, 0, 0));
 		jbApplyAll.addActionListener(new ActionListener() {
@@ -77,9 +79,9 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 		JPanel left = new JPanel(new BorderLayout());
 		JPanel lTop = new JPanel(new BorderLayout());
-		lTop.add(lTopButtons, BorderLayout.NORTH);
-		lTop.add(this.lCenter, BorderLayout.CENTER);
-		left.add(lTop, BorderLayout.PAGE_START);
+		lTop.add(this.lCenter, BorderLayout.PAGE_START);
+		lTop.add(lTopButtons, BorderLayout.PAGE_END);
+		left.add(lTop, BorderLayout.CENTER);
 		this.center.add(left, BorderLayout.LINE_START);
 
 		this.visualGridModel = new VisualGridModel(this.epithelium
