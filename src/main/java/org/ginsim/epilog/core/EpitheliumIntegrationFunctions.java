@@ -38,6 +38,10 @@ public class EpitheliumIntegrationFunctions {
 		this.functions.put(node.getNodeID(), new ComponentIntegrationFunctions(
 				node.getMax()));
 	}
+	
+	public void addComponentFunctions(String nodeID, ComponentIntegrationFunctions funcs) {
+		this.functions.put(nodeID, funcs);
+	}
 
 	public void removeComponent(String nodeID) {
 		this.functions.remove(nodeID);

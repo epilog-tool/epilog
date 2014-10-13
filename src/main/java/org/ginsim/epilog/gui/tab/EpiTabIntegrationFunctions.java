@@ -45,6 +45,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	private JPanel jpNLBottom;
 	private JPanel jpNRTop;
 	private JPanel jpNRBottom;
+	private JPanel jpNLTop;
 
 	public EpiTabIntegrationFunctions(Epithelium e, TreePath path,
 			ProjectModelFeatures modelFeatures) {
@@ -67,45 +68,12 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		// Model selection list
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
 				this.epithelium.getEpitheliumGrid().getModelSet());
-		String[] saSBML = new String[modelList.size()];
-		for (int i = 0; i < modelList.size(); i++) {
-			saSBML[i] = this.modelFeatures.getName(modelList.get(i));
-		}
-		JComboBox<String> jcbSBML = new JComboBox<String>(saSBML);
-		jcbSBML.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				@SuppressWarnings("unchecked")
-				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
-				updateComponentList((String) jcb.getSelectedItem());
-				// Re-Paint
-				getParent().repaint();
-			}
-		});
-		JPanel jpNLTop = new JPanel();
-		jpNLTop.add(jcbSBML);
-		jpNLeft.add(jpNLTop, BorderLayout.NORTH);
-		ButtonGroup group = new ButtonGroup();
-		for (LogicalModel m : modelList) {
-			for (NodeInfo node : m.getNodeOrder()) {
-				if (!node.isInput())
-					continue;
-				String nodeID = node.getNodeID();
-				JRadioButton jrb = new JRadioButton(nodeID);
-				jrb.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						JRadioButton jrb = (JRadioButton) e.getSource();
-						activeNodeID = jrb.getText();
-						updateNodeID(jrb.getText());
-						// Re-Paint
-						getParent().repaint();
-					}
-				});
-				this.mNode2RadioButton.put(nodeID, jrb);
-				group.add(jrb);
-			}
-		}
+		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
+		this.jpNLTop = new JPanel();
+		this.jpNLTop.setBorder(BorderFactory
+				.createTitledBorder("Model selection"));
+		this.jpNLTop.add(jcbSBML);
+		jpNLeft.add(this.jpNLTop, BorderLayout.NORTH);
 
 		// Component selection list
 		this.jpNLBottom = new JPanel(new GridBagLayout());
@@ -127,6 +95,53 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		jpSouth.add(new JLabel("Explanation missing"));
 		this.center.add(jpSouth, BorderLayout.SOUTH);
 		this.updateComponentList((String) jcbSBML.getSelectedItem());
+		this.isInitialized = true;
+	}
+
+	private JComboBox<String> newModelCombobox(List<LogicalModel> modelList) {
+		// Model selection list
+		String[] saSBML = new String[modelList.size()];
+		for (int i = 0; i < modelList.size(); i++) {
+			saSBML[i] = this.modelFeatures.getName(modelList.get(i));
+		}
+		JComboBox<String> jcb = new JComboBox<String>(saSBML);
+		jcb.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				@SuppressWarnings("unchecked")
+				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
+				updateComponentList((String) jcb.getSelectedItem());
+				// Re-Paint
+				getParent().repaint();
+			}
+		});
+		ButtonGroup group = new ButtonGroup();
+		for (LogicalModel m : modelList) {
+			for (NodeInfo node : m.getNodeOrder()) {
+				if (!node.isInput())
+					continue;
+				String nodeID = node.getNodeID();
+				JRadioButton jrb;
+				if (this.mNode2RadioButton.containsKey(nodeID)) {
+					jrb = this.mNode2RadioButton.get(nodeID);
+				} else {
+					jrb = new JRadioButton(nodeID);
+					jrb.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							JRadioButton jrb = (JRadioButton) e.getSource();
+							activeNodeID = jrb.getText();
+							updateNodeID(jrb.getText());
+							// Re-Paint
+							getParent().repaint();
+						}
+					});
+					this.mNode2RadioButton.put(nodeID, jrb);
+				}
+				group.add(jrb);
+			}
+		}
+		return jcb;
 	}
 
 	private void updateNodeID(String nodeID) {
@@ -315,5 +330,29 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 				return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void notifyChange() {
+		if (!this.isInitialized)
+			return;
+		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
+				this.epithelium.getEpitheliumGrid().getModelSet());
+		EpitheliumIntegrationFunctions epiFunc = new EpitheliumIntegrationFunctions();
+		for (LogicalModel m : modelList) {
+			for (NodeInfo node : m.getNodeOrder()) {
+				String nodeID = node.getNodeID();
+				if (this.userIntegrationFunctions.containsKey(nodeID)) {
+					// Already exists
+					epiFunc.addComponentFunctions(nodeID, this.userIntegrationFunctions.getComponentIntegrationFunctions(nodeID));
+				} else {
+					// Adds a new one
+					epiFunc.addComponent(node);
+				}
+			}
+		}
+		this.jpNLTop.removeAll();
+		this.jpNLTop.add(this.newModelCombobox(modelList));
+		this.updateComponentList(this.modelFeatures.getName(modelList.get(0)));
 	}
 }
