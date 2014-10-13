@@ -84,7 +84,7 @@ public class Epithelium {
 				this.priorities.removeModel(mPriorities);
 			}
 		}
-		for (LogicalModel mPerturbation : this.perturbations.getModelSet()) {
+		for (LogicalModel mPerturbation : new ArrayList<LogicalModel>(this.perturbations.getModelSet())) {
 			if (!modelSet.contains(mPerturbation)) {
 				this.perturbations.removeModel(mPerturbation);
 			}
