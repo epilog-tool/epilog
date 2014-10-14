@@ -139,4 +139,8 @@ public class Simulation {
 	public EpitheliumGrid getCurrentGrid() {
 		return stateHistory.get(stateHistory.size() - 1);
 	}
+	
+	public Epithelium getEpithelium() {
+		return this.epithelium;
+	}
 }

@@ -175,25 +175,12 @@ public class EpitheliumGrid {
 			return true;
 		EpitheliumGrid o = (EpitheliumGrid) obj;
 
-		if (this.getX() != o.getX())
-			return false;
-		if (this.getY() != o.getY())
+		if (!this.topology.equals(o.topology))
 			return false;
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
-				// FIXME <- can be diff ?
-				if (!this.getModel(x, y).equals(o.getModel(x, y)))
+				if (!this.gridEpiCell[x][y].equals(o.gridEpiCell[x][y]))
 					return false;
-				if (this.getPerturbation(x, y) != o.getPerturbation(x, y))
-					return false;
-				byte[] thisState = this.getCellState(x, y);
-				byte[] oState = o.getCellState(x, y);
-				if (thisState.length != oState.length)
-					return false;
-				for (int i = 0; i < thisState.length; i++) {
-					if (thisState[i] != oState[i])
-						return false;
-				}
 			}
 		}
 		return true;

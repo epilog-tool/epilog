@@ -68,4 +68,10 @@ public abstract class Topology {
 
 	public abstract Tuple2D getSelectedCell(double radius, int mouseX,
 			int mouseY);
+	
+	public boolean equals(Object o) {
+		Topology tOut = (Topology)o;
+		return (this.getDescription().equals(tOut.getDescription()) &&
+				this.getX()==tOut.getX() && this.getY() == tOut.getY());
+	}
 }

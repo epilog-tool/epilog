@@ -62,8 +62,6 @@ public class ComponentIntegrationFunctions {
 		ComponentIntegrationFunctions cif = (ComponentIntegrationFunctions) o;
 		List<String> outStrings = cif.getFunctions();
 		for (int i = 0; i < this.stringExpr.length; i++) {
-			System.out.println("  orig[" + i + "]: " + this.stringExpr[i]);
-			System.out.println("  clon[" + i + "]: " + outStrings.get(i));
 			if (!this.stringExpr[i].equals(outStrings.get(i)))
 				return false;
 		}

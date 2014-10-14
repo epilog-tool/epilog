@@ -197,7 +197,7 @@ public class EpiGUI extends JFrame {
 
 		this.validateGUI();
 		this.pack();
-		this.setSize(1024, 768);
+		this.setSize(1070, 768);
 		this.setVisible(true);
 	}
 

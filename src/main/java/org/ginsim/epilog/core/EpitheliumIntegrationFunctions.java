@@ -2,6 +2,7 @@ package org.ginsim.epilog.core;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,8 +29,7 @@ public class EpitheliumIntegrationFunctions {
 		this.functions = f;
 	}
 
-	public void setFunctionAtLevel(NodeInfo node, byte value,
-			String function) {
+	public void setFunctionAtLevel(NodeInfo node, byte value, String function) {
 		this.functions.get(node.getNodeID())
 				.setFunctionAtLevel(value, function);
 	}
@@ -38,8 +38,9 @@ public class EpitheliumIntegrationFunctions {
 		this.functions.put(node.getNodeID(), new ComponentIntegrationFunctions(
 				node.getMax()));
 	}
-	
-	public void addComponentFunctions(String nodeID, ComponentIntegrationFunctions funcs) {
+
+	public void addComponentFunctions(String nodeID,
+			ComponentIntegrationFunctions funcs) {
 		this.functions.put(nodeID, funcs);
 	}
 
@@ -55,7 +56,24 @@ public class EpitheliumIntegrationFunctions {
 		return Collections.unmodifiableSet(this.functions.keySet());
 	}
 
-	public ComponentIntegrationFunctions getComponentIntegrationFunctions(String nodeID) {
+	public ComponentIntegrationFunctions getComponentIntegrationFunctions(
+			String nodeID) {
 		return this.functions.get(nodeID);
+	}
+
+	public boolean equals(Object o) {
+		EpitheliumIntegrationFunctions eifOut = (EpitheliumIntegrationFunctions) o;
+		Set<String> sAllNodes = new HashSet<String>();
+		sAllNodes.addAll(this.functions.keySet());
+		sAllNodes.addAll(eifOut.functions.keySet());
+		for (String nodeID : sAllNodes) {
+			if (!this.functions.containsKey(nodeID)
+					|| !eifOut.functions.containsKey(nodeID))
+				return false;
+			if (!this.functions.get(nodeID)
+					.equals(eifOut.functions.get(nodeID)))
+				return false;
+		}
+		return true;
 	}
 }

@@ -2,6 +2,7 @@ package org.ginsim.epilog.gui.tab;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -27,6 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.tree.TreePath;
 
@@ -84,7 +86,7 @@ public class EpiTabSimulation extends EpiTab {
 
 		this.iUserBurst = 30;
 		this.iCurrSimIter = 0;
-		this.simulation = new Simulation(this.epithelium);
+		this.simulation = new Simulation(this.epithelium.clone());
 		this.jpRight = new JPanel(new BorderLayout());
 		this.add(this.jpRight, BorderLayout.CENTER);
 
@@ -291,6 +293,7 @@ public class EpiTabSimulation extends EpiTab {
 
 		this.add(jpLeftAggreg, BorderLayout.LINE_START);
 		updateComponentList(jccb.getSelectedItems());
+		this.isInitialized = true;
 	}
 
 	private void saveEpiGrid2File() {
@@ -516,5 +519,34 @@ public class EpiTabSimulation extends EpiTab {
 	@Override
 	public boolean canClose() {
 		return true;
+	}
+
+	private boolean hasChangedEpithelium() {
+		return !this.simulation.getEpithelium().equals(this.epithelium);
+	}
+
+	@Override
+	public void notifyChange() {
+		if (!this.isInitialized)
+			return;
+		if (this.hasChangedEpithelium()) {
+			JTextPane jtp = new JTextPane();
+			jtp.setContentType("text/html");
+			jtp.setText("<html><body style=\"background-color:#ffbebe\">"
+					+ "You have some <b>changed definitions</b> for this Epithelium.<br/>"
+					+ "This simulation is therefore <b>no longer valid</b>!<br/>"
+					+ "You can still perform a clone/screenshot of particular interations.<br/>"
+					+ "Please <b>close/re-open it</b>, to have an updated Simulation Tab."
+					+ "</body></html>");
+			this.jpRight.add(jtp, BorderLayout.NORTH);
+		} else {
+			for (int i=0; i < this.jpRight.getComponentCount(); i++) {
+				Component c = this.jpRight.getComponent(i);
+				if (c instanceof JTextPane) {
+					this.jpRight.remove(i);
+					break;
+				}
+			}
+		}
 	}
 }

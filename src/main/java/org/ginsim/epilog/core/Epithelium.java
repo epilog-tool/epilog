@@ -60,11 +60,11 @@ public class Epithelium {
 				this.integrationFunctions.clone(), this.priorities.clone(),
 				this.perturbations.clone(), this.componentFeatures.clone());
 	}
-	
+
 	public void update() {
 		this.grid.updateModelSet();
 		Set<LogicalModel> modelSet = this.grid.getModelSet();
-		
+
 		// Add to Epithelium state new models from modelSet
 		for (LogicalModel mSet : modelSet) {
 			// Priority classes
@@ -77,19 +77,22 @@ public class Epithelium {
 			if (!this.perturbations.hasModel(mSet))
 				this.perturbations.addModel(mSet);
 		}
-		
+
 		// Remove from Epithelium state absent models from modelSet
-		for (LogicalModel mPriorities : new ArrayList<LogicalModel>(this.priorities.getModelSet())) {
+		for (LogicalModel mPriorities : new ArrayList<LogicalModel>(
+				this.priorities.getModelSet())) {
 			if (!modelSet.contains(mPriorities)) {
 				this.priorities.removeModel(mPriorities);
 			}
 		}
-		for (LogicalModel mPerturbation : new ArrayList<LogicalModel>(this.perturbations.getModelSet())) {
+		for (LogicalModel mPerturbation : new ArrayList<LogicalModel>(
+				this.perturbations.getModelSet())) {
 			if (!modelSet.contains(mPerturbation)) {
 				this.perturbations.removeModel(mPerturbation);
 			}
 		}
 		
+
 		// Create list with all existing Components
 		Set<String> sNodeIDs = new HashSet<String>();
 		for (LogicalModel m : modelSet) {
@@ -98,8 +101,11 @@ public class Epithelium {
 			}
 		}
 		// Clean Epithelium components
-		for (String oldNodeID : new ArrayList<String>(this.componentFeatures.getComponents())) {
+		List<String> lOldNodes = new ArrayList<String>(
+				this.componentFeatures.getComponents());
+		for (String oldNodeID : lOldNodes) {
 			if (!sNodeIDs.contains(oldNodeID)) {
+				System.out.println("OldNode: " + oldNodeID);
 				this.componentFeatures.removeComponent(oldNodeID);
 				if (this.isIntegrationComponent(oldNodeID)) {
 					this.integrationFunctions.removeComponent(oldNodeID);
@@ -178,7 +184,7 @@ public class Epithelium {
 		this.priorities.addModelPriorityClasses(mpc);
 		this.isChanged = true;
 	}
-	
+
 	public void setPriorityClasses(ModelPriorityClasses mpc) {
 		this.priorities.addModelPriorityClasses(mpc);
 	}
@@ -212,7 +218,8 @@ public class Epithelium {
 
 	public ComponentIntegrationFunctions getIntegrationFunctionsForComponent(
 			String nodeID) {
-		return this.integrationFunctions.getComponentIntegrationFunctions(nodeID);
+		return this.integrationFunctions
+				.getComponentIntegrationFunctions(nodeID);
 	}
 
 	public Set<String> getIntegrationFunctionsComponents() {
@@ -240,4 +247,13 @@ public class Epithelium {
 		this.isChanged = true;
 	}
 
+	public boolean equals(Object o) {
+		Epithelium otherEpi = (Epithelium) o;
+		return (this.grid.equals(otherEpi.grid)
+				&& this.componentFeatures.equals(otherEpi.componentFeatures)
+				&& this.priorities.equals(otherEpi.priorities)
+				&& this.integrationFunctions
+						.equals(otherEpi.integrationFunctions) && this.perturbations
+					.equals(otherEpi.perturbations));
+	}
 }

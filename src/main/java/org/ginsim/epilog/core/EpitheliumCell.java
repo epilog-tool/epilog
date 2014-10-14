@@ -62,4 +62,25 @@ public class EpitheliumCell {
 		}
 		return -1;
 	}
+
+	public boolean equals(Object o) {
+		EpitheliumCell ecOut = (EpitheliumCell) o;
+		if (!this.model.equals(ecOut.model))
+			return false;
+		if (this.perturbation == null) {
+			if (ecOut.perturbation != null)
+				return false;
+		} else {
+			if (ecOut.perturbation == null
+					|| !this.perturbation.equals(ecOut.perturbation))
+				return false;
+		}
+		if (state.length != ecOut.state.length)
+			return false;
+		for (int i = 0; i < state.length; i++) {
+			if (state[i] != ecOut.state[i])
+				return false;
+		}
+		return true;
+	}
 }
