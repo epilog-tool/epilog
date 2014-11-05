@@ -45,8 +45,10 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.ginsim.epilog.common.Web;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumGrid;
+import org.ginsim.epilog.gui.dialog.DialogAbout;
 import org.ginsim.epilog.gui.dialog.DialogNewEpithelium;
 import org.ginsim.epilog.gui.dialog.DialogNewProject;
 import org.ginsim.epilog.gui.dialog.DialogRenameEpithelium;
@@ -85,8 +87,17 @@ public class EpiGUI extends JFrame {
 		try {
 			UIManager.setLookAndFeel(UIManager
 					.getCrossPlatformLookAndFeelClassName());
+			// UI Alternatives
+			// com.sun.java.swing.plaf.gtk.GTKLookAndFeel
+			// com.sun.java.swing.plaf.motif.MotifLookAndFeel
+			// com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel
+			// com.sun.java.swing.plaf.windows.WindowsLookAndFeel
+			// javax.swing.plaf.basic.BasicLookAndFeel
+			// javax.swing.plaf.metal.MetalLookAndFeel
+			// javax.swing.plaf.multi.MultiLookAndFeel
+			// javax.swing.plaf.nimbus.NimbusLookAndFeel
 			UIManager
-					.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+					.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 		} catch (ClassNotFoundException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -219,7 +230,7 @@ public class EpiGUI extends JFrame {
 			}
 		});
 		menuFile.add(itemNew);
-		JMenuItem itemOpen = new JMenuItem("Open Project");
+		JMenuItem itemOpen = new JMenuItem("Load Project");
 		itemOpen.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -313,15 +324,37 @@ public class EpiGUI extends JFrame {
 
 		// Help menu
 		JMenu menuHelp = new JMenu("Help");
+		JMenuItem itemHelpDoc = new JMenuItem("Documentation");
+		itemHelpDoc.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Web.openURI("http://ginsim.org/epilog-doc/");
+			}
+		});
+		menuHelp.add(itemHelpDoc);
 		JMenuItem itemHelpAbout = new JMenuItem("About");
+		itemHelpAbout.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				aboutDialog();
+			}
+		});
 		menuHelp.add(itemHelpAbout);
-		JMenuItem itemHelpWWW = new JMenuItem("WWW");
-		menuHelp.add(itemHelpWWW);
 		this.epiMenu.add(menuHelp);
 
 		this.setJMenuBar(this.epiMenu);
 	}
 
+	private void aboutDialog() {
+		Window win = SwingUtilities.getWindowAncestor(this);
+		dialog = new JDialog(win, "About",
+				ModalityType.APPLICATION_MODAL);
+		dialog.getContentPane().add(new DialogAbout());
+		dialog.pack();
+		dialog.setLocationRelativeTo(null);
+		dialog.setVisible(true);
+	}
+	
 	private void newEpithelium() throws InstantiationException,
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
@@ -415,6 +448,9 @@ public class EpiGUI extends JFrame {
 	}
 
 	private void newProject() throws IOException {
+		if (!this.canClose("Do you really want a new project?")) {
+			return;
+		}
 		DialogNewProject dialogPanel = new DialogNewProject();
 
 		Window win = SwingUtilities.getWindowAncestor(this);
@@ -467,10 +503,10 @@ public class EpiGUI extends JFrame {
 		this.validateJTreeExpansion();
 	}
 
-	private boolean canClose() {
+	private boolean canClose(String msg) {
 		if (this.project != null && this.project.hasChanged()) {
 			int n = JOptionPane.showConfirmDialog(this,
-					"You have unsaved changes!\nDo you really want to quit?",
+					"You have unsaved changes!\n" + msg,
 					"Question", JOptionPane.YES_NO_OPTION);
 			if (n == JOptionPane.YES_OPTION) {
 				return true;
@@ -483,7 +519,7 @@ public class EpiGUI extends JFrame {
 	}
 
 	private void exitProject() {
-		if (this.canClose()) {
+		if (this.canClose("Do you really want to quit?")) {
 			System.exit(EXIT_ON_CLOSE);
 		}
 	}
@@ -492,6 +528,9 @@ public class EpiGUI extends JFrame {
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException {
+		if (!this.canClose("Do you really want load another project?")) {
+			return;
+		}
 		if (this.loadPEPS()) {
 			this.cleanGUI();
 			this.setTitle(NAME + " - " + this.project.getFilenamePEPS());
@@ -661,7 +700,7 @@ public class EpiGUI extends JFrame {
 			if (epiTab != null) {
 				this.epiRightFrame.addTab(title, epiTab);
 				epiTab.initialize();
-				
+
 				CloseTabButton tabButton = new CloseTabButton(title,
 						this.epiRightFrame);
 				tabIndex = this.epiRightFrame.getTabCount() - 1;
@@ -793,6 +832,9 @@ public class EpiGUI extends JFrame {
 		this.setTitle(NAME);
 		this.projDescPanel.clean();
 		this.initEpitheliumJTree();
+		while (this.epiRightFrame.getTabCount() > 0) {
+			this.epiRightFrame.removeTabAt(0);
+		}
 
 		this.buttonAdd.setEnabled(false);
 		this.buttonRemove.setEnabled(false);
