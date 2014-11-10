@@ -28,6 +28,7 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumPriorityClasses;
 import org.ginsim.epilog.core.ModelPriorityClasses;
+import org.ginsim.epilog.gui.EpiGUI.EpiTabChanged;
 import org.ginsim.epilog.io.ButtonFactory;
 import org.ginsim.epilog.project.ProjectModelFeatures;
 
@@ -46,8 +47,8 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 	private JPanel jpTLeft;
 
 	public EpiTabPriorityClasses(Epithelium e, TreePath path,
-			ProjectModelFeatures modelFeatures) {
-		super(e, path, modelFeatures);
+			EpiTabChanged tabChanged, ProjectModelFeatures modelFeatures) {
+		super(e, path, tabChanged, modelFeatures);
 	}
 
 	public void initialize() {

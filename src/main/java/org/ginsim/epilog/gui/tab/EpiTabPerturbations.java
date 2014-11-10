@@ -42,6 +42,7 @@ import org.ginsim.epilog.core.EpitheliumCell;
 import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.core.EpitheliumPerturbations;
 import org.ginsim.epilog.core.ModelPerturbations;
+import org.ginsim.epilog.gui.EpiGUI.EpiTabChanged;
 import org.ginsim.epilog.gui.color.ColorUtils;
 import org.ginsim.epilog.gui.widgets.VisualGridPerturbation;
 import org.ginsim.epilog.io.ButtonFactory;
@@ -70,8 +71,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	private JPanel lTop;
 
 	public EpiTabPerturbations(Epithelium e, TreePath path,
-			ProjectModelFeatures modelFeatures) {
-		super(e, path, modelFeatures);
+			EpiTabChanged tabChanged, ProjectModelFeatures modelFeatures) {
+		super(e, path, tabChanged, modelFeatures);
 	}
 
 	public void initialize() {
@@ -111,7 +112,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 				this.epithelium.getEpitheliumGrid().getModelSet());
 		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
 		this.lTop.add(jcbSBML);
-		this.lTop.setBorder(BorderFactory.createTitledBorder("Model selection"));
+		this.lTop
+				.setBorder(BorderFactory.createTitledBorder("Model selection"));
 		left.add(this.lTop, BorderLayout.NORTH);
 
 		this.jpCenter = new JPanel(new BorderLayout());
@@ -142,7 +144,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		});
 		return jcb;
 	}
-	
+
 	private void updatePanelsWithModel(LogicalModel m) {
 		this.selModel = m;
 		this.visualGridPerturb.setModel(this.selModel);
@@ -587,7 +589,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		for (LogicalModel m : modelList) {
 			if (this.epiPerturbClone.hasModel(m)) {
 				// Already exists
-				newPerturbs.addModelPerturbation(m, this.epiPerturbClone.getModelPerturbations(m));
+				newPerturbs.addModelPerturbation(m,
+						this.epiPerturbClone.getModelPerturbations(m));
 			} else {
 				// Adds a new one
 				newPerturbs.addModel(m);
@@ -600,7 +603,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
 		for (int x = 0; x < this.cellGridClone.length; x++) {
 			for (int y = 0; y < this.cellGridClone[0].length; y++) {
-				if (!grid.getModel(x, y).equals(this.cellGridClone[x][y].getModel())) {
+				if (!grid.getModel(x, y).equals(
+						this.cellGridClone[x][y].getModel())) {
 					this.cellGridClone[x][y] = grid.cloneEpitheliumCellAt(x, y);
 				}
 			}

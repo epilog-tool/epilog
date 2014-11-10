@@ -12,6 +12,7 @@ import javax.swing.tree.TreePath;
 
 import org.ginsim.epilog.project.ProjectModelFeatures;
 import org.ginsim.epilog.core.Epithelium;
+import org.ginsim.epilog.gui.EpiGUI.EpiTabChanged;
 
 public abstract class EpiTabDefinitions extends EpiTab {
 	private static final long serialVersionUID = -2587480492648550086L;
@@ -19,10 +20,12 @@ public abstract class EpiTabDefinitions extends EpiTab {
 	protected ProjectModelFeatures modelFeatures;
 	protected JPanel center;
 	private JPanel south;
+	private EpiTabChanged tabChanged;
 
 	protected EpiTabDefinitions(Epithelium e, TreePath path,
-			ProjectModelFeatures modelFeatures) {
+			EpiTabChanged tabChanged, ProjectModelFeatures modelFeatures) {
 		super(e, path);
+		this.tabChanged = tabChanged;
 		this.modelFeatures = modelFeatures;
 		this.initializeGUI();
 	}
@@ -57,6 +60,7 @@ public abstract class EpiTabDefinitions extends EpiTab {
 				public void actionPerformed(ActionEvent e) {
 					if (isChanged()) {
 						buttonAccept();
+						tabChanged.setEpiChanged();
 					}
 				}
 			});
