@@ -23,6 +23,7 @@ public class VisualGridSimulation extends VisualGrid {
 	private EpitheliumGrid epiGrid;
 	private List<String> lCompON;
 	private GridInformation valuePanel;
+	private Tuple2D lastPos;
 
 	public VisualGridSimulation(EpitheliumGrid epiGrid,
 			EpitheliumComponentFeatures componentFeatures, List<String> lCompON,
@@ -77,12 +78,13 @@ public class VisualGridSimulation extends VisualGrid {
 	private void updateComponentValues(Tuple2D pos) {
 		if (!isInGrid(pos))
 			return;
-
+		this.lastPos = pos;
 		this.valuePanel.updateValues(pos.getX(), pos.getY(), this.epiGrid);
 	}
 
 	public void setEpitheliumGrid(EpitheliumGrid grid) {
 		this.epiGrid = grid;
+		this.updateComponentValues(this.lastPos);
 	}
 
 	@Override
