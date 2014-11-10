@@ -38,6 +38,8 @@ import org.ginsim.epilog.gui.color.ColorUtils;
 public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	private static final long serialVersionUID = -2124909766318378839L;
 
+	private final int JTF_WIDTH = 30;
+
 	private EpitheliumIntegrationFunctions userIntegrationFunctions;
 	private String activeNodeID;
 
@@ -199,9 +201,11 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		GridBagConstraints gbc = new GridBagConstraints();
 		for (int i = 0; i < functions.size(); i++) {
 			gbc.gridy = i;
+			gbc.ipady = 5;
+			gbc.insets.bottom = 5;
 			gbc.gridx = 0;
 			gbc.anchor = GridBagConstraints.WEST;
-			this.jpNRBottom.add(new JLabel("Level " + (i + 1)), gbc);
+			this.jpNRBottom.add(new JLabel("Level " + (i + 1) + " "), gbc);
 			gbc.gridx = 1;
 			JTextField jtf = new JTextField(functions.get(i));
 			jtf.setToolTipText("" + (i + 1));
@@ -224,7 +228,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 				}
 			});
 			validateIntegrationFunction(jtf);
-			jtf.setColumns(20);
+			jtf.setColumns(this.JTF_WIDTH);
 			this.jpNRBottom.add(jtf, gbc);
 		}
 	}
@@ -344,7 +348,9 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 				String nodeID = node.getNodeID();
 				if (this.userIntegrationFunctions.containsKey(nodeID)) {
 					// Already exists
-					epiFunc.addComponentFunctions(nodeID, this.userIntegrationFunctions.getComponentIntegrationFunctions(nodeID));
+					epiFunc.addComponentFunctions(nodeID,
+							this.userIntegrationFunctions
+									.getComponentIntegrationFunctions(nodeID));
 				} else {
 					// Adds a new one
 					epiFunc.addComponent(node);
