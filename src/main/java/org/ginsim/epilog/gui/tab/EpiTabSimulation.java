@@ -86,7 +86,8 @@ public class EpiTabSimulation extends EpiTab {
 
 		this.iUserBurst = 30;
 		this.iCurrSimIter = 0;
-		this.simulation = new Simulation(this.epithelium.clone());
+		Epithelium clonedEpi = this.epithelium.clone();
+		this.simulation = new Simulation(clonedEpi);
 		this.jpRight = new JPanel(new BorderLayout());
 		this.add(this.jpRight, BorderLayout.CENTER);
 
@@ -104,7 +105,7 @@ public class EpiTabSimulation extends EpiTab {
 				this.epithelium.getIntegrationFunctions(), this.modelFeatures);
 
 		this.visualGridSimulation = new VisualGridSimulation(
-				this.epithelium.getEpitheliumGrid(),
+				clonedEpi.getEpitheliumGrid(),
 				this.epithelium.getComponentFeatures(), this.lCompON,
 				this.lRight);
 		this.jpRight.add(this.visualGridSimulation, BorderLayout.CENTER);
