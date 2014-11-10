@@ -34,6 +34,7 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumGrid;
+import org.ginsim.epilog.gui.EpiGUI.EpiTabChanged;
 import org.ginsim.epilog.gui.widgets.GridInformation;
 import org.ginsim.epilog.gui.widgets.VisualGridInitialConditions;
 import org.ginsim.epilog.io.ButtonFactory;
@@ -57,8 +58,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private JPanel rTop;
 
 	public EpiTabInitialConditions(Epithelium e, TreePath path,
-			ProjectModelFeatures modelFeatures) {
-		super(e, path, modelFeatures);
+			EpiTabChanged tabChanged, ProjectModelFeatures modelFeatures) {
+		super(e, path, tabChanged, modelFeatures);
 	}
 
 	public void initialize() {
@@ -195,13 +196,13 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		updateComponentList((String) jcbSBML.getSelectedItem());
 		this.isInitialized = true;
 	}
-	
+
 	private void createGUIForModel(LogicalModel m) {
 		for (NodeInfo node : m.getNodeOrder()) {
 			String nodeID = node.getNodeID();
 			// Color
-			this.mNode2Color.put(nodeID, this.epithelium
-					.getComponentFeatures().getNodeColor(nodeID));
+			this.mNode2Color.put(nodeID, this.epithelium.getComponentFeatures()
+					.getNodeColor(nodeID));
 			JButton jButton = new JButton();
 			jButton.setBackground(this.mNode2Color.get(nodeID));
 			jButton.setToolTipText(nodeID);
@@ -220,15 +221,13 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 					JCheckBox jcb = (JCheckBox) e.getSource();
 					String nodeID = jcb.getText();
 					if (jcb.isSelected()) {
-						mNode2ValueSelected.put(nodeID,
-								(Byte) mNode2Combobox.get(nodeID)
-										.getSelectedItem());
+						mNode2ValueSelected.put(nodeID, (Byte) mNode2Combobox
+								.get(nodeID).getSelectedItem());
 					} else {
 						mNode2ValueSelected.remove(nodeID);
 					}
 					// Repaint
-					visualGridICs.paintComponent(visualGridICs
-							.getGraphics());
+					visualGridICs.paintComponent(visualGridICs.getGraphics());
 				}
 			});
 			this.mNode2Checkbox.put(nodeID, jcheckb);

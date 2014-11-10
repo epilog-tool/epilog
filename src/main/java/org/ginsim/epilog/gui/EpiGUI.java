@@ -88,16 +88,16 @@ public class EpiGUI extends JFrame {
 			UIManager.setLookAndFeel(UIManager
 					.getCrossPlatformLookAndFeelClassName());
 			// UI Alternatives
-			// com.sun.java.swing.plaf.gtk.GTKLookAndFeel
-			// com.sun.java.swing.plaf.motif.MotifLookAndFeel
-			// com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel
-			// com.sun.java.swing.plaf.windows.WindowsLookAndFeel
+			// com.sun.java.swing.plaf.gtk.GTKLookAndFeel <- +/-
+			// com.sun.java.swing.plaf.motif.MotifLookAndFeel <- v
+			// com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel <- v
+			// com.sun.java.swing.plaf.windows.WindowsLookAndFeel <- x
 			// javax.swing.plaf.basic.BasicLookAndFeel
-			// javax.swing.plaf.metal.MetalLookAndFeel
-			// javax.swing.plaf.multi.MultiLookAndFeel
-			// javax.swing.plaf.nimbus.NimbusLookAndFeel
+			// javax.swing.plaf.metal.MetalLookAndFeel <- v
+			// javax.swing.plaf.multi.MultiLookAndFeel <- X
+			// javax.swing.plaf.nimbus.NimbusLookAndFeel <- +/-
 			UIManager
-					.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+					.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 		} catch (ClassNotFoundException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -443,7 +443,6 @@ public class EpiGUI extends JFrame {
 				&& !epi.toString().equals(dialogPanel.getEpitheliumName())) {
 			this.project.setChanged(true);
 			epi.setName(dialogPanel.getEpitheliumName());
-			// TODO: change open tab names
 			for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
 				EpiTab epitab = (EpiTab) this.epiRightFrame.getComponentAt(i);
 				if (epitab.containsEpithelium(epi)) {
@@ -550,7 +549,6 @@ public class EpiGUI extends JFrame {
 				this.projDescPanel.addModel(sbml);
 			}
 
-			// TODO Epithelium Tree
 			this.initEpitheliumJTree();
 			for (Epithelium epi : this.project.getEpitheliumList()) {
 				this.addEpi2JTree(epi);
@@ -687,20 +685,21 @@ public class EpiGUI extends JFrame {
 			EpiTab epiTab = null;
 			String title = ((Epithelium) parent.getUserObject()).getName()
 					+ ":" + node;
+			EpiTabChanged tabChanged = new EpiTabChanged();
 			if (node.toString() == "Initial Condition") {
-				epiTab = new EpiTabInitialConditions(epi, selPath,
+				epiTab = new EpiTabInitialConditions(epi, selPath, tabChanged,
 						this.project.getModelFeatures());
 			} else if (node.toString() == "Integration Components") {
-				epiTab = new EpiTabIntegrationFunctions(epi, selPath,
+				epiTab = new EpiTabIntegrationFunctions(epi, selPath, tabChanged,
 						this.project.getModelFeatures());
 			} else if (node.toString() == "Perturbations") {
-				epiTab = new EpiTabPerturbations(epi, selPath,
+				epiTab = new EpiTabPerturbations(epi, selPath, tabChanged,
 						this.project.getModelFeatures());
 			} else if (node.toString() == "Priorities") {
-				epiTab = new EpiTabPriorityClasses(epi, selPath,
+				epiTab = new EpiTabPriorityClasses(epi, selPath, tabChanged,
 						this.project.getModelFeatures());
 			} else if (node.toString() == "Model Grid") {
-				epiTab = new EpiTabModelGrid(epi, selPath,
+				epiTab = new EpiTabModelGrid(epi, selPath, tabChanged,
 						this.project.getModelFeatures());
 			} else if (node.toString() == "Simulation") {
 				epiTab = new EpiTabSimulation(epi, selPath,
@@ -863,6 +862,16 @@ public class EpiGUI extends JFrame {
 				}
 			}
 			addEpithelium2JTree(epiClone);
+		}
+	}
+	
+	public class EpiTabChanged {
+		public EpiTabChanged() {
+		}
+		
+		public void setEpiChanged() {
+			project.setChanged(true);
+			validateGUI();
 		}
 	}
 }

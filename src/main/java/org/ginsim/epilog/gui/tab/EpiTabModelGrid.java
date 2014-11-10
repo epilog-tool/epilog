@@ -26,6 +26,7 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.ginsim.epilog.project.ProjectModelFeatures;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumGrid;
+import org.ginsim.epilog.gui.EpiGUI.EpiTabChanged;
 import org.ginsim.epilog.gui.widgets.VisualGridModel;
 
 public class EpiTabModelGrid extends EpiTabDefinitions {
@@ -38,8 +39,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	private JPanel lCenter;
 
 	public EpiTabModelGrid(Epithelium e, TreePath path,
-			ProjectModelFeatures modelFeatures) {
-		super(e, path, modelFeatures);
+			EpiTabChanged tabChanged, ProjectModelFeatures modelFeatures) {
+		super(e, path, tabChanged, modelFeatures);
 	}
 
 	public void initialize() {

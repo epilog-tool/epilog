@@ -33,6 +33,7 @@ import org.colomoto.logicalmodel.NodeInfo;
 import org.ginsim.epilog.core.ComponentIntegrationFunctions;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumIntegrationFunctions;
+import org.ginsim.epilog.gui.EpiGUI.EpiTabChanged;
 import org.ginsim.epilog.gui.color.ColorUtils;
 import org.ginsim.epilog.project.ProjectModelFeatures;
 
@@ -51,8 +52,8 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	private JPanel jpNLTop;
 
 	public EpiTabIntegrationFunctions(Epithelium e, TreePath path,
-			ProjectModelFeatures modelFeatures) {
-		super(e, path, modelFeatures);
+			EpiTabChanged tabChanged, ProjectModelFeatures modelFeatures) {
+		super(e, path, tabChanged, modelFeatures);
 		this.mNode2RadioButton = new HashMap<String, JRadioButton>();
 	}
 
