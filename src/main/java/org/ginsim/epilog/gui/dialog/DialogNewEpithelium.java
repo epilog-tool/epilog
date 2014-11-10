@@ -119,9 +119,10 @@ public class DialogNewEpithelium extends EscapableDialog {
 	}
 
 	private boolean validateTextField() {
-		boolean valid = true;
-		if (this.listEpiNames.contains(this.jtfEpiName.getText())) {
-			valid = false;
+		boolean valid = false;
+		if (!this.listEpiNames.contains(this.jtfEpiName.getText())
+				&& !this.jtfEpiName.getText().trim().isEmpty()) {
+			valid = true;
 		}
 		if (!valid) {
 			this.jtfEpiName.setBackground(ColorUtils.LIGHT_RED);
@@ -132,14 +133,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 	}
 
 	private boolean validateComboBox() {
-		boolean valid = true;
-		// if (this.jcbSBMLs.getSelectedIndex() == 0) {
-		// valid = false;
-		// }
-		// TODO: method necessary ?
-		System.out.println("jcb: " + this.jcbSBMLs.getSelectedIndex()
-				+ " valid:" + valid);
-		return valid;
+		return true;
 	}
 
 	private void buttonAction(boolean bIsOK) {
@@ -147,6 +141,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 		if (bIsOK && !this.validateDialog()) {
 			return;
 		}
+		this.jtfEpiName.setText(this.jtfEpiName.getText().trim());
 		this.dispose();
 	}
 
