@@ -38,7 +38,7 @@ public class DialogAbout extends EscapableDialog {
 		s += "\n";
 		s += "<h3>Previous Contributors</h3>\n";
 		s += "<table border=0>\n";
-		s += "<tr><td>Nuno Dias Mendes</td><td>Software development</td></tr>\n";
+		s += "<tr><td>Nuno D. Mendes</td><td>Software development</td></tr>\n";
 		s += "</table>\n";
 		s += "</center></body>";
 		return s;
