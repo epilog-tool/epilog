@@ -112,7 +112,7 @@ public class DialogRenameEpithelium extends EscapableDialog {
 		this.jtfName.setBackground(Color.WHITE);
 		if (name.isEmpty()) {
 			isValid = false;
-		} else if (this.reservedNames.contains(name) && !this.originalName.equals(name)) {
+		} else if (this.reservedNames.contains(name) && !this.originalName.equalsIgnoreCase(name)) {
 			msg = "There is another epithelium with this name!";
 			this.jtfName.setBackground(ColorUtils.LIGHT_RED);
 			isValid = false;
