@@ -1,9 +1,14 @@
 package org.ginsim.epilog.gui.dialog;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JEditorPane;
+import javax.swing.JPanel;
 
 public class DialogAbout extends EscapableDialog {
 	private static final long serialVersionUID = -1433694621928539481L;
@@ -17,6 +22,18 @@ public class DialogAbout extends EscapableDialog {
 		jPane.setEnabled(true);
 		jPane.setBackground(SystemColor.window);
 		jPane.setText(this.getContent());
+		// Bottom
+		JPanel bottom = new JPanel(new FlowLayout());
+		JButton buttonClose = new JButton("Close");
+		buttonClose.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
+		bottom.add(buttonClose);
+		bottom.setBackground(SystemColor.window);
+		this.add(bottom, BorderLayout.SOUTH);
 	}
 
 	private String getContent() {
