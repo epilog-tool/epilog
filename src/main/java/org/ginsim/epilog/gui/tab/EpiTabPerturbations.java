@@ -459,6 +459,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.gridwidth = 2;
 		this.jpRBColor.add(jrDel, gbc);
+		jrDel.setSelected(true);
 
 		this.jpRBColor.revalidate();
 		this.jpRBColor.repaint();
