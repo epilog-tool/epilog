@@ -97,7 +97,7 @@ public class EpiGUI extends JFrame {
 			// javax.swing.plaf.multi.MultiLookAndFeel <- X
 			// javax.swing.plaf.nimbus.NimbusLookAndFeel <- +/-
 			UIManager
-					.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+					.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 		} catch (ClassNotFoundException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
