@@ -15,6 +15,8 @@ import org.ginsim.epilog.io.ButtonFactory;
 
 public class CloseTabButton extends JPanel {
 	private static final long serialVersionUID = -2812970403104281880L;
+	
+	private JLabel jLabel;
 
 	public CloseTabButton(String title, final JTabbedPane tabPane) {
 		this.setLayout(new GridBagLayout());
@@ -23,7 +25,8 @@ public class CloseTabButton extends JPanel {
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.weightx = 1;
-		this.add(new JLabel(title), gbc);
+		jLabel = new JLabel(title);
+		this.add(jLabel, gbc);
 		gbc.gridx++;
 		gbc.weightx = 0;
 		JButton closeButton = ButtonFactory
@@ -44,5 +47,10 @@ public class CloseTabButton extends JPanel {
 			}
 		});
 		this.add(closeButton, gbc);
+	}
+	
+	public void changeTitle(String title) {
+		this.jLabel.setText(title);
+		this.revalidate();
 	}
 }

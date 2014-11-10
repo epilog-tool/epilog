@@ -443,6 +443,16 @@ public class EpiGUI extends JFrame {
 				&& !epi.toString().equals(dialogPanel.getEpitheliumName())) {
 			this.project.setChanged(true);
 			epi.setName(dialogPanel.getEpitheliumName());
+			// TODO: change open tab names
+			for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
+				EpiTab epitab = (EpiTab) this.epiRightFrame.getComponentAt(i);
+				if (epitab.containsEpithelium(epi)) {
+					DefaultMutableTreeNode epiNode = (DefaultMutableTreeNode) epitab.getPath().getLastPathComponent();
+					String title = epi.getName() + ":" + epiNode;
+					((CloseTabButton)epiRightFrame.getTabComponentAt(i)).changeTitle(title);
+				}
+			}
+
 			this.validateGUI();
 		}
 	}
