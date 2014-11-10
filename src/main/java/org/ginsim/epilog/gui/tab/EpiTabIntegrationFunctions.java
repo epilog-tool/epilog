@@ -21,6 +21,7 @@ import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -29,11 +30,11 @@ import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
-import org.ginsim.epilog.project.ProjectModelFeatures;
 import org.ginsim.epilog.core.ComponentIntegrationFunctions;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumIntegrationFunctions;
 import org.ginsim.epilog.gui.color.ColorUtils;
+import org.ginsim.epilog.project.ProjectModelFeatures;
 
 public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	private static final long serialVersionUID = -2124909766318378839L;
@@ -93,11 +94,41 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		jpNRight.add(this.jpNRBottom, BorderLayout.CENTER);
 
 		// South Panel
-		JPanel jpSouth = new JPanel(new BorderLayout());
-		jpSouth.add(new JLabel("Explanation missing"));
-		this.center.add(jpSouth, BorderLayout.SOUTH);
+		// JPanel jpSouth = new JPanel(new BorderLayout());
+		// jpSouth.add(new JLabel("Explanation missing"));
+		this.center.add(this.getExplanationPanel(), BorderLayout.SOUTH);
 		this.updateComponentList((String) jcbSBML.getSelectedItem());
 		this.isInitialized = true;
+	}
+
+	private JEditorPane getExplanationPanel() {
+		JEditorPane jPane = new JEditorPane();
+		jPane.setContentType("text/html");
+		jPane.setEditable(false);
+		jPane.setEnabled(true);
+		jPane.setBackground(this.getBackground());
+		String s = "<html><head>\n";
+		s += "<style type=\"text/css\">\n";
+		// s+="td {   font-family:Courier; }\n";
+		// s+="b {   font-family:Courier; }\n";
+		s += "</style>\n";
+		s += "</head><body>\n";
+		s += "<b>Grammar specification examples</b><br/>\n";
+		s += "<table border=1>";
+		s += "<tr><td>G<sub>0</sub>(1,1,4,1)</td><td>at least 1 and at most 4 "
+				+ "neighbours at distance 1 have G<sub>0</sub> at least at "
+				+ "level 1</td></tr>";
+		s += "<tr><td>G<sub>0</sub>(1,1,_,1)</td><td>at least 1 neighbour at "
+				+ "distance 1 has G<sub>0</sub> at least at level 1</td></tr>";
+		s += "<tr><td>G<sub>0</sub>(1,1,_,1) | G<sub>0</sub>(2,3,_,1)</td><td>"
+				+ "at least 1 neighbour at distance 1 has G<sub>0</sub> at least "
+				+ "at level 1 <b>OR</b> at least 3 neighbours at distance 1 have "
+				+ "G<sub>0</sub> at least at level 2</td></tr>";
+		s += "<tr><td>G<sub>0</sub>(_,1,_,2:3)</td><td>at least 1 neighbour at "
+				+ "distance 2 or 3 has G<sub>0</sub> at its maximum level</td></tr>";
+		s += "</table></font></body>";
+		jPane.setText(s);
+		return jPane;
 	}
 
 	private JComboBox<String> newModelCombobox(List<LogicalModel> modelList) {
