@@ -23,7 +23,7 @@ public class VisualGridInitialConditions extends VisualGrid {
 	private Map<String, Byte> mNode2ValueSelected;
 	private Map<String, Color> colorMapClone;
 	private boolean isRectFill;
-	private Tuple2D initialRectPos;
+	private Tuple2D<Integer> initialRectPos;
 	private LogicalModel selectedModel;
 	private GridInformation valuePanel;
 
@@ -87,7 +87,7 @@ public class VisualGridInitialConditions extends VisualGrid {
 		});
 	}
 
-	private void updateComponentValues(Tuple2D pos) {
+	private void updateComponentValues(Tuple2D<Integer> pos) {
 		if (!isInGrid(pos))
 			return;
 
@@ -129,7 +129,6 @@ public class VisualGridInitialConditions extends VisualGrid {
 
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
-				Polygon polygon = topology.createNewPolygon(this.radius, x, y);
 				Color cCombined;
 				if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
 					List<Color> lColors = new ArrayList<Color>();
@@ -150,6 +149,10 @@ public class VisualGridInitialConditions extends VisualGrid {
 				} else {
 					cCombined = this.getParent().getBackground();
 				}
+				Tuple2D<Double> center = topology.getPolygonCenter(this.radius,
+						x, y);
+				Polygon polygon = topology
+						.createNewPolygon(this.radius, center);
 				this.paintPolygon(this.strokeBasic, cCombined, polygon, g2);
 			}
 		}

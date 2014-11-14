@@ -20,7 +20,6 @@ public class Epithelium {
 	private EpitheliumPriorityClasses priorities;
 	private EpitheliumIntegrationFunctions integrationFunctions;
 	private EpitheliumPerturbations perturbations;
-	private boolean isChanged;
 
 	public Epithelium(int x, int y, String topologyLayout, RollOver rollover,
 			LogicalModel m, String name) throws InstantiationException,
@@ -36,7 +35,6 @@ public class Epithelium {
 		this.perturbations.addModel(m);
 		this.componentFeatures = new EpitheliumComponentFeatures();
 		this.componentFeatures.addModel(m);
-		this.isChanged = false;
 	}
 
 	private Epithelium(String name, EpitheliumGrid grid,
@@ -48,7 +46,6 @@ public class Epithelium {
 		this.integrationFunctions = eif;
 		this.componentFeatures = ecf;
 		this.perturbations = eap;
-		this.isChanged = false;
 	}
 
 	public boolean hasModel(LogicalModel m) {
@@ -91,7 +88,6 @@ public class Epithelium {
 				this.perturbations.removeModel(mPerturbation);
 			}
 		}
-		
 
 		// Create list with all existing Components
 		Set<String> sNodeIDs = new HashSet<String>();
@@ -129,32 +125,28 @@ public class Epithelium {
 
 	public void setName(String name) {
 		this.name = name;
-		this.isChanged = true;
 	}
 
 	public LogicalModel getModel(int x, int y) {
 		return this.grid.getModel(x, y);
 	}
 
-	public void setGridWithModel(LogicalModel m, List<Tuple2D> lTuples) {
-		for (Tuple2D tuple : lTuples) {
+	public void setGridWithModel(LogicalModel m, List<Tuple2D<Integer>> lTuples) {
+		for (Tuple2D<Integer> tuple : lTuples) {
 			this.grid.setModel(tuple.getX(), tuple.getY(), m);
 		}
-		this.isChanged = true;
 	}
 
 	public void setGridWithComponentValue(String nodeID, byte value,
-			List<Tuple2D> lTuples) {
-		for (Tuple2D tuple : lTuples) {
-			this.grid.setCellComponentValue(tuple.getX(), tuple.getY(), nodeID,
-					value);
+			List<Tuple2D<Integer>> lTuples) {
+		for (Tuple2D<Integer> tuple : lTuples) {
+			this.grid.setCellComponentValue(tuple.getX(), tuple.getY(),
+					nodeID, value);
 		}
-		this.isChanged = true;
 	}
 
 	public void setComponentColor(String nodeID, Color color) {
 		this.componentFeatures.setNodeColor(nodeID, color);
-		this.isChanged = true;
 	}
 
 	public void setIntegrationFunction(String nodeID, byte value,
@@ -164,25 +156,21 @@ public class Epithelium {
 			this.integrationFunctions.addComponent(node);
 		}
 		this.integrationFunctions.setFunctionAtLevel(node, value, function);
-		this.isChanged = true;
 	}
 
 	public void initPriorityClasses(LogicalModel m) {
 		ModelPriorityClasses mpc = new ModelPriorityClasses(m);
 		this.priorities.addModelPriorityClasses(mpc);
-		// TODO: this.isChanged = true;
 	}
 
 	public void initComponentFeatures(LogicalModel m) {
 		this.componentFeatures.addModel(m);
-		// TODO: this.isChanged = true;
 	}
 
 	public void setPriorityClasses(LogicalModel m, String pcs) {
 		ModelPriorityClasses mpc = new ModelPriorityClasses(m);
 		mpc.setPriorities(pcs);
 		this.priorities.addModelPriorityClasses(mpc);
-		this.isChanged = true;
 	}
 
 	public void setPriorityClasses(ModelPriorityClasses mpc) {
@@ -191,21 +179,18 @@ public class Epithelium {
 
 	public void addPerturbation(LogicalModel m, AbstractPerturbation ap) {
 		this.perturbations.addPerturbation(m, ap);
-		this.isChanged = true;
 	}
 
 	public void delPerturbation(LogicalModel m, AbstractPerturbation ap) {
 		this.perturbations.delPerturbation(m, ap);
-		this.isChanged = true;
 	}
 
 	public void applyPerturbation(LogicalModel m, AbstractPerturbation ap,
-			Color c, List<Tuple2D> lTuples) {
+			Color c, List<Tuple2D<Integer>> lTuples) {
 		this.perturbations.addPerturbationColor(m, ap, c);
 		if (lTuples != null) {
 			this.grid.setPerturbation(m, lTuples, ap);
 		}
-		this.isChanged = true;
 	}
 
 	public EpitheliumGrid getEpitheliumGrid() {
@@ -244,7 +229,6 @@ public class Epithelium {
 
 	public void setModel(int x, int y, LogicalModel m) {
 		this.grid.setModel(x, y, m);
-		this.isChanged = true;
 	}
 
 	public boolean equals(Object o) {

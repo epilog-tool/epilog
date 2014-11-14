@@ -22,7 +22,7 @@ public class VisualGridPerturbation extends VisualGrid {
 	private EpitheliumCell[][] cellGridClone;
 	private Map<AbstractPerturbation, Color> colorMapClone;
 	private boolean isRectFill;
-	private Tuple2D initialRectPos;
+	private Tuple2D<Integer> initialRectPos;
 
 	private LogicalModel selectedModel;
 	private AbstractPerturbation selAbsPerturb;
@@ -94,7 +94,8 @@ public class VisualGridPerturbation extends VisualGrid {
 		Color c = this.colorMapClone.get(this.selAbsPerturb);
 
 		// Paint the rectangle
-		super.highlightCellsOverRectangle(this.initialRectPos, this.mouseGrid, c);
+		super.highlightCellsOverRectangle(this.initialRectPos, this.mouseGrid,
+				c);
 	}
 
 	public void setSelAbsPerturb(AbstractPerturbation ap) {
@@ -132,7 +133,6 @@ public class VisualGridPerturbation extends VisualGrid {
 
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
-				Polygon polygon = topology.createNewPolygon(this.radius, x, y);
 				BasicStroke stroke = this.strokeBasic;
 				Color cPerturb = this.getParent().getBackground();
 				if (this.cellGridClone[x][y].getModel().equals(
@@ -145,6 +145,10 @@ public class VisualGridPerturbation extends VisualGrid {
 					} else
 						cPerturb = Color.WHITE;
 				}
+				Tuple2D<Double> center = topology.getPolygonCenter(this.radius,
+						x, y);
+				Polygon polygon = topology
+						.createNewPolygon(this.radius, center);
 				this.paintPolygon(stroke, cPerturb, polygon, g2);
 			}
 		}

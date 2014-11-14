@@ -23,11 +23,11 @@ public class VisualGridSimulation extends VisualGrid {
 	private EpitheliumGrid epiGrid;
 	private List<String> lCompON;
 	private GridInformation valuePanel;
-	private Tuple2D lastPos;
+	private Tuple2D<Integer> lastPos;
 
 	public VisualGridSimulation(EpitheliumGrid epiGrid,
-			EpitheliumComponentFeatures componentFeatures, List<String> lCompON,
-			GridInformation valuePanel) {
+			EpitheliumComponentFeatures componentFeatures,
+			List<String> lCompON, GridInformation valuePanel) {
 		super(epiGrid.getX(), epiGrid.getY(), epiGrid.getTopology());
 		this.componentFeatures = componentFeatures;
 		this.epiGrid = epiGrid;
@@ -44,6 +44,7 @@ public class VisualGridSimulation extends VisualGrid {
 			public void mouseDragged(MouseEvent e) {
 				mousePosition2Grid(e);
 				updateComponentValues(mouseGrid);
+				paintComponent(getGraphics());
 			}
 		});
 		this.addMouseListener(new MouseListener() {
@@ -75,7 +76,7 @@ public class VisualGridSimulation extends VisualGrid {
 		// Does not need to apply data
 	}
 
-	private void updateComponentValues(Tuple2D pos) {
+	private void updateComponentValues(Tuple2D<Integer> pos) {
 		if (!isInGrid(pos))
 			return;
 		this.lastPos = pos;
@@ -90,14 +91,12 @@ public class VisualGridSimulation extends VisualGrid {
 	@Override
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
-		
 
 		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY,
 				this.getSize().width, this.getSize().height);
 
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
-				Polygon polygon = topology.createNewPolygon(this.radius, x, y);
 				BasicStroke stroke = this.strokeBasic;
 				if (this.epiGrid.getPerturbation(x, y) != null) {
 					stroke = this.strokePerturb;
@@ -119,7 +118,19 @@ public class VisualGridSimulation extends VisualGrid {
 					}
 				}
 				Color cCombined = ColorUtils.combine(lColors);
+				Tuple2D<Double> center = topology.getPolygonCenter(this.radius,
+						x, y);
+				Polygon polygon = topology
+						.createNewPolygon(this.radius, center);
 				this.paintPolygon(stroke, cCombined, polygon, g2);
+				// Highlights the selected cell
+				if (this.lastPos != null && this.lastPos.getX() == x
+						&& this.lastPos.getY() == y) {
+					center = topology.getPolygonCenter(this.radius, x, y);
+					polygon = topology
+							.createNewPolygon(this.radius / 3, center);
+					this.paintPolygon(stroke, ColorUtils.LIGHT_RED, polygon, g2);
+				}
 			}
 		}
 	}

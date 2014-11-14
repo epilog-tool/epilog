@@ -14,8 +14,8 @@ public abstract class Topology {
 
 	public abstract String getDescription();
 
-	public abstract Set<Tuple2D> getNeighbours(int x, int y, int minDist,
-			int maxDist);
+	public abstract Set<Tuple2D<Integer>> getNeighbours(int x, int y,
+			int minDist, int maxDist);
 
 	public int getX() {
 		return this.maxX;
@@ -33,8 +33,8 @@ public abstract class Topology {
 		this.rollover = rollover;
 	}
 
-	public List<Tuple2D> instances2Tuples2D(String[] instances) {
-		List<Tuple2D> lTuples = new ArrayList<Tuple2D>();
+	public List<Tuple2D<Integer>> instances2Tuples2D(String[] instances) {
+		List<Tuple2D<Integer>> lTuples = new ArrayList<Tuple2D<Integer>>();
 		for (String tmp : instances) {
 			int i, j;
 			if (tmp.contains("-")) {
@@ -49,29 +49,33 @@ public abstract class Topology {
 		return lTuples;
 	}
 
-	private List<Tuple2D> instance2Tuple2D(int iStart, int iEnd) {
-		List<Tuple2D> list = new ArrayList<Tuple2D>();
+	private List<Tuple2D<Integer>> instance2Tuple2D(int iStart, int iEnd) {
+		List<Tuple2D<Integer>> list = new ArrayList<Tuple2D<Integer>>();
 		for (int i = iStart; i <= iEnd; i++) {
 			int x = i % this.maxX;
 			int y = i / this.maxX;
-			list.add(new Tuple2D(x, y));
+			list.add(new Tuple2D<Integer>(x, y));
 		}
 		return list;
 	}
 
 	public abstract Topology clone();
 
-	public abstract Polygon createNewPolygon(double radius, int gridX, int gridY);
+	public abstract Tuple2D<Double> getPolygonCenter(double cellSize,
+			int gridX, int gridY);
+
+	public abstract Polygon createNewPolygon(double radius,
+			Tuple2D<Double> center);
 
 	public abstract double computeBestRadius(int gridX, int gridY, double dimX,
 			double dimY);
 
-	public abstract Tuple2D getSelectedCell(double radius, int mouseX,
+	public abstract Tuple2D<Integer> getSelectedCell(double radius, int mouseX,
 			int mouseY);
-	
+
 	public boolean equals(Object o) {
-		Topology tOut = (Topology)o;
-		return (this.getDescription().equals(tOut.getDescription()) &&
-				this.getX()==tOut.getX() && this.getY() == tOut.getY());
+		Topology tOut = (Topology) o;
+		return (this.getDescription().equals(tOut.getDescription())
+				&& this.getX() == tOut.getX() && this.getY() == tOut.getY());
 	}
 }

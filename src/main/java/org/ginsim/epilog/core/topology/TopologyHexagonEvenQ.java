@@ -16,12 +16,13 @@ public class TopologyHexagonEvenQ extends TopologyHexagon {
 		this.maxY = maxY;
 		this.rollover = rollover;
 	}
-	
+
 	public String getDescription() {
 		return "Hexagon-Even-FlatTopped";
 	}
 
-	public Set<Tuple2D> getNeighbours(Tuple2D elem, Set<Tuple2D> setComplete) {
+	public Set<Tuple2D<Integer>> getNeighbours(Tuple2D<Integer> elem,
+			Set<Tuple2D<Integer>> setComplete) {
 		return getNeighbours(this.neighboursX, this.neighboursY, elem,
 				setComplete);
 	}
@@ -32,26 +33,31 @@ public class TopologyHexagonEvenQ extends TopologyHexagon {
 	}
 
 	@Override
-	public Polygon createNewPolygon(double radius, int gridX, int gridY) {
+	public Polygon createNewPolygon(double radius, Tuple2D<Double> center) {
 		Polygon hexagon = new Polygon();
-		// TODO: simplify...
-		double incX = radius;
-		double incY = radius * SQRT3_2;
-		double y, x = incX + gridX * (3 * radius / 2);
+		for (int i = 0; i < 6; i++) {
+			double angle = 2 * Math.PI / 6 * i;
+			double x_i = center.getX() + radius * Math.cos(angle);
+			double y_i = center.getY() + radius * Math.sin(angle);
+			hexagon.addPoint((int) x_i, (int) y_i);
+		}
+		return hexagon;
+	}
+
+	@Override
+	public Tuple2D<Double> getPolygonCenter(double cellSize, int gridX,
+			int gridY) {
+		double incX = cellSize;
+		double incY = cellSize * SQRT3_2;
+		double y, x = incX + gridX * (3 * cellSize / 2);
 		if (gridX % 2 == 1)
 			y = incY + gridY * 2 * incY;
 		else
 			y = 2 * incY + gridY * 2 * incY;
 
-		for (int i = 0; i < 6; i++) {
-			double angle = 2 * Math.PI / 6 * i;
-			double x_i = x + radius * Math.cos(angle);
-			double y_i = y + radius * Math.sin(angle);
-			hexagon.addPoint((int) x_i, (int) y_i);
-		}
-		return hexagon;
+		return new Tuple2D<Double>(x, y);
 	}
-	
+
 	@Override
 	public double computeBestRadius(int gridX, int gridY, double dimX,
 			double dimY) {
@@ -59,9 +65,10 @@ public class TopologyHexagonEvenQ extends TopologyHexagon {
 		double radiuxY = dimY / (SQRT3 * (gridY + 0.5));
 		return Math.min(radiusX, radiuxY);
 	}
-	
+
 	@Override
-	public Tuple2D getSelectedCell(double radius, int mouseX, int mouseY) {
+	public Tuple2D<Integer> getSelectedCell(double radius, int mouseX,
+			int mouseY) {
 		double sqW = radius * 1.5;
 		double sqH_2 = radius * SQRT3_2;
 		double sqH = 2 * sqH_2;
@@ -77,7 +84,7 @@ public class TopologyHexagonEvenQ extends TopologyHexagon {
 		if (xRest < radius / 2) {
 			// y = ax + b
 			double ax = xRest * sqH / radius;
-			
+
 			if (xDiv % 2 == 1) {
 				if (yRest < sqH_2) {
 					if (yRest < (-ax + sqH_2)) {
@@ -91,7 +98,7 @@ public class TopologyHexagonEvenQ extends TopologyHexagon {
 				}
 			} else { // xDiv % 2 == 0
 				if (yRest < 0) {
-					if (yRest < (ax-sqH_2)) {
+					if (yRest < (ax - sqH_2)) {
 						yDiv--;
 					} else {
 						xDiv--;
@@ -114,7 +121,7 @@ public class TopologyHexagonEvenQ extends TopologyHexagon {
 				}
 			}
 		}
-		
-		return new Tuple2D(xDiv, yDiv);
+
+		return new Tuple2D<Integer>(xDiv, yDiv);
 	}
 }

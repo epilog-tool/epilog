@@ -11,32 +11,32 @@ public abstract class TopologyHexagon extends Topology {
 	protected final double SQRT3_2 = SQRT3 / 2;
 
 	@Override
-	public Set<Tuple2D> getNeighbours(int x, int y, int minDist, int maxDist) {
-		Set<Tuple2D> setComplete = new HashSet<Tuple2D>();
-		setComplete.add(new Tuple2D(x, y));
-		Set<Tuple2D> setN = new HashSet<Tuple2D>(setComplete);
-		Set<Tuple2D> setMin = new HashSet<Tuple2D>(setComplete);
+	public Set<Tuple2D<Integer>> getNeighbours(int x, int y, int minDist, int maxDist) {
+		Set<Tuple2D<Integer>> setComplete = new HashSet<Tuple2D<Integer>>();
+		setComplete.add(new Tuple2D<Integer>(x, y));
+		Set<Tuple2D<Integer>> setN = new HashSet<Tuple2D<Integer>>(setComplete);
+		Set<Tuple2D<Integer>> setMin = new HashSet<Tuple2D<Integer>>(setComplete);
 
 		for (int i = 1; i <= maxDist; i++) {
-			for (Tuple2D tuple : setN) {
+			for (Tuple2D<Integer> tuple : setN) {
 				setComplete.addAll(this.getNeighbours(tuple, setComplete));
 			}
 			if (i == (minDist - 1)) {
-				setMin = new HashSet<Tuple2D>(setComplete);
+				setMin = new HashSet<Tuple2D<Integer>>(setComplete);
 			}
 		}
 		setComplete.removeAll(setMin);
-		
+
 		return setComplete;
 	}
 
-	public abstract Set<Tuple2D> getNeighbours(Tuple2D elem,
-			Set<Tuple2D> setComplete);
-	
-	//TODO: For all the others
-	protected Set<Tuple2D> getNeighboursODDR(int[][] neighboursX,
-			int[] neighboursY, Tuple2D elem, Set<Tuple2D> setComplete) {
-		Set<Tuple2D> setN = new HashSet<Tuple2D>();
+	public abstract Set<Tuple2D<Integer>> getNeighbours(Tuple2D<Integer> elem,
+			Set<Tuple2D<Integer>> setComplete);
+
+	// TODO: For all the others
+	protected Set<Tuple2D<Integer>> getNeighboursODDR(int[][] neighboursX,
+			int[] neighboursY, Tuple2D<Integer> elem, Set<Tuple2D<Integer>> setComplete) {
+		Set<Tuple2D<Integer>> setN = new HashSet<Tuple2D<Integer>>();
 
 		for (int k = 0; k < neighboursY.length; k++) {
 			int j = elem.getY() + neighboursY[k];
@@ -57,16 +57,16 @@ public abstract class TopologyHexagon extends Topology {
 				else if (i >= this.maxX)
 					i = 0;
 			}
-			Tuple2D temp = new Tuple2D(i, j);
+			Tuple2D<Integer> temp = new Tuple2D<Integer>(i, j);
 			if (!setComplete.contains(temp))
 				setN.add(temp);
 		}
 		return setN;
 	}
 
-	protected Set<Tuple2D> getNeighbours(int[] neighboursX,
-			int[][] neighboursY, Tuple2D elem, Set<Tuple2D> setComplete) {
-		Set<Tuple2D> setN = new HashSet<Tuple2D>();
+	protected Set<Tuple2D<Integer>> getNeighbours(int[] neighboursX,
+			int[][] neighboursY, Tuple2D<Integer> elem, Set<Tuple2D<Integer>> setComplete) {
+		Set<Tuple2D<Integer>> setN = new HashSet<Tuple2D<Integer>>();
 
 		for (int k = 0; k < neighboursX.length; k++) {
 			int i = elem.getX() + neighboursX[k];
@@ -87,7 +87,7 @@ public abstract class TopologyHexagon extends Topology {
 				else if (i >= this.maxX)
 					i = 0;
 			}
-			Tuple2D temp = new Tuple2D(i, j);
+			Tuple2D<Integer> temp = new Tuple2D<Integer>(i, j);
 			if (!setComplete.contains(temp))
 				setN.add(temp);
 		}

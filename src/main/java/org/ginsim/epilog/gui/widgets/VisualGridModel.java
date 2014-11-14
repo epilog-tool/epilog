@@ -22,7 +22,7 @@ public class VisualGridModel extends VisualGrid {
 	private ProjectModelFeatures modelFeatures;
 	private String selModelName;
 	private boolean isRectFill;
-	private Tuple2D initialRectPos;
+	private Tuple2D<Integer> initialRectPos;
 
 	public VisualGridModel(int gridX, int gridY, Topology topology,
 			LogicalModel[][] modelGridClone,
@@ -89,7 +89,8 @@ public class VisualGridModel extends VisualGrid {
 		Color c = this.colorMapClone.get(m);
 
 		// Paint the rectangle
-		super.highlightCellsOverRectangle(this.initialRectPos, this.mouseGrid, c);
+		super.highlightCellsOverRectangle(this.initialRectPos, this.mouseGrid,
+				c);
 	}
 
 	public void setSelModelName(String name) {
@@ -115,7 +116,10 @@ public class VisualGridModel extends VisualGrid {
 
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
-				Polygon polygon = topology.createNewPolygon(this.radius, x, y);
+				Tuple2D<Double> center = topology.getPolygonCenter(this.radius,
+						x, y);
+				Polygon polygon = topology
+						.createNewPolygon(this.radius, center);
 				Color c = this.colorMapClone.get(this.modelGridClone[x][y]);
 				this.paintPolygon(this.strokeBasic, c, polygon, g2);
 			}
