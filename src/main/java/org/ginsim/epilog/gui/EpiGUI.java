@@ -96,8 +96,7 @@ public class EpiGUI extends JFrame {
 			// javax.swing.plaf.metal.MetalLookAndFeel <- v
 			// javax.swing.plaf.multi.MultiLookAndFeel <- X
 			// javax.swing.plaf.nimbus.NimbusLookAndFeel <- +/-
-			UIManager
-					.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+			UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 		} catch (ClassNotFoundException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -347,14 +346,13 @@ public class EpiGUI extends JFrame {
 
 	private void aboutDialog() {
 		Window win = SwingUtilities.getWindowAncestor(this);
-		dialog = new JDialog(win, "About",
-				ModalityType.APPLICATION_MODAL);
+		dialog = new JDialog(win, "About", ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(new DialogAbout());
 		dialog.pack();
 		dialog.setLocationRelativeTo(null);
 		dialog.setVisible(true);
 	}
-	
+
 	private void newEpithelium() throws InstantiationException,
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
@@ -398,8 +396,9 @@ public class EpiGUI extends JFrame {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
 				.getLastSelectedPathComponent();
 		Epithelium epi = (Epithelium) node.getUserObject();
-		int result = JOptionPane.showConfirmDialog(null,
-				"Do you really want to delete " + epi + "?");
+		int result = JOptionPane.showConfirmDialog(this,
+				"Do you really want to delete epithelium:\n" + epi + " ?",
+				"Question", JOptionPane.YES_NO_OPTION);
 		if (result == JOptionPane.YES_OPTION) {
 			// Remove from core
 			this.project.removeEpithelium(epi);
@@ -446,9 +445,11 @@ public class EpiGUI extends JFrame {
 			for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
 				EpiTab epitab = (EpiTab) this.epiRightFrame.getComponentAt(i);
 				if (epitab.containsEpithelium(epi)) {
-					DefaultMutableTreeNode epiNode = (DefaultMutableTreeNode) epitab.getPath().getLastPathComponent();
+					DefaultMutableTreeNode epiNode = (DefaultMutableTreeNode) epitab
+							.getPath().getLastPathComponent();
 					String title = epi.getName() + ":" + epiNode;
-					((CloseTabButton)epiRightFrame.getTabComponentAt(i)).changeTitle(title);
+					((CloseTabButton) epiRightFrame.getTabComponentAt(i))
+							.changeTitle(title);
 				}
 			}
 
@@ -515,8 +516,8 @@ public class EpiGUI extends JFrame {
 	private boolean canClose(String msg) {
 		if (this.project != null && this.project.hasChanged()) {
 			int n = JOptionPane.showConfirmDialog(this,
-					"You have unsaved changes!\n" + msg,
-					"Question", JOptionPane.YES_NO_OPTION);
+					"You have unsaved changes!\n" + msg, "Question",
+					JOptionPane.YES_NO_OPTION);
 			if (n == JOptionPane.YES_OPTION) {
 				return true;
 			} else {
@@ -690,8 +691,8 @@ public class EpiGUI extends JFrame {
 				epiTab = new EpiTabInitialConditions(epi, selPath, tabChanged,
 						this.project.getModelFeatures());
 			} else if (node.toString() == "Integration Components") {
-				epiTab = new EpiTabIntegrationFunctions(epi, selPath, tabChanged,
-						this.project.getModelFeatures());
+				epiTab = new EpiTabIntegrationFunctions(epi, selPath,
+						tabChanged, this.project.getModelFeatures());
 			} else if (node.toString() == "Perturbations") {
 				epiTab = new EpiTabPerturbations(epi, selPath, tabChanged,
 						this.project.getModelFeatures());
@@ -864,11 +865,11 @@ public class EpiGUI extends JFrame {
 			addEpithelium2JTree(epiClone);
 		}
 	}
-	
+
 	public class EpiTabChanged {
 		public EpiTabChanged() {
 		}
-		
+
 		public void setEpiChanged() {
 			project.setChanged(true);
 			validateGUI();
