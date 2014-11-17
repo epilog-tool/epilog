@@ -9,8 +9,12 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
-public class DialogAbout extends EscapableDialog {
+import org.ginsim.epilog.common.Web;
+
+public class DialogAbout extends EscapableDialog implements HyperlinkListener {
 	private static final long serialVersionUID = -1433694621928539481L;
 
 	public DialogAbout() {
@@ -22,6 +26,7 @@ public class DialogAbout extends EscapableDialog {
 		jPane.setEnabled(true);
 		jPane.setBackground(SystemColor.window);
 		jPane.setText(this.getContent());
+		jPane.addHyperlinkListener(this);
 		// Bottom
 		JPanel bottom = new JPanel(new FlowLayout());
 		JButton buttonClose = new JButton("Close");
@@ -39,12 +44,11 @@ public class DialogAbout extends EscapableDialog {
 	private String getContent() {
 		String s = "<body><center>\n";
 		s += "<h2>EpiLog</h2>\n";
-		s+="</center>\n";
 		s += "<p>EpiLog is a tool used for qualitative simulations ";
 		s += "of <b>Epi</b>thelium <b>Log</b>ical models.<br/>\n";
 		s += "It makes use of Cellular Automata to visualize the ";
 		s += "evolution of the pattern formation.</p>\n";
-		s += "<br/><center>\n";
+		s += "<a href=\"http://ginsim.org/epilog\">http://ginsim.org/epilog</a><br/>\n";
 		s += "<h3>Current Team</h3>\n";
 		s += "<table border=0>\n";
 		s += "<tr><td>Pedro L. Varela</td><td>Software development</td></tr>\n";
@@ -62,7 +66,13 @@ public class DialogAbout extends EscapableDialog {
 	}
 
 	@Override
-	public void focusComponentOnLoad() {
+	public void hyperlinkUpdate(HyperlinkEvent event) {
+		if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+			Web.openURI(event.getDescription());
+		}
 	}
 
+	@Override
+	public void focusComponentOnLoad() {
+	}
 }
