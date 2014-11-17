@@ -115,8 +115,9 @@ public class Epithelium {
 	}
 
 	public String toString() {
-		return this.name + " ("
-				+ this.grid.getTopology().getRollOver().toString() + ")";
+		return this.getName();
+//		return this.name + " ("
+//				+ this.grid.getTopology().getRollOver().toString() + ")";
 	}
 
 	public String getName() {

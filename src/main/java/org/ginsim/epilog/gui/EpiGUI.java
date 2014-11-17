@@ -30,6 +30,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
@@ -41,6 +42,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -97,16 +99,12 @@ public class EpiGUI extends JFrame {
 			// javax.swing.plaf.nimbus.NimbusLookAndFeel <- +/-
 			UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 		} catch (ClassNotFoundException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		} catch (InstantiationException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		} catch (IllegalAccessException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		} catch (UnsupportedLookAndFeelException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
 
@@ -595,6 +593,11 @@ public class EpiGUI extends JFrame {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(
 				"Epithelium list:");
 		this.epiTree = new JTree(root);
+		//--
+		ToolTipManager.sharedInstance().registerComponent(this.epiTree);
+		TreeCellRenderer renderer = new ToolTipTreeCellRenderer();
+		this.epiTree.setCellRenderer(renderer);
+		//--
 		this.epiTree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		this.scrollTree.setViewportView(this.epiTree);
@@ -746,7 +749,6 @@ public class EpiGUI extends JFrame {
 		try {
 			this.project = FileIO.loadPEPS(new File(filename));
 		} catch (IOException e) {
-			// TODO: send this to User Error message!!! ptgm
 			e.printStackTrace();
 		}
 		this.cleanGUI();
