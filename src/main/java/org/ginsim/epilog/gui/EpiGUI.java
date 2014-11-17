@@ -77,7 +77,6 @@ public class EpiGUI extends JFrame {
 	private ProjDescPanel projDescPanel;
 	private JTree epiTree;
 	private Project project;
-	private JDialog dialog; // TODO clean in the future?
 	private JButton buttonAdd;
 	private JButton buttonRemove;
 
@@ -346,7 +345,7 @@ public class EpiGUI extends JFrame {
 
 	private void aboutDialog() {
 		Window win = SwingUtilities.getWindowAncestor(this);
-		dialog = new JDialog(win, "About", ModalityType.APPLICATION_MODAL);
+		JDialog dialog = new JDialog(win, "About", ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(new DialogAbout());
 		dialog.pack();
 		dialog.setLocationRelativeTo(null);
@@ -362,7 +361,7 @@ public class EpiGUI extends JFrame {
 				this.project.getEpitheliumNameList());
 
 		Window win = SwingUtilities.getWindowAncestor(this);
-		dialog = new JDialog(win, "New Epithelium",
+		JDialog dialog = new JDialog(win, "New Epithelium",
 				ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(dialogPanel);
 		dialog.pack();
@@ -431,7 +430,7 @@ public class EpiGUI extends JFrame {
 		DialogRenameEpithelium dialogPanel = new DialogRenameEpithelium(
 				epi.getName(), this.project.getEpitheliumNameList());
 		Window win = SwingUtilities.getWindowAncestor(this);
-		dialog = new JDialog(win, "Rename Epithelium",
+		JDialog dialog = new JDialog(win, "Rename Epithelium",
 				ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(dialogPanel);
 		dialog.pack();
@@ -464,7 +463,7 @@ public class EpiGUI extends JFrame {
 		DialogNewProject dialogPanel = new DialogNewProject();
 
 		Window win = SwingUtilities.getWindowAncestor(this);
-		dialog = new JDialog(win, "New Project Definitions",
+		JDialog dialog = new JDialog(win, "New Project Definitions",
 				ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(dialogPanel);
 		dialog.pack();
