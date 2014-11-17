@@ -8,6 +8,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
 import org.ginsim.epilog.core.Epithelium;
+import org.ginsim.epilog.core.topology.Topology;
 
 class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
@@ -30,11 +31,13 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 					tipKey = "<html><b>Epithelium</b><br/>";
 					tipKey += "Name: " + epiNode.getName() + "<br/>";
 					tipKey += "Grid: " + epiNode.getEpitheliumGrid().getX()
-							+ "x" + epiNode.getEpitheliumGrid().getY()
-							+ "<br/>";
+							+ " (width) x " + epiNode.getEpitheliumGrid().getY()
+							+ " (height)<br/>";
+					Topology top = epiNode.getEpitheliumGrid().getTopology();
 					tipKey += "Rollover: "
-							+ epiNode.getEpitheliumGrid().getTopology()
-									.getRollOver() + "<br/>";
+							+ top.getRollOver() + "<br/>";
+					tipKey += "Topology: " +
+									top.getDescription()+"<br/>";
 					tipKey += "</html>";
 				}
 			} else {
