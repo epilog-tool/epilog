@@ -787,12 +787,15 @@ public class EpiGUI extends JFrame {
 			newUserPEPSFile += (newUserPEPSFile.endsWith(".peps") ? ""
 					: ".peps");
 			FileIO.savePEPS(this.project, newUserPEPSFile);
+			this.project.setFilenamePEPS(newUserPEPSFile);
 			this.project.setChanged(false);
+			this.setTitle(NAME + " - " + newUserPEPSFile);
 			this.validateGUI();
 		}
 	}
 
 	private void savePEPS() throws IOException {
+		System.out.println(this.project.getFilenamePEPS());
 		String fName = this.project.getFilenamePEPS();
 		if (fName == null) {
 			saveAsPEPS();
