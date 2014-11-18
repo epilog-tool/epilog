@@ -220,8 +220,7 @@ public class EpiGUI extends JFrame {
 				try {
 					newProject();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					userMessageError("You have selected an invalid SBML file!", "New project");
 				}
 			}
 		});
@@ -233,8 +232,8 @@ public class EpiGUI extends JFrame {
 				try {
 					loadProject();
 				} catch (Exception e1) {
-					// TODO: handle Java reflection exception in the future
-					e1.printStackTrace();
+					userMessageError("Invalid project (PEPS) file!",
+							"Load project");
 				}
 			}
 		});
@@ -343,11 +342,21 @@ public class EpiGUI extends JFrame {
 
 	private void aboutDialog() {
 		Window win = SwingUtilities.getWindowAncestor(this);
-		JDialog dialog = new JDialog(win, "About", ModalityType.APPLICATION_MODAL);
+		JDialog dialog = new JDialog(win, "About",
+				ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(new DialogAbout());
 		dialog.pack();
 		dialog.setLocationRelativeTo(null);
 		dialog.setVisible(true);
+	}
+
+	private void userMessage(String msg, String title, int type) {
+		JOptionPane.showMessageDialog(this, msg, title, type);
+
+	}
+
+	private void userMessageError(String msg, String title) {
+		this.userMessage(msg, title, JOptionPane.ERROR_MESSAGE);
 	}
 
 	private void newEpithelium() throws InstantiationException,
@@ -469,19 +478,22 @@ public class EpiGUI extends JFrame {
 		dialog.setVisible(true);
 
 		if (dialogPanel.isDefined()) {
-			this.cleanGUI();
-			this.setTitle(NAME + " - Unsaved");
-			this.project = new Project(dialogPanel.getProjWidth(),
+			Project p = new Project(dialogPanel.getProjWidth(),
 					dialogPanel.getProjHeight(),
 					dialogPanel.getTopologyLayout());
-			// TODO: receive from GUI
+			for (File fSBML : dialogPanel.getFileList()) {
+				p.addModel(fSBML.getName(), FileIO.loadSBMLModel(fSBML));
+			}
+			// Only when all SBML are properly loaded
+			// is the this.project and the GUI updated
+			this.project = p;
+			this.cleanGUI();
+			this.setTitle(NAME + " - Unsaved");
+			for (String sbmlName : this.project.getModelNames()) {
+				this.projDescPanel.addModel(sbmlName);
+			}
 			this.projDescPanel.setDimension(dialogPanel.getProjWidth(),
 					dialogPanel.getProjHeight());
-			for (File fSBML : dialogPanel.getFileList()) {
-				LogicalModel m = FileIO.loadSBMLModel(fSBML);
-				this.project.addModel(fSBML.getName(), m);
-				this.projDescPanel.addModel(fSBML.getName());
-			}
 			initEpitheliumJTree();
 			this.validateGUI();
 		}
@@ -593,11 +605,11 @@ public class EpiGUI extends JFrame {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(
 				"Epithelium list:");
 		this.epiTree = new JTree(root);
-		//--
+		// --
 		ToolTipManager.sharedInstance().registerComponent(this.epiTree);
 		TreeCellRenderer renderer = new ToolTipTreeCellRenderer();
 		this.epiTree.setCellRenderer(renderer);
-		//--
+		// --
 		this.epiTree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		this.scrollTree.setViewportView(this.epiTree);
