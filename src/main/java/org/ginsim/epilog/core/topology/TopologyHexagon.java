@@ -32,65 +32,26 @@ public abstract class TopologyHexagon extends Topology {
 
 	public abstract Set<Tuple2D<Integer>> getNeighbours(Tuple2D<Integer> elem,
 			Set<Tuple2D<Integer>> setComplete);
-
-	// TODO: For all the others
-	protected Set<Tuple2D<Integer>> getNeighboursODDR(int[][] neighboursX,
-			int[] neighboursY, Tuple2D<Integer> elem, Set<Tuple2D<Integer>> setComplete) {
-		Set<Tuple2D<Integer>> setN = new HashSet<Tuple2D<Integer>>();
-
-		for (int k = 0; k < neighboursY.length; k++) {
-			int j = elem.getY() + neighboursY[k];
-			int i = elem.getX() + neighboursX[elem.getX() % 2][k];
-			if (this.rollover != RollOver.VERTICAL && (j < 0 || j >= this.maxY))
-				continue;
-			if (this.rollover != RollOver.HORIZONTAL
-					&& (i < 0 || i >= this.maxX))
-				continue;
-			if (this.rollover == RollOver.VERTICAL) {
-				if (j < 0)
-					j = (this.maxY - 1);
-				else if (j >= this.maxY)
-					j = 0;
-			} else if (this.rollover == RollOver.HORIZONTAL) {
-				if (i < 0)
-					i = (this.maxX - 1);
-				else if (i >= this.maxX)
-					i = 0;
-			}
-			Tuple2D<Integer> temp = new Tuple2D<Integer>(i, j);
-			if (!setComplete.contains(temp))
-				setN.add(temp);
+	
+	protected void includeNeighbour(int i, int j, Set<Tuple2D<Integer>> setN, Set<Tuple2D<Integer>> setComplete) {
+		if (this.rollover != RollOver.VERTICAL && (j < 0 || j >= this.maxY))
+			return;
+		if (this.rollover != RollOver.HORIZONTAL
+				&& (i < 0 || i >= this.maxX))
+			return;
+		if (this.rollover == RollOver.VERTICAL) {
+			if (j < 0)
+				j = (this.maxY - 1);
+			else if (j >= this.maxY)
+				j = 0;
+		} else if (this.rollover == RollOver.HORIZONTAL) {
+			if (i < 0)
+				i = (this.maxX - 1);
+			else if (i >= this.maxX)
+				i = 0;
 		}
-		return setN;
-	}
-
-	protected Set<Tuple2D<Integer>> getNeighbours(int[] neighboursX,
-			int[][] neighboursY, Tuple2D<Integer> elem, Set<Tuple2D<Integer>> setComplete) {
-		Set<Tuple2D<Integer>> setN = new HashSet<Tuple2D<Integer>>();
-
-		for (int k = 0; k < neighboursX.length; k++) {
-			int i = elem.getX() + neighboursX[k];
-			int j = elem.getY() + neighboursY[elem.getX() % 2][k];
-			if (this.rollover != RollOver.VERTICAL && (j < 0 || j >= this.maxY))
-				continue;
-			if (this.rollover != RollOver.HORIZONTAL
-					&& (i < 0 || i >= this.maxX))
-				continue;
-			if (this.rollover == RollOver.VERTICAL) {
-				if (j < 0)
-					j = (this.maxY - 1);
-				else if (j >= this.maxY)
-					j = 0;
-			} else if (this.rollover == RollOver.HORIZONTAL) {
-				if (i < 0)
-					i = (this.maxX - 1);
-				else if (i >= this.maxX)
-					i = 0;
-			}
-			Tuple2D<Integer> temp = new Tuple2D<Integer>(i, j);
-			if (!setComplete.contains(temp))
-				setN.add(temp);
-		}
-		return setN;
+		Tuple2D<Integer> temp = new Tuple2D<Integer>(i, j);
+		if (!setComplete.contains(temp))
+			setN.add(temp);
 	}
 }

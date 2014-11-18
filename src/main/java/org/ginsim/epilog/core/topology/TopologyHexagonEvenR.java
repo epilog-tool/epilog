@@ -1,15 +1,16 @@
 package org.ginsim.epilog.core.topology;
 
 import java.awt.Polygon;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.ginsim.epilog.common.Tuple2D;
 
 public class TopologyHexagonEvenR extends TopologyHexagon {
 
-	private int[] neighboursX = { -1, 0, 1, 0, -1, -1 };
-	private int[][] neighboursY = { { -1, -1, 0, 1, 1, 0 },
-			{ -1, 1, 0, 1, 1, 0 } };
+	private int[] neighboursY = { -1, -1, 0, 1, 1, 0 };
+	private int[][] neighboursX = { { 0, 1, 1, 1, 0, -1 }, // even Y
+			{ -1, 0, 1, 0, -1, -1 } }; // odd Y
 
 	public TopologyHexagonEvenR(int maxX, int maxY, RollOver rollover) {
 		this.maxX = maxX;
@@ -21,10 +22,17 @@ public class TopologyHexagonEvenR extends TopologyHexagon {
 		return "Hexagon-Even-PointyTopped";
 	}
 
+	@Override
 	public Set<Tuple2D<Integer>> getNeighbours(Tuple2D<Integer> elem,
 			Set<Tuple2D<Integer>> setComplete) {
-		return getNeighbours(this.neighboursX, this.neighboursY, elem,
-				setComplete);
+		Set<Tuple2D<Integer>> setN = new HashSet<Tuple2D<Integer>>();
+
+		for (int k = 0; k < neighboursY.length; k++) {
+			int i = elem.getX() + neighboursX[elem.getY() % 2][k];
+			int j = elem.getY() + neighboursY[k];
+			this.includeNeighbour(i, j, setN, setComplete);
+		}
+		return setN;
 	}
 
 	@Override

@@ -1,15 +1,16 @@
 package org.ginsim.epilog.core.topology;
 
 import java.awt.Polygon;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.ginsim.epilog.common.Tuple2D;
 
 public class TopologyHexagonOddQ extends TopologyHexagon {
 
-	private int[] neighboursX = { -1, -1, 0, 1, 1, 0 };
-	private int[][] neighboursY = { { -1, 0, 1, 0, -1, -1 },
-			{ 0, 1, 1, 1, 0, -1 } };
+	private int[] neighboursX = { -1, 0, 1, 1, 0, -1 };
+	private int[][] neighboursY = { { -1, -1, -1, 0, 1, 0 },
+			{ 0, -1, 0, 1, 1, 1 } };
 
 	public TopologyHexagonOddQ(int maxX, int maxY, RollOver rollover) {
 		this.maxX = maxX;
@@ -23,8 +24,14 @@ public class TopologyHexagonOddQ extends TopologyHexagon {
 
 	public Set<Tuple2D<Integer>> getNeighbours(Tuple2D<Integer> elem,
 			Set<Tuple2D<Integer>> setComplete) {
-		return getNeighbours(this.neighboursX, this.neighboursY, elem,
-				setComplete);
+		Set<Tuple2D<Integer>> setN = new HashSet<Tuple2D<Integer>>();
+
+		for (int k = 0; k < neighboursX.length; k++) {
+			int i = elem.getX() + neighboursX[k];
+			int j = elem.getY() + neighboursY[elem.getX() % 2][k];
+			this.includeNeighbour(i, j, setN, setComplete);
+		}
+		return setN;
 	}
 
 	@Override
