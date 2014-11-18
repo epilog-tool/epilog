@@ -9,8 +9,8 @@ import org.ginsim.epilog.common.Tuple2D;
 public class TopologyHexagonOddR extends TopologyHexagon {
 
 	private int[] neighboursY = { -1, -1, 0, 1, 1, 0 };
-	private int[][] neighboursX = { { 1, -1, 0, -1, 0, -1 }, // even Y
-			{ 1, -1, 0, 1, 0, 1 } }; // odd Y
+	private int[][] neighboursX = { { -1, 0, 1, 0, -1, -1 }, // even Y
+			{ 0, 1, 1, 1, 0, -1 } }; // odd Y
 
 	public TopologyHexagonOddR(int maxX, int maxY, RollOver rollover) {
 		this.maxX = maxX;
