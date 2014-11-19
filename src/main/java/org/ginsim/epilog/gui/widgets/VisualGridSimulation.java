@@ -55,6 +55,7 @@ public class VisualGridSimulation extends VisualGrid {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				updateComponentValues(mouseGrid);
+				paintComponent(getGraphics());
 			}
 
 			@Override
