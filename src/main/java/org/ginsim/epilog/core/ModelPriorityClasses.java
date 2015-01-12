@@ -187,8 +187,8 @@ public class ModelPriorityClasses {
 		}
 	}
 
-	public boolean equals(Object o) {
-		List<List<String>> outList = ((ModelPriorityClasses) o)
+	public boolean equals(Object a) {
+		List<List<String>> outList = ((ModelPriorityClasses) a)
 				.getPriorityList();
 		for (int i = 0; i < this.priorityList.size(); i++) {
 			for (int j = 0; j < this.priorityList.get(i).size(); j++) {

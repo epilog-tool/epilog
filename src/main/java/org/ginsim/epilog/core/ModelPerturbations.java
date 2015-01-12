@@ -52,8 +52,8 @@ public class ModelPerturbations {
 		return Collections.unmodifiableList(this.allPerturbations);
 	}
 
-	public boolean equals(Object o) {
-		ModelPerturbations mp = (ModelPerturbations) o;
+	public boolean equals(Object a) {
+		ModelPerturbations mp = (ModelPerturbations) a;
 		List<AbstractPerturbation> apList = new ArrayList<AbstractPerturbation>();
 		apList.addAll(this.allPerturbations);
 		apList.addAll(mp.getAllPerturbations());
