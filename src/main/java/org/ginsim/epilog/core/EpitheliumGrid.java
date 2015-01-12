@@ -168,12 +168,12 @@ public class EpitheliumGrid {
 		return s;
 	}
 
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof EpitheliumGrid))
+	public boolean equals(Object a) {
+		if (a == null || !(a instanceof EpitheliumGrid))
 			return false;
-		if (obj == this)
+		if (a == this)
 			return true;
-		EpitheliumGrid o = (EpitheliumGrid) obj;
+		EpitheliumGrid o = (EpitheliumGrid) a;
 
 		if (!this.topology.equals(o.topology))
 			return false;
