@@ -30,6 +30,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
@@ -41,6 +42,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -77,7 +79,6 @@ public class EpiGUI extends JFrame {
 	private ProjDescPanel projDescPanel;
 	private JTree epiTree;
 	private Project project;
-	private JDialog dialog; // TODO clean in the future?
 	private JButton buttonAdd;
 	private JButton buttonRemove;
 
@@ -96,19 +97,14 @@ public class EpiGUI extends JFrame {
 			// javax.swing.plaf.metal.MetalLookAndFeel <- v
 			// javax.swing.plaf.multi.MultiLookAndFeel <- X
 			// javax.swing.plaf.nimbus.NimbusLookAndFeel <- +/-
-			UIManager
-					.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+			UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 		} catch (ClassNotFoundException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		} catch (InstantiationException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		} catch (IllegalAccessException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		} catch (UnsupportedLookAndFeelException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
 
@@ -224,8 +220,7 @@ public class EpiGUI extends JFrame {
 				try {
 					newProject();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					userMessageError("You have selected an invalid SBML file!", "New project");
 				}
 			}
 		});
@@ -237,8 +232,8 @@ public class EpiGUI extends JFrame {
 				try {
 					loadProject();
 				} catch (Exception e1) {
-					// TODO: handle Java reflection exception in the future
-					e1.printStackTrace();
+					userMessageError("Invalid project (PEPS) file!",
+							"Load project");
 				}
 			}
 		});
@@ -347,14 +342,23 @@ public class EpiGUI extends JFrame {
 
 	private void aboutDialog() {
 		Window win = SwingUtilities.getWindowAncestor(this);
-		dialog = new JDialog(win, "About",
+		JDialog dialog = new JDialog(win, "About",
 				ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(new DialogAbout());
 		dialog.pack();
 		dialog.setLocationRelativeTo(null);
 		dialog.setVisible(true);
 	}
-	
+
+	private void userMessage(String msg, String title, int type) {
+		JOptionPane.showMessageDialog(this, msg, title, type);
+
+	}
+
+	private void userMessageError(String msg, String title) {
+		this.userMessage(msg, title, JOptionPane.ERROR_MESSAGE);
+	}
+
 	private void newEpithelium() throws InstantiationException,
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
@@ -364,7 +368,7 @@ public class EpiGUI extends JFrame {
 				this.project.getEpitheliumNameList());
 
 		Window win = SwingUtilities.getWindowAncestor(this);
-		dialog = new JDialog(win, "New Epithelium",
+		JDialog dialog = new JDialog(win, "New Epithelium",
 				ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(dialogPanel);
 		dialog.pack();
@@ -398,8 +402,9 @@ public class EpiGUI extends JFrame {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
 				.getLastSelectedPathComponent();
 		Epithelium epi = (Epithelium) node.getUserObject();
-		int result = JOptionPane.showConfirmDialog(null,
-				"Do you really want to delete " + epi + "?");
+		int result = JOptionPane.showConfirmDialog(this,
+				"Do you really want to delete epithelium:\n" + epi + " ?",
+				"Question", JOptionPane.YES_NO_OPTION);
 		if (result == JOptionPane.YES_OPTION) {
 			// Remove from core
 			this.project.removeEpithelium(epi);
@@ -432,7 +437,7 @@ public class EpiGUI extends JFrame {
 		DialogRenameEpithelium dialogPanel = new DialogRenameEpithelium(
 				epi.getName(), this.project.getEpitheliumNameList());
 		Window win = SwingUtilities.getWindowAncestor(this);
-		dialog = new JDialog(win, "Rename Epithelium",
+		JDialog dialog = new JDialog(win, "Rename Epithelium",
 				ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(dialogPanel);
 		dialog.pack();
@@ -446,9 +451,11 @@ public class EpiGUI extends JFrame {
 			for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
 				EpiTab epitab = (EpiTab) this.epiRightFrame.getComponentAt(i);
 				if (epitab.containsEpithelium(epi)) {
-					DefaultMutableTreeNode epiNode = (DefaultMutableTreeNode) epitab.getPath().getLastPathComponent();
+					DefaultMutableTreeNode epiNode = (DefaultMutableTreeNode) epitab
+							.getPath().getLastPathComponent();
 					String title = epi.getName() + ":" + epiNode;
-					((CloseTabButton)epiRightFrame.getTabComponentAt(i)).changeTitle(title);
+					((CloseTabButton) epiRightFrame.getTabComponentAt(i))
+							.changeTitle(title);
 				}
 			}
 
@@ -463,7 +470,7 @@ public class EpiGUI extends JFrame {
 		DialogNewProject dialogPanel = new DialogNewProject();
 
 		Window win = SwingUtilities.getWindowAncestor(this);
-		dialog = new JDialog(win, "New Project Definitions",
+		JDialog dialog = new JDialog(win, "New Project Definitions",
 				ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(dialogPanel);
 		dialog.pack();
@@ -471,19 +478,22 @@ public class EpiGUI extends JFrame {
 		dialog.setVisible(true);
 
 		if (dialogPanel.isDefined()) {
-			this.cleanGUI();
-			this.setTitle(NAME + " - Unsaved");
-			this.project = new Project(dialogPanel.getProjWidth(),
+			Project p = new Project(dialogPanel.getProjWidth(),
 					dialogPanel.getProjHeight(),
 					dialogPanel.getTopologyLayout());
-			// TODO: receive from GUI
+			for (File fSBML : dialogPanel.getFileList()) {
+				p.addModel(fSBML.getName(), FileIO.loadSBMLModel(fSBML));
+			}
+			// Only when all SBML are properly loaded
+			// is the this.project and the GUI updated
+			this.project = p;
+			this.cleanGUI();
+			this.setTitle(NAME + " - Unsaved");
+			for (String sbmlName : this.project.getModelNames()) {
+				this.projDescPanel.addModel(sbmlName);
+			}
 			this.projDescPanel.setDimension(dialogPanel.getProjWidth(),
 					dialogPanel.getProjHeight());
-			for (File fSBML : dialogPanel.getFileList()) {
-				LogicalModel m = FileIO.loadSBMLModel(fSBML);
-				this.project.addModel(fSBML.getName(), m);
-				this.projDescPanel.addModel(fSBML.getName());
-			}
 			initEpitheliumJTree();
 			this.validateGUI();
 		}
@@ -515,8 +525,8 @@ public class EpiGUI extends JFrame {
 	private boolean canClose(String msg) {
 		if (this.project != null && this.project.hasChanged()) {
 			int n = JOptionPane.showConfirmDialog(this,
-					"You have unsaved changes!\n" + msg,
-					"Question", JOptionPane.YES_NO_OPTION);
+					"You have unsaved changes!\n" + msg, "Question",
+					JOptionPane.YES_NO_OPTION);
 			if (n == JOptionPane.YES_OPTION) {
 				return true;
 			} else {
@@ -595,6 +605,11 @@ public class EpiGUI extends JFrame {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(
 				"Epithelium list:");
 		this.epiTree = new JTree(root);
+		// --
+		ToolTipManager.sharedInstance().registerComponent(this.epiTree);
+		TreeCellRenderer renderer = new ToolTipTreeCellRenderer();
+		this.epiTree.setCellRenderer(renderer);
+		// --
 		this.epiTree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		this.scrollTree.setViewportView(this.epiTree);
@@ -690,8 +705,8 @@ public class EpiGUI extends JFrame {
 				epiTab = new EpiTabInitialConditions(epi, selPath, tabChanged,
 						this.project.getModelFeatures());
 			} else if (node.toString() == "Integration Components") {
-				epiTab = new EpiTabIntegrationFunctions(epi, selPath, tabChanged,
-						this.project.getModelFeatures());
+				epiTab = new EpiTabIntegrationFunctions(epi, selPath,
+						tabChanged, this.project.getModelFeatures());
 			} else if (node.toString() == "Perturbations") {
 				epiTab = new EpiTabPerturbations(epi, selPath, tabChanged,
 						this.project.getModelFeatures());
@@ -746,7 +761,6 @@ public class EpiGUI extends JFrame {
 		try {
 			this.project = FileIO.loadPEPS(new File(filename));
 		} catch (IOException e) {
-			// TODO: send this to User Error message!!! ptgm
 			e.printStackTrace();
 		}
 		this.cleanGUI();
@@ -773,12 +787,15 @@ public class EpiGUI extends JFrame {
 			newUserPEPSFile += (newUserPEPSFile.endsWith(".peps") ? ""
 					: ".peps");
 			FileIO.savePEPS(this.project, newUserPEPSFile);
+			this.project.setFilenamePEPS(newUserPEPSFile);
 			this.project.setChanged(false);
+			this.setTitle(NAME + " - " + newUserPEPSFile);
 			this.validateGUI();
 		}
 	}
 
 	private void savePEPS() throws IOException {
+		System.out.println(this.project.getFilenamePEPS());
 		String fName = this.project.getFilenamePEPS();
 		if (fName == null) {
 			saveAsPEPS();
@@ -864,11 +881,11 @@ public class EpiGUI extends JFrame {
 			addEpithelium2JTree(epiClone);
 		}
 	}
-	
+
 	public class EpiTabChanged {
 		public EpiTabChanged() {
 		}
-		
+
 		public void setEpiChanged() {
 			project.setChanged(true);
 			validateGUI();

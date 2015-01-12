@@ -139,7 +139,7 @@ public class Parser {
 				if (!rest.isEmpty()) {
 					saTmp = rest.split("\\s+");
 					Color c = ColorUtils.getColor(saTmp[0], saTmp[1], saTmp[2]);
-					List<Tuple2D> lTuple = null;
+					List<Tuple2D<Integer>> lTuple = null;
 					if (saTmp.length > 3) {
 						lTuple = currEpi.getEpitheliumGrid().getTopology()
 								.instances2Tuples2D(saTmp[3].split(","));

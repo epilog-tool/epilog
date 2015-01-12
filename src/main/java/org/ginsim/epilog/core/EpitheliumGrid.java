@@ -101,9 +101,9 @@ public class EpitheliumGrid {
 		gridEpiCell[x][y].setPerturbation(ap);
 	}
 
-	public void setPerturbation(LogicalModel m, List<Tuple2D> lTuples,
+	public void setPerturbation(LogicalModel m, List<Tuple2D<Integer>> lTuples,
 			AbstractPerturbation ap) {
-		for (Tuple2D tuple : lTuples) {
+		for (Tuple2D<Integer> tuple : lTuples) {
 			if (this.gridEpiCell[tuple.getX()][tuple.getY()].getModel().equals(
 					m)) {
 				this.setPerturbation(tuple.getX(), tuple.getY(), ap);
@@ -135,8 +135,8 @@ public class EpitheliumGrid {
 			int maxDist) {
 		List<EpitheliumCell> l = new ArrayList<EpitheliumCell>();
 
-		for (Tuple2D tuple : this.topology
-				.getNeighbours(x, y, minDist, maxDist)) {
+		for (Tuple2D<Integer> tuple : this.topology.getNeighbours(x, y,
+				minDist, maxDist)) {
 			l.add(gridEpiCell[tuple.getX()][tuple.getY()]);
 		}
 		return l;

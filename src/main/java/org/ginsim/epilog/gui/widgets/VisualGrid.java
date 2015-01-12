@@ -23,56 +23,51 @@ public abstract class VisualGrid extends JPanel {
 	protected int gridY;
 	protected Topology topology;
 	protected double radius;
-	protected Tuple2D mouseGrid;
+	protected Tuple2D<Integer> mouseGrid;
 
 	public VisualGrid(int gridX, int gridY, Topology topology) {
 		this.gridX = gridX;
 		this.gridY = gridY;
 		this.topology = topology;
 		this.setSize(800, 450);
-		this.mouseGrid = new Tuple2D(-1, -1);
+		this.mouseGrid = new Tuple2D<Integer>(-1, -1);
 	}
 
-	protected boolean isInGrid(Tuple2D pos) {
+	protected boolean isInGrid(Tuple2D<Integer> pos) {
 		return (pos != null && pos.getX() >= 0 && pos.getX() < this.gridX
 				&& pos.getY() >= 0 && pos.getY() < this.gridY);
 	}
-	
-	protected void highlightCellsOverRectangle(Tuple2D init, Tuple2D end, Color c) {
+
+	protected void highlightCellsOverRectangle(Tuple2D<Integer> init,
+			Tuple2D<Integer> end, Color c) {
 		if (!isInGrid(init) || !isInGrid(end))
 			return;
 		Graphics g = this.getGraphics();
 		Graphics2D g2 = (Graphics2D) g;
 		this.paintComponent(g);
-		
-		int minX = init.getX();
-		int minY = init.getY();
-		int maxX = end.getX();
-		int maxY = end.getY();
-		if (minX > maxX) {
-			minX = end.getX();
-			maxX = init.getX();
-		}
-		if (minY > maxY) {
-			minY = end.getY();
-			maxY = init.getY();
-		}
-		
-		for (int x = minX; x <= maxX; x++) {
-			for (int y = minY; y <= maxY; y++) {
-				Polygon polygon = topology.createNewPolygon(this.radius, x, y);
+
+		Tuple2D<Integer> tMin = init.getMin(end);
+		Tuple2D<Integer> tMax = init.getMax(end);
+
+		for (int x = tMin.getX(); x <= tMax.getX(); x++) {
+			for (int y = tMin.getY(); y <= tMax.getY(); y++) {
+				Tuple2D<Double> center = topology.getPolygonCenter(this.radius,
+						x, y);
+				Polygon polygon = topology
+						.createNewPolygon(this.radius, center);
 				this.paintPolygon(this.strokeBasic, c, polygon, g2);
 			}
 		}
 	}
 
-	protected void applyRectangleOnCells(Tuple2D init, Tuple2D end) {
+	protected void applyRectangleOnCells(Tuple2D<Integer> init,
+			Tuple2D<Integer> end) {
 		if (!isInGrid(init) || !isInGrid(end)) {
 			this.paintComponent(this.getGraphics());
 			return;
 		}
-		Tuple2D min = init.getMin(end);
-		Tuple2D max = init.getMax(end);
+		Tuple2D<Integer> min = init.getMin(end);
+		Tuple2D<Integer> max = init.getMax(end);
 		for (int x = min.getX(); x <= max.getX(); x++) {
 			for (int y = min.getY(); y <= max.getY(); y++) {
 				this.applyDataAt(x, y);
@@ -81,7 +76,7 @@ public abstract class VisualGrid extends JPanel {
 		this.paintComponent(this.getGraphics());
 	}
 
-	protected void paintCellAt(Tuple2D pos) {
+	protected void paintCellAt(Tuple2D<Integer> pos) {
 		// Get selected cell grid XY
 		if (!this.isInGrid(pos))
 			return;

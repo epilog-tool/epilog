@@ -101,8 +101,9 @@ public class IntegrationFunctionEvaluation {
 
 		} else if (expression instanceof IntegrationAtom) {
 			IntegrationAtom atom = (IntegrationAtom) expression;
-			Set<Tuple2D> neighbours = this.grid.getTopology().getNeighbours(x,
-					y, atom.getMinDistance(), atom.getMaxDistance());
+			Set<Tuple2D<Integer>> neighbours = this.grid.getTopology()
+					.getNeighbours(x, y, atom.getMinDistance(),
+							atom.getMaxDistance());
 			NodeInfo node = this.features.getNodeInfo(atom.getComponentName());
 
 			byte minThreshold = atom.getMinThreshold();
@@ -126,7 +127,7 @@ public class IntegrationFunctionEvaluation {
 				return true;
 
 			int habilitations = 0;
-			for (Tuple2D tuple : neighbours) {
+			for (Tuple2D<Integer> tuple : neighbours) {
 				List<NodeInfo> lNodes = this.grid.getModel(tuple.getX(),
 						tuple.getY()).getNodeOrder();
 				for (int n = 0; n < lNodes.size(); n++) {
