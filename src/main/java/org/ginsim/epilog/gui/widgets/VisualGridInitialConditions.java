@@ -86,6 +86,12 @@ public class VisualGridInitialConditions extends VisualGrid {
 			}
 		});
 	}
+	
+	@Override
+	protected void paintCellAt(Tuple2D<Integer> pos) {
+		if (epiGrid.getModel(pos.getX(), pos.getY()).equals(this.selectedModel))
+			super.paintCellAt(pos);
+	}
 
 	private void updateComponentValues(Tuple2D<Integer> pos) {
 		if (!isInGrid(pos))
