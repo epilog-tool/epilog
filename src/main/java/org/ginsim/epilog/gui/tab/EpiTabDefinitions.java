@@ -37,7 +37,23 @@ public abstract class EpiTabDefinitions extends EpiTab {
 		south = new ModificationsPanel();
 		this.add(south, BorderLayout.SOUTH);
 	}
+	
+	abstract protected void buttonReset();
 
+	abstract protected void buttonAccept();
+
+	abstract protected boolean isChanged();
+
+	public boolean canClose() {
+		if (!this.isChanged())
+			return true;
+		int n = JOptionPane.showConfirmDialog(this,
+				"Do you really want to close?\n"
+						+ "You'll lose all modifications in this Tab!",
+				"Question", JOptionPane.YES_NO_OPTION);
+		return (n == JOptionPane.YES_OPTION);
+	}
+	
 	private class ModificationsPanel extends JPanel {
 		private static final long serialVersionUID = -2133956602678321512L;
 
@@ -68,19 +84,5 @@ public abstract class EpiTabDefinitions extends EpiTab {
 		}
 	}
 
-	abstract protected void buttonReset();
 
-	abstract protected void buttonAccept();
-
-	abstract protected boolean isChanged();
-
-	public boolean canClose() {
-		if (!this.isChanged())
-			return true;
-		int n = JOptionPane.showConfirmDialog(this,
-				"Do you really want to close?\n"
-						+ "You'll lose all modifications in this Tab!",
-				"Question", JOptionPane.YES_NO_OPTION);
-		return (n == JOptionPane.YES_OPTION);
-	}
 }
