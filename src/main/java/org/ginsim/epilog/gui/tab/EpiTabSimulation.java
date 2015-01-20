@@ -192,6 +192,8 @@ public class EpiTabSimulation extends EpiTab {
 			}
 		});
 		jpButtonsR.add(jbClone);
+		
+		//Button to save an image from the simulated grid
 		JButton jbPicture = ButtonFactory
 				.getImageNoBorder("fotography-24x24.png");
 		jbPicture.setToolTipText("Save the image of the current grid to file");
@@ -297,13 +299,16 @@ public class EpiTabSimulation extends EpiTab {
 		this.isInitialized = true;
 	}
 
+	/**
+	 * 
+	 */
 	private void saveEpiGrid2File() {
 		JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(new EpilogFileFilter("png"));
 		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 			String file = fc.getSelectedFile().getAbsolutePath();
-			String ext = ".png";
-			file += (file.endsWith(ext) ? "" : ext);
+			String ext = "PNG";
+			file += (file.endsWith(ext) ? "" : "."+ext);
 			FileIO.writeEpitheliumGrid2File(
 					this.simulation.getGridAt(this.iCurrSimIter), file,
 					this.visualGridSimulation, ext);
