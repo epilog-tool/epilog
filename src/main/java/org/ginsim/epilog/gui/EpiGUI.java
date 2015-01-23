@@ -213,6 +213,8 @@ public class EpiGUI extends JFrame {
 
 		// File menu
 		JMenu menuFile = new JMenu("File");
+		
+		//Create New Project
 		JMenuItem itemNew = new JMenuItem("New Project");
 		itemNew.addActionListener(new ActionListener() {
 			@Override
@@ -225,6 +227,8 @@ public class EpiGUI extends JFrame {
 			}
 		});
 		menuFile.add(itemNew);
+		
+		//Open Existing Project
 		JMenuItem itemOpen = new JMenuItem("Load Project");
 		itemOpen.addActionListener(new ActionListener() {
 			@Override
@@ -238,6 +242,8 @@ public class EpiGUI extends JFrame {
 			}
 		});
 		menuFile.add(itemOpen);
+		
+		//Save existing project
 		menuFile.addSeparator();
 		JMenuItem itemSave = new JMenuItem("Save");
 		itemSave.addActionListener(new ActionListener() {
@@ -252,6 +258,8 @@ public class EpiGUI extends JFrame {
 			}
 		});
 		menuFile.add(itemSave);
+		
+		//Save new Project
 		JMenuItem itemSaveAs = new JMenuItem("Save As");
 		itemSaveAs.addActionListener(new ActionListener() {
 			@Override
@@ -265,6 +273,8 @@ public class EpiGUI extends JFrame {
 			}
 		});
 		menuFile.add(itemSaveAs);
+		
+		//exit EpiLog
 		menuFile.addSeparator();
 		JMenuItem itemExit = new JMenuItem("Exit");
 		itemExit.addActionListener(new ActionListener() {
@@ -518,6 +528,17 @@ public class EpiGUI extends JFrame {
 		this.buttonAdd.setEnabled(bIsValid);
 		this.buttonRemove.setEnabled(bIsValid
 				&& this.projDescPanel.countModels() > 1);
+		
+		boolean eIsValid = false;
+		if (epiTree.getRowCount()==1) eIsValid=false;
+		else eIsValid=true;
+		System.out.println(project);
+		
+		JMenu epithelium = this.epiMenu.getMenu(1);
+		epithelium.getItem(1).setEnabled(eIsValid);
+		epithelium.getItem(2).setEnabled(eIsValid);
+		epithelium.getItem(3).setEnabled(eIsValid);
+
 
 		this.validateJTreeExpansion();
 	}
@@ -795,7 +816,7 @@ public class EpiGUI extends JFrame {
 	}
 
 	private void savePEPS() throws IOException {
-		System.out.println(this.project.getFilenamePEPS());
+		//System.out.println(this.project.getFilenamePEPS());
 		String fName = this.project.getFilenamePEPS();
 		if (fName == null) {
 			saveAsPEPS();
