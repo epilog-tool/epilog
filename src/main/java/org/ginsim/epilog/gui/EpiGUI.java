@@ -385,9 +385,10 @@ public class EpiGUI extends JFrame {
 		dialog.setLocationRelativeTo(null);
 		dialog.setVisible(true);
 		if (dialogPanel.isDefined()) {
-			Epithelium newEpi = this.project.newEpithelium(dialogPanel.getX(),dialogPanel.getY(),dialogPanel.getTopologyLayout(),
+			Epithelium newEpi = this.project.newEpithelium(dialogPanel.getEpitheliumWidth(),dialogPanel.getEpitheliumHeight(),dialogPanel.getTopologyLayout(),
 					dialogPanel.getEpiName(), dialogPanel.getSBMLName(),
 					dialogPanel.getRollOver());
+			System.out.println(newEpi.getX()+ ""+dialogPanel.getX() + dialogPanel.getTopologyLayout() + dialogPanel.getEpiName());
 			this.addEpi2JTree(newEpi);
 			this.project.setChanged(true);
 			this.validateGUI();

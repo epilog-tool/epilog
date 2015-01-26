@@ -63,6 +63,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	}
 
 	public void initialize() {
+		
 		this.center.setLayout(new BorderLayout());
 
 		this.epiGridClone = this.epithelium.getEpitheliumGrid().clone();

@@ -42,7 +42,7 @@ public class Epithelium {
 		this.componentFeatures.addModel(m);
 	}
 
-	private Epithelium(String name, int x, int y, String topologyLayout, EpitheliumGrid grid,
+	private Epithelium(int x, int y, String topologyLayout, String name, EpitheliumGrid grid,
 			EpitheliumIntegrationFunctions eif, EpitheliumPriorityClasses epc,
 			EpitheliumPerturbations eap, EpitheliumComponentFeatures ecf) {
 		this.x = x;
@@ -61,7 +61,7 @@ public class Epithelium {
 	}
 
 	public Epithelium clone() {
-		return new Epithelium("CopyOf_" + this.name, this.x, this.y, this.topologyLayout,this.grid.clone(),
+		return new Epithelium(this.x, this.y, this.topologyLayout, "CopyOf_" + this.name, this.grid.clone(),
 				this.integrationFunctions.clone(), this.priorities.clone(),
 				this.perturbations.clone(), this.componentFeatures.clone());
 	}

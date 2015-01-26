@@ -75,6 +75,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 			@Override
 			public void focusLost(FocusEvent e) {
 				validateEvenDimension(e);
+				System.out.println(e);
 			}
 
 			@Override
@@ -181,6 +182,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 			}
 		});
 		bottom.add(buttonCancel);
+		
 		buttonOK = new JButton("OK");
 		buttonOK.addActionListener(new ActionListener() {
 			@Override
@@ -203,6 +205,20 @@ public class DialogNewEpithelium extends EscapableDialog {
 
 	public RollOver getRollOver() {
 		return (RollOver) this.jcbRollover.getSelectedItem();
+	}
+	
+	public int getEpitheliumWidth() {
+		System.out.println(jtfWidth.getText());
+		return Integer.parseInt(jtfWidth.getText());
+	}
+
+	public int getEpitheliumHeight() {
+		return Integer.parseInt(jtfHeight.getText());
+	}
+
+	public String getTopologyLayout() {
+		String desc = (String) this.jcbLayout.getSelectedItem();
+		return TopologyService.getManager().getTopologyID(desc);
 	}
 
 	private boolean validateTextField() {
@@ -282,22 +298,6 @@ public class DialogNewEpithelium extends EscapableDialog {
 		this.buttonOK.setEnabled(isValid);
 		return isValid;
 	}
-
-	
-	
-	public int getProjWidth() {
-		return this.width;
-	}
-
-	public int getProjHeight() {
-		return this.height;
-	}
-
-	public String getTopologyLayout() {
-		String desc = (String) this.jcbLayout.getSelectedItem();
-		return TopologyService.getManager().getTopologyID(desc);
-	}
-	
 	
 	@Override
 	public void focusComponentOnLoad() {
