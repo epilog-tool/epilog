@@ -38,88 +38,18 @@ public class DialogNewProject extends EscapableDialog {
 	private final String DEFAULT_WIDTH = "20";
 	private final String DEFAULT_HEIGHT = "20";
 
-	private JTextField jtfWidth;
-	private JTextField jtfHeight;
-	private JComboBox<String> jcbLayout;
+
 	private JList<String> listSBMLs;
 	private JButton buttonRemove;
 	private JButton buttonOK;
 
 	private List<File> fileList;
-	private int width;
-	private int height;
+
 	private boolean bIsOK;
 
 	public DialogNewProject() {
 		setLayout(new BorderLayout());
 		this.fileList = new ArrayList<File>();
-
-		// PAGE_START begin
-		JPanel top = new JPanel(new FlowLayout());
-		top.add(new JLabel("Width:"));
-		jtfWidth = new JTextField(DEFAULT_WIDTH, 3);
-		jtfWidth.addKeyListener(new KeyListener() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				validateTextField(e);
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-		});
-		jtfWidth.addFocusListener(new FocusListener() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				validateEvenDimension(e);
-			}
-
-			@Override
-			public void focusGained(FocusEvent e) {
-			}
-		});
-		top.add(jtfWidth);
-		top.add(new JLabel("Height:"));
-		jtfHeight = new JTextField(DEFAULT_HEIGHT, 3);
-		jtfHeight.addKeyListener(new KeyListener() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				validateTextField(e);
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-		});
-		jtfHeight.addFocusListener(new FocusListener() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				validateEvenDimension(e);
-			}
-
-			@Override
-			public void focusGained(FocusEvent e) {
-			}
-		});
-		top.add(jtfHeight);
-		top.add(new JLabel("Topology:"));
-		DefaultComboBoxModel<String> cbModel = new DefaultComboBoxModel<String>();
-		// Dynamically loads Topologies in the classpath
-		for (String topID : TopologyService.getManager()
-				.getTopologyDescriptions()) {
-			cbModel.addElement(topID);
-		}
-		jcbLayout = new JComboBox<String>(cbModel);
-		top.add(jcbLayout);
-		this.add(top, BorderLayout.PAGE_START);
 
 		// CENTER begin
 		JPanel center = new JPanel(new BorderLayout());
@@ -172,7 +102,7 @@ public class DialogNewProject extends EscapableDialog {
 		});
 		bottom.add(buttonOK);
 		this.add(bottom, BorderLayout.PAGE_END);
-		this.validateDialog();
+//		this.validateDialog();
 	}
 
 	private void validateTextField(KeyEvent e) {
@@ -190,7 +120,7 @@ public class DialogNewProject extends EscapableDialog {
 		} else {
 			jtf.setBackground(Color.WHITE);
 		}
-		this.validateDialog();
+//		this.validateDialog();
 	}
 
 	private void validateEvenDimension(FocusEvent e) {
@@ -212,18 +142,6 @@ public class DialogNewProject extends EscapableDialog {
 		this.dispose();
 	}
 
-	public int getProjWidth() {
-		return this.width;
-	}
-
-	public int getProjHeight() {
-		return this.height;
-	}
-
-	public String getTopologyLayout() {
-		String desc = (String) this.jcbLayout.getSelectedItem();
-		return TopologyService.getManager().getTopologyID(desc);
-	}
 
 	public List<File> getFileList() {
 		return this.fileList;
@@ -254,7 +172,7 @@ public class DialogNewProject extends EscapableDialog {
 			((DefaultListModel<String>) this.listSBMLs.getModel())
 					.addElement(fc.getSelectedFile().getAbsolutePath());
 		}
-		this.validateDialog();
+		//this.validateDialog();
 	}
 
 	private void removeSBMLFile() throws IOException {
@@ -270,8 +188,14 @@ public class DialogNewProject extends EscapableDialog {
 					break;
 				}
 			}
-			this.validateDialog();
+			//this.validateDialog();
 		}
+	}
+
+	@Override
+	public void focusComponentOnLoad() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private boolean validateDialog() {
@@ -281,18 +205,9 @@ public class DialogNewProject extends EscapableDialog {
 		}
 		this.buttonRemove.setEnabled(isValid);
 
-		try {
-			this.width = Integer.parseInt(this.jtfWidth.getText());
-			this.height = Integer.parseInt(this.jtfHeight.getText());
-		} catch (NumberFormatException nfe) {
-			isValid = false;
-		}
+
 		this.buttonOK.setEnabled(isValid);
 		return isValid;
 	}
 
-	@Override
-	public void focusComponentOnLoad() {
-		this.jtfWidth.requestFocusInWindow();
-	}
 }

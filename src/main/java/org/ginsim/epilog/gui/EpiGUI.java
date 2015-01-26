@@ -385,7 +385,7 @@ public class EpiGUI extends JFrame {
 		dialog.setLocationRelativeTo(null);
 		dialog.setVisible(true);
 		if (dialogPanel.isDefined()) {
-			Epithelium newEpi = this.project.newEpithelium(
+			Epithelium newEpi = this.project.newEpithelium(dialogPanel.getX(),dialogPanel.getY(),dialogPanel.getTopologyLayout(),
 					dialogPanel.getEpiName(), dialogPanel.getSBMLName(),
 					dialogPanel.getRollOver());
 			this.addEpi2JTree(newEpi);
@@ -480,7 +480,7 @@ public class EpiGUI extends JFrame {
 		DialogNewProject dialogPanel = new DialogNewProject();
 
 		Window win = SwingUtilities.getWindowAncestor(this);
-		JDialog dialog = new JDialog(win, "New Project Definitions",
+		JDialog dialog = new JDialog(win, "Create Model and add SBML Models",
 				ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(dialogPanel);
 		dialog.pack();
@@ -488,9 +488,7 @@ public class EpiGUI extends JFrame {
 		dialog.setVisible(true);
 
 		if (dialogPanel.isDefined()) {
-			Project p = new Project(dialogPanel.getProjWidth(),
-					dialogPanel.getProjHeight(),
-					dialogPanel.getTopologyLayout());
+			Project p = new Project();
 			for (File fSBML : dialogPanel.getFileList()) {
 				p.addModel(fSBML.getName(), FileIO.loadSBMLModel(fSBML));
 			}
@@ -502,8 +500,8 @@ public class EpiGUI extends JFrame {
 			for (String sbmlName : this.project.getModelNames()) {
 				this.projDescPanel.addModel(sbmlName);
 			}
-			this.projDescPanel.setDimension(dialogPanel.getProjWidth(),
-					dialogPanel.getProjHeight());
+//			this.projDescPanel.setDimension(dialogPanel.getProjWidth(),
+//					dialogPanel.getProjHeight());
 			initEpitheliumJTree();
 			this.validateGUI();
 		}
@@ -574,8 +572,8 @@ public class EpiGUI extends JFrame {
 		if (this.loadPEPS()) {
 			this.cleanGUI();
 			this.setTitle(NAME + " - " + this.project.getFilenamePEPS());
-			this.projDescPanel.setDimension(this.project.getX(),
-					this.project.getY());
+//			this.projDescPanel.setDimension(this.project.getX(),
+//					this.project.getY());
 			for (String sbml : this.project.getModelNames()) {
 				this.projDescPanel.addModel(sbml);
 			}
@@ -786,8 +784,6 @@ public class EpiGUI extends JFrame {
 		}
 		this.cleanGUI();
 		this.setTitle(NAME + " - " + this.project.getFilenamePEPS());
-		this.projDescPanel.setDimension(this.project.getX(),
-				this.project.getY());
 		for (String sbml : this.project.getModelNames()) {
 			this.projDescPanel.addModel(sbml);
 		}
@@ -877,7 +873,6 @@ public class EpiGUI extends JFrame {
 	private void cleanGUI() {
 		// Close & delete all TABS
 		this.setTitle(NAME);
-		this.projDescPanel.clean();
 		this.initEpitheliumJTree();
 		while (this.epiRightFrame.getTabCount() > 0) {
 			this.epiRightFrame.removeTabAt(0);

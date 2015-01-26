@@ -10,18 +10,12 @@ import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.topology.RollOver;
 
 public class Project {
-	private int x;
-	private int y;
-	private String topologyLayout;
 	private List<Epithelium> epitheliumList;
 	private ProjectModelFeatures modelFeatures;
 	private String filenamePEPS;
 	private boolean isChanged;
 
-	public Project(int x, int y, String topologyLayout) {
-		this.x = x;
-		this.y = y;
-		this.topologyLayout = topologyLayout;
+	public Project(){
 		this.epitheliumList = new ArrayList<Epithelium>();
 		this.modelFeatures = new ProjectModelFeatures();
 		this.filenamePEPS = null;
@@ -34,14 +28,6 @@ public class Project {
 
 	public void setChanged(boolean state) {
 		this.isChanged = state;
-	}
-
-	public int getX() {
-		return this.x;
-	}
-
-	public int getY() {
-		return this.y;
 	}
 
 	public List<Epithelium> getEpitheliumList() {
@@ -96,10 +82,6 @@ public class Project {
 	// this.modelMap = newModelMap;
 	// }
 
-	public String getTopologyLayout() {
-		// TODO: improve this
-		return this.topologyLayout;
-	}
 
 	public String getFilenamePEPS() {
 		return this.filenamePEPS;
@@ -109,12 +91,12 @@ public class Project {
 		this.filenamePEPS = filename;
 	}
 
-	public Epithelium newEpithelium(String userName, String modelName,
+	public Epithelium newEpithelium(int x, int y, String topologyLayout, String userName, String modelName,
 			RollOver rollover) throws InstantiationException,
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException {
-		Epithelium epi = new Epithelium(this.x, this.y, this.topologyLayout,
+		Epithelium epi = new Epithelium(x, y, topologyLayout,
 				rollover, this.modelFeatures.getModel(modelName), userName);
 		this.epitheliumList.add(epi);
 		return epi;

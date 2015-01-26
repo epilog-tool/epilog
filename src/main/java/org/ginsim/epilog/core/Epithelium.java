@@ -14,6 +14,11 @@ import org.ginsim.epilog.common.Tuple2D;
 import org.ginsim.epilog.core.topology.RollOver;
 
 public class Epithelium {
+	
+	private int x;
+	private int y;
+	private String topologyLayout;
+	
 	private String name;
 	private EpitheliumGrid grid;
 	private EpitheliumComponentFeatures componentFeatures;
@@ -37,9 +42,12 @@ public class Epithelium {
 		this.componentFeatures.addModel(m);
 	}
 
-	private Epithelium(String name, EpitheliumGrid grid,
+	private Epithelium(String name, int x, int y, String topologyLayout, EpitheliumGrid grid,
 			EpitheliumIntegrationFunctions eif, EpitheliumPriorityClasses epc,
 			EpitheliumPerturbations eap, EpitheliumComponentFeatures ecf) {
+		this.x = x;
+		this.y = y;
+		this.topologyLayout = topologyLayout;
 		this.name = name;
 		this.grid = grid;
 		this.priorities = epc;
@@ -53,7 +61,7 @@ public class Epithelium {
 	}
 
 	public Epithelium clone() {
-		return new Epithelium("CopyOf_" + this.name, this.grid.clone(),
+		return new Epithelium("CopyOf_" + this.name, this.x, this.y, this.topologyLayout,this.grid.clone(),
 				this.integrationFunctions.clone(), this.priorities.clone(),
 				this.perturbations.clone(), this.componentFeatures.clone());
 	}
@@ -230,6 +238,19 @@ public class Epithelium {
 
 	public void setModel(int x, int y, LogicalModel m) {
 		this.grid.setModel(x, y, m);
+	}
+	
+	public int getX() {
+	return this.x;
+	}
+
+	public int getY() {
+	return this.y;
+	}
+	
+	public String getTopologyLayout() {
+		// TODO: improve this
+		return this.topologyLayout;
 	}
 
 	public boolean equals(Object o) {

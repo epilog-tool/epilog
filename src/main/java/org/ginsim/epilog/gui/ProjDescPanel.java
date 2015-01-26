@@ -15,7 +15,7 @@ import javax.swing.ListSelectionModel;
 public class ProjDescPanel extends JPanel {
 	private static final long serialVersionUID = -8691538114476162311L;
 
-	private static final String LABEL = "Dimensions: ";
+	private static final String LABEL = "Models Loaded: ";
 	private JList<String> listSBMLs;
 
 	public ProjDescPanel() {
@@ -23,6 +23,10 @@ public class ProjDescPanel extends JPanel {
 		
 		// PAGE_START
 		JPanel jpWholeLine = new JPanel(new BorderLayout());
+		JLabel jlModels = new JLabel(LABEL);
+		Font font = jlModels.getFont();
+		jlModels.setFont(new Font(font.getFontName(), Font.BOLD, font.getSize()));
+		jpWholeLine.add(jlModels, BorderLayout.LINE_START);
 		this.add(jpWholeLine, BorderLayout.PAGE_START);
 
 		// CENTER
