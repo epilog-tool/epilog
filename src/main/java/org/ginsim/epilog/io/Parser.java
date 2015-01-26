@@ -45,6 +45,11 @@ public class Parser {
 		Project project = null;
 		Epithelium currEpi = null;
 		RollOver rollover = null;
+		
+		int x = (Integer) null;
+		int y = (Integer) null;
+		String topologyLayout = null;
+		
 		String line, epiName = null;
 		String[] saTmp;
 
@@ -54,10 +59,10 @@ public class Parser {
 				continue;
 			// Initialize default grid dimensions
 			// Topology can be: OddQ, OddR, EvenQ, EvenR
-			if (line.startsWith("GD")) {
-				saTmp = line.split("\\s+");
-				project = new Project(Integer.parseInt(saTmp[1]),
-						Integer.parseInt(saTmp[2]), saTmp[3]);
+//			if (line.startsWith("GD")) {
+//				saTmp = line.split("\\s+");
+//				project = new Project(Integer.parseInt(saTmp[1]),
+//						Integer.parseInt(saTmp[2]), saTmp[3]);
 			}
 			// Load SBML model numerical identifiers
 			if (line.startsWith("SB")) {
@@ -74,6 +79,12 @@ public class Parser {
 				epiName = line.split("\\s+")[1];
 				currEpi = null;
 				rollover = RollOver.NOROLLOVER;
+
+			if (line.startsWith("GD")) {
+				saTmp = line.split("\\s+");
+				x = Integer.parseInt(saTmp[1]);
+				y = Integer.parseInt(saTmp[2]); 
+				topologyLayout = saTmp[3];
 			}
 			// RollOver
 			if (line.startsWith("RL")) {
@@ -87,7 +98,7 @@ public class Parser {
 				saTmp = line.split("\\s+");
 				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
 				if (currEpi == null) {
-					currEpi = project.newEpithelium(epiName,
+					currEpi = project.newEpithelium(x,y,topologyLayout,epiName,
 							modelKey2Name.get(saTmp[1]), rollover);
 				}
 				if (saTmp.length > 2) {
@@ -194,8 +205,8 @@ public class Parser {
 	public static void saveConfigurations(Project project, PrintWriter w)
 			throws IOException {
 		// Grid dimensions
-		w.println("GD " + project.getX() + " " + project.getY() + " "
-				+ project.getTopologyLayout());
+//		w.println("GD " + project.getX() + " " + project.getY() + " "
+//				+ project.getTopologyLayout());
 
 		// SBML numerical identifiers
 		int i = 0;
@@ -222,6 +233,8 @@ public class Parser {
 
 		// Epithelium name
 		w.println("SN " + epi.getName());
+		w.println("GD " + epi.getX() + " " + epi.getY() + " "
+				+ epi.getTopologyLayout());
 
 		// Rollover
 		w.println("RL " + epi.getEpitheliumGrid().getTopology().getRollOver());

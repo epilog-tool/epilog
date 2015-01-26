@@ -44,7 +44,7 @@ public class Launcher {
 		int maxiter = 10;
 		boolean bCMD = false;
 		String pepsFile = null;
-
+	
 		try {
 			jsap = new SimpleJSAP(
 					Launcher.class.getName(),
@@ -66,6 +66,7 @@ public class Launcher {
 			maxiter = jsapResult.getInt("max-iter");
 			bCMD = jsapResult.getBoolean("cmd");
 			pepsFile = jsapResult.getString("peps");
+
 		} catch (JSAPException e) {
 			System.err.println(e.getMessage());
 			System.exit(1);
@@ -82,6 +83,7 @@ public class Launcher {
 		} else {
 			// GUI
 			EpiGUI gui = new EpiGUI();
+
 			if (pepsFile != null) {
 				File f = new File(pepsFile);
 				if (f.exists())
