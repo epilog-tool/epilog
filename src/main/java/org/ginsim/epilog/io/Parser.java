@@ -42,31 +42,29 @@ public class Parser {
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
 		Map<String, String> modelKey2Name = new HashMap<String, String>();
-		Project project = null;
+		Project project = new Project();
 		Epithelium currEpi = null;
 		RollOver rollover = null;
 		
-		int x = (Integer) null;
-		int y = (Integer) null;
+		String x = null;
+		String y = null;
 		String topologyLayout = null;
 		
 		String line, epiName = null;
 		String[] saTmp;
 
+		
+		
 		while ((line = br.readLine()) != null) {
 			line = line.trim();
 			if (line.startsWith("#"))
 				continue;
-			// Initialize default grid dimensions
-			// Topology can be: OddQ, OddR, EvenQ, EvenR
-//			if (line.startsWith("GD")) {
-//				saTmp = line.split("\\s+");
-//				project = new Project(Integer.parseInt(saTmp[1]),
-//						Integer.parseInt(saTmp[2]), saTmp[3]);
-			}
-			// Load SBML model numerical identifiers
+
+			// Load SBML model numerical identifiers and create new project
+			
 			if (line.startsWith("SB")) {
 				saTmp = line.split("\\s+");
+
 				File fSBML = new File(fConfig.getParent() + "/" + saTmp[2]);
 				project.addModel(fSBML.getName(), FileIO.loadSBMLModel(fSBML));
 				modelKey2Name.put(saTmp[1], saTmp[2]);
@@ -74,16 +72,20 @@ public class Parser {
 						saTmp[5]);
 				project.getModelFeatures().changeColor(saTmp[2], modelColor);
 			}
+			
 			// Epithelium name
 			if (line.startsWith("SN")) {
 				epiName = line.split("\\s+")[1];
 				currEpi = null;
 				rollover = RollOver.NOROLLOVER;
+			}
 
 			if (line.startsWith("GD")) {
 				saTmp = line.split("\\s+");
-				x = Integer.parseInt(saTmp[1]);
-				y = Integer.parseInt(saTmp[2]); 
+				//int x = Integer.parseInt(saTmp[1]);
+				//int y = Integer.parseInt(saTmp[2]); 
+				x = saTmp[1];
+				y = saTmp[2];
 				topologyLayout = saTmp[3];
 			}
 			// RollOver
@@ -98,72 +100,74 @@ public class Parser {
 				saTmp = line.split("\\s+");
 				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
 				if (currEpi == null) {
-					currEpi = project.newEpithelium(x,y,topologyLayout,epiName,
+					currEpi = project.newEpithelium(Integer.parseInt(x),Integer.parseInt(y),topologyLayout,epiName,
 							modelKey2Name.get(saTmp[1]), rollover);
+					//System.out.println(Integer.parseInt(x)+Integer.parseInt(y)+topologyLayout+epiName+modelKey2Name.get(saTmp[1]));
 				}
-				if (saTmp.length > 2) {
-					currEpi.setGridWithModel(m,
-							currEpi.getEpitheliumGrid().getTopology()
-									.instances2Tuples2D(saTmp[2].split(",")));
-					currEpi.initPriorityClasses(m);
-					currEpi.initComponentFeatures(m);
-				}
+//				if (saTmp.length > 2) {
+//					currEpi.setGridWithModel(m,
+//							currEpi.getEpitheliumGrid().getTopology()
+//									.instances2Tuples2D(saTmp[2].split(",")));
+//					currEpi.initPriorityClasses(m);
+//					currEpi.initComponentFeatures(m);
+//				}
 			}
 			// Initial Conditions grid
-			if (line.startsWith("IC")) {
-				saTmp = line.split("\\s+");
-				currEpi.setGridWithComponentValue(saTmp[1],
-						Byte.parseByte(saTmp[2]),
-						currEpi.getEpitheliumGrid().getTopology()
-								.instances2Tuples2D(saTmp[3].split(",")));
-			}
+//			if (line.startsWith("IC")) {
+//				saTmp = line.split("\\s+");
+//				currEpi.setGridWithComponentValue(saTmp[1],
+//						Byte.parseByte(saTmp[2]),
+//						currEpi.getEpitheliumGrid().getTopology()
+//								.instances2Tuples2D(saTmp[3].split(",")));
+//			}
 			// Component Colors
-			if (line.startsWith("CL")) {
-				saTmp = line.split("\\s+");
-				currEpi.setComponentColor(saTmp[1],
-						ColorUtils.getColor(saTmp[2], saTmp[3], saTmp[4]));
-			}
+//			if (line.startsWith("CL")) {
+//				saTmp = line.split("\\s+");
+//				currEpi.setComponentColor(saTmp[1],
+//						ColorUtils.getColor(saTmp[2], saTmp[3], saTmp[4]));
+//			}
 			// Component Integration Functions
-			if (line.startsWith("IT")) {
-				saTmp = line.split("\\s+");
-				currEpi.setIntegrationFunction(saTmp[1], Byte
-						.parseByte(saTmp[2]), (saTmp.length > 3) ? saTmp[3]
-						: "");
-			}
+//			if (line.startsWith("IT")) {
+//				saTmp = line.split("\\s+");
+//				currEpi.setIntegrationFunction(saTmp[1], Byte
+//						.parseByte(saTmp[2]), (saTmp.length > 3) ? saTmp[3]
+//						: "");
+//			}
 			// Model Priority classes
-			if (line.startsWith("PR")) {
-				saTmp = line.split("\\s+");
-				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
-				currEpi.setPriorityClasses(m, saTmp[2]);
-			}
+//			if (line.startsWith("PR")) {
+//				saTmp = line.split("\\s+");
+//				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
+//				currEpi.setPriorityClasses(m, saTmp[2]);
+//			}
 			// Model All Perturbations
-			if (line.startsWith("PT")) {
-				saTmp = line.split("\\s+");
-				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
-				String sPerturb = line.substring(line.indexOf("(") + 1,
-						line.indexOf(")"));
-				AbstractPerturbation ap = string2AbstractPerturbation(
-						currEpi.getComponentFeatures(), sPerturb);
-				currEpi.addPerturbation(m, ap);
-
-				String rest = line.substring(line.indexOf(")") + 1).trim();
-				if (!rest.isEmpty()) {
-					saTmp = rest.split("\\s+");
-					Color c = ColorUtils.getColor(saTmp[0], saTmp[1], saTmp[2]);
-					List<Tuple2D<Integer>> lTuple = null;
-					if (saTmp.length > 3) {
-						lTuple = currEpi.getEpitheliumGrid().getTopology()
-								.instances2Tuples2D(saTmp[3].split(","));
-					}
-					currEpi.applyPerturbation(m, ap, c, lTuple);
-				}
-			}
+//			if (line.startsWith("PT")) {
+//				saTmp = line.split("\\s+");
+//				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
+//				String sPerturb = line.substring(line.indexOf("(") + 1,
+//						line.indexOf(")"));
+//				AbstractPerturbation ap = string2AbstractPerturbation(
+//						currEpi.getComponentFeatures(), sPerturb);
+//				currEpi.addPerturbation(m, ap);
+//
+//				String rest = line.substring(line.indexOf(")") + 1).trim();
+//				if (!rest.isEmpty()) {
+//					saTmp = rest.split("\\s+");
+//					Color c = ColorUtils.getColor(saTmp[0], saTmp[1], saTmp[2]);
+//					List<Tuple2D<Integer>> lTuple = null;
+//					if (saTmp.length > 3) {
+//						lTuple = currEpi.getEpitheliumGrid().getTopology()
+//								.instances2Tuples2D(saTmp[3].split(","));
+//					}
+//					currEpi.applyPerturbation(m, ap, c, lTuple);
+//				}
+//			}
 			// project add currEpi
 		}
-		// Ensure coherence of all epithelia
-		for (Epithelium epi : project.getEpitheliumList()) {
-			epi.update();
-		}
+//		// Ensure coherence of all epithelia
+//		for (Epithelium epi : project.getEpitheliumList()) {
+//			epi.update();
+//		}
+		//System.out.println("Final: " + project);
 		project.setChanged(false);
 		br.close();
 		in.close();

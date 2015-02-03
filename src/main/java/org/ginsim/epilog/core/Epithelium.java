@@ -26,11 +26,14 @@ public class Epithelium {
 	private EpitheliumIntegrationFunctions integrationFunctions;
 	private EpitheliumPerturbations perturbations;
 
-	public Epithelium(int x, int y, String topologyLayout, RollOver rollover,
-			LogicalModel m, String name) throws InstantiationException,
+	public Epithelium(int x, int y, String topologyLayout,String name,
+			LogicalModel m, RollOver rollover) throws InstantiationException,
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException {
+		this.x = x;
+		this.y = y;
+		this.topologyLayout = topologyLayout;
 		this.name = name;
 		this.grid = new EpitheliumGrid(x, y, topologyLayout, rollover, m);
 		this.priorities = new EpitheliumPriorityClasses();
@@ -241,11 +244,11 @@ public class Epithelium {
 	}
 	
 	public int getX() {
-	return this.x;
+		return this.x;
 	}
 
 	public int getY() {
-	return this.y;
+		return this.y;
 	}
 	
 	public String getTopologyLayout() {

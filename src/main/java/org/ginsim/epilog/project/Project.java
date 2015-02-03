@@ -96,8 +96,7 @@ public class Project {
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException {
-		Epithelium epi = new Epithelium(x, y, topologyLayout,
-				rollover, this.modelFeatures.getModel(modelName), userName);
+		Epithelium epi = new Epithelium(x, y, topologyLayout, userName, this.modelFeatures.getModel(modelName), rollover);
 		this.epitheliumList.add(epi);
 		return epi;
 	}

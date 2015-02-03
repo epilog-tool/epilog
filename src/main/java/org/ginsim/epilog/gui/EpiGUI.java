@@ -388,7 +388,7 @@ public class EpiGUI extends JFrame {
 			Epithelium newEpi = this.project.newEpithelium(dialogPanel.getEpitheliumWidth(),dialogPanel.getEpitheliumHeight(),dialogPanel.getTopologyLayout(),
 					dialogPanel.getEpiName(), dialogPanel.getSBMLName(),
 					dialogPanel.getRollOver());
-			System.out.println(newEpi.getX()+ ""+dialogPanel.getX() + dialogPanel.getTopologyLayout() + dialogPanel.getEpiName());
+			//System.out.println(newEpi.getX()+ ""+dialogPanel.getX() + dialogPanel.getTopologyLayout() + dialogPanel.getEpiName());
 			this.addEpi2JTree(newEpi);
 			this.project.setChanged(true);
 			this.validateGUI();
@@ -531,7 +531,7 @@ public class EpiGUI extends JFrame {
 		boolean eIsValid = false;
 		if (epiTree.getRowCount()==1) eIsValid=false;
 		else eIsValid=true;
-		System.out.println(project);
+		//System.out.println(project);
 		
 		JMenu epithelium = this.epiMenu.getMenu(1);
 		epithelium.getItem(1).setEnabled(eIsValid);
