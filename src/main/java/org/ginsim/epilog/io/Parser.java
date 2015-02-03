@@ -104,63 +104,63 @@ public class Parser {
 							modelKey2Name.get(saTmp[1]), rollover);
 					//System.out.println(Integer.parseInt(x)+Integer.parseInt(y)+topologyLayout+epiName+modelKey2Name.get(saTmp[1]));
 				}
-//				if (saTmp.length > 2) {
-//					currEpi.setGridWithModel(m,
-//							currEpi.getEpitheliumGrid().getTopology()
-//									.instances2Tuples2D(saTmp[2].split(",")));
-//					currEpi.initPriorityClasses(m);
-//					currEpi.initComponentFeatures(m);
-//				}
+				if (saTmp.length > 2) {
+					currEpi.setGridWithModel(m,
+							currEpi.getEpitheliumGrid().getTopology()
+									.instances2Tuples2D(saTmp[2].split(",")));
+					currEpi.initPriorityClasses(m);
+					currEpi.initComponentFeatures(m);
+				}
 			}
 			// Initial Conditions grid
-//			if (line.startsWith("IC")) {
-//				saTmp = line.split("\\s+");
-//				currEpi.setGridWithComponentValue(saTmp[1],
-//						Byte.parseByte(saTmp[2]),
-//						currEpi.getEpitheliumGrid().getTopology()
-//								.instances2Tuples2D(saTmp[3].split(",")));
-//			}
+			if (line.startsWith("IC")) {
+				saTmp = line.split("\\s+");
+				currEpi.setGridWithComponentValue(saTmp[1],
+						Byte.parseByte(saTmp[2]),
+						currEpi.getEpitheliumGrid().getTopology()
+								.instances2Tuples2D(saTmp[3].split(",")));
+			}
 			// Component Colors
-//			if (line.startsWith("CL")) {
-//				saTmp = line.split("\\s+");
-//				currEpi.setComponentColor(saTmp[1],
-//						ColorUtils.getColor(saTmp[2], saTmp[3], saTmp[4]));
-//			}
+			if (line.startsWith("CL")) {
+				saTmp = line.split("\\s+");
+				currEpi.setComponentColor(saTmp[1],
+						ColorUtils.getColor(saTmp[2], saTmp[3], saTmp[4]));
+			}
 			// Component Integration Functions
-//			if (line.startsWith("IT")) {
-//				saTmp = line.split("\\s+");
-//				currEpi.setIntegrationFunction(saTmp[1], Byte
-//						.parseByte(saTmp[2]), (saTmp.length > 3) ? saTmp[3]
-//						: "");
-//			}
+			if (line.startsWith("IT")) {
+				saTmp = line.split("\\s+");
+				currEpi.setIntegrationFunction(saTmp[1], Byte
+						.parseByte(saTmp[2]), (saTmp.length > 3) ? saTmp[3]
+						: "");
+			}
 			// Model Priority classes
-//			if (line.startsWith("PR")) {
-//				saTmp = line.split("\\s+");
-//				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
-//				currEpi.setPriorityClasses(m, saTmp[2]);
-//			}
+			if (line.startsWith("PR")) {
+				saTmp = line.split("\\s+");
+				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
+				currEpi.setPriorityClasses(m, saTmp[2]);
+			}
 			// Model All Perturbations
-//			if (line.startsWith("PT")) {
-//				saTmp = line.split("\\s+");
-//				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
-//				String sPerturb = line.substring(line.indexOf("(") + 1,
-//						line.indexOf(")"));
-//				AbstractPerturbation ap = string2AbstractPerturbation(
-//						currEpi.getComponentFeatures(), sPerturb);
-//				currEpi.addPerturbation(m, ap);
-//
-//				String rest = line.substring(line.indexOf(")") + 1).trim();
-//				if (!rest.isEmpty()) {
-//					saTmp = rest.split("\\s+");
-//					Color c = ColorUtils.getColor(saTmp[0], saTmp[1], saTmp[2]);
-//					List<Tuple2D<Integer>> lTuple = null;
-//					if (saTmp.length > 3) {
-//						lTuple = currEpi.getEpitheliumGrid().getTopology()
-//								.instances2Tuples2D(saTmp[3].split(","));
-//					}
-//					currEpi.applyPerturbation(m, ap, c, lTuple);
-//				}
-//			}
+			if (line.startsWith("PT")) {
+				saTmp = line.split("\\s+");
+				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
+				String sPerturb = line.substring(line.indexOf("(") + 1,
+						line.indexOf(")"));
+				AbstractPerturbation ap = string2AbstractPerturbation(
+						currEpi.getComponentFeatures(), sPerturb);
+				currEpi.addPerturbation(m, ap);
+
+				String rest = line.substring(line.indexOf(")") + 1).trim();
+				if (!rest.isEmpty()) {
+					saTmp = rest.split("\\s+");
+					Color c = ColorUtils.getColor(saTmp[0], saTmp[1], saTmp[2]);
+					List<Tuple2D<Integer>> lTuple = null;
+					if (saTmp.length > 3) {
+						lTuple = currEpi.getEpitheliumGrid().getTopology()
+								.instances2Tuples2D(saTmp[3].split(","));
+					}
+					currEpi.applyPerturbation(m, ap, c, lTuple);
+				}
+			}
 			// project add currEpi
 		}
 //		// Ensure coherence of all epithelia
