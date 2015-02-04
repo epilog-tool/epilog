@@ -8,15 +8,15 @@
 		<title type="link">Index</title>
 		<credit type="author">
 			<name>Pedro Varela</name>
-			<email>pvarela@igc.gulbenkian.pt</email>
+			<email>pedro.varela@ist.utl.pt</email>
+		</credit>
+				<credit type="author">
+			<name>Pedro Monteiro</name>
+			<email>pedro.monteiro@inesc-id.pt/email>
 		</credit>
 				<credit type="author">
 			<name>Nuno Mendes</name>
 			<email>nmdm@igc.gulbenkian.pt</email>
-		</credit>
-		<credit type="author">
-			<name>Pedro Monteiro</name>
-			<email>ptgm@igc.gulbenkian.pt</email>
 		</credit>
 	<credit type="author">
 			<name>Adrien  Fauré</name>
@@ -37,42 +37,43 @@
 	
    	EpiLog 
    	is a tool used for qualitative simulations of <em style="strong">Epi</em>thelium <em style="strong">Log</em>ical models.
-   	Simulation can made using a <link xref="composed-model">Composed Model</link> or a <link href="https://en.wikipedia.org/wiki/Cellular_automaton">Cellular Automata</link>  to visualize the evolution of the pattern formation.
+   	Simulation can made using <link href="https://en.wikipedia.org/wiki/Cellular_automaton">Cellular Automata</link>  to visualize the evolution of the pattern formation.
 	</p>
 
     
-	<section id="definitions" style="2column">
+	<section id="dProject Definitions" style="2column">
 		<info>
-			<title type="link" role="trail">Definitions</title>
+			<title type="link" role="trail">Project Definitions</title>
 		</info>
-		<title>Epithelium model: Definitions</title>
+		<title>Project Definitions</title>
 	</section>
 	
-		<section id="inputs" style="2column">
+	<section id="Epithelium Definitions" style="2column">
+		<info>
+			<title type="link" role="trail">Epithelium Definitions</title>
+		</info>
+		<title>Epithelium Definitions</title>
+	</section>
+
+		<section id="Inputs" style="2column">
 		<info>
 			<title type="link" role="trail">Inputs</title>
 		</info>
 		<title>Inputs</title>
-		<p>
-		</p>
-
 	</section>
 
-	<section id="simulation" style="2column">
+	<section id="Topology" style="2column">
 		<info>
-			<title type="link" role="trail">Simulation</title>
+			<title type="link" role="trail">Topology</title>
 		</info>
-		<title>Simulation</title>
+		<title>Topology</title>
 	</section>
 
-
-
-
-	<section id="advanced" style="2column">
+	<section id="I/O Files" style="2column">
 		<info>
-			<title type="link" role="trail">Advanced</title>
+			<title type="link" role="trail">I/O Files</title>
 		</info>
-		<title>Going further</title>
+		<title>I/O Files</title>
 	</section>
 
 
