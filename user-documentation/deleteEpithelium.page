@@ -12,15 +12,9 @@
 	<!--  TODO: series link not supported by HTML export  -->
 	<links type="series"/>
 
-	<title>Creating a Project</title>
+	<title>Deleting an epithelium</title>
 
-	<p>Choosing to create a new project, opens a new window to add SMBL files to the project. At least one SBML must be added, so that a project can be created. A SBML file can be deleted from this initial list, or later at Epilog's <link xref="mainWindow">main window</link>. Once all SBML files are added, and "OK" is pressed, 
-	<link xref="newEpithelium">new Epithelia</link> can be added to the project.</p>
+	<p>>To delete an existing epithelium, the user has to select an epithelium from the epithelium list at EpiLog's <link xref="mainWindow">main window</link>, and then select the "Delete" option from the "Epithelium" Menu. Since this action can't be undone, a confirmation dialog will always pop up. </p>
 
-	<figure>
-		<media type="image" src="figures/modelGrid.png" />
-
-		<title>For a new project to be created, at least, one SBML file must be added.</title>
-	</figure>
 
 </page>

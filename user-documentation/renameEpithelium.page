@@ -12,15 +12,15 @@
 	<!--  TODO: series link not supported by HTML export  -->
 	<links type="series"/>
 
-	<title>Creating a Project</title>
+	<title>Renaming an epithelium</title>
 
-	<p>Choosing to create a new project, opens a new window to add SMBL files to the project. At least one SBML must be added, so that a project can be created. A SBML file can be deleted from this initial list, or later at Epilog's <link xref="mainWindow">main window</link>. Once all SBML files are added, and "OK" is pressed, 
-	<link xref="newEpithelium">new Epithelia</link> can be added to the project.</p>
-
+"	<p>To rename an existing epithelium, the user has to select an epithelium from the epithelium list at EpiLog's <link xref="mainWindow">main window</link>, and then select the "Rename" option from the "Epithelium" Menu. Each epithelium has an unique name, so if a name is already in use, it wil not be possible to use that name.</p>
+"
 	<figure>
-		<media type="image" src="figures/modelGrid.png" />
+		<media type="image" src="figures/renameEpithelium.png" />
 
-		<title>For a new project to be created, at least, one SBML file must be added.</title>
+		<title>If a name is already chosen, it will not be possible to save, and the text box will change from white to red.</title>
 	</figure>
+
 
 </page>
