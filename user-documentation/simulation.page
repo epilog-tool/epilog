@@ -1,76 +1,26 @@
-<page xmlns="http://projectmallard.org/1.0/" type="topic"
-      id="simulation"> <info>
-		
-				<link type="guide" xref="index#simulation"/>
-		<title type="link" role="trail">Simulation</title>
-		
-<desc>Description on how to run a simulation</desc> <revision
-	status="draft" date="2013-07-24" /> </info> <!--  TODO: series link not supported by HTML export  -->
-<links type="series" />
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="simulation">
 
-<title>Running a simulation</title>
+	<info>
+		<link type="guide" xref="index#EpitheliumDefinitions"/>
+		<title type="link" role="trail">simulation</title>
+		<desc>Simulation panel description</desc>
+		<revision status="draft" date="2015-02-04"/>
+	</info>
 
-<p>
-	At the simulation tab (see Figure below) the user can decide if there
-	is
-	<link xref="roll-over">
-	roll-over
-	</link>
-	and if the simulation is to be made with a <link xref="cellular-automata">
-	celullar automata
-	</link>, or a
-	<link xref="composed-model">
-	composed model
-	</link>. Other definitions regarding the model are the choice of:
-	<link xref="initial-conditions">
-	initial conditions
-	</link>
-	 (the grid displays the selected initial state),
-	<link xref="perturbations">
-	perturbations</link>, (perturbed instances have thicker edges), and 
-	<link xref="priorities">
-	priorities
-	</link>.
-</p>
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
 
-<figure>
-	<media type="image" src="figures/simulation.png" />
-	<title>Epilog's Simulation interface.</title>
-</figure>
+	<title>Creating a Project</title>
 
-<p>When choosing an input set, if there is a change in the type of
-	input (environment to integration, or vice-versa), the panel with the
-	components is updated and only environment inputs are displayed. If there are no environmental inputs then only proper components are displayed.</p>
+	<p>Choosing to create a new project, opens a new window to add SMBL files to the project. At least one SBML must be added, so that a project can be created. A SBML file can be deleted from this initial list, or later at Epilog's <link xref="mainWindow">main window</link>. Once all SBML files are added, and "OK" is pressed, 
+	<link xref="newEpithelium">new Epithelia</link> can be added to the project.</p>
 
+	<figure>
+		<media type="image" src="figures/simulation.png" />
 
-<p>By moving the mouse over the hexagons grid the value of all
-	components and existing perturbations on a hexagon are displayed on the
-	<link xref="value-analytics">
-	analytics panel
-	</link>.</p>
+		<title>For a new project to be created, at least, one SBML file must be added.</title>
+	</figure>
 
-<p>
-	To start the simulation just press the
-	<link xref="step">
-	Step
-	</link>
-or
-<link xref="run">
-Run
-</link>
-button. All other tabs and selection panels are disabled at this time.
-The iteration number is updated on top of the hexagons grid, and the
-user can select or deselect components between iterations. During the
-simulation the user can also save an image with the hexagons grid by
-clicking on any point of the grid.
-</p>
-
-<p>During the simulation, pressing the "Save State" button,
-	will save the current grid as an initial state set, with the name set by the user.</p>
-
-<p>The simulation keeps going until a stable state is found, however
-	at any time the user can press "Restart" and reverts to where it was
-	before the simulation began. If the user pressed <link xref="run">
-Run
-</link> then there is a stopping parameter (by default 30).</p>
 </page>

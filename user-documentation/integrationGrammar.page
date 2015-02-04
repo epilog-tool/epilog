@@ -1,11 +1,11 @@
 <page xmlns="http://projectmallard.org/1.0/"
 		type="topic"
-		id="priorities">
+		id="integrationGrammar">
 
 	<info>
-		<link type="guide" xref="index#EpitheliumDefinitions"/>
-		<title type="link" role="trail">Priorities</title>
-		<desc>Priorities panel description</desc>
+		<link type="guide" xref="index#GeneralDefinitions"/>
+		<title type="link" role="trail">integrationGrammar</title>
+		<desc>Integration grammar</desc>
 		<revision status="draft" date="2015-02-04"/>
 	</info>
 
@@ -18,7 +18,7 @@
 	<link xref="newEpithelium">new Epithelia</link> can be added to the project.</p>
 
 	<figure>
-		<media type="image" src="figures/priorities.png" />
+		<media type="image" src="figures/modelGrid.png" />
 
 		<title>For a new project to be created, at least, one SBML file must be added.</title>
 	</figure>

@@ -1,0 +1,20 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="rollover">
+
+	<info>
+		<link type="guide" xref="index#Topology"/>
+		<title type="link" role="trail">Rollover</title>
+		<desc>Rollover options</desc>
+		<revision status="draft" date="2015-02-04"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Rollover specifications</title>
+
+	<p>
+	<link xref="topology">Topology</link> </p>
+
+</page>

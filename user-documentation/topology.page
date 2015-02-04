@@ -1,0 +1,26 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="topology">
+
+	<info>
+		<link type="guide" xref="index#Topology"/>
+		<title type="link" role="trail">Topology</title>
+		<desc>Topology Description</desc>
+		<revision status="draft" date="2015-02-04"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Available Topologies</title>
+
+	<p>
+	<link xref="topology">Topology</link> </p>
+
+	<figure>
+		<media type="image" src="figures/topology.png" />
+
+		<title>Examples of the available topologies.</title>
+	</figure>
+
+</page>

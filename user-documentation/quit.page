@@ -1,20 +1,26 @@
 <page xmlns="http://projectmallard.org/1.0/"
 		type="topic"
-		id="quit">
+		id="quitEpilog">
 
 	<info>
-								<link type="guide" xref="index#definitions"/>
-		<title type="link" role="trail">Quit Epilog</title>
-		<desc>Description on how to quit Epilog</desc>
-		<revision status="draft" date="2013-07-24"/>
+		<link type="guide" xref="index#ProjectDefinitions"/>
+		<title type="link" role="trail">Quit EpiLog</title>
+		<desc>Quiting EpiLog</desc>
+		<revision status="draft" date="2015-02-04"/>
 	</info>
 
 	<!--  TODO: series link not supported by HTML export  -->
 	<links type="series"/>
 
-	<title>Quit Epilog</title>
+	<title>Quit EpiLog</title>
 
-	<p>
-Pressing quit Epilog is closed without saving any modified data since last save.
-	</p>
+	<p>If no project was created, or there are no unsaved changes in the current project, EpiLog closes immediatly. If there are unsaved changes, a dialog appears, confirming if the unsaved changes are to be discarded.</p>
+
+	<figure>
+		<media type="image" src="figures/quitEpilog.png" />
+
+		<title>EpiLog's quiting dialog.</title>
+	</figure>
+
+
 </page>

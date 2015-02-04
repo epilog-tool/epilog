@@ -1,0 +1,26 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="newEpithelium">
+
+	<info>
+		<link type="guide" xref="index#EpitheliumDefinitions"/>
+		<title type="link" role="trail">New Epithelium</title>
+		<desc>Creating a new Epithelium</desc>
+		<revision status="draft" date="2015-02-04"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Creating an epithelium</title>
+
+	<p>
+	<link xref="topology">Topology</link> </p>
+
+	<figure>
+		<media type="image" src="figures/newEpithelium.png" />
+
+		<title>For a new project to be created, at least, one SBML file must be added.</title>
+	</figure>
+
+</page>

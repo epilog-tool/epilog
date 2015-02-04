@@ -1,0 +1,25 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="mainWindow">
+
+	<info>
+		<link type="guide" xref="index#ProjectDefinitions"/>
+		<title type="link" role="trail">EpiLog's main Window</title>
+		<desc>DEscription of EpiLog's main Window</desc>
+		<revision status="draft" date="2015-02-04"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Eplilog's main window</title>
+
+	<p> </p>
+
+	<figure>
+		<media type="image" src="figures/mainWindow.png" />
+
+		<title>...</title>
+	</figure>
+
+</page>

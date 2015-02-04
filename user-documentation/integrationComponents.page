@@ -1,11 +1,11 @@
 <page xmlns="http://projectmallard.org/1.0/"
 		type="topic"
-		id="priorities">
+		id="integrationComponents">
 
 	<info>
 		<link type="guide" xref="index#EpitheliumDefinitions"/>
-		<title type="link" role="trail">Priorities</title>
-		<desc>Priorities panel description</desc>
+		<title type="link" role="trail">IntegrationComponents</title>
+		<desc>Integration Components panel description</desc>
 		<revision status="draft" date="2015-02-04"/>
 	</info>
 
