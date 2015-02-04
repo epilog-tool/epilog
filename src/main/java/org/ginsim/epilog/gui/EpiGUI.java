@@ -481,7 +481,7 @@ public class EpiGUI extends JFrame {
 		DialogNewProject dialogPanel = new DialogNewProject();
 
 		Window win = SwingUtilities.getWindowAncestor(this);
-		JDialog dialog = new JDialog(win, "Create Model and add SBML Models",
+		JDialog dialog = new JDialog(win, "Add SBML Models",
 				ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(dialogPanel);
 		dialog.pack();
