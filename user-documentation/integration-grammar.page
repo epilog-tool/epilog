@@ -1,39 +1,0 @@
-<page xmlns="http://projectmallard.org/1.0/"
-		type="topic"
-		id="integration-functions">
-
-	<info>
-									<link type="guide" xref="index#inputs"/>
-		<title type="link" role="trail">Integration Functions Grammar</title>
-		<desc>Description of the integration functions grammar</desc>
-		<revision status="draft" date="2013-07-24"/>
-	</info>
-
-	<!--  TODO: series link not supported by HTML export  -->
-	<links type="series"/>
-
-	<title>Integration Functions Grammar</title>
-
-
-	<p>
-		The integration function specication follows a grammar designed for thispurpose, described as any combination of logical connectors representingdisjunction (|), conjunction (&amp;) or negation (!) of atoms of the following		form:</p>
-		
-	
-		<p>G(t; m; M)</p>
-		<p>G(t; m; M; d)</p>
-		<p>G(t; m; M; d:D)</p>
-	<p>G is the component name, <em>t</em> is the threshold level of the component, <em>m</em> and <em>M</em> are, respectively, the minimum and maximum number of neighbours meeting the threshold requirement, and <em>d</em> (resp. <em>D</em>) is the minimum (resp. maximum) distance from the current position at which a cell is considered to be a neighbour. The distance parameters are optional; when they are not specied, only immediate neighbours (at distance 1) are considered. The <em>D</em> parameter is also optional, in which case only neighbours at exactly distance d are considered. If both <em>d</em> and <em>D</em> are specied, all cellsat a distance within the range are considered. Parameters <em>m</em> and <em>M</em> arespecied either by exact numbers or by the symbol (underscore character), which is replaced by the actual number of neighbours, consideringthe distance parameters. The <em>t</em> parameter may also be specied as "_", which denotes the maximum level of the component.
-		
-	</p>
-
-
-
-	<figure>
-		<media type="image" src="figures/integrationfunction.png" />
-		<title>Integration functions grammar example.</title>
-	</figure>
-
-
-
-
-</page>
