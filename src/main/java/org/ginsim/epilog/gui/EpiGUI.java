@@ -276,7 +276,7 @@ public class EpiGUI extends JFrame {
 		
 		//exit EpiLog
 		menuFile.addSeparator();
-		JMenuItem itemExit = new JMenuItem("Exit");
+		JMenuItem itemExit = new JMenuItem("Quit");
 		itemExit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
