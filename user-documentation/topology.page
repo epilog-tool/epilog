@@ -14,13 +14,23 @@
 
 	<title>Available Topologies</title>
 
-	<p>
-	<link xref="topology">Topology</link> </p>
+	<p>EpiLog represents each cell as an hexagon, and an epithelium is represented by a grid of adjoined hexagons. There are four topologies available to choose from, when creating a <link xref="newEpithelium">new Epithelium</link>: Hexagon-Odd-PointyTopped, Hexagon-Even-PointyTopped, Hexagon-Odd-FlatTopped, and Hexagon-Even-FlatTopped. In all topologies there is an offset every other column (or row), creating the "Odd" or "Even" variant.</p>
 
 	<figure>
-		<media type="image" src="figures/topology.png" />
-
-		<title>Examples of the available topologies.</title>
+		<media type="image" src="figures/even_pointy.png" />
+		<title>Hexagon-Even-PointyTopped</title>
+	</figure>
+		<figure>
+		<media type="image" src="figures/odd_pointy.png" />
+		<title>Hexagon-Odd-PointyTopped</title>
+	</figure>
+		<figure>
+		<media type="image" src="figures/even_flat.png" />
+		<title>Hexagon-Even-FlatTopped</title>
+	</figure>
+		<figure>
+		<media type="image" src="figures/odd_flat.png" />
+		<title>Hexagon-Odd-FlatTopped</title>
 	</figure>
 
 </page>

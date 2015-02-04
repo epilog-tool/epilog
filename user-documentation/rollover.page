@@ -14,7 +14,9 @@
 
 	<title>Rollover specifications</title>
 
-	<p>
-	<link xref="topology">Topology</link> </p>
+	<p>EpiLog represents each cell as an hexagon, and an epithelium is represented by a grid of adjoined hexagons. When creating a <link xref="newEpithelium">new epithelium</link> the user must decide if the epithelium is a cylinder or a 2D epithelium. If "Vertical Roll-Over" or "Horizontal
+		Roll-Over" is selected, then the epithelium is a cylinder, connected by the
+		vertical, or horizontal extremes. If the "no Roll-Over" option is selected,
+		the extremities are not connected, and it is a 2D epithelium. </p>
 
 </page>

@@ -14,7 +14,6 @@
 
 	<title>Grid's dimensions specifications</title>
 
-	<p>
-	<link xref="topology">Topology</link> </p>
+	<p>EpiLog represents each cell as an hexagon, and an epithelium is represented by a grid of adjoined hexagons. This grid has specified dimensions: Width and Height. When creating a <link xref="newEpithelium">new epithelium</link>, both dimensions have to be specified. An epithelium will only accept dimensions bigger than 0, and all odd numbers are rounded to the next even number.</p>
 
 </page>
