@@ -13,6 +13,7 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import org.ginsim.epilog.common.Web;
+import org.ginsim.epilog.io.FileResource;
 
 public class DialogAbout extends EscapableDialog implements HyperlinkListener {
 	private static final long serialVersionUID = -1433694621928539481L;
@@ -43,7 +44,7 @@ public class DialogAbout extends EscapableDialog implements HyperlinkListener {
 
 	private String getContent() {
 		String s = "<body><center>\n";
-		s += "<h2>EpiLog</h2>\n";
+		s+= "<img src='" + FileResource.getResource("logo_epilog.png") + "'/>";
 		s += "<p>EpiLog is a tool used for qualitative simulations ";
 		s += "of <b>Epi</b>thelium <b>Log</b>ical models.<br/>\n";
 		s += "It makes use of Cellular Automata to visualize the ";
