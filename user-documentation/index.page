@@ -6,26 +6,32 @@
 	<info>
 		<title type="link" role="trail">Index</title>
 		<title type="link">Index</title>
+		
 		<credit type="author">
 			<name>Pedro Varela</name>
 			<email>pedro.varela@ist.utl.pt</email>
 		</credit>
-				<credit type="author">
+
+		<credit type="author">
 			<name>Pedro Monteiro</name>
 			<email>pedro.monteiro@inesc-id.pt/email>
 		</credit>
-				<credit type="author">
+
+		<credit type="author">
 			<name>Nuno Mendes</name>
 			<email>nmdm@igc.gulbenkian.pt</email>
 		</credit>
-	<credit type="author">
+
+		<credit type="author">
 			<name>Adrien  Fauré</name>
 			<email>chaouiya@</email>
 		</credit>
-	<credit type="author">
+
+		<credit type="author">
 			<name>Claudine Chaouiya</name>
 			<email>chaouiya@igc.gulbenkian.pt</email>
 		</credit>
+		
 		<license><p>Creative Commons Share Alike 3.0</p></license>
 	</info>
 
