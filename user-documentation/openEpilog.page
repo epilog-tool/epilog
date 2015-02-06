@@ -14,7 +14,7 @@
 
 	<title>Opening EpiLog</title>
 
-	<p>The <link xref="ProjectDefinitions">ProjectDefinitions</link> When EpiLog is open an project windos is created. The user has to option to load a previously <link xref="loadProject>saved project/link> ( .peps file) or to create a <link xref="newProject">new project</link>. It is also possible to <link xref="quit">quit</link>, or in case of doubt select <link xref="help">Help</link>.</p>
+	<p>The <link xref="ProjectDefinitions">ProjectDefinitions</link> When EpiLog is open an project windos is created. The user has to option to load a previously <link xref="loadProject>saved project</link> ( .peps file) or to create a <link xref="newProject">new project</link>. It is also possible to <link xref="quit">quit</link>, or in case of doubt select <link xref="help">Help</link>.</p>
 
 	<figure>
 		<media type="image" src="figures/openEpilog.png" />
