@@ -18,7 +18,7 @@
 	<link xref="newEpithelium">new Epithelia</link> can be added to the project.</p>
 
 	<figure>
-		<media type="image" src="figures/simulation.png" />
+		<media type="image" src="figures/simulationEpilog.png" />
 
 		<title>For a new project to be created, at least, one SBML file must be added.</title>
 	</figure>
