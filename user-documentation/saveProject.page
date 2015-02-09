@@ -12,14 +12,14 @@
 	<!--  TODO: series link not supported by HTML export  -->
 	<links type="series"/>
 
-	<title>Quit EpiLog</title>
+	<title>Save Project</title>
 
-	<p>If no project was created, or there are no unsaved changes in the current project, EpiLog closes immediatly. If there are unsaved changes, a dialog appears, confirming if the unsaved changes are to be discarded.</p>
+	<p></p>
 
 	<figure>
-		<media type="image" src="figures/quitEpilog.png" />
+		<media type="image" src="figures/saveProject.png" />
 
-		<title>EpiLog's quiting dialog.</title>
+		<title>Save new project.</title>
 	</figure>
 
 
