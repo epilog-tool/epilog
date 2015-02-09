@@ -47,14 +47,14 @@
 	</p>
 
     
-	<section id="dProject Definitions" style="2column">
+	<section id="ProjectDefinitions" style="2column">
 		<info>
 			<title type="link" role="trail">Project Definitions</title>
 		</info>
 		<title>Project Definitions</title>
 	</section>
 	
-	<section id="Epithelium Definitions" style="2column">
+	<section id="EpitheliumDefinitions" style="2column">
 		<info>
 			<title type="link" role="trail">Epithelium Definitions</title>
 		</info>
@@ -75,7 +75,7 @@
 		<title>Topology</title>
 	</section>
 
-	<section id="I/O Files" style="2column">
+	<section id="I/OFiles" style="2column">
 		<info>
 			<title type="link" role="trail">I/O Files</title>
 		</info>
