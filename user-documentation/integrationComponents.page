@@ -12,7 +12,7 @@
 	<!--  TODO: series link not supported by HTML export  -->
 	<links type="series"/>
 
-	<title>Creating a Project</title>
+	<title>Integration Components Panel</title>
 
 	<p>Choosing to create a new project, opens a new window to add SMBL files to the project. At least one SBML must be added, so that a project can be created. A SBML file can be deleted from this initial list, or later at Epilog's <link xref="mainWindow">main window</link>. Once all SBML files are added, and "OK" is pressed, 
 	<link xref="newEpithelium">new Epithelia</link> can be added to the project.</p>
