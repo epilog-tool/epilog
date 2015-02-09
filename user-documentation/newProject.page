@@ -5,8 +5,8 @@
 	<info>
 		<link type="guide" xref="index#ProjectDefinitions"/>
 		<title type="link" role="trail">New Project</title>
-		<desc>Creating a new Project</desc>
-		<revision status="draft" date="2015-02-04"/>
+		<desc>Create a new Project</desc>
+		<revision status="draft" date="2015-02-09"/>
 	</info>
 
 	<!--  TODO: series link not supported by HTML export  -->
