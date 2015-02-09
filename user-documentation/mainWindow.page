@@ -18,7 +18,7 @@
 
 	Creating a <link xref="newProject">new project</link>, the selected <link xref="SBML">SBML</link> files loaded, appear in the Models Loaded box. <link xref="newEpithelium">Creating an epithelium</link> leads to the construction of the listed tree, whit all information regarding that epithilium. Alternatively, <link xref="loadProject">loading a project</link> will also fill the main window with this information. 
 
-	Clicking on each of the branches of the listed tree, the correspondig tab appears on the right side, with the corr
+	Clicking on each of the branches of the listed tree, the correspondig <link xref="generalTab">tab</link> appears on the right side
 
 	</p>
 
