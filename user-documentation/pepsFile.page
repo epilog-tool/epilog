@@ -1,11 +1,11 @@
 <page xmlns="http://projectmallard.org/1.0/"
 		type="topic"
-		id="SBML">
+		id="pepsFormat">
 
 	<info>
 		<link type="guide" xref="index#IOFIles"/>
-		<title type="link" role="trail">SBML</title>
-		<desc>SBML</desc>
+		<title type="link" role="trail">Peps Format</title>
+		<desc>peps Format</desc>
 		<revision status="draft" date="2015-02-04"/>
 	</info>
 

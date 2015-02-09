@@ -75,6 +75,13 @@
 		<title>Topology</title>
 	</section>
 
+	<section id="GeneralDefinitions" style="2column">
+		<info>
+			<title type="link" role="trail">General Definitions</title>
+		</info>
+		<title>General Definitions</title>
+	</section>
+
 	<section id="I/OFiles" style="2column">
 		<info>
 			<title type="link" role="trail">I/O Files</title>

@@ -3,7 +3,7 @@
 		id="integrationGrammar">
 
 	<info>
-		<link type="guide" xref="index#GeneralDefinitions"/>
+		<link type="guide" xref="index#Inputs"/>
 		<title type="link" role="trail">integrationGrammar</title>
 		<desc>Integration grammar</desc>
 		<revision status="draft" date="2015-02-04"/>
