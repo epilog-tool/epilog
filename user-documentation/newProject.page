@@ -14,7 +14,7 @@
 
 	<title>Creating a Project</title>
 
-	<p>Choosing to create a new project, opens a new window to add <link xref="SBML">SBML</link> files to the project. At least one <link xref="SBML">SBML</link> must be added, so that a project can be created. A <link xref="SBML">SBML</link> file can be deleted from this initial list, or later at Epilog's <link xref="mainWindow">main window</link>. Once all <link xref="SBML">SBML</link> files are added, and "OK" is pressed, <link xref="newEpithelium">new Epithelia</link> can be added to the project.</p>
+	<p>To create a new project, the user must select "New" from the "File" menu. A pop up window opens up, and the <link xref="SBML">SBML</link> files (at least one) must be added to the project. Each <link xref="SBML">SBML</link> file represents a model that can be posteriorly deleted from this initial list(<link xref="mainWindow">main window</link>). Once all <link xref="SBML">SBML</link> files are added, and "OK" is pressed, <link xref="newEpithelium">new Epithelia</link> can be added to the project.</p>
 
 	<figure>
 		<media type="image" src="figures/newProject.png" />
