@@ -5,14 +5,14 @@
 	<info>
 		<link type="guide" xref="index#IOFIles"/>
 		<title type="link" role="trail">SBML</title>
-		<desc>SBML</desc>
+		<desc>SBML-qual</desc>
 		<revision status="draft" date="2015-02-04"/>
 	</info>
 
 	<!--  TODO: series link not supported by HTML export  -->
 	<links type="series"/>
 
-	<title>SBML format</title>
+	<title>SBML-qual format</title>
 
 	<p></p>
 
