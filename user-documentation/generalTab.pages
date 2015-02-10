@@ -1,0 +1,20 @@
+<page xmlns="http://projectmallard.org/1.0/"
+		type="topic"
+		id="inputComponents">
+
+	<info>
+		<link type="guide" xref="index#GeneralDefinitions"/>
+		<title type="link" role="trail">Tabs</title>
+		<desc>Tabs</desc>
+		<revision status="draft" date="2015-02-04"/>
+	</info>
+
+	<!--  TODO: series link not supported by HTML export  -->
+	<links type="series"/>
+
+	<title>Proper Components</title>
+
+	<p></p>
+
+
+</page>
