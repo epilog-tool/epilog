@@ -14,7 +14,7 @@
 
 	<title>Creating an epithelium</title>
 
-	<p>Selecting "New" from the "Epithelium" menu bar opens a pop up with the specifications for the construction of the epithelium (<link xref="gridDimensions">grid dimensions</link> ,<link xref="topology">Topology</link>, name,<link xref="SBML">model</link> to load and <link xref="rollover">rollover</link> option). At first all cells have the same model, but it can be changed in the <link xref="modelgrid">model grid</link> tab. If any of the provided specification is not correctly introduced, the text box will be red. After the "OK" is pressed a listed tree with information appears on Epilog's <link xref="mainWindow">main Window</link>. </p>
+	<p>Selecting "New" from the "Epithelium" menu bar opens a pop up with the specifications for the construction of the epithelium (<link xref="gridDimensions">grid dimensions</link> ,<link xref="topology">topology</link>, name, <link xref="SBML">model</link> to load and <link xref="rollover">rollover</link> option). At first all cells have the same model, but it can be changed in the <link xref="modelGrid">model grid</link> tab. If any of the provided specification is not correctly introduced, the text box will be red. After the "OK" is pressed a listed tree with information appears on Epilog's <link xref="mainWindow">main Window</link>. </p>
 
 	<figure>
 		<media type="image" src="figures/newEpithelium.png" />
