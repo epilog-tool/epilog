@@ -1,6 +1,6 @@
 <page xmlns="http://projectmallard.org/1.0/"
 		type="topic"
-		id="inputComponents">
+		id="generalTab">
 
 	<info>
 		<link type="guide" xref="index#GeneralDefinitions"/>
@@ -12,9 +12,17 @@
 	<!--  TODO: series link not supported by HTML export  -->
 	<links type="series"/>
 
-	<title>Proper Components</title>
+	<title>Tabs generalized characteristics</title>
 
-	<p></p>
+	<p>Whenever a branch from the Epithelium listed tree is chosen, a tab is created. These tabs have different behaviours, however they share common traits:
+		<dl>
+  			<dt>Save or discard tab changes</dt>
+  			<dd>Whenever there are unsaved changest to the tab, to assume those changes, the user must press the "Accept" button, if the changes are to be discarded, then press "Reset". </dd>
+  			<dt>Close a tab</dt>
+  			<dd>Pressing the "x" box next to the the tabs name will close the tab, however if there are unaccepted changes, a confirmation pop appears to confirm that the changes are to be discarded.</dd>
+		</dl>
+		At all times, when a change is made and accepted, an asterist procedes the project's name until the project <link xref="saveProject">is saved</link>.
+	</p>
 
 
 </page>
