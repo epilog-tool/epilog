@@ -22,7 +22,7 @@ public class Epithelium {
 	private String name;
 	private EpitheliumGrid grid;
 	private EpitheliumComponentFeatures componentFeatures;
-	private EpitheliumPriorityClasses priorities;
+	private EpitheliumUpdateSchemeIntra priorities;
 	private EpitheliumIntegrationFunctions integrationFunctions;
 	private EpitheliumPerturbations perturbations;
 
@@ -36,7 +36,7 @@ public class Epithelium {
 		this.topologyLayout = topologyLayout;
 		this.name = name;
 		this.grid = new EpitheliumGrid(x, y, topologyLayout, rollover, m);
-		this.priorities = new EpitheliumPriorityClasses();
+		this.priorities = new EpitheliumUpdateSchemeIntra();
 		this.priorities.addModel(m);
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
 		this.perturbations = new EpitheliumPerturbations();
@@ -46,7 +46,7 @@ public class Epithelium {
 	}
 
 	private Epithelium(int x, int y, String topologyLayout, String name, EpitheliumGrid grid,
-			EpitheliumIntegrationFunctions eif, EpitheliumPriorityClasses epc,
+			EpitheliumIntegrationFunctions eif, EpitheliumUpdateSchemeIntra epc,
 			EpitheliumPerturbations eap, EpitheliumComponentFeatures ecf) {
 		this.x = x;
 		this.y = y;
