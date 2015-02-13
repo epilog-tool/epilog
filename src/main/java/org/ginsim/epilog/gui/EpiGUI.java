@@ -59,7 +59,7 @@ import org.ginsim.epilog.gui.tab.EpiTabInitialConditions;
 import org.ginsim.epilog.gui.tab.EpiTabIntegrationFunctions;
 import org.ginsim.epilog.gui.tab.EpiTabModelGrid;
 import org.ginsim.epilog.gui.tab.EpiTabPerturbations;
-import org.ginsim.epilog.gui.tab.EpiTabPriorityClasses;
+import org.ginsim.epilog.gui.tab.EpiTabUpdateScheme;
 import org.ginsim.epilog.gui.tab.EpiTabSimulation;
 import org.ginsim.epilog.gui.widgets.CloseTabButton;
 import org.ginsim.epilog.io.EpilogFileFilter;
@@ -601,7 +601,7 @@ public class EpiGUI extends JFrame {
 		epiNode.add(it);
 		DefaultMutableTreeNode pt = new DefaultMutableTreeNode("Perturbations");
 		epiNode.add(pt);
-		DefaultMutableTreeNode pr = new DefaultMutableTreeNode("Priorities");
+		DefaultMutableTreeNode pr = new DefaultMutableTreeNode("Updating Scheme");
 		epiNode.add(pr);
 		DefaultMutableTreeNode gm = new DefaultMutableTreeNode("Model Grid");
 		epiNode.add(gm);
@@ -730,8 +730,8 @@ public class EpiGUI extends JFrame {
 			} else if (node.toString() == "Perturbations") {
 				epiTab = new EpiTabPerturbations(epi, selPath, tabChanged,
 						this.project.getModelFeatures());
-			} else if (node.toString() == "Priorities") {
-				epiTab = new EpiTabPriorityClasses(epi, selPath, tabChanged,
+			} else if (node.toString() == "Updating Scheme") {
+				epiTab = new EpiTabUpdateScheme(epi, selPath, tabChanged,
 						this.project.getModelFeatures());
 			} else if (node.toString() == "Model Grid") {
 				epiTab = new EpiTabModelGrid(epi, selPath, tabChanged,
