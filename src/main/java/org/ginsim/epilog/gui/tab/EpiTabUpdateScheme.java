@@ -8,45 +8,64 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JSlider;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.ginsim.epilog.common.Web;
 import org.ginsim.epilog.core.Epithelium;
-import org.ginsim.epilog.core.EpitheliumPriorityClasses;
+import org.ginsim.epilog.core.EpitheliumUpdateSchemeInter;
+import org.ginsim.epilog.core.EpitheliumUpdateSchemeIntra;
 import org.ginsim.epilog.core.ModelPriorityClasses;
 import org.ginsim.epilog.gui.EpiGUI.EpiTabChanged;
 import org.ginsim.epilog.io.ButtonFactory;
 import org.ginsim.epilog.project.ProjectModelFeatures;
 
-public class EpiTabPriorityClasses extends EpiTabDefinitions {
+public class EpiTabUpdateScheme extends EpiTabDefinitions implements
+		HyperlinkListener {
 	private static final long serialVersionUID = 1176575422084167530L;
 
 	private final int JLIST_LINES = 10;
 	private final int JLIST_WIDTH = 65;
 	private final int JLIST_SPACING = 15;
 
-	private EpitheliumPriorityClasses userPriorityClasses;
+	private final int SLIDER_MIN = 0;
+	private final int SLIDER_MAX = 100;
+	private final int SLIDER_STEP = 10;
+
+	private EpitheliumUpdateSchemeInter updateSchemeInter;
+	private EpitheliumUpdateSchemeIntra userPriorityClasses;
 	private LogicalModel selectedModel;
 	private List<JList<String>> guiClasses;
 
-	private JPanel jpBottom;
+	private JPanel jpIntraCenter;
 	private JPanel jpTLeft;
+	private JLabel jlabelScheme;
+	private JSlider jSlide;
 
-	public EpiTabPriorityClasses(Epithelium e, TreePath path,
+	public EpiTabUpdateScheme(Epithelium e, TreePath path,
 			EpiTabChanged tabChanged, ProjectModelFeatures modelFeatures) {
 		super(e, path, tabChanged, modelFeatures);
 	}
@@ -55,21 +74,31 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 		this.center.setLayout(new BorderLayout());
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
 				this.epithelium.getEpitheliumGrid().getModelSet());
-		this.userPriorityClasses = new EpitheliumPriorityClasses();
+		this.userPriorityClasses = new EpitheliumUpdateSchemeIntra();
 		for (LogicalModel m : modelList) {
 			this.userPriorityClasses.addModelPriorityClasses(this.epithelium
 					.getPriorityClasses(m).clone());
 		}
+		this.updateSchemeInter = this.epithelium.getUpdateSchemeInter().clone();
 		this.guiClasses = new ArrayList<JList<String>>();
 
-		JPanel jpTop = new JPanel(new BorderLayout());
-		jpTop.setBorder(BorderFactory.createTitledBorder("Navigation"));
-		this.center.add(jpTop, BorderLayout.NORTH);
-		this.jpTLeft = new JPanel();
-		jpTop.add(this.jpTLeft, BorderLayout.LINE_START);
-		JPanel jpTRight = new JPanel(new FlowLayout());
-		jpTop.add(jpTRight, BorderLayout.CENTER);
+		// ******************
+		// * Intra-cellular *
+		// ******************
+		JPanel jpIntra = new JPanel(new BorderLayout());
+		jpIntra.setBorder(BorderFactory.createTitledBorder("Intra-cellular"));
+		this.center.add(jpIntra, BorderLayout.NORTH);
 
+		JPanel jpIntraTop = new JPanel(new BorderLayout());
+		// jpIntraTop.setBorder(BorderFactory.createTitledBorder("Model"));
+		jpIntra.add(jpIntraTop, BorderLayout.NORTH);
+		this.jpTLeft = new JPanel();
+		jpIntraTop.add(this.jpTLeft, BorderLayout.LINE_START);
+		JPanel jpTRight = new JPanel(new FlowLayout());
+		// jpIntraTop.add(jpTRight, BorderLayout.CENTER);
+		jpIntra.add(jpTRight, BorderLayout.SOUTH);
+
+		this.jpTLeft.add(new JLabel("Model:"));
 		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
 		this.jpTLeft.add(jcbSBML);
 
@@ -125,15 +154,91 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 		});
 		jpTRight.add(jbSingle);
 
-		this.jpBottom = new JPanel(new FlowLayout());
-		this.jpBottom.setBorder(BorderFactory
-				.createTitledBorder("Priority sets"));
-		this.center.add(this.jpBottom, BorderLayout.CENTER);
+		this.jpIntraCenter = new JPanel(new FlowLayout());
+		// this.jpIntraCenter.setBorder(BorderFactory
+		// .createTitledBorder("Priority sets"));
+		jpIntra.add(this.jpIntraCenter, BorderLayout.CENTER);
+
+		// Panel just to glue Inter-cellular to Intra-cellular ;)
+		JPanel jpCenterBottom = new JPanel(new BorderLayout());
+		this.center.add(jpCenterBottom, BorderLayout.CENTER);
+
+		// ******************
+		// * Inter-cellular *
+		// ******************
+		jpCenterBottom.add(new JSeparator(JSeparator.HORIZONTAL),
+				BorderLayout.NORTH);
+		JPanel jpInter = new JPanel();
+		jpInter.setLayout(new BoxLayout(jpInter, BoxLayout.PAGE_AXIS));
+		jpInter.setBorder(BorderFactory.createTitledBorder("Inter-cellular"));
+		jpCenterBottom.add(jpInter, BorderLayout.CENTER);
+
+		JEditorPane jPane = new JEditorPane();
+		jpInter.add(jPane);
+		jPane.setContentType("text/html");
+		jPane.setEditable(false);
+		jPane.setEnabled(true);
+		jPane.setBackground(jpInter.getBackground());
+		jPane.addHyperlinkListener(this);
+		jPane.setText("Here we consider an updating scheme named &alpha;-asyncronism "
+				+ "(see <a href=\"http://dx.doi.org/10.1007/978-3-642-40867-0_2\">"
+				+ "doi:10.1007/978-3-642-40867-0_2</a>).<br/>"
+				+ "It consists in updating each cell with probability &alpha;, the"
+				+ "synchrony rate, leaving the state of the cells unchanged otherwise.");
+
+		jpInter.add(new JLabel(" "));
+
+		JPanel jpInterAlpha = new JPanel(new BorderLayout());
+		jpInterAlpha
+				.add(new JLabel("Current alpha: "), BorderLayout.LINE_START);
+		this.jlabelScheme = new JLabel("--");
+		jpInterAlpha.add(this.jlabelScheme, BorderLayout.CENTER);
+		jpInter.add(jpInterAlpha);
+
+		// JSlider for alpha-asynchronism
+		JPanel jpInterSlider = new JPanel(new BorderLayout());
+		jpInterSlider.add(new JLabel("Value: "), BorderLayout.LINE_START);
+		this.jSlide = new JSlider(JSlider.HORIZONTAL, this.SLIDER_MIN,
+				this.SLIDER_MAX, this.SLIDER_MAX);
+		this.jSlide.setMajorTickSpacing(this.SLIDER_STEP);
+		this.jSlide.setMinorTickSpacing(1);
+		this.jSlide.setPaintTicks(true);
+		this.jSlide.setPaintLabels(true);
+		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
+		for (int i = this.SLIDER_MIN; i <= this.SLIDER_MAX; i += this.SLIDER_STEP) {
+			labelTable.put(new Integer(i), new JLabel(""
+					+ ((float) i / this.SLIDER_MAX)));
+		}
+		this.jSlide.setLabelTable(labelTable);
+		this.jSlide.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				JSlider slide = (JSlider) e.getSource();
+				updateAlpha(slide.getValue());
+			}
+		});
+		this.jSlide
+				.setValue((int) (this.updateSchemeInter.getAlpha() * SLIDER_MAX));
+		updateAlpha(this.jSlide.getValue());
+		jpInterSlider.add(this.jSlide, BorderLayout.CENTER);
+		jpInter.add(jpInterSlider);
 
 		LogicalModel m = this.modelFeatures.getModel((String) jcbSBML
 				.getSelectedItem());
 		this.updatePriorityList(m);
 		this.isInitialized = true;
+	}
+
+	private void updateAlpha(int sliderValue) {
+		float value = (float) sliderValue / SLIDER_MAX;
+		this.updateSchemeInter.setAlpha(value);
+		String sTmp = "" + value;
+		if (sliderValue == SLIDER_MIN) {
+			sTmp += " (asynchronous)";
+		} else if (sliderValue == SLIDER_MAX) {
+			sTmp += " (synchronous)";
+		}
+		jlabelScheme.setText(sTmp);
 	}
 
 	private JComboBox<String> newModelCombobox(List<LogicalModel> modelList) {
@@ -223,7 +328,7 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 	}
 
 	private void updatePriorityList(LogicalModel m) {
-		this.jpBottom.removeAll();
+		this.jpIntraCenter.removeAll();
 		this.guiClasses.clear();
 		this.selectedModel = m;
 		ModelPriorityClasses mpc = this.userPriorityClasses
@@ -287,20 +392,23 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 			jpRankBlock.add(new JLabel(label, SwingConstants.CENTER),
 					BorderLayout.SOUTH);
 
-			this.jpBottom.add(jpRankBlock);
-			this.jpBottom.add(Box.createRigidArea(new Dimension(
+			this.jpIntraCenter.add(jpRankBlock);
+			this.jpIntraCenter.add(Box.createRigidArea(new Dimension(
 					this.JLIST_SPACING, 10)));
 		}
 	}
 
 	@Override
 	protected void buttonReset() {
-		this.userPriorityClasses = new EpitheliumPriorityClasses();
+		this.userPriorityClasses = new EpitheliumUpdateSchemeIntra();
 		for (LogicalModel m : this.epithelium.getEpitheliumGrid().getModelSet()) {
 			this.userPriorityClasses.addModelPriorityClasses(this.epithelium
 					.getPriorityClasses(m).clone());
 		}
 		this.updatePriorityList(this.selectedModel);
+		this.jSlide.setValue((int) (this.epithelium.getUpdateSchemeInter()
+				.getAlpha() * SLIDER_MAX));
+		this.updateAlpha(this.jSlide.getValue());
 		// Repaint
 		this.getParent().repaint();
 	}
@@ -312,6 +420,8 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 					.getModelPriorityClasses(m).clone();
 			this.epithelium.setPriorityClasses(clone);
 		}
+		this.epithelium.getUpdateSchemeInter().setAlpha(
+				this.updateSchemeInter.getAlpha());
 	}
 
 	@Override
@@ -323,6 +433,9 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 			if (!clone.equals(orig))
 				return true;
 		}
+		if (this.epithelium.getUpdateSchemeInter().getAlpha() != this.updateSchemeInter
+				.getAlpha())
+			return true;
 		return false;
 	}
 
@@ -332,7 +445,7 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 			return;
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
 				this.epithelium.getEpitheliumGrid().getModelSet());
-		EpitheliumPriorityClasses newPCs = new EpitheliumPriorityClasses();
+		EpitheliumUpdateSchemeIntra newPCs = new EpitheliumUpdateSchemeIntra();
 		for (LogicalModel m : modelList) {
 			if (this.userPriorityClasses.getModelSet().contains(m)) {
 				// Already exists
@@ -345,7 +458,15 @@ public class EpiTabPriorityClasses extends EpiTabDefinitions {
 		}
 		this.userPriorityClasses = newPCs;
 		this.jpTLeft.removeAll();
+		this.jpTLeft.add(new JLabel("Model:"));
 		this.jpTLeft.add(this.newModelCombobox(modelList));
 		this.updatePriorityList(modelList.get(0));
+	}
+
+	@Override
+	public void hyperlinkUpdate(HyperlinkEvent event) {
+		if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+			Web.openURI(event.getDescription());
+		}
 	}
 }

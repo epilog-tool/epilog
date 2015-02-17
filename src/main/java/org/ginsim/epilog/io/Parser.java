@@ -112,6 +112,11 @@ public class Parser {
 					currEpi.initComponentFeatures(m);
 				}
 			}
+			// alpha-asynchronous value
+			if (line.startsWith("AS")) {
+				saTmp = line.split("\\s+");
+				currEpi.getUpdateSchemeInter().setAlpha(Float.parseFloat(saTmp[1]));
+			}
 			// Initial Conditions grid
 			if (line.startsWith("IC")) {
 				saTmp = line.split("\\s+");
@@ -278,6 +283,9 @@ public class Parser {
 			w.println("GM " + model2Key.get(m) + " "
 					+ join(modelInst.get(m), ","));
 		}
+		
+		// Alpha asynchronism
+		w.println("AS " + epi.getUpdateSchemeInter().getAlpha());
 		w.println();
 
 		// Initial Conditions

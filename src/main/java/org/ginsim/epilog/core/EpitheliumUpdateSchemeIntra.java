@@ -7,10 +7,10 @@ import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
 
-public class EpitheliumPriorityClasses {
+public class EpitheliumUpdateSchemeIntra {
 	private Map<LogicalModel, ModelPriorityClasses> priorityClassSet;
 
-	public EpitheliumPriorityClasses() {
+	public EpitheliumUpdateSchemeIntra() {
 		this.priorityClassSet = new HashMap<LogicalModel, ModelPriorityClasses>();
 	}
 
@@ -35,8 +35,8 @@ public class EpitheliumPriorityClasses {
 		return this.priorityClassSet.keySet();
 	}
 
-	public EpitheliumPriorityClasses clone() {
-		EpitheliumPriorityClasses newPCs = new EpitheliumPriorityClasses();
+	public EpitheliumUpdateSchemeIntra clone() {
+		EpitheliumUpdateSchemeIntra newPCs = new EpitheliumUpdateSchemeIntra();
 		for (LogicalModel m : this.priorityClassSet.keySet()) {
 			newPCs.addModelPriorityClasses(this.getModelPriorityClasses(m)
 					.clone());
@@ -45,7 +45,7 @@ public class EpitheliumPriorityClasses {
 	}
 
 	public boolean equals(Object o) {
-		EpitheliumPriorityClasses epcOut = (EpitheliumPriorityClasses) o;
+		EpitheliumUpdateSchemeIntra epcOut = (EpitheliumUpdateSchemeIntra) o;
 		Set<LogicalModel> sAllModels = new HashSet<LogicalModel>();
 		sAllModels.addAll(this.priorityClassSet.keySet());
 		sAllModels.addAll(epcOut.priorityClassSet.keySet());

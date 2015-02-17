@@ -117,7 +117,7 @@ public class Launcher {
 						.println("Reached maximum number of iterations! Exiting...");
 				System.exit(0);
 			}
-		} while (!currGrid.equals(nextGrid));
+		} while (!simulator.isStableAt(i));
 
 		System.out.println("Reached a stable grid!");
 

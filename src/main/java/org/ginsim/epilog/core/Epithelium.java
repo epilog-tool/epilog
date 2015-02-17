@@ -14,19 +14,20 @@ import org.ginsim.epilog.common.Tuple2D;
 import org.ginsim.epilog.core.topology.RollOver;
 
 public class Epithelium {
-	
+
 	private int x;
 	private int y;
 	private String topologyLayout;
-	
+
 	private String name;
 	private EpitheliumGrid grid;
 	private EpitheliumComponentFeatures componentFeatures;
-	private EpitheliumUpdateSchemeIntra priorities;
 	private EpitheliumIntegrationFunctions integrationFunctions;
 	private EpitheliumPerturbations perturbations;
+	private EpitheliumUpdateSchemeIntra priorities;
+	private EpitheliumUpdateSchemeInter updateSchemeInter;
 
-	public Epithelium(int x, int y, String topologyLayout,String name,
+	public Epithelium(int x, int y, String topologyLayout, String name,
 			LogicalModel m, RollOver rollover) throws InstantiationException,
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
@@ -43,11 +44,14 @@ public class Epithelium {
 		this.perturbations.addModel(m);
 		this.componentFeatures = new EpitheliumComponentFeatures();
 		this.componentFeatures.addModel(m);
+		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(
+				EpitheliumUpdateSchemeInter.DEFAULT_ALPHA);
 	}
 
-	private Epithelium(int x, int y, String topologyLayout, String name, EpitheliumGrid grid,
-			EpitheliumIntegrationFunctions eif, EpitheliumUpdateSchemeIntra epc,
-			EpitheliumPerturbations eap, EpitheliumComponentFeatures ecf) {
+	private Epithelium(int x, int y, String topologyLayout, String name,
+			EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
+			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap,
+			EpitheliumComponentFeatures ecf, EpitheliumUpdateSchemeInter usi) {
 		this.x = x;
 		this.y = y;
 		this.topologyLayout = topologyLayout;
@@ -57,6 +61,7 @@ public class Epithelium {
 		this.integrationFunctions = eif;
 		this.componentFeatures = ecf;
 		this.perturbations = eap;
+		this.updateSchemeInter = usi;
 	}
 
 	public boolean hasModel(LogicalModel m) {
@@ -64,9 +69,11 @@ public class Epithelium {
 	}
 
 	public Epithelium clone() {
-		return new Epithelium(this.x, this.y, this.topologyLayout, "CopyOf_" + this.name, this.grid.clone(),
+		return new Epithelium(this.x, this.y, this.topologyLayout, "CopyOf_"
+				+ this.name, this.grid.clone(),
 				this.integrationFunctions.clone(), this.priorities.clone(),
-				this.perturbations.clone(), this.componentFeatures.clone());
+				this.perturbations.clone(), this.componentFeatures.clone(),
+				this.updateSchemeInter.clone());
 	}
 
 	public void update() {
@@ -121,14 +128,18 @@ public class Epithelium {
 		}
 	}
 
+	public EpitheliumUpdateSchemeInter getUpdateSchemeInter() {
+		return this.updateSchemeInter;
+	}
+
 	public EpitheliumComponentFeatures getComponentFeatures() {
 		return this.componentFeatures;
 	}
 
 	public String toString() {
 		return this.getName();
-//		return this.name + " ("
-//				+ this.grid.getTopology().getRollOver().toString() + ")";
+		// return this.name + " ("
+		// + this.grid.getTopology().getRollOver().toString() + ")";
 	}
 
 	public String getName() {
@@ -152,8 +163,8 @@ public class Epithelium {
 	public void setGridWithComponentValue(String nodeID, byte value,
 			List<Tuple2D<Integer>> lTuples) {
 		for (Tuple2D<Integer> tuple : lTuples) {
-			this.grid.setCellComponentValue(tuple.getX(), tuple.getY(),
-					nodeID, value);
+			this.grid.setCellComponentValue(tuple.getX(), tuple.getY(), nodeID,
+					value);
 		}
 	}
 
@@ -242,7 +253,7 @@ public class Epithelium {
 	public void setModel(int x, int y, LogicalModel m) {
 		this.grid.setModel(x, y, m);
 	}
-	
+
 	public int getX() {
 		return this.x;
 	}
@@ -250,7 +261,7 @@ public class Epithelium {
 	public int getY() {
 		return this.y;
 	}
-	
+
 	public String getTopologyLayout() {
 		// TODO: improve this
 		return this.topologyLayout;

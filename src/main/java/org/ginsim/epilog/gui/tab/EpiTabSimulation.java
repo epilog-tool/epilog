@@ -192,8 +192,8 @@ public class EpiTabSimulation extends EpiTab {
 			}
 		});
 		jpButtonsR.add(jbClone);
-		
-		//Button to save an image from the simulated grid
+
+		// Button to save an image from the simulated grid
 		JButton jbPicture = ButtonFactory
 				.getImageNoBorder("fotography-24x24.png");
 		jbPicture.setToolTipText("Save the image of the current grid to file");
@@ -308,7 +308,7 @@ public class EpiTabSimulation extends EpiTab {
 		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 			String file = fc.getSelectedFile().getAbsolutePath();
 			String ext = "PNG";
-			file += (file.endsWith(ext) ? "" : "."+ext);
+			file += (file.endsWith(ext) ? "" : "." + ext);
 			FileIO.writeEpitheliumGrid2File(
 					this.simulation.getGridAt(this.iCurrSimIter), file,
 					this.visualGridSimulation, ext);
@@ -364,14 +364,14 @@ public class EpiTabSimulation extends EpiTab {
 	}
 
 	private void simulationStepFwr() {
-		EpitheliumGrid prevGrid = this.simulation.getGridAt(this.iCurrSimIter);
 		EpitheliumGrid nextGrid = this.simulation
 				.getGridAt(this.iCurrSimIter + 1);
-		if (!nextGrid.equals(prevGrid)) {
-			this.visualGridSimulation.setEpitheliumGrid(nextGrid);
-			this.jlStep.setText("Iteration: " + ++this.iCurrSimIter);
-		} else {
+		if (this.simulation.isStableAt(this.iCurrSimIter + 1)) {
 			setGridGUIStable(true);
+		} else {
+			this.iCurrSimIter++;
+			this.visualGridSimulation.setEpitheliumGrid(nextGrid);
+			this.jlStep.setText("Iteration: " + this.iCurrSimIter);
 		}
 		this.jbRewind.setEnabled(true);
 		this.jbBack.setEnabled(true);
@@ -380,15 +380,13 @@ public class EpiTabSimulation extends EpiTab {
 	}
 
 	private void simulationFastFwr() {
-		EpitheliumGrid prevGrid = this.simulation.getGridAt(this.iCurrSimIter);
-		EpitheliumGrid nextGrid = prevGrid;
+		EpitheliumGrid nextGrid = this.simulation.getGridAt(this.iCurrSimIter);
 		for (int i = 0; i < this.iUserBurst; i++) {
 			nextGrid = this.simulation.getGridAt(this.iCurrSimIter + 1);
-			if (nextGrid.equals(prevGrid)) {
+			if (this.simulation.isStableAt(this.iCurrSimIter + 1)) {
 				setGridGUIStable(true);
 				break;
 			}
-			prevGrid = nextGrid;
 			this.iCurrSimIter++;
 		}
 		this.visualGridSimulation.setEpitheliumGrid(nextGrid);
@@ -546,7 +544,7 @@ public class EpiTabSimulation extends EpiTab {
 					+ "</body></html>");
 			this.jpRight.add(jtp, BorderLayout.NORTH);
 		} else {
-			for (int i=0; i < this.jpRight.getComponentCount(); i++) {
+			for (int i = 0; i < this.jpRight.getComponentCount(); i++) {
 				Component c = this.jpRight.getComponent(i);
 				if (c instanceof JTextPane) {
 					this.jpRight.remove(i);
