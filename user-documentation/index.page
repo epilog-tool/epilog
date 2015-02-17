@@ -82,7 +82,7 @@
 		<title>General Definitions</title>
 	</section>
 
-	<section id="I/OFiles" style="2column">
+	<section id="IOFiles" style="2column">
 		<info>
 			<title type="link" role="trail">I/O Files</title>
 		</info>

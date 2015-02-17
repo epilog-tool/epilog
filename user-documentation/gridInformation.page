@@ -12,15 +12,16 @@
 	<!--  TODO: series link not supported by HTML export  -->
 	<links type="series"/>
 
-	<title>Creating a Project</title>
+	<title>Grid Information</title>
 
-	<p>Choosing to create a new project, opens a new window to add SMBL files to the project. At least one SBML must be added, so that a project can be created. A SBML file can be deleted from this initial list, or later at Epilog's <link xref="mainWindow">main window</link>. Once all SBML files are added, and "OK" is pressed, 
-	<link xref="newEpithelium">new Epithelia</link> can be added to the project.</p>
+	<p>During <link xref="simulation">simulation/link>, or while marking the initial conditions, it may become troublesome to read components values from the grid, due to the <link xref="colorCombination">combine color</link> of selected components. All proper components and environment inputs are displayed on the Grid Information panel, with the corresponding value at the selected cell. The cells coordinate, model attributed to the cell and perturbation (if any) is also displayed. The Grid Information panel is updated differently in the simulation and the initial conditions panel. In the simulation the user must press the mouse over the cell, and a small dot appears on the cell. Trhoughout the simulation, information regarding that cell will be updated on the Grid Information panel. While marking the initial conditions, the Grid Information is updated by passing the mouse over a cell.
+
+	</p>
 
 	<figure>
-		<media type="image" src="figures/modelGrid.png" />
+		<media type="image" src="figures/gridInformation.png" />
 
-		<title>For a new project to be created, at least, one SBML file must be added.</title>
+		<title>Grid information panel with selected cell information.</title>
 	</figure>
 
 </page>
