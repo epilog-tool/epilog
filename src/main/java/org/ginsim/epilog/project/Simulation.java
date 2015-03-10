@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 
@@ -89,7 +90,8 @@ public class Simulation {
 
 		if (keys.size() > 0) {
 			// Randomize the order of cells to update
-			Collections.shuffle(keys);
+			Collections.shuffle(keys,
+					new Random(Double.doubleToLongBits(Math.random())));
 
 			// Updates at least one (asynchronous case - alpha=0)
 			Tuple2D<Integer> key = keys.pop();
