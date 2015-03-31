@@ -20,4 +20,9 @@ public class EpitheliumUpdateSchemeInter {
 	public float getAlpha() {
 		return this.alphaAsyncParam;
 	}
+	
+	public boolean equals(Object o) {
+		EpitheliumUpdateSchemeInter otherObj = (EpitheliumUpdateSchemeInter) o;
+		return this.alphaAsyncParam == otherObj.getAlpha();
+	}
 }

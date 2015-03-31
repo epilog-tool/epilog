@@ -273,7 +273,8 @@ public class Epithelium {
 				&& this.componentFeatures.equals(otherEpi.componentFeatures)
 				&& this.priorities.equals(otherEpi.priorities)
 				&& this.integrationFunctions
-						.equals(otherEpi.integrationFunctions) && this.perturbations
-					.equals(otherEpi.perturbations));
+						.equals(otherEpi.integrationFunctions)
+				&& this.perturbations.equals(otherEpi.perturbations) && this.updateSchemeInter
+					.equals(otherEpi.getUpdateSchemeInter()));
 	}
 }
