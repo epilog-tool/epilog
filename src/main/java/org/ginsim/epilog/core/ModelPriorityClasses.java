@@ -173,15 +173,15 @@ public class ModelPriorityClasses {
 		for (int i = 0; i < this.priorityList.size(); i++) {
 			if (this.priorityList.get(i).contains(var)) {
 				this.priorityList.get(i).remove(var);
-				if (this.priorityList.get(i).isEmpty()) {
-					this.priorityList.remove(i);
-				}
 				Collections.sort(this.priorityList.get(index),
 						new Comparator<String>() {
 							public int compare(String s1, String s2) {
 								return s1.compareToIgnoreCase(s2);
 							}
 						});
+				if (this.priorityList.get(i).isEmpty()) {
+					this.priorityList.remove(i);
+				}
 				return;
 			}
 		}
