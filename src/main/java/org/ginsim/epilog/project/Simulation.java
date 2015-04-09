@@ -152,7 +152,7 @@ public class Simulation {
 			// PC
 			if (hasChanged)
 				break;
-			for (String varID : mpc.getVarsAtIndex(p)) {
+			for (String varID : mpc.getClassVars(p)) {
 				String nodeID = (varID.endsWith(ModelPriorityClasses.INC) || varID
 						.endsWith(ModelPriorityClasses.DEC)) ? varID.substring(
 						0, varID.length() - ModelPriorityClasses.INC.length())

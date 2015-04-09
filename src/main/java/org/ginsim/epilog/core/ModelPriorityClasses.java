@@ -1,42 +1,34 @@
 package org.ginsim.epilog.core;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
+import org.colomoto.logicalmodel.tool.simulation.updater.PriorityClasses;
 
 public class ModelPriorityClasses {
-	
+
 	public static final String INC = "[+]";
 	public static final String DEC = "[-]";
-	
-	private LogicalModel model;
-	// This must be a String because of splitted variable names
-	private List<List<String>> priorityList;
 
-	private ModelPriorityClasses(LogicalModel m, List<List<String>> pl) {
+	private LogicalModel model;
+	private PriorityClasses priorities;
+
+	private ModelPriorityClasses(LogicalModel m, PriorityClasses pcs) {
 		this.model = m;
-		this.priorityList = pl;
+		this.priorities = pcs;
 	}
 
 	public ModelPriorityClasses(LogicalModel m) {
 		this.model = m;
-		List<String> vars = new ArrayList<String>();
-		for (NodeInfo node : m.getNodeOrder()) {
-			if (node.isInput())
-				continue;
-			vars.add(node.getNodeID());
+		this.priorities = new PriorityClasses();
+		int[] tmp = new int[m.getNodeOrder().size() * 2];
+		for (int n = 0; n < m.getNodeOrder().size(); n++) {
+			tmp[n * 2] = n;
+			tmp[n * 2 + 1] = 0;
 		}
-		this.priorityList = new ArrayList<List<String>>();
-		Collections.sort(vars, new Comparator<String>() {
-			public int compare(String s1, String s2) {
-				return s1.compareToIgnoreCase(s2);
-			}
-		});
-		this.priorityList.add(vars);
+		this.priorities.add(tmp, true);
 	}
 
 	public LogicalModel getModel() {
@@ -44,162 +36,160 @@ public class ModelPriorityClasses {
 	}
 
 	public ModelPriorityClasses clone() {
-		List<List<String>> newPList = new ArrayList<List<String>>();
-		for (List<String> pc : this.priorityList) {
-			List<String> tmp = new ArrayList<String>();
-			for (String s : pc) {
-				tmp.add(s);
+		return new ModelPriorityClasses(this.model, this.priorities.clone());
+	}
+
+	public List<String> getClassVars(int idxPC) {
+		List<String> lVars = new ArrayList<String>();
+		int[] iaPCidx = this.priorities.getClass(idxPC);
+		for (int i = 0; i < this.priorities.getClass(idxPC).length; i += 2) {
+			String var = model.getNodeOrder().get(iaPCidx[i]).getNodeID();
+			if (iaPCidx[i + 1] == 1) {
+				var += INC;
+			} else if (iaPCidx[i + 1] == -1) {
+				var += DEC;
 			}
-			newPList.add(tmp);
+			lVars.add(var);
 		}
-		return new ModelPriorityClasses(this.model, newPList);
+		return lVars;
 	}
 
 	public void setPriorities(String pcs) {
-		// Format: varA,varB:varC,varD:varE
-		// FIXME: parsing should be on the parser!!
-		List<List<String>> newPLList = new ArrayList<List<String>>();
-		String[] saTmp = pcs.split(":");
-		for (int i = 0; i < saTmp.length; i++) {
-			List<String> pcList = new ArrayList<String>();
-			for (String comp : saTmp[i].split(",")) {
-				pcList.add(comp);
-			}
-			Collections.sort(pcList, new Comparator<String>() {
-				public int compare(String s1, String s2) {
-					return s1.compareToIgnoreCase(s2);
+		this.priorities = new PriorityClasses();
+		// Format: varA,varB[+],varC:varB[-],varD
+		String[] sClasses = pcs.split(":");
+		for (String sClass : sClasses) {
+			String[] sVars = sClass.split(",");
+			int[] newTmp = new int[sVars.length*2];
+			for (int i = 0; i < sVars.length; i++) {
+				String var = sVars[i];
+				int split = 0;
+				if (sVars[i].endsWith(DEC)) {
+					split = -1;
+					var = sVars[i].substring(0, var.length() - DEC.length());
+				} else if (sVars[i].endsWith(INC)) {
+					split = 1;
+					var = sVars[i].substring(0, var.length() - INC.length());
 				}
-			});
-			newPLList.add(pcList);
-		}
-		this.priorityList = newPLList;
-	}
-
-	public List<List<String>> getPriorityList() {
-		return Collections.unmodifiableList(this.priorityList);
-	}
-
-	public void decPriorities(int index, List<String> vars) {
-		if (vars.size() < this.priorityList.get(index).size()) {
-			this.priorityList.get(index).removeAll(vars);
-			if (this.priorityList.size() == (index + 1)) {
-				this.priorityList.add(new ArrayList<String>());
+				for (int idx = 0; idx < this.model.getNodeOrder().size(); idx++) {
+					NodeInfo node = this.model.getNodeOrder().get(idx);
+					if (node.getNodeID().equals(var)) {
+						newTmp[i*2] = idx;
+						newTmp[i*2+1] = split;
+						break;
+					}
+				}
 			}
-			this.priorityList.get(index + 1).addAll(vars);
-			Collections.sort(this.priorityList.get(index + 1),
-					new Comparator<String>() {
-						public int compare(String s1, String s2) {
-							return s1.compareToIgnoreCase(s2);
-						}
-					});
-
+			this.priorities.add(newTmp, true);
 		}
 	}
 
-	public void incPriorities(int index, List<String> vars) {
-		if (index > 0) {
-			this.priorityList.get(index).removeAll(vars);
-			this.priorityList.get(index - 1).addAll(vars);
-			Collections.sort(this.priorityList.get(index - 1),
-					new Comparator<String>() {
-						public int compare(String s1, String s2) {
-							return s1.compareToIgnoreCase(s2);
-						}
-					});
-			if (this.priorityList.get(index).size() == 0) {
-				this.priorityList.remove(index);
+	public void decPriorities(int idxPC, List<String> vars) {
+		if ((idxPC + 1) > this.priorities.size())
+			return;
+		int split;
+		String var;
+		for (String varMm : vars) {
+			if (varMm.endsWith(INC)) {
+				split = 1;
+				var = varMm.substring(0, varMm.length() - INC.length());
+			} else if (varMm.endsWith(DEC)) {
+				split = -1;
+				var = varMm.substring(0, varMm.length() - DEC.length());
+			} else {
+				split = 0;
+				var = varMm;
+			}
+			for (int idx = 0; idx < this.model.getNodeOrder().size(); idx++) {
+				NodeInfo node = this.model.getNodeOrder().get(idx);
+				if (node.getNodeID().equals(var)) {
+					this.priorities.decPriority(idxPC, idx, split);
+					break;
+				}
+			}
+		}
+	}
+
+	public void incPriorities(int idxPC, List<String> vars) {
+		if (idxPC <= 0)
+			return;
+		int split;
+		String var;
+		for (String varMm : vars) {
+			if (varMm.endsWith(INC)) {
+				split = 1;
+				var = varMm.substring(0, varMm.length() - INC.length());
+			} else if (varMm.endsWith(DEC)) {
+				split = -1;
+				var = varMm.substring(0, varMm.length() - DEC.length());
+			} else {
+				split = 0;
+				var = varMm;
+			}
+			for (int idx = 0; idx < this.model.getNodeOrder().size(); idx++) {
+				NodeInfo node = this.model.getNodeOrder().get(idx);
+				if (node.getNodeID().equals(var)) {
+					this.priorities.incPriority(idxPC, idx, split);
+					break;
+				}
 			}
 		}
 	}
 
 	public void singlePriorityClass() {
-		List<String> firstClass = this.priorityList.get(0);
-		for (int i = 1; i < this.priorityList.size(); i++) {
-			for (String var : this.priorityList.get(i)) {
-				firstClass.add(var);
-			}
-		}
-		this.priorityList = new ArrayList<List<String>>();
-		Collections.sort(firstClass, new Comparator<String>() {
-			public int compare(String s1, String s2) {
-				return s1.compareToIgnoreCase(s2);
-			}
-		});
-		this.priorityList.add(firstClass);
+		// the new collapsed class will be Synchronous
+		this.priorities.collapse(true);
 	}
 
+	/**
+	 * It's the number of classes
+	 * 
+	 * @return
+	 */
 	public int size() {
-		return this.priorityList.size();
+		return this.priorities.size();
 	}
 
-	public int sizeAtIndex(int index) {
-		return this.priorityList.get(index).size();
-	}
+	// /**
+	// * It's the number of variables (including splitted transitions) in a
+	// given
+	// * class
+	// *
+	// * @param index
+	// * @return
+	// */
+	// public int sizeAtIndex(int index) {
+	// return (this.priorities.get(index).variables.length / 2);
+	// }
 
-	public List<String> getVarsAtIndex(int index) {
-		return this.priorityList.get(index);
-	}
+	// public List<String> getVarsAtIndex(int index) {
+	// return this.priorityList.get(index);
+	// }
 
-	public void split(int index, String var) {
-		for (NodeInfo node : this.model.getNodeOrder()) {
+	public void split(int idxPC, String var) {
+		for (int idx = 0; idx < this.model.getNodeOrder().size(); idx++) {
+			NodeInfo node = this.model.getNodeOrder().get(idx);
 			if (node.getNodeID().equals(var)) {
-				this.priorityList.get(index).remove(var);
-				this.priorityList.get(index).add(var + INC);
-				this.priorityList.get(index).add(var + DEC);
-				Collections.sort(this.priorityList.get(index),
-						new Comparator<String>() {
-							public int compare(String s1, String s2) {
-								return s1.compareToIgnoreCase(s2);
-							}
-						});
+				this.priorities.split(idxPC, idx);
 				return;
 			}
 		}
 	}
 
-	public void unsplit(int index, String varMm) {
-		for (NodeInfo node : this.model.getNodeOrder()) {
-			if (node.getNodeID().equals(varMm)) {
-				return;
-			}
-		}
-		// Corrects bug when Var[+] & Var[-] are both selected on the same JList
-		if (!this.priorityList.get(index).contains(varMm))
-			return;
+	public void unsplit(int idxPC, String varMm) {
 		String var = varMm.substring(0, varMm.length() - INC.length());
-		this.priorityList.get(index).remove(varMm);
-		this.priorityList.get(index).add(var);
-		var = var + (varMm.substring(var.length()).equals(INC) ? DEC : INC);
-		for (int i = 0; i < this.priorityList.size(); i++) {
-			if (this.priorityList.get(i).contains(var)) {
-				this.priorityList.get(i).remove(var);
-				Collections.sort(this.priorityList.get(index),
-						new Comparator<String>() {
-							public int compare(String s1, String s2) {
-								return s1.compareToIgnoreCase(s2);
-							}
-						});
-				if (this.priorityList.get(i).isEmpty()) {
-					this.priorityList.remove(i);
-				}
-				return;
+		int split = varMm.endsWith(INC) ? 1 : -1;
+		for (int idx = 0; idx < this.model.getNodeOrder().size(); idx++) {
+			NodeInfo node = this.model.getNodeOrder().get(idx);
+			if (node.getNodeID().equals(var)) {
+				this.priorities.unsplit(idxPC, idx, split);
 			}
 		}
 	}
 
 	public boolean equals(Object a) {
-		List<List<String>> outList = ((ModelPriorityClasses) a)
-				.getPriorityList();
-		for (int i = 0; i < this.priorityList.size(); i++) {
-			for (int j = 0; j < this.priorityList.get(i).size(); j++) {
-				if (outList.get(i) == null
-						|| outList.get(i).get(j) == null
-						|| !this.priorityList.get(i).get(j)
-								.equals(outList.get(i).get(j))) {
-					return false;
-				}
-			}
-		}
-		return true;
+		ModelPriorityClasses outMPC = (ModelPriorityClasses) a;
+		return (this.model.equals(outMPC.model) && this.priorities
+				.equals(outMPC.priorities));
 	}
 }

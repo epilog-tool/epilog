@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -327,22 +328,25 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 		this.updatePriorityList(this.selectedModel);
 	}
 
+	// FIXME
 	private void updatePriorityList(LogicalModel m) {
 		this.jpIntraCenter.removeAll();
 		this.guiClasses.clear();
 		this.selectedModel = m;
 		ModelPriorityClasses mpc = this.userPriorityClasses
 				.getModelPriorityClasses(m);
-		List<List<String>> priorities = mpc.getPriorityList();
 
-		for (int i = 0; i < priorities.size(); i++) {
+		for (int idxPC = 0; idxPC < mpc.size(); idxPC++) {
 			JPanel jpRankBlock = new JPanel(new BorderLayout());
-			JLabel jlTmp = new JLabel("Rank " + (i + 1), SwingConstants.CENTER);
+			JLabel jlTmp = new JLabel("Rank " + (idxPC + 1), SwingConstants.CENTER);
 			jpRankBlock.add(jlTmp, BorderLayout.NORTH);
 
 			DefaultListModel<String> lModel = new DefaultListModel<String>();
-			for (int v = 0; v < priorities.get(i).size(); v++) {
-				lModel.addElement(priorities.get(i).get(v));
+			List<String> vars = mpc.getClassVars(idxPC);
+			// -- Order variables alphabetically
+			Collections.sort(vars, String.CASE_INSENSITIVE_ORDER);
+			for (String var : vars) {
+				lModel.addElement(var);
 			}
 			JList<String> jList = new JList<String>(lModel);
 			jList.setVisibleRowCount(this.JLIST_LINES);
@@ -383,10 +387,10 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 			jpRankBlock.add(jScroll, BorderLayout.CENTER);
 
 			String label = "  ";
-			if (priorities.size() > 1) {
-				if (i == 0)
+			if (mpc.size() > 1) {
+				if (idxPC == 0)
 					label = "Fastest";
-				else if (i == (priorities.size() - 1))
+				else if (idxPC == (mpc.size() - 1))
 					label = "Slowest";
 			}
 			jpRankBlock.add(new JLabel(label, SwingConstants.CENTER),

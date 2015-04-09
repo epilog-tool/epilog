@@ -352,13 +352,14 @@ public class Parser {
 		// Model Priority classes
 		for (LogicalModel m : model2Key.keySet()) {
 			ModelPriorityClasses mpc = epi.getPriorityClasses(m);
-			if (mpc == null)
-				continue;
+//			if (mpc == null)
+//				continue; // This should never occur
 			String sPCs = "";
-			for (List<String> pcClass : mpc.getPriorityList()) {
+			for (int idxPC = 0; idxPC < mpc.size(); idxPC++) {
 				if (!sPCs.isEmpty())
 					sPCs += ":";
-				sPCs += join(pcClass, ",");
+				List<String> pcVars = mpc.getClassVars(idxPC);
+				sPCs += join(pcVars, ",");
 			}
 			w.println("PR " + model2Key.get(m) + " " + sPCs);
 		}
