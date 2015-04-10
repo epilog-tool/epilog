@@ -60,7 +60,7 @@ public class ModelPriorityClasses {
 		String[] sClasses = pcs.split(":");
 		for (String sClass : sClasses) {
 			String[] sVars = sClass.split(",");
-			int[] newTmp = new int[sVars.length*2];
+			int[] newTmp = new int[sVars.length * 2];
 			for (int i = 0; i < sVars.length; i++) {
 				String var = sVars[i];
 				int split = 0;
@@ -74,8 +74,8 @@ public class ModelPriorityClasses {
 				for (int idx = 0; idx < this.model.getNodeOrder().size(); idx++) {
 					NodeInfo node = this.model.getNodeOrder().get(idx);
 					if (node.getNodeID().equals(var)) {
-						newTmp[i*2] = idx;
-						newTmp[i*2+1] = split;
+						newTmp[i * 2] = idx;
+						newTmp[i * 2 + 1] = split;
 						break;
 					}
 				}
@@ -177,6 +177,8 @@ public class ModelPriorityClasses {
 	}
 
 	public void unsplit(int idxPC, String varMm) {
+		if (!varMm.endsWith(INC) || varMm.endsWith(DEC))
+			return;
 		String var = varMm.substring(0, varMm.length() - INC.length());
 		int split = varMm.endsWith(INC) ? 1 : -1;
 		for (int idx = 0; idx < this.model.getNodeOrder().size(); idx++) {
