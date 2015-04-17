@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
@@ -12,10 +13,11 @@ import java.util.Stack;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
+import org.colomoto.logicalmodel.tool.simulation.updater.PriorityClasses;
+import org.colomoto.logicalmodel.tool.simulation.updater.PriorityUpdater;
 import org.ginsim.epilog.common.Tuple2D;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumGrid;
-import org.ginsim.epilog.core.ModelPriorityClasses;
 import org.ginsim.epilog.integration.IntegrationFunctionEvaluation;
 import org.ginsim.epilog.integration.IntegrationFunctionSpecification.IntegrationExpression;
 
@@ -29,6 +31,9 @@ public class Simulation {
 	private Epithelium epithelium;
 	private List<EpitheliumGrid> stateHistory;
 	private boolean stable;
+	// Perturbed models cache - avoids repeatedly computing perturbations at
+	// each step
+	private PriorityUpdater[][] updaterCache;
 
 	/**
 	 * Initializes the simulation. It is called after creating and epithelium.
@@ -46,6 +51,34 @@ public class Simulation {
 		this.stateHistory = new ArrayList<EpitheliumGrid>();
 		this.stateHistory.add(this.epithelium.getEpitheliumGrid());
 		this.stable = false;
+		this.buildPriorityUpdaterCache();
+	}
+
+	private void buildPriorityUpdaterCache() {
+		this.updaterCache = new PriorityUpdater[this.getCurrentGrid().getX()][this
+				.getCurrentGrid().getY()];
+		Map<LogicalModel, Map<AbstractPerturbation, PriorityUpdater>> tmpMap = new HashMap<LogicalModel, Map<AbstractPerturbation, PriorityUpdater>>();
+		for (int y = 0; y < this.getCurrentGrid().getY(); y++) {
+			for (int x = 0; x < this.getCurrentGrid().getX(); x++) {
+				LogicalModel m = this.getCurrentGrid().getModel(x, y);
+				AbstractPerturbation ap = this.getCurrentGrid()
+						.getPerturbation(x, y);
+				if (!tmpMap.containsKey(m))
+					tmpMap.put(
+							m,
+							new HashMap<AbstractPerturbation, PriorityUpdater>());
+				if (!tmpMap.get(m).containsKey(ap)) {
+					// Apply model perturbation
+					LogicalModel perturb = (ap == null) ? m : ap.apply(m);
+					// Get Priority classes
+					PriorityClasses pcs = this.epithelium.getPriorityClasses(m)
+							.getPriorities();
+					PriorityUpdater updater = new PriorityUpdater(perturb, pcs);
+					tmpMap.get(m).put(ap, updater);
+				}
+				this.updaterCache[x][y] = tmpMap.get(m).get(ap);
+			}
+		}
 	}
 
 	/**
@@ -80,7 +113,7 @@ public class Simulation {
 				byte[] nextState = this.nextCellValue(x, y, currGrid,
 						evaluator, sIntegComponents);
 				// If the cell state changed then add it to the pool
-				if (!Arrays.equals(currState, nextState)) {
+				if (nextState == null || !Arrays.equals(currState, nextState)) {
 					Tuple2D<Integer> key = new Tuple2D<Integer>(x, y);
 					cells2update.put(key, nextState);
 					keys.add(key);
@@ -120,13 +153,11 @@ public class Simulation {
 			Set<String> sIntegComponents) {
 		byte[] currState = currGrid.getCellState(x, y);
 
-		// 1. Apply the Cell perturbation
-		LogicalModel m = currGrid.getModel(x, y);
-		AbstractPerturbation ap = currGrid.getPerturbation(x, y);
-		LogicalModel perturbedModel = (ap != null) ? ap.apply(m) : m;
+		PriorityUpdater updater = this.updaterCache[x][y];
+		LogicalModel m = updater.getModel();
 
 		// 2. Update integration components
-		for (NodeInfo node : perturbedModel.getNodeOrder()) {
+		for (NodeInfo node : m.getNodeOrder()) {
 			String nodeID = node.getNodeID();
 			if (node.isInput() && sIntegComponents.contains(nodeID)) {
 				List<IntegrationExpression> lExpressions = this.epithelium
@@ -139,48 +170,18 @@ public class Simulation {
 						break; // The lowest value being satisfied
 					}
 				}
-				currState[perturbedModel.getNodeOrder().indexOf(node)] = target;
+				currState[m.getNodeOrder().indexOf(node)] = target;
 			}
 		}
-		byte[] nextState = currState.clone();
 
-		// 3. Apply Priorities
-		ModelPriorityClasses mpc = this.epithelium.getPriorityClasses(m);
-		boolean hasChanged = false;
-		for (int p = 0; p < mpc.size(); p++) {
-			// At least one variable has been updated in the current
-			// PC
-			if (hasChanged)
-				break;
-			for (String varID : mpc.getClassVars(p)) {
-				String nodeID = (varID.endsWith(ModelPriorityClasses.INC) || varID
-						.endsWith(ModelPriorityClasses.DEC)) ? varID.substring(
-						0, varID.length() - ModelPriorityClasses.INC.length())
-						: varID;
-
-				NodeInfo node = this.epithelium.getComponentFeatures()
-						.getNodeInfo(nodeID);
-				int index = perturbedModel.getNodeOrder().indexOf(node);
-				int target = perturbedModel.getTargetValue(index, currState);
-
-				if (target > currState[index]) {
-					if (varID.endsWith(ModelPriorityClasses.DEC))
-						break;
-					if (currState[index] < node.getMax()) {
-						nextState[index] = (byte) (currState[index] + 1);
-						hasChanged = true;
-					}
-				} else if (target < currState[index]) {
-					if (varID.endsWith(ModelPriorityClasses.INC))
-						break;
-					if (currState[index] > 0) {
-						nextState[index] = (byte) (currState[index] - 1);
-						hasChanged = true;
-					}
-				}
-			}
+		List<byte[]> succ = updater.getSuccessors(currState);
+		if (succ == null) {
+			return currState;
+		} else if (succ.size() > 1) {
+			// FIXME
+			// throw new Exception("Argh");
 		}
-		return nextState;
+		return succ.get(0);
 	}
 
 	public boolean isStableAt(int i) {

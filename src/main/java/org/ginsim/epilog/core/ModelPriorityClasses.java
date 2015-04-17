@@ -34,6 +34,10 @@ public class ModelPriorityClasses {
 	public LogicalModel getModel() {
 		return this.model;
 	}
+	
+	public PriorityClasses getPriorities() {
+		return this.priorities;
+	}
 
 	public ModelPriorityClasses clone() {
 		return new ModelPriorityClasses(this.model, this.priorities.clone());
