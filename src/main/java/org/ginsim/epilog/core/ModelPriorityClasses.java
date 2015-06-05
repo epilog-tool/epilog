@@ -181,7 +181,7 @@ public class ModelPriorityClasses {
 	}
 
 	public void unsplit(int idxPC, String varMm) {
-		if (!varMm.endsWith(INC) || varMm.endsWith(DEC))
+		if (!varMm.endsWith(INC) && !varMm.endsWith(DEC))
 			return;
 		String var = varMm.substring(0, varMm.length() - INC.length());
 		int split = varMm.endsWith(INC) ? 1 : -1;

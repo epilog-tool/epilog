@@ -184,7 +184,7 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 		jPane.setText("Here we consider an updating scheme named &alpha;-asyncronism "
 				+ "(see <a href=\"http://dx.doi.org/10.1007/978-3-642-40867-0_2\">"
 				+ "doi:10.1007/978-3-642-40867-0_2</a>).<br/>"
-				+ "It consists in updating each cell with probability &alpha;, the"
+				+ "It consists in updating each cell with probability &alpha;, the "
 				+ "synchrony rate, leaving the state of the cells unchanged otherwise.");
 
 		jpInter.add(new JLabel(" "));
