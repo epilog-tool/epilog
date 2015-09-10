@@ -69,8 +69,8 @@ public class TopologyHexagonOddR extends TopologyHexagon {
 	@Override
 	public double computeBestRadius(int gridX, int gridY, double dimX,
 			double dimY) {
-		double radiusX = dimX / (SQRT3 * (gridX + 0.5));
-		double radiuxY = dimY / (gridY * 1.5 + 0.5);
+		double radiusX = this.dimXFix(dimX) / (SQRT3 * (gridX + 0.5));
+		double radiuxY = this.dimYFix(dimY) / (gridY * 1.5 + 0.5);
 		return Math.min(radiusX, radiuxY);
 	}
 

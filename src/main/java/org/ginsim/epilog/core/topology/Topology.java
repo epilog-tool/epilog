@@ -70,6 +70,14 @@ public abstract class Topology {
 	public abstract double computeBestRadius(int gridX, int gridY, double dimX,
 			double dimY);
 
+	protected double dimXFix(double dimX) {
+		return dimX - 3;
+	}
+
+	protected double dimYFix(double dimY) {
+		return dimY - 3;
+	}
+
 	public abstract Tuple2D<Integer> getSelectedCell(double radius, int mouseX,
 			int mouseY);
 

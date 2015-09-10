@@ -68,8 +68,8 @@ public class TopologyHexagonOddQ extends TopologyHexagon {
 	@Override
 	public double computeBestRadius(int gridX, int gridY, double dimX,
 			double dimY) {
-		double radiusX = dimX / (gridX * 1.5 + 0.5);
-		double radiuxY = dimY / (SQRT3 * (gridY + 0.5));
+		double radiusX = this.dimXFix(dimX) / (gridX * 1.5 + 0.5);
+		double radiuxY = this.dimYFix(dimY) / (SQRT3 * (gridY + 0.5));
 		return Math.min(radiusX, radiuxY);
 	}
 
