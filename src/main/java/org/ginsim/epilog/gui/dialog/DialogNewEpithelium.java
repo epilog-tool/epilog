@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -28,11 +26,11 @@ import org.ginsim.epilog.services.TopologyService;
 public class DialogNewEpithelium extends EscapableDialog {
 	private static final long serialVersionUID = 1877338344309723137L;
 
-	private final int DEFAULT_WIDTH = 20;
+	private final int DEFAULT_JLABEL_WIDTH = 20;
 
-	private final String DEFAULT_WIDTH_STRING = "20";
-	private final String DEFAULT_HEIGHT_STRING = "20";
-	
+	private final String DEFAULT_WIDTH_STRING = "15";
+	private final String DEFAULT_HEIGHT_STRING = "15";
+
 	private JTextField jtfWidth;
 	private JTextField jtfHeight;
 	private JComboBox<String> jcbLayout;
@@ -46,21 +44,24 @@ public class DialogNewEpithelium extends EscapableDialog {
 
 	private int width;
 	private int height;
+	private boolean bIsNameOK;
+	private boolean bIsWidthOK;
+	private boolean bIsHeightOK;
 	private boolean bIsOK;
 
 	public DialogNewEpithelium(Set<String> sSBMLs, List<String> lEpiNames) {
 		this.listSBMLs = new ArrayList<String>(sSBMLs);
 		this.listEpiNames = lEpiNames;
-		setLayout(new BorderLayout());
-		
+		this.setLayout(new BorderLayout());
+
 		// PAGE_START begin
 		JPanel top = new JPanel(new FlowLayout());
 		top.add(new JLabel("Width:"));
-		jtfWidth = new JTextField(DEFAULT_WIDTH_STRING, 3);
-		jtfWidth.addKeyListener(new KeyListener() {
+		this.jtfWidth = new JTextField(DEFAULT_WIDTH_STRING, 3);
+		this.jtfWidth.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				validateTextFieldDimensions(e);
+				validateWidth();
 			}
 
 			@Override
@@ -71,24 +72,13 @@ public class DialogNewEpithelium extends EscapableDialog {
 			public void keyPressed(KeyEvent e) {
 			}
 		});
-		jtfWidth.addFocusListener(new FocusListener() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				validateEvenDimension(e);
-				System.out.println(e);
-			}
-
-			@Override
-			public void focusGained(FocusEvent e) {
-			}
-		});
-		top.add(jtfWidth);
+		top.add(this.jtfWidth);
 		top.add(new JLabel("Height:"));
-		jtfHeight = new JTextField(DEFAULT_HEIGHT_STRING, 3);
-		jtfHeight.addKeyListener(new KeyListener() {
+		this.jtfHeight = new JTextField(DEFAULT_HEIGHT_STRING, 3);
+		this.jtfHeight.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				validateTextFieldDimensions(e);
+				validateHeight();
 			}
 
 			@Override
@@ -99,17 +89,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 			public void keyPressed(KeyEvent e) {
 			}
 		});
-		jtfHeight.addFocusListener(new FocusListener() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				validateEvenDimension(e);
-			}
-
-			@Override
-			public void focusGained(FocusEvent e) {
-			}
-		});
-		top.add(jtfHeight);
+		top.add(this.jtfHeight);
 		top.add(new JLabel("Topology:"));
 		DefaultComboBoxModel<String> cbModel = new DefaultComboBoxModel<String>();
 		// Dynamically loads Topologies in the classpath
@@ -117,23 +97,22 @@ public class DialogNewEpithelium extends EscapableDialog {
 				.getTopologyDescriptions()) {
 			cbModel.addElement(topID);
 		}
-		jcbLayout = new JComboBox<String>(cbModel);
-		top.add(jcbLayout);
+		this.jcbLayout = new JComboBox<String>(cbModel);
+		top.add(this.jcbLayout);
 		this.add(top, BorderLayout.PAGE_START);
-		
-		//CENTER
+
+		// CENTER
 		JPanel center = new JPanel();
 		center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
-		
-		
+
 		// Name chooser
 		JPanel jpName = new JPanel(new BorderLayout());
 		jpName.add(new JLabel("Name    "), BorderLayout.LINE_START);
-		jtfEpiName = new JTextField(DEFAULT_WIDTH);
-		jtfEpiName.addKeyListener(new KeyListener() {
+		this.jtfEpiName = new JTextField(DEFAULT_JLABEL_WIDTH);
+		this.jtfEpiName.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				validateDialog();
+				validateTextField();
 			}
 
 			@Override
@@ -144,55 +123,62 @@ public class DialogNewEpithelium extends EscapableDialog {
 			public void keyPressed(KeyEvent e) {
 			}
 		});
-		jpName.add(jtfEpiName, BorderLayout.CENTER);
+		jpName.add(this.jtfEpiName, BorderLayout.CENTER);
 		center.add(jpName);
 
-		
-		
 		// SBML chooser
 		JPanel jpSBML = new JPanel(new BorderLayout());
 		jpSBML.add(new JLabel("SBML     "), BorderLayout.LINE_START);
-		jcbSBMLs = new JComboBox<String>(
+		this.jcbSBMLs = new JComboBox<String>(
 				this.listSBMLs.toArray(new String[this.listSBMLs.size()]));
-		jcbSBMLs.addActionListener(new ActionListener() {
+		this.jcbSBMLs.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				validateDialog();
 			}
 		});
-		jpSBML.add(jcbSBMLs, BorderLayout.CENTER);
+		jpSBML.add(this.jcbSBMLs, BorderLayout.CENTER);
 		center.add(jpSBML);
 
 		// Rollover chooser
 		JPanel jpRollover = new JPanel(new BorderLayout());
 		jpRollover.add(new JLabel("Rollover"), BorderLayout.LINE_START);
-		jcbRollover = new JComboBox<RollOver>(new RollOver[] {
+		this.jcbRollover = new JComboBox<RollOver>(new RollOver[] {
 				RollOver.NOROLLOVER, RollOver.HORIZONTAL, RollOver.VERTICAL });
-		jpRollover.add(jcbRollover, BorderLayout.CENTER);
+		this.jcbRollover.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				validateWidth();
+				validateHeight();
+			}
+		});
+		jpRollover.add(this.jcbRollover, BorderLayout.CENTER);
 		center.add(jpRollover);
 		this.add(center, BorderLayout.CENTER);
 
 		// PAGE_END begin
 		JPanel bottom = new JPanel(new FlowLayout());
-		buttonCancel = new JButton("Cancel");
-		buttonCancel.addActionListener(new ActionListener() {
+		this.buttonCancel = new JButton("Cancel");
+		this.buttonCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				buttonAction(false);
 			}
 		});
-		bottom.add(buttonCancel);
-		
-		buttonOK = new JButton("OK");
-		buttonOK.addActionListener(new ActionListener() {
+		bottom.add(this.buttonCancel);
+
+		this.buttonOK = new JButton("OK");
+		this.buttonOK.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				buttonAction(true);
 			}
 		});
-		bottom.add(buttonOK);
-		this.add(bottom,BorderLayout.PAGE_END);
-		this.validateDialog();
+		bottom.add(this.buttonOK);
+		this.add(bottom, BorderLayout.PAGE_END);
+		this.validateTextField();
+		this.validateWidth();
+		this.validateHeight();
 	}
 
 	public String getEpiName() {
@@ -206,14 +192,13 @@ public class DialogNewEpithelium extends EscapableDialog {
 	public RollOver getRollOver() {
 		return (RollOver) this.jcbRollover.getSelectedItem();
 	}
-	
+
 	public int getEpitheliumWidth() {
-		System.out.println(jtfWidth.getText());
-		return Integer.parseInt(jtfWidth.getText());
+		return this.width;
 	}
 
 	public int getEpitheliumHeight() {
-		return Integer.parseInt(jtfHeight.getText());
+		return this.height;
 	}
 
 	public String getTopologyLayout() {
@@ -221,51 +206,48 @@ public class DialogNewEpithelium extends EscapableDialog {
 		return TopologyService.getManager().getTopologyID(desc);
 	}
 
-	private boolean validateTextField() {
-		boolean valid = false;
+	private void validateTextField() {
+		this.bIsNameOK = false;
 		if (!this.listEpiNames.contains(this.jtfEpiName.getText())
-				&& !this.jtfEpiName.getText().trim().isEmpty()) {
-			valid = true;
+				&& !this.jtfEpiName.getText().isEmpty()
+				&& !this.jtfEpiName.getText().matches(".*(\\s).*")) {
+			this.bIsNameOK = true;
 		}
-		if (!valid) {
-			this.jtfEpiName.setBackground(ColorUtils.LIGHT_RED);
-		} else {
-			this.jtfEpiName.setBackground(Color.WHITE);
-		}
-		return valid;
-	}
-	
-	private void validateTextFieldDimensions(KeyEvent e) {
-		JTextField jtf = (JTextField) e.getSource();
-		boolean valid = false;
-		try {
-			int x = Integer.parseInt(jtf.getText());
-			if (x >= 1) {
-				valid = true;
-			}
-		} catch (NumberFormatException nfe) {
-		}
-		if (!valid) {
-			jtf.setBackground(ColorUtils.LIGHT_RED);
-		} else {
-			jtf.setBackground(Color.WHITE);
-		}
+		this.jtfEpiName.setBackground(this.bIsNameOK ? Color.WHITE
+				: ColorUtils.LIGHT_RED);
 		this.validateDialog();
 	}
 
-	private void validateEvenDimension(FocusEvent e) {
-		JTextField jtf = (JTextField) e.getSource();
+	private void validateWidth() {
+		this.bIsWidthOK = false;
 		try {
-			int x = Integer.parseInt(jtf.getText());
-			if (x % 2 == 1) {
-				jtf.setText("" + (x + 1));
+			this.width = Integer.parseInt(this.jtfWidth.getText());
+			if (this.width >= 1) {
+				RollOver ro = (RollOver) this.jcbRollover.getSelectedItem();
+				this.bIsWidthOK = (this.width % 2 == 0)
+						|| (ro != RollOver.HORIZONTAL);
 			}
 		} catch (NumberFormatException nfe) {
 		}
+		this.jtfWidth.setBackground(this.bIsWidthOK ? Color.WHITE
+				: ColorUtils.LIGHT_RED);
+		this.validateDialog();
 	}
-	
-	private boolean validateComboBox() {
-		return true;
+
+	private void validateHeight() {
+		this.bIsHeightOK = false;
+		try {
+			this.height = Integer.parseInt(this.jtfHeight.getText());
+			if (this.height >= 1) {
+				RollOver ro = (RollOver) this.jcbRollover.getSelectedItem();
+				this.bIsHeightOK = (this.height % 2 == 0)
+						|| (ro != RollOver.VERTICAL);
+			}
+		} catch (NumberFormatException nfe) {
+		}
+		this.jtfHeight.setBackground(this.bIsHeightOK ? Color.WHITE
+				: ColorUtils.LIGHT_RED);
+		this.validateDialog();
 	}
 
 	private void buttonAction(boolean bIsOK) {
@@ -281,32 +263,14 @@ public class DialogNewEpithelium extends EscapableDialog {
 		return this.bIsOK;
 	}
 
-	
 	private boolean validateDialog() {
-		boolean isValid = false;
-		if (this.validateTextField() && this.validateComboBox()) {
-			isValid = true;
-		}
-		this.buttonOK.setEnabled(isValid);
-
-		try {
-			this.width = Integer.parseInt(this.jtfWidth.getText());
-			this.height = Integer.parseInt(this.jtfHeight.getText());
-		} catch (NumberFormatException nfe) {
-			isValid = false;
-		}
+		boolean isValid = bIsNameOK && bIsWidthOK && bIsHeightOK;
 		this.buttonOK.setEnabled(isValid);
 		return isValid;
 	}
-	
+
 	@Override
 	public void focusComponentOnLoad() {
 		this.jtfEpiName.requestFocusInWindow();
 	}
-	
-	//ATENTION
-//	@Override
-//	public void focusComponentOnLoad() {
-//		this.jtfWidth.requestFocusInWindow();
-//	}
 }
