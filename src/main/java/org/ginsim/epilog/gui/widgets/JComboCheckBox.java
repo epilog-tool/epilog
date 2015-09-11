@@ -34,11 +34,6 @@ public class JComboCheckBox extends JComboBox {
 
 	private void init() {
 		setRenderer(new ComboBoxRenderer());
-		// addActionListener(new ActionListener() {
-		// public void actionPerformed(ActionEvent ae) {
-		// itemSelected();
-		// }
-		// });
 	}
 
 	private void itemSelected() {
@@ -50,7 +45,7 @@ public class JComboCheckBox extends JComboBox {
 
 	public List<String> getSelectedItems() {
 		itemSelected();
-		
+
 		List<String> sItems = new ArrayList<String>();
 
 		for (int i = 0; i < this.getModel().getSize(); i++) {
