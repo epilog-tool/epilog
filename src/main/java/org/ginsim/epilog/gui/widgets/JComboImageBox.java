@@ -1,0 +1,84 @@
+package org.ginsim.epilog.gui.widgets;
+
+import java.awt.Component;
+import java.awt.Font;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+import javax.swing.SwingConstants;
+
+import org.ginsim.epilog.io.FileResource;
+
+public class JComboImageBox extends JComboBox {
+	private static final long serialVersionUID = 5114067663247442502L;
+
+	private ImageIcon[] selectedImages;
+	private String[] selectedDescr;
+	private Integer[] intArray;
+
+	public JComboImageBox(String[] names) {
+		super();
+		selectedImages = new ImageIcon[names.length];
+		selectedDescr = names;
+		intArray = new Integer[names.length];
+		for (int i = 0; i < names.length; i++) {
+			selectedImages[i] = FileResource.getImageIcon(names[i] + ".png");
+			intArray[i] = new Integer(i);
+		}
+		setModel(new DefaultComboBoxModel(intArray));
+		setRenderer(new ComboBoxRenderer());
+	}
+
+	class ComboBoxRenderer extends JLabel implements ListCellRenderer {
+		private static final long serialVersionUID = 2340379218653860517L;
+		private Font uhOhFont;
+
+		public ComboBoxRenderer() {
+			setOpaque(true);
+			setHorizontalAlignment(SwingConstants.CENTER);
+			setVerticalAlignment(SwingConstants.CENTER);
+		}
+
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value,
+				int index, boolean isSelected, boolean cellHasFocus) {
+			// Get the selected index. (The index param isn't
+			// always valid, so just use the value.)
+			int selectedIndex = ((Integer) value).intValue();
+
+			if (isSelected) {
+				setBackground(list.getSelectionBackground());
+				setForeground(list.getSelectionForeground());
+			} else {
+				setBackground(list.getBackground());
+				setForeground(list.getForeground());
+			}
+
+			// Set the icon and text. If icon was null, say so.
+			ImageIcon icon = selectedImages[selectedIndex];
+			String descr = selectedDescr[selectedIndex];
+			setIcon(icon);
+			if (icon != null) {
+				setText(descr);
+				setFont(list.getFont());
+			} else {
+				setUhOhText(descr + " (no image available)", list.getFont());
+			}
+
+			return this;
+		}
+
+		// Set the font and text when no image was found.
+		protected void setUhOhText(String uhOhText, Font normalFont) {
+			if (uhOhFont == null) { // lazily create this font
+				uhOhFont = normalFont.deriveFont(Font.ITALIC);
+			}
+			setFont(uhOhFont);
+			setText(uhOhText);
+		}
+	}
+}

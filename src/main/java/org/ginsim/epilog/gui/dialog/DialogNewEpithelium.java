@@ -13,6 +13,7 @@ import java.util.Set;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -21,6 +22,8 @@ import javax.swing.JTextField;
 
 import org.ginsim.epilog.core.topology.RollOver;
 import org.ginsim.epilog.gui.color.ColorUtils;
+import org.ginsim.epilog.gui.widgets.JComboImageBox;
+import org.ginsim.epilog.io.FileResource;
 import org.ginsim.epilog.services.TopologyService;
 
 public class DialogNewEpithelium extends EscapableDialog {
@@ -91,16 +94,16 @@ public class DialogNewEpithelium extends EscapableDialog {
 		});
 		top.add(this.jtfHeight);
 		top.add(new JLabel("Topology:"));
-		DefaultComboBoxModel<String> cbModel = new DefaultComboBoxModel<String>();
-		// Dynamically loads Topologies in the classpath
-		for (String topID : TopologyService.getManager()
-				.getTopologyDescriptions()) {
-			cbModel.addElement(topID);
+		List<String> lDescs = new ArrayList<String>(TopologyService
+				.getManager().getTopologyDescriptions());
+		String[] names = new String[lDescs.size()];
+		for (int i = 0; i < lDescs.size(); i++) {
+			names[i] = lDescs.get(i);
 		}
-		this.jcbLayout = new JComboBox<String>(cbModel);
+		this.jcbLayout = new JComboImageBox(names);
 		top.add(this.jcbLayout);
 		this.add(top, BorderLayout.PAGE_START);
-
+		
 		// CENTER
 		JPanel center = new JPanel();
 		center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
