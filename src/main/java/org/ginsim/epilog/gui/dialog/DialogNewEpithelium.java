@@ -1,8 +1,10 @@
 package org.ginsim.epilog.gui.dialog;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -11,9 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -23,13 +22,10 @@ import javax.swing.JTextField;
 import org.ginsim.epilog.core.topology.RollOver;
 import org.ginsim.epilog.gui.color.ColorUtils;
 import org.ginsim.epilog.gui.widgets.JComboImageBox;
-import org.ginsim.epilog.io.FileResource;
 import org.ginsim.epilog.services.TopologyService;
 
 public class DialogNewEpithelium extends EscapableDialog {
 	private static final long serialVersionUID = 1877338344309723137L;
-
-	private final int DEFAULT_JLABEL_WIDTH = 20;
 
 	private final String DEFAULT_WIDTH_STRING = "15";
 	private final String DEFAULT_HEIGHT_STRING = "15";
@@ -55,12 +51,19 @@ public class DialogNewEpithelium extends EscapableDialog {
 	public DialogNewEpithelium(Set<String> sSBMLs, List<String> lEpiNames) {
 		this.listSBMLs = new ArrayList<String>(sSBMLs);
 		this.listEpiNames = lEpiNames;
-		this.setLayout(new BorderLayout());
+		this.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		// natural height, maximum width
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets(3, 3, 3, 3);
 
-		// PAGE_START begin
-		JPanel top = new JPanel(new FlowLayout());
-		top.add(new JLabel("Width:"));
-		this.jtfWidth = new JTextField(DEFAULT_WIDTH_STRING, 3);
+		// Width JLabel
+		c.gridx = 0;
+		c.gridy = 0;
+		this.add(new JLabel("Width:"), c);
+
+		// Width JTextField
+		this.jtfWidth = new JTextField(DEFAULT_WIDTH_STRING);
 		this.jtfWidth.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -75,9 +78,17 @@ public class DialogNewEpithelium extends EscapableDialog {
 			public void keyPressed(KeyEvent e) {
 			}
 		});
-		top.add(this.jtfWidth);
-		top.add(new JLabel("Height:"));
-		this.jtfHeight = new JTextField(DEFAULT_HEIGHT_STRING, 3);
+		c.gridx = 1;
+		c.gridy = 0;
+		this.add(this.jtfWidth, c);
+
+		// Height JLabel
+		c.gridx = 0;
+		c.gridy = 1;
+		this.add(new JLabel("Height:"), c);
+
+		// Height JTextField
+		this.jtfHeight = new JTextField(DEFAULT_HEIGHT_STRING);
 		this.jtfHeight.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -92,26 +103,17 @@ public class DialogNewEpithelium extends EscapableDialog {
 			public void keyPressed(KeyEvent e) {
 			}
 		});
-		top.add(this.jtfHeight);
-		top.add(new JLabel("Topology:"));
-		List<String> lDescs = new ArrayList<String>(TopologyService
-				.getManager().getTopologyDescriptions());
-		String[] names = new String[lDescs.size()];
-		for (int i = 0; i < lDescs.size(); i++) {
-			names[i] = lDescs.get(i);
-		}
-		this.jcbLayout = new JComboImageBox(names);
-		top.add(this.jcbLayout);
-		this.add(top, BorderLayout.PAGE_START);
-		
-		// CENTER
-		JPanel center = new JPanel();
-		center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
+		c.gridx = 1;
+		c.gridy = 1;
+		this.add(this.jtfHeight, c);
 
-		// Name chooser
-		JPanel jpName = new JPanel(new BorderLayout());
-		jpName.add(new JLabel("Name    "), BorderLayout.LINE_START);
-		this.jtfEpiName = new JTextField(DEFAULT_JLABEL_WIDTH);
+		// Name JLabel
+		c.gridx = 0;
+		c.gridy = 2;
+		this.add(new JLabel("Name:"), c);
+
+		// Name JTextField
+		this.jtfEpiName = new JTextField();
 		this.jtfEpiName.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -126,12 +128,16 @@ public class DialogNewEpithelium extends EscapableDialog {
 			public void keyPressed(KeyEvent e) {
 			}
 		});
-		jpName.add(this.jtfEpiName, BorderLayout.CENTER);
-		center.add(jpName);
+		c.gridx = 1;
+		c.gridy = 2;
+		this.add(this.jtfEpiName, c);
 
-		// SBML chooser
-		JPanel jpSBML = new JPanel(new BorderLayout());
-		jpSBML.add(new JLabel("SBML     "), BorderLayout.LINE_START);
+		// SBML JLabel
+		c.gridx = 0;
+		c.gridy = 3;
+		this.add(new JLabel("SBML:"), c);
+
+		// SBML JComboBox
 		this.jcbSBMLs = new JComboBox<String>(
 				this.listSBMLs.toArray(new String[this.listSBMLs.size()]));
 		this.jcbSBMLs.addActionListener(new ActionListener() {
@@ -140,12 +146,16 @@ public class DialogNewEpithelium extends EscapableDialog {
 				validateDialog();
 			}
 		});
-		jpSBML.add(this.jcbSBMLs, BorderLayout.CENTER);
-		center.add(jpSBML);
+		c.gridx = 1;
+		c.gridy = 3;
+		this.add(this.jcbSBMLs, c);
 
-		// Rollover chooser
-		JPanel jpRollover = new JPanel(new BorderLayout());
-		jpRollover.add(new JLabel("Rollover"), BorderLayout.LINE_START);
+		// Rollover JLabel
+		c.gridx = 0;
+		c.gridy = 4;
+		this.add(new JLabel("Rollover:"), c);
+
+		// Rollover JComboBox
 		this.jcbRollover = new JComboBox<RollOver>(new RollOver[] {
 				RollOver.NOROLLOVER, RollOver.HORIZONTAL, RollOver.VERTICAL });
 		this.jcbRollover.addActionListener(new ActionListener() {
@@ -155,11 +165,28 @@ public class DialogNewEpithelium extends EscapableDialog {
 				validateHeight();
 			}
 		});
-		jpRollover.add(this.jcbRollover, BorderLayout.CENTER);
-		center.add(jpRollover);
-		this.add(center, BorderLayout.CENTER);
+		c.gridx = 1;
+		c.gridy = 4;
+		this.add(this.jcbRollover, c);
 
-		// PAGE_END begin
+		// Topology JLabel
+		c.gridx = 0;
+		c.gridy = 5;
+		this.add(new JLabel("Topology:"), c);
+
+		// Topology JComboBox
+		List<String> lDescs = new ArrayList<String>(TopologyService
+				.getManager().getTopologyDescriptions());
+		String[] names = new String[lDescs.size()];
+		for (int i = 0; i < lDescs.size(); i++) {
+			names[i] = lDescs.get(i);
+		}
+		this.jcbLayout = new JComboImageBox(names);
+		c.gridx = 1;
+		c.gridy = 5;
+		this.add(this.jcbLayout, c);
+
+		// Bottom Panel
 		JPanel bottom = new JPanel(new FlowLayout());
 		this.buttonCancel = new JButton("Cancel");
 		this.buttonCancel.addActionListener(new ActionListener() {
@@ -178,7 +205,11 @@ public class DialogNewEpithelium extends EscapableDialog {
 			}
 		});
 		bottom.add(this.buttonOK);
-		this.add(bottom, BorderLayout.PAGE_END);
+		c.gridx = 0;
+		c.gridy = 6;
+		c.gridwidth = 2;
+		this.add(bottom, c);
+
 		this.validateTextField();
 		this.validateWidth();
 		this.validateHeight();
