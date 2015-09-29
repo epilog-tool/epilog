@@ -24,12 +24,12 @@ public class JComboImageBox extends JComboBox {
 		super();
 		selectedImages = new ImageIcon[names.length];
 		selectedDescr = names;
-		intArray = new Integer[names.length];
+//		intArray = new Integer[names.length];
 		for (int i = 0; i < names.length; i++) {
 			selectedImages[i] = FileResource.getImageIcon(names[i] + ".png");
-			intArray[i] = new Integer(i);
+//			intArray[i] = new Integer(i);
 		}
-		setModel(new DefaultComboBoxModel(intArray));
+		setModel(new DefaultComboBoxModel(selectedDescr));
 		setRenderer(new ComboBoxRenderer());
 	}
 
@@ -46,9 +46,6 @@ public class JComboImageBox extends JComboBox {
 		@Override
 		public Component getListCellRendererComponent(JList list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus) {
-			// Get the selected index. (The index param isn't
-			// always valid, so just use the value.)
-			int selectedIndex = ((Integer) value).intValue();
 
 			if (isSelected) {
 				setBackground(list.getSelectionBackground());
@@ -56,6 +53,15 @@ public class JComboImageBox extends JComboBox {
 			} else {
 				setBackground(list.getBackground());
 				setForeground(list.getForeground());
+			}
+
+			String selected = (String) value;
+			int selectedIndex = 0;
+			for (int i = 0; i < selectedDescr.length; i++) {
+				if (selectedDescr[i].equals(selected)) {
+					selectedIndex = i;
+					break;
+				}
 			}
 
 			// Set the icon and text. If icon was null, say so.
