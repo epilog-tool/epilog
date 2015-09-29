@@ -54,44 +54,29 @@ public class TopologyService {
 				'.', File.separatorChar)
 				+ this.CLASS);
 		String basedir = (topologyURL != null) ? topologyURL.toString() : "";
+		boolean bWindows = System.getProperty("os.name").startsWith("Windows");
 		
 		if (basedir.startsWith("file:")) {
 			basedir = basedir.substring(basedir.indexOf("/"),
-					basedir.lastIndexOf("/")) + "/org/ginsim/epilog/core/topology";
-			if (System.getProperty("os.name").startsWith("Windows")) {
-				//if we're working on a Windows OS, path must be redefined (why???) and 
-				//FILTER_SLH variable must be adapted (switch from "/" to "\")
-				basedir = basedir.substring(1);
-				File fdir_w = new File(basedir);
-				for (File file_w : fdir_w.listFiles()) {
-					String name_w = file_w.toString();
-					if (name_w.contains(FILTER_SLH_W)) {
-						String className = FILTER_DOT
-								+ name_w.substring(name_w.indexOf(FILTER_SLH_W)
-										+ FILTER_SLH_W.length(), name_w.length()
-										- this.CLASS.length());
-						this.addTopology(cLoader, className);
-					}
+					basedir.lastIndexOf("/")) + (bWindows?"/org/ginsim/epilog/core/topology":"");
+			String filter = (bWindows?FILTER_SLH_W:FILTER_SLH);
+			File fdir = new File(basedir);
+			for (File file : fdir.listFiles()) {
+				String name = file.toString();
+				if (name.contains(filter)) {
+					String className = FILTER_DOT
+							+ name.substring(name.indexOf(filter)
+							+ filter.length(), name.length()
+							- this.CLASS.length());
+					this.addTopology(cLoader, className);
 				}
 			}
-			else {
-				File fdir = new File(basedir);
-				for (File file : fdir.listFiles()) {
-					String name = file.toString();
-					if (name.contains(FILTER_SLH)) {
-						String className = FILTER_DOT
-								+ name.substring(name.indexOf(FILTER_SLH)
-								+ FILTER_SLH.length(), name.length()
-								- this.CLASS.length());
-						this.addTopology(cLoader, className);
-					}
-				}
-			} 
 		}
 		else if (basedir.startsWith("jar:file:")) {
 			try {
 				JarFile jarf = new JarFile(new File(basedir.substring(9,
 						basedir.indexOf("!/"))));
+				System.out.println("Basedir: " + basedir);
 				Enumeration<JarEntry> jeIter = jarf.entries();
 				while (jeIter.hasMoreElements()) {
 					String filename = jeIter.nextElement().getName();
