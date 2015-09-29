@@ -27,12 +27,13 @@ public class TopologyService {
 
 	public static final String FILTER_DOT = "org.ginsim.epilog.core.topology.Topology";
 	public static final String FILTER_SLH = "org/ginsim/epilog/core/topology/Topology";
+	public static final String FILTER_SLH_W = "org\\ginsim\\epilog\\core\\topology\\Topology";
 	private final String CLASS = ".class";
 	private static TopologyService MANAGER = null;
 
 	private Map<String, String> mDesc2topID;
 	private Map<String, Constructor<Topology>> mtopID2Constructor;
-
+	
 	/**
 	 * Retrieve the single-instance service manager.
 	 * 
@@ -49,27 +50,45 @@ public class TopologyService {
 		this.mDesc2topID = new HashMap<String, String>();
 		this.mtopID2Constructor = new HashMap<String, Constructor<Topology>>();
 		ClassLoader cLoader = Topology.class.getClassLoader();
-
 		URL topologyURL = cLoader.getResource(Topology.class.getName().replace(
 				'.', File.separatorChar)
 				+ this.CLASS);
 		String basedir = (topologyURL != null) ? topologyURL.toString() : "";
-
+		
 		if (basedir.startsWith("file:")) {
 			basedir = basedir.substring(basedir.indexOf("/"),
-					basedir.lastIndexOf("/"));
-			File fdir = new File(basedir);
-			for (File file : fdir.listFiles()) {
-				String name = file.toString();
-				if (name.contains(FILTER_SLH)) {
-					String className = FILTER_DOT
-							+ name.substring(name.indexOf(FILTER_SLH)
-									+ FILTER_SLH.length(), name.length()
-									- this.CLASS.length());
-					this.addTopology(cLoader, className);
+					basedir.lastIndexOf("/")) + "/org/ginsim/epilog/core/topology";
+			if (System.getProperty("os.name").startsWith("Windows")) {
+				//if we're working on a Windows OS, path must be redefined (why???) and 
+				//FILTER_SLH variable must be adapted (switch from "/" to "\")
+				basedir = basedir.substring(1);
+				File fdir_w = new File(basedir);
+				for (File file_w : fdir_w.listFiles()) {
+					String name_w = file_w.toString();
+					if (name_w.contains(FILTER_SLH_W)) {
+						String className = FILTER_DOT
+								+ name_w.substring(name_w.indexOf(FILTER_SLH_W)
+										+ FILTER_SLH_W.length(), name_w.length()
+										- this.CLASS.length());
+						this.addTopology(cLoader, className);
+					}
 				}
 			}
-		} else if (basedir.startsWith("jar:file:")) {
+			else {
+				File fdir = new File(basedir);
+				for (File file : fdir.listFiles()) {
+					String name = file.toString();
+					if (name.contains(FILTER_SLH)) {
+						String className = FILTER_DOT
+								+ name.substring(name.indexOf(FILTER_SLH)
+								+ FILTER_SLH.length(), name.length()
+								- this.CLASS.length());
+						this.addTopology(cLoader, className);
+					}
+				}
+			} 
+		}
+		else if (basedir.startsWith("jar:file:")) {
 			try {
 				JarFile jarf = new JarFile(new File(basedir.substring(9,
 						basedir.indexOf("!/"))));
