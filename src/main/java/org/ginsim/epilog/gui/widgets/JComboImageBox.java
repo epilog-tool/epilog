@@ -18,16 +18,13 @@ public class JComboImageBox extends JComboBox {
 
 	private ImageIcon[] selectedImages;
 	private String[] selectedDescr;
-	private Integer[] intArray;
 
 	public JComboImageBox(String[] names) {
 		super();
 		selectedImages = new ImageIcon[names.length];
 		selectedDescr = names;
-//		intArray = new Integer[names.length];
 		for (int i = 0; i < names.length; i++) {
 			selectedImages[i] = FileResource.getImageIcon(names[i] + ".png");
-//			intArray[i] = new Integer(i);
 		}
 		setModel(new DefaultComboBoxModel(selectedDescr));
 		setRenderer(new ComboBoxRenderer());
