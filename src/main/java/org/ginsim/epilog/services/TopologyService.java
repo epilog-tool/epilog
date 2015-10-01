@@ -50,15 +50,23 @@ public class TopologyService {
 		this.mDesc2topID = new HashMap<String, String>();
 		this.mtopID2Constructor = new HashMap<String, Constructor<Topology>>();
 		ClassLoader cLoader = Topology.class.getClassLoader();
-		URL topologyURL = cLoader.getResource(Topology.class.getName().replace(
-				'.', File.separatorChar)
-				+ this.CLASS);
-		String basedir = (topologyURL != null) ? topologyURL.toString() : "";
+		
 		boolean bWindows = System.getProperty("os.name").startsWith("Windows");
 		
+		URL topologyURL = bWindows?
+				(cLoader.getResource((Topology.class.getName().replace(
+				'.', File.separatorChar) + this.CLASS).replaceAll("\\\\", "/"))):
+				(cLoader.getResource((Topology.class.getName().replace(
+							'.', File.separatorChar) + this.CLASS)));
+				
+		String basedir = (topologyURL != null) ? topologyURL.toString() : "";
+		
 		if (basedir.startsWith("file:")) {
-			basedir = basedir.substring(basedir.indexOf("/"),
-					basedir.lastIndexOf("/")) + (bWindows?"/org/ginsim/epilog/core/topology":"");
+			basedir = (bWindows?
+					(basedir.substring(basedir.indexOf("/"),
+					basedir.lastIndexOf("/")).replaceAll("/", "\\\\")):
+					(basedir.substring(basedir.indexOf("/"),
+					basedir.lastIndexOf("/"))));
 			String filter = (bWindows?FILTER_SLH_W:FILTER_SLH);
 			File fdir = new File(basedir);
 			for (File file : fdir.listFiles()) {
@@ -76,14 +84,13 @@ public class TopologyService {
 			try {
 				JarFile jarf = new JarFile(new File(basedir.substring(9,
 						basedir.indexOf("!/"))));
-				System.out.println("Basedir: " + basedir);
 				Enumeration<JarEntry> jeIter = jarf.entries();
 				while (jeIter.hasMoreElements()) {
 					String filename = jeIter.nextElement().getName();
 					if (filename.endsWith(this.CLASS)
 							&& filename.contains(FILTER_SLH)) {
-						String className = filename.replace(File.separatorChar,
-								'.');
+						String className = (bWindows?(filename.replace('/',
+								'.')):(filename.replace(File.separatorChar, '.')));
 						className = className.substring(0, className.length()
 								- this.CLASS.length());
 						this.addTopology(cLoader, className);
