@@ -218,7 +218,7 @@ public class FileIO {
 		FileIO.zipTmpDir(newPEPSTmpDir, newPEPSFile);
 	}
 
-	public static void writeEpitheliumGrid2File(EpitheliumGrid grid,
+	public static void writeEpitheliumGrid2File(
 			String file, Container c, String ext) {
 		BufferedImage dest = new BufferedImage(c.getWidth(), c.getHeight(),
 				BufferedImage.TYPE_INT_ARGB);

@@ -204,6 +204,17 @@ public class EpiTabSimulation extends EpiTab {
 			}
 		});
 		jpButtonsR.add(jbPicture);
+		
+		// Button to save all simulated grid images
+		JButton jbSaveAll = ButtonFactory.getImageNoBorder("fotography-mult-31x24.png");
+		jbSaveAll.setToolTipText("Save all the simulation grids into different files");
+		jbSaveAll.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				saveAllEpiGrid2File();
+			}
+		});
+		
+		jpButtonsR.add(jbSaveAll);
 
 		jpButtons.add(jpButtonsR, BorderLayout.LINE_END);
 
@@ -302,6 +313,7 @@ public class EpiTabSimulation extends EpiTab {
 	/**
 	 * 
 	 */
+	//get current simulation step
 	private void saveEpiGrid2File() {
 		JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(new EpilogFileFilter("png"));
@@ -309,9 +321,23 @@ public class EpiTabSimulation extends EpiTab {
 			String file = fc.getSelectedFile().getAbsolutePath();
 			String ext = "PNG";
 			file += (file.endsWith(ext) ? "" : "." + ext);
-			FileIO.writeEpitheliumGrid2File(
-					this.simulation.getGridAt(this.iCurrSimIter), file,
-					this.visualGridSimulation, ext);
+			FileIO.writeEpitheliumGrid2File(file, this.visualGridSimulation, ext);
+		}
+	}
+	//get all the simulation steps
+	private void saveAllEpiGrid2File() {
+		JFileChooser fc = new JFileChooser();
+		fc.setFileFilter(new EpilogFileFilter("png"));
+		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+			String file = fc.getSelectedFile().getAbsolutePath();
+			String ext = "PNG";
+			file += (file.endsWith(ext) ? "" : "." + ext);
+			for (int i = 0; i <= this.iCurrSimIter; i++) {
+				String file_name = file.replace(".", "_" + i + ".");
+				EpitheliumGrid grid = this.simulation.getGridAt(i);
+				this.visualGridSimulation.setEpitheliumGrid(grid);
+				FileIO.writeEpitheliumGrid2File(file_name, this.visualGridSimulation, ext);
+			}
 		}
 	}
 
