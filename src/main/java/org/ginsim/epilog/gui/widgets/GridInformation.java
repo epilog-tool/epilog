@@ -16,20 +16,20 @@ import javax.swing.JScrollPane;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
-import org.ginsim.epilog.core.EpitheliumComponentFeatures;
 import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.core.EpitheliumIntegrationFunctions;
+import org.ginsim.epilog.project.ProjectComponentFeatures;
 import org.ginsim.epilog.project.ProjectModelFeatures;
 
 public class GridInformation extends JPanel {
 	private static final long serialVersionUID = -1449994132920814592L;
 
-	private EpitheliumComponentFeatures compFeatures;
+	private ProjectComponentFeatures compFeatures;
 	private EpitheliumIntegrationFunctions integrFunctions;
 	private ProjectModelFeatures modelFeatures;
 	private JPanel jIntPanel;
 
-	public GridInformation(EpitheliumComponentFeatures compFeatures,
+	public GridInformation(ProjectComponentFeatures compFeatures,
 			EpitheliumIntegrationFunctions eif,
 			ProjectModelFeatures modelFeatures) {
 		this.compFeatures = compFeatures;

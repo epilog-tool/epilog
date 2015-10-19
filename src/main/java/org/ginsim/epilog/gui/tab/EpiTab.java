@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 import javax.swing.tree.TreePath;
 
 import org.ginsim.epilog.core.Epithelium;
+import org.ginsim.epilog.gui.EpiGUI.ProjectChangedInTab;
 
 public abstract class EpiTab extends JPanel {
 	private static final long serialVersionUID = 4245892165061439503L;
@@ -11,11 +12,13 @@ public abstract class EpiTab extends JPanel {
 	protected Epithelium epithelium;
 	protected TreePath path;
 	protected boolean isInitialized;
+	protected ProjectChangedInTab projChanged;
 
-	protected EpiTab(Epithelium e, TreePath path) {
+	protected EpiTab(Epithelium e, TreePath path, ProjectChangedInTab projChanged) {
 		this.epithelium = e;
 		this.path = path;
 		this.isInitialized = false;
+		this.projChanged = projChanged;
 	}
 	
 	public TreePath getPath() {

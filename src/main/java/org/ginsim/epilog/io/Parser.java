@@ -21,10 +21,10 @@ import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
 import org.ginsim.epilog.project.Project;
+import org.ginsim.epilog.project.ProjectComponentFeatures;
 import org.ginsim.epilog.common.Tuple2D;
 import org.ginsim.epilog.core.ComponentIntegrationFunctions;
 import org.ginsim.epilog.core.Epithelium;
-import org.ginsim.epilog.core.EpitheliumComponentFeatures;
 import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.core.ModelPerturbations;
 import org.ginsim.epilog.core.ModelPriorityClasses;
@@ -71,6 +71,13 @@ public class Parser {
 				Color modelColor = ColorUtils.getColor(saTmp[3], saTmp[4],
 						saTmp[5]);
 				project.getModelFeatures().changeColor(saTmp[2], modelColor);
+			}
+			
+			if (line.startsWith("CC")){
+				saTmp = line.split("\\s+");
+				Color componentColor = ColorUtils.getColor(saTmp[2], saTmp[3],
+						saTmp[4]);
+				project.getComponentFeatures().setNodeColor(saTmp[1],  componentColor);
 			}
 			
 			// Epithelium name
@@ -125,12 +132,6 @@ public class Parser {
 						currEpi.getEpitheliumGrid().getTopology()
 								.instances2Tuples2D(saTmp[3].split(",")));
 			}
-			// Component Colors
-			if (line.startsWith("CL")) {
-				saTmp = line.split("\\s+");
-				currEpi.setComponentColor(saTmp[1],
-						ColorUtils.getColor(saTmp[2], saTmp[3], saTmp[4]));
-			}
 			// Component Integration Functions
 			if (line.startsWith("IT")) {
 				saTmp = line.split("\\s+");
@@ -181,7 +182,7 @@ public class Parser {
 	}
 
 	private static AbstractPerturbation string2AbstractPerturbation(
-			EpitheliumComponentFeatures features, String sExpr) {
+			ProjectComponentFeatures features, String sExpr) {
 		String[] saExpr = sExpr.split(", ");
 		List<AbstractPerturbation> lPerturb = new ArrayList<AbstractPerturbation>();
 
@@ -229,6 +230,13 @@ public class Parser {
 			i++;
 		}
 		w.println();
+		
+		// Component colors
+		for(String nodeID : project.getComponentFeatures().getComponents()){
+			Color c = project.getComponentFeatures().getNodeColor(nodeID);
+			w.println("CC " + nodeID + " " + c.getRed() + " " 
+					+ c.getBlue() + " " + c.getGreen());
+		}
 
 		for (Epithelium epi : project.getEpitheliumList()) {
 			writeEpithelium(epi, model2Key, w);

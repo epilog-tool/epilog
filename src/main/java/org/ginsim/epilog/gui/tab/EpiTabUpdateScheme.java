@@ -41,11 +41,11 @@ import org.ginsim.epilog.core.EpitheliumUpdateSchemeInter;
 import org.ginsim.epilog.core.EpitheliumUpdateSchemeIntra;
 import org.ginsim.epilog.core.ModelPriorityClasses;
 import org.ginsim.epilog.gui.EpiGUI.EpiTabChanged;
+import org.ginsim.epilog.gui.EpiGUI.ProjectChangedInTab;
 import org.ginsim.epilog.io.ButtonFactory;
 import org.ginsim.epilog.project.ProjectModelFeatures;
 
-public class EpiTabUpdateScheme extends EpiTabDefinitions implements
-		HyperlinkListener {
+public class EpiTabUpdateScheme extends EpiTabDefinitions implements HyperlinkListener {
 	private static final long serialVersionUID = 1176575422084167530L;
 
 	private final int JLIST_LINES = 10;
@@ -66,19 +66,17 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 	private JLabel jlabelScheme;
 	private JSlider jSlide;
 
-	public EpiTabUpdateScheme(Epithelium e, TreePath path,
-			EpiTabChanged tabChanged, ProjectModelFeatures modelFeatures) {
-		super(e, path, tabChanged, modelFeatures);
+	public EpiTabUpdateScheme(Epithelium e, TreePath path, ProjectChangedInTab projChanged, EpiTabChanged tabChanged,
+			ProjectModelFeatures modelFeatures) {
+		super(e, path, projChanged, tabChanged, modelFeatures);
 	}
 
 	public void initialize() {
 		this.center.setLayout(new BorderLayout());
-		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
-				this.epithelium.getEpitheliumGrid().getModelSet());
+		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		this.userPriorityClasses = new EpitheliumUpdateSchemeIntra();
 		for (LogicalModel m : modelList) {
-			this.userPriorityClasses.addModelPriorityClasses(this.epithelium
-					.getPriorityClasses(m).clone());
+			this.userPriorityClasses.addModelPriorityClasses(this.epithelium.getPriorityClasses(m).clone());
 		}
 		this.updateSchemeInter = this.epithelium.getUpdateSchemeInter().clone();
 		this.guiClasses = new ArrayList<JList<String>>();
@@ -167,8 +165,7 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 		// ******************
 		// * Inter-cellular *
 		// ******************
-		jpCenterBottom.add(new JSeparator(JSeparator.HORIZONTAL),
-				BorderLayout.NORTH);
+		jpCenterBottom.add(new JSeparator(JSeparator.HORIZONTAL), BorderLayout.NORTH);
 		JPanel jpInter = new JPanel();
 		jpInter.setLayout(new BoxLayout(jpInter, BoxLayout.PAGE_AXIS));
 		jpInter.setBorder(BorderFactory.createTitledBorder("Inter-cellular"));
@@ -190,8 +187,7 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 		jpInter.add(new JLabel(" "));
 
 		JPanel jpInterAlpha = new JPanel(new BorderLayout());
-		jpInterAlpha
-				.add(new JLabel("Current alpha: "), BorderLayout.LINE_START);
+		jpInterAlpha.add(new JLabel("Current alpha: "), BorderLayout.LINE_START);
 		this.jlabelScheme = new JLabel("--");
 		jpInterAlpha.add(this.jlabelScheme, BorderLayout.CENTER);
 		jpInter.add(jpInterAlpha);
@@ -199,16 +195,14 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 		// JSlider for alpha-asynchronism
 		JPanel jpInterSlider = new JPanel(new BorderLayout());
 		jpInterSlider.add(new JLabel("Value: "), BorderLayout.LINE_START);
-		this.jSlide = new JSlider(JSlider.HORIZONTAL, this.SLIDER_MIN,
-				this.SLIDER_MAX, this.SLIDER_MAX);
+		this.jSlide = new JSlider(JSlider.HORIZONTAL, this.SLIDER_MIN, this.SLIDER_MAX, this.SLIDER_MAX);
 		this.jSlide.setMajorTickSpacing(this.SLIDER_STEP);
 		this.jSlide.setMinorTickSpacing(1);
 		this.jSlide.setPaintTicks(true);
 		this.jSlide.setPaintLabels(true);
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
 		for (int i = this.SLIDER_MIN; i <= this.SLIDER_MAX; i += this.SLIDER_STEP) {
-			labelTable.put(new Integer(i), new JLabel(""
-					+ ((float) i / this.SLIDER_MAX)));
+			labelTable.put(new Integer(i), new JLabel("" + ((float) i / this.SLIDER_MAX)));
 		}
 		this.jSlide.setLabelTable(labelTable);
 		this.jSlide.addChangeListener(new ChangeListener() {
@@ -218,14 +212,12 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 				updateAlpha(slide.getValue());
 			}
 		});
-		this.jSlide
-				.setValue((int) (this.updateSchemeInter.getAlpha() * SLIDER_MAX));
+		this.jSlide.setValue((int) (this.updateSchemeInter.getAlpha() * SLIDER_MAX));
 		updateAlpha(this.jSlide.getValue());
 		jpInterSlider.add(this.jSlide, BorderLayout.CENTER);
 		jpInter.add(jpInterSlider);
 
-		LogicalModel m = this.modelFeatures.getModel((String) jcbSBML
-				.getSelectedItem());
+		LogicalModel m = this.modelFeatures.getModel((String) jcbSBML.getSelectedItem());
 		this.updatePriorityList(m);
 		this.isInitialized = true;
 	}
@@ -254,8 +246,7 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
 				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
-				LogicalModel m = modelFeatures.getModel((String) jcb
-						.getSelectedItem());
+				LogicalModel m = modelFeatures.getModel((String) jcb.getSelectedItem());
 				updatePriorityList(m);
 				// Re-Paint
 				getParent().repaint();
@@ -265,11 +256,9 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 	}
 
 	private void splitSelVars() {
-		ModelPriorityClasses mpc = this.userPriorityClasses
-				.getModelPriorityClasses(this.selectedModel);
+		ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(this.selectedModel);
 		for (int i = 0; i < this.guiClasses.size(); i++) {
-			List<String> values = this.guiClasses.get(i)
-					.getSelectedValuesList();
+			List<String> values = this.guiClasses.get(i).getSelectedValuesList();
 			if (!values.isEmpty()) {
 				for (String var : values)
 					mpc.split(i, var);
@@ -280,11 +269,9 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 	}
 
 	private void unsplitSelVars() {
-		ModelPriorityClasses mpc = this.userPriorityClasses
-				.getModelPriorityClasses(this.selectedModel);
+		ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(this.selectedModel);
 		for (int i = 0; i < this.guiClasses.size(); i++) {
-			List<String> values = this.guiClasses.get(i)
-					.getSelectedValuesList();
+			List<String> values = this.guiClasses.get(i).getSelectedValuesList();
 			if (!values.isEmpty()) {
 				for (String var : values)
 					mpc.unsplit(i, var);
@@ -295,11 +282,9 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 	}
 
 	private void incPriorityOfSelVars() {
-		ModelPriorityClasses mpc = this.userPriorityClasses
-				.getModelPriorityClasses(this.selectedModel);
+		ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(this.selectedModel);
 		for (int i = 0; i < this.guiClasses.size(); i++) {
-			List<String> values = this.guiClasses.get(i)
-					.getSelectedValuesList();
+			List<String> values = this.guiClasses.get(i).getSelectedValuesList();
 			if (!values.isEmpty()) {
 				mpc.incPriorities(i, values);
 				break;
@@ -309,11 +294,9 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 	}
 
 	private void decPriorityOfSelVars() {
-		ModelPriorityClasses mpc = this.userPriorityClasses
-				.getModelPriorityClasses(this.selectedModel);
+		ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(this.selectedModel);
 		for (int i = 0; i < this.guiClasses.size(); i++) {
-			List<String> values = this.guiClasses.get(i)
-					.getSelectedValuesList();
+			List<String> values = this.guiClasses.get(i).getSelectedValuesList();
 			if (!values.isEmpty()) {
 				mpc.decPriorities(i, values);
 				break;
@@ -323,8 +306,7 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 	}
 
 	private void createSingleClass() {
-		this.userPriorityClasses.getModelPriorityClasses(this.selectedModel)
-				.singlePriorityClass();
+		this.userPriorityClasses.getModelPriorityClasses(this.selectedModel).singlePriorityClass();
 		this.updatePriorityList(this.selectedModel);
 	}
 
@@ -333,8 +315,7 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 		this.jpIntraCenter.removeAll();
 		this.guiClasses.clear();
 		this.selectedModel = m;
-		ModelPriorityClasses mpc = this.userPriorityClasses
-				.getModelPriorityClasses(m);
+		ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(m);
 
 		for (int idxPC = 0; idxPC < mpc.size(); idxPC++) {
 			JPanel jpRankBlock = new JPanel(new BorderLayout());
@@ -393,12 +374,10 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 				else if (idxPC == (mpc.size() - 1))
 					label = "Slowest";
 			}
-			jpRankBlock.add(new JLabel(label, SwingConstants.CENTER),
-					BorderLayout.SOUTH);
+			jpRankBlock.add(new JLabel(label, SwingConstants.CENTER), BorderLayout.SOUTH);
 
 			this.jpIntraCenter.add(jpRankBlock);
-			this.jpIntraCenter.add(Box.createRigidArea(new Dimension(
-					this.JLIST_SPACING, 10)));
+			this.jpIntraCenter.add(Box.createRigidArea(new Dimension(this.JLIST_SPACING, 10)));
 		}
 	}
 
@@ -406,12 +385,10 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 	protected void buttonReset() {
 		this.userPriorityClasses = new EpitheliumUpdateSchemeIntra();
 		for (LogicalModel m : this.epithelium.getEpitheliumGrid().getModelSet()) {
-			this.userPriorityClasses.addModelPriorityClasses(this.epithelium
-					.getPriorityClasses(m).clone());
+			this.userPriorityClasses.addModelPriorityClasses(this.epithelium.getPriorityClasses(m).clone());
 		}
 		this.updatePriorityList(this.selectedModel);
-		this.jSlide.setValue((int) (this.epithelium.getUpdateSchemeInter()
-				.getAlpha() * SLIDER_MAX));
+		this.jSlide.setValue((int) (this.epithelium.getUpdateSchemeInter().getAlpha() * SLIDER_MAX));
 		this.updateAlpha(this.jSlide.getValue());
 		// Repaint
 		this.getParent().repaint();
@@ -420,25 +397,21 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 	@Override
 	protected void buttonAccept() {
 		for (LogicalModel m : this.userPriorityClasses.getModelSet()) {
-			ModelPriorityClasses clone = this.userPriorityClasses
-					.getModelPriorityClasses(m).clone();
+			ModelPriorityClasses clone = this.userPriorityClasses.getModelPriorityClasses(m).clone();
 			this.epithelium.setPriorityClasses(clone);
 		}
-		this.epithelium.getUpdateSchemeInter().setAlpha(
-				this.updateSchemeInter.getAlpha());
+		this.epithelium.getUpdateSchemeInter().setAlpha(this.updateSchemeInter.getAlpha());
 	}
 
 	@Override
 	protected boolean isChanged() {
 		for (LogicalModel m : this.epithelium.getEpitheliumGrid().getModelSet()) {
-			ModelPriorityClasses clone = this.userPriorityClasses
-					.getModelPriorityClasses(m);
+			ModelPriorityClasses clone = this.userPriorityClasses.getModelPriorityClasses(m);
 			ModelPriorityClasses orig = this.epithelium.getPriorityClasses(m);
 			if (!clone.equals(orig))
 				return true;
 		}
-		if (this.epithelium.getUpdateSchemeInter().getAlpha() != this.updateSchemeInter
-				.getAlpha())
+		if (this.epithelium.getUpdateSchemeInter().getAlpha() != this.updateSchemeInter.getAlpha())
 			return true;
 		return false;
 	}
@@ -447,14 +420,12 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements
 	public void notifyChange() {
 		if (!this.isInitialized)
 			return;
-		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
-				this.epithelium.getEpitheliumGrid().getModelSet());
+		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		EpitheliumUpdateSchemeIntra newPCs = new EpitheliumUpdateSchemeIntra();
 		for (LogicalModel m : modelList) {
 			if (this.userPriorityClasses.getModelSet().contains(m)) {
 				// Already exists
-				newPCs.addModelPriorityClasses(this.userPriorityClasses
-						.getModelPriorityClasses(m));
+				newPCs.addModelPriorityClasses(this.userPriorityClasses.getModelPriorityClasses(m));
 			} else {
 				// Adds a new one
 				newPCs.addModel(m);

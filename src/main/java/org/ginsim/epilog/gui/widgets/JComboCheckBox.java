@@ -19,6 +19,9 @@ public class JComboCheckBox extends JComboBox {
 
 	public JComboCheckBox(JCheckBox[] items) {
 		super(items);
+		if (items != null && items.length > 0) {
+			items[0].setSelected(true);
+		}
 		init();
 	}
 
@@ -43,9 +46,11 @@ public class JComboCheckBox extends JComboBox {
 		}
 	}
 
-	public List<String> getSelectedItems() {
-		itemSelected();
+	public void updateSelected() {
+		this.itemSelected();
+	}
 
+	public List<String> getSelectedItems() {
 		List<String> sItems = new ArrayList<String>();
 
 		for (int i = 0; i < this.getModel().getSize(); i++) {
@@ -64,8 +69,8 @@ public class JComboCheckBox extends JComboBox {
 			setOpaque(true);
 		}
 
-		public Component getListCellRendererComponent(JList list, Object value,
-				int index, boolean isSelected, boolean cellHasFocus) {
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
 			if (value instanceof Component) {
 				Component c = (Component) value;
 				return c;

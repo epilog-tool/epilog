@@ -5,17 +5,17 @@ import java.util.Set;
 
 import org.colomoto.logicalmodel.NodeInfo;
 import org.ginsim.epilog.common.Tuple2D;
-import org.ginsim.epilog.core.EpitheliumComponentFeatures;
 import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.integration.IntegrationFunctionSpecification.IntegrationAtom;
 import org.ginsim.epilog.integration.IntegrationFunctionSpecification.IntegrationExpression;
 import org.ginsim.epilog.integration.IntegrationFunctionSpecification.IntegrationNegation;
 import org.ginsim.epilog.integration.IntegrationFunctionSpecification.IntegrationOperation;
+import org.ginsim.epilog.project.ProjectComponentFeatures;
 
 public class IntegrationFunctionEvaluation {
 
 	private EpitheliumGrid grid;
-	private EpitheliumComponentFeatures features;
+	private ProjectComponentFeatures features;
 
 	/**
 	 * Evaluates an expression.
@@ -28,7 +28,7 @@ public class IntegrationFunctionEvaluation {
 	 * 
 	 */
 	public IntegrationFunctionEvaluation(EpitheliumGrid grid,
-			EpitheliumComponentFeatures features) {
+			ProjectComponentFeatures features) {
 		this.grid = grid;
 		this.features = features;
 	}

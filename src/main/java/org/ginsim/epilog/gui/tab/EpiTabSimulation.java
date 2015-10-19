@@ -36,6 +36,7 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumGrid;
+import org.ginsim.epilog.gui.EpiGUI.ProjectChangedInTab;
 import org.ginsim.epilog.gui.EpiGUI.SimulationEpiClone;
 import org.ginsim.epilog.gui.color.ColorUtils;
 import org.ginsim.epilog.gui.widgets.GridInformation;
@@ -73,10 +74,11 @@ public class EpiTabSimulation extends EpiTab {
 	private GridInformation lRight;
 	private JPanel lLeft;
 	private JPanel jpRRCenter;
+	private JComboCheckBox jccb;
 
-	public EpiTabSimulation(Epithelium e, TreePath path,
+	public EpiTabSimulation(Epithelium e, TreePath path, ProjectChangedInTab projChanged,
 			ProjectModelFeatures modelFeatures, SimulationEpiClone simEpiClone) {
-		super(e, path);
+		super(e, path, projChanged);
 		this.modelFeatures = modelFeatures;
 		this.simEpiClone = simEpiClone;
 	}
@@ -100,24 +102,19 @@ public class EpiTabSimulation extends EpiTab {
 				this.mSelCheckboxes.put(node.getNodeID(), false);
 			}
 		}
-		this.lRight = new GridInformation(
-				this.epithelium.getComponentFeatures(),
+		this.lRight = new GridInformation(this.epithelium.getComponentFeatures(),
 				this.epithelium.getIntegrationFunctions(), this.modelFeatures);
 
-		this.visualGridSimulation = new VisualGridSimulation(
-				clonedEpi.getEpitheliumGrid(),
-				this.epithelium.getComponentFeatures(), this.lCompON,
-				this.lRight);
+		this.visualGridSimulation = new VisualGridSimulation(clonedEpi.getEpitheliumGrid(),
+				this.epithelium.getComponentFeatures(), this.lCompON, this.lRight);
 		this.jpRight.add(this.visualGridSimulation, BorderLayout.CENTER);
 
 		JPanel jpButtons = new JPanel(new BorderLayout());
 		JPanel jpButtonsC = new JPanel();
 		jpButtons.add(jpButtonsC, BorderLayout.CENTER);
 
-		this.jbRewind = ButtonFactory
-				.getImageNoBorder("media_rewind-26x24.png");
-		this.jbRewind
-				.setToolTipText("Go back to the beginning of the simulation");
+		this.jbRewind = ButtonFactory.getImageNoBorder("media_rewind-26x24.png");
+		this.jbRewind.setToolTipText("Go back to the beginning of the simulation");
 		this.jbRewind.setEnabled(false);
 		this.jbRewind.addActionListener(new ActionListener() {
 			@Override
@@ -126,8 +123,7 @@ public class EpiTabSimulation extends EpiTab {
 			}
 		});
 		jpButtonsC.add(this.jbRewind);
-		this.jbBack = ButtonFactory
-				.getImageNoBorder("media_step_back-24x24.png");
+		this.jbBack = ButtonFactory.getImageNoBorder("media_step_back-24x24.png");
 		this.jbBack.setToolTipText("Go back one step");
 		this.jbBack.setEnabled(false);
 		this.jbBack.addActionListener(new ActionListener() {
@@ -137,8 +133,7 @@ public class EpiTabSimulation extends EpiTab {
 			}
 		});
 		jpButtonsC.add(this.jbBack);
-		this.jbForward = ButtonFactory
-				.getImageNoBorder("media_step_forward-24x24.png");
+		this.jbForward = ButtonFactory.getImageNoBorder("media_step_forward-24x24.png");
 		this.jbForward.setToolTipText("Go forward one step");
 		this.jbForward.addActionListener(new ActionListener() {
 			@Override
@@ -171,8 +166,7 @@ public class EpiTabSimulation extends EpiTab {
 			}
 		});
 		jpButtonsC.add(jtSteps);
-		this.jbFastFwr = ButtonFactory
-				.getImageNoBorder("media_fast_forward-26x24.png");
+		this.jbFastFwr = ButtonFactory.getImageNoBorder("media_fast_forward-26x24.png");
 		this.jbFastFwr.setToolTipText("Go forward a burst of 'n' steps");
 		this.jbFastFwr.addActionListener(new ActionListener() {
 			@Override
@@ -194,8 +188,7 @@ public class EpiTabSimulation extends EpiTab {
 		jpButtonsR.add(jbClone);
 
 		// Button to save an image from the simulated grid
-		JButton jbPicture = ButtonFactory
-				.getImageNoBorder("fotography-24x24.png");
+		JButton jbPicture = ButtonFactory.getImageNoBorder("fotography-24x24.png");
 		jbPicture.setToolTipText("Save the image of the current grid to file");
 		jbPicture.addActionListener(new ActionListener() {
 			@Override
@@ -204,7 +197,7 @@ public class EpiTabSimulation extends EpiTab {
 			}
 		});
 		jpButtonsR.add(jbPicture);
-		
+
 		// Button to save all simulated grid images
 		JButton jbSaveAll = ButtonFactory.getImageNoBorder("fotography-mult-31x24.png");
 		jbSaveAll.setToolTipText("Save all the simulation grids into different files");
@@ -213,7 +206,7 @@ public class EpiTabSimulation extends EpiTab {
 				saveAllEpiGrid2File();
 			}
 		});
-		
+
 		jpButtonsR.add(jbSaveAll);
 
 		jpButtons.add(jpButtonsR, BorderLayout.LINE_END);
@@ -235,16 +228,14 @@ public class EpiTabSimulation extends EpiTab {
 		rrTop.setLayout(new BoxLayout(rrTop, BoxLayout.Y_AXIS));
 
 		// Model combobox
-		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
-				this.epithelium.getEpitheliumGrid().getModelSet());
+		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		JCheckBox[] items = new JCheckBox[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
-			items[i] = new JCheckBox(this.modelFeatures.getName(modelList
-					.get(i)));
+			items[i] = new JCheckBox(this.modelFeatures.getName(modelList.get(i)));
 			items[i].setSelected(false);
 		}
-		JComboCheckBox jccb = new JComboCheckBox(items);
-		rrTop.add(jccb);
+		this.jccb = new JComboCheckBox(items);
+		rrTop.add(this.jccb);
 
 		// Select/Deselect buttons
 		JPanel rrTopSel = new JPanel(new FlowLayout());
@@ -261,8 +252,7 @@ public class EpiTabSimulation extends EpiTab {
 					if (!lCompON.contains(nodeID))
 						lCompON.add(nodeID);
 				}
-				visualGridSimulation.paintComponent(visualGridSimulation
-						.getGraphics());
+				visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
 			}
 		});
 		rrTopSel.add(jbSelectAll);
@@ -278,8 +268,7 @@ public class EpiTabSimulation extends EpiTab {
 					mSelCheckboxes.put(nodeID, false);
 					lCompON.remove(nodeID);
 				}
-				visualGridSimulation.paintComponent(visualGridSimulation
-						.getGraphics());
+				visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
 			}
 		});
 		rrTopSel.add(jbDeselectAll);
@@ -293,10 +282,11 @@ public class EpiTabSimulation extends EpiTab {
 		JScrollPane jscroll = new JScrollPane(this.jpRRCenter);
 		jscroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.lLeft.add(jscroll, BorderLayout.CENTER);
-		jccb.addActionListener(new ActionListener() {
+		this.jccb.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JComboCheckBox jccb = (JComboCheckBox) e.getSource();
+				jccb.updateSelected();
 				updateComponentList(jccb.getSelectedItems());
 			}
 		});
@@ -306,14 +296,14 @@ public class EpiTabSimulation extends EpiTab {
 		jpLeftAggreg.add(this.lRight, BorderLayout.LINE_END);
 
 		this.add(jpLeftAggreg, BorderLayout.LINE_START);
-		updateComponentList(jccb.getSelectedItems());
+		updateComponentList(this.jccb.getSelectedItems());
 		this.isInitialized = true;
 	}
 
 	/**
 	 * 
 	 */
-	//get current simulation step
+	// get current simulation step
 	private void saveEpiGrid2File() {
 		JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(new EpilogFileFilter("png"));
@@ -324,7 +314,8 @@ public class EpiTabSimulation extends EpiTab {
 			FileIO.writeEpitheliumGrid2File(file, this.visualGridSimulation, ext);
 		}
 	}
-	//get all the simulation steps
+
+	// get all the simulation steps
 	private void saveAllEpiGrid2File() {
 		JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(new EpilogFileFilter("png"));
@@ -342,8 +333,7 @@ public class EpiTabSimulation extends EpiTab {
 	}
 
 	private void cloneEpiWithCurrGrid() {
-		this.simEpiClone.cloneEpithelium(this.epithelium,
-				this.simulation.getGridAt(this.iCurrSimIter));
+		this.simEpiClone.cloneEpithelium(this.epithelium, this.simulation.getGridAt(this.iCurrSimIter));
 	}
 
 	private void simulationRewind() {
@@ -364,8 +354,7 @@ public class EpiTabSimulation extends EpiTab {
 		if (this.iCurrSimIter == 0) {
 			return;
 		}
-		EpitheliumGrid prevGrid = this.simulation
-				.getGridAt(--this.iCurrSimIter);
+		EpitheliumGrid prevGrid = this.simulation.getGridAt(--this.iCurrSimIter);
 		this.jlStep.setText("Iteration: " + this.iCurrSimIter);
 		this.visualGridSimulation.setEpitheliumGrid(prevGrid);
 		setGridGUIStable(false);
@@ -390,8 +379,7 @@ public class EpiTabSimulation extends EpiTab {
 	}
 
 	private void simulationStepFwr() {
-		EpitheliumGrid nextGrid = this.simulation
-				.getGridAt(this.iCurrSimIter + 1);
+		EpitheliumGrid nextGrid = this.simulation.getGridAt(this.iCurrSimIter + 1);
 		if (this.simulation.isStableAt(this.iCurrSimIter + 1)) {
 			setGridGUIStable(true);
 		} else {
@@ -423,8 +411,7 @@ public class EpiTabSimulation extends EpiTab {
 		this.repaint();
 	}
 
-	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y,
-			String nodeID) {
+	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String nodeID) {
 		gbc.gridy = y;
 		gbc.gridx = 0;
 		gbc.anchor = GridBagConstraints.WEST;
@@ -441,8 +428,7 @@ public class EpiTabSimulation extends EpiTab {
 					} else {
 						lCompON.remove(jcb.getText());
 					}
-					visualGridSimulation.paintComponent(visualGridSimulation
-							.getGraphics());
+					visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
 				}
 			});
 			this.mNodeID2Checkbox.put(nodeID, jcb);
@@ -450,8 +436,7 @@ public class EpiTabSimulation extends EpiTab {
 		jp.add(jcb, gbc);
 		gbc.gridx = 1;
 		JButton jbColor = new JButton();
-		jbColor.setBackground(this.epithelium.getComponentFeatures()
-				.getNodeColor(nodeID));
+		jbColor.setBackground(this.epithelium.getComponentFeatures().getNodeColor(nodeID));
 		jbColor.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -464,14 +449,12 @@ public class EpiTabSimulation extends EpiTab {
 
 	private void setNewColor(JButton jb) {
 		String nodeID = this.colorButton2Node.get(jb);
-		Color newColor = JColorChooser.showDialog(jb, "Color chooser - "
-				+ nodeID, jb.getBackground());
-		if (newColor != null) {
+		Color newColor = JColorChooser.showDialog(jb, "Color chooser - " + nodeID, jb.getBackground());
+		if (newColor != null && !newColor.equals(modelFeatures.getColor(nodeID))) {
 			jb.setBackground(newColor);
-			this.epithelium.getComponentFeatures().setNodeColor(nodeID,
-					newColor);
-			this.visualGridSimulation.paintComponent(this.visualGridSimulation
-					.getGraphics());
+			this.epithelium.getComponentFeatures().setNodeColor(nodeID, newColor);
+			this.projChanged.setChanged();
+			this.visualGridSimulation.paintComponent(this.visualGridSimulation.getGraphics());
 		}
 	}
 
@@ -490,10 +473,9 @@ public class EpiTabSimulation extends EpiTab {
 		JPanel jpRRCTop = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(5, 5, 4, 0);
-		jpRRCTop.setBorder(BorderFactory
-				.createTitledBorder("Proper components"));
-		List<String> lProper = new ArrayList<String>(this.epithelium
-				.getComponentFeatures().getModelsComponents(lModels, false));
+		jpRRCTop.setBorder(BorderFactory.createTitledBorder("Proper components"));
+		List<String> lProper = new ArrayList<String>(
+				this.epithelium.getComponentFeatures().getModelsComponents(lModels, false));
 		Collections.sort(lProper, new Comparator<String>() {
 			public int compare(String s1, String s2) {
 				return s1.compareToIgnoreCase(s2);
@@ -514,10 +496,9 @@ public class EpiTabSimulation extends EpiTab {
 		JPanel jpRRCBottom = new JPanel(new GridBagLayout());
 		gbc = new GridBagConstraints();
 		gbc.insets = new Insets(5, 5, 4, 0);
-		jpRRCBottom.setBorder(BorderFactory
-				.createTitledBorder("Input components"));
-		List<String> lInputs = new ArrayList<String>(this.epithelium
-				.getComponentFeatures().getModelsComponents(lModels, true));
+		jpRRCBottom.setBorder(BorderFactory.createTitledBorder("Input components"));
+		List<String> lInputs = new ArrayList<String>(
+				this.epithelium.getComponentFeatures().getModelsComponents(lModels, true));
 		Collections.sort(lInputs, new Comparator<String>() {
 			public int compare(String s1, String s2) {
 				return s1.compareToIgnoreCase(s2);
@@ -540,8 +521,7 @@ public class EpiTabSimulation extends EpiTab {
 			y++;
 		}
 		this.jpRRCenter.add(jpRRCBottom);
-		this.visualGridSimulation.paintComponent(this.visualGridSimulation
-				.getGraphics());
+		this.visualGridSimulation.paintComponent(this.visualGridSimulation.getGraphics());
 		this.jpRRCenter.revalidate();
 		this.jpRRCenter.repaint();
 	}
@@ -566,8 +546,7 @@ public class EpiTabSimulation extends EpiTab {
 					+ "You have some <b>changed definitions</b> for this Epithelium.<br/>"
 					+ "This simulation is therefore <b>no longer valid</b>!<br/>"
 					+ "You can still perform a clone/screenshot of particular interations.<br/>"
-					+ "Please <b>close/re-open it</b>, to have an updated Simulation Tab."
-					+ "</body></html>");
+					+ "Please <b>close/re-open it</b>, to have an updated Simulation Tab." + "</body></html>");
 			this.jpRight.add(jtp, BorderLayout.NORTH);
 		} else {
 			for (int i = 0; i < this.jpRight.getComponentCount(); i++) {
@@ -578,5 +557,6 @@ public class EpiTabSimulation extends EpiTab {
 				}
 			}
 		}
+		this.updateComponentList(this.jccb.getSelectedItems());
 	}
 }

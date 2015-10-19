@@ -12,21 +12,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ginsim.epilog.common.Tuple2D;
-import org.ginsim.epilog.core.EpitheliumComponentFeatures;
 import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.gui.color.ColorUtils;
+import org.ginsim.epilog.project.ProjectComponentFeatures;
 
 public class VisualGridSimulation extends VisualGrid {
 	private static final long serialVersionUID = -3880244278613986980L;
 
-	private EpitheliumComponentFeatures componentFeatures;
+	private ProjectComponentFeatures componentFeatures;
 	private EpitheliumGrid epiGrid;
 	private List<String> lCompON;
 	private GridInformation valuePanel;
 	private Tuple2D<Integer> lastPos;
 
 	public VisualGridSimulation(EpitheliumGrid epiGrid,
-			EpitheliumComponentFeatures componentFeatures,
+			ProjectComponentFeatures componentFeatures,
 			List<String> lCompON, GridInformation valuePanel) {
 		super(epiGrid.getX(), epiGrid.getY(), epiGrid.getTopology());
 		this.componentFeatures = componentFeatures;

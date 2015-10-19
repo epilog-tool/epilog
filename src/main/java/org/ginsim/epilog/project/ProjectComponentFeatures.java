@@ -1,4 +1,4 @@
-package org.ginsim.epilog.core;
+package org.ginsim.epilog.project;
 
 import java.awt.Color;
 import java.util.Collections;
@@ -12,17 +12,18 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.ginsim.epilog.gui.color.ColorUtils;
 
-public class EpitheliumComponentFeatures {
+public class ProjectComponentFeatures {
 	private Map<String, NodeInfo> nodeID2Info;
 	private Map<String, Color> nodeColor;
 
-	public EpitheliumComponentFeatures() {
+	public ProjectComponentFeatures() {
 		this.nodeID2Info = new HashMap<String, NodeInfo>();
 		this.nodeColor = new HashMap<String, Color>();
 	}
 
-	public EpitheliumComponentFeatures clone() {
-		EpitheliumComponentFeatures ecf = new EpitheliumComponentFeatures();
+	@Deprecated
+	public ProjectComponentFeatures clone() {
+		ProjectComponentFeatures ecf = new ProjectComponentFeatures();
 		for (String nodeID : this.nodeColor.keySet()) {
 			ecf.setNodeColor(nodeID, this.nodeColor.get(nodeID));
 		}
@@ -41,7 +42,7 @@ public class EpitheliumComponentFeatures {
 		this.nodeColor.remove(nodeID);
 	}
 
-	public void addModel(LogicalModel m) {
+	public void addAllComponentsFromModel(LogicalModel m) {
 		for (NodeInfo node : m.getNodeOrder()) {
 			if (!nodeID2Info.containsKey(node.getNodeID())) {
 				this.nodeID2Info.put(node.getNodeID(), node);
@@ -58,13 +59,19 @@ public class EpitheliumComponentFeatures {
 		return this.nodeColor.get(nodeID);
 	}
 
+	public Map<String, Color> getColorMap() {
+		return this.nodeColor;
+	}
+
 	public Set<String> getComponents() {
 		return Collections.unmodifiableSet(this.nodeColor.keySet());
 		// TODO return unmodifiable lists everywhere!
 	}
 
 	public void setNodeColor(String nodeID, Color color) {
-		this.nodeColor.put(nodeID, color);
+		if (!this.nodeColor.containsKey(nodeID) || !color.equals(this.nodeColor.get(nodeID))) {
+			this.nodeColor.put(nodeID, color);
+		}
 	}
 
 	public Set<String> getModelComponents(LogicalModel m, boolean input) {
@@ -77,8 +84,7 @@ public class EpitheliumComponentFeatures {
 		return sComps;
 	}
 
-	public Set<String> getModelsComponents(List<LogicalModel> lModels,
-			boolean input) {
+	public Set<String> getModelsComponents(List<LogicalModel> lModels, boolean input) {
 		Set<String> sComps = new HashSet<String>();
 		if (!lModels.isEmpty()) {
 			for (LogicalModel m : lModels) {
@@ -87,9 +93,9 @@ public class EpitheliumComponentFeatures {
 		}
 		return sComps;
 	}
-	
+
 	public boolean equals(Object o) {
-		EpitheliumComponentFeatures ecfOut = (EpitheliumComponentFeatures) o;
+		ProjectComponentFeatures ecfOut = (ProjectComponentFeatures) o;
 		Set<String> sAllNodes = new HashSet<String>();
 		// NodeInfo
 		sAllNodes.addAll(this.nodeID2Info.keySet());

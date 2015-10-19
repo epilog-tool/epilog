@@ -34,6 +34,7 @@ import org.ginsim.epilog.core.ComponentIntegrationFunctions;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumIntegrationFunctions;
 import org.ginsim.epilog.gui.EpiGUI.EpiTabChanged;
+import org.ginsim.epilog.gui.EpiGUI.ProjectChangedInTab;
 import org.ginsim.epilog.gui.color.ColorUtils;
 import org.ginsim.epilog.project.ProjectModelFeatures;
 
@@ -51,17 +52,16 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	private JPanel jpNRBottom;
 	private JPanel jpNLTop;
 
-	public EpiTabIntegrationFunctions(Epithelium e, TreePath path,
+	public EpiTabIntegrationFunctions(Epithelium e, TreePath path, ProjectChangedInTab projChanged,
 			EpiTabChanged tabChanged, ProjectModelFeatures modelFeatures) {
-		super(e, path, tabChanged, modelFeatures);
+		super(e, path, projChanged, tabChanged, modelFeatures);
 		this.mNode2RadioButton = new HashMap<String, JRadioButton>();
 	}
 
 	public void initialize() {
 		this.center.setLayout(new BorderLayout());
 
-		this.userIntegrationFunctions = this.epithelium
-				.getIntegrationFunctions().clone();
+		this.userIntegrationFunctions = this.epithelium.getIntegrationFunctions().clone();
 		this.activeNodeID = null;
 
 		// North Panel
@@ -70,19 +70,16 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		jpNorth.add(jpNLeft, BorderLayout.LINE_START);
 
 		// Model selection list
-		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
-				this.epithelium.getEpitheliumGrid().getModelSet());
+		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
 		this.jpNLTop = new JPanel();
-		this.jpNLTop.setBorder(BorderFactory
-				.createTitledBorder("Model selection"));
+		this.jpNLTop.setBorder(BorderFactory.createTitledBorder("Model selection"));
 		this.jpNLTop.add(jcbSBML);
 		jpNLeft.add(this.jpNLTop, BorderLayout.NORTH);
 
 		// Component selection list
 		this.jpNLBottom = new JPanel(new GridBagLayout());
-		this.jpNLBottom.setBorder(BorderFactory
-				.createTitledBorder("Input components"));
+		this.jpNLBottom.setBorder(BorderFactory.createTitledBorder("Input components"));
 		jpNLeft.add(this.jpNLBottom, BorderLayout.CENTER);
 
 		JPanel jpNRight = new JPanel(new BorderLayout());
@@ -110,15 +107,14 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		jPane.setBackground(this.getBackground());
 		String s = "<html><head>\n";
 		s += "<style type=\"text/css\">\n";
-		// s+="td {   font-family:Courier; }\n";
-		// s+="b {   font-family:Courier; }\n";
+		// s+="td { font-family:Courier; }\n";
+		// s+="b { font-family:Courier; }\n";
 		s += "</style>\n";
 		s += "</head><body>\n";
 		s += "<b>Grammar specification examples</b><br/>\n";
 		s += "<table border=1>";
 		s += "<tr><td>G<sub>0</sub>(1,1,4,1)</td><td>at least 1 and at most 4 "
-				+ "neighbours at distance 1 have G<sub>0</sub> at least at "
-				+ "level 1</td></tr>";
+				+ "neighbours at distance 1 have G<sub>0</sub> at least at " + "level 1</td></tr>";
 		s += "<tr><td>G<sub>0</sub>(1,1,_,1)</td><td>at least 1 neighbour at "
 				+ "distance 1 has G<sub>0</sub> at least at level 1</td></tr>";
 		s += "<tr><td>G<sub>0</sub>(1,1,_,1) | G<sub>0</sub>(2,3,_,1)</td><td>"
@@ -222,12 +218,10 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		this.jpNRBottom.removeAll();
 
 		if (!this.userIntegrationFunctions.containsKey(nodeID)) {
-			NodeInfo node = this.epithelium.getComponentFeatures().getNodeInfo(
-					nodeID);
+			NodeInfo node = this.epithelium.getComponentFeatures().getNodeInfo(nodeID);
 			this.userIntegrationFunctions.addComponent(node);
 		}
-		ComponentIntegrationFunctions cfi = this.userIntegrationFunctions
-				.getComponentIntegrationFunctions(nodeID);
+		ComponentIntegrationFunctions cfi = this.userIntegrationFunctions.getComponentIntegrationFunctions(nodeID);
 
 		List<String> functions = cfi.getFunctions();
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -265,11 +259,9 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		}
 	}
 
-	private void setIntegrationFunction(String nodeID, byte level,
-			String function) {
+	private void setIntegrationFunction(String nodeID, byte level, String function) {
 
-		ComponentIntegrationFunctions cif = this.userIntegrationFunctions
-				.getComponentIntegrationFunctions(nodeID);
+		ComponentIntegrationFunctions cif = this.userIntegrationFunctions.getComponentIntegrationFunctions(nodeID);
 		cif.setFunctionAtLevel(level, function);
 	}
 
@@ -295,8 +287,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(1, 5, 1, 0);
-		Set<String> sInputs = this.epithelium.getComponentFeatures()
-				.getModelComponents(m, true);
+		Set<String> sInputs = this.epithelium.getComponentFeatures().getModelComponents(m, true);
 		List<String> lInputs = new ArrayList<String>(sInputs);
 		Collections.sort(lInputs, new Comparator<String>() {
 			public int compare(String s1, String s2) {
@@ -319,8 +310,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 
 	@Override
 	protected void buttonReset() {
-		this.userIntegrationFunctions = this.epithelium
-				.getIntegrationFunctions().clone();
+		this.userIntegrationFunctions = this.epithelium.getIntegrationFunctions().clone();
 		this.updateNodeID(this.activeNodeID);
 		// Repaint
 		this.getParent().repaint();
@@ -331,18 +321,15 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		for (String nodeID : mNode2RadioButton.keySet()) {
 			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions
 					.getComponentIntegrationFunctions(nodeID);
-			EpitheliumIntegrationFunctions eifOrig = this.epithelium
-					.getIntegrationFunctions();
+			EpitheliumIntegrationFunctions eifOrig = this.epithelium.getIntegrationFunctions();
 			if (cifClone == null) {
 				eifOrig.removeComponent(nodeID);
 			} else {
-				NodeInfo node = this.epithelium.getComponentFeatures()
-						.getNodeInfo(nodeID);
+				NodeInfo node = this.epithelium.getComponentFeatures().getNodeInfo(nodeID);
 				eifOrig.addComponent(node);
 				for (byte i = 1; i <= node.getMax(); i++) {
-					eifOrig.getComponentIntegrationFunctions(nodeID)
-							.setFunctionAtLevel(i,
-									cifClone.getFunctions().get(i - 1));
+					eifOrig.getComponentIntegrationFunctions(nodeID).setFunctionAtLevel(i,
+							cifClone.getFunctions().get(i - 1));
 				}
 			}
 		}
@@ -353,14 +340,12 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		for (String nodeID : mNode2RadioButton.keySet()) {
 			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions
 					.getComponentIntegrationFunctions(nodeID);
-			ComponentIntegrationFunctions cifOrig = this.epithelium
-					.getIntegrationFunctions()
+			ComponentIntegrationFunctions cifOrig = this.epithelium.getIntegrationFunctions()
 					.getComponentIntegrationFunctions(nodeID);
 			System.out.println(nodeID);
 			if (cifClone == null && cifOrig == null)
 				continue;
-			if (cifClone == null && cifOrig != null || cifClone != null
-					&& cifOrig == null)
+			if (cifClone == null && cifOrig != null || cifClone != null && cifOrig == null)
 				return true;
 			if (!cifOrig.equals(cifClone))
 				return true;
@@ -372,8 +357,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	public void notifyChange() {
 		if (!this.isInitialized)
 			return;
-		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
-				this.epithelium.getEpitheliumGrid().getModelSet());
+		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		EpitheliumIntegrationFunctions epiFunc = new EpitheliumIntegrationFunctions();
 		for (LogicalModel m : modelList) {
 			for (NodeInfo node : m.getNodeOrder()) {
@@ -381,8 +365,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 				if (this.userIntegrationFunctions.containsKey(nodeID)) {
 					// Already exists
 					epiFunc.addComponentFunctions(nodeID,
-							this.userIntegrationFunctions
-									.getComponentIntegrationFunctions(nodeID));
+							this.userIntegrationFunctions.getComponentIntegrationFunctions(nodeID));
 				} else {
 					// Adds a new one
 					epiFunc.addComponent(node);

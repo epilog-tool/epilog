@@ -1,5 +1,6 @@
 package org.ginsim.epilog.project;
 
+import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +15,12 @@ public class Project {
 	private ProjectModelFeatures modelFeatures;
 	private String filenamePEPS;
 	private boolean isChanged;
+	private ProjectComponentFeatures componentFeatures;
 
 	public Project(){
 		this.epitheliumList = new ArrayList<Epithelium>();
 		this.modelFeatures = new ProjectModelFeatures();
+		this.componentFeatures = new ProjectComponentFeatures();
 		this.filenamePEPS = null;
 		this.isChanged = true;
 	}
@@ -65,23 +68,10 @@ public class Project {
 		// this.updateModelMap();
 	}
 
-	// private void updateModelMap() {
-	// Set<LogicalModel> newModelSet = new HashSet<LogicalModel>();
-	// for (Epithelium epi : this.epitheliumList) {
-	// EpitheliumGrid grid = epi.getEpitheliumGrid();
-	// grid.updateModelSet();
-	// newModelSet.addAll(grid.getModelSet());
-	// }
-	// Map<String, LogicalModel> newModelMap = new HashMap<String,
-	// LogicalModel>();
-	// for (String name : this.modelMap.keySet()) {
-	// if (newModelSet.contains(this.modelMap.get(name))) {
-	// newModelMap.put(name, this.modelMap.get(name));
-	// }
-	// }
-	// this.modelMap = newModelMap;
-	// }
-
+	//COMPONENT COLOURS
+	public ProjectComponentFeatures getComponentFeatures() {
+		return this.componentFeatures;
+	}
 
 	public String getFilenamePEPS() {
 		return this.filenamePEPS;
@@ -91,12 +81,14 @@ public class Project {
 		this.filenamePEPS = filename;
 	}
 
-	public Epithelium newEpithelium(int x, int y, String topologyLayout, String userName, String modelName,
-			RollOver rollover) throws InstantiationException,
+	public Epithelium newEpithelium(int x, int y, String topologyLayout, 
+			String userName, String modelName, RollOver rollover) 
+					throws InstantiationException,
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException {
-		Epithelium epi = new Epithelium(x, y, topologyLayout, userName, this.modelFeatures.getModel(modelName), rollover);
+		Epithelium epi = new Epithelium(x, y, topologyLayout, userName, 
+				this.modelFeatures.getModel(modelName), rollover, this.componentFeatures);
 		this.epitheliumList.add(epi);
 		return epi;
 	}
@@ -112,6 +104,7 @@ public class Project {
 
 	public void addModel(String name, LogicalModel m) {
 		this.modelFeatures.addModel(name, m);
+		this.componentFeatures.addAllComponentsFromModel(m);
 		// TODO: should the model be inserted somewhere else?
 		this.isChanged = true;
 	}
