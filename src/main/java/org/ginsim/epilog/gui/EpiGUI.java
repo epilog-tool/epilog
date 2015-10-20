@@ -570,14 +570,14 @@ public class EpiGUI extends JFrame {
 
 		DefaultMutableTreeNode gm = new DefaultMutableTreeNode("Model Grid");
 		epiNode.add(gm);
-		DefaultMutableTreeNode pr = new DefaultMutableTreeNode("Updating Scheme");
-		epiNode.add(pr);
-		DefaultMutableTreeNode ic = new DefaultMutableTreeNode("Initial Condition");
-		epiNode.add(ic);
 		DefaultMutableTreeNode it = new DefaultMutableTreeNode("Integration Components");
 		epiNode.add(it);
+		DefaultMutableTreeNode ic = new DefaultMutableTreeNode("Initial Condition");
+		epiNode.add(ic);
 		DefaultMutableTreeNode pt = new DefaultMutableTreeNode("Perturbations");
 		epiNode.add(pt);
+		DefaultMutableTreeNode pr = new DefaultMutableTreeNode("Updating Scheme");
+		epiNode.add(pr);
 		DefaultMutableTreeNode sim = new DefaultMutableTreeNode("Simulation");
 		epiNode.add(sim);
 
