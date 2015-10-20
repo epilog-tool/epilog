@@ -29,11 +29,11 @@ public class Epithelium {
 	private ProjectComponentFeatures componentFeatures;
 
 	public Epithelium(int x, int y, String topologyLayout, String name,
-			LogicalModel m, RollOver rollover, ProjectComponentFeatures componentFeatures) 
-					throws InstantiationException,
-			IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException,
-			SecurityException, ClassNotFoundException {
+			LogicalModel m, RollOver rollover,
+			ProjectComponentFeatures componentFeatures)
+			throws InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		this.x = x;
 		this.y = y;
 		this.topologyLayout = topologyLayout;
@@ -52,7 +52,7 @@ public class Epithelium {
 	private Epithelium(int x, int y, String topologyLayout, String name,
 			EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
 			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap,
-			EpitheliumUpdateSchemeInter usi) {
+			ProjectComponentFeatures pcf, EpitheliumUpdateSchemeInter usi) {
 		this.x = x;
 		this.y = y;
 		this.topologyLayout = topologyLayout;
@@ -60,7 +60,7 @@ public class Epithelium {
 		this.grid = grid;
 		this.priorities = epc;
 		this.integrationFunctions = eif;
-		//this.componentFeatures = ecf;
+		this.componentFeatures = pcf;
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
 	}
@@ -73,7 +73,7 @@ public class Epithelium {
 		return new Epithelium(this.x, this.y, this.topologyLayout, "CopyOf_"
 				+ this.name, this.grid.clone(),
 				this.integrationFunctions.clone(), this.priorities.clone(),
-				this.perturbations.clone(), //this.componentFeatures.clone(),
+				this.perturbations.clone(), this.componentFeatures,
 				this.updateSchemeInter.clone());
 	}
 
@@ -114,7 +114,7 @@ public class Epithelium {
 			}
 		}
 		// Clean Epithelium components
-		for (String nodeID :  this.integrationFunctions.getComponents()) {
+		for (String nodeID : this.integrationFunctions.getComponents()) {
 			if (!sNodeIDs.contains(nodeID)) {
 				this.integrationFunctions.removeComponent(nodeID);
 			}
@@ -124,7 +124,6 @@ public class Epithelium {
 	public EpitheliumUpdateSchemeInter getUpdateSchemeInter() {
 		return this.updateSchemeInter;
 	}
-
 
 	public String toString() {
 		return this.getName();
@@ -143,7 +142,7 @@ public class Epithelium {
 	public LogicalModel getModel(int x, int y) {
 		return this.grid.getModel(x, y);
 	}
-	
+
 	public ProjectComponentFeatures getComponentFeatures() {
 		return this.componentFeatures;
 	}
