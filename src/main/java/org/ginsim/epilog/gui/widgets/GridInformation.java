@@ -151,17 +151,54 @@ public class GridInformation extends JPanel {
 
 			// Separation
 			this.minimalSpace(gbc, ++y);
-
-			// Input values
+			this.minimalSpace(gbc, ++y);
+			
+			//Inputs
 			gbc.gridy = ++y;
 			gbc.gridx = 0;
 			gbc.gridwidth = 1;
 			jlTmp = new JLabel("Input:");
 			this.jIntPanel.add(jlTmp, gbc);
+			
+			// Separation
+			this.minimalSpace(gbc, ++y);
+			
+			// Environmental Input values
+			gbc.gridy = ++y;
+			gbc.gridx = 0;
+			gbc.gridwidth = 1;
+			jlTmp = new JLabel("Environmental:");
+			this.jIntPanel.add(jlTmp, gbc);
 			gbc.gridwidth = 1;
 			for (String nodeID : lAllNodeIDs) {
 				if (!this.compFeatures.getNodeInfo(nodeID).isInput()
 						|| this.integrFunctions.containsKey(nodeID))
+					continue;
+				gbc.gridy = ++y;
+				gbc.gridx = 0;
+				gbc.anchor = GridBagConstraints.WEST;
+				jlTmp = new JLabel(nodeID + " ");
+				this.jIntPanel.add(jlTmp, gbc);
+				int index = grid.getNodeIndex(posX, posY, nodeID);
+				if (index < 0)
+					continue;
+				gbc.gridx = 1;
+				jlTmp = new JLabel(": " + grid.getCellState(posX, posY)[index]);
+				this.jIntPanel.add(jlTmp, gbc);
+			}
+			// Separation
+			this.minimalSpace(gbc, ++y);
+
+			// Integration Input values
+			gbc.gridy = ++y;
+			gbc.gridx = 0;
+			gbc.gridwidth = 1;
+			jlTmp = new JLabel("Integration:");
+			this.jIntPanel.add(jlTmp, gbc);
+			gbc.gridwidth = 1;
+			for (String nodeID : lAllNodeIDs) {
+				if (!this.compFeatures.getNodeInfo(nodeID).isInput()
+						|| !this.integrFunctions.containsKey(nodeID))
 					continue;
 				gbc.gridy = ++y;
 				gbc.gridx = 0;
