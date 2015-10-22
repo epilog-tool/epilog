@@ -260,7 +260,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		ModelPerturbations mp = this.epiPerturbClone.getModelPerturbations(this.selModel);
 		if (mp != null)
 			for (AbstractPerturbation ap : mp.getAllPerturbations()) {
-				System.out.println("  ap: " + ap);
 				dlmAPs.addElement(ap);
 				this.mID2AP.put(ap.toString(), ap);
 			}

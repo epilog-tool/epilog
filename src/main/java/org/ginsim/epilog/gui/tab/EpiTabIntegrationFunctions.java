@@ -342,7 +342,6 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 					.getComponentIntegrationFunctions(nodeID);
 			ComponentIntegrationFunctions cifOrig = this.epithelium.getIntegrationFunctions()
 					.getComponentIntegrationFunctions(nodeID);
-			System.out.println(nodeID);
 			if (cifClone == null && cifOrig == null)
 				continue;
 			if (cifClone == null && cifOrig != null || cifClone != null && cifOrig == null)

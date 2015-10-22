@@ -264,7 +264,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private void setNewColor(JButton jb) {
 		String nodeID = jb.getToolTipText();
 		Color newColor = JColorChooser.showDialog(jb, "Color chooser - " + nodeID, jb.getBackground());
-		System.out.println("Color = " + newColor);
 		if (newColor != null && !newColor.equals(modelFeatures.getColor(nodeID))) {
 			//jb.setBackground(newColor);
 			this.epithelium.getComponentFeatures().setNodeColor(nodeID, newColor);
@@ -403,7 +402,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	public void notifyChange() {
 		if (!this.isInitialized)
 			return;
-		System.out.println("IC.notifyChanged: ");
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		// Update grid
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();

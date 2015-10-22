@@ -506,10 +506,7 @@ public class EpiTabSimulation extends EpiTab {
 		});
 		List<String> lEnvInputCompsFromSelectedModels = new ArrayList<String>();
 		for (String nodeID : lInputs) {
-			if (!this.epithelium.isIntegrationComponent(nodeID)) {
-
 				lEnvInputCompsFromSelectedModels.add(nodeID);
-			}
 		}
 		y = 0;
 		for (String nodeID : lEnvInputCompsFromSelectedModels) {
