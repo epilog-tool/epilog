@@ -170,9 +170,9 @@ public class Parser {
 			// project add currEpi
 		}
 //		// Ensure coherence of all epithelia
-//		for (Epithelium epi : project.getEpitheliumList()) {
-//			epi.update();
-//		}
+		for (Epithelium epi : project.getEpitheliumList()) {
+			epi.getEpitheliumGrid().updateModelSet();
+		}
 		//System.out.println("Final: " + project);
 		project.setChanged(false);
 		br.close();
