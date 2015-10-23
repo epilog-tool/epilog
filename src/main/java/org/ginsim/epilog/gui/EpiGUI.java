@@ -554,7 +554,7 @@ public class EpiGUI extends JFrame {
 			for (String sbml : this.project.getModelNames()) {
 				this.projDescPanel.addModel(sbml);
 			}
-
+			this.project.setChanged(false);
 			this.initEpitheliumJTree();
 			for (Epithelium epi : this.project.getEpitheliumList()) {
 				this.addEpi2JTree(epi);
@@ -843,7 +843,7 @@ public class EpiGUI extends JFrame {
 		while (this.epiRightFrame.getTabCount() > 0) {
 			this.epiRightFrame.removeTabAt(0);
 		}
-
+		this.projDescPanel.clean();
 		this.buttonAdd.setEnabled(false);
 		this.buttonRemove.setEnabled(false);
 	}

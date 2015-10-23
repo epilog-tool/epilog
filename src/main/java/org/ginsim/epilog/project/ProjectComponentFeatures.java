@@ -94,6 +94,7 @@ public class ProjectComponentFeatures {
 		return sComps;
 	}
 
+	@Deprecated
 	public boolean equals(Object o) {
 		ProjectComponentFeatures ecfOut = (ProjectComponentFeatures) o;
 		Set<String> sAllNodes = new HashSet<String>();
@@ -101,7 +102,7 @@ public class ProjectComponentFeatures {
 		sAllNodes.addAll(this.nodeID2Info.keySet());
 		sAllNodes.addAll(ecfOut.nodeID2Info.keySet());
 		for (String nodeID : sAllNodes) {
-			if (!this.nodeID2Info.containsKey(nodeID) || !this.nodeID2Info.containsKey(nodeID))
+			if (!this.nodeID2Info.containsKey(nodeID) || !ecfOut.nodeID2Info.containsKey(nodeID))
 				return false;
 			if (!this.nodeID2Info.get(nodeID).equals(ecfOut.nodeID2Info.get(nodeID)))
 				return false;
@@ -111,7 +112,7 @@ public class ProjectComponentFeatures {
 		sAllNodes.addAll(this.nodeColor.keySet());
 		sAllNodes.addAll(ecfOut.nodeColor.keySet());
 		for (String nodeID : sAllNodes) {
-			if (!this.nodeColor.containsKey(nodeID) || !this.nodeColor.containsKey(nodeID))
+			if (!this.nodeColor.containsKey(nodeID) || !ecfOut.nodeColor.containsKey(nodeID))
 				return false;
 			if (!this.nodeColor.get(nodeID).equals(ecfOut.nodeColor.get(nodeID)))
 				return false;

@@ -64,5 +64,12 @@ public class ProjDescPanel extends JPanel {
 	public String getSelected() {
 		return this.listSBMLs.getSelectedValue();
 	}
+	
+	public void clean() {
+		while (this.countModels() > 0) {
+			String model = this.listSBMLs.getModel().getElementAt(0);
+			this.removeModel(model);
+		}
+	}
 
 }
