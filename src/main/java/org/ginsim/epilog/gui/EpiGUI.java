@@ -599,7 +599,7 @@ public class EpiGUI extends JFrame {
 		this.epiTree = new JTree(root);
 		// --
 		ToolTipManager.sharedInstance().registerComponent(this.epiTree);
-		TreeCellRenderer renderer = new ToolTipTreeCellRenderer();
+		TreeCellRenderer renderer = new ToolTipTreeCellRenderer(this.project);
 		this.epiTree.setCellRenderer(renderer);
 		// --
 		this.epiTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
