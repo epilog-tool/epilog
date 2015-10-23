@@ -9,12 +9,13 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.ginsim.epilog.core.ComponentIntegrationFunctions;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumIntegrationFunctions;
+import org.ginsim.epilog.core.ModelPerturbations;
 import org.ginsim.epilog.core.ModelPriorityClasses;
 import org.ginsim.epilog.core.topology.Topology;
-import org.ginsim.epilog.gui.tab.EpiTabIntegrationFunctions;
 import org.ginsim.epilog.project.Project;
 
 class ToolTipTreeCellRenderer implements TreeCellRenderer {
@@ -82,7 +83,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	}
 
 	private String getTooltipModelGrid(Epithelium epi) {
-		String tipKey = "<html><b>Models in use</b>";
+		String tipKey = "<html><b>Model(s) in use</b>";
 		for (LogicalModel m : epi.getEpitheliumGrid().getModelSet()) {
 			tipKey += "<br/>- " + this.project.getModelFeatures().getName(m);
 		}
@@ -103,7 +104,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 			}
 		}
 		if (epiIF.getComponents().isEmpty()) {
-			tipKey += "<i>None</i>";
+			tipKey += "<i>Empty</i>";
 		}
 		tipKey += "</html>";
 		return tipKey;
@@ -117,8 +118,29 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	}
 
 	private String getTooltipPerturbations(Epithelium epi) {
-		String tipKey = "<html><b>per model</b>";
-// TODO
+		String tipKey = "<html>";
+		boolean isEmpty = true;
+		for (LogicalModel m : epi.getEpitheliumGrid().getModelSet()) {
+			ModelPerturbations mp = epi.getModelPerturbations(m);
+			if (mp == null) {
+				continue;
+			}
+			List<AbstractPerturbation> apList = mp.getAllPerturbations();
+			if (apList.size()==0) {
+				continue;
+			}
+			if (!isEmpty) {
+				tipKey+="<br/>";
+			}
+			tipKey += "<b>" + this.project.getModelFeatures().getName(m) +"</b>";
+			for (AbstractPerturbation ap : apList) {
+				tipKey += "<br/>&nbsp;. " + ap;
+			}
+			isEmpty = false;
+		}
+		if (isEmpty) {
+			tipKey += "<i>Empty</i>";
+		}
 		tipKey += "</html>";
 		return tipKey;
 	}
@@ -127,12 +149,12 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 		String tipKey = "<html><b>Intra-cellular</b><br/>";
 		for (LogicalModel m : epi.getEpitheliumGrid().getModelSet()) {
 			ModelPriorityClasses mpc = epi.getPriorityClasses(m);
-			tipKey += this.project.getModelFeatures().getName(m)
+			tipKey += "- " + this.project.getModelFeatures().getName(m)
 					+ "</b><br/>";
-			tipKey += "  - "+mpc.size() + " classes<br/>";
+			tipKey += "&nbsp;&nbsp;. "+mpc.size() + " class(es)<br/>";
 		}
 		tipKey += "<b>Inter-cellular</b><br/>";
-		tipKey += "alpha = " + epi.getUpdateSchemeInter().getAlpha();
+		tipKey += "- alpha = " + epi.getUpdateSchemeInter().getAlpha();
 		tipKey += "</html>";
 		return tipKey;
 	}
