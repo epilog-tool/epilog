@@ -19,10 +19,12 @@ import javax.imageio.ImageIO;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
+import org.ginsim.epilog.OptionStore;
 import org.ginsim.epilog.project.Project;
-import org.ginsim.epilog.core.EpitheliumGrid;
 
 public class FileIO {
+
+	private final static String CONFIG_FILE = "config.txt";
 
 	public static File unzipPEPSTmpDir(File zipFile) throws IOException {
 		File outputTempDir = FileIO.createTempDirectory();
@@ -180,8 +182,7 @@ public class FileIO {
 		Project project = null;
 		// Loads all the epithelium from the config.txt configuration file
 		for (final File fileEntry : tmpFolder.listFiles()) {
-			if (fileEntry.getName().equals("config.txt")
-					|| fileEntry.getName().equals("CONFIG.TXT")) {
+			if (fileEntry.getName().toLowerCase().equals(CONFIG_FILE)) {
 				project = Parser.loadConfigurations(fileEntry);
 				break;
 			}
@@ -190,6 +191,7 @@ public class FileIO {
 		// Deletes the unzip temporary folder
 		FileIO.deleteTempDirectory(tmpFolder);
 		project.setFilenamePEPS(file.getAbsolutePath());
+		OptionStore.addRecentFile(file.getAbsolutePath());
 		return project;
 	}
 
@@ -199,7 +201,7 @@ public class FileIO {
 		File newPEPSTmpDir = FileIO.createTempDirectory();
 
 		// Save config.txt to tmpDir
-		String configFile = newPEPSTmpDir.getAbsolutePath() + "/config.txt";
+		String configFile = newPEPSTmpDir.getAbsolutePath() + "/" + CONFIG_FILE;
 		PrintWriter w = new PrintWriter(new FileWriter(configFile));
 		Parser.saveConfigurations(project, w);
 		w.close();
@@ -216,10 +218,11 @@ public class FileIO {
 
 		// Save PEPS to file
 		FileIO.zipTmpDir(newPEPSTmpDir, newPEPSFile);
+		OptionStore.addRecentFile(newPEPSFile);
 	}
 
-	public static void writeEpitheliumGrid2File(
-			String file, Container c, String ext) {
+	public static void writeEpitheliumGrid2File(String file, Container c,
+			String ext) {
 		BufferedImage dest = new BufferedImage(c.getWidth(), c.getHeight(),
 				BufferedImage.TYPE_INT_ARGB);
 		c.paint(dest.getGraphics());

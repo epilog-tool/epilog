@@ -46,6 +46,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.ginsim.epilog.OptionStore;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumGrid;
 import org.ginsim.epilog.gui.dialog.DialogAbout;
@@ -445,6 +446,7 @@ public class EpiGUI extends JFrame {
 
 	public void quitProject() {
 		if (this.canClose("Do you really want to quit?")) {
+			OptionStore.saveOptions();
 			System.exit(EXIT_ON_CLOSE);
 		}
 	}

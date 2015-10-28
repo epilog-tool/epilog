@@ -54,18 +54,30 @@ class NewProjAction extends AbstractAction {
 
 class LoadProjAction extends AbstractAction {
 	private static final long serialVersionUID = -2274417985854368549L;
+	private final String filename;
 
 	public LoadProjAction() {
 		super("Load Project");
 		putValue(SHORT_DESCRIPTION, "Load Project");
 		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O,
 		// FrameActionManager.MASK));
+		this.filename = null;
+	}
+
+	public LoadProjAction(String filename) {
+		super(filename);
+		this.filename = filename;
+		// TODO
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		try {
-			EpiGUI.getInstance().loadProject();
+			if (filename == null) {
+				EpiGUI.getInstance().loadProject();
+			} else {
+				EpiGUI.getInstance().loadPEPS(this.filename);
+			}
 		} catch (Exception e1) {
 			EpiGUI.getInstance().userMessageError(
 					"Invalid project (PEPS) file!", "Load project");
@@ -85,9 +97,9 @@ class RecentMenu extends JMenu {
 		if (b) {
 			// rebuild the recent menu
 			removeAll();
-//			for (String recent : OptionStore.getRecentFiles()) {
-//				add(new OpenAction(recent));
-//			}
+			for (String recent : OptionStore.getRecentFiles()) {
+				add(new LoadProjAction(recent));
+			}
 		}
 		super.setSelected(b);
 	}

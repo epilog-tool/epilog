@@ -75,7 +75,12 @@ public class Launcher {
 			}
 		} else {
 			// GUI
-//			OptionStore.init(Launcher.class.getPackage().getName());
+			try {
+				OptionStore.init(Launcher.class.getPackage().getName());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			EpiGUI gui = EpiGUI.getInstance();
 			
 			if (pepsFile != null) {
