@@ -92,7 +92,7 @@
 					<configuration>
 						<archive>
 							<manifest>
-								<mainClass>org.ginsim.epilog.Launcher</mainClass>
+								<mainClass>org.epilogtool.Launcher</mainClass>
 							</manifest>
 						</archive>
 						<descriptorRefs>
@@ -128,7 +128,7 @@
 								<addClasspath>true</addClasspath>
 								<classpathPrefix>lib/</classpathPrefix>
 								<useUniqueVersions>false</useUniqueVersions>
-								<mainClass>org.ginsim.epilog.Launcher</mainClass>
+								<mainClass>org.epilogtool.Launcher</mainClass>
 							</manifest>
 						</archive>
 					</configuration>
