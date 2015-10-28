@@ -26,7 +26,7 @@ public class FileIO {
 
 	private final static String CONFIG_FILE = "config.txt";
 
-	public static File unzipPEPSTmpDir(File zipFile) throws IOException {
+	public static File unzipPEPSTmpDir(String zipFile) throws IOException {
 		File outputTempDir = FileIO.createTempDirectory();
 		FileIO.unZipIt(zipFile, outputTempDir);
 		return outputTempDir;
@@ -122,7 +122,7 @@ public class FileIO {
 		return null;
 	}
 
-	private static void unZipIt(File zipFile, File folder) {
+	private static void unZipIt(String zipFile, File folder) {
 
 		byte[] buffer = new byte[1024];
 
@@ -134,8 +134,8 @@ public class FileIO {
 			}
 
 			// get the zip file content
-			ZipInputStream zis = new ZipInputStream(
-					new FileInputStream(zipFile));
+			ZipInputStream zis = new ZipInputStream(new FileInputStream(
+					new File(zipFile)));
 			// get the zipped file list entry
 			ZipEntry ze = zis.getNextEntry();
 
@@ -173,11 +173,11 @@ public class FileIO {
 		return sbmlFormat.importFile(file);
 	}
 
-	public static Project loadPEPS(File file) throws IOException,
+	public static Project loadPEPS(String filename) throws IOException,
 			InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
-		File tmpFolder = FileIO.unzipPEPSTmpDir(file);
+		File tmpFolder = FileIO.unzipPEPSTmpDir(filename);
 
 		Project project = null;
 		// Loads all the epithelium from the config.txt configuration file
@@ -190,8 +190,8 @@ public class FileIO {
 
 		// Deletes the unzip temporary folder
 		FileIO.deleteTempDirectory(tmpFolder);
-		project.setFilenamePEPS(file.getAbsolutePath());
-		OptionStore.addRecentFile(file.getAbsolutePath());
+		project.setFilenamePEPS(filename);
+		OptionStore.addRecentFile(filename);
 		return project;
 	}
 

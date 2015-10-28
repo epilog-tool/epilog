@@ -82,7 +82,7 @@ public class Launcher {
 				e.printStackTrace();
 			}
 			EpiGUI gui = EpiGUI.getInstance();
-			
+
 			if (pepsFile != null) {
 				File f = new File(pepsFile);
 				if (f.exists())
@@ -95,8 +95,7 @@ public class Launcher {
 			throws IOException, InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
-		File fPEPS = new File(pepsFile);
-		Project project = FileIO.loadPEPS(fPEPS);
+		Project project = FileIO.loadPEPS(pepsFile);
 
 		List<Epithelium> epiList = project.getEpitheliumList();
 		Simulation simulator = new Simulation(epiList.get(0));

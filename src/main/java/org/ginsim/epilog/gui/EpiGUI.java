@@ -46,6 +46,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.ginsim.epilog.FileSelectionHelper;
 import org.ginsim.epilog.OptionStore;
 import org.ginsim.epilog.core.Epithelium;
 import org.ginsim.epilog.core.EpitheliumGrid;
@@ -64,7 +65,6 @@ import org.ginsim.epilog.gui.tab.EpiTabPerturbations;
 import org.ginsim.epilog.gui.tab.EpiTabSimulation;
 import org.ginsim.epilog.gui.tab.EpiTabUpdateScheme;
 import org.ginsim.epilog.gui.widgets.CloseTabButton;
-import org.ginsim.epilog.io.EpilogFileFilter;
 import org.ginsim.epilog.io.FileIO;
 import org.ginsim.epilog.project.Project;
 
@@ -650,13 +650,11 @@ public class EpiGUI extends JFrame {
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException {
-		JFileChooser fc = new JFileChooser();
-		fc.setFileFilter(new EpilogFileFilter("peps"));
 
-		fc.setDialogTitle("Open file");
-		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+		String filename = FileSelectionHelper.openFilename();
+		if (filename != null) {
 			try {
-				this.project = FileIO.loadPEPS(fc.getSelectedFile());
+				this.project = FileIO.loadPEPS(filename);
 				return true;
 			} catch (IOException e1) {
 				e1.printStackTrace();
@@ -670,7 +668,7 @@ public class EpiGUI extends JFrame {
 			InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException {
 		try {
-			this.project = FileIO.loadPEPS(new File(filename));
+			this.project = FileIO.loadPEPS(filename);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -689,22 +687,19 @@ public class EpiGUI extends JFrame {
 	}
 
 	public void saveAsPEPS() throws IOException {
-		JFileChooser fc = new JFileChooser();
+		String filename = FileSelectionHelper.saveFilename();
 
-		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-			String newUserPEPSFile = fc.getSelectedFile().getAbsolutePath();
-			newUserPEPSFile += (newUserPEPSFile.endsWith(".peps") ? ""
-					: ".peps");
-			FileIO.savePEPS(this.project, newUserPEPSFile);
-			this.project.setFilenamePEPS(newUserPEPSFile);
+		if (filename != null) {
+			filename += (filename.endsWith(".peps") ? "" : ".peps");
+			FileIO.savePEPS(this.project, filename);
+			this.project.setFilenamePEPS(filename);
 			this.project.setChanged(false);
-			this.setTitle(NAME + " - " + newUserPEPSFile);
+			this.setTitle(NAME + " - " + filename);
 			this.validateGUI();
 		}
 	}
 
 	public void savePEPS() throws IOException {
-		// System.out.println(this.project.getFilenamePEPS());
 		String fName = this.project.getFilenamePEPS();
 		if (fName == null) {
 			saveAsPEPS();
