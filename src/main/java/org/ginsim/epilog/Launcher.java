@@ -24,14 +24,7 @@ public class Launcher {
 
 	/**
 	 * @param args
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 * @throws SecurityException
-	 * @throws NoSuchMethodException
-	 * @throws InvocationTargetException
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
+	 * @throws Exception
 	 */
 	public static void main(String[] args) throws IOException,
 			InstantiationException, IllegalAccessException,
@@ -44,7 +37,7 @@ public class Launcher {
 		int maxiter = 10;
 		boolean bCMD = false;
 		String pepsFile = null;
-	
+
 		try {
 			jsap = new SimpleJSAP(
 					Launcher.class.getName(),
@@ -82,14 +75,14 @@ public class Launcher {
 			}
 		} else {
 			// GUI
-			EpiGUI gui = new EpiGUI();
-
+//			OptionStore.init(Launcher.class.getPackage().getName());
+			EpiGUI gui = EpiGUI.getInstance();
+			
 			if (pepsFile != null) {
 				File f = new File(pepsFile);
 				if (f.exists())
 					gui.loadPEPS(pepsFile);
 			}
-			// gui.initialize();
 		}
 	}
 

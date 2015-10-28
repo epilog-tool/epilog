@@ -49,7 +49,7 @@ public class DialogAbout extends EscapableDialog implements HyperlinkListener {
 		s += "of <b>Epi</b>thelium <b>Log</b>ical models.<br/>\n";
 		s += "It makes use of Cellular Automata to visualize the ";
 		s += "evolution of the pattern formation.</p>\n";
-		s += "<a href=\"http://ginsim.org/epilog\">http://ginsim.org/epilog</a><br/>\n";
+		s += "<a href=\"http://epilog-tool.org\">http://epilog-tool.org</a><br/>\n";
 		s += "<h3>Current Team</h3>\n";
 		s += "<table border=0>\n";
 		s += "<tr><td>Claudine Chaouiya</td><td>Project coordination</td></tr>\n";
