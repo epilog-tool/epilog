@@ -265,9 +265,9 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		String nodeID = jb.getToolTipText();
 		Color newColor = JColorChooser.showDialog(jb, "Color chooser - " + nodeID, jb.getBackground());
 		if (newColor != null && !newColor.equals(modelFeatures.getColor(nodeID))) {
-			//jb.setBackground(newColor);
+			jb.setBackground(newColor);
 			this.epithelium.getComponentFeatures().setNodeColor(nodeID, newColor);
-			this.projChanged.setChanged();
+			this.projChanged.setChanged(this);
 			if (this.mNode2ValueSelected.containsKey(nodeID)) {
 				// Paint only if NodeID is selected!!
 				this.visualGridICs.paintComponent(this.visualGridICs.getGraphics());
