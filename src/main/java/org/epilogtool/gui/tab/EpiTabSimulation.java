@@ -453,7 +453,7 @@ public class EpiTabSimulation extends EpiTab {
 		if (newColor != null && !newColor.equals(modelFeatures.getColor(nodeID))) {
 			jb.setBackground(newColor);
 			this.epithelium.getComponentFeatures().setNodeColor(nodeID, newColor);
-			this.projChanged.setChanged();
+			this.projChanged.setChanged(this);
 			this.visualGridSimulation.paintComponent(this.visualGridSimulation.getGraphics());
 		}
 	}

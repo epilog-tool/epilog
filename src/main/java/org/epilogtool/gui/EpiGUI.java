@@ -800,9 +800,8 @@ public class EpiGUI extends JFrame {
 			project.setChanged(true);
 			for (int i = 0; i < epiRightFrame.getTabCount(); i++) {
 				Component c = epiRightFrame.getComponentAt(i);
-				if (c instanceof EpiTabSimulation) {
-					((EpiTab) c).notifyChange();
-				} else if (c instanceof EpiTabInitialConditions) {
+				if (c instanceof EpiTabSimulation
+						|| c instanceof EpiTabInitialConditions) {
 					EpiTab tab = (EpiTab) c;
 					if (!tab.equals(changedTab)) {
 						tab.notifyChange();
