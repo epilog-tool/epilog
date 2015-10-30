@@ -11,6 +11,7 @@ import java.util.Set;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.epilogtool.gui.color.ColorUtils;
+import org.epilogtool.OptionStore;
 
 public class ProjectComponentFeatures {
 	private Map<String, NodeInfo> nodeID2Info;
@@ -44,9 +45,17 @@ public class ProjectComponentFeatures {
 
 	public void addAllComponentsFromModel(LogicalModel m) {
 		for (NodeInfo node : m.getNodeOrder()) {
+			
 			if (!nodeID2Info.containsKey(node.getNodeID())) {
 				this.nodeID2Info.put(node.getNodeID(), node);
-				this.nodeColor.put(node.getNodeID(), ColorUtils.random());
+				String OS_nodeID = "CC " + node.getNodeID();
+				if (OptionStore.getOption(OS_nodeID) != null){
+					this.nodeColor.put(node.getNodeID(), 
+							Color.decode((String) OptionStore.getOption(OS_nodeID)));
+				}
+				else {
+					this.nodeColor.put(node.getNodeID(), ColorUtils.random());
+				}
 			}
 		}
 	}

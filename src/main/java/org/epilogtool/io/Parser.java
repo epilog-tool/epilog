@@ -22,6 +22,7 @@ import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
 import org.epilogtool.project.Project;
 import org.epilogtool.project.ProjectComponentFeatures;
+import org.epilogtool.OptionStore;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
@@ -236,6 +237,7 @@ public class Parser {
 			Color c = project.getComponentFeatures().getNodeColor(nodeID);
 			w.println("CC " + nodeID + " " + c.getRed() + " " 
 					+ c.getBlue() + " " + c.getGreen());
+			OptionStore.setOption("CC " + nodeID,  ColorUtils.getColorCode(c));
 		}
 
 		for (Epithelium epi : project.getEpitheliumList()) {
