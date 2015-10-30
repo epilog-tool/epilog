@@ -3,6 +3,8 @@ package org.epilogtool.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
@@ -20,7 +22,7 @@ public class ProjDescPanel extends JPanel {
 
 	public ProjDescPanel() {
 		this.setLayout(new BorderLayout());
-		
+
 		// PAGE_START
 		JPanel jpWholeLine = new JPanel(new BorderLayout());
 		JLabel jlModels = new JLabel(LABEL);
@@ -32,6 +34,21 @@ public class ProjDescPanel extends JPanel {
 		// CENTER
 		ListModel<String> listModel = new DefaultListModel<String>();
 		this.listSBMLs = new JList<String>(listModel);
+		this.listSBMLs.addMouseMotionListener(new MouseMotionListener() {
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				JList l = (JList) e.getSource();
+				int index = l.locationToIndex(e.getPoint());
+				if (index > -1) {
+					l.setToolTipText(l.getModel().getElementAt(index)
+							.toString());
+				}
+			}
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+			}
+		});
 		this.listSBMLs.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		JScrollPane scroll = new JScrollPane(this.listSBMLs);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -48,7 +65,8 @@ public class ProjDescPanel extends JPanel {
 	}
 
 	public void removeModel(String model) {
-		((DefaultListModel<String>) this.listSBMLs.getModel()).removeElement(model);
+		((DefaultListModel<String>) this.listSBMLs.getModel())
+				.removeElement(model);
 	}
 
 	public boolean hasModel(String model) {
@@ -60,11 +78,10 @@ public class ProjDescPanel extends JPanel {
 		return this.listSBMLs.getModel().getSize();
 	}
 
-
 	public String getSelected() {
 		return this.listSBMLs.getSelectedValue();
 	}
-	
+
 	public void clean() {
 		while (this.countModels() > 0) {
 			String model = this.listSBMLs.getModel().getElementAt(0);
