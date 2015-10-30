@@ -73,6 +73,7 @@ public class EpiGUI extends JFrame {
 
 	private final static String NAME = "Epilog";
 	private final static int DIVIDER_SIZE = 3;
+	private final static int DIVIDER_POS_X = 210;
 
 	private JMenuBar epiMenu;
 	private JSplitPane epiMainFrame;
@@ -192,6 +193,7 @@ public class EpiGUI extends JFrame {
 		this.epiMainFrame = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 				epiLeftFrame, this.epiRightFrame);
 		this.epiMainFrame.setDividerSize(DIVIDER_SIZE);
+		this.epiMainFrame.setDividerLocation(DIVIDER_POS_X);
 
 		this.add(this.epiMainFrame);
 
