@@ -5,7 +5,7 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 
 public class FileResource {
-	private static final String PATH = "/org.epilogtool/icon/";
+	private static final String PATH = "/org/epilogtool/icon/";
 
 	public static URL getResource(String file) {
 		return ButtonFactory.class.getResource(FileResource.PATH + file);
