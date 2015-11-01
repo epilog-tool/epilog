@@ -25,6 +25,7 @@ public class FileMenu {
 
 		menu.add(new JSeparator());
 
+		menu.add(new CloseAction());
 		menu.add(new QuitAction());
 
 		return menu;
@@ -160,5 +161,21 @@ class QuitAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		EpiGUI.getInstance().quitProject();
+	}
+}
+
+class CloseAction extends AbstractAction {
+	private static final long serialVersionUID = 1728730440633848251L;
+
+	public CloseAction() {
+		super("Close");
+		putValue(SHORT_DESCRIPTION, "Close");
+		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_W,
+		// FrameActionManager.MASK));
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		EpiGUI.getInstance().closeProject();
 	}
 }

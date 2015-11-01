@@ -1,12 +1,9 @@
 package org.epilogtool.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dialog.ModalityType;
-import java.awt.FlowLayout;
-import java.awt.Insets;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
@@ -16,7 +13,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -57,6 +53,7 @@ import org.epilogtool.gui.dialog.DialogRenameEpithelium;
 import org.epilogtool.gui.menu.EpitheliumMenu;
 import org.epilogtool.gui.menu.FileMenu;
 import org.epilogtool.gui.menu.HelpMenu;
+import org.epilogtool.gui.menu.SBMLMenu;
 import org.epilogtool.gui.tab.EpiTab;
 import org.epilogtool.gui.tab.EpiTabInitialConditions;
 import org.epilogtool.gui.tab.EpiTabIntegrationFunctions;
@@ -82,8 +79,6 @@ public class EpiGUI extends JFrame {
 	private ProjDescPanel projDescPanel;
 	private JTree epiTree;
 	private Project project;
-	private JButton buttonAdd;
-	private JButton buttonRemove;
 	private static EpiGUI epigui;
 
 	public static EpiGUI getInstance() {
@@ -126,6 +121,10 @@ public class EpiGUI extends JFrame {
 		JMenu fileMenu = FileMenu.getMenu();
 		this.epiMenu.add(fileMenu);
 
+		// SBML menu
+		JMenu sbmlMenu = SBMLMenu.getMenu();
+		this.epiMenu.add(sbmlMenu);
+
 		// Epithelium menu
 		JMenu epiMenu = EpitheliumMenu.getMenu();
 		this.epiMenu.add(epiMenu);
@@ -140,39 +139,19 @@ public class EpiGUI extends JFrame {
 		JPanel topLeftFrame = new JPanel();
 		topLeftFrame
 				.setLayout(new BoxLayout(topLeftFrame, BoxLayout.PAGE_AXIS));
-		this.projDescPanel = new ProjDescPanel();
+		this.projDescPanel = new ProjDescPanel(sbmlMenu);
 		topLeftFrame.add(this.projDescPanel);
-		JPanel addRemoveModelPanel = new JPanel(new FlowLayout());
-		buttonAdd = new JButton("Add");
-		buttonAdd.setMargin(new Insets(0, 10, 0, 10));
-		buttonAdd.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					addSBML();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		});
-		addRemoveModelPanel.add(buttonAdd);
-		buttonRemove = new JButton("Delete");
-		buttonRemove.setMargin(new Insets(0, 10, 0, 10));
-		buttonRemove.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				removeSBML();
-			}
-		});
-		addRemoveModelPanel.add(buttonRemove);
-		topLeftFrame.add(addRemoveModelPanel);
 
+		// Epithelium list
+		JPanel jpEpiTree = new JPanel(new BorderLayout());
+		jpEpiTree.add(EpilogGUIFactory.getJLabelBold("List of Epithelium's:"),
+				BorderLayout.PAGE_START);
 		this.scrollTree = new JScrollPane(
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		jpEpiTree.add(this.scrollTree, BorderLayout.CENTER);
 		JSplitPane epiLeftFrame = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				topLeftFrame, this.scrollTree);
+				topLeftFrame, jpEpiTree);
 		epiLeftFrame.setDividerSize(DIVIDER_SIZE);
 		initEpitheliumJTree();
 
@@ -409,13 +388,17 @@ public class EpiGUI extends JFrame {
 						this.getTitle().length() - 1));
 			}
 		}
-		this.epiMenu.getMenu(1).setEnabled(bIsValid);
+
+		// File Menu
 		JMenu file = this.epiMenu.getMenu(0);
 		file.getItem(4).setEnabled(bIsValid && this.project.hasChanged()); // Save
 		file.getItem(5).setEnabled(bIsValid); // Save As
-		this.buttonAdd.setEnabled(bIsValid);
-		this.buttonRemove.setEnabled(bIsValid
-				&& this.projDescPanel.countModels() > 1);
+
+		// SBML Menu
+		this.epiMenu.getMenu(1).setEnabled(bIsValid);
+		if (bIsValid) {
+			this.projDescPanel.updateSBMLMenuItems();
+		}
 
 		boolean eIsValid = false;
 		if (epiTree.getRowCount() == 1)
@@ -423,7 +406,9 @@ public class EpiGUI extends JFrame {
 		else
 			eIsValid = true;
 
-		JMenu epithelium = this.epiMenu.getMenu(1);
+		// Epithelium Menu
+		this.epiMenu.getMenu(2).setEnabled(bIsValid);
+		JMenu epithelium = this.epiMenu.getMenu(2);
 		epithelium.getItem(1).setEnabled(eIsValid);
 		epithelium.getItem(2).setEnabled(eIsValid);
 		epithelium.getItem(3).setEnabled(eIsValid);
@@ -443,6 +428,14 @@ public class EpiGUI extends JFrame {
 			}
 		} else {
 			return true;
+		}
+	}
+
+	public void closeProject() {
+		if (this.canClose("Do you really want to close?")) {
+			this.project = null;
+			this.cleanGUI();
+			this.validateJTreeExpansion();
 		}
 	}
 
@@ -502,7 +495,7 @@ public class EpiGUI extends JFrame {
 		DefaultTreeModel model = (DefaultTreeModel) this.epiTree.getModel();
 		model.reload();
 
-		validateJTreeExpansion();
+		this.validateJTreeExpansion();
 	}
 
 	private void validateJTreeExpansion() {
@@ -571,7 +564,7 @@ public class EpiGUI extends JFrame {
 		if (node == null || node.isLeaf() || node.isRoot()) {
 			bActive = false;
 		}
-		JMenu epithelium = this.epiMenu.getMenu(1);
+		JMenu epithelium = this.epiMenu.getMenu(2);
 		epithelium.getItem(1).setEnabled(bActive);
 		epithelium.getItem(2).setEnabled(bActive);
 		epithelium.getItem(3).setEnabled(bActive);
@@ -712,7 +705,7 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
-	private void addSBML() throws IOException {
+	public void loadSBML() throws IOException {
 		FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter(
 				"sbml files (*.sbml)", "sbml");
 		JFileChooser fc = new JFileChooser();
@@ -735,7 +728,7 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
-	private void removeSBML() {
+	public void removeSBML() {
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
 			if (this.project.removeModel(model)) {
@@ -767,8 +760,10 @@ public class EpiGUI extends JFrame {
 			this.epiRightFrame.removeTabAt(0);
 		}
 		this.projDescPanel.clean();
-		this.buttonAdd.setEnabled(false);
-		this.buttonRemove.setEnabled(false);
+		// SBML Menu
+		JMenu sbml = this.epiMenu.getMenu(1);
+		sbml.getItem(0).setEnabled(false);
+		sbml.getItem(1).setEnabled(false);
 	}
 
 	public class SimulationEpiClone {
