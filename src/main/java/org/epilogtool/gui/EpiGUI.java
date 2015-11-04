@@ -419,6 +419,9 @@ public class EpiGUI extends JFrame {
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException {
+		if (!this.canClose("Do you really want load another project?")) {
+			return;
+		}
 		try {
 			this.project = FileIO.loadPEPS(filename);
 		} catch (IOException e) {
