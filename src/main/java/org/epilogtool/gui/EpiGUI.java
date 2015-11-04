@@ -325,10 +325,11 @@ public class EpiGUI extends JFrame {
 		}
 
 		// File Menu
-		boolean bIsValid = this.project.getFilenamePEPS() != null;
+		boolean bIsValid = this.project.getFilenamePEPS() != null ? this.project
+				.hasChanged() : this.projDescPanel.countModels() > 0;
 		JMenu file = this.epiMenu.getMenu(0);
-		file.getItem(4).setEnabled(bIsValid && this.project.hasChanged()); // Save
-		file.getItem(5).setEnabled(bIsValid); // Save As
+		file.getItem(4).setEnabled(bIsValid); // Save
+		file.getItem(5).setEnabled(this.projDescPanel.countModels() > 0); // SaveAs
 
 		// SBML Menu
 		this.projDescPanel.updateSBMLMenuItems();
