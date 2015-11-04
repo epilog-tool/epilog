@@ -1,14 +1,17 @@
 package org.epilogtool.gui.menu;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JSeparator;
+import javax.swing.KeyStroke;
 
 import org.epilogtool.OptionStore;
 import org.epilogtool.gui.EpiGUI;
+import org.epilogtool.gui.GUIInfo;
 
 public class FileMenu {
 	public static JMenu getMenu() {
@@ -25,7 +28,6 @@ public class FileMenu {
 
 		menu.add(new JSeparator());
 
-		menu.add(new CloseAction());
 		menu.add(new QuitAction());
 
 		return menu;
@@ -38,8 +40,8 @@ class NewProjAction extends AbstractAction {
 	public NewProjAction() {
 		super("New Project");
 		putValue(SHORT_DESCRIPTION, "New Project");
-		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
-		// FrameActionManager.MASK));
+		putValue(ACCELERATOR_KEY,
+				KeyStroke.getKeyStroke(KeyEvent.VK_N, GUIInfo.MASK));
 	}
 
 	@Override
@@ -60,15 +62,14 @@ class LoadProjAction extends AbstractAction {
 	public LoadProjAction() {
 		super("Load Project");
 		putValue(SHORT_DESCRIPTION, "Load Project");
-		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O,
-		// FrameActionManager.MASK));
+		putValue(ACCELERATOR_KEY,
+				KeyStroke.getKeyStroke(KeyEvent.VK_O, GUIInfo.MASK));
 		this.filename = null;
 	}
 
 	public LoadProjAction(String filename) {
 		super(filename);
 		this.filename = filename;
-		// TODO
 	}
 
 	@Override
@@ -112,8 +113,8 @@ class SaveAction extends AbstractAction {
 	public SaveAction() {
 		super("Save");
 		putValue(SHORT_DESCRIPTION, "Save");
-		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S,
-		// FrameActionManager.MASK));
+		putValue(ACCELERATOR_KEY,
+				KeyStroke.getKeyStroke(KeyEvent.VK_S, GUIInfo.MASK));
 	}
 
 	@Override
@@ -133,8 +134,6 @@ class SaveAsAction extends AbstractAction {
 	public SaveAsAction() {
 		super("Save As");
 		putValue(SHORT_DESCRIPTION, "Save As");
-		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S,
-		// FrameActionManager.MASK));
 	}
 
 	@Override
@@ -154,28 +153,12 @@ class QuitAction extends AbstractAction {
 	public QuitAction() {
 		super("Quit");
 		putValue(SHORT_DESCRIPTION, "Quit");
-		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Q,
-		// FrameActionManager.MASK));
+		putValue(ACCELERATOR_KEY,
+				KeyStroke.getKeyStroke(KeyEvent.VK_Q, GUIInfo.MASK));
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		EpiGUI.getInstance().quitProject();
-	}
-}
-
-class CloseAction extends AbstractAction {
-	private static final long serialVersionUID = 1728730440633848251L;
-
-	public CloseAction() {
-		super("Close");
-		putValue(SHORT_DESCRIPTION, "Close");
-		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_W,
-		// FrameActionManager.MASK));
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		EpiGUI.getInstance().closeProject();
 	}
 }

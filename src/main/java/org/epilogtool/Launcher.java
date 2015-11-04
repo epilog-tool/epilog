@@ -83,10 +83,10 @@ public class Launcher {
 			}
 			EpiGUI gui = EpiGUI.getInstance();
 
-			if (pepsFile != null) {
-				File f = new File(pepsFile);
-				if (f.exists())
-					gui.loadPEPS(pepsFile);
+			if (pepsFile != null && (new File(pepsFile).exists())) {
+				gui.loadPEPS(pepsFile);
+			} else {
+				gui.newProject();
 			}
 		}
 	}

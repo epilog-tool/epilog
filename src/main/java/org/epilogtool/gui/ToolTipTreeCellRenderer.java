@@ -16,14 +16,14 @@ import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.core.ModelPerturbations;
 import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.core.topology.Topology;
-import org.epilogtool.project.Project;
+import org.epilogtool.project.ProjectModelFeatures;
 
 class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
-	private Project project;
+	private ProjectModelFeatures modelFeatures;
 
-	public ToolTipTreeCellRenderer(Project project) {
-		this.project = project;
+	public ToolTipTreeCellRenderer(ProjectModelFeatures modelFeatures) {
+		this.modelFeatures = modelFeatures;
 	}
 
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
@@ -85,7 +85,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	private String getTooltipModelGrid(Epithelium epi) {
 		String tipKey = "<html><b>Model(s) in use</b>";
 		for (LogicalModel m : epi.getEpitheliumGrid().getModelSet()) {
-			tipKey += "<br/>- " + this.project.getModelFeatures().getName(m);
+			tipKey += "<br/>- " + this.modelFeatures.getName(m);
 		}
 		tipKey += "</html>";
 		return tipKey;
@@ -124,13 +124,13 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 				continue;
 			}
 			List<AbstractPerturbation> apList = mp.getAllPerturbations();
-			if (apList.size()==0) {
+			if (apList.size() == 0) {
 				continue;
 			}
 			if (!isEmpty) {
-				tipKey+="<br/>";
+				tipKey += "<br/>";
 			}
-			tipKey += "<b>" + this.project.getModelFeatures().getName(m) +"</b>";
+			tipKey += "<b>" + this.modelFeatures.getName(m) + "</b>";
 			for (AbstractPerturbation ap : apList) {
 				tipKey += "<br/>&nbsp;. " + ap;
 			}
@@ -147,9 +147,8 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 		String tipKey = "<html><b>Intra-cellular</b><br/>";
 		for (LogicalModel m : epi.getEpitheliumGrid().getModelSet()) {
 			ModelPriorityClasses mpc = epi.getPriorityClasses(m);
-			tipKey += "- " + this.project.getModelFeatures().getName(m)
-					+ "</b><br/>";
-			tipKey += "&nbsp;&nbsp;. "+mpc.size() + " class(es)<br/>";
+			tipKey += "- " + this.modelFeatures.getName(m) + "</b><br/>";
+			tipKey += "&nbsp;&nbsp;. " + mpc.size() + " class(es)<br/>";
 		}
 		tipKey += "<b>Inter-cellular</b><br/>";
 		tipKey += "- alpha = " + epi.getUpdateSchemeInter().getAlpha();
@@ -159,7 +158,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 
 	private String getTooltipSimulation(Epithelium epi) {
 		String tipKey = "<html><b>Ideas for information to put here ???</b>";
-// TODO
+		// TODO
 		tipKey += "</html>";
 		return tipKey;
 	}

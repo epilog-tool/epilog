@@ -1,14 +1,10 @@
 package org.epilogtool.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dialog.ModalityType;
 import java.awt.Window;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
@@ -20,26 +16,16 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTree;
 import javax.swing.SwingUtilities;
-import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeExpansionListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.epilogtool.FileSelectionHelper;
@@ -48,7 +34,6 @@ import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.dialog.DialogAbout;
 import org.epilogtool.gui.dialog.DialogNewEpithelium;
-import org.epilogtool.gui.dialog.DialogNewProject;
 import org.epilogtool.gui.dialog.DialogRenameEpithelium;
 import org.epilogtool.gui.menu.EpitheliumMenu;
 import org.epilogtool.gui.menu.FileMenu;
@@ -68,16 +53,18 @@ import org.epilogtool.project.Project;
 public class EpiGUI extends JFrame {
 	private static final long serialVersionUID = -3266121588934662490L;
 
-	private final static String NAME = "Epilog";
+	private final static String TITLE_APPNAME = "Epilog";
+	private final static String TITLE_UNTITLED = " - Untitled";
+	private final static String TITLE_MODIFIED_SYMBOL = "*";
+
 	private final static int DIVIDER_SIZE = 3;
 	private final static int DIVIDER_POS_X = 210;
 
 	private JMenuBar epiMenu;
 	private JSplitPane epiMainFrame;
-	private JScrollPane scrollTree;
 	private JTabbedPane epiRightFrame;
 	private ProjDescPanel projDescPanel;
-	private JTree epiTree;
+	private EpiTreePanel epiTreePanel;
 	private Project project;
 	private static EpiGUI epigui;
 
@@ -89,18 +76,18 @@ public class EpiGUI extends JFrame {
 	}
 
 	private EpiGUI() {
-		super(NAME);
+		super(TITLE_APPNAME);
 
 		try {
 			UIManager.setLookAndFeel(UIManager
 					.getCrossPlatformLookAndFeelClassName());
 			// UI Alternatives
 			// com.sun.java.swing.plaf.gtk.GTKLookAndFeel <- +/-
-			// com.sun.java.swing.plaf.motif.MotifLookAndFeel <- v
-			// com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel <- v
+			// com.sun.java.swing.plaf.motif.MotifLookAndFeel <- ok
+			// com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel <- ok
 			// com.sun.java.swing.plaf.windows.WindowsLookAndFeel <- x
 			// javax.swing.plaf.basic.BasicLookAndFeel
-			// javax.swing.plaf.metal.MetalLookAndFeel <- v
+			// javax.swing.plaf.metal.MetalLookAndFeel <- ok
 			// javax.swing.plaf.multi.MultiLookAndFeel <- X
 			// javax.swing.plaf.nimbus.NimbusLookAndFeel <- +/-
 			UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
@@ -142,19 +129,7 @@ public class EpiGUI extends JFrame {
 		this.projDescPanel = new ProjDescPanel(sbmlMenu);
 		topLeftFrame.add(this.projDescPanel);
 
-		// Epithelium list
-		JPanel jpEpiTree = new JPanel(new BorderLayout());
-		jpEpiTree.add(EpilogGUIFactory.getJLabelBold("List of Epithelium's:"),
-				BorderLayout.PAGE_START);
-		this.scrollTree = new JScrollPane(
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		jpEpiTree.add(this.scrollTree, BorderLayout.CENTER);
-		JSplitPane epiLeftFrame = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				topLeftFrame, jpEpiTree);
-		epiLeftFrame.setDividerSize(DIVIDER_SIZE);
-		initEpitheliumJTree();
-
+		// TabbedPane
 		this.epiRightFrame = new JTabbedPane();
 		this.epiRightFrame.addChangeListener(new ChangeListener() {
 			@Override
@@ -169,6 +144,13 @@ public class EpiGUI extends JFrame {
 				epitab.notifyChange();
 			}
 		});
+
+		// Epithelium list
+		this.epiTreePanel = new EpiTreePanel(epiMenu);
+		JSplitPane epiLeftFrame = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+				topLeftFrame, this.epiTreePanel);
+		epiLeftFrame.setDividerSize(DIVIDER_SIZE);
+
 		this.epiMainFrame = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 				epiLeftFrame, this.epiRightFrame);
 		this.epiMainFrame.setDividerSize(DIVIDER_SIZE);
@@ -209,7 +191,6 @@ public class EpiGUI extends JFrame {
 			}
 		});
 
-		this.validateGUI();
 		this.pack();
 		this.setSize(1070, 768);
 		this.setVisible(true);
@@ -255,32 +236,24 @@ public class EpiGUI extends JFrame {
 					dialogPanel.getEpitheliumHeight(),
 					dialogPanel.getTopologyLayout(), dialogPanel.getEpiName(),
 					dialogPanel.getSBMLName(), dialogPanel.getRollOver());
-			// System.out.println(newEpi.getX()+ ""+dialogPanel.getX() +
-			// dialogPanel.getTopologyLayout() + dialogPanel.getEpiName());
-			this.addEpi2JTree(newEpi);
-			this.project.setChanged(true);
-			this.validateGUI();
+			this.addEpithelium2JTree(newEpi);
 		}
 	}
 
 	public void cloneEpithelium() {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
-				.getLastSelectedPathComponent();
-		Epithelium epi = (Epithelium) node.getUserObject();
+		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
 		Epithelium epiClone = this.project.cloneEpithelium(epi);
 		this.addEpithelium2JTree(epiClone);
 	}
 
 	private void addEpithelium2JTree(Epithelium epiClone) {
-		this.addEpi2JTree(epiClone);
+		this.epiTreePanel.addEpi2JTree(epiClone);
 		this.project.setChanged(true);
 		this.validateGUI();
 	}
 
 	public void deleteEpithelium() {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
-				.getLastSelectedPathComponent();
-		Epithelium epi = (Epithelium) node.getUserObject();
+		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
 		int result = JOptionPane.showConfirmDialog(this,
 				"Do you really want to delete epithelium:\n" + epi + " ?",
 				"Question", JOptionPane.YES_NO_OPTION);
@@ -294,24 +267,14 @@ public class EpiGUI extends JFrame {
 					epiRightFrame.removeTabAt(i);
 				}
 			}
-			// Remove from JTree
-			DefaultTreeModel model = (DefaultTreeModel) this.epiTree.getModel();
-			DefaultMutableTreeNode root = (DefaultMutableTreeNode) model
-					.getRoot();
-			root.remove(node);
-			model.reload();
-			if (root.getChildCount() == 0) {
-				this.initEpitheliumJTree();
-			}
+			this.epiTreePanel.remove(this.project.getModelFeatures());
 			this.project.setChanged(true);
 			this.validateGUI();
 		}
 	}
 
 	public void renameEpithelium() {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
-				.getLastSelectedPathComponent();
-		Epithelium epi = (Epithelium) node.getUserObject();
+		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
 
 		DialogRenameEpithelium dialogPanel = new DialogRenameEpithelium(
 				epi.getName(), this.project.getEpitheliumNameList());
@@ -337,7 +300,6 @@ public class EpiGUI extends JFrame {
 							.changeTitle(title);
 				}
 			}
-
 			this.validateGUI();
 		}
 	}
@@ -346,78 +308,47 @@ public class EpiGUI extends JFrame {
 		if (!this.canClose("Do you really want a new project?")) {
 			return;
 		}
-		DialogNewProject dialogPanel = new DialogNewProject();
-
-		Window win = SwingUtilities.getWindowAncestor(this);
-		JDialog dialog = new JDialog(win, "Add SBML Models",
-				ModalityType.APPLICATION_MODAL);
-		dialog.getContentPane().add(dialogPanel);
-		dialog.pack();
-		dialog.setLocationRelativeTo(null);
-		dialog.setVisible(true);
-
-		if (dialogPanel.isDefined()) {
-			Project p = new Project();
-			for (File fSBML : dialogPanel.getFileList()) {
-				p.addModel(fSBML.getName(), FileIO.loadSBMLModel(fSBML));
-			}
-			// Only when all SBML are properly loaded
-			// is the this.project and the GUI updated
-			this.project = p;
-			this.cleanGUI();
-			this.setTitle(NAME + " - Unsaved");
-			for (String sbmlName : this.project.getModelNames()) {
-				this.projDescPanel.addModel(sbmlName);
-			}
-			// this.projDescPanel.setDimension(dialogPanel.getProjWidth(),
-			// dialogPanel.getProjHeight());
-			initEpitheliumJTree();
-			this.validateGUI();
-		}
+		this.project = new Project();
+		this.cleanGUI();
+		this.validateGUI();
 	}
 
 	private void validateGUI() {
-		boolean bIsValid = false;
-		if (this.project != null) {
-			bIsValid = true;
-			if (this.project.hasChanged() && !this.getTitle().endsWith("*")) {
-				this.setTitle(this.getTitle() + "*");
-			}
-			if (!this.project.hasChanged() && this.getTitle().endsWith("*")) {
-				this.setTitle(this.getTitle().substring(0,
-						this.getTitle().length() - 1));
-			}
+		if (this.project.hasChanged()
+				&& !this.getTitle().endsWith(TITLE_MODIFIED_SYMBOL)) {
+			this.setTitle(this.getTitle() + TITLE_MODIFIED_SYMBOL);
+		}
+		if (!this.project.hasChanged()
+				&& this.getTitle().endsWith(TITLE_MODIFIED_SYMBOL)) {
+			this.setTitle(this.getTitle().substring(0,
+					this.getTitle().length() - 1));
 		}
 
 		// File Menu
+		boolean bIsValid = this.project.getFilenamePEPS() != null;
 		JMenu file = this.epiMenu.getMenu(0);
 		file.getItem(4).setEnabled(bIsValid && this.project.hasChanged()); // Save
 		file.getItem(5).setEnabled(bIsValid); // Save As
 
 		// SBML Menu
-		this.epiMenu.getMenu(1).setEnabled(bIsValid);
-		if (bIsValid) {
-			this.projDescPanel.updateSBMLMenuItems();
-		}
-
-		boolean eIsValid = false;
-		if (epiTree.getRowCount() == 1)
-			eIsValid = false;
-		else
-			eIsValid = true;
+		this.projDescPanel.updateSBMLMenuItems();
 
 		// Epithelium Menu
-		this.epiMenu.getMenu(2).setEnabled(bIsValid);
-		JMenu epithelium = this.epiMenu.getMenu(2);
-		epithelium.getItem(1).setEnabled(eIsValid);
-		epithelium.getItem(2).setEnabled(eIsValid);
-		epithelium.getItem(3).setEnabled(eIsValid);
+		bIsValid = this.projDescPanel.countModels() > 0;
+		JMenu sbml = this.epiMenu.getMenu(2);
+		sbml.setEnabled(bIsValid);
+		sbml.getItem(1).setEnabled(false);
+		sbml.getItem(2).setEnabled(false);
+		sbml.getItem(3).setEnabled(false);
+		if (bIsValid) {
+			this.epiTreePanel.updateEpiMenuItems();
+		}
 
-		this.validateJTreeExpansion();
+		this.epiTreePanel.validateJTreeExpansion();
 	}
 
 	private boolean canClose(String msg) {
-		if (this.project != null && this.project.hasChanged()) {
+		if (this.projDescPanel.countModels() > 0 && this.project.hasChanged()) {
 			int n = JOptionPane.showConfirmDialog(this,
 					"You have unsaved changes!\n" + msg, "Question",
 					JOptionPane.YES_NO_OPTION);
@@ -428,14 +359,6 @@ public class EpiGUI extends JFrame {
 			}
 		} else {
 			return true;
-		}
-	}
-
-	public void closeProject() {
-		if (this.canClose("Do you really want to close?")) {
-			this.project = null;
-			this.cleanGUI();
-			this.validateJTreeExpansion();
 		}
 	}
 
@@ -455,197 +378,30 @@ public class EpiGUI extends JFrame {
 		}
 		if (this.loadPEPS()) {
 			this.cleanGUI();
-			this.setTitle(NAME + " - " + this.project.getFilenamePEPS());
+			this.setTitle(TITLE_APPNAME + " - "
+					+ this.project.getFilenamePEPS());
 			// this.projDescPanel.setDimension(this.project.getX(),
 			// this.project.getY());
 			for (String sbml : this.project.getModelNames()) {
 				this.projDescPanel.addModel(sbml);
 			}
 			this.project.setChanged(false);
-			this.initEpitheliumJTree();
+			this.epiTreePanel.initEpitheliumJTree(this.project
+					.getModelFeatures());
 			for (Epithelium epi : this.project.getEpitheliumList()) {
-				this.addEpi2JTree(epi);
+				this.epiTreePanel.addEpi2JTree(epi);
 			}
-			this.validateTreeNodeSelection();
 			this.validateGUI();
 		}
-	}
-
-	private void addEpi2JTree(Epithelium epi) {
-		DefaultMutableTreeNode epiNode = new DefaultMutableTreeNode(epi);
-		((DefaultMutableTreeNode) this.epiTree.getModel().getRoot())
-				.add(epiNode);
-
-		DefaultMutableTreeNode gm = new DefaultMutableTreeNode("Model Grid");
-		epiNode.add(gm);
-		DefaultMutableTreeNode it = new DefaultMutableTreeNode(
-				"Integration Components");
-		epiNode.add(it);
-		DefaultMutableTreeNode ic = new DefaultMutableTreeNode(
-				"Initial Condition");
-		epiNode.add(ic);
-		DefaultMutableTreeNode pt = new DefaultMutableTreeNode("Perturbations");
-		epiNode.add(pt);
-		DefaultMutableTreeNode pr = new DefaultMutableTreeNode(
-				"Updating Scheme");
-		epiNode.add(pr);
-		DefaultMutableTreeNode sim = new DefaultMutableTreeNode("Simulation");
-		epiNode.add(sim);
-
-		DefaultTreeModel model = (DefaultTreeModel) this.epiTree.getModel();
-		model.reload();
-
-		this.validateJTreeExpansion();
-	}
-
-	private void validateJTreeExpansion() {
-		for (int i = 0; i < this.epiTree.getRowCount(); i++) {
-			this.epiTree.expandRow(i);
-		}
-		this.epiTree.setRootVisible(false);
-	}
-
-	private void initEpitheliumJTree() {
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode(
-				"Epithelium list:");
-		this.epiTree = new JTree(root);
-		// --
-		ToolTipManager.sharedInstance().registerComponent(this.epiTree);
-		TreeCellRenderer renderer = new ToolTipTreeCellRenderer(this.project);
-		this.epiTree.setCellRenderer(renderer);
-		// --
-		this.epiTree.getSelectionModel().setSelectionMode(
-				TreeSelectionModel.SINGLE_TREE_SELECTION);
-		this.scrollTree.setViewportView(this.epiTree);
-		this.epiTree.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseReleased(MouseEvent e) {
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				checkDoubleClickEpitheliumJTree(e);
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-			}
-		});
-		this.epiTree.addTreeSelectionListener(new TreeSelectionListener() {
-			@Override
-			public void valueChanged(TreeSelectionEvent e) {
-				validateTreeNodeSelection();
-			}
-		});
-		this.epiTree.addTreeExpansionListener(new TreeExpansionListener() {
-			@Override
-			public void treeExpanded(TreeExpansionEvent event) {
-			}
-
-			@Override
-			public void treeCollapsed(TreeExpansionEvent event) {
-				validateJTreeExpansion();
-			}
-		});
-	}
-
-	private void validateTreeNodeSelection() {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
-				.getLastSelectedPathComponent();
-		boolean bActive = true;
-		if (node == null || node.isLeaf() || node.isRoot()) {
-			bActive = false;
-		}
-		JMenu epithelium = this.epiMenu.getMenu(2);
-		epithelium.getItem(1).setEnabled(bActive);
-		epithelium.getItem(2).setEnabled(bActive);
-		epithelium.getItem(3).setEnabled(bActive);
-		for (int i = 0; i < this.epiTree.getRowCount(); i++) {
-			this.epiTree.expandRow(i);
-		}
-	}
-
-	private void checkDoubleClickEpitheliumJTree(MouseEvent e) {
-		if (e.getClickCount() != 2)
-			return;
-		int selRow = this.epiTree.getRowForLocation(e.getX(), e.getY());
-		if (selRow == -1)
-			return;
-
-		TreePath selPath = this.epiTree.getPathForLocation(e.getX(), e.getY());
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selPath
-				.getLastPathComponent();
-		// Only opens tabs for leafs
-		if (!node.isLeaf()) {
-			return;
-		}
-		DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node
-				.getParent();
-
-		int tabIndex = -1;
-		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
-			EpiTab epi = (EpiTab) this.epiRightFrame.getComponentAt(i);
-			if (epi.containsPath(selPath)) {
-				tabIndex = i;
-				break;
-			}
-		}
-		if (tabIndex < 0 && parent != null) {
-			// Create new Tab
-			Epithelium epi = (Epithelium) parent.getUserObject();
-			EpiTab epiTab = null;
-			String title = ((Epithelium) parent.getUserObject()).getName()
-					+ ":" + node;
-			EpiTabChanged tabChanged = new EpiTabChanged();
-			ProjectChangedInTab projChanged = new ProjectChangedInTab();
-			if (node.toString() == "Initial Condition") {
-				epiTab = new EpiTabInitialConditions(epi, selPath, projChanged,
-						tabChanged, this.project.getModelFeatures());
-			} else if (node.toString() == "Integration Components") {
-				epiTab = new EpiTabIntegrationFunctions(epi, selPath,
-						projChanged, tabChanged,
-						this.project.getModelFeatures());
-			} else if (node.toString() == "Perturbations") {
-				epiTab = new EpiTabPerturbations(epi, selPath, projChanged,
-						tabChanged, this.project.getModelFeatures());
-			} else if (node.toString() == "Updating Scheme") {
-				epiTab = new EpiTabUpdateScheme(epi, selPath, projChanged,
-						tabChanged, this.project.getModelFeatures());
-			} else if (node.toString() == "Model Grid") {
-				epiTab = new EpiTabModelGrid(epi, selPath, projChanged,
-						tabChanged, this.project.getModelFeatures());
-			} else if (node.toString() == "Simulation") {
-				epiTab = new EpiTabSimulation(epi, selPath, projChanged,
-						this.project.getModelFeatures(),
-						new SimulationEpiClone());
-			}
-			if (epiTab != null) {
-				this.epiRightFrame.addTab(title, epiTab);
-				epiTab.initialize();
-
-				CloseTabButton tabButton = new CloseTabButton(title,
-						this.epiRightFrame);
-				tabIndex = this.epiRightFrame.getTabCount() - 1;
-				this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
-			}
-		}
-		// Select existing Tab
-		this.epiRightFrame.setSelectedIndex(tabIndex);
 	}
 
 	private boolean loadPEPS() throws InstantiationException,
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException {
-
+		if (!this.canClose("Do you really want load another project?")) {
+			return false;
+		}
 		String filename = FileSelectionHelper.openFilename();
 		if (filename != null) {
 			try {
@@ -668,16 +424,15 @@ public class EpiGUI extends JFrame {
 			e.printStackTrace();
 		}
 		this.cleanGUI();
-		this.setTitle(NAME + " - " + this.project.getFilenamePEPS());
+		this.setTitle(TITLE_APPNAME + " - " + this.project.getFilenamePEPS());
 		for (String sbml : this.project.getModelNames()) {
 			this.projDescPanel.addModel(sbml);
 		}
 
-		this.initEpitheliumJTree();
+		this.epiTreePanel.initEpitheliumJTree(this.project.getModelFeatures());
 		for (Epithelium epi : this.project.getEpitheliumList()) {
-			this.addEpi2JTree(epi);
+			this.epiTreePanel.addEpi2JTree(epi);
 		}
-		this.validateTreeNodeSelection();
 		this.validateGUI();
 	}
 
@@ -689,7 +444,7 @@ public class EpiGUI extends JFrame {
 			FileIO.savePEPS(this.project, filename);
 			this.project.setFilenamePEPS(filename);
 			this.project.setChanged(false);
-			this.setTitle(NAME + " - " + filename);
+			this.setTitle(TITLE_APPNAME + " - " + filename);
 			this.validateGUI();
 		}
 	}
@@ -754,8 +509,8 @@ public class EpiGUI extends JFrame {
 
 	private void cleanGUI() {
 		// Close & delete all TABS
-		this.setTitle(NAME);
-		this.initEpitheliumJTree();
+		this.setTitle(TITLE_APPNAME + TITLE_UNTITLED);
+		this.epiTreePanel.initEpitheliumJTree(this.project.getModelFeatures());
 		while (this.epiRightFrame.getTabCount() > 0) {
 			this.epiRightFrame.removeTabAt(0);
 		}
@@ -766,6 +521,57 @@ public class EpiGUI extends JFrame {
 		sbml.getItem(1).setEnabled(false);
 	}
 
+	public void openEpiTab(Epithelium epi, TreePath selPath, String tabName) {
+		int tabIndex = -1;
+		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
+			EpiTab epiInTab = (EpiTab) this.epiRightFrame.getComponentAt(i);
+			if (epiInTab.containsPath(selPath)) {
+				tabIndex = i;
+				break;
+			}
+		}
+		if (tabIndex < 0) {
+			// Create new Tab
+			EpiTab epiTab = null;
+			String title = epi.getName() + ":" + tabName;
+			EpiTabChanged tabChanged = new EpiTabChanged();
+			ProjectChangedInTab projChanged = new ProjectChangedInTab();
+			if (tabName.equals("Initial Condition")) {
+				epiTab = new EpiTabInitialConditions(epi, selPath, projChanged,
+						tabChanged, this.project.getModelFeatures());
+			} else if (tabName.equals("Integration Components")) {
+				epiTab = new EpiTabIntegrationFunctions(epi, selPath,
+						projChanged, tabChanged,
+						this.project.getModelFeatures());
+			} else if (tabName.equals("Perturbations")) {
+				epiTab = new EpiTabPerturbations(epi, selPath, projChanged,
+						tabChanged, this.project.getModelFeatures());
+			} else if (tabName.equals("Updating Scheme")) {
+				epiTab = new EpiTabUpdateScheme(epi, selPath, projChanged,
+						tabChanged, this.project.getModelFeatures());
+			} else if (tabName.equals("Model Grid")) {
+				epiTab = new EpiTabModelGrid(epi, selPath, projChanged,
+						tabChanged, this.project.getModelFeatures());
+			} else if (tabName.equals("Simulation")) {
+				epiTab = new EpiTabSimulation(epi, selPath, projChanged,
+						this.project.getModelFeatures(),
+						new SimulationEpiClone());
+			}
+			if (epiTab != null) {
+				this.epiRightFrame.addTab(title, epiTab);
+				epiTab.initialize();
+
+				CloseTabButton tabButton = new CloseTabButton(title,
+						this.epiRightFrame);
+				tabIndex = this.epiRightFrame.getTabCount() - 1;
+				this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
+			}
+		}
+		// Select existing Tab
+		this.epiRightFrame.setSelectedIndex(tabIndex);
+	}
+
+	// Inner Classes
 	public class SimulationEpiClone {
 		public SimulationEpiClone() {
 		}
@@ -783,9 +589,6 @@ public class EpiGUI extends JFrame {
 	}
 
 	public class EpiTabChanged {
-		public EpiTabChanged() {
-		}
-
 		public void setEpiChanged() {
 			project.setChanged(true);
 			validateGUI();
@@ -808,5 +611,4 @@ public class EpiGUI extends JFrame {
 			validateGUI();
 		}
 	}
-
 }

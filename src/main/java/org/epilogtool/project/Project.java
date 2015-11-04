@@ -1,6 +1,5 @@
 package org.epilogtool.project;
 
-import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
