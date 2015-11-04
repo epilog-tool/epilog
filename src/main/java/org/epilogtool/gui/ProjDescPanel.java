@@ -3,6 +3,7 @@ package org.epilogtool.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import javax.swing.DefaultListModel;
@@ -15,15 +16,19 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.epilogtool.gui.menu.SBMLPopupMenu;
+
 public class ProjDescPanel extends JPanel {
 	private static final long serialVersionUID = -8691538114476162311L;
 
 	private static final String LABEL = "List of loaded models: ";
 	private JList<String> listSBMLs;
 	private JMenu menu;
+	private SBMLPopupMenu popupmenu;
 
 	public ProjDescPanel(JMenu sbmlMenu) {
 		this.menu = sbmlMenu;
+		this.popupmenu = new SBMLPopupMenu();
 		this.setLayout(new BorderLayout());
 
 		// PAGE_START
@@ -35,6 +40,7 @@ public class ProjDescPanel extends JPanel {
 		this.listSBMLs.addMouseMotionListener(new MouseMotionListener() {
 			@Override
 			public void mouseMoved(MouseEvent e) {
+				@SuppressWarnings("rawtypes")
 				JList l = (JList) e.getSource();
 				int index = l.locationToIndex(e.getPoint());
 				if (index > -1) {
@@ -45,6 +51,32 @@ public class ProjDescPanel extends JPanel {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
+			}
+		});
+		this.listSBMLs.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					popupmenu.updateMenuItems(listSBMLs.getSelectionModel()
+							.getMinSelectionIndex() >= 0);
+					popupmenu.show(e.getComponent(), e.getX(), e.getY());
+				}
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
 			}
 		});
 		this.listSBMLs.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -63,8 +95,8 @@ public class ProjDescPanel extends JPanel {
 
 	public void updateSBMLMenuItems() {
 		menu.getItem(0).setEnabled(true);
-		int index = this.listSBMLs.getSelectionModel().getMinSelectionIndex();
-		menu.getItem(1).setEnabled(index >= 0);
+		menu.getItem(1).setEnabled(
+				this.listSBMLs.getSelectionModel().getMinSelectionIndex() >= 0);
 	}
 
 	public void addModel(String model) {
