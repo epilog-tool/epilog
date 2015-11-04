@@ -61,8 +61,7 @@ public class ProjDescPanel extends JPanel {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				if (e.isPopupTrigger()) {
-					popupmenu.updateMenuItems(listSBMLs.getSelectionModel()
-							.getMinSelectionIndex() >= 0);
+					popupmenu.updateMenuItems(listSBMLs.getSelectedValue() != null);
 					popupmenu.show(e.getComponent(), e.getX(), e.getY());
 				}
 			}
