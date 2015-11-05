@@ -341,9 +341,7 @@ public class EpiGUI extends JFrame {
 		sbml.getItem(1).setEnabled(false);
 		sbml.getItem(2).setEnabled(false);
 		sbml.getItem(3).setEnabled(false);
-		if (bIsValid) {
-			this.epiTreePanel.updateEpiMenuItems();
-		}
+		this.epiTreePanel.updateEpiMenuItems();
 
 		this.epiTreePanel.validateJTreeExpansion();
 	}

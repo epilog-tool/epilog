@@ -20,6 +20,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.epilogtool.core.Epithelium;
+import org.epilogtool.gui.menu.EpiTreePopupMenu;
 import org.epilogtool.project.ProjectModelFeatures;
 
 public class EpiTreePanel extends JPanel {
@@ -28,10 +29,12 @@ public class EpiTreePanel extends JPanel {
 	private JScrollPane scrollTree;
 	private JMenu menu;
 	private JTree epiTree;
+	private EpiTreePopupMenu popupmenu;
 
 	public EpiTreePanel(JMenu epiMenu) {
 		this.menu = epiMenu;
 		this.epiTree = null;
+		this.popupmenu = new EpiTreePopupMenu();
 
 		this.setLayout(new BorderLayout());
 		this.add(EpilogGUIFactory.getJLabelBold("List of Epithelium's:"),
@@ -61,7 +64,12 @@ public class EpiTreePanel extends JPanel {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				checkDoubleClickEpitheliumJTree(e);
+				if (e.getClickCount() == 2) {
+					checkDoubleClickEpitheliumJTree(e);
+				} else if (e.isPopupTrigger()) {
+//					popupmenu.updateMenuItems(listSBMLs.getSelectedValue() != null);
+					popupmenu.show(e.getComponent(), e.getX(), e.getY());
+				}
 			}
 
 			@Override
@@ -123,19 +131,17 @@ public class EpiTreePanel extends JPanel {
 	}
 
 	public void updateEpiMenuItems() {
-		this.validateJTreeExpansion();
+		this.validateTreeNodeSelection();
 	}
 
 	private void validateTreeNodeSelection() {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
 				.getLastSelectedPathComponent();
 		boolean bActive = node != null && !node.isLeaf() && !node.isRoot();
-		menu.getItem(1).setEnabled(bActive);
-		menu.getItem(2).setEnabled(bActive);
-		menu.getItem(3).setEnabled(bActive);
-		for (int i = 0; i < this.epiTree.getRowCount(); i++) {
-			this.epiTree.expandRow(i);
-		}
+		this.menu.getItem(1).setEnabled(bActive);
+		this.menu.getItem(2).setEnabled(bActive);
+		this.menu.getItem(3).setEnabled(bActive);
+		this.popupmenu.notifySelection(this.menu.isEnabled(), bActive);
 	}
 
 	public void addEpi2JTree(Epithelium epi) {
@@ -166,8 +172,6 @@ public class EpiTreePanel extends JPanel {
 	}
 
 	private void checkDoubleClickEpitheliumJTree(MouseEvent e) {
-		if (e.getClickCount() != 2)
-			return;
 		int selRow = this.epiTree.getRowForLocation(e.getX(), e.getY());
 		if (selRow == -1)
 			return;

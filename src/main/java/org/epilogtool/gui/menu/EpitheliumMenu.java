@@ -53,12 +53,7 @@ class DeleteEpiAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		try {
-			EpiGUI.getInstance().deleteEpithelium();
-		} catch (Exception e1) {
-			// TODO: handle java reflection in the future
-			e1.printStackTrace();
-		}
+		EpiGUI.getInstance().deleteEpithelium();
 	}
 }
 
@@ -74,12 +69,7 @@ class RenameEpiAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		try {
-			EpiGUI.getInstance().renameEpithelium();
-		} catch (Exception e1) {
-			// TODO: handle java reflection in the future
-			e1.printStackTrace();
-		}
+		EpiGUI.getInstance().renameEpithelium();
 	}
 }
 
@@ -95,11 +85,6 @@ class CloneEpiAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		try {
-			EpiGUI.getInstance().cloneEpithelium();
-		} catch (Exception e1) {
-			// TODO: handle java reflection in the future
-			e1.printStackTrace();
-		}
+		EpiGUI.getInstance().cloneEpithelium();
 	}
 }
