@@ -15,9 +15,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
+import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
 
 public class GridInformation extends JPanel {
@@ -131,9 +133,10 @@ public class GridInformation extends JPanel {
 			gbc.gridwidth = 1;
 			for (String nodeID : lAllNodeIDs) {
 				System.out.println(nodeID);
-				if (!this.projectFeatures.hasNode(nodeID, m) ||
-					this.projectFeatures.getNodeInfo(nodeID, m).isInput()) {
-						continue;
+				if (!this.projectFeatures.hasNode(nodeID, m)
+						|| this.projectFeatures.getNodeInfo(nodeID, m)
+								.isInput()) {
+					continue;
 				}
 				gbc.gridy = ++y;
 				gbc.gridx = 0;
@@ -151,17 +154,17 @@ public class GridInformation extends JPanel {
 			// Separation
 			this.minimalSpace(gbc, ++y);
 			this.minimalSpace(gbc, ++y);
-			
-			//Inputs
+
+			// Inputs
 			gbc.gridy = ++y;
 			gbc.gridx = 0;
 			gbc.gridwidth = 1;
 			jlTmp = new JLabel("Input:");
 			this.jIntPanel.add(jlTmp, gbc);
-			
+
 			// Separation
 			this.minimalSpace(gbc, ++y);
-			
+
 			// Environmental Input values
 			gbc.gridy = ++y;
 			gbc.gridx = 0;
@@ -170,10 +173,11 @@ public class GridInformation extends JPanel {
 			this.jIntPanel.add(jlTmp, gbc);
 			gbc.gridwidth = 1;
 			for (String nodeID : lAllNodeIDs) {
-				if (!this.projectFeatures.hasNode(nodeID, m) ||
-						!this.projectFeatures.getNodeInfo(nodeID, m).isInput()
-							|| this.integrFunctions.containsKey(this.projectFeatures.getNodeInfo(nodeID, m))) {
-						continue;
+				NodeInfo node = this.projectFeatures.getNodeInfo(nodeID, m);
+				ComponentPair cp = new ComponentPair(m, node);
+				if (node == null || !node.isInput()
+						|| this.integrFunctions.containsComponentPair(cp)) {
+					continue;
 				}
 				gbc.gridy = ++y;
 				gbc.gridx = 0;
@@ -198,9 +202,11 @@ public class GridInformation extends JPanel {
 			this.jIntPanel.add(jlTmp, gbc);
 			gbc.gridwidth = 1;
 			for (String nodeID : lAllNodeIDs) {
-				if (!this.projectFeatures.hasNode(nodeID, m) || 
-						!this.integrFunctions.containsKey(this.projectFeatures.getNodeInfo(nodeID, m))) {
-						continue;
+				NodeInfo node = this.projectFeatures.getNodeInfo(nodeID, m);
+				ComponentPair cp = new ComponentPair(m, node);
+				if (node == null
+						|| !this.integrFunctions.containsComponentPair(cp)) {
+					continue;
 				}
 				gbc.gridy = ++y;
 				gbc.gridx = 0;

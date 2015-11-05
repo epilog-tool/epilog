@@ -100,7 +100,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(1, 5, 1, 0);
 		int i = 0;
-		for (String name : this.projectFeatures.getNames()) {
+		for (String name : this.projectFeatures.getModelNames()) {
 			gbc.gridy = i;
 			i++;
 			gbc.gridx = 0;
@@ -131,7 +131,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 			this.mapSBMLMiniPanels.put(jrButton, jbColor);
 		}
 		// Clean grid of models that were deleted before an accept
-		String defaultModel = this.projectFeatures.getNames().iterator().next();
+		String defaultModel = this.projectFeatures.getModelNames().iterator().next();
 		for (int x = 0; x < this.modelGridClone.length; x++) {
 			for (int y = 0; y < this.modelGridClone[0].length; y++) {
 				if (!this.projectFeatures.hasModel(this.modelGridClone[x][y])) {

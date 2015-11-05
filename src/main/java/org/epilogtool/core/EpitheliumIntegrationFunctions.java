@@ -6,72 +6,66 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.colomoto.logicalmodel.NodeInfo;
+import org.epilogtool.project.ComponentPair;
 
 public class EpitheliumIntegrationFunctions {
-	private Map<NodeInfo, ComponentIntegrationFunctions> functions;
+	private Map<ComponentPair, ComponentIntegrationFunctions> functions;
 
 	public EpitheliumIntegrationFunctions() {
-		this.functions = new HashMap<NodeInfo, ComponentIntegrationFunctions>();
+		this.functions = new HashMap<ComponentPair, ComponentIntegrationFunctions>();
 	}
 
 	public EpitheliumIntegrationFunctions clone() {
 		EpitheliumIntegrationFunctions newEIF = new EpitheliumIntegrationFunctions();
-		Map<NodeInfo, ComponentIntegrationFunctions> newFuncs = new HashMap<NodeInfo, ComponentIntegrationFunctions>();
-		for (NodeInfo node : this.functions.keySet()) {
-			newFuncs.put(node, this.functions.get(node).clone());
+		Map<ComponentPair, ComponentIntegrationFunctions> newFuncs = new HashMap<ComponentPair, ComponentIntegrationFunctions>();
+		for (ComponentPair cf : this.functions.keySet()) {
+			newFuncs.put(cf, this.functions.get(cf).clone());
 		}
-		newEIF.setFunctions(newFuncs);
+		newEIF.functions = newFuncs;
 		return newEIF;
 	}
 
-	private void setFunctions(Map<NodeInfo, ComponentIntegrationFunctions> f) {
-		this.functions = f;
+	public void setFunctionAtLevel(ComponentPair cf, byte value, String function) {
+		this.functions.get(cf).setFunctionAtLevel(value, function);
 	}
 
-	public void setFunctionAtLevel(NodeInfo node, byte value, String function) {
-		this.functions.get(node)
-				.setFunctionAtLevel(value, function);
+	public void addComponent(ComponentPair cp) {
+		this.addComponentFunctions(cp, new ComponentIntegrationFunctions(cp
+				.getNodeInfo().getMax()));
 	}
 
-	public void addComponent(NodeInfo node) {
-		this.functions.put(node, new ComponentIntegrationFunctions(
-				node.getMax()));
-	}
-
-	public void addComponentFunctions(NodeInfo node,
+	public void addComponentFunctions(ComponentPair cf,
 			ComponentIntegrationFunctions funcs) {
-		this.functions.put(node, funcs);
+		this.functions.put(cf, funcs);
 	}
 
-	public void removeComponent(NodeInfo node) {
-		this.functions.remove(node);
+	public void removeComponent(ComponentPair cf) {
+		this.functions.remove(cf);
 	}
 
-	public boolean containsKey(NodeInfo node) {
-		return this.functions.containsKey(node);
+	public boolean containsComponentPair(ComponentPair cp) {
+		return this.functions.containsKey(cp);
 	}
 
-	public Set<NodeInfo> getComponents() {
+	public Set<ComponentPair> getComponentPair() {
 		return Collections.unmodifiableSet(this.functions.keySet());
 	}
 
 	public ComponentIntegrationFunctions getComponentIntegrationFunctions(
-			NodeInfo node) {
-		return this.functions.get(node);
+			ComponentPair cf) {
+		return this.functions.get(cf);
 	}
 
 	public boolean equals(Object o) {
 		EpitheliumIntegrationFunctions eifOut = (EpitheliumIntegrationFunctions) o;
-		Set<NodeInfo> sAllNodes = new HashSet<NodeInfo>();
+		Set<ComponentPair> sAllNodes = new HashSet<ComponentPair>();
 		sAllNodes.addAll(this.functions.keySet());
 		sAllNodes.addAll(eifOut.functions.keySet());
-		for (NodeInfo node : sAllNodes) {
-			if (!this.functions.containsKey(node)
-					|| !eifOut.functions.containsKey(node))
+		for (ComponentPair cf : sAllNodes) {
+			if (!this.functions.containsKey(cf)
+					|| !eifOut.functions.containsKey(cf))
 				return false;
-			if (!this.functions.get(node)
-					.equals(eifOut.functions.get(node)))
+			if (!this.functions.get(cf).equals(eifOut.functions.get(cf)))
 				return false;
 		}
 		return true;

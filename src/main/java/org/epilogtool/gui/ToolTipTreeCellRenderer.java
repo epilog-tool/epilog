@@ -9,7 +9,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
 import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
@@ -17,6 +16,7 @@ import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.core.ModelPerturbations;
 import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.core.topology.Topology;
+import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
 
 class ToolTipTreeCellRenderer implements TreeCellRenderer {
@@ -95,16 +95,18 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	private String getTooltipIntegration(Epithelium epi) {
 		String tipKey = "<html>";
 		EpitheliumIntegrationFunctions epiIF = epi.getIntegrationFunctions();
-		for (NodeInfo node : epiIF.getComponents()) {
-			tipKey += "<b>" + node.getNodeID() + "</b><br/>";
+		for (ComponentPair cp : epiIF.getComponentPair()) {
+			tipKey += "<b>" + cp.getNodeInfo().getNodeID() + " - "
+					+ this.projectFeatures.getModelName(cp.getModel())
+					+ "</b><br/>";
 			ComponentIntegrationFunctions cif = epiIF
-					.getComponentIntegrationFunctions(node);
+					.getComponentIntegrationFunctions(cp);
 			List<String> lFunctions = cif.getFunctions();
 			for (int i = 0; i < lFunctions.size(); i++) {
 				tipKey += (i + 1) + ": " + lFunctions.get(i) + "<br/>";
 			}
 		}
-		if (epiIF.getComponents().isEmpty()) {
+		if (epiIF.getComponentPair().isEmpty()) {
 			tipKey += "<i>Empty</i>";
 		}
 		tipKey += "</html>";

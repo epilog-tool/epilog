@@ -23,7 +23,7 @@ public class ProjectFeatures {
 	private Map<String, Set<NodeInfo>> nodeID2Info;
 	private Map<String, Color> nodeColor;
 
-	private Map<String, Set<ComponentPair>> string2ComponentFeature;
+	private Map<String, Set<ComponentFeature>> string2ComponentFeature;
 
 	public ProjectFeatures() {
 		// model info
@@ -34,7 +34,7 @@ public class ProjectFeatures {
 		this.nodeID2Info = new HashMap<String, Set<NodeInfo>>();
 		this.nodeColor = new HashMap<String, Color>();
 		// model 2 nodes
-		this.string2ComponentFeature = new HashMap<String, Set<ComponentPair>>();
+		this.string2ComponentFeature = new HashMap<String, Set<ComponentFeature>>();
 	}
 
 	public void addModelComponents(LogicalModel m) {
@@ -44,20 +44,19 @@ public class ProjectFeatures {
 				Set<NodeInfo> tmpSet = new HashSet<NodeInfo>();
 				tmpSet.add(node);
 				this.nodeID2Info.put(nodeID, tmpSet);
-			} else {
+			}
+			else{
 				this.nodeID2Info.get(nodeID).add(node);
 			}
 			String OS_nodeID = "CC " + nodeID;
 			if (OptionStore.getOption(OS_nodeID) != null) {
-				this.nodeColor
-						.put(nodeID, Color.decode((String) OptionStore
-								.getOption(OS_nodeID)));
+				this.nodeColor.put(nodeID, Color.decode((String) OptionStore.getOption(OS_nodeID)));
 			} else {
 				this.nodeColor.put(nodeID, ColorUtils.random());
 			}
-			ComponentPair cf = new ComponentPair(m, node);
+			ComponentFeature cf = new ComponentFeature(m, node);
 			this.string2ComponentFeature.get(nodeID).add(cf);
-		}
+ 		}
 	}
 
 	// MODELCOMPONENTFEATURES
@@ -75,8 +74,8 @@ public class ProjectFeatures {
 		this.model2String.remove(m);
 		this.string2Model.remove(name);
 		for (String nodeID : this.string2ComponentFeature.keySet()) {
-			Set<ComponentPair> sToRemove = new HashSet<ComponentPair>();
-			for (ComponentPair cf : this.string2ComponentFeature.get(nodeID)) {
+			Set<ComponentFeature> sToRemove = new HashSet<ComponentFeature>();
+			for (ComponentFeature cf : this.string2ComponentFeature.get(nodeID)) {
 				if (cf.getModel().equals(m)) {
 					sToRemove.add(cf);
 				}
@@ -131,17 +130,14 @@ public class ProjectFeatures {
 
 	// ProjectComponentFeatures.getNodeInfo
 	public NodeInfo getNodeInfo(String nodeID, LogicalModel m) {
-		Set<ComponentPair> sCP = this.string2ComponentFeature.get(nodeID);
-		if (sCP != null) {
-			for (ComponentPair cp : sCP) {
-				if (cp.getModel().equals(m)) {
-					return cp.getNodeInfo();
-				}
+		for (ComponentFeature cf : this.string2ComponentFeature.get(nodeID)) {
+			if (cf.getModel().equals(m)) {
+				return cf.getNodeInfo();
 			}
 		}
 		return null;
 	}
-
+	
 	public Color getNodeColor(String nodeID) {
 		return this.nodeColor.get(nodeID);
 	}
@@ -157,35 +153,34 @@ public class ProjectFeatures {
 	}
 
 	public void setNodeColor(String nodeID, Color color) {
-		if (!this.nodeColor.containsKey(nodeID)
-				|| !color.equals(this.nodeColor.get(nodeID))) {
+		if (!this.nodeColor.containsKey(nodeID) || !color.equals(this.nodeColor.get(nodeID))) {
 			this.nodeColor.put(nodeID, color);
 		}
 	}
-
-	public Set<LogicalModel> getModels() {
+	
+	public Set<LogicalModel> getModels(){
 		return this.model2String.keySet();
 	}
-
+	
 	public boolean hasNode(String NodeID, LogicalModel m) {
 		List<NodeInfo> modelNodeInfos = m.getNodeOrder();
-		for (NodeInfo node : modelNodeInfos) {
+		for (NodeInfo node : modelNodeInfos){
 			if (node.getNodeID() == NodeID) {
 				return true;
 			}
 		}
 		return false;
 	}
-
-//	public LogicalModel getNodeModel(NodeInfo node) {
-//		String nodeID = node.getNodeID();
-//		for (LogicalModel m : this.getModels()) {
-//			if (this.string2ComponentFeature.get(nodeID).containsKey(m)) {
-//				return m;
-//			}
-//		}
-//		return null;
-//	}
+	
+	public LogicalModel getNodeModel(NodeInfo node) {
+		String nodeID = node.getNodeID();
+		for (LogicalModel m : this.getModels()){
+			if (this.string2ComponentFeature.get(nodeID).containsKey(m)){
+				return m;
+			}
+		}
+		return null;
+	}
 
 	public Set<String> getModelComponents(LogicalModel m, boolean input) {
 		Set<String> sComps = new HashSet<String>();
@@ -207,8 +202,7 @@ public class ProjectFeatures {
 		return sComps;
 	}
 
-	public Set<String> getModelsComponents(List<LogicalModel> lModels,
-			boolean input) {
+	public Set<String> getModelsComponents(List<LogicalModel> lModels, boolean input) {
 		Set<String> sComps = new HashSet<String>();
 		if (!lModels.isEmpty()) {
 			for (LogicalModel m : lModels) {

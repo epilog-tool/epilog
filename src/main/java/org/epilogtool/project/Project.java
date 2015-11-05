@@ -123,7 +123,7 @@ public class Project {
 	}
 
 	public Set<String> getModelNames() {
-		return this.projectFeatures.getNames();
+		return this.projectFeatures.getModelNames();
 	}
 
 	public LogicalModel getModel(String name) {

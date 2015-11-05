@@ -20,6 +20,7 @@ import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
+import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.Project;
 import org.epilogtool.project.ProjectFeatures;
 import org.epilogtool.OptionStore;
@@ -354,14 +355,13 @@ public class Parser {
 		w.println();
 
 		// Component Integration Functions
-		for (NodeInfo node : epi.getIntegrationFunctionsComponents()) {
+		for (ComponentPair cp : epi.getIntegrationComponentPairs()) {
 			ComponentIntegrationFunctions cif = epi
-					.getIntegrationFunctionsForComponent(node);
+					.getIntegrationFunctionsForComponent(cp);
 			List<String> lFunctions = cif.getFunctions();
 			for (int i = 0; i < lFunctions.size(); i++) {
-				LogicalModel m = epi.getComponentFeatures().getNodeModel(node);
-				int modelIndex = model2Key.get(m);
-				w.println("IT " + modelIndex + " " + node.getNodeID() + " " + (i + 1) + " "
+				int modelIndex = model2Key.get(cp.getModel());
+				w.println("IT " + modelIndex + " " + cp.getNodeInfo().getNodeID() + " " + (i + 1) + " "
 						+ lFunctions.get(i));
 			}
 		}

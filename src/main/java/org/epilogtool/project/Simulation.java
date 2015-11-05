@@ -93,8 +93,8 @@ public class Simulation {
 
 		EpitheliumGrid nextGrid = currGrid.clone();
 
-		Set<NodeInfo> sIntegComponents = this.epithelium
-				.getIntegrationFunctionsComponents();
+		Set<ComponentPair> sIntegComponentPairs = this.epithelium
+				.getIntegrationComponentPairs();
 
 		IntegrationFunctionEvaluation evaluator = new IntegrationFunctionEvaluation(
 				currGrid, this.epithelium.getComponentFeatures());
@@ -111,7 +111,7 @@ public class Simulation {
 				nextGrid.setCellState(x, y, currState.clone());
 				// Compute next state
 				byte[] nextState = this.nextCellValue(x, y, currGrid,
-						evaluator, sIntegComponents);
+						evaluator, sIntegComponentPairs);
 				// If the cell state changed then add it to the pool
 				if (nextState == null || !Arrays.equals(currState, nextState)) {
 					Tuple2D<Integer> key = new Tuple2D<Integer>(x, y);
@@ -150,7 +150,7 @@ public class Simulation {
 
 	private byte[] nextCellValue(int x, int y, EpitheliumGrid currGrid,
 			IntegrationFunctionEvaluation evaluator,
-			Set<NodeInfo> sIntegComponents) {
+			Set<ComponentPair> sIntegComponentPairs) {
 		byte[] currState = currGrid.getCellState(x, y);
 
 		PriorityUpdater updater = this.updaterCache[x][y];
@@ -158,9 +158,16 @@ public class Simulation {
 
 		// 2. Update integration components
 		for (NodeInfo node : m.getNodeOrder()) {
-			if (node.isInput() && sIntegComponents.contains(node)) {
+			ComponentPair nodeCP = null;
+			for (ComponentPair cp : sIntegComponentPairs) {
+				if (cp.getNodeInfo().equals(node)) {
+					nodeCP = cp;
+					break;
+				}
+			}
+			if (node.isInput() && nodeCP != null) {
 				List<IntegrationExpression> lExpressions = this.epithelium
-						.getIntegrationFunctionsForComponent(node)
+						.getIntegrationFunctionsForComponent(nodeCP)
 						.getComputedExpressions();
 				byte target = 0;
 				for (int i = 0; i < lExpressions.size(); i++) {

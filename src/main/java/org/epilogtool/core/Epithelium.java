@@ -12,6 +12,7 @@ import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.topology.RollOver;
+import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
 
 public class Epithelium {
@@ -114,8 +115,8 @@ public class Epithelium {
 			}
 		}
 		// Clean Epithelium components
-		for (NodeInfo node : this.integrationFunctions.getComponents()) {
-			if (!sNodeIDs.contains(node)) {
+		for (NodeInfo node : this.integrationFunctions.getComponentPair()) {
+			if (!sNodeIDs.contains(node.getNodeID())) {
 				this.integrationFunctions.removeComponent(node);
 			}
 		}
@@ -214,13 +215,13 @@ public class Epithelium {
 	}
 
 	public ComponentIntegrationFunctions getIntegrationFunctionsForComponent(
-			NodeInfo node) {
+			ComponentPair cp) {
 		return this.integrationFunctions
-				.getComponentIntegrationFunctions(node);
+				.getComponentIntegrationFunctions(cp);
 	}
 
-	public Set<NodeInfo> getIntegrationFunctionsComponents() {
-		return this.integrationFunctions.getComponents();
+	public Set<ComponentPair> getIntegrationComponentPairs() {
+		return this.integrationFunctions.getComponentPair();
 	}
 
 	public boolean isIntegrationComponent(NodeInfo node) {
