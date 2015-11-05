@@ -11,15 +11,13 @@ import org.epilogtool.core.topology.RollOver;
 
 public class Project {
 	private List<Epithelium> epitheliumList;
-	private ProjectModelFeatures modelFeatures;
+	private ProjectFeatures projectFeatures;
 	private String filenamePEPS;
 	private boolean isChanged;
-	private ProjectComponentFeatures componentFeatures;
 
 	public Project(){
 		this.epitheliumList = new ArrayList<Epithelium>();
-		this.modelFeatures = new ProjectModelFeatures();
-		this.componentFeatures = new ProjectComponentFeatures();
+		this.projectFeatures = new ProjectFeatures();
 		this.filenamePEPS = null;
 		this.isChanged = true;
 	}
@@ -67,9 +65,8 @@ public class Project {
 		// this.updateModelMap();
 	}
 
-	//COMPONENT COLOURS
-	public ProjectComponentFeatures getComponentFeatures() {
-		return this.componentFeatures;
+	public ProjectFeatures getComponentFeatures() {
+		return this.projectFeatures;
 	}
 
 	public String getFilenamePEPS() {
@@ -87,7 +84,7 @@ public class Project {
 			InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException {
 		Epithelium epi = new Epithelium(x, y, topologyLayout, userName, 
-				this.modelFeatures.getModel(modelName), rollover, this.componentFeatures);
+				this.projectFeatures.getModel(modelName), rollover, this.projectFeatures);
 		this.epitheliumList.add(epi);
 		return epi;
 	}
@@ -102,15 +99,14 @@ public class Project {
 	// }
 
 	public void addModel(String name, LogicalModel m) {
-		this.modelFeatures.addModel(name, m);
-		this.componentFeatures.addAllComponentsFromModel(m);
+		this.projectFeatures.addModel(name, m);
 		// TODO: should the model be inserted somewhere else?
 		this.isChanged = true;
 	}
 
 	public boolean removeModel(String name) {
 		if (!this.isUsedModel(name)) {
-			this.modelFeatures.removeModel(name);
+			this.projectFeatures.removeModel(name);
 			this.isChanged = true;
 			return true;
 		}
@@ -118,7 +114,7 @@ public class Project {
 	}
 
 	public boolean isUsedModel(String name) {
-		LogicalModel m = this.modelFeatures.getModel(name);
+		LogicalModel m = this.projectFeatures.getModel(name);
 		for (Epithelium epi : this.epitheliumList) {
 			if (epi.hasModel(m))
 				return true;
@@ -127,14 +123,14 @@ public class Project {
 	}
 
 	public Set<String> getModelNames() {
-		return this.modelFeatures.getNames();
+		return this.projectFeatures.getNames();
 	}
 
 	public LogicalModel getModel(String name) {
-		return this.modelFeatures.getModel(name);
+		return this.projectFeatures.getModel(name);
 	}
 	
-	public ProjectModelFeatures getModelFeatures() {
-		return this.modelFeatures;
+	public ProjectFeatures getModelFeatures() {
+		return this.projectFeatures;
 	}
 }

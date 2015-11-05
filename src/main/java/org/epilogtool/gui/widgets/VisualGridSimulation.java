@@ -11,25 +11,26 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.colomoto.logicalmodel.LogicalModel;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.color.ColorUtils;
-import org.epilogtool.project.ProjectComponentFeatures;
+import org.epilogtool.project.ProjectFeatures;
 
 public class VisualGridSimulation extends VisualGrid {
 	private static final long serialVersionUID = -3880244278613986980L;
 
-	private ProjectComponentFeatures componentFeatures;
+	private ProjectFeatures projectFeatures;
 	private EpitheliumGrid epiGrid;
 	private List<String> lCompON;
 	private GridInformation valuePanel;
 	private Tuple2D<Integer> lastPos;
 
 	public VisualGridSimulation(EpitheliumGrid epiGrid,
-			ProjectComponentFeatures componentFeatures,
+			ProjectFeatures projectFeatures,
 			List<String> lCompON, GridInformation valuePanel) {
 		super(epiGrid.getX(), epiGrid.getY(), epiGrid.getTopology());
-		this.componentFeatures = componentFeatures;
+		this.projectFeatures = projectFeatures;
 		this.epiGrid = epiGrid;
 		this.lCompON = lCompON;
 		this.valuePanel = valuePanel;
@@ -102,11 +103,12 @@ public class VisualGridSimulation extends VisualGrid {
 				if (this.epiGrid.getPerturbation(x, y) != null) {
 					stroke = this.strokePerturb;
 				}
+				LogicalModel m = this.epiGrid.getModel(x, y);
 				List<Color> lColors = new ArrayList<Color>();
 				for (String nodeID : this.lCompON) {
-
-					Color cBase = this.componentFeatures.getNodeColor(nodeID);
-					byte max = this.componentFeatures.getNodeInfo(nodeID)
+					Color cBase = this.projectFeatures.getNodeColor(nodeID);
+					if (this.projectFeatures.hasNode(nodeID, m)){
+						byte max = this.projectFeatures.getNodeInfo(nodeID, m)
 							.getMax();
 
 					int index = this.epiGrid.getNodeIndex(x, y, nodeID);
@@ -115,6 +117,7 @@ public class VisualGridSimulation extends VisualGrid {
 						if (value > 0) {
 							lColors.add(ColorUtils.getColorAtValue(cBase, max,
 									value));
+						}
 						}
 					}
 				}

@@ -27,8 +27,7 @@ public class VisualGridInitialConditions extends VisualGrid {
 	private LogicalModel selectedModel;
 	private GridInformation valuePanel;
 
-	public VisualGridInitialConditions(EpitheliumGrid gridClone,
-			Map<String, Color> colorMapClone,
+	public VisualGridInitialConditions(EpitheliumGrid gridClone, Map<String, Color> colorMapClone,
 			Map<String, Byte> mNode2ValueSelected, GridInformation valuePanel) {
 		super(gridClone.getX(), gridClone.getY(), gridClone.getTopology());
 		this.epiGrid = gridClone;
@@ -86,12 +85,15 @@ public class VisualGridInitialConditions extends VisualGrid {
 			}
 		});
 	}
-	
+
 	@Override
 	protected void paintCellAt(Tuple2D<Integer> pos) {
-		if (pos.getX()<gridX & pos.getY()<gridY) {
-			if (epiGrid.getModel(pos.getX(), pos.getY()).equals(this.selectedModel))
-				super.paintCellAt(pos);}
+		// Get selected cell grid XY
+		if (!this.isInGrid(pos))
+			return;
+
+		if (epiGrid.getModel(pos.getX(), pos.getY()).equals(this.selectedModel))
+			super.paintCellAt(pos);
 	}
 
 	private void updateComponentValues(Tuple2D<Integer> pos) {
@@ -112,8 +114,7 @@ public class VisualGridInitialConditions extends VisualGrid {
 		Color c = Color.LIGHT_GRAY;
 
 		// Paint the rectangle
-		super.highlightCellsOverRectangle(this.initialRectPos, this.mouseGrid,
-				c);
+		super.highlightCellsOverRectangle(this.initialRectPos, this.mouseGrid, c);
 	}
 
 	public void isRectangleFill(boolean fill) {
@@ -122,8 +123,7 @@ public class VisualGridInitialConditions extends VisualGrid {
 
 	protected void applyDataAt(int x, int y) {
 		for (String nodeID : this.mNode2ValueSelected.keySet()) {
-			this.epiGrid.setCellComponentValue(x, y, nodeID,
-					this.mNode2ValueSelected.get(nodeID));
+			this.epiGrid.setCellComponentValue(x, y, nodeID, this.mNode2ValueSelected.get(nodeID));
 		}
 	}
 
@@ -131,8 +131,8 @@ public class VisualGridInitialConditions extends VisualGrid {
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 
-		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY,
-				this.getSize().width, this.getSize().height);
+		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY, this.getSize().width,
+				this.getSize().height);
 
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
@@ -145,10 +145,8 @@ public class VisualGridInitialConditions extends VisualGrid {
 							Color cBase = this.colorMapClone.get(nodeID);
 							byte value = this.epiGrid.getCellState(x, y)[index];
 							if (value > 0) {
-								byte max = this.epiGrid.getModel(x, y)
-										.getNodeOrder().get(index).getMax();
-								lColors.add(ColorUtils.getColorAtValue(cBase,
-										max, value));
+								byte max = this.epiGrid.getModel(x, y).getNodeOrder().get(index).getMax();
+								lColors.add(ColorUtils.getColorAtValue(cBase, max, value));
 							}
 						}
 					}
@@ -156,10 +154,8 @@ public class VisualGridInitialConditions extends VisualGrid {
 				} else {
 					cCombined = this.getParent().getBackground();
 				}
-				Tuple2D<Double> center = topology.getPolygonCenter(this.radius,
-						x, y);
-				Polygon polygon = topology
-						.createNewPolygon(this.radius, center);
+				Tuple2D<Double> center = topology.getPolygonCenter(this.radius, x, y);
+				Polygon polygon = topology.createNewPolygon(this.radius, center);
 				this.paintPolygon(this.strokeBasic, cCombined, polygon, g2);
 			}
 		}

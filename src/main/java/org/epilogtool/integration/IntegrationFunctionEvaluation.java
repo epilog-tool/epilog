@@ -10,12 +10,12 @@ import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationAt
 import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationExpression;
 import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationNegation;
 import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationOperation;
-import org.epilogtool.project.ProjectComponentFeatures;
+import org.epilogtool.project.ProjectFeatures;
 
 public class IntegrationFunctionEvaluation {
 
 	private EpitheliumGrid grid;
-	private ProjectComponentFeatures features;
+	private ProjectFeatures features;
 
 	/**
 	 * Evaluates an expression.
@@ -28,7 +28,7 @@ public class IntegrationFunctionEvaluation {
 	 * 
 	 */
 	public IntegrationFunctionEvaluation(EpitheliumGrid grid,
-			ProjectComponentFeatures features) {
+			ProjectFeatures features) {
 		this.grid = grid;
 		this.features = features;
 	}
@@ -104,7 +104,7 @@ public class IntegrationFunctionEvaluation {
 			Set<Tuple2D<Integer>> neighbours = this.grid.getTopology()
 					.getNeighbours(x, y, atom.getMinDistance(),
 							atom.getMaxDistance());
-			NodeInfo node = this.features.getNodeInfo(atom.getComponentName());
+			NodeInfo node = this.features.getNodeInfo(atom.getComponentName(), this.grid.getModel(x, y));
 
 			byte minThreshold = atom.getMinThreshold();
 			if (minThreshold < 0)

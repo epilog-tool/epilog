@@ -21,7 +21,7 @@ import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
 import org.epilogtool.project.Project;
-import org.epilogtool.project.ProjectComponentFeatures;
+import org.epilogtool.project.ProjectFeatures;
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.ComponentIntegrationFunctions;
@@ -71,7 +71,7 @@ public class Parser {
 				modelKey2Name.put(saTmp[1], saTmp[2]);
 				Color modelColor = ColorUtils.getColor(saTmp[3], saTmp[4],
 						saTmp[5]);
-				project.getModelFeatures().changeColor(saTmp[2], modelColor);
+				project.getModelFeatures().changeModelColor(saTmp[2], modelColor);
 			}
 			
 			if (line.startsWith("CC")){
@@ -136,9 +136,22 @@ public class Parser {
 			// Component Integration Functions
 			if (line.startsWith("IT")) {
 				saTmp = line.split("\\s+");
-				currEpi.setIntegrationFunction(saTmp[1], Byte
-						.parseByte(saTmp[2]), (saTmp.length > 3) ? saTmp[3]
-						: "");
+				if (saTmp.length == 4) {
+					String input = saTmp[1];
+					String proper = saTmp[3].split("\\(")[0];
+					for (LogicalModel m : project.getModelFeatures().getModels()){
+						if (project.getModelFeatures().hasNode(input, m) & 
+								project.getModelFeatures().hasNode(proper, m)) {
+							currEpi.setIntegrationFunction(saTmp[1], m, Byte.parseByte(saTmp[2]), 
+									(saTmp.length > 3) ? saTmp[3] : "");
+						}
+					}
+				}
+				else{
+					LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
+				currEpi.setIntegrationFunction(saTmp[2], m, Byte.parseByte(saTmp[3]), 
+						(saTmp.length > 4) ? saTmp[4] : "");
+				}	
 			}
 			// Model Priority classes
 			if (line.startsWith("PR")) {
@@ -153,7 +166,7 @@ public class Parser {
 				String sPerturb = line.substring(line.indexOf("(") + 1,
 						line.indexOf(")"));
 				AbstractPerturbation ap = string2AbstractPerturbation(
-						currEpi.getComponentFeatures(), sPerturb);
+						currEpi.getComponentFeatures(), sPerturb, m);
 				currEpi.addPerturbation(m, ap);
 
 				String rest = line.substring(line.indexOf(")") + 1).trim();
@@ -183,14 +196,14 @@ public class Parser {
 	}
 
 	private static AbstractPerturbation string2AbstractPerturbation(
-			ProjectComponentFeatures features, String sExpr) {
+			ProjectFeatures features, String sExpr, LogicalModel m) {
 		String[] saExpr = sExpr.split(", ");
 		List<AbstractPerturbation> lPerturb = new ArrayList<AbstractPerturbation>();
 
 		for (String sTmp : saExpr) {
 			AbstractPerturbation ap;
 			String name = sTmp.split(" ")[0];
-			NodeInfo node = features.getNodeInfo(name);
+			NodeInfo node = features.getNodeInfo(name, m);
 			String perturb = sTmp.split(" ")[1];
 
 			if (perturb.equals("KO")) {
@@ -225,7 +238,7 @@ public class Parser {
 		for (String sbml : project.getModelNames()) {
 			LogicalModel m = project.getModel(sbml);
 			model2Key.put(m, i);
-			Color c = project.getModelFeatures().getColor(m);
+			Color c = project.getModelFeatures().getModelColor(m);
 			w.println("SB " + i + " " + sbml + " " + c.getRed() + " "
 					+ c.getGreen() + " " + c.getBlue());
 			i++;
@@ -235,6 +248,7 @@ public class Parser {
 		// Component colors
 		for(String nodeID : project.getComponentFeatures().getComponents()){
 			Color c = project.getComponentFeatures().getNodeColor(nodeID);
+			System.out.println("Node: " + nodeID + "\nColor: "+ ColorUtils.getColorCode(c));
 			w.println("CC " + nodeID + " " + c.getRed() + " " 
 					+ c.getBlue() + " " + c.getGreen());
 			OptionStore.setOption("CC " + nodeID,  ColorUtils.getColorCode(c));
@@ -339,21 +353,15 @@ public class Parser {
 		}
 		w.println();
 
-		// Component Colors
-		for (String nodeID : epi.getComponentFeatures().getComponents()) {
-			Color c = epi.getComponentFeatures().getNodeColor(nodeID);
-			w.println("CL " + nodeID + " " + c.getRed() + " " + c.getGreen()
-					+ " " + c.getBlue());
-		}
-		w.println();
-
 		// Component Integration Functions
-		for (String nodeID : epi.getIntegrationFunctionsComponents()) {
+		for (NodeInfo node : epi.getIntegrationFunctionsComponents()) {
 			ComponentIntegrationFunctions cif = epi
-					.getIntegrationFunctionsForComponent(nodeID);
+					.getIntegrationFunctionsForComponent(node);
 			List<String> lFunctions = cif.getFunctions();
 			for (int i = 0; i < lFunctions.size(); i++) {
-				w.println("IT " + nodeID + " " + (i + 1) + " "
+				LogicalModel m = epi.getComponentFeatures().getNodeModel(node);
+				int modelIndex = model2Key.get(m);
+				w.println("IT " + modelIndex + " " + node.getNodeID() + " " + (i + 1) + " "
 						+ lFunctions.get(i));
 			}
 		}

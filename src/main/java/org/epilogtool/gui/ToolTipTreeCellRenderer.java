@@ -9,6 +9,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
@@ -16,14 +17,14 @@ import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.core.ModelPerturbations;
 import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.core.topology.Topology;
-import org.epilogtool.project.ProjectModelFeatures;
+import org.epilogtool.project.ProjectFeatures;
 
 class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
-	private ProjectModelFeatures modelFeatures;
+	private ProjectFeatures projectFeatures;
 
-	public ToolTipTreeCellRenderer(ProjectModelFeatures modelFeatures) {
-		this.modelFeatures = modelFeatures;
+	public ToolTipTreeCellRenderer(ProjectFeatures projectFeatures) {
+		this.projectFeatures = projectFeatures;
 	}
 
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
@@ -85,7 +86,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	private String getTooltipModelGrid(Epithelium epi) {
 		String tipKey = "<html><b>Model(s) in use</b>";
 		for (LogicalModel m : epi.getEpitheliumGrid().getModelSet()) {
-			tipKey += "<br/>- " + this.modelFeatures.getName(m);
+			tipKey += "<br/>- " + this.projectFeatures.getModelName(m);
 		}
 		tipKey += "</html>";
 		return tipKey;
@@ -94,10 +95,10 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	private String getTooltipIntegration(Epithelium epi) {
 		String tipKey = "<html>";
 		EpitheliumIntegrationFunctions epiIF = epi.getIntegrationFunctions();
-		for (String nodeID : epiIF.getComponents()) {
-			tipKey += "<b>" + nodeID + "</b><br/>";
+		for (NodeInfo node : epiIF.getComponents()) {
+			tipKey += "<b>" + node.getNodeID() + "</b><br/>";
 			ComponentIntegrationFunctions cif = epiIF
-					.getComponentIntegrationFunctions(nodeID);
+					.getComponentIntegrationFunctions(node);
 			List<String> lFunctions = cif.getFunctions();
 			for (int i = 0; i < lFunctions.size(); i++) {
 				tipKey += (i + 1) + ": " + lFunctions.get(i) + "<br/>";
@@ -130,7 +131,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 			if (!isEmpty) {
 				tipKey += "<br/>";
 			}
-			tipKey += "<b>" + this.modelFeatures.getName(m) + "</b>";
+			tipKey += "<b>" + this.projectFeatures.getModelName(m) + "</b>";
 			for (AbstractPerturbation ap : apList) {
 				tipKey += "<br/>&nbsp;. " + ap;
 			}
@@ -147,7 +148,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 		String tipKey = "<html><b>Intra-cellular</b><br/>";
 		for (LogicalModel m : epi.getEpitheliumGrid().getModelSet()) {
 			ModelPriorityClasses mpc = epi.getPriorityClasses(m);
-			tipKey += "- " + this.modelFeatures.getName(m) + "</b><br/>";
+			tipKey += "- " + this.projectFeatures.getModelName(m) + "</b><br/>";
 			tipKey += "&nbsp;&nbsp;. " + mpc.size() + " class(es)<br/>";
 		}
 		tipKey += "<b>Inter-cellular</b><br/>";

@@ -93,7 +93,7 @@ public class Simulation {
 
 		EpitheliumGrid nextGrid = currGrid.clone();
 
-		Set<String> sIntegComponents = this.epithelium
+		Set<NodeInfo> sIntegComponents = this.epithelium
 				.getIntegrationFunctionsComponents();
 
 		IntegrationFunctionEvaluation evaluator = new IntegrationFunctionEvaluation(
@@ -150,7 +150,7 @@ public class Simulation {
 
 	private byte[] nextCellValue(int x, int y, EpitheliumGrid currGrid,
 			IntegrationFunctionEvaluation evaluator,
-			Set<String> sIntegComponents) {
+			Set<NodeInfo> sIntegComponents) {
 		byte[] currState = currGrid.getCellState(x, y);
 
 		PriorityUpdater updater = this.updaterCache[x][y];
@@ -158,10 +158,9 @@ public class Simulation {
 
 		// 2. Update integration components
 		for (NodeInfo node : m.getNodeOrder()) {
-			String nodeID = node.getNodeID();
-			if (node.isInput() && sIntegComponents.contains(nodeID)) {
+			if (node.isInput() && sIntegComponents.contains(node)) {
 				List<IntegrationExpression> lExpressions = this.epithelium
-						.getIntegrationFunctionsForComponent(nodeID)
+						.getIntegrationFunctionsForComponent(node)
 						.getComputedExpressions();
 				byte target = 0;
 				for (int i = 0; i < lExpressions.size(); i++) {

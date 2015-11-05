@@ -12,7 +12,7 @@ import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.topology.RollOver;
-import org.epilogtool.project.ProjectComponentFeatures;
+import org.epilogtool.project.ProjectFeatures;
 
 public class Epithelium {
 
@@ -26,11 +26,11 @@ public class Epithelium {
 	private EpitheliumPerturbations perturbations;
 	private EpitheliumUpdateSchemeIntra priorities;
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
-	private ProjectComponentFeatures componentFeatures;
+	private ProjectFeatures projectFeatures;
 
 	public Epithelium(int x, int y, String topologyLayout, String name,
 			LogicalModel m, RollOver rollover,
-			ProjectComponentFeatures componentFeatures)
+			ProjectFeatures projectFeatures)
 			throws InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
@@ -44,7 +44,7 @@ public class Epithelium {
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
 		this.perturbations = new EpitheliumPerturbations();
 		this.perturbations.addModel(m);
-		this.componentFeatures = componentFeatures;
+		this.projectFeatures = projectFeatures;
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(
 				EpitheliumUpdateSchemeInter.DEFAULT_ALPHA);
 	}
@@ -52,7 +52,7 @@ public class Epithelium {
 	private Epithelium(int x, int y, String topologyLayout, String name,
 			EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
 			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap,
-			ProjectComponentFeatures pcf, EpitheliumUpdateSchemeInter usi) {
+			ProjectFeatures pf, EpitheliumUpdateSchemeInter usi) {
 		this.x = x;
 		this.y = y;
 		this.topologyLayout = topologyLayout;
@@ -60,7 +60,7 @@ public class Epithelium {
 		this.grid = grid;
 		this.priorities = epc;
 		this.integrationFunctions = eif;
-		this.componentFeatures = pcf;
+		this.projectFeatures = pf;
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
 	}
@@ -73,7 +73,7 @@ public class Epithelium {
 		return new Epithelium(this.x, this.y, this.topologyLayout, "CopyOf_"
 				+ this.name, this.grid.clone(),
 				this.integrationFunctions.clone(), this.priorities.clone(),
-				this.perturbations.clone(), this.componentFeatures,
+				this.perturbations.clone(), this.projectFeatures,
 				this.updateSchemeInter.clone());
 	}
 
@@ -114,9 +114,9 @@ public class Epithelium {
 			}
 		}
 		// Clean Epithelium components
-		for (String nodeID : this.integrationFunctions.getComponents()) {
-			if (!sNodeIDs.contains(nodeID)) {
-				this.integrationFunctions.removeComponent(nodeID);
+		for (NodeInfo node : this.integrationFunctions.getComponents()) {
+			if (!sNodeIDs.contains(node)) {
+				this.integrationFunctions.removeComponent(node);
 			}
 		}
 	}
@@ -143,8 +143,8 @@ public class Epithelium {
 		return this.grid.getModel(x, y);
 	}
 
-	public ProjectComponentFeatures getComponentFeatures() {
-		return this.componentFeatures;
+	public ProjectFeatures getComponentFeatures() {
+		return this.projectFeatures;
 	}
 
 	public void setGridWithModel(LogicalModel m, List<Tuple2D<Integer>> lTuples) {
@@ -161,10 +161,10 @@ public class Epithelium {
 		}
 	}
 
-	public void setIntegrationFunction(String nodeID, byte value,
+	public void setIntegrationFunction(String nodeID, LogicalModel m, byte value,
 			String function) {
-		NodeInfo node = this.componentFeatures.getNodeInfo(nodeID);
-		if (!this.integrationFunctions.containsKey(nodeID)) {
+		NodeInfo node = this.projectFeatures.getNodeInfo(nodeID, m);
+		if (!this.integrationFunctions.containsKey(node)) {
 			this.integrationFunctions.addComponent(node);
 		}
 		this.integrationFunctions.setFunctionAtLevel(node, value, function);
@@ -176,7 +176,7 @@ public class Epithelium {
 	}
 
 	public void initComponentFeatures(LogicalModel m) {
-		this.componentFeatures.addAllComponentsFromModel(m);
+		this.projectFeatures.addModelComponents(m);
 	}
 
 	public void setPriorityClasses(LogicalModel m, String pcs) {
@@ -214,17 +214,17 @@ public class Epithelium {
 	}
 
 	public ComponentIntegrationFunctions getIntegrationFunctionsForComponent(
-			String nodeID) {
+			NodeInfo node) {
 		return this.integrationFunctions
-				.getComponentIntegrationFunctions(nodeID);
+				.getComponentIntegrationFunctions(node);
 	}
 
-	public Set<String> getIntegrationFunctionsComponents() {
+	public Set<NodeInfo> getIntegrationFunctionsComponents() {
 		return this.integrationFunctions.getComponents();
 	}
 
-	public boolean isIntegrationComponent(String nodeID) {
-		return this.integrationFunctions.containsKey(nodeID);
+	public boolean isIntegrationComponent(NodeInfo node) {
+		return this.integrationFunctions.containsKey(node);
 	}
 
 	public EpitheliumIntegrationFunctions getIntegrationFunctions() {

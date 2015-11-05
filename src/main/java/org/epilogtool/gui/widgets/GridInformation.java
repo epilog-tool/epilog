@@ -18,23 +18,19 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
-import org.epilogtool.project.ProjectComponentFeatures;
-import org.epilogtool.project.ProjectModelFeatures;
+import org.epilogtool.project.ProjectFeatures;
 
 public class GridInformation extends JPanel {
 	private static final long serialVersionUID = -1449994132920814592L;
 
-	private ProjectComponentFeatures compFeatures;
 	private EpitheliumIntegrationFunctions integrFunctions;
-	private ProjectModelFeatures modelFeatures;
+	private ProjectFeatures projectFeatures;
 	private JPanel jIntPanel;
 
-	public GridInformation(ProjectComponentFeatures compFeatures,
-			EpitheliumIntegrationFunctions eif,
-			ProjectModelFeatures modelFeatures) {
-		this.compFeatures = compFeatures;
+	public GridInformation(EpitheliumIntegrationFunctions eif,
+			ProjectFeatures projectFeatures) {
 		this.integrFunctions = eif;
-		this.modelFeatures = modelFeatures;
+		this.projectFeatures = projectFeatures;
 
 		this.setBorder(BorderFactory.createTitledBorder("Grid information"));
 		this.setLayout(new BorderLayout());
@@ -74,7 +70,7 @@ public class GridInformation extends JPanel {
 		this.minimalSpace(gbc, y);
 		if (grid != null) {
 			List<String> lAllNodeIDs = new ArrayList<String>(
-					this.compFeatures.getComponents());
+					this.projectFeatures.getComponents());
 			Collections.sort(lAllNodeIDs, new Comparator<String>() {
 				public int compare(String s1, String s2) {
 					return s1.compareToIgnoreCase(s2);
@@ -103,7 +99,7 @@ public class GridInformation extends JPanel {
 			gbc.gridy = ++y;
 			gbc.gridx = 0;
 			gbc.gridwidth = 2;
-			jlTmp = new JLabel("  " + modelFeatures.getName(m));
+			jlTmp = new JLabel("  " + projectFeatures.getModelName(m));
 			this.jIntPanel.add(jlTmp, gbc);
 
 			// Separation
@@ -134,8 +130,11 @@ public class GridInformation extends JPanel {
 			this.jIntPanel.add(jlTmp, gbc);
 			gbc.gridwidth = 1;
 			for (String nodeID : lAllNodeIDs) {
-				if (this.compFeatures.getNodeInfo(nodeID).isInput())
-					continue;
+				System.out.println(nodeID);
+				if (!this.projectFeatures.hasNode(nodeID, m) ||
+					this.projectFeatures.getNodeInfo(nodeID, m).isInput()) {
+						continue;
+				}
 				gbc.gridy = ++y;
 				gbc.gridx = 0;
 				gbc.anchor = GridBagConstraints.WEST;
@@ -171,9 +170,11 @@ public class GridInformation extends JPanel {
 			this.jIntPanel.add(jlTmp, gbc);
 			gbc.gridwidth = 1;
 			for (String nodeID : lAllNodeIDs) {
-				if (!this.compFeatures.getNodeInfo(nodeID).isInput()
-						|| this.integrFunctions.containsKey(nodeID))
-					continue;
+				if (!this.projectFeatures.hasNode(nodeID, m) ||
+						!this.projectFeatures.getNodeInfo(nodeID, m).isInput()
+							|| this.integrFunctions.containsKey(this.projectFeatures.getNodeInfo(nodeID, m))) {
+						continue;
+				}
 				gbc.gridy = ++y;
 				gbc.gridx = 0;
 				gbc.anchor = GridBagConstraints.WEST;
@@ -197,9 +198,10 @@ public class GridInformation extends JPanel {
 			this.jIntPanel.add(jlTmp, gbc);
 			gbc.gridwidth = 1;
 			for (String nodeID : lAllNodeIDs) {
-				if (!this.compFeatures.getNodeInfo(nodeID).isInput()
-						|| !this.integrFunctions.containsKey(nodeID))
-					continue;
+				if (!this.projectFeatures.hasNode(nodeID, m) || 
+						!this.integrFunctions.containsKey(this.projectFeatures.getNodeInfo(nodeID, m))) {
+						continue;
+				}
 				gbc.gridy = ++y;
 				gbc.gridx = 0;
 				gbc.anchor = GridBagConstraints.WEST;

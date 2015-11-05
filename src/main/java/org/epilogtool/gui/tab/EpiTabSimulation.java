@@ -45,7 +45,7 @@ import org.epilogtool.gui.widgets.VisualGridSimulation;
 import org.epilogtool.io.ButtonFactory;
 import org.epilogtool.io.EpilogFileFilter;
 import org.epilogtool.io.FileIO;
-import org.epilogtool.project.ProjectModelFeatures;
+import org.epilogtool.project.ProjectFeatures;
 import org.epilogtool.project.Simulation;
 
 public class EpiTabSimulation extends EpiTab {
@@ -55,7 +55,7 @@ public class EpiTabSimulation extends EpiTab {
 	private Simulation simulation;
 	private Map<String, Boolean> mSelCheckboxes;
 	private Map<String, JCheckBox> mNodeID2Checkbox;
-	private ProjectModelFeatures modelFeatures;
+	private ProjectFeatures projectFeatures;
 	private List<String> lPresentComps;
 	private List<String> lCompON;
 	private Map<JButton, String> colorButton2Node;
@@ -77,9 +77,9 @@ public class EpiTabSimulation extends EpiTab {
 	private JComboCheckBox jccb;
 
 	public EpiTabSimulation(Epithelium e, TreePath path, ProjectChangedInTab projChanged,
-			ProjectModelFeatures modelFeatures, SimulationEpiClone simEpiClone) {
+			ProjectFeatures projectFeatures, SimulationEpiClone simEpiClone) {
 		super(e, path, projChanged);
-		this.modelFeatures = modelFeatures;
+		this.projectFeatures = projectFeatures;
 		this.simEpiClone = simEpiClone;
 	}
 
@@ -102,8 +102,8 @@ public class EpiTabSimulation extends EpiTab {
 				this.mSelCheckboxes.put(node.getNodeID(), false);
 			}
 		}
-		this.lRight = new GridInformation(this.epithelium.getComponentFeatures(),
-				this.epithelium.getIntegrationFunctions(), this.modelFeatures);
+		this.lRight = new GridInformation(this.epithelium.getIntegrationFunctions(),
+				this.projectFeatures);
 
 		this.visualGridSimulation = new VisualGridSimulation(clonedEpi.getEpitheliumGrid(),
 				this.epithelium.getComponentFeatures(), this.lCompON, this.lRight);
@@ -231,7 +231,7 @@ public class EpiTabSimulation extends EpiTab {
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		JCheckBox[] items = new JCheckBox[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
-			items[i] = new JCheckBox(this.modelFeatures.getName(modelList.get(i)));
+			items[i] = new JCheckBox(this.projectFeatures.getModelName(modelList.get(i)));
 			items[i].setSelected(false);
 		}
 		this.jccb = new JComboCheckBox(items);
@@ -450,7 +450,7 @@ public class EpiTabSimulation extends EpiTab {
 	private void setNewColor(JButton jb) {
 		String nodeID = this.colorButton2Node.get(jb);
 		Color newColor = JColorChooser.showDialog(jb, "Color chooser - " + nodeID, jb.getBackground());
-		if (newColor != null && !newColor.equals(modelFeatures.getColor(nodeID))) {
+		if (newColor != null && !newColor.equals(projectFeatures.getNodeColor(nodeID))) {
 			jb.setBackground(newColor);
 			this.epithelium.getComponentFeatures().setNodeColor(nodeID, newColor);
 			this.projChanged.setChanged(this);
@@ -465,7 +465,7 @@ public class EpiTabSimulation extends EpiTab {
 
 		List<LogicalModel> lModels = new ArrayList<LogicalModel>();
 		for (String modelName : items) {
-			lModels.add(this.modelFeatures.getModel(modelName));
+			lModels.add(this.projectFeatures.getModel(modelName));
 		}
 		this.lPresentComps = new ArrayList<String>();
 

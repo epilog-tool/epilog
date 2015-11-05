@@ -47,7 +47,7 @@ import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.widgets.VisualGridPerturbation;
 import org.epilogtool.io.ButtonFactory;
-import org.epilogtool.project.ProjectModelFeatures;
+import org.epilogtool.project.ProjectFeatures;
 
 public class EpiTabPerturbations extends EpiTabDefinitions {
 	private static final long serialVersionUID = -1795100027288146018L;
@@ -72,8 +72,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	private JPanel lTop;
 
 	public EpiTabPerturbations(Epithelium e, TreePath path, ProjectChangedInTab projChanged, EpiTabChanged tabChanged,
-			ProjectModelFeatures modelFeatures) {
-		super(e, path, projChanged, tabChanged, modelFeatures);
+			ProjectFeatures projectFeatures) {
+		super(e, path, projChanged, tabChanged, projectFeatures);
 	}
 
 	public void initialize() {
@@ -115,7 +115,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		this.jpCenter = new JPanel(new BorderLayout());
 		left.add(jpCenter, BorderLayout.CENTER);
 		this.center.add(left, BorderLayout.LINE_START);
-		LogicalModel m = this.modelFeatures.getModel((String) jcbSBML.getSelectedItem());
+		LogicalModel m = this.projectFeatures.getModel((String) jcbSBML.getSelectedItem());
 		updatePanelsWithModel(m);
 		this.isInitialized = true;
 	}
@@ -124,7 +124,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		// Model selection list
 		String[] saSBML = new String[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
-			saSBML[i] = this.modelFeatures.getName(modelList.get(i));
+			saSBML[i] = this.projectFeatures.getModelName(modelList.get(i));
 		}
 		JComboBox<String> jcb = new JComboBox<String>(saSBML);
 		jcb.addActionListener(new ActionListener() {
@@ -132,7 +132,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
 				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
-				LogicalModel m = modelFeatures.getModel((String) jcb.getSelectedItem());
+				LogicalModel m = projectFeatures.getModel((String) jcb.getSelectedItem());
 				updatePanelsWithModel(m);
 			}
 		});
@@ -199,7 +199,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String nodeID = (String) jcbComps.getSelectedItem();
-				NodeInfo node = epithelium.getComponentFeatures().getNodeInfo(nodeID);
+				NodeInfo node = epithelium.getComponentFeatures().getNodeInfo(nodeID, selModel);
 				byte min = (Byte) jcbMinVal.getSelectedItem();
 				byte max = (Byte) jcbMaxVal.getSelectedItem();
 				AbstractPerturbation ap;
@@ -485,7 +485,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	private void updateMinMaxValues(String nodeID) {
 		jcbMinVal.removeAllItems();
 		jcbMaxVal.removeAllItems();
-		byte max = epithelium.getComponentFeatures().getNodeInfo(nodeID).getMax();
+		byte max = epithelium.getComponentFeatures().getNodeInfo(nodeID, selModel).getMax();
 		for (byte b = 0; b <= max; b++) {
 			jcbMinVal.addItem(b);
 			jcbMaxVal.addItem(b);

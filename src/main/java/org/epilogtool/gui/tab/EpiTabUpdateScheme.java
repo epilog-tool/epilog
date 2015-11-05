@@ -43,7 +43,7 @@ import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
 import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
 import org.epilogtool.io.ButtonFactory;
-import org.epilogtool.project.ProjectModelFeatures;
+import org.epilogtool.project.ProjectFeatures;
 
 public class EpiTabUpdateScheme extends EpiTabDefinitions implements HyperlinkListener {
 	private static final long serialVersionUID = 1176575422084167530L;
@@ -67,8 +67,8 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements HyperlinkLi
 	private JSlider jSlide;
 
 	public EpiTabUpdateScheme(Epithelium e, TreePath path, ProjectChangedInTab projChanged, EpiTabChanged tabChanged,
-			ProjectModelFeatures modelFeatures) {
-		super(e, path, projChanged, tabChanged, modelFeatures);
+			ProjectFeatures projectFeatures) {
+		super(e, path, projChanged, tabChanged, projectFeatures);
 	}
 
 	public void initialize() {
@@ -217,7 +217,7 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements HyperlinkLi
 		jpInterSlider.add(this.jSlide, BorderLayout.CENTER);
 		jpInter.add(jpInterSlider);
 
-		LogicalModel m = this.modelFeatures.getModel((String) jcbSBML.getSelectedItem());
+		LogicalModel m = this.projectFeatures.getModel((String) jcbSBML.getSelectedItem());
 		this.updatePriorityList(m);
 		this.isInitialized = true;
 	}
@@ -238,7 +238,7 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements HyperlinkLi
 		// Model selection list
 		String[] saSBML = new String[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
-			saSBML[i] = this.modelFeatures.getName(modelList.get(i));
+			saSBML[i] = this.projectFeatures.getModelName(modelList.get(i));
 		}
 		JComboBox<String> jcb = new JComboBox<String>(saSBML);
 		jcb.addActionListener(new ActionListener() {
@@ -246,7 +246,7 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements HyperlinkLi
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
 				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
-				LogicalModel m = modelFeatures.getModel((String) jcb.getSelectedItem());
+				LogicalModel m = projectFeatures.getModel((String) jcb.getSelectedItem());
 				updatePriorityList(m);
 				// Re-Paint
 				getParent().repaint();

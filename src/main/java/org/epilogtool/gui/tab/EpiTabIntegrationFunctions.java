@@ -36,7 +36,7 @@ import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
 import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
 import org.epilogtool.gui.color.ColorUtils;
-import org.epilogtool.project.ProjectModelFeatures;
+import org.epilogtool.project.ProjectFeatures;
 
 public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	private static final long serialVersionUID = -2124909766318378839L;
@@ -45,17 +45,18 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 
 	private EpitheliumIntegrationFunctions userIntegrationFunctions;
 	private String activeNodeID;
+	private String activeModel;
 
-	private Map<String, JRadioButton> mNode2RadioButton;
+	private Map<NodeInfo, JRadioButton> mNode2RadioButton;
 	private JPanel jpNLBottom;
 	private JPanel jpNRTop;
 	private JPanel jpNRBottom;
 	private JPanel jpNLTop;
 
 	public EpiTabIntegrationFunctions(Epithelium e, TreePath path, ProjectChangedInTab projChanged,
-			EpiTabChanged tabChanged, ProjectModelFeatures modelFeatures) {
-		super(e, path, projChanged, tabChanged, modelFeatures);
-		this.mNode2RadioButton = new HashMap<String, JRadioButton>();
+			EpiTabChanged tabChanged, ProjectFeatures projectFeatures) {
+		super(e, path, projChanged, tabChanged, projectFeatures);
+		this.mNode2RadioButton = new HashMap<NodeInfo, JRadioButton>();
 	}
 
 	public void initialize() {
@@ -95,7 +96,8 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		// JPanel jpSouth = new JPanel(new BorderLayout());
 		// jpSouth.add(new JLabel("Explanation missing"));
 		this.center.add(this.getExplanationPanel(), BorderLayout.SOUTH);
-		this.updateComponentList((String) jcbSBML.getSelectedItem());
+		this.activeModel = (String) jcbSBML.getSelectedItem();
+		this.updateComponentList();
 		this.isInitialized = true;
 	}
 
@@ -132,7 +134,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		// Model selection list
 		String[] saSBML = new String[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
-			saSBML[i] = this.modelFeatures.getName(modelList.get(i));
+			saSBML[i] = this.projectFeatures.getModelName(modelList.get(i));
 		}
 		JComboBox<String> jcb = new JComboBox<String>(saSBML);
 		jcb.addActionListener(new ActionListener() {
@@ -140,7 +142,8 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
 				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
-				updateComponentList((String) jcb.getSelectedItem());
+				activeModel = (String) jcb.getSelectedItem();
+				updateComponentList();
 				// Re-Paint
 				getParent().repaint();
 			}
@@ -161,12 +164,12 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 						public void actionPerformed(ActionEvent e) {
 							JRadioButton jrb = (JRadioButton) e.getSource();
 							activeNodeID = jrb.getText();
-							updateNodeID(jrb.getText());
+							updateNodeID();
 							// Re-Paint
 							getParent().repaint();
 						}
 					});
-					this.mNode2RadioButton.put(nodeID, jrb);
+					this.mNode2RadioButton.put(node, jrb);
 				}
 				group.add(jrb);
 			}
@@ -174,17 +177,15 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		return jcb;
 	}
 
-	private void updateNodeID(String nodeID) {
+	private void updateNodeID() {
 		this.jpNRTop.removeAll();
 		ButtonGroup group = new ButtonGroup();
-		this.jpNRTop.add(new JLabel(nodeID + ": "));
+		this.jpNRTop.add(new JLabel(this.activeNodeID + ": "));
 		JRadioButton jrEnv = new JRadioButton("Environment");
-		jrEnv.setToolTipText(nodeID);
 		jrEnv.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JRadioButton jrb = (JRadioButton) e.getSource();
-				paintEnvironmentPanel(jrb.getToolTipText());
+				paintEnvironmentPanel();
 				// Re-Paint
 				getParent().repaint();
 			}
@@ -192,36 +193,40 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		group.add(jrEnv);
 		this.jpNRTop.add(jrEnv);
 		JRadioButton jrInt = new JRadioButton("Integration");
-		jrInt.setToolTipText(nodeID);
 		jrInt.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JRadioButton jrb = (JRadioButton) e.getSource();
-				paintIntegrationPanel(jrb.getToolTipText());
+				paintIntegrationPanel();
 				// Re-Paint
 				getParent().repaint();
 			}
 		});
 		group.add(jrInt);
 		this.jpNRTop.add(jrInt);
-		if (this.userIntegrationFunctions.containsKey(nodeID)) {
+		LogicalModel m = this.epithelium.getComponentFeatures().getModel(this.activeModel);
+		NodeInfo node = this.epithelium.getComponentFeatures().getNodeInfo(this.activeNodeID, m);
+		if (this.userIntegrationFunctions.containsKey(node)) {
 			jrInt.setSelected(true);
-			paintIntegrationPanel(nodeID);
+			paintIntegrationPanel();
 		} else {
 			jrEnv.setSelected(true);
-			paintEnvironmentPanel(nodeID);
+			paintEnvironmentPanel();
 		}
 	}
+	
+	private NodeInfo getActiveNodeInfo() {
+		LogicalModel m = this.epithelium.getComponentFeatures().getModel(this.activeModel);
+		return this.epithelium.getComponentFeatures().getNodeInfo(this.activeNodeID, m);
+	}
 
-	private void paintIntegrationPanel(String nodeID) {
+	private void paintIntegrationPanel() {
 		// GUI
 		this.jpNRBottom.removeAll();
 
-		if (!this.userIntegrationFunctions.containsKey(nodeID)) {
-			NodeInfo node = this.epithelium.getComponentFeatures().getNodeInfo(nodeID);
-			this.userIntegrationFunctions.addComponent(node);
+		if (!this.userIntegrationFunctions.containsKey(this.getActiveNodeInfo())) {
+			this.userIntegrationFunctions.addComponent(this.getActiveNodeInfo());
 		}
-		ComponentIntegrationFunctions cfi = this.userIntegrationFunctions.getComponentIntegrationFunctions(nodeID);
+		ComponentIntegrationFunctions cfi = this.userIntegrationFunctions.getComponentIntegrationFunctions(this.getActiveNodeInfo());
 
 		List<String> functions = cfi.getFunctions();
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -245,7 +250,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 					JTextField jtf = (JTextField) e.getSource();
 					byte value = Byte.parseByte(jtf.getToolTipText());
 
-					setIntegrationFunction(activeNodeID, value, jtf.getText());
+					setIntegrationFunction(value, jtf.getText());
 					validateIntegrationFunction(jtf);
 				}
 
@@ -259,15 +264,15 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		}
 	}
 
-	private void setIntegrationFunction(String nodeID, byte level, String function) {
+	private void setIntegrationFunction(byte level, String function) {
 
-		ComponentIntegrationFunctions cif = this.userIntegrationFunctions.getComponentIntegrationFunctions(nodeID);
+		ComponentIntegrationFunctions cif = this.userIntegrationFunctions.getComponentIntegrationFunctions(this.getActiveNodeInfo());
 		cif.setFunctionAtLevel(level, function);
 	}
 
 	private void validateIntegrationFunction(JTextField jtf) {
 		ComponentIntegrationFunctions cif = this.userIntegrationFunctions
-				.getComponentIntegrationFunctions(this.activeNodeID);
+				.getComponentIntegrationFunctions(this.getActiveNodeInfo());
 		byte value = Byte.parseByte(jtf.getToolTipText());
 		if (jtf.getText().trim().isEmpty() || cif.isValidAtLevel(value)) {
 			jtf.setBackground(Color.WHITE);
@@ -276,59 +281,58 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		}
 	}
 
-	private void paintEnvironmentPanel(String nodeID) {
-		this.userIntegrationFunctions.removeComponent(nodeID);
+	private void paintEnvironmentPanel() {
+		this.userIntegrationFunctions.removeComponent(this.getActiveNodeInfo());
 		this.jpNRBottom.removeAll();
 	}
 
-	private void updateComponentList(String sModel) {
+	private void updateComponentList() {
 		this.jpNLBottom.removeAll();
-		LogicalModel m = this.modelFeatures.getModel(sModel);
+		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(1, 5, 1, 0);
-		Set<String> sInputs = this.epithelium.getComponentFeatures().getModelComponents(m, true);
-		List<String> lInputs = new ArrayList<String>(sInputs);
-		Collections.sort(lInputs, new Comparator<String>() {
-			public int compare(String s1, String s2) {
-				return s1.compareToIgnoreCase(s2);
+		Set<NodeInfo> sInputs = this.epithelium.getComponentFeatures().getModelNodeInfos(m, true);
+		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(sInputs);
+		Collections.sort(lInputs, new Comparator<NodeInfo>() {
+			public int compare(NodeInfo s1, NodeInfo s2) {
+				return s1.getNodeID().compareToIgnoreCase(s2.getNodeID());
 			}
 		});
 		int y = 0;
-		for (String nodeID : lInputs) {
+		for (NodeInfo node : lInputs) {
 			if (y == 0) {
-				this.activeNodeID = nodeID;
-				updateNodeID(nodeID);
-				this.mNode2RadioButton.get(nodeID).setSelected(true);
+				this.activeNodeID = node.getNodeID();
+				updateNodeID();
+				this.mNode2RadioButton.get(node).setSelected(true);
 			}
 			gbc.gridy = y++;
 			gbc.gridx = 0;
 			gbc.anchor = GridBagConstraints.WEST;
-			this.jpNLBottom.add(this.mNode2RadioButton.get(nodeID), gbc);
+			this.jpNLBottom.add(this.mNode2RadioButton.get(node), gbc);
 		}
 	}
 
 	@Override
 	protected void buttonReset() {
 		this.userIntegrationFunctions = this.epithelium.getIntegrationFunctions().clone();
-		this.updateNodeID(this.activeNodeID);
+		this.updateNodeID();
 		// Repaint
 		this.getParent().repaint();
 	}
 
 	@Override
 	protected void buttonAccept() {
-		for (String nodeID : mNode2RadioButton.keySet()) {
+		for (NodeInfo node : mNode2RadioButton.keySet()) {
 			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions
-					.getComponentIntegrationFunctions(nodeID);
+					.getComponentIntegrationFunctions(node);
 			EpitheliumIntegrationFunctions eifOrig = this.epithelium.getIntegrationFunctions();
 			if (cifClone == null) {
-				eifOrig.removeComponent(nodeID);
+				eifOrig.removeComponent(node);
 			} else {
-				NodeInfo node = this.epithelium.getComponentFeatures().getNodeInfo(nodeID);
 				eifOrig.addComponent(node);
 				for (byte i = 1; i <= node.getMax(); i++) {
-					eifOrig.getComponentIntegrationFunctions(nodeID).setFunctionAtLevel(i,
+					eifOrig.getComponentIntegrationFunctions(node).setFunctionAtLevel(i,
 							cifClone.getFunctions().get(i - 1));
 				}
 			}
@@ -337,11 +341,11 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 
 	@Override
 	protected boolean isChanged() {
-		for (String nodeID : mNode2RadioButton.keySet()) {
+		for (NodeInfo node : mNode2RadioButton.keySet()) {
 			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions
-					.getComponentIntegrationFunctions(nodeID);
+					.getComponentIntegrationFunctions(node);
 			ComponentIntegrationFunctions cifOrig = this.epithelium.getIntegrationFunctions()
-					.getComponentIntegrationFunctions(nodeID);
+					.getComponentIntegrationFunctions(node);
 			if (cifClone == null && cifOrig == null)
 				continue;
 			if (cifClone == null && cifOrig != null || cifClone != null && cifOrig == null)
@@ -360,11 +364,10 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		EpitheliumIntegrationFunctions epiFunc = new EpitheliumIntegrationFunctions();
 		for (LogicalModel m : modelList) {
 			for (NodeInfo node : m.getNodeOrder()) {
-				String nodeID = node.getNodeID();
-				if (this.userIntegrationFunctions.containsKey(nodeID)) {
+				if (this.userIntegrationFunctions.containsKey(node)) {
 					// Already exists
-					epiFunc.addComponentFunctions(nodeID,
-							this.userIntegrationFunctions.getComponentIntegrationFunctions(nodeID));
+					epiFunc.addComponentFunctions(node,
+							this.userIntegrationFunctions.getComponentIntegrationFunctions(node));
 				} else {
 					// Adds a new one
 					epiFunc.addComponent(node);
@@ -373,6 +376,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		}
 		this.jpNLTop.removeAll();
 		this.jpNLTop.add(this.newModelCombobox(modelList));
-		this.updateComponentList(this.modelFeatures.getName(modelList.get(0)));
+		this.activeModel = this.projectFeatures.getModelName(modelList.get(0));
+		this.updateComponentList();
 	}
 }

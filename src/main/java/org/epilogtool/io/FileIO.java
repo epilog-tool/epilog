@@ -183,7 +183,11 @@ public class FileIO {
 		// Loads all the epithelium from the config.txt configuration file
 		for (final File fileEntry : tmpFolder.listFiles()) {
 			if (fileEntry.getName().toLowerCase().equals(CONFIG_FILE)) {
+				try {
 				project = Parser.loadConfigurations(fileEntry);
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
 				break;
 			}
 		}

@@ -10,7 +10,7 @@ import java.awt.event.MouseMotionListener;
 import java.util.Map;
 
 import org.colomoto.logicalmodel.LogicalModel;
-import org.epilogtool.project.ProjectModelFeatures;
+import org.epilogtool.project.ProjectFeatures;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.topology.Topology;
 
@@ -19,7 +19,7 @@ public class VisualGridModel extends VisualGrid {
 
 	private LogicalModel[][] modelGridClone;
 	private Map<LogicalModel, Color> colorMapClone;
-	private ProjectModelFeatures modelFeatures;
+	private ProjectFeatures projectFeatures;
 	private String selModelName;
 	private boolean isRectFill;
 	private Tuple2D<Integer> initialRectPos;
@@ -27,11 +27,11 @@ public class VisualGridModel extends VisualGrid {
 	public VisualGridModel(int gridX, int gridY, Topology topology,
 			LogicalModel[][] modelGridClone,
 			Map<LogicalModel, Color> colorMapClone,
-			ProjectModelFeatures modelFeatures) {
+			ProjectFeatures projectFeatures) {
 		super(gridX, gridY, topology);
 		this.modelGridClone = modelGridClone;
 		this.colorMapClone = colorMapClone;
-		this.modelFeatures = modelFeatures;
+		this.projectFeatures = projectFeatures;
 		this.selModelName = null;
 		this.isRectFill = false;
 		this.initialRectPos = null;
@@ -85,7 +85,7 @@ public class VisualGridModel extends VisualGrid {
 
 	private void drawRectangleOverSelectedCells() {
 		// Get selected model color
-		LogicalModel m = this.modelFeatures.getModel(this.selModelName);
+		LogicalModel m = this.projectFeatures.getModel(this.selModelName);
 		Color c = this.colorMapClone.get(m);
 
 		// Paint the rectangle
@@ -104,7 +104,7 @@ public class VisualGridModel extends VisualGrid {
 	protected void applyDataAt(int x, int y) {
 		if (this.selModelName == null)
 			return;
-		LogicalModel m = this.modelFeatures.getModel(this.selModelName);
+		LogicalModel m = this.projectFeatures.getModel(this.selModelName);
 		this.modelGridClone[x][y] = m;
 	}
 

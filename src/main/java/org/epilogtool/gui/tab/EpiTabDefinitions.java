@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.tree.TreePath;
 
-import org.epilogtool.project.ProjectModelFeatures;
+import org.epilogtool.project.ProjectFeatures;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
 import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
@@ -18,16 +18,16 @@ import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
 public abstract class EpiTabDefinitions extends EpiTab {
 	private static final long serialVersionUID = -2587480492648550086L;
 
-	protected ProjectModelFeatures modelFeatures;
+	protected ProjectFeatures projectFeatures;
 	protected JPanel center;
 	private JPanel south;
 	private EpiTabChanged tabChanged;
 
 	protected EpiTabDefinitions(Epithelium e, TreePath path, ProjectChangedInTab projChanged,
-			EpiTabChanged tabChanged, ProjectModelFeatures modelFeatures) {
+			EpiTabChanged tabChanged, ProjectFeatures projectFeatures) {
 		super(e, path, projChanged);
 		this.tabChanged = tabChanged;
-		this.modelFeatures = modelFeatures;
+		this.projectFeatures = projectFeatures;
 		this.initializeGUI();
 	}
 
