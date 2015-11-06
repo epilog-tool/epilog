@@ -55,8 +55,15 @@ public class ProjectFeatures {
 			} else {
 				this.nodeColor.put(nodeID, ColorUtils.random());
 			}
-			ComponentPair cf = new ComponentPair(m, node);
-			this.string2ComponentFeature.get(nodeID).add(cf);
+			ComponentPair cp = new ComponentPair(m, node);
+			if (!this.string2ComponentFeature.containsKey(nodeID)){
+				Set<ComponentPair> tmpSet = new HashSet<ComponentPair>();
+				tmpSet.add(cp);
+				this.string2ComponentFeature.put(nodeID, tmpSet);
+			}
+			else {
+			this.string2ComponentFeature.get(nodeID).add(cp);
+			}
 		}
 	}
 

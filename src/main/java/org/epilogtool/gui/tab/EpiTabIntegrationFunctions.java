@@ -280,15 +280,18 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	}
 
 	private void setIntegrationFunction(byte level, String function) {
-
+		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
+		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
 		ComponentIntegrationFunctions cif = this.userIntegrationFunctions
-				.getComponentIntegrationFunctions(this.getActiveNodeInfo());
+				.getComponentIntegrationFunctions(cp);
 		cif.setFunctionAtLevel(level, function);
 	}
 
 	private void validateIntegrationFunction(JTextField jtf) {
+		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
+		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
 		ComponentIntegrationFunctions cif = this.userIntegrationFunctions
-				.getComponentIntegrationFunctions(this.getActiveNodeInfo());
+				.getComponentIntegrationFunctions(cp);
 		byte value = Byte.parseByte(jtf.getToolTipText());
 		if (jtf.getText().trim().isEmpty() || cif.isValidAtLevel(value)) {
 			jtf.setBackground(Color.WHITE);
@@ -298,7 +301,9 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	}
 
 	private void paintEnvironmentPanel() {
-		this.userIntegrationFunctions.removeComponent(this.getActiveNodeInfo());
+		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
+		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
+		this.userIntegrationFunctions.removeComponent(cp);
 		this.jpNRBottom.removeAll();
 	}
 
@@ -342,16 +347,18 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	@Override
 	protected void buttonAccept() {
 		for (NodeInfo node : mNode2RadioButton.keySet()) {
+			ComponentPair cp = new ComponentPair(this.projectFeatures.
+					getModel(this.activeModel), node);
 			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions
-					.getComponentIntegrationFunctions(node);
+					.getComponentIntegrationFunctions(cp);
 			EpitheliumIntegrationFunctions eifOrig = this.epithelium
 					.getIntegrationFunctions();
 			if (cifClone == null) {
-				eifOrig.removeComponent(node);
+				eifOrig.removeComponent(cp);
 			} else {
-				eifOrig.addComponent(node);
+				eifOrig.addComponent(cp);
 				for (byte i = 1; i <= node.getMax(); i++) {
-					eifOrig.getComponentIntegrationFunctions(node)
+					eifOrig.getComponentIntegrationFunctions(cp)
 							.setFunctionAtLevel(i,
 									cifClone.getFunctions().get(i - 1));
 				}
@@ -362,11 +369,13 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	@Override
 	protected boolean isChanged() {
 		for (NodeInfo node : mNode2RadioButton.keySet()) {
+			ComponentPair cp = new ComponentPair(this.projectFeatures.
+					getModel(this.activeModel), node);
 			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions
-					.getComponentIntegrationFunctions(node);
+					.getComponentIntegrationFunctions(cp);
 			ComponentIntegrationFunctions cifOrig = this.epithelium
 					.getIntegrationFunctions()
-					.getComponentIntegrationFunctions(node);
+					.getComponentIntegrationFunctions(cp);
 			if (cifClone == null && cifOrig == null)
 				continue;
 			if (cifClone == null && cifOrig != null || cifClone != null
@@ -387,14 +396,15 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		EpitheliumIntegrationFunctions epiFunc = new EpitheliumIntegrationFunctions();
 		for (LogicalModel m : modelList) {
 			for (NodeInfo node : m.getNodeOrder()) {
-				if (this.userIntegrationFunctions.containsKey(node)) {
+				ComponentPair cp = new ComponentPair(m, node);
+				if (this.userIntegrationFunctions.containsComponentPair(cp)) {
 					// Already exists
-					epiFunc.addComponentFunctions(node,
+					epiFunc.addComponentFunctions(cp,
 							this.userIntegrationFunctions
-									.getComponentIntegrationFunctions(node));
+									.getComponentIntegrationFunctions(cp));
 				} else {
 					// Adds a new one
-					epiFunc.addComponent(node);
+					epiFunc.addComponent(cp);
 				}
 			}
 		}

@@ -115,9 +115,11 @@ public class Epithelium {
 			}
 		}
 		// Clean Epithelium components
-		for (NodeInfo node : this.integrationFunctions.getComponentPair()) {
+		Set<ComponentPair> sCP = this.integrationFunctions.getComponentPair();
+		for (ComponentPair cp : sCP) {
+			NodeInfo node = cp.getNodeInfo();
 			if (!sNodeIDs.contains(node.getNodeID())) {
-				this.integrationFunctions.removeComponent(node);
+				this.integrationFunctions.removeComponent(cp);
 			}
 		}
 	}
@@ -165,10 +167,11 @@ public class Epithelium {
 	public void setIntegrationFunction(String nodeID, LogicalModel m, byte value,
 			String function) {
 		NodeInfo node = this.projectFeatures.getNodeInfo(nodeID, m);
-		if (!this.integrationFunctions.containsKey(node)) {
-			this.integrationFunctions.addComponent(node);
+		ComponentPair cp = new ComponentPair(m, node);
+		if (!this.integrationFunctions.containsComponentPair(cp)) {
+			this.integrationFunctions.addComponent(cp);
 		}
-		this.integrationFunctions.setFunctionAtLevel(node, value, function);
+		this.integrationFunctions.setFunctionAtLevel(cp, value, function);
 	}
 
 	public void initPriorityClasses(LogicalModel m) {
@@ -225,7 +228,10 @@ public class Epithelium {
 	}
 
 	public boolean isIntegrationComponent(NodeInfo node) {
-		return this.integrationFunctions.containsKey(node);
+		for (ComponentPair cp : this.integrationFunctions.getComponentPair()){
+			if (node.equals(cp.getNodeInfo())) return true;
+		}
+		return false;
 	}
 
 	public EpitheliumIntegrationFunctions getIntegrationFunctions() {
