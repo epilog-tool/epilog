@@ -158,14 +158,9 @@ public class Simulation {
 
 		// 2. Update integration components
 		for (NodeInfo node : m.getNodeOrder()) {
-			ComponentPair nodeCP = null;
-			for (ComponentPair cp : sIntegComponentPairs) {
-				if (cp.getNodeInfo().equals(node)) {
-					nodeCP = cp;
-					break;
-				}
-			}
-			if (node.isInput() && nodeCP != null) {
+			ComponentPair nodeCP = new ComponentPair(m, node);
+
+			if (node.isInput() && sIntegComponentPairs.contains(nodeCP)) {
 				List<IntegrationExpression> lExpressions = this.epithelium
 						.getIntegrationFunctionsForComponent(nodeCP)
 						.getComputedExpressions();

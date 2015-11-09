@@ -237,7 +237,6 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 
 		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
 		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
-		System.out.println("paintPanel: " + cp);
 		if (!this.userIntegrationFunctions.containsComponentPair(cp)) {
 			this.userIntegrationFunctions.addComponent(cp);
 		}
