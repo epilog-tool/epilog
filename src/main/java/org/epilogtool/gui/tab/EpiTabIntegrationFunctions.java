@@ -237,6 +237,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 
 		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
 		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
+		System.out.println("paintPanel: " + cp);
 		if (!this.userIntegrationFunctions.containsComponentPair(cp)) {
 			this.userIntegrationFunctions.addComponent(cp);
 		}
@@ -273,7 +274,6 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 				public void keyPressed(KeyEvent e) {
 				}
 			});
-			validateIntegrationFunction(jtf);
 			jtf.setColumns(this.JTF_WIDTH);
 			this.jpNRBottom.add(jtf, gbc);
 		}

@@ -132,7 +132,6 @@ public class GridInformation extends JPanel {
 			this.jIntPanel.add(jlTmp, gbc);
 			gbc.gridwidth = 1;
 			for (String nodeID : lAllNodeIDs) {
-				System.out.println(nodeID);
 				if (!this.projectFeatures.hasNode(nodeID, m)
 						|| this.projectFeatures.getNodeInfo(nodeID, m)
 								.isInput()) {

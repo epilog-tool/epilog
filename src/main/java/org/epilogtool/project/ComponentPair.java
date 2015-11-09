@@ -25,4 +25,10 @@ public class ComponentPair {
 		ComponentPair out = (ComponentPair) obj;
 		return this.m.equals(out.m) && this.node.equals(out.node);
 	}
+	
+	@Override
+	public int hashCode() {
+		return this.m.getNodeOrder().size() + 1000*this.m.getExtraComponents().size() + 100000*this.node.getMax()
+		+ 1000000*this.node.getNodeID().length();
+	}
 }
