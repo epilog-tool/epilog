@@ -6,7 +6,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -17,6 +16,7 @@ import javax.swing.JScrollPane;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
+import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.project.ComponentPair;
@@ -73,11 +73,7 @@ public class GridInformation extends JPanel {
 		if (grid != null) {
 			List<String> lAllNodeIDs = new ArrayList<String>(
 					this.projectFeatures.getComponents());
-			Collections.sort(lAllNodeIDs, new Comparator<String>() {
-				public int compare(String s1, String s2) {
-					return s1.compareToIgnoreCase(s2);
-				}
-			});
+			Collections.sort(lAllNodeIDs, ObjectComparator.STRING);
 			LogicalModel m = grid.getModel(posX, posY);
 
 			// Cell Position

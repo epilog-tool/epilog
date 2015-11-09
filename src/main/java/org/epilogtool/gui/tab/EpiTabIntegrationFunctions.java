@@ -12,7 +12,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +29,7 @@ import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
+import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
@@ -315,11 +315,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		Set<NodeInfo> sInputs = this.epithelium.getComponentFeatures()
 				.getModelNodeInfos(m, true);
 		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(sInputs);
-		Collections.sort(lInputs, new Comparator<NodeInfo>() {
-			public int compare(NodeInfo s1, NodeInfo s2) {
-				return s1.getNodeID().compareToIgnoreCase(s2.getNodeID());
-			}
-		});
+		Collections.sort(lInputs, ObjectComparator.NODE_INFO);
 		int y = 0;
 		for (NodeInfo node : lInputs) {
 			if (y == 0) {
@@ -346,8 +342,8 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	@Override
 	protected void buttonAccept() {
 		for (NodeInfo node : mNode2RadioButton.keySet()) {
-			ComponentPair cp = new ComponentPair(this.projectFeatures.
-					getModel(this.activeModel), node);
+			ComponentPair cp = new ComponentPair(
+					this.projectFeatures.getModel(this.activeModel), node);
 			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions
 					.getComponentIntegrationFunctions(cp);
 			EpitheliumIntegrationFunctions eifOrig = this.epithelium
@@ -368,8 +364,8 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	@Override
 	protected boolean isChanged() {
 		for (NodeInfo node : mNode2RadioButton.keySet()) {
-			ComponentPair cp = new ComponentPair(this.projectFeatures.
-					getModel(this.activeModel), node);
+			ComponentPair cp = new ComponentPair(
+					this.projectFeatures.getModel(this.activeModel), node);
 			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions
 					.getComponentIntegrationFunctions(cp);
 			ComponentIntegrationFunctions cifOrig = this.epithelium
