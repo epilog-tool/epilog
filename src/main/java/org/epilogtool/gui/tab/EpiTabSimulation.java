@@ -487,12 +487,13 @@ public class EpiTabSimulation extends EpiTab {
 		}
 	}
 
-	private void setComponentTypeList(List<String> nodeList, String titleBorder) {
+	private void setComponentTypeList(Set<String> sNodeIDs, String titleBorder) {
 		JPanel jpRRC = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(5, 5, 4, 0);
 		jpRRC.setBorder(BorderFactory
 				.createTitledBorder(titleBorder));
+		List<String> nodeList = new ArrayList<String>(sNodeIDs);
 		Collections.sort(nodeList, ObjectComparator.STRING);
 		int y = 0;
 		for (String nodeID : nodeList) {
@@ -517,39 +518,35 @@ public class EpiTabSimulation extends EpiTab {
 		}
 		this.lPresentComps = new ArrayList<String>();
 		
-		Set<String> ProperNodeIDs = new HashSet<String>();
-		Set<String> InputNodeIDs = new HashSet<String>();
-		Set<String> CommonNodeIDs = new HashSet<String>();
+		Set<String> sProperNodeIDs = new HashSet<String>();
+		Set<String> sInputNodeIDs = new HashSet<String>();
+		Set<String> sCommonNodeIDs = new HashSet<String>();
 		
 		List<NodeInfo> lProper = new ArrayList<NodeInfo>(this.epithelium
 				.getComponentFeatures().getModelsNodeInfos(lModels, false));
 		
 		for (NodeInfo node : lProper)
-			ProperNodeIDs.add(node.getNodeID());
+			sProperNodeIDs.add(node.getNodeID());
 		
 		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(this.epithelium
 				.getComponentFeatures().getModelsNodeInfos(lModels, true));
 		
 		for (NodeInfo node : lInputs){
-			if (ProperNodeIDs.contains(node.getNodeID())){
-				CommonNodeIDs.add(node.getNodeID());
-				ProperNodeIDs.remove(node.getNodeID());
+			if (sProperNodeIDs.contains(node.getNodeID())){
+				sCommonNodeIDs.add(node.getNodeID());
+				sProperNodeIDs.remove(node.getNodeID());
 			}
 			else {
-				InputNodeIDs.add(node.getNodeID());
+				sInputNodeIDs.add(node.getNodeID());
 			}
 		}
 		
-		List<String> Proper = new ArrayList<String>(ProperNodeIDs);
-		List<String> Inputs = new ArrayList<String>(InputNodeIDs);
-		List<String> Common = new ArrayList<String>(CommonNodeIDs);
-		
-		if (lProper.size() > 0) 
-			this.setComponentTypeList(Proper, "Proper Components");
-		if (lInputs.size() > 0)
-			this.setComponentTypeList(Inputs, "Input Components");
-		if (Common.size() > 0)
-			this.setComponentTypeList(Common, "Common Components");
+		if (!sCommonNodeIDs.isEmpty())
+			this.setComponentTypeList(sCommonNodeIDs, "Common Components");
+		if (!sProperNodeIDs.isEmpty()) 
+			this.setComponentTypeList(sProperNodeIDs, "Proper Components");
+		if (!sInputNodeIDs.isEmpty())
+			this.setComponentTypeList(sInputNodeIDs, "Input Components");
 		this.visualGridSimulation.paintComponent(this.visualGridSimulation
 				.getGraphics());
 		this.jpRRCenter.revalidate();
