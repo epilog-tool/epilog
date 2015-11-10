@@ -14,8 +14,10 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -485,6 +487,25 @@ public class EpiTabSimulation extends EpiTab {
 		}
 	}
 
+	private void setComponentTypeList(List<String> nodeList, String titleBorder) {
+		JPanel jpRRC = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(5, 5, 4, 0);
+		jpRRC.setBorder(BorderFactory
+				.createTitledBorder(titleBorder));
+		Collections.sort(nodeList, ObjectComparator.STRING);
+		int y = 0;
+		for (String nodeID : nodeList) {
+			this.lPresentComps.add(nodeID);
+			if (mSelCheckboxes.get(nodeID)) {
+				this.lCompON.add(nodeID);
+			}
+			this.getCompMiniPanel(jpRRC, gbc, y, nodeID);
+			y++;
+		}
+		this.jpRRCenter.add(jpRRC);
+	}
+	
 	private void updateComponentList(List<String> items) {
 		this.jpRRCenter.removeAll();
 		this.lCompON.clear();
@@ -495,48 +516,40 @@ public class EpiTabSimulation extends EpiTab {
 			lModels.add(this.projectFeatures.getModel(modelName));
 		}
 		this.lPresentComps = new ArrayList<String>();
-
-		// Proper components
-		JPanel jpRRCTop = new JPanel(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(5, 5, 4, 0);
-		jpRRCTop.setBorder(BorderFactory
-				.createTitledBorder("Proper components"));
+		
+		Set<String> ProperNodeIDs = new HashSet<String>();
+		Set<String> InputNodeIDs = new HashSet<String>();
+		Set<String> CommonNodeIDs = new HashSet<String>();
+		
 		List<NodeInfo> lProper = new ArrayList<NodeInfo>(this.epithelium
 				.getComponentFeatures().getModelsNodeInfos(lModels, false));
-		Collections.sort(lProper, ObjectComparator.NODE_INFO);
-		int y = 0;
-		for (NodeInfo node : lProper) {
-			String nodeID = node.getNodeID();
-			this.lPresentComps.add(nodeID);
-			if (mSelCheckboxes.get(nodeID)) {
-				this.lCompON.add(nodeID);
-			}
-			this.getCompMiniPanel(jpRRCTop, gbc, y, nodeID);
-			y++;
-		}
-		this.jpRRCenter.add(jpRRCTop);
-
-		// Input components
-		JPanel jpRRCBottom = new JPanel(new GridBagLayout());
-		gbc = new GridBagConstraints();
-		gbc.insets = new Insets(5, 5, 4, 0);
-		jpRRCBottom.setBorder(BorderFactory
-				.createTitledBorder("Input components"));
+		
+		for (NodeInfo node : lProper)
+			ProperNodeIDs.add(node.getNodeID());
+		
 		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(this.epithelium
 				.getComponentFeatures().getModelsNodeInfos(lModels, true));
-		Collections.sort(lInputs, ObjectComparator.NODE_INFO);
-		y = 0;
-		for (NodeInfo node : lInputs) {
-			String nodeID = node.getNodeID();
-			this.lPresentComps.add(nodeID);
-			if (mSelCheckboxes.get(nodeID)) {
-				this.lCompON.add(nodeID);
+		
+		for (NodeInfo node : lInputs){
+			if (ProperNodeIDs.contains(node.getNodeID())){
+				CommonNodeIDs.add(node.getNodeID());
+				ProperNodeIDs.remove(node.getNodeID());
 			}
-			this.getCompMiniPanel(jpRRCBottom, gbc, y, nodeID);
-			y++;
+			else {
+				InputNodeIDs.add(node.getNodeID());
+			}
 		}
-		this.jpRRCenter.add(jpRRCBottom);
+		
+		List<String> Proper = new ArrayList<String>(ProperNodeIDs);
+		List<String> Inputs = new ArrayList<String>(InputNodeIDs);
+		List<String> Common = new ArrayList<String>(CommonNodeIDs);
+		
+		if (lProper.size() > 0) 
+			this.setComponentTypeList(Proper, "Proper Components");
+		if (lInputs.size() > 0)
+			this.setComponentTypeList(Inputs, "Input Components");
+		if (Common.size() > 0)
+			this.setComponentTypeList(Common, "Common Components");
 		this.visualGridSimulation.paintComponent(this.visualGridSimulation
 				.getGraphics());
 		this.jpRRCenter.revalidate();

@@ -173,25 +173,12 @@ public class ProjectFeatures {
 		return this.model2String.keySet();
 	}
 
-	public boolean hasNode(String NodeID, LogicalModel m) {
-		List<NodeInfo> modelNodeInfos = m.getNodeOrder();
-		for (NodeInfo node : modelNodeInfos) {
-			if (node.getNodeID() == NodeID) {
-				return true;
+	public boolean hasNode(String nodeID, LogicalModel m) {
+		if (this.getNodeInfo(nodeID, m) != null) {
+			return true;
 			}
-		}
 		return false;
 	}
-
-	// public LogicalModel getNodeModel(NodeInfo node) {
-	// String nodeID = node.getNodeID();
-	// for (LogicalModel m : this.getModels()) {
-	// if (this.string2ComponentFeature.get(nodeID).containsKey(m)) {
-	// return m;
-	// }
-	// }
-	// return null;
-	// }
 
 	public Set<String> getModelComponents(LogicalModel m, boolean input) {
 		Set<String> sComps = new HashSet<String>();
