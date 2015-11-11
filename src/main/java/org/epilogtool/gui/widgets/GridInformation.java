@@ -113,7 +113,7 @@ public class GridInformation extends JPanel {
 			this.jCellPanel.add(jlTmp, gbc);
 			AbstractPerturbation ap = grid.getPerturbation(posX, posY);
 			if (ap == null) {
-				jlTmp = EpilogGUIFactory.getJLabelItalic("  Node");
+				jlTmp = EpilogGUIFactory.getJLabelItalic("  None");
 			} else {
 				jlTmp = new JLabel("  " + ap.toString());
 			}

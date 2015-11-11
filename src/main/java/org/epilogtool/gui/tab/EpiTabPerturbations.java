@@ -415,7 +415,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		GridBagConstraints gbc = new GridBagConstraints();
 		int y = 0;
 		for (AbstractPerturbation ap : this.colorMapClone.keySet()) {
-			if (this.epiPerturbClone.getModelPerturbations(this.selModel).getPerturbationColor(ap) == null)
+			if (this.epiPerturbClone.getModelPerturbations(this.selModel) == null || 
+					this.epiPerturbClone.getModelPerturbations(this.selModel).getPerturbationColor(ap) == null)
 				continue;
 			gbc.gridy = y;
 			gbc.gridx = 0;
@@ -425,7 +426,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 			this.jpRBColor.add(this.mAP2JButton.get(ap), gbc);
 			y++;
 		}
-
 		JRadioButton jrDel = new JRadioButton("Clear cell");
 		jrDel.addActionListener(new ActionListener() {
 			@Override
@@ -439,8 +439,9 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.gridwidth = 2;
 		this.jpRBColor.add(jrDel, gbc);
+		//TODO jrDel.setSelected is not setting selected abstract perturbations to null
 		jrDel.setSelected(true);
-
+		this.visualGridPerturb.setSelAbsPerturb(null);
 		this.jpRBColor.revalidate();
 		this.jpRBColor.repaint();
 	}
