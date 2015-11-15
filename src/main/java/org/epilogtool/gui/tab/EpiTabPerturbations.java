@@ -160,7 +160,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		gbc.anchor = GridBagConstraints.WEST;
 		jpPerturbTop.add(new JLabel("Component:"), gbc);
 
-		Set<String> sProper = this.epithelium.getComponentFeatures().getModelComponents(this.selModel, false);
+		Set<String> sProper = this.epithelium.getProjectFeatures().getModelComponents(this.selModel, false);
 
 		String[] saProper = new String[sProper.size()];
 		int i = 0;
@@ -199,7 +199,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String nodeID = (String) jcbComps.getSelectedItem();
-				NodeInfo node = epithelium.getComponentFeatures().getNodeInfo(nodeID, selModel);
+				NodeInfo node = epithelium.getProjectFeatures().getNodeInfo(nodeID, selModel);
 				byte min = (Byte) jcbMinVal.getSelectedItem();
 				byte max = (Byte) jcbMaxVal.getSelectedItem();
 				AbstractPerturbation ap;
@@ -486,7 +486,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	private void updateMinMaxValues(String nodeID) {
 		jcbMinVal.removeAllItems();
 		jcbMaxVal.removeAllItems();
-		byte max = epithelium.getComponentFeatures().getNodeInfo(nodeID, selModel).getMax();
+		byte max = epithelium.getProjectFeatures().getNodeInfo(nodeID, selModel).getMax();
 		for (byte b = 0; b <= max; b++) {
 			jcbMinVal.addItem(b);
 			jcbMaxVal.addItem(b);

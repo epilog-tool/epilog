@@ -97,7 +97,7 @@ public class Simulation {
 				.getIntegrationComponentPairs();
 
 		IntegrationFunctionEvaluation evaluator = new IntegrationFunctionEvaluation(
-				currGrid, this.epithelium.getComponentFeatures());
+				currGrid, this.epithelium.getProjectFeatures());
 
 		// Gets the set of cells that can be updated
 		// And builds the default next grid (= current grid)

@@ -167,7 +167,7 @@ public class Parser {
 				String sPerturb = line.substring(line.indexOf("(") + 1,
 						line.indexOf(")"));
 				AbstractPerturbation ap = string2AbstractPerturbation(
-						currEpi.getComponentFeatures(), sPerturb, m);
+						currEpi.getProjectFeatures(), sPerturb, m);
 				currEpi.addPerturbation(m, ap);
 
 				String rest = line.substring(line.indexOf(")") + 1).trim();

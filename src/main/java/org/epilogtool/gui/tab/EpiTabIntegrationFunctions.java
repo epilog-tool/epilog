@@ -210,9 +210,9 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		});
 		group.add(jrInt);
 		this.jpNRTop.add(jrInt);
-		LogicalModel m = this.epithelium.getComponentFeatures().getModel(
+		LogicalModel m = this.epithelium.getProjectFeatures().getModel(
 				this.activeModel);
-		NodeInfo node = this.epithelium.getComponentFeatures().getNodeInfo(
+		NodeInfo node = this.epithelium.getProjectFeatures().getNodeInfo(
 				this.activeNodeID, m);
 		if (this.userIntegrationFunctions
 				.containsComponentPair(new ComponentPair(m, node))) {
@@ -225,9 +225,9 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	}
 
 	private NodeInfo getActiveNodeInfo() {
-		LogicalModel m = this.epithelium.getComponentFeatures().getModel(
+		LogicalModel m = this.epithelium.getProjectFeatures().getModel(
 				this.activeModel);
-		return this.epithelium.getComponentFeatures().getNodeInfo(
+		return this.epithelium.getProjectFeatures().getNodeInfo(
 				this.activeNodeID, m);
 	}
 
@@ -312,7 +312,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(1, 5, 1, 0);
-		Set<NodeInfo> sInputs = this.epithelium.getComponentFeatures()
+		Set<NodeInfo> sInputs = this.epithelium.getProjectFeatures()
 				.getModelNodeInfos(m, true);
 		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(sInputs);
 		Collections.sort(lInputs, ObjectComparator.NODE_INFO);

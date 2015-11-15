@@ -146,7 +146,7 @@ public class Epithelium {
 		return this.grid.getModel(x, y);
 	}
 
-	public ProjectFeatures getComponentFeatures() {
+	public ProjectFeatures getProjectFeatures() {
 		return this.projectFeatures;
 	}
 

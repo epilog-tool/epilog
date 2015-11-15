@@ -110,7 +110,7 @@ public class EpiTabSimulation extends EpiTab {
 
 		this.visualGridSimulation = new VisualGridSimulation(
 				clonedEpi.getEpitheliumGrid(),
-				this.epithelium.getComponentFeatures(), this.lCompON,
+				this.epithelium.getProjectFeatures(), this.lCompON,
 				this.lRight);
 		this.jpRight.add(this.visualGridSimulation, BorderLayout.CENTER);
 
@@ -460,7 +460,7 @@ public class EpiTabSimulation extends EpiTab {
 		jp.add(jcb, gbc);
 		gbc.gridx = 1;
 		JButton jbColor = new JButton();
-		jbColor.setBackground(this.epithelium.getComponentFeatures()
+		jbColor.setBackground(this.epithelium.getProjectFeatures()
 				.getNodeColor(nodeID));
 		jbColor.addActionListener(new ActionListener() {
 			@Override
@@ -479,7 +479,7 @@ public class EpiTabSimulation extends EpiTab {
 		if (newColor != null
 				&& !newColor.equals(projectFeatures.getNodeColor(nodeID))) {
 			jb.setBackground(newColor);
-			this.epithelium.getComponentFeatures().setNodeColor(nodeID,
+			this.epithelium.getProjectFeatures().setNodeColor(nodeID,
 					newColor);
 			this.projChanged.setChanged(this);
 			this.visualGridSimulation.paintComponent(this.visualGridSimulation
@@ -523,13 +523,13 @@ public class EpiTabSimulation extends EpiTab {
 		Set<String> sCommonNodeIDs = new HashSet<String>();
 		
 		List<NodeInfo> lProper = new ArrayList<NodeInfo>(this.epithelium
-				.getComponentFeatures().getModelsNodeInfos(lModels, false));
+				.getProjectFeatures().getModelsNodeInfos(lModels, false));
 		
 		for (NodeInfo node : lProper)
 			sProperNodeIDs.add(node.getNodeID());
 		
 		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(this.epithelium
-				.getComponentFeatures().getModelsNodeInfos(lModels, true));
+				.getProjectFeatures().getModelsNodeInfos(lModels, true));
 		
 		for (NodeInfo node : lInputs){
 			if (sProperNodeIDs.contains(node.getNodeID())){
