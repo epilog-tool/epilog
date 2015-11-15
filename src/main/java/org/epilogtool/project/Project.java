@@ -130,7 +130,7 @@ public class Project {
 		return this.projectFeatures.getModel(name);
 	}
 	
-	public ProjectFeatures getModelFeatures() {
+	public ProjectFeatures getProjectFeatures() {
 		return this.projectFeatures;
 	}
 }

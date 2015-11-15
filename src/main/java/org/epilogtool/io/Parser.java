@@ -72,7 +72,7 @@ public class Parser {
 				modelKey2Name.put(saTmp[1], saTmp[2]);
 				Color modelColor = ColorUtils.getColor(saTmp[3], saTmp[4],
 						saTmp[5]);
-				project.getModelFeatures().changeModelColor(saTmp[2], modelColor);
+				project.getProjectFeatures().changeModelColor(saTmp[2], modelColor);
 			}
 			
 			if (line.startsWith("CC")){
@@ -140,9 +140,9 @@ public class Parser {
 				if (saTmp.length == 4) {
 					String input = saTmp[1];
 					String proper = saTmp[3].split("\\(")[0];
-					for (LogicalModel m : project.getModelFeatures().getModels()){
-						if (project.getModelFeatures().hasNode(input, m) & 
-								project.getModelFeatures().hasNode(proper, m)) {
+					for (LogicalModel m : project.getProjectFeatures().getModels()){
+						if (project.getProjectFeatures().hasNode(input, m) & 
+								project.getProjectFeatures().hasNode(proper, m)) {
 							currEpi.setIntegrationFunction(saTmp[1], m, Byte.parseByte(saTmp[2]), 
 									(saTmp.length > 3) ? saTmp[3] : "");
 						}
@@ -239,7 +239,7 @@ public class Parser {
 		for (String sbml : project.getModelNames()) {
 			LogicalModel m = project.getModel(sbml);
 			model2Key.put(m, i);
-			Color c = project.getModelFeatures().getModelColor(m);
+			Color c = project.getProjectFeatures().getModelColor(m);
 			w.println("SB " + i + " " + sbml + " " + c.getRed() + " "
 					+ c.getGreen() + " " + c.getBlue());
 			i++;

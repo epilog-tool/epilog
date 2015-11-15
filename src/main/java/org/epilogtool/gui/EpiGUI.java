@@ -267,7 +267,7 @@ public class EpiGUI extends JFrame {
 					epiRightFrame.removeTabAt(i);
 				}
 			}
-			this.epiTreePanel.remove(this.project.getModelFeatures());
+			this.epiTreePanel.remove(this.project.getProjectFeatures());
 			this.project.setChanged(true);
 			this.validateGUI();
 		}
@@ -386,7 +386,7 @@ public class EpiGUI extends JFrame {
 			}
 			this.project.setChanged(false);
 			this.epiTreePanel.initEpitheliumJTree(this.project
-					.getModelFeatures());
+					.getProjectFeatures());
 			for (Epithelium epi : this.project.getEpitheliumList()) {
 				this.epiTreePanel.addEpi2JTree(epi);
 			}
@@ -431,7 +431,7 @@ public class EpiGUI extends JFrame {
 			this.projDescPanel.addModel(sbml);
 		}
 
-		this.epiTreePanel.initEpitheliumJTree(this.project.getModelFeatures());
+		this.epiTreePanel.initEpitheliumJTree(this.project.getProjectFeatures());
 		for (Epithelium epi : this.project.getEpitheliumList()) {
 			this.epiTreePanel.addEpi2JTree(epi);
 		}
@@ -512,7 +512,7 @@ public class EpiGUI extends JFrame {
 	private void cleanGUI() {
 		// Close & delete all TABS
 		this.setTitle(TITLE_APPNAME + TITLE_UNTITLED);
-		this.epiTreePanel.initEpitheliumJTree(this.project.getModelFeatures());
+		this.epiTreePanel.initEpitheliumJTree(this.project.getProjectFeatures());
 		while (this.epiRightFrame.getTabCount() > 0) {
 			this.epiRightFrame.removeTabAt(0);
 		}
@@ -540,23 +540,23 @@ public class EpiGUI extends JFrame {
 			ProjectChangedInTab projChanged = new ProjectChangedInTab();
 			if (tabName.equals("Initial Condition")) {
 				epiTab = new EpiTabInitialConditions(epi, selPath, projChanged,
-						tabChanged, this.project.getModelFeatures());
+						tabChanged, this.project.getProjectFeatures());
 			} else if (tabName.equals("Integration Components")) {
 				epiTab = new EpiTabIntegrationFunctions(epi, selPath,
 						projChanged, tabChanged,
-						this.project.getModelFeatures());
+						this.project.getProjectFeatures());
 			} else if (tabName.equals("Perturbations")) {
 				epiTab = new EpiTabPerturbations(epi, selPath, projChanged,
-						tabChanged, this.project.getModelFeatures());
+						tabChanged, this.project.getProjectFeatures());
 			} else if (tabName.equals("Updating Scheme")) {
 				epiTab = new EpiTabUpdateScheme(epi, selPath, projChanged,
-						tabChanged, this.project.getModelFeatures());
+						tabChanged, this.project.getProjectFeatures());
 			} else if (tabName.equals("Model Grid")) {
 				epiTab = new EpiTabModelGrid(epi, selPath, projChanged,
-						tabChanged, this.project.getModelFeatures());
+						tabChanged, this.project.getProjectFeatures());
 			} else if (tabName.equals("Simulation")) {
 				epiTab = new EpiTabSimulation(epi, selPath, projChanged,
-						this.project.getModelFeatures(),
+						this.project.getProjectFeatures(),
 						new SimulationEpiClone());
 			}
 			if (epiTab != null) {
