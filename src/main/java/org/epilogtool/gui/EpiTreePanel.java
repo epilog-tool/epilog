@@ -67,7 +67,8 @@ public class EpiTreePanel extends JPanel {
 				if (e.getClickCount() == 2) {
 					checkDoubleClickEpitheliumJTree(e);
 				} else if (e.isPopupTrigger()) {
-//					popupmenu.updateMenuItems(listSBMLs.getSelectedValue() != null);
+					// popupmenu.updateMenuItems(listSBMLs.getSelectedValue() !=
+					// null);
 					popupmenu.show(e.getComponent(), e.getX(), e.getY());
 				}
 			}
@@ -157,11 +158,17 @@ public class EpiTreePanel extends JPanel {
 		DefaultMutableTreeNode ic = new DefaultMutableTreeNode(
 				"Initial Condition");
 		epiNode.add(ic);
-		DefaultMutableTreeNode pt = new DefaultMutableTreeNode("Perturbations");
-		epiNode.add(pt);
-		DefaultMutableTreeNode pr = new DefaultMutableTreeNode(
-				"Updating Scheme");
-		epiNode.add(pr);
+		DefaultMutableTreeNode ptc = new DefaultMutableTreeNode(
+				"Component Perturbations");
+		epiNode.add(ptc);
+		DefaultMutableTreeNode pte = new DefaultMutableTreeNode(
+				"Epithelial Perturbations");
+		epiNode.add(pte);
+		DefaultMutableTreeNode mu = new DefaultMutableTreeNode("Model Updating");
+		epiNode.add(mu);
+		DefaultMutableTreeNode eu = new DefaultMutableTreeNode(
+				"Epithelial Updating");
+		epiNode.add(eu);
 		DefaultMutableTreeNode sim = new DefaultMutableTreeNode("Simulation");
 		epiNode.add(sim);
 

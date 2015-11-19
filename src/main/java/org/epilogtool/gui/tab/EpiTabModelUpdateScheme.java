@@ -45,7 +45,7 @@ import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
 import org.epilogtool.io.ButtonFactory;
 import org.epilogtool.project.ProjectFeatures;
 
-public class EpiTabUpdateScheme extends EpiTabDefinitions implements HyperlinkListener {
+public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements HyperlinkListener {
 	private static final long serialVersionUID = 1176575422084167530L;
 
 	private final int JLIST_LINES = 10;
@@ -66,7 +66,7 @@ public class EpiTabUpdateScheme extends EpiTabDefinitions implements HyperlinkLi
 	private JLabel jlabelScheme;
 	private JSlider jSlide;
 
-	public EpiTabUpdateScheme(Epithelium e, TreePath path, ProjectChangedInTab projChanged, EpiTabChanged tabChanged,
+	public EpiTabModelUpdateScheme(Epithelium e, TreePath path, ProjectChangedInTab projChanged, EpiTabChanged tabChanged,
 			ProjectFeatures projectFeatures) {
 		super(e, path, projChanged, tabChanged, projectFeatures);
 	}

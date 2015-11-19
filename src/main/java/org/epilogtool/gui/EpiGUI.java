@@ -40,12 +40,13 @@ import org.epilogtool.gui.menu.FileMenu;
 import org.epilogtool.gui.menu.HelpMenu;
 import org.epilogtool.gui.menu.SBMLMenu;
 import org.epilogtool.gui.tab.EpiTab;
+import org.epilogtool.gui.tab.EpiTabEpithelialUpdateScheme;
 import org.epilogtool.gui.tab.EpiTabInitialConditions;
 import org.epilogtool.gui.tab.EpiTabIntegrationFunctions;
 import org.epilogtool.gui.tab.EpiTabModelGrid;
 import org.epilogtool.gui.tab.EpiTabPerturbations;
 import org.epilogtool.gui.tab.EpiTabSimulation;
-import org.epilogtool.gui.tab.EpiTabUpdateScheme;
+import org.epilogtool.gui.tab.EpiTabModelUpdateScheme;
 import org.epilogtool.gui.widgets.CloseTabButton;
 import org.epilogtool.io.FileIO;
 import org.epilogtool.project.Project;
@@ -58,7 +59,7 @@ public class EpiGUI extends JFrame {
 	private final static String TITLE_MODIFIED_SYMBOL = "*";
 
 	private final static int DIVIDER_SIZE = 3;
-	private final static int DIVIDER_POS_X = 210;
+	private final static int DIVIDER_POS_X = 215;
 
 	private JMenuBar epiMenu;
 	private JSplitPane epiMainFrame;
@@ -545,11 +546,16 @@ public class EpiGUI extends JFrame {
 				epiTab = new EpiTabIntegrationFunctions(epi, selPath,
 						projChanged, tabChanged,
 						this.project.getProjectFeatures());
-			} else if (tabName.equals("Perturbations")) {
+			} else if (tabName.equals("Component Perturbations")) {
 				epiTab = new EpiTabPerturbations(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
-			} else if (tabName.equals("Updating Scheme")) {
-				epiTab = new EpiTabUpdateScheme(epi, selPath, projChanged,
+			} else if (tabName.equals("Epithelial Perturbations")) {
+				// TODO
+			} else if (tabName.equals("Model Updating")) {
+				epiTab = new EpiTabModelUpdateScheme(epi, selPath, projChanged,
+						tabChanged, this.project.getProjectFeatures());
+			} else if (tabName.equals("Epithelial Updating")) {
+				epiTab = new EpiTabEpithelialUpdateScheme(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
 			} else if (tabName.equals("Model Grid")) {
 				epiTab = new EpiTabModelGrid(epi, selPath, projChanged,

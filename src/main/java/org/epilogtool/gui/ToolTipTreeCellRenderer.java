@@ -53,10 +53,12 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 							tipKey = this.getTooltipIntegration(epi);
 						} else if (sLeaf.equals("Initial Condition")) {
 							tipKey = this.getTooltipInitCond(epi);
-						} else if (sLeaf.equals("Perturbations")) {
+						} else if (sLeaf.equals("Component Perturbations")) {
 							tipKey = this.getTooltipPerturbations(epi);
-						} else if (sLeaf.equals("Updating Scheme")) {
-							tipKey = this.getTooltipUpdateScheme(epi);
+						} else if (sLeaf.equals("Model Updating")) {
+							tipKey = this.getTooltipModelUpdateScheme(epi);
+						} else if (sLeaf.equals("Epithelial Updating")) {
+							tipKey = this.getTooltipEpithelialUpdateScheme(epi);
 						} else if (sLeaf.equals("Simulation")) {
 							tipKey = this.getTooltipSimulation(epi);
 						}
@@ -146,15 +148,23 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 		return tipKey;
 	}
 
-	private String getTooltipUpdateScheme(Epithelium epi) {
-		String tipKey = "<html><b>Intra-cellular</b><br/>";
+	private String getTooltipModelUpdateScheme(Epithelium epi) {
+		String tipKey = "<html>";
 		for (LogicalModel m : epi.getEpitheliumGrid().getModelSet()) {
 			ModelPriorityClasses mpc = epi.getPriorityClasses(m);
 			tipKey += "- " + this.projectFeatures.getModelName(m) + "</b><br/>";
 			tipKey += "&nbsp;&nbsp;. " + mpc.size() + " class(es)<br/>";
 		}
-		tipKey += "<b>Inter-cellular</b><br/>";
-		tipKey += "- alpha = " + epi.getUpdateSchemeInter().getAlpha();
+		tipKey += "</html>";
+		return tipKey;
+	}
+
+	private String getTooltipEpithelialUpdateScheme(Epithelium epi) {
+		String tipKey = "<html>";
+		tipKey += "<b>Parameters</b><br/>";
+		tipKey += "- alpha = " + epi.getUpdateSchemeInter().getAlpha()
+				+ "<br/>";
+		tipKey += "- sigma = ...";
 		tipKey += "</html>";
 		return tipKey;
 	}
