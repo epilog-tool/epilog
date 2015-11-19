@@ -126,6 +126,16 @@ public class Parser {
 				saTmp = line.split("\\s+");
 				currEpi.getUpdateSchemeInter().setAlpha(Float.parseFloat(saTmp[1]));
 			}
+			
+			// sigma-asynchronism values
+			if (line.startsWith("SS")) {
+				saTmp = line.split("\\s+");
+				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
+				NodeInfo node = project.getProjectFeatures().getNodeInfo(saTmp[2], m);
+				ComponentPair cp = new ComponentPair(m, node);
+				currEpi.getUpdateSchemeInter().setComponentSigma(cp, Float.parseFloat(saTmp[3]));
+			}
+			
 			// Initial Conditions grid
 			if (line.startsWith("IC")) {
 				saTmp = line.split("\\s+");
