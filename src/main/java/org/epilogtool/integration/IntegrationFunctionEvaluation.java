@@ -1,5 +1,6 @@
 package org.epilogtool.integration;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -104,7 +105,8 @@ public class IntegrationFunctionEvaluation {
 			Set<Tuple2D<Integer>> neighbours = this.grid.getTopology()
 					.getNeighbours(x, y, atom.getMinDistance(),
 							atom.getMaxDistance());
-			NodeInfo node = this.features.getNodeInfo(atom.getComponentName(), this.grid.getModel(x, y));
+			NodeInfo node = this.features.getNodeInfo(atom.getComponentName(),
+					this.grid.getModel(x, y));
 
 			byte minThreshold = atom.getMinThreshold();
 			if (minThreshold < 0)
@@ -148,5 +150,24 @@ public class IntegrationFunctionEvaluation {
 
 		}
 		return result;
+	}
+
+	public Set<String> traverseTreeRegulators(IntegrationExpression expr) {
+		Set<String> sNodeIDs = new HashSet<String>();
+		if (expr instanceof IntegrationOperation) {
+			for (IntegrationExpression operand : ((IntegrationOperation) expr)
+					.getOperands()) {
+				if (operand != null) {
+					sNodeIDs.addAll(traverseTreeRegulators(operand));
+				}
+			}
+		}
+		if (expr instanceof IntegrationNegation) {
+			sNodeIDs.addAll(traverseTreeRegulators(((IntegrationNegation) expr)
+					.getNegatedExpression()));
+		} else if (expr instanceof IntegrationAtom) {
+			sNodeIDs.add(((IntegrationAtom) expr).getComponentName());
+		}
+		return sNodeIDs;
 	}
 }
