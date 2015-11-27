@@ -9,27 +9,19 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JSlider;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.tree.TreePath;
@@ -37,7 +29,6 @@ import javax.swing.tree.TreePath;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.epilogtool.common.Web;
 import org.epilogtool.core.Epithelium;
-import org.epilogtool.core.EpitheliumUpdateSchemeInter;
 import org.epilogtool.core.EpitheliumUpdateSchemeIntra;
 import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
@@ -48,23 +39,18 @@ import org.epilogtool.project.ProjectFeatures;
 public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements HyperlinkListener {
 	private static final long serialVersionUID = 1176575422084167530L;
 
-	private final int JLIST_LINES = 10;
+	private final int JLIST_LINES = 15;
 	private final int JLIST_WIDTH = 65;
 	private final int JLIST_SPACING = 15;
 
-	private final int SLIDER_MIN = 0;
-	private final int SLIDER_MAX = 100;
-	private final int SLIDER_STEP = 10;
-
-	private EpitheliumUpdateSchemeInter updateSchemeInter;
 	private EpitheliumUpdateSchemeIntra userPriorityClasses;
 	private LogicalModel selectedModel;
 	private List<JList<String>> guiClasses;
 
+	private JPanel jpNorth;
+	private JPanel jpNorthLeft;
+	private JPanel jpSouth;
 	private JPanel jpIntraCenter;
-	private JPanel jpTLeft;
-	private JLabel jlabelScheme;
-	private JSlider jSlide;
 
 	public EpiTabModelUpdateScheme(Epithelium e, TreePath path, ProjectChangedInTab projChanged, EpiTabChanged tabChanged,
 			ProjectFeatures projectFeatures) {
@@ -78,30 +64,25 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 		for (LogicalModel m : modelList) {
 			this.userPriorityClasses.addModelPriorityClasses(this.epithelium.getPriorityClasses(m).clone());
 		}
-		this.updateSchemeInter = this.epithelium.getUpdateSchemeInter().clone();
 		this.guiClasses = new ArrayList<JList<String>>();
 
-		// ******************
-		// * Intra-cellular *
-		// ******************
-		JPanel jpIntra = new JPanel(new BorderLayout());
-		jpIntra.setBorder(BorderFactory.createTitledBorder("Intra-cellular"));
-		this.center.add(jpIntra, BorderLayout.NORTH);
-
-		JPanel jpIntraTop = new JPanel(new BorderLayout());
-		// jpIntraTop.setBorder(BorderFactory.createTitledBorder("Model"));
-		jpIntra.add(jpIntraTop, BorderLayout.NORTH);
-		this.jpTLeft = new JPanel();
-		jpIntraTop.add(this.jpTLeft, BorderLayout.LINE_START);
-		JPanel jpTRight = new JPanel(new FlowLayout());
-		// jpIntraTop.add(jpTRight, BorderLayout.CENTER);
-		jpIntra.add(jpTRight, BorderLayout.SOUTH);
-
-		this.jpTLeft.add(new JLabel("Model:"));
+		this.jpNorth = new JPanel(new BorderLayout());
+		this.center.add(this.jpNorth, BorderLayout.NORTH);
+		
+		// Model selection JPanel
+		this.jpNorthLeft = new JPanel();
+		this.jpNorth.add(this.jpNorthLeft, BorderLayout.WEST);
+		this.jpNorthLeft.add(new JLabel("Model: "));
 		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
-		this.jpTLeft.add(jcbSBML);
-
+		this.jpNorthLeft.add(jcbSBML);
+		
+		this.jpSouth = new JPanel(new BorderLayout());
+		this.center.add(jpSouth, BorderLayout.SOUTH);
+		
 		// Button display options
+		JPanel jpSouthCenter = new JPanel(new FlowLayout());
+		this.jpSouth.add(jpSouthCenter, BorderLayout.CENTER);
+
 		JButton jbSplit = ButtonFactory.getNoMargins("Split");
 		jbSplit.addActionListener(new ActionListener() {
 			@Override
@@ -111,7 +92,7 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 				getParent().repaint();
 			}
 		});
-		jpTRight.add(jbSplit);
+		jpSouthCenter.add(jbSplit);
 		JButton jbUnsplit = ButtonFactory.getNoMargins("Unsplit");
 		jbUnsplit.addActionListener(new ActionListener() {
 			@Override
@@ -121,7 +102,7 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 				getParent().repaint();
 			}
 		});
-		jpTRight.add(jbUnsplit);
+		jpSouthCenter.add(jbUnsplit);
 		JButton jbInc = ButtonFactory.getNoMargins("<-");
 		jbInc.addActionListener(new ActionListener() {
 			@Override
@@ -131,7 +112,7 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 				getParent().repaint();
 			}
 		});
-		jpTRight.add(jbInc);
+		jpSouthCenter.add(jbInc);
 		JButton jbDec = ButtonFactory.getNoMargins("->");
 		jbDec.addActionListener(new ActionListener() {
 			@Override
@@ -141,7 +122,7 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 				getParent().repaint();
 			}
 		});
-		jpTRight.add(jbDec);
+		jpSouthCenter.add(jbDec);
 		JButton jbSingle = ButtonFactory.getNoMargins("Single class");
 		jbSingle.addActionListener(new ActionListener() {
 			@Override
@@ -151,87 +132,15 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 				getParent().repaint();
 			}
 		});
-		jpTRight.add(jbSingle);
-
+		jpSouthCenter.add(jbSingle);
+		
+		// Model Components panel
 		this.jpIntraCenter = new JPanel(new FlowLayout());
-		// this.jpIntraCenter.setBorder(BorderFactory
-		// .createTitledBorder("Priority sets"));
-		jpIntra.add(this.jpIntraCenter, BorderLayout.CENTER);
-
-		// Panel just to glue Inter-cellular to Intra-cellular ;)
-		JPanel jpCenterBottom = new JPanel(new BorderLayout());
-		this.center.add(jpCenterBottom, BorderLayout.CENTER);
-
-		// ******************
-		// * Inter-cellular *
-		// ******************
-		jpCenterBottom.add(new JSeparator(JSeparator.HORIZONTAL), BorderLayout.NORTH);
-		JPanel jpInter = new JPanel();
-		jpInter.setLayout(new BoxLayout(jpInter, BoxLayout.PAGE_AXIS));
-		jpInter.setBorder(BorderFactory.createTitledBorder("Inter-cellular"));
-		jpCenterBottom.add(jpInter, BorderLayout.CENTER);
-
-		JEditorPane jPane = new JEditorPane();
-		jpInter.add(jPane);
-		jPane.setContentType("text/html");
-		jPane.setEditable(false);
-		jPane.setEnabled(true);
-		jPane.setBackground(jpInter.getBackground());
-		jPane.addHyperlinkListener(this);
-		jPane.setText("Here we consider an updating scheme named &alpha;-asyncronism "
-				+ "(see <a href=\"http://dx.doi.org/10.1007/978-3-642-40867-0_2\">"
-				+ "doi:10.1007/978-3-642-40867-0_2</a>).<br/>"
-				+ "It consists in updating each cell with probability &alpha;, the "
-				+ "synchrony rate, leaving the state of the cells unchanged otherwise.");
-
-		jpInter.add(new JLabel(" "));
-
-		JPanel jpInterAlpha = new JPanel(new BorderLayout());
-		jpInterAlpha.add(new JLabel("Current alpha: "), BorderLayout.LINE_START);
-		this.jlabelScheme = new JLabel("--");
-		jpInterAlpha.add(this.jlabelScheme, BorderLayout.CENTER);
-		jpInter.add(jpInterAlpha);
-
-		// JSlider for alpha-asynchronism
-		JPanel jpInterSlider = new JPanel(new BorderLayout());
-		jpInterSlider.add(new JLabel("Value: "), BorderLayout.LINE_START);
-		this.jSlide = new JSlider(JSlider.HORIZONTAL, this.SLIDER_MIN, this.SLIDER_MAX, this.SLIDER_MAX);
-		this.jSlide.setMajorTickSpacing(this.SLIDER_STEP);
-		this.jSlide.setMinorTickSpacing(1);
-		this.jSlide.setPaintTicks(true);
-		this.jSlide.setPaintLabels(true);
-		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
-		for (int i = this.SLIDER_MIN; i <= this.SLIDER_MAX; i += this.SLIDER_STEP) {
-			labelTable.put(new Integer(i), new JLabel("" + ((float) i / this.SLIDER_MAX)));
-		}
-		this.jSlide.setLabelTable(labelTable);
-		this.jSlide.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				JSlider slide = (JSlider) e.getSource();
-				updateAlpha(slide.getValue());
-			}
-		});
-		this.jSlide.setValue((int) (this.updateSchemeInter.getAlpha() * SLIDER_MAX));
-		updateAlpha(this.jSlide.getValue());
-		jpInterSlider.add(this.jSlide, BorderLayout.CENTER);
-		jpInter.add(jpInterSlider);
+		this.center.add(this.jpIntraCenter, BorderLayout.CENTER);
 
 		LogicalModel m = this.projectFeatures.getModel((String) jcbSBML.getSelectedItem());
 		this.updatePriorityList(m);
 		this.isInitialized = true;
-	}
-
-	private void updateAlpha(int sliderValue) {
-		float value = (float) sliderValue / SLIDER_MAX;
-		this.updateSchemeInter.setAlpha(value);
-		String sTmp = "" + value;
-		if (sliderValue == SLIDER_MIN) {
-			sTmp += " (asynchronous)";
-		} else if (sliderValue == SLIDER_MAX) {
-			sTmp += " (synchronous)";
-		}
-		jlabelScheme.setText(sTmp);
 	}
 
 	private JComboBox<String> newModelCombobox(List<LogicalModel> modelList) {
@@ -388,8 +297,6 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 			this.userPriorityClasses.addModelPriorityClasses(this.epithelium.getPriorityClasses(m).clone());
 		}
 		this.updatePriorityList(this.selectedModel);
-		this.jSlide.setValue((int) (this.epithelium.getUpdateSchemeInter().getAlpha() * SLIDER_MAX));
-		this.updateAlpha(this.jSlide.getValue());
 		// Repaint
 		this.getParent().repaint();
 	}
@@ -400,7 +307,6 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 			ModelPriorityClasses clone = this.userPriorityClasses.getModelPriorityClasses(m).clone();
 			this.epithelium.setPriorityClasses(clone);
 		}
-		this.epithelium.getUpdateSchemeInter().setAlpha(this.updateSchemeInter.getAlpha());
 	}
 
 	@Override
@@ -411,8 +317,6 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 			if (!clone.equals(orig))
 				return true;
 		}
-		if (this.epithelium.getUpdateSchemeInter().getAlpha() != this.updateSchemeInter.getAlpha())
-			return true;
 		return false;
 	}
 
@@ -432,9 +336,9 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 			}
 		}
 		this.userPriorityClasses = newPCs;
-		this.jpTLeft.removeAll();
-		this.jpTLeft.add(new JLabel("Model:"));
-		this.jpTLeft.add(this.newModelCombobox(modelList));
+		this.jpNorthLeft.removeAll();
+		this.jpNorthLeft.add(new JLabel("Model:"));
+		this.jpNorthLeft.add(this.newModelCombobox(modelList));
 		this.updatePriorityList(modelList.get(0));
 	}
 

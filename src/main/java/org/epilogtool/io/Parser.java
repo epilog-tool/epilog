@@ -133,7 +133,7 @@ public class Parser {
 				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
 				NodeInfo node = project.getProjectFeatures().getNodeInfo(saTmp[2], m);
 				ComponentPair cp = new ComponentPair(m, node);
-				currEpi.getUpdateSchemeInter().setComponentSigma(cp, Float.parseFloat(saTmp[3]));
+				currEpi.getUpdateSchemeInter().setCPSigma(cp, Float.parseFloat(saTmp[3]));
 			}
 			
 			// Initial Conditions grid

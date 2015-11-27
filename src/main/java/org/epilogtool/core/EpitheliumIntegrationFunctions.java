@@ -55,6 +55,10 @@ public class EpitheliumIntegrationFunctions {
 			ComponentPair cf) {
 		return this.functions.get(cf);
 	}
+	
+	public Map<ComponentPair, ComponentIntegrationFunctions> getAllIntegrationFunctions() {
+		return this.functions;
+	}
 
 	public boolean equals(Object o) {
 		EpitheliumIntegrationFunctions eifOut = (EpitheliumIntegrationFunctions) o;
