@@ -321,6 +321,16 @@ public class Parser {
 		// Alpha asynchronism
 		w.println("AS " + epi.getUpdateSchemeInter().getAlpha());
 		w.println();
+		
+		//Sigma asynchronism
+		Map<ComponentPair, Float> mSigmaAsync = epi.getUpdateSchemeInter().getCPSigmas();
+		if (mSigmaAsync.size() > 0){
+			for (ComponentPair cp : mSigmaAsync.keySet()) {
+				w.println("SS " + model2Key.get(cp.getModel()) + " " + 
+			cp.getNodeInfo().getNodeID() + mSigmaAsync.get(cp));
+			}
+			w.println();
+		}
 
 		// Initial Conditions
 		// varA value 1-2,3,4-6

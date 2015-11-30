@@ -220,7 +220,8 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		Set<ComponentPair> sRegulatorComponents = new HashSet<ComponentPair>();
 		Map<ComponentPair, ComponentIntegrationFunctions> mIntegrationFunctions = 
 				this.epithelium.getIntegrationFunctions().getAllIntegrationFunctions();
-		IntegrationFunctionEvaluation ifEvaluator = new IntegrationFunctionEvaluation(this.epithelium.getEpitheliumGrid(), this.epithelium.getProjectFeatures());
+		IntegrationFunctionEvaluation ifEvaluator = new IntegrationFunctionEvaluation
+				(this.epithelium.getEpitheliumGrid(), this.epithelium.getProjectFeatures());
 		for (ComponentPair cp : mIntegrationFunctions.keySet()){
 			LogicalModel m = cp.getModel();
 			List<IntegrationExpression> lExpressions = this.epithelium

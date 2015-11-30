@@ -3,8 +3,10 @@ package org.epilogtool.core;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
@@ -18,12 +20,15 @@ public class EpitheliumGrid {
 	private EpitheliumCell[][] gridEpiCell;
 	private Topology topology;
 	private Set<LogicalModel> modelSet;
+	private Map<LogicalModel, List<Tuple2D<Integer>>> modelPositions;
 
 	private EpitheliumGrid(EpitheliumCell[][] gridEpiCell, Topology topology,
-			Set<LogicalModel> modelSet) {
+			Set<LogicalModel> modelSet, 
+			Map<LogicalModel, List<Tuple2D<Integer>>> modelPositions) {
 		this.gridEpiCell = gridEpiCell;
 		this.topology = topology;
 		this.modelSet = modelSet;
+		this.modelPositions = modelPositions;
 	}
 
 	public EpitheliumGrid(int gridX, int gridY, String topologyLayout,
@@ -33,10 +38,19 @@ public class EpitheliumGrid {
 			SecurityException, ClassNotFoundException {
 		this.topology = TopologyService.getManager().getNewTopology(
 				topologyLayout, gridX, gridY, rollover);
+		this.modelPositions = new HashMap<LogicalModel, List<Tuple2D<Integer>>>();
 		this.gridEpiCell = new EpitheliumCell[gridX][gridY];
 		for (int y = 0; y < gridY; y++) {
 			for (int x = 0; x < gridX; x++) {
 				this.gridEpiCell[x][y] = new EpitheliumCell(m);
+				if (this.modelPositions.keySet().contains(m)){
+					this.modelPositions.get(m).add(new Tuple2D<Integer>(x,y));
+				}
+				else{
+					List<Tuple2D<Integer>> tmpList = new ArrayList<Tuple2D<Integer>>();
+					tmpList.add(new Tuple2D<Integer>(x,y));
+					this.modelPositions.put(m, tmpList);
+				}
 			}
 		}
 		this.modelSet = new HashSet<LogicalModel>();
@@ -49,9 +63,21 @@ public class EpitheliumGrid {
 
 	public void updateModelSet() {
 		this.modelSet = new HashSet<LogicalModel>();
+		this.modelPositions = new HashMap<LogicalModel, List<Tuple2D<Integer>>>();
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
-				this.modelSet.add(this.gridEpiCell[x][y].getModel());
+				LogicalModel m = this.gridEpiCell[x][y].getModel();
+				this.modelSet.add(m);
+				Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x, y);
+				if(this.modelPositions.containsKey(m)){
+					this.modelPositions.get(m).add(tmpTuple);
+				}
+				else{
+				List<Tuple2D<Integer>> tmpList = new ArrayList<Tuple2D<Integer>>();
+				tmpList.add(tmpTuple);
+				this.modelPositions.put(m, tmpList);
+				}
+				
 			}
 		}
 	}
@@ -86,7 +112,9 @@ public class EpitheliumGrid {
 		}
 		Topology newTop = this.topology.clone();
 		Set<LogicalModel> newModelSet = new HashSet<LogicalModel>(this.modelSet);
-		return new EpitheliumGrid(newGrid, newTop, newModelSet);
+		Map<LogicalModel, List<Tuple2D<Integer>>> newModelPositions = 
+				new HashMap<LogicalModel, List<Tuple2D<Integer>>>(this.modelPositions);
+		return new EpitheliumGrid(newGrid, newTop, newModelSet, newModelPositions);
 	}
 
 	public EpitheliumCell cloneEpitheliumCellAt(int x, int y) {
@@ -128,7 +156,23 @@ public class EpitheliumGrid {
 	}
 
 	public void setModel(int x, int y, LogicalModel m) {
+		Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x,y);
+		if (this.gridEpiCell[x][y].getModel() != m){
+			if (this.modelPositions.get(this.gridEpiCell[x][y].getModel()).
+					contains(tmpTuple)){
+				this.modelPositions.get(this.gridEpiCell[x][y].getModel()).
+					remove(tmpTuple);
+			}
+		}
 		gridEpiCell[x][y].setModel(m);
+		if (!this.modelPositions.containsKey(m)){
+			List<Tuple2D<Integer>> tmpList = new ArrayList<Tuple2D<Integer>>();
+			tmpList.add(tmpTuple);
+			this.modelPositions.put(m,  tmpList);
+		}
+		else{
+			this.modelPositions.get(m).add(tmpTuple);
+		}
 	}
 
 	public List<EpitheliumCell> getNeighbours(int x, int y, int minDist,
@@ -188,5 +232,9 @@ public class EpitheliumGrid {
 
 	public int getNodeIndex(int x, int y, String nodeID) {
 		return this.gridEpiCell[x][y].getNodeIndex(nodeID);
+	}
+	
+	public Map<LogicalModel, List<Tuple2D<Integer>>> getModelPositions(){
+		return this.modelPositions;
 	}
 }

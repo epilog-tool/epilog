@@ -15,7 +15,7 @@ import org.epilogtool.project.ProjectFeatures;
 
 public class IntegrationFunctionEvaluation {
 
-	private EpitheliumGrid grid;
+	private EpitheliumGrid neighboursGrid;
 	private ProjectFeatures features;
 
 	/**
@@ -28,9 +28,9 @@ public class IntegrationFunctionEvaluation {
 	 * 
 	 * 
 	 */
-	public IntegrationFunctionEvaluation(EpitheliumGrid grid,
+	public IntegrationFunctionEvaluation(EpitheliumGrid neighboursGrid, 
 			ProjectFeatures features) {
-		this.grid = grid;
+		this.neighboursGrid = neighboursGrid;
 		this.features = features;
 	}
 
@@ -102,11 +102,11 @@ public class IntegrationFunctionEvaluation {
 
 		} else if (expression instanceof IntegrationAtom) {
 			IntegrationAtom atom = (IntegrationAtom) expression;
-			Set<Tuple2D<Integer>> neighbours = this.grid.getTopology()
+			Set<Tuple2D<Integer>> neighbours = this.neighboursGrid.getTopology()
 					.getNeighbours(x, y, atom.getMinDistance(),
 							atom.getMaxDistance());
 			NodeInfo node = this.features.getNodeInfo(atom.getComponentName(),
-					this.grid.getModel(x, y));
+					this.neighboursGrid.getModel(x, y));
 
 			byte minThreshold = atom.getMinThreshold();
 			if (minThreshold < 0)
@@ -130,11 +130,11 @@ public class IntegrationFunctionEvaluation {
 
 			int habilitations = 0;
 			for (Tuple2D<Integer> tuple : neighbours) {
-				List<NodeInfo> lNodes = this.grid.getModel(tuple.getX(),
+				List<NodeInfo> lNodes = this.neighboursGrid.getModel(tuple.getX(),
 						tuple.getY()).getNodeOrder();
 				for (int n = 0; n < lNodes.size(); n++) {
 					if (node.getNodeID().equals(lNodes.get(n).getNodeID())) {
-						byte state = this.grid.getCellState(tuple.getX(),
+						byte state = this.neighboursGrid.getCellState(tuple.getX(),
 								tuple.getY())[n];
 						if (minThreshold <= state && state <= maxThreshold) {
 							habilitations++;

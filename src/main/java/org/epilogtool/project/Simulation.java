@@ -18,6 +18,7 @@ import org.colomoto.logicalmodel.tool.simulation.updater.PriorityUpdater;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
+import org.epilogtool.core.EpitheliumUpdateSchemeInter;
 import org.epilogtool.integration.IntegrationFunctionEvaluation;
 import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationExpression;
 
@@ -29,6 +30,7 @@ import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationEx
  */
 public class Simulation {
 	private Epithelium epithelium;
+	private EpitheliumGrid neighbouringEpi;
 	private List<EpitheliumGrid> stateHistory;
 	private boolean stable;
 	// Perturbed models cache - avoids repeatedly computing perturbations at
@@ -48,6 +50,7 @@ public class Simulation {
 	 */
 	public Simulation(Epithelium e) {
 		this.epithelium = e;
+		this.neighbouringEpi = e.getEpitheliumGrid().clone();
 		this.stateHistory = new ArrayList<EpitheliumGrid>();
 		this.stateHistory.add(this.epithelium.getEpitheliumGrid());
 		this.stable = false;
@@ -90,6 +93,9 @@ public class Simulation {
 		if (this.stable) {
 			return currGrid;
 		}
+		
+		this.generateNeighboursEpithelium();
+		EpitheliumGrid currNeighboursGrid = this.neighbouringEpi;
 
 		EpitheliumGrid nextGrid = currGrid.clone();
 
@@ -97,7 +103,7 @@ public class Simulation {
 				.getIntegrationComponentPairs();
 
 		IntegrationFunctionEvaluation evaluator = new IntegrationFunctionEvaluation(
-				currGrid, this.epithelium.getProjectFeatures());
+				currNeighboursGrid, this.epithelium.getProjectFeatures());
 
 		// Gets the set of cells that can be updated
 		// And builds the default next grid (= current grid)
@@ -202,5 +208,40 @@ public class Simulation {
 
 	public Epithelium getEpithelium() {
 		return this.epithelium;
+	}
+	
+	private void generateNeighboursEpithelium(){
+		//Creates an epithelium which is only visited to 'see' neighbours and their states
+		
+		EpitheliumGrid tmpNeighbourEpi = this.getGridAt(this.stateHistory.size()-1).clone();
+		
+		Map<ComponentPair, Float> mSigmaAsync= 
+				this.epithelium.getUpdateSchemeInter().getCPSigmas();
+		
+		Map<LogicalModel, List<Tuple2D<Integer>>> mapModelPositions = 
+				tmpNeighbourEpi.getModelPositions();
+		if (mSigmaAsync.size() == 0) {
+			this.neighbouringEpi = tmpNeighbourEpi;
+		}
+		else{
+			for (ComponentPair cp : mSigmaAsync.keySet()) {
+				float sigma = mSigmaAsync.get(cp);
+				if (sigma != EpitheliumUpdateSchemeInter.DEFAULT_SIGMA){
+					LogicalModel m = cp.getModel();
+					String nodeID = cp.getNodeInfo().getNodeID();
+					List<Tuple2D<Integer>> modelPositions = mapModelPositions.get(m);
+					int selectedCells = (int) Math.ceil((1 - sigma) * modelPositions.size());
+					Collections.shuffle(modelPositions,
+							new Random(Double.doubleToLongBits(Math.random())));
+					List<Tuple2D<Integer>> selectedModelPositions = 
+							modelPositions.subList(0, selectedCells);
+					for (Tuple2D<Integer> tuple : selectedModelPositions){
+						tmpNeighbourEpi.
+						setCellComponentValue(tuple.getX(), tuple.getY(), nodeID, (byte) 0);
+					}
+				}	
+			}
+			this.neighbouringEpi = tmpNeighbourEpi;
+		}
 	}
 }
