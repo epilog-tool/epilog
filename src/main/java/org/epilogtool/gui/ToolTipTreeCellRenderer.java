@@ -2,6 +2,7 @@ package org.epilogtool.gui;
 
 import java.awt.Component;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -162,9 +163,21 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	private String getTooltipEpithelialUpdateScheme(Epithelium epi) {
 		String tipKey = "<html>";
 		tipKey += "<b>Parameters</b><br/>";
-		tipKey += "- alpha = " + epi.getUpdateSchemeInter().getAlpha()
+		tipKey += "- Alpha = " + epi.getUpdateSchemeInter().getAlpha()
 				+ "<br/>";
-		tipKey += "- sigma = ...";
+		Map<ComponentPair, Float> cpSigmas = epi.getUpdateSchemeInter().getCPSigmas();
+		if (cpSigmas.size() == 0){
+			tipKey += "- Sigma = <i>Empty</i>";
+		}
+		else {
+			tipKey += "- Sigma <br/>";
+			for (ComponentPair cp : cpSigmas.keySet()) {
+				tipKey += "&nbsp;&nbsp;. " + 
+						epi.getProjectFeatures().getModelName(cp.getModel()) + 
+						" : " + cp.getNodeInfo().getNodeID() + 
+						" - " + cpSigmas.get(cp) + "<br/>";
+			}
+		}
 		tipKey += "</html>";
 		return tipKey;
 	}

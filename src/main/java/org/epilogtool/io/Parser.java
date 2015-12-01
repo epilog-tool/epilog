@@ -11,8 +11,10 @@ import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
@@ -153,6 +155,11 @@ public class Parser {
 					for (LogicalModel m : project.getProjectFeatures().getModels()){
 						if (project.getProjectFeatures().hasNode(input, m) & 
 								project.getProjectFeatures().hasNode(proper, m)) {
+							ComponentPair cp = new ComponentPair
+									(m, project.getProjectFeatures().getNodeInfo(proper, m));
+							if (!currEpi.getUpdateSchemeInter().containsCPSigma(cp)){
+								currEpi.getUpdateSchemeInter().addCP(cp);
+							}
 							currEpi.setIntegrationFunction(saTmp[1], m, Byte.parseByte(saTmp[2]), 
 									(saTmp.length > 3) ? saTmp[3] : "");
 						}
@@ -160,6 +167,12 @@ public class Parser {
 				}
 				else{
 					LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
+					String proper = saTmp[4].split("\\(")[0];
+					ComponentPair cp = new ComponentPair
+							(m, project.getProjectFeatures().getNodeInfo(proper, m));
+					if (!currEpi.getUpdateSchemeInter().containsCPSigma(cp)){
+						currEpi.getUpdateSchemeInter().addCP(cp);
+					}
 				currEpi.setIntegrationFunction(saTmp[2], m, Byte.parseByte(saTmp[3]), 
 						(saTmp.length > 4) ? saTmp[4] : "");
 				}	
