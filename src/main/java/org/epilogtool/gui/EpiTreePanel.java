@@ -161,9 +161,6 @@ public class EpiTreePanel extends JPanel {
 		DefaultMutableTreeNode ptc = new DefaultMutableTreeNode(
 				"Component Perturbations");
 		epiNode.add(ptc);
-		DefaultMutableTreeNode pte = new DefaultMutableTreeNode(
-				"Epithelial Perturbations");
-		epiNode.add(pte);
 		DefaultMutableTreeNode mu = new DefaultMutableTreeNode("Model Updating");
 		epiNode.add(mu);
 		DefaultMutableTreeNode eu = new DefaultMutableTreeNode(
