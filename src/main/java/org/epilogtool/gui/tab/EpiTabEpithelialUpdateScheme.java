@@ -1,6 +1,8 @@
 package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -16,8 +18,9 @@ import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
-import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.HyperlinkEvent;
@@ -49,6 +52,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 
 	private JPanel jpAlpha;
 	private JPanel jpSigmaSliderPanel;
+	private JScrollPane jspSigmaSliderScroller;
 	private JSlider jAlphaSlide;
 	private JLabel jAlphaLabelValue;
 	
@@ -57,25 +61,31 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	
 	private Map<ComponentPair, JSlider> mCP2Sliders;
 	private Map<JSlider, Set<ComponentPair>> mSliders2CP;
-	private Map<ComponentPair, JPanel> mCP2InfoPanel;
+	private Map<ComponentPair, JPanel> mCP2Panel;
 	private Map<ComponentPair, JLabel> mCP2InfoLabel;
-	private String[] tableColumns = {"Component", "Asynchronism value slider"};
 
 	
 	public EpiTabEpithelialUpdateScheme(Epithelium e, TreePath path, ProjectChangedInTab projChanged, EpiTabChanged tabChanged,
 			ProjectFeatures projectFeatures) {
 		super(e, path, projChanged, tabChanged, projectFeatures);
 	}
+	
+	
 
 	public void initialize() {
 		this.center.setLayout(new BorderLayout());
 		this.mCP2Sliders = new HashMap<ComponentPair, JSlider>();
 		this.mSliders2CP = new HashMap<JSlider, Set<ComponentPair>>();
 		this.mCP2InfoLabel = new HashMap<ComponentPair, JLabel>();
-		this.mCP2InfoPanel = new HashMap<ComponentPair, JPanel>();
+		this.mCP2Panel = new HashMap<ComponentPair, JPanel>();
 		
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		this.updateSchemeInter = this.epithelium.getUpdateSchemeInter().clone();
+		if (this.updateSchemeInter.getCPSigmas().size()>0){
+			for (ComponentPair cp : this.updateSchemeInter.getCPSigmas().keySet()){
+				this.addRegCP(cp);
+			}
+		}
 		
 		// Alpha asynchronism panel
 		this.jpAlpha = new JPanel(new BorderLayout());
@@ -104,9 +114,6 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		this.generateAlphaSlider();
 		
 		//Sigma asynchronism panel
-		
-		this.mCP2Sliders = new HashMap<ComponentPair, JSlider>();
-		this.mSliders2CP = new HashMap<JSlider, Set<ComponentPair>>();
 		this.jpSigma = new JPanel(new BorderLayout());
 		this.center.add(jpSigma, BorderLayout.CENTER);
 		this.jpSigma.setBorder(BorderFactory.createTitledBorder("Sigma - Asynchronism"));
@@ -120,17 +127,13 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
 		this.jpSigmaModelSelection.add(jcbSBML);
 		
-		this.jpSigmaSliderPanel = new JPanel(new BorderLayout());
-		this.jpSigma.add(this.jpSigmaSliderPanel, BorderLayout.CENTER);
-		
 		//Sigma sliders JPanels
 		this.selectedModel = this.projectFeatures.getModel((String) jcbSBML.getSelectedItem());
 		updateSigmaSlidersPanel(this.selectedModel);
-		
 		this.isInitialized = true;
 	}
 	
-	
+
 	
 	private void generateAlphaSlider() {
 		JPanel jpAlphaInfo = new JPanel(new BorderLayout());
@@ -166,55 +169,49 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	
 	
 	
-	private void generateSigmaSlider(ComponentPair cp) {
-		
-		JPanel jpSigmaInfo = new JPanel(new BorderLayout());
+	private void updateAlpha(int sliderValue) {
+		float value = (float) sliderValue / SLIDER_MAX;
+		this.updateSchemeInter.setAlpha(value);
+		String sTmp = "" + value;
+		if (sliderValue == SLIDER_MIN) {
+			sTmp += " (asynchronous)";
+		} else if (sliderValue == SLIDER_MAX) {
+			sTmp += " (synchronous)";
+		}
+		jAlphaLabelValue.setText(sTmp);
+	}
+	
+	
+	
+	private void addRegCP(ComponentPair cp){
+		if (!this.updateSchemeInter.containsCPSigma(cp)){
+			this.updateSchemeInter.addCP(cp);
+		}
 		JLabel jSigmaLabelValue = new JLabel("--");
-		this.mCP2InfoPanel.put(cp, jpSigmaInfo);
 		this.mCP2InfoLabel.put(cp, jSigmaLabelValue);
-		
-		
-		JPanel jSigmaInfoNorth = new JPanel(new BorderLayout());
-		jpSigmaInfo.add(jSigmaInfoNorth, BorderLayout.NORTH);
-		jSigmaInfoNorth.add(new JLabel("Component: " + cp.getNodeInfo().getNodeID()),
-				BorderLayout.CENTER);
-		
-		JPanel jSigmaInfoCenter = new JPanel(new BorderLayout());
-		jpSigmaInfo.add(jSigmaInfoCenter, BorderLayout.CENTER);
-		jSigmaInfoCenter.add(new JLabel("Current sigma: "), BorderLayout.LINE_START);
-		jSigmaInfoCenter.add(jSigmaLabelValue);
-
-			
-		JSlider sigmaSlider = new JSlider(JSlider.HORIZONTAL, 
-				this.SLIDER_MIN, this.SLIDER_MAX, this.SLIDER_MAX);
-		sigmaSlider.setMajorTickSpacing(this.SLIDER_STEP);
-		sigmaSlider.setMinorTickSpacing(1);
-		sigmaSlider.setPaintTicks(true);
-		sigmaSlider.setPaintLabels(true);
-		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
-		for (int i = this.SLIDER_MIN; i <= this.SLIDER_MAX; i += this.SLIDER_STEP) {
-			labelTable.put(new Integer(i), new JLabel("" + ((float) i / this.SLIDER_MAX)));
-		}
-		sigmaSlider.setLabelTable(labelTable);
-		sigmaSlider.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				JSlider slide = (JSlider) e.getSource();	
-				updateSigmaSlider(slide, slide.getValue());
+		this.generateCPSigmaSlider(cp);
+		this.generateCPSigmaPanel(cp);
+	}
+	
+	
+	
+	private void removeRegCP(ComponentPair cp){
+		this.updateSchemeInter.removeCPSigma(cp);
+		this.mCP2InfoLabel.remove(cp);
+		this.mCP2Panel.remove(cp);
+		this.mCP2Sliders.remove(cp);
+		Map<JSlider, Set<ComponentPair>> sliderCopy = new HashMap<JSlider, Set<ComponentPair>>(this.mSliders2CP);
+		for (JSlider jSlider : sliderCopy.keySet()){
+			if (sliderCopy.get(jSlider).contains(cp)){
+				this.mSliders2CP.get(jSlider).remove(cp);
+				if (this.mSliders2CP.get(jSlider).size() == 0){
+					this.mSliders2CP.remove(jSlider);
+				}
 			}
-		});
-		sigmaSlider.setValue((int) (this.updateSchemeInter.getCPSigma(cp) * SLIDER_MAX));
-		this.mCP2Sliders.put(cp, sigmaSlider);
-		if (this.mSliders2CP.containsKey(sigmaSlider)){
-			this.mSliders2CP.get(sigmaSlider).add(cp);
-		}
-		else{
-			Set<ComponentPair> tmpSet = new HashSet<ComponentPair>();
-			tmpSet.add(cp);
-			this.mSliders2CP.put(sigmaSlider, tmpSet);
 		}
 	}
-
+	
+	
 	
 	private Set<ComponentPair> generateRegulatorCP(){
 		Set<ComponentPair> sRegulatorComponents = new HashSet<ComponentPair>();
@@ -242,18 +239,69 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	}
 
 	
-	private void updateAlpha(int sliderValue) {
-		float value = (float) sliderValue / SLIDER_MAX;
-		this.updateSchemeInter.setAlpha(value);
-		String sTmp = "" + value;
-		if (sliderValue == SLIDER_MIN) {
-			sTmp += " (asynchronous)";
-		} else if (sliderValue == SLIDER_MAX) {
-			sTmp += " (synchronous)";
+	
+	private void generateCPSigmaSlider(ComponentPair cp){
+		JSlider sigmaSlider = new JSlider(JSlider.HORIZONTAL, 
+				this.SLIDER_MIN, this.SLIDER_MAX, this.SLIDER_MAX);
+		sigmaSlider.setMajorTickSpacing(this.SLIDER_STEP);
+		sigmaSlider.setMinorTickSpacing(1);
+		sigmaSlider.setPaintTicks(true);
+		sigmaSlider.setPaintLabels(true);
+		
+		//Store sigma slider
+				this.mCP2Sliders.put(cp, sigmaSlider);
+				if (this.mSliders2CP.containsKey(sigmaSlider)){
+					this.mSliders2CP.get(sigmaSlider).add(cp);
+				}
+				else{
+					Set<ComponentPair> tmpSet = new HashSet<ComponentPair>();
+					tmpSet.add(cp);
+					this.mSliders2CP.put(sigmaSlider, tmpSet);
+				}
+
+		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
+		for (int i = this.SLIDER_MIN; i <= this.SLIDER_MAX; i += this.SLIDER_STEP) {
+			labelTable.put(new Integer(i), new JLabel("" + ((float) i / this.SLIDER_MAX)));
 		}
-		jAlphaLabelValue.setText(sTmp);
+		sigmaSlider.setLabelTable(labelTable);
+		sigmaSlider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				JSlider slide = (JSlider) e.getSource();	
+				updateSigmaSlider(slide, slide.getValue());
+			}
+		});
+		sigmaSlider.setValue((int) (this.updateSchemeInter.getCPSigma(cp) * SLIDER_MAX));
 	}
 	
+	
+	
+	private void generateCPSigmaPanel(ComponentPair cp) {
+		
+		JPanel componentPanel = new JPanel(new BorderLayout());
+		JLabel componentSigmaLabel = this.mCP2InfoLabel.get(cp);
+		JSlider componentSlider = this.mCP2Sliders.get(cp);
+		
+		this.mCP2Panel.put(cp, componentPanel);
+		
+		JPanel jpComponentNorthInfo = new JPanel(new BorderLayout());
+		componentPanel.add(jpComponentNorthInfo, BorderLayout.NORTH);
+		jpComponentNorthInfo.add(new JLabel("Component: " + cp.getNodeInfo().getNodeID()),
+				BorderLayout.CENTER);
+		
+		JPanel jpComponentCenterInfo = new JPanel(new BorderLayout());
+		componentPanel.add(jpComponentCenterInfo, BorderLayout.WEST);
+		jpComponentCenterInfo.add(new JLabel("Current sigma: "), BorderLayout.LINE_START);
+		jpComponentCenterInfo.add(componentSigmaLabel, BorderLayout.CENTER);
+		
+		
+		JPanel jpComponentSliderPanel = new JPanel(new BorderLayout());
+		componentPanel.add(jpComponentSliderPanel, BorderLayout.SOUTH);
+		jpComponentSliderPanel.add(new JLabel("Value: "), BorderLayout.LINE_START);
+		jpComponentSliderPanel.add(componentSlider, BorderLayout.CENTER);
+		
+		}
+
 	
 	
 	private void updateSigmaSlider(JSlider sigmaSlider, int sliderValue) {
@@ -274,12 +322,14 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		this.mCP2InfoLabel.get(cp).setText(""+ value);
 	}
 	
+	
+	
 	private void updateAllCPSigma(){
 		Set<ComponentPair> sNewRegComponents = this.generateRegulatorCP();
 		
 		if (sNewRegComponents.size() == 0) {
 			this.mCP2Sliders.clear();
-			this.mCP2InfoPanel.clear();
+			this.mCP2Panel.clear();
 			this.mCP2InfoLabel.clear();
 			this.mSliders2CP.clear();
 			this.updateSchemeInter.clearAllCPSigma();
@@ -292,32 +342,22 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 			sCommonRegComponents.addAll(sNewRegComponents);
 			for (ComponentPair oldCP : sOldRegComponents) {
 				if (!sCommonRegComponents.contains(oldCP)){
-					this.updateSchemeInter.getCPSigmas().remove(oldCP);
-					this.mCP2InfoLabel.remove(oldCP);
-					this.mCP2InfoPanel.remove(oldCP);
-					JSlider tmpSlider = this.mCP2Sliders.get(oldCP);
-					this.mCP2Sliders.remove(oldCP);
-					for (JSlider slider : this.mSliders2CP.keySet()){
-						if (slider == tmpSlider & oldCP == this.mSliders2CP.get(tmpSlider)){
-							this.mSliders2CP.remove(tmpSlider);
-						}
-					}
+					this.removeRegCP(oldCP);
 				}
 			}
 			for (ComponentPair newCP : sCommonRegComponents) {
 				if (this.updateSchemeInter.containsCPSigma(newCP))
 					continue;
 				else{
-					this.updateSchemeInter.addCP(newCP);
-					this.generateSigmaSlider(newCP);
+					this.addRegCP(newCP);
 				}
 			}
 		}
 	}
 	
 	
+	
 	private void updateSigmaSlidersPanel(LogicalModel m) {
-		this.jpSigmaSliderPanel.removeAll();
 		this.updateAllCPSigma();
 		this.selectedModel = m;
 		Set<ComponentPair> sModelRegComponents = new HashSet<ComponentPair>();
@@ -340,39 +380,15 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 					+ "\n\r");
 		}
 		else {
-			//TODO alphabetical order
-//			List<ComponentPair> lModelRegComponents = new ArrayList<ComponentPair>(sModelRegComponents);
-//			int rows = lModelRegComponents.size();
-//			int columns = tableColumns.length;
-//			Object [][] contentCPSliders = new Object[rows][columns];
-//			JTable sigmaTable = new JTable(contentCPSliders, tableColumns);
-//			sigmaTable.setRowHeight(100);
-//			this.jpSigmaSliderPanel.add(sigmaTable, BorderLayout.CENTER);
-//			for (int i=0; i<rows; i++) {
-//				JPanel jpCPSliderPanel = new JPanel(new BorderLayout());
-//				ComponentPair cp = lModelRegComponents.get(i);
-//				JSlider jpCPSlider = this.mCP2Sliders.get(cp);
-//				JPanel jpCPInfo = this.mCP2InfoPanel.get(cp);
-//				jpCPSliderPanel.add(new JLabel("Value: "), BorderLayout.LINE_START);
-//				jpCPSliderPanel.add(jpCPSlider, BorderLayout.CENTER);
-//				contentCPSliders[i][0] = jpCPInfo;
-//				contentCPSliders[i][1] = jpCPSliderPanel;
-//			}
-			//FIXME 
+			this.jpSigmaSliderPanel = 
+					new JPanel(new GridLayout(sModelRegComponents.size(), 1));
+			this.jspSigmaSliderScroller = new JScrollPane(this.jpSigmaSliderPanel);
+			this.jspSigmaSliderScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+			this.jpSigma.add(this.jspSigmaSliderScroller, BorderLayout.CENTER);
 			for (ComponentPair cp : sModelRegComponents){
-				JSlider jCPSlider = this.mCP2Sliders.get(cp);
-				JPanel jpCPInfo = this.mCP2InfoPanel.get(cp);
-				
-				JPanel jpCPPanel = new JPanel(new BorderLayout());
-				this.jpSigmaSliderPanel.add(jpCPPanel, BorderLayout.CENTER);
-				
-				JPanel jpCPSliderPanel = new JPanel(new BorderLayout());
-				jpCPPanel.add(jpCPSliderPanel, BorderLayout.CENTER);
-				jpCPPanel.add(jpCPInfo, BorderLayout.WEST);
-				
-				jpCPSliderPanel.add(new JLabel("Value: "), BorderLayout.LINE_START);
-				jpCPSliderPanel.add(jCPSlider, BorderLayout.CENTER);
-				
+				JPanel componentPanel = this.mCP2Panel.get(cp);
+				componentPanel.setBorder(BorderFactory.createEtchedBorder());
+				this.jpSigmaSliderPanel.add(componentPanel);
 			}
 		}
 	}
@@ -401,8 +417,6 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	}
 
 	
-	
-
 	
 	@Override
 	protected void buttonReset() {
@@ -467,8 +481,6 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		this.updateSigmaSlidersPanel(this.selectedModel);
 		this.getParent().repaint();
 	}
-
-	
 	
 	@Override
 	public void hyperlinkUpdate(HyperlinkEvent event) {

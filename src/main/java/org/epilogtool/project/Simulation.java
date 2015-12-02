@@ -224,11 +224,17 @@ public class Simulation {
 			this.neighbouringEpi = tmpNeighbourEpi;
 		}
 		else{
+			EpitheliumGrid delayGrid = this.stateHistory.get(0);
+			if (this.stateHistory.size() >= 2){
+				delayGrid = this.stateHistory.get(this.stateHistory.size()-2);
+			}
 			for (ComponentPair cp : mSigmaAsync.keySet()) {
 				float sigma = mSigmaAsync.get(cp);
 				if (sigma != EpitheliumUpdateSchemeInter.DEFAULT_SIGMA){
 					LogicalModel m = cp.getModel();
 					String nodeID = cp.getNodeInfo().getNodeID();
+					List<NodeInfo> modelNodes = m.getNodeOrder();
+					int nodePosition =  modelNodes.indexOf(cp.getNodeInfo());
 					List<Tuple2D<Integer>> modelPositions = mapModelPositions.get(m);
 					int selectedCells = (int) Math.ceil((1 - sigma) * modelPositions.size());
 					Collections.shuffle(modelPositions,
@@ -236,8 +242,9 @@ public class Simulation {
 					List<Tuple2D<Integer>> selectedModelPositions = 
 							modelPositions.subList(0, selectedCells);
 					for (Tuple2D<Integer> tuple : selectedModelPositions){
+						byte[] delayState = delayGrid.getCellState(tuple.getX(), tuple.getY());
 						tmpNeighbourEpi.
-						setCellComponentValue(tuple.getX(), tuple.getY(), nodeID, (byte) 0);
+						setCellComponentValue(tuple.getX(), tuple.getY(), nodeID, (byte) delayState[nodePosition]);
 					}
 				}	
 			}

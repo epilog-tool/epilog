@@ -327,7 +327,7 @@ public class Parser {
 		if (mSigmaAsync.size() > 0){
 			for (ComponentPair cp : mSigmaAsync.keySet()) {
 				w.println("SS " + model2Key.get(cp.getModel()) + " " + 
-			cp.getNodeInfo().getNodeID() + mSigmaAsync.get(cp));
+			cp.getNodeInfo().getNodeID() + " " + mSigmaAsync.get(cp));
 			}
 			w.println();
 		}
