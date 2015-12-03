@@ -155,13 +155,24 @@ public class Parser {
 								project.getProjectFeatures().hasNode(proper, m)) {
 							currEpi.setIntegrationFunction(saTmp[1], m, Byte.parseByte(saTmp[2]), 
 									(saTmp.length > 3) ? saTmp[3] : "");
+							NodeInfo node = project.getProjectFeatures().getNodeInfo(proper, m);
+							ComponentPair cp = new ComponentPair(m, node);
+							if (!currEpi.getUpdateSchemeInter().containsCPSigma(cp)){
+								currEpi.getUpdateSchemeInter().addCP(cp);
+							}
 						}
 					}
 				}
 				else{
 					LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
+					String proper = saTmp[4].split("\\(")[0];
+					NodeInfo node = project.getProjectFeatures().getNodeInfo(proper, m);
+					ComponentPair cp = new ComponentPair(m, node);
 				currEpi.setIntegrationFunction(saTmp[2], m, Byte.parseByte(saTmp[3]), 
 						(saTmp.length > 4) ? saTmp[4] : "");
+				if (!currEpi.getUpdateSchemeInter().containsCPSigma(cp)){
+					currEpi.getUpdateSchemeInter().addCP(cp);
+				}
 				}	
 			}
 			// Model Priority classes

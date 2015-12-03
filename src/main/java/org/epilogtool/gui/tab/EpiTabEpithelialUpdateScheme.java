@@ -1,11 +1,11 @@
 package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -29,6 +29,7 @@ import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
+import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.common.Web;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
@@ -129,7 +130,13 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		
 		//Sigma sliders JPanels
 		this.selectedModel = this.projectFeatures.getModel((String) jcbSBML.getSelectedItem());
-		updateSigmaSlidersPanel(this.selectedModel);
+		this.jpSigmaSliderPanel = new JPanel(new GridLayout());
+
+		this.jspSigmaSliderScroller = new JScrollPane(this.jpSigmaSliderPanel);
+		this.jspSigmaSliderScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		this.jpSigma.add(jspSigmaSliderScroller, BorderLayout.CENTER);
+		//this.jspSigmaSliderScroller.add(this.jpSigmaSliderPanel);
+		this.updateSigmaSlidersScrollPane(this.selectedModel);
 		this.isInitialized = true;
 	}
 	
@@ -187,7 +194,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		if (!this.updateSchemeInter.containsCPSigma(cp)){
 			this.updateSchemeInter.addCP(cp);
 		}
-		JLabel jSigmaLabelValue = new JLabel("--");
+		JLabel jSigmaLabelValue = new JLabel("" + this.updateSchemeInter.getCPSigma(cp));
 		this.mCP2InfoLabel.put(cp, jSigmaLabelValue);
 		this.generateCPSigmaSlider(cp);
 		this.generateCPSigmaPanel(cp);
@@ -333,6 +340,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 			this.mCP2InfoLabel.clear();
 			this.mSliders2CP.clear();
 			this.updateSchemeInter.clearAllCPSigma();
+			this.epithelium.getUpdateSchemeInter().getCPSigmas().clear();
 		}
 		else{
 			Set<ComponentPair> sOldRegComponents = new HashSet<ComponentPair>
@@ -343,6 +351,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 			for (ComponentPair oldCP : sOldRegComponents) {
 				if (!sCommonRegComponents.contains(oldCP)){
 					this.removeRegCP(oldCP);
+					this.epithelium.getUpdateSchemeInter().getCPSigmas().remove(oldCP);
 				}
 			}
 			for (ComponentPair newCP : sCommonRegComponents) {
@@ -350,6 +359,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 					continue;
 				else{
 					this.addRegCP(newCP);
+					this.epithelium.getUpdateSchemeInter().addCP(newCP);
 				}
 			}
 		}
@@ -357,16 +367,17 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	
 	
 	
-	private void updateSigmaSlidersPanel(LogicalModel m) {
-		this.updateAllCPSigma();
+	private void updateSigmaSlidersScrollPane(LogicalModel m) {
 		this.selectedModel = m;
-		Set<ComponentPair> sModelRegComponents = new HashSet<ComponentPair>();
+		List<ComponentPair> sModelRegComponents = new ArrayList<ComponentPair>();
 		for (ComponentPair cp : this.updateSchemeInter.getCPSigmas().keySet()){
 			if (cp.getModel() == m) {
 				sModelRegComponents.add(cp);
 			}
 		}
 		if (sModelRegComponents.size() == 0){
+			this.jpSigmaSliderPanel.removeAll();
+			this.jpSigmaSliderPanel.setLayout(new GridLayout());
 			JEditorPane jSigmaPane = new JEditorPane();
 			this.jpSigmaSliderPanel.add(jSigmaPane, BorderLayout.CENTER);
 			jSigmaPane.setContentType("text/html");
@@ -380,11 +391,9 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 					+ "\n\r");
 		}
 		else {
-			this.jpSigmaSliderPanel = 
-					new JPanel(new GridLayout(sModelRegComponents.size(), 1));
-			this.jspSigmaSliderScroller = new JScrollPane(this.jpSigmaSliderPanel);
-			this.jspSigmaSliderScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-			this.jpSigma.add(this.jspSigmaSliderScroller, BorderLayout.CENTER);
+			Collections.sort(sModelRegComponents, ObjectComparator.COMPONENTPAIR);
+			this.jpSigmaSliderPanel.removeAll();
+			this.jpSigmaSliderPanel.setLayout(new GridLayout(sModelRegComponents.size(), 1));
 			for (ComponentPair cp : sModelRegComponents){
 				JPanel componentPanel = this.mCP2Panel.get(cp);
 				componentPanel.setBorder(BorderFactory.createEtchedBorder());
@@ -408,7 +417,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 				@SuppressWarnings("unchecked")
 				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
 				LogicalModel m = projectFeatures.getModel((String) jcb.getSelectedItem());
-				updateSigmaSlidersPanel(m);
+				updateSigmaSlidersScrollPane(m);
 				// Re-Paint
 				getParent().repaint();
 			}
@@ -441,7 +450,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	@Override
 	protected void buttonAccept() {
 		this.epithelium.getUpdateSchemeInter().setAlpha(this.updateSchemeInter.getAlpha());
-		for (ComponentPair cp : this.mCP2Sliders.keySet()) {
+		for (ComponentPair cp : this.updateSchemeInter.getCPSigmas().keySet()) {
 			this.epithelium.getUpdateSchemeInter().
 			setCPSigma(cp, this.updateSchemeInter.getCPSigma(cp));
 		}
@@ -478,7 +487,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		this.jpSigmaModelSelection.add(new JLabel("Model: "), BorderLayout.WEST);
 		this.jpSigmaModelSelection.add(this.newModelCombobox(modelList));
 		this.updateAllCPSigma();
-		this.updateSigmaSlidersPanel(this.selectedModel);
+		this.updateSigmaSlidersScrollPane(this.selectedModel);
 		this.getParent().repaint();
 	}
 	
