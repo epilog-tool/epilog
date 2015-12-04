@@ -1,6 +1,7 @@
 package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
@@ -130,8 +132,9 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		
 		//Sigma sliders JPanels
 		this.selectedModel = this.projectFeatures.getModel((String) jcbSBML.getSelectedItem());
-		this.jpSigmaSliderPanel = new JPanel(new GridLayout());
-
+		this.jpSigmaSliderPanel = new JPanel();
+		this.jpSigmaSliderPanel.
+			setLayout(new BoxLayout(this.jpSigmaSliderPanel, BoxLayout.Y_AXIS));
 		this.jspSigmaSliderScroller = new JScrollPane(this.jpSigmaSliderPanel);
 		this.jspSigmaSliderScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.jpSigma.add(jspSigmaSliderScroller, BorderLayout.CENTER);
@@ -286,6 +289,9 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	private void generateCPSigmaPanel(ComponentPair cp) {
 		
 		JPanel componentPanel = new JPanel(new BorderLayout());
+		componentPanel.setPreferredSize(new Dimension(400, 100));
+		componentPanel.setMaximumSize(new Dimension(5000, 100));
+		componentPanel.setMinimumSize(new Dimension(100, 100));
 		JLabel componentSigmaLabel = this.mCP2InfoLabel.get(cp);
 		JSlider componentSlider = this.mCP2Sliders.get(cp);
 		
@@ -377,7 +383,6 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		}
 		if (sModelRegComponents.size() == 0){
 			this.jpSigmaSliderPanel.removeAll();
-			this.jpSigmaSliderPanel.setLayout(new GridLayout());
 			JEditorPane jSigmaPane = new JEditorPane();
 			this.jpSigmaSliderPanel.add(jSigmaPane, BorderLayout.CENTER);
 			jSigmaPane.setContentType("text/html");
@@ -393,7 +398,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		else {
 			Collections.sort(sModelRegComponents, ObjectComparator.COMPONENTPAIR);
 			this.jpSigmaSliderPanel.removeAll();
-			this.jpSigmaSliderPanel.setLayout(new GridLayout(sModelRegComponents.size(), 1));
+			//this.jpSigmaSliderPanel.setLayout(new GridLayout(sModelRegComponents.size(), 1));
 			for (ComponentPair cp : sModelRegComponents){
 				JPanel componentPanel = this.mCP2Panel.get(cp);
 				componentPanel.setBorder(BorderFactory.createEtchedBorder());
