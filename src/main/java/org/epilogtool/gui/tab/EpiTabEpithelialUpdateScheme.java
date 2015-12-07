@@ -2,7 +2,6 @@ package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -330,7 +329,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	
 	
 	
-	private void updateCPSigma(ComponentPair cp, int value) {
+	private void updateCPSigma(ComponentPair cp, float value) {
 		this.updateSchemeInter.setCPSigma(cp, value);
 		this.mCP2InfoLabel.get(cp).setText(""+ value);
 	}
@@ -435,14 +434,14 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	@Override
 	protected void buttonReset() {
 		for (ComponentPair cp : this.mCP2Sliders.keySet()) {
-			float sigmaReset = (int) this.epithelium.getUpdateSchemeInter().getCPSigma(cp);
+			float sigmaReset = this.epithelium.getUpdateSchemeInter().getCPSigma(cp);
 			this.mCP2Sliders.get(cp).setValue((int) (sigmaReset * this.SLIDER_MAX));
 			for (JSlider jSlide : this.mSliders2CP.keySet()){
 				if (this.mSliders2CP.get(jSlide) == cp){
 					jSlide.setValue((int) (sigmaReset * this.SLIDER_MAX));
 				}
 			}
-			this.updateCPSigma(cp, (int) (sigmaReset * this.SLIDER_MAX));
+			this.updateCPSigma(cp, sigmaReset);
 		}
 		this.jAlphaSlide.setValue((int) (this.epithelium.getUpdateSchemeInter().getAlpha() * SLIDER_MAX));
 		this.updateAlpha(this.jAlphaSlide.getValue());
