@@ -412,9 +412,10 @@ public class EpiTabSimulation extends EpiTab {
 				.getGridAt(this.iCurrSimIter + 1);
 		if (this.simulation.isStableAt(this.iCurrSimIter + 1)) {
 			setGridGUIStable(true);
-		} else if (this.simulation.hasCycle()) {
-			setGridGUICycle(true);
 		} else {
+			if (this.simulation.hasCycle()) {
+				setGridGUICycle(true);
+			}
 			this.iCurrSimIter++;
 			this.visualGridSimulation.setEpitheliumGrid(nextGrid);
 			this.jlStep.setText("Iteration: " + this.iCurrSimIter);
