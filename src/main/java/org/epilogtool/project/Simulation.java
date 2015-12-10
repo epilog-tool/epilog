@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -31,8 +32,10 @@ import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationEx
 public class Simulation {
 	private Epithelium epithelium;
 	private EpitheliumGrid neighbouringEpi;
-	private List<EpitheliumGrid> stateHistory;
+	private List<EpitheliumGrid> gridHistory;
+	private List<String> gridHashHistory;
 	private boolean stable;
+	private boolean hasCycle;
 	// Perturbed models cache - avoids repeatedly computing perturbations at
 	// each step
 	private PriorityUpdater[][] updaterCache;
@@ -51,9 +54,13 @@ public class Simulation {
 	public Simulation(Epithelium e) {
 		this.epithelium = e;
 		this.neighbouringEpi = e.getEpitheliumGrid().clone();
-		this.stateHistory = new ArrayList<EpitheliumGrid>();
-		this.stateHistory.add(this.epithelium.getEpitheliumGrid());
+		this.gridHistory = new ArrayList<EpitheliumGrid>();
+		this.gridHistory.add(this.epithelium.getEpitheliumGrid());
+		this.gridHashHistory = new ArrayList<String>();
+		this.gridHashHistory
+				.add(this.epithelium.getEpitheliumGrid().hashGrid());
 		this.stable = false;
+		this.hasCycle = false;
 		this.buildPriorityUpdaterCache();
 	}
 
@@ -93,7 +100,7 @@ public class Simulation {
 		if (this.stable) {
 			return currGrid;
 		}
-		
+
 		this.generateNeighboursEpithelium();
 		EpitheliumGrid currNeighboursGrid = this.neighbouringEpi;
 
@@ -150,8 +157,18 @@ public class Simulation {
 			return currGrid;
 		}
 
-		this.stateHistory.add(nextGrid);
+		this.gridHistory.add(nextGrid);
+		this.gridHashHistory.add(nextGrid.hashGrid());
 		return nextGrid;
+	}
+
+	public boolean hasCycle() {
+		if (!this.hasCycle) {
+			Set<String> sStateHistory = new HashSet<String>(
+					this.gridHashHistory);
+			this.hasCycle = (sStateHistory.size() < this.gridHashHistory.size());
+		}
+		return this.hasCycle;
 	}
 
 	private byte[] nextCellValue(int x, int y, EpitheliumGrid currGrid,
@@ -192,61 +209,66 @@ public class Simulation {
 	}
 
 	public boolean isStableAt(int i) {
-		return (i >= this.stateHistory.size() && this.stable);
+		return (i >= this.gridHistory.size() && this.stable);
 	}
 
 	public EpitheliumGrid getGridAt(int i) {
-		if (i < this.stateHistory.size()) {
-			return this.stateHistory.get(i);
+		if (i < this.gridHistory.size()) {
+			return this.gridHistory.get(i);
 		}
 		return this.nextStepGrid();
 	}
 
 	public EpitheliumGrid getCurrentGrid() {
-		return stateHistory.get(stateHistory.size() - 1);
+		return gridHistory.get(gridHistory.size() - 1);
 	}
 
 	public Epithelium getEpithelium() {
 		return this.epithelium;
 	}
-	
-	private void generateNeighboursEpithelium(){
-		//Creates an epithelium which is only visited to 'see' neighbours and their states
-		
-		EpitheliumGrid tmpNeighbourEpi = this.getGridAt(this.stateHistory.size()-1).clone();
-		
-		Map<ComponentPair, Float> mSigmaAsync= 
-				this.epithelium.getUpdateSchemeInter().getCPSigmas();
-		
-		Map<LogicalModel, List<Tuple2D<Integer>>> mapModelPositions = 
-				tmpNeighbourEpi.getModelPositions();
+
+	private void generateNeighboursEpithelium() {
+		// Creates an epithelium which is only visited to 'see' neighbours and
+		// their states
+
+		EpitheliumGrid tmpNeighbourEpi = this.getGridAt(
+				this.gridHistory.size() - 1).clone();
+
+		Map<ComponentPair, Float> mSigmaAsync = this.epithelium
+				.getUpdateSchemeInter().getCPSigmas();
+
+		Map<LogicalModel, List<Tuple2D<Integer>>> mapModelPositions = tmpNeighbourEpi
+				.getModelPositions();
 		if (mSigmaAsync.size() == 0) {
 			this.neighbouringEpi = tmpNeighbourEpi;
-		}
-		else{
-			EpitheliumGrid delayGrid = this.stateHistory.get(0);
-			if (this.stateHistory.size() >= 2){
-				delayGrid = this.stateHistory.get(this.stateHistory.size()-2);
+		} else {
+			EpitheliumGrid delayGrid = this.gridHistory.get(0);
+			if (this.gridHistory.size() >= 2) {
+				delayGrid = this.gridHistory.get(this.gridHistory.size() - 2);
 			}
 			for (ComponentPair cp : mSigmaAsync.keySet()) {
 				float sigma = mSigmaAsync.get(cp);
-				if (sigma != EpitheliumUpdateSchemeInter.DEFAULT_SIGMA){
+				if (sigma != EpitheliumUpdateSchemeInter.DEFAULT_SIGMA) {
 					LogicalModel m = cp.getModel();
 					String nodeID = cp.getNodeInfo().getNodeID();
 					List<NodeInfo> modelNodes = m.getNodeOrder();
-					int nodePosition =  modelNodes.indexOf(cp.getNodeInfo());
-					List<Tuple2D<Integer>> modelPositions = mapModelPositions.get(m);
-					int selectedCells = (int) Math.ceil((1 - sigma) * modelPositions.size());
+					int nodePosition = modelNodes.indexOf(cp.getNodeInfo());
+					List<Tuple2D<Integer>> modelPositions = mapModelPositions
+							.get(m);
+					int selectedCells = (int) Math.ceil((1 - sigma)
+							* modelPositions.size());
 					Collections.shuffle(modelPositions,
 							new Random(Double.doubleToLongBits(Math.random())));
-					List<Tuple2D<Integer>> selectedModelPositions = 
-							modelPositions.subList(0, selectedCells);
-					for (Tuple2D<Integer> tuple : selectedModelPositions){
-						byte[] delayState = delayGrid.getCellState(tuple.getX(), tuple.getY());
-						tmpNeighbourEpi.
-						setCellComponentValue(tuple.getX(), tuple.getY(), nodeID, (byte) delayState[nodePosition]);
+					List<Tuple2D<Integer>> selectedModelPositions = modelPositions
+							.subList(0, selectedCells);
+					for (Tuple2D<Integer> tuple : selectedModelPositions) {
+						byte[] delayState = delayGrid.getCellState(
+								tuple.getX(), tuple.getY());
+						tmpNeighbourEpi.setCellComponentValue(tuple.getX(),
+								tuple.getY(), nodeID,
+								(byte) delayState[nodePosition]);
 					}
-				}	
+				}
 			}
 			this.neighbouringEpi = tmpNeighbourEpi;
 		}

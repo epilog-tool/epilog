@@ -23,6 +23,15 @@ public class EpitheliumCell {
 		return this.perturbation;
 	}
 
+	public long hashState() {
+		long hash = 1;
+		for (int i = 0; i < model.getNodeOrder().size(); i++) {
+			int vals = model.getNodeOrder().get(i).getMax() + 1;
+			hash += i * Math.pow(vals, this.state[i]);
+		}
+		return hash;
+	}
+
 	public void setPerturbation(AbstractPerturbation ap) {
 		this.perturbation = ap;
 	}

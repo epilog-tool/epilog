@@ -398,12 +398,22 @@ public class EpiTabSimulation extends EpiTab {
 			this.jlStable.setText("           ");
 		}
 	}
+	
+	private void setGridGUICycle(boolean cycle) {
+		if (cycle) {
+			this.jlStable.setText("Cycle!");
+		} else {
+			this.jlStable.setText("           ");
+		}
+	}
 
 	private void simulationStepFwr() {
 		EpitheliumGrid nextGrid = this.simulation
 				.getGridAt(this.iCurrSimIter + 1);
 		if (this.simulation.isStableAt(this.iCurrSimIter + 1)) {
 			setGridGUIStable(true);
+		} else if (this.simulation.hasCycle()) {
+			setGridGUICycle(true);
 		} else {
 			this.iCurrSimIter++;
 			this.visualGridSimulation.setEpitheliumGrid(nextGrid);
@@ -422,6 +432,8 @@ public class EpiTabSimulation extends EpiTab {
 			if (this.simulation.isStableAt(this.iCurrSimIter + 1)) {
 				setGridGUIStable(true);
 				break;
+			} else if (this.simulation.hasCycle()) {
+				setGridGUICycle(true);
 			}
 			this.iCurrSimIter++;
 		}

@@ -237,4 +237,14 @@ public class EpitheliumGrid {
 	public Map<LogicalModel, List<Tuple2D<Integer>>> getModelPositions(){
 		return this.modelPositions;
 	}
+	
+	public String hashGrid() {
+		String hash = "";
+		for (int y = 0; y < this.getY(); y++) {
+			for (int x = 0; x < this.getX(); x++) {
+				hash += this.gridEpiCell[x][y].hashState();
+			}
+		}
+		return hash;
+	}
 }
