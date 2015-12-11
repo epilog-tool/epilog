@@ -66,7 +66,7 @@ public class EpiTabSimulation extends EpiTab {
 	private int iUserBurst;
 	private int iCurrSimIter;
 	private JLabel jlStep;
-	private JLabel jlStable;
+	private JLabel jlAttractor;
 	private JButton jbRewind;
 	private JButton jbBack;
 	private JButton jbForward;
@@ -227,10 +227,10 @@ public class EpiTabSimulation extends EpiTab {
 		JPanel jpButtonsL = new JPanel();
 		this.jlStep = new JLabel("Iteration: " + this.iCurrSimIter);
 		jpButtonsL.add(this.jlStep);
-		this.jlStable = new JLabel("Stable!");
-		this.jlStable.setForeground(Color.RED);
+		this.jlAttractor = new JLabel("Stable!");
+		this.jlAttractor.setForeground(Color.RED);
 		this.setGridGUIStable(false);
-		jpButtonsL.add(this.jlStable);
+		jpButtonsL.add(this.jlAttractor);
 
 		jpButtons.add(jpButtonsL, BorderLayout.LINE_START);
 		this.jpRight.add(jpButtons, BorderLayout.SOUTH);
@@ -379,6 +379,7 @@ public class EpiTabSimulation extends EpiTab {
 		this.jlStep.setText("Iteration: " + this.iCurrSimIter);
 		this.visualGridSimulation.setEpitheliumGrid(prevGrid);
 		setGridGUIStable(false);
+		setGridGUICycle(this.simulation.hasCycleAt(this.iCurrSimIter));
 		if (this.iCurrSimIter == 0) {
 			this.jbRewind.setEnabled(false);
 			this.jbBack.setEnabled(false);
@@ -391,19 +392,19 @@ public class EpiTabSimulation extends EpiTab {
 
 	private void setGridGUIStable(boolean stable) {
 		if (stable) {
-			this.jlStable.setText("Stable!");
+			this.jlAttractor.setText("Stable!");
 			this.jbForward.setEnabled(false);
 			this.jbFastFwr.setEnabled(false);
 		} else {
-			this.jlStable.setText("           ");
+			this.jlAttractor.setText("           ");
 		}
 	}
 	
 	private void setGridGUICycle(boolean cycle) {
 		if (cycle) {
-			this.jlStable.setText("Cycle!");
+			this.jlAttractor.setText("Cycle detected!");
 		} else {
-			this.jlStable.setText("           ");
+			this.jlAttractor.setText("           ");
 		}
 	}
 
@@ -413,7 +414,7 @@ public class EpiTabSimulation extends EpiTab {
 		if (this.simulation.isStableAt(this.iCurrSimIter + 1)) {
 			setGridGUIStable(true);
 		} else {
-			if (this.simulation.hasCycle()) {
+			if (this.simulation.hasCycleAt(this.iCurrSimIter + 1)) {
 				setGridGUICycle(true);
 			}
 			this.iCurrSimIter++;
@@ -433,7 +434,7 @@ public class EpiTabSimulation extends EpiTab {
 			if (this.simulation.isStableAt(this.iCurrSimIter + 1)) {
 				setGridGUIStable(true);
 				break;
-			} else if (this.simulation.hasCycle()) {
+			} else if (this.simulation.hasCycleAt(this.iCurrSimIter + 1)) {
 				setGridGUICycle(true);
 			}
 			this.iCurrSimIter++;

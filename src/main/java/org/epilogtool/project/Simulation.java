@@ -211,6 +211,12 @@ public class Simulation {
 	public boolean isStableAt(int i) {
 		return (i >= this.gridHistory.size() && this.stable);
 	}
+	
+	public boolean hasCycleAt(int i) {
+		List<String> tmpList = new ArrayList<String>(this.gridHashHistory.subList(0, i));
+		Set<String> tmpSet = new HashSet<String>(tmpList);
+		return !(tmpSet.size() == tmpList.size());
+	}
 
 	public EpitheliumGrid getGridAt(int i) {
 		if (i < this.gridHistory.size()) {
