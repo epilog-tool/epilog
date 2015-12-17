@@ -124,7 +124,7 @@ public class GridInformation extends JPanel {
 			this.minimalSpace(gbc, ++y);
 
 			// Components
-			jlTmp = new JLabel("---- Components ----");
+			jlTmp = new JLabel("--- Components ---");
 			this.constraints(gbc, 0, ++y, 2);
 			this.jCellPanel.add(jlTmp, gbc);
 

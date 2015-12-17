@@ -37,7 +37,7 @@ public class EpiTreePanel extends JPanel {
 		this.popupmenu = new EpiTreePopupMenu();
 
 		this.setLayout(new BorderLayout());
-		this.add(EpilogGUIFactory.getJLabelBold("List of Epithelium's:"),
+		this.add(EpilogGUIFactory.getJLabelBold("Epithelia:"),
 				BorderLayout.PAGE_START);
 		this.scrollTree = new JScrollPane(
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,

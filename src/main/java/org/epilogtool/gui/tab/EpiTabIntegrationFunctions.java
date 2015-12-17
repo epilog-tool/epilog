@@ -101,12 +101,14 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		// South Panel
 		// JPanel jpSouth = new JPanel(new BorderLayout());
 		// jpSouth.add(new JLabel("Explanation missing"));
-		this.center.add(this.getExplanationPanel(), BorderLayout.SOUTH);
+		//this.center.add(this.getExplanationPanel(), BorderLayout.SOUTH);
 		this.activeModel = (String) jcbSBML.getSelectedItem();
 		this.updateComponentList();
 		this.isInitialized = true;
 	}
 
+
+	@Deprecated
 	private JEditorPane getExplanationPanel() {
 		JEditorPane jPane = new JEditorPane();
 		jPane.setContentType("text/html");

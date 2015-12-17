@@ -94,24 +94,6 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		this.center.add(this.jpAlpha, BorderLayout.NORTH);
 		jpAlpha.setBorder(BorderFactory.createTitledBorder("Alpha - Asynchronism"));
 
-		// alpha asynchronism information
-		JEditorPane jAlphaPane = new JEditorPane();
-		jpAlpha.add(jAlphaPane, BorderLayout.NORTH);
-		jAlphaPane.setContentType("text/html");
-		jAlphaPane.setEditable(false);
-		jAlphaPane.setEnabled(true);
-		jAlphaPane.setBackground(jpAlpha.getBackground());
-		jAlphaPane.addHyperlinkListener(this);
-		jAlphaPane.setText("\n\r"
-				+ "Here we consider an updating scheme named &alpha;-asyncronism "
-				+ "(see <a href=\"http://dx.doi.org/10.1007/978-3-642-40867-0_2\">"
-				+ "doi:10.1007/978-3-642-40867-0_2</a>).<br/>"
-				+ "It consists in updating each cell with probability &alpha;, the "
-				+ "synchrony rate, leaving the state of the cells unchanged otherwise."
-				+ "\n\r");
-
-		jpAlpha.add(new JLabel(" "));
-
 		// JSlider for alpha-asynchronism
 		this.generateAlphaSlider();
 		
@@ -298,7 +280,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		
 		JPanel jpComponentNorthInfo = new JPanel(new BorderLayout());
 		componentPanel.add(jpComponentNorthInfo, BorderLayout.NORTH);
-		jpComponentNorthInfo.add(new JLabel("Component: " + cp.getNodeInfo().getNodeID()),
+		jpComponentNorthInfo.add(new JLabel("Integration Function Regulator: " + cp.getNodeInfo().getNodeID()),
 				BorderLayout.CENTER);
 		
 		JPanel jpComponentCenterInfo = new JPanel(new BorderLayout());

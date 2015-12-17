@@ -557,7 +557,7 @@ public class EpiTabSimulation extends EpiTab {
 		}
 		
 		if (!sCommonNodeIDs.isEmpty())
-			this.setComponentTypeList(sCommonNodeIDs, "Common Components");
+			this.setComponentTypeList(sCommonNodeIDs, "Input/Proper Components");
 		if (!sProperNodeIDs.isEmpty()) 
 			this.setComponentTypeList(sProperNodeIDs, "Proper Components");
 		if (!sInputNodeIDs.isEmpty())

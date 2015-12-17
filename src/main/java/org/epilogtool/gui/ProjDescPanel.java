@@ -21,7 +21,7 @@ import org.epilogtool.gui.menu.SBMLPopupMenu;
 public class ProjDescPanel extends JPanel {
 	private static final long serialVersionUID = -8691538114476162311L;
 
-	private static final String LABEL = "List of loaded models: ";
+	private static final String LABEL = "Intra-cellular models: ";
 	private JList<String> listSBMLs;
 	private JMenu menu;
 	private SBMLPopupMenu popupmenu;
