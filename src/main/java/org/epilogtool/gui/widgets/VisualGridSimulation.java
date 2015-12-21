@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.project.ProjectFeatures;
@@ -27,8 +28,8 @@ public class VisualGridSimulation extends VisualGrid {
 	private Tuple2D<Integer> lastPos;
 
 	public VisualGridSimulation(EpitheliumGrid epiGrid,
-			ProjectFeatures projectFeatures,
-			List<String> lCompON, GridInformation valuePanel) {
+			ProjectFeatures projectFeatures, List<String> lCompON,
+			GridInformation valuePanel) {
 		super(epiGrid.getX(), epiGrid.getY(), epiGrid.getTopology());
 		this.projectFeatures = projectFeatures;
 		this.epiGrid = epiGrid;
@@ -105,19 +106,23 @@ public class VisualGridSimulation extends VisualGrid {
 				}
 				LogicalModel m = this.epiGrid.getModel(x, y);
 				List<Color> lColors = new ArrayList<Color>();
-				for (String nodeID : this.lCompON) {
-					Color cBase = this.projectFeatures.getNodeColor(nodeID);
-					if (this.projectFeatures.hasNode(nodeID, m)){
-						byte max = this.projectFeatures.getNodeInfo(nodeID, m)
-							.getMax();
+				if (EmptyModel.getInstance().isEmptyModel(m)) {
+					lColors.add(EmptyModel.getInstance().getColor());
+				} else {
+					for (String nodeID : this.lCompON) {
+						Color cBase = this.projectFeatures.getNodeColor(nodeID);
+						if (this.projectFeatures.hasNode(nodeID, m)) {
+							byte max = this.projectFeatures.getNodeInfo(nodeID,
+									m).getMax();
 
-					int index = this.epiGrid.getNodeIndex(x, y, nodeID);
-					if (index >= 0) { // if cell has nodeID
-						byte value = this.epiGrid.getCellState(x, y)[index];
-						if (value > 0) {
-							lColors.add(ColorUtils.getColorAtValue(cBase, max,
-									value));
-						}
+							int index = this.epiGrid.getNodeIndex(x, y, nodeID);
+							if (index >= 0) { // if cell has nodeID
+								byte value = this.epiGrid.getCellState(x, y)[index];
+								if (value > 0) {
+									lColors.add(ColorUtils.getColorAtValue(
+											cBase, max, value));
+								}
+							}
 						}
 					}
 				}

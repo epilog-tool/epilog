@@ -23,7 +23,7 @@ public class EpitheliumGrid {
 	private Map<LogicalModel, List<Tuple2D<Integer>>> modelPositions;
 
 	private EpitheliumGrid(EpitheliumCell[][] gridEpiCell, Topology topology,
-			Set<LogicalModel> modelSet, 
+			Set<LogicalModel> modelSet,
 			Map<LogicalModel, List<Tuple2D<Integer>>> modelPositions) {
 		this.gridEpiCell = gridEpiCell;
 		this.topology = topology;
@@ -43,12 +43,11 @@ public class EpitheliumGrid {
 		for (int y = 0; y < gridY; y++) {
 			for (int x = 0; x < gridX; x++) {
 				this.gridEpiCell[x][y] = new EpitheliumCell(m);
-				if (this.modelPositions.keySet().contains(m)){
-					this.modelPositions.get(m).add(new Tuple2D<Integer>(x,y));
-				}
-				else{
+				if (this.modelPositions.keySet().contains(m)) {
+					this.modelPositions.get(m).add(new Tuple2D<Integer>(x, y));
+				} else {
 					List<Tuple2D<Integer>> tmpList = new ArrayList<Tuple2D<Integer>>();
-					tmpList.add(new Tuple2D<Integer>(x,y));
+					tmpList.add(new Tuple2D<Integer>(x, y));
 					this.modelPositions.put(m, tmpList);
 				}
 			}
@@ -67,17 +66,18 @@ public class EpitheliumGrid {
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
 				LogicalModel m = this.gridEpiCell[x][y].getModel();
+				if (EmptyModel.getInstance().isEmptyModel(m)) {
+					continue;
+				}
 				this.modelSet.add(m);
 				Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x, y);
-				if(this.modelPositions.containsKey(m)){
+				if (this.modelPositions.containsKey(m)) {
 					this.modelPositions.get(m).add(tmpTuple);
+				} else {
+					List<Tuple2D<Integer>> tmpList = new ArrayList<Tuple2D<Integer>>();
+					tmpList.add(tmpTuple);
+					this.modelPositions.put(m, tmpList);
 				}
-				else{
-				List<Tuple2D<Integer>> tmpList = new ArrayList<Tuple2D<Integer>>();
-				tmpList.add(tmpTuple);
-				this.modelPositions.put(m, tmpList);
-				}
-				
 			}
 		}
 	}
@@ -112,9 +112,10 @@ public class EpitheliumGrid {
 		}
 		Topology newTop = this.topology.clone();
 		Set<LogicalModel> newModelSet = new HashSet<LogicalModel>(this.modelSet);
-		Map<LogicalModel, List<Tuple2D<Integer>>> newModelPositions = 
-				new HashMap<LogicalModel, List<Tuple2D<Integer>>>(this.modelPositions);
-		return new EpitheliumGrid(newGrid, newTop, newModelSet, newModelPositions);
+		Map<LogicalModel, List<Tuple2D<Integer>>> newModelPositions = new HashMap<LogicalModel, List<Tuple2D<Integer>>>(
+				this.modelPositions);
+		return new EpitheliumGrid(newGrid, newTop, newModelSet,
+				newModelPositions);
 	}
 
 	public EpitheliumCell cloneEpitheliumCellAt(int x, int y) {
@@ -156,21 +157,20 @@ public class EpitheliumGrid {
 	}
 
 	public void setModel(int x, int y, LogicalModel m) {
-		Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x,y);
-		if (this.gridEpiCell[x][y].getModel() != m){
-			if (this.modelPositions.get(this.gridEpiCell[x][y].getModel()).
-					contains(tmpTuple)){
-				this.modelPositions.get(this.gridEpiCell[x][y].getModel()).
-					remove(tmpTuple);
+		Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x, y);
+		if (this.gridEpiCell[x][y].getModel() != m) {
+			if (this.modelPositions.get(this.gridEpiCell[x][y].getModel())
+					.contains(tmpTuple)) {
+				this.modelPositions.get(this.gridEpiCell[x][y].getModel())
+						.remove(tmpTuple);
 			}
 		}
 		gridEpiCell[x][y].setModel(m);
-		if (!this.modelPositions.containsKey(m)){
+		if (!this.modelPositions.containsKey(m)) {
 			List<Tuple2D<Integer>> tmpList = new ArrayList<Tuple2D<Integer>>();
 			tmpList.add(tmpTuple);
-			this.modelPositions.put(m,  tmpList);
-		}
-		else{
+			this.modelPositions.put(m, tmpList);
+		} else {
 			this.modelPositions.get(m).add(tmpTuple);
 		}
 	}
@@ -233,11 +233,11 @@ public class EpitheliumGrid {
 	public int getNodeIndex(int x, int y, String nodeID) {
 		return this.gridEpiCell[x][y].getNodeIndex(nodeID);
 	}
-	
-	public Map<LogicalModel, List<Tuple2D<Integer>>> getModelPositions(){
+
+	public Map<LogicalModel, List<Tuple2D<Integer>>> getModelPositions() {
 		return this.modelPositions;
 	}
-	
+
 	public String hashGrid() {
 		String hash = "";
 		for (int y = 0; y < this.getY(); y++) {

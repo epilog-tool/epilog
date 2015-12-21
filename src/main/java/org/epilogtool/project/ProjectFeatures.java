@@ -1,6 +1,7 @@
 package org.epilogtool.project;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import java.util.Set;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.epilogtool.OptionStore;
+import org.epilogtool.core.EmptyModel;
 import org.epilogtool.gui.color.ColorUtils;
 
 public class ProjectFeatures {
@@ -97,15 +99,26 @@ public class ProjectFeatures {
 	}
 
 	public boolean hasModel(LogicalModel m) {
-		return this.model2String.containsKey(m);
+		return EmptyModel.getInstance().isEmptyModel(m)
+				|| this.model2String.containsKey(m);
 	}
 
 	public LogicalModel getModel(String name) {
+		if (EmptyModel.getInstance().isEmptyModel(name)) {
+			return EmptyModel.getInstance().getModel();
+		}
 		return this.string2Model.get(name);
 	}
 
 	public Set<String> getModelNames() {
 		return Collections.unmodifiableSet(this.string2Model.keySet());
+	}
+
+	public List<String> getGUIModelNames() {
+		List<String> ltmp = new ArrayList<String>();
+		ltmp.add(EmptyModel.getInstance().getName());
+		ltmp.addAll(this.string2Model.keySet());
+		return ltmp;
 	}
 
 	// ProjectModelFeatures.setColor
@@ -115,6 +128,9 @@ public class ProjectFeatures {
 
 	// ProjectModelFeatures.getColor
 	public Color getModelColor(String name) {
+		if (EmptyModel.getInstance().isEmptyModel(name)) {
+			return EmptyModel.getInstance().getColor();
+		}
 		return this.getModelColor(this.string2Model.get(name));
 	}
 
@@ -176,7 +192,7 @@ public class ProjectFeatures {
 	public boolean hasNode(String nodeID, LogicalModel m) {
 		if (this.getNodeInfo(nodeID, m) != null) {
 			return true;
-			}
+		}
 		return false;
 	}
 

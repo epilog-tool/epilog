@@ -23,12 +23,12 @@ import javax.swing.JToggleButton;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
-import org.epilogtool.project.ProjectFeatures;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
 import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
 import org.epilogtool.gui.widgets.VisualGridModel;
+import org.epilogtool.project.ProjectFeatures;
 
 public class EpiTabModelGrid extends EpiTabDefinitions {
 	private static final long serialVersionUID = -5262665948855829161L;
@@ -100,7 +100,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(1, 5, 1, 0);
 		int i = 0;
-		for (String name : this.projectFeatures.getModelNames()) {
+		for (String name : this.projectFeatures.getGUIModelNames()) {
 			gbc.gridy = i;
 			i++;
 			gbc.gridx = 0;

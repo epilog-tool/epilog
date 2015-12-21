@@ -17,6 +17,7 @@ import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.colomoto.logicalmodel.tool.simulation.updater.PriorityClasses;
 import org.colomoto.logicalmodel.tool.simulation.updater.PriorityUpdater;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
@@ -71,6 +72,9 @@ public class Simulation {
 		for (int y = 0; y < this.getCurrentGrid().getY(); y++) {
 			for (int x = 0; x < this.getCurrentGrid().getX(); x++) {
 				LogicalModel m = this.getCurrentGrid().getModel(x, y);
+				if (EmptyModel.getInstance().isEmptyModel(m)) {
+					continue;
+				}
 				AbstractPerturbation ap = this.getCurrentGrid()
 						.getPerturbation(x, y);
 				if (!tmpMap.containsKey(m))
@@ -119,6 +123,9 @@ public class Simulation {
 
 		for (int y = 0; y < currGrid.getY(); y++) {
 			for (int x = 0; x < currGrid.getX(); x++) {
+				if (EmptyModel.getInstance().isEmptyModel(currGrid.getModel(x, y))) {
+					continue;
+				}
 				byte[] currState = currGrid.getCellState(x, y);
 				// Default cell next state is same as current
 				nextGrid.setCellState(x, y, currState.clone());
