@@ -17,6 +17,7 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.ObjectComparator;
+import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.gui.EpilogGUIFactory;
@@ -70,7 +71,6 @@ public class GridInformation extends JPanel {
 	}
 
 	public void updateValues(int posX, int posY, EpitheliumGrid grid) {
-		// TODO: LogicalModel m, AbstractPerturbation ap, byte[] state) {
 		this.jCellPanel.removeAll();
 		JLabel jlTmp;
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -80,6 +80,7 @@ public class GridInformation extends JPanel {
 
 		// Separation
 		if (grid != null) {
+			
 			List<String> lAllNodeIDs = new ArrayList<String>(
 					this.projectFeatures.getComponents());
 			Collections.sort(lAllNodeIDs, ObjectComparator.STRING);
@@ -95,8 +96,17 @@ public class GridInformation extends JPanel {
 
 			// Separation
 			this.minimalSpace(gbc, ++y);
+			
+			//Empty cell specification
+			if (EmptyModel.getInstance().getModel().equals(grid.getModel(posX, posY))){
+				this.constraints(gbc, 0, ++y, 2);
+				jlTmp = new JLabel(EmptyModel.getInstance().getName());
+				this.jCellPanel.add(jlTmp, gbc);
+			} 
+			
+			else{
 
-			// Cell Model
+			// Cell Model specification
 			this.constraints(gbc, 0, ++y, 2);
 			jlTmp = new JLabel("Model:");
 			this.jCellPanel.add(jlTmp, gbc);
@@ -213,6 +223,7 @@ public class GridInformation extends JPanel {
 				this.jCellPanel.add(jlTmp, gbc);
 			}
 			this.checkEmpty(gbc, ++y, isEmpty);
+			}
 
 			gbc.anchor = GridBagConstraints.PAGE_END;
 			// Separation
@@ -230,6 +241,7 @@ public class GridInformation extends JPanel {
 
 		// Repaint
 		this.jCellPanel.revalidate();
+		this.jCellPanel.repaint();
 	}
 
 	private void checkEmpty(GridBagConstraints gbc, int y, boolean isEmpty) {

@@ -9,8 +9,10 @@ import org.colomoto.logicalmodel.LogicalModelImpl;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.internal.MDDStoreImpl;
+import org.epilogtool.OptionStore;
 
 public class EmptyModel {
+	private static final Color default_color = Color.DARK_GRAY;
 	private Color color;
 	private String name;
 	private LogicalModel model;
@@ -18,8 +20,9 @@ public class EmptyModel {
 	private static EmptyModel emptyModel = null;
 
 	private EmptyModel() {
-		this.color = Color.GRAY;
-		this.name = "Empty model";
+		String c = (String) OptionStore.getOption("EM");
+		this.color = ((c == null) ? default_color: Color.decode(c));
+		this.name = "Empty cell";
 		List<NodeInfo> vars = new ArrayList<NodeInfo>();
 		MDDManager manager = new MDDStoreImpl(vars, 2);
 		int[] functions = new int[0];
@@ -37,12 +40,16 @@ public class EmptyModel {
 		return this.name;
 	}
 
-	public Color getColor() {
-		return this.color;
-	}
-
 	public LogicalModel getModel() {
 		return this.model;
+	}
+	
+	public Color getColor(){
+		return this.color;
+	}
+	
+	public void setColor(Color c) {
+		this.color = c;
 	}
 
 	public boolean isEmptyModel(String n) {

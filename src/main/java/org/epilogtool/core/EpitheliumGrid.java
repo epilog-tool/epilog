@@ -159,10 +159,12 @@ public class EpitheliumGrid {
 	public void setModel(int x, int y, LogicalModel m) {
 		Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x, y);
 		if (this.gridEpiCell[x][y].getModel() != m) {
-			if (this.modelPositions.get(this.gridEpiCell[x][y].getModel())
-					.contains(tmpTuple)) {
-				this.modelPositions.get(this.gridEpiCell[x][y].getModel())
+			if (!EmptyModel.getInstance().isEmptyModel(this.gridEpiCell[x][y].getModel())){
+				if (this.modelPositions.get(this.gridEpiCell[x][y].getModel())
+						.contains(tmpTuple)) {
+					this.modelPositions.get(this.gridEpiCell[x][y].getModel())
 						.remove(tmpTuple);
+				}
 			}
 		}
 		gridEpiCell[x][y].setModel(m);
@@ -173,27 +175,6 @@ public class EpitheliumGrid {
 		} else {
 			this.modelPositions.get(m).add(tmpTuple);
 		}
-	}
-
-	public List<EpitheliumCell> getNeighbours(int x, int y, int minDist,
-			int maxDist) {
-		List<EpitheliumCell> l = new ArrayList<EpitheliumCell>();
-
-		for (Tuple2D<Integer> tuple : this.topology.getNeighbours(x, y,
-				minDist, maxDist)) {
-			l.add(gridEpiCell[tuple.getX()][tuple.getY()]);
-		}
-		return l;
-	}
-
-	public List<EpitheliumCell> filterNeighboursByComponent(
-			List<EpitheliumCell> neighbours, String nodeID) {
-		List<EpitheliumCell> filteredCells = new ArrayList<EpitheliumCell>();
-		for (EpitheliumCell cell : neighbours) {
-			if (cell.getNodeIndex(nodeID) > 0)
-				filteredCells.add(cell);
-		}
-		return filteredCells;
 	}
 
 	public String toString() {

@@ -38,7 +38,7 @@ public class ProjectFeatures {
 		// model 2 nodes
 		this.string2ComponentFeature = new HashMap<String, Set<ComponentPair>>();
 	}
-
+	
 	public void addModelComponents(LogicalModel m) {
 		for (NodeInfo node : m.getNodeOrder()) {
 			String nodeID = node.getNodeID();

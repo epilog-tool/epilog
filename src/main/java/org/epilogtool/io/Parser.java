@@ -266,6 +266,10 @@ public class Parser {
 		// + project.getTopologyLayout());
 
 		// SBML numerical identifiers
+		
+		OptionStore.setOption("EM", 
+				ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
+		
 		int i = 0;
 		Map<LogicalModel, Integer> model2Key = new HashMap<LogicalModel, Integer>();
 		for (String sbml : project.getModelNames()) {

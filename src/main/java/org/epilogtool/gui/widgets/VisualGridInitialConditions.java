@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.color.ColorUtils;
 
@@ -137,7 +138,10 @@ public class VisualGridInitialConditions extends VisualGrid {
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
 				Color cCombined;
-				if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
+				if (EmptyModel.getInstance().isEmptyModel(this.epiGrid.getModel(x, y))){
+					cCombined = EmptyModel.getInstance().getColor();
+				}
+				else if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
 					List<Color> lColors = new ArrayList<Color>();
 					for (String nodeID : this.mNode2ValueSelected.keySet()) {
 						int index = this.epiGrid.getNodeIndex(x, y, nodeID);

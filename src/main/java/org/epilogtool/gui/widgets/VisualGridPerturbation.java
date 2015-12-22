@@ -13,6 +13,7 @@ import java.util.Map;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumCell;
 import org.epilogtool.core.topology.Topology;
 
@@ -135,7 +136,11 @@ public class VisualGridPerturbation extends VisualGrid {
 			for (int y = 0; y < this.gridY; y++) {
 				BasicStroke stroke = this.strokeBasic;
 				Color cPerturb = this.getParent().getBackground();
-				if (this.cellGridClone[x][y].getModel().equals(
+				if (EmptyModel.getInstance().isEmptyModel(this.cellGridClone[x][y].getModel())){
+					cPerturb = EmptyModel.getInstance().getColor();
+				}
+				
+				else if (this.cellGridClone[x][y].getModel().equals(
 						this.selectedModel)) {
 					AbstractPerturbation ap = this.cellGridClone[x][y]
 							.getPerturbation();

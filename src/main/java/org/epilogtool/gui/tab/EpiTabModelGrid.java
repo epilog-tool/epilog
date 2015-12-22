@@ -23,6 +23,7 @@ import javax.swing.JToggleButton;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
@@ -153,6 +154,9 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 					jb.setBackground(newColor);
 					this.colorMapClone.put(this.projectFeatures.getModel(name), newColor);
 					this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
+					if (EmptyModel.getInstance().isEmptyModel(name)){
+						EmptyModel.getInstance().setColor(newColor);
+					}
 				}
 				break;
 			}
@@ -191,7 +195,12 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		// Copy colorMapClone to ProjectModelFeatures
 		for (JRadioButton jrb : this.mapSBMLMiniPanels.keySet()) {
 			String modelName = jrb.getText();
-			this.projectFeatures.setModelColor(modelName, this.mapSBMLMiniPanels.get(jrb).getBackground());
+			if (EmptyModel.getInstance().getName().equals(modelName)){
+				EmptyModel.getInstance().setColor(this.mapSBMLMiniPanels.get(jrb).getBackground());
+			}
+			else{
+				this.projectFeatures.setModelColor(modelName, this.mapSBMLMiniPanels.get(jrb).getBackground());
+			}
 		}
 		// Make Epithelium structures coherent
 		this.epithelium.update();
