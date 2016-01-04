@@ -98,46 +98,11 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		this.jpNRBottom = new JPanel(new GridBagLayout());
 		jpNRight.add(this.jpNRBottom, BorderLayout.CENTER);
 
-		// South Panel
-		// JPanel jpSouth = new JPanel(new BorderLayout());
-		// jpSouth.add(new JLabel("Explanation missing"));
-		//this.center.add(this.getExplanationPanel(), BorderLayout.SOUTH);
 		this.activeModel = (String) jcbSBML.getSelectedItem();
 		this.updateComponentList();
 		this.isInitialized = true;
 	}
-
-
-	@Deprecated
-	private JEditorPane getExplanationPanel() {
-		JEditorPane jPane = new JEditorPane();
-		jPane.setContentType("text/html");
-		jPane.setEditable(false);
-		jPane.setEnabled(true);
-		jPane.setBackground(this.getBackground());
-		String s = "<html><head>\n";
-		s += "<style type=\"text/css\">\n";
-		// s+="td { font-family:Courier; }\n";
-		// s+="b { font-family:Courier; }\n";
-		s += "</style>\n";
-		s += "</head><body>\n";
-		s += "<b>Grammar specification examples</b><br/>\n";
-		s += "<table border=1>";
-		s += "<tr><td>G<sub>0</sub>(1,1,4,1)</td><td>at least 1 and at most 4 "
-				+ "neighbours at distance 1 have G<sub>0</sub> at least at "
-				+ "level 1</td></tr>";
-		s += "<tr><td>G<sub>0</sub>(1,1,_,1)</td><td>at least 1 neighbour at "
-				+ "distance 1 has G<sub>0</sub> at least at level 1</td></tr>";
-		s += "<tr><td>G<sub>0</sub>(1,1,_,1) | G<sub>0</sub>(2,3,_,1)</td><td>"
-				+ "at least 1 neighbour at distance 1 has G<sub>0</sub> at least "
-				+ "at level 1 <b>OR</b> at least 3 neighbours at distance 1 have "
-				+ "G<sub>0</sub> at least at level 2</td></tr>";
-		s += "<tr><td>G<sub>0</sub>(_,1,_,2:3)</td><td>at least 1 neighbour at "
-				+ "distance 2 or 3 has G<sub>0</sub> at its maximum level</td></tr>";
-		s += "</table></font></body>";
-		jPane.setText(s);
-		return jPane;
-	}
+	
 
 	private JComboBox<String> newModelCombobox(List<LogicalModel> modelList) {
 		// Model selection list
@@ -233,6 +198,35 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 				this.activeNodeID, m);
 	}
 
+	
+	private void setIntegrationFunction(byte level, String function) {
+		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
+		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
+		ComponentIntegrationFunctions cif = this.userIntegrationFunctions
+				.getComponentIntegrationFunctions(cp);
+		cif.setFunctionAtLevel(level, function);
+	}
+
+	private void validateIntegrationFunction(JTextField jtf) {
+		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
+		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
+		ComponentIntegrationFunctions cif = this.userIntegrationFunctions
+				.getComponentIntegrationFunctions(cp);
+		byte value = Byte.parseByte(jtf.getToolTipText());
+		if (jtf.getText().trim().isEmpty() || cif.isValidAtLevel(value)) {
+			jtf.setBackground(Color.WHITE);
+		} else {
+			jtf.setBackground(ColorUtils.LIGHT_RED);
+		}
+	}
+
+	private void paintEnvironmentPanel() {
+		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
+		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
+		this.userIntegrationFunctions.removeComponent(cp);
+		this.jpNRBottom.removeAll();
+	}
+	
 	private void paintIntegrationPanel() {
 		// GUI
 		this.jpNRBottom.removeAll();
@@ -280,56 +274,49 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		}
 	}
 
-	private void setIntegrationFunction(byte level, String function) {
-		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
-		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
-		ComponentIntegrationFunctions cif = this.userIntegrationFunctions
-				.getComponentIntegrationFunctions(cp);
-		cif.setFunctionAtLevel(level, function);
-	}
-
-	private void validateIntegrationFunction(JTextField jtf) {
-		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
-		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
-		ComponentIntegrationFunctions cif = this.userIntegrationFunctions
-				.getComponentIntegrationFunctions(cp);
-		byte value = Byte.parseByte(jtf.getToolTipText());
-		if (jtf.getText().trim().isEmpty() || cif.isValidAtLevel(value)) {
-			jtf.setBackground(Color.WHITE);
-		} else {
-			jtf.setBackground(ColorUtils.LIGHT_RED);
-		}
-	}
-
-	private void paintEnvironmentPanel() {
-		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
-		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
-		this.userIntegrationFunctions.removeComponent(cp);
-		this.jpNRBottom.removeAll();
-	}
 
 	private void updateComponentList() {
 		this.jpNLBottom.removeAll();
+		this.jpNLBottom.setVisible(true);
 		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(1, 5, 1, 0);
 		Set<NodeInfo> sInputs = this.epithelium.getProjectFeatures()
 				.getModelNodeInfos(m, true);
-		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(sInputs);
-		Collections.sort(lInputs, ObjectComparator.NODE_INFO);
-		int y = 0;
-		for (NodeInfo node : lInputs) {
-			if (y == 0) {
-				this.activeNodeID = node.getNodeID();
-				updateNodeID();
-				this.mNode2RadioButton.get(node).setSelected(true);
+		
+		if (sInputs.size()==0){
+			this.getEmptyInputModelTextField();
+		} else {
+			List<NodeInfo> lInputs = new ArrayList<NodeInfo>(sInputs);
+			Collections.sort(lInputs, ObjectComparator.NODE_INFO);
+			int y = 0;
+			for (NodeInfo node : lInputs) {
+				if (y == 0) {
+					this.activeNodeID = node.getNodeID();
+					updateNodeID();
+					this.mNode2RadioButton.get(node).setSelected(true);
+				}
+				gbc.gridy = y++;
+				gbc.gridx = 0;
+				gbc.anchor = GridBagConstraints.WEST;
+				this.jpNLBottom.add(this.mNode2RadioButton.get(node), gbc);
 			}
-			gbc.gridy = y++;
-			gbc.gridx = 0;
-			gbc.anchor = GridBagConstraints.WEST;
-			this.jpNLBottom.add(this.mNode2RadioButton.get(node), gbc);
 		}
+	}
+	
+	private void getEmptyInputModelTextField(){
+		this.jpNRBottom.removeAll();
+		this.jpNRTop.removeAll();
+		this.jpNLBottom.setVisible(false);
+		this.activeNodeID = null;
+		JEditorPane jEmptyInputPane = new JEditorPane();
+		jEmptyInputPane.setContentType("text/html");
+		jEmptyInputPane.setEditable(false);
+		jEmptyInputPane.setEnabled(true);
+		jEmptyInputPane.setBackground(this.jpNRBottom.getBackground());
+		jEmptyInputPane.setText("There are no Input nodes in this Model");
+		this.jpNRBottom.add(jEmptyInputPane);
 	}
 
 	@Override
