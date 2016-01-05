@@ -419,19 +419,19 @@ public class Parser {
 
 		// Model Priority classes
 		for (LogicalModel m : model2Key.keySet()) {
-			ModelPriorityClasses mpc = epi.getPriorityClasses(m);
-			// if (mpc == null)
-			// continue; // This should never occur
-			String sPCs = "";
-			for (int idxPC = 0; idxPC < mpc.size(); idxPC++) {
-				if (!sPCs.isEmpty())
-					sPCs += ":";
-				List<String> pcVars = mpc.getClassVars(idxPC);
-				sPCs += join(pcVars, ",");
+			if (epi.hasModel(m)){
+				ModelPriorityClasses mpc = epi.getPriorityClasses(m);
+				String sPCs = "";
+				for (int idxPC = 0; idxPC < mpc.size(); idxPC++) {
+					if (!sPCs.isEmpty())
+						sPCs += ":";
+					List<String> pcVars = mpc.getClassVars(idxPC);
+					sPCs += join(pcVars, ",");
+				}
+				w.println("PR " + model2Key.get(m) + " " + sPCs);
 			}
-			w.println("PR " + model2Key.get(m) + " " + sPCs);
+			w.println();
 		}
-		w.println();
 
 		// Model All Perturbations
 		Map<AbstractPerturbation, List<String>> apInst = new HashMap<AbstractPerturbation, List<String>>();
