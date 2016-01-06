@@ -146,7 +146,7 @@
 					<version>2.12</version>
 					<configuration>
 						<includes>
-							<include>org/ginsim/AllTests.java</include>
+							<include>org/epilogtool/AllTests.java</include>
 						</includes>
 					</configuration>
 				</plugin>
