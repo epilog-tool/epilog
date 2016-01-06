@@ -2,6 +2,7 @@ package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -36,6 +37,7 @@ import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
 import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
 import org.epilogtool.gui.color.ColorUtils;
+import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
 
@@ -88,7 +90,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		this.jpNLBottom.setBorder(BorderFactory
 				.createTitledBorder("Input components"));
 		jpNLeft.add(this.jpNLBottom, BorderLayout.CENTER);
-
+		
 		JPanel jpNRight = new JPanel(new BorderLayout());
 		jpNorth.add(jpNRight, BorderLayout.CENTER);
 		this.center.add(jpNorth, BorderLayout.NORTH);
@@ -110,7 +112,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		for (int i = 0; i < modelList.size(); i++) {
 			saSBML[i] = this.projectFeatures.getModelName(modelList.get(i));
 		}
-		JComboBox<String> jcb = new JComboBox<String>(saSBML);
+		JComboBox<String> jcb = new JComboWideBox(saSBML);
 		jcb.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -286,7 +288,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 				.getModelNodeInfos(m, true);
 		
 		if (sInputs.size()==0){
-			this.getEmptyInputModelTextField();
+			this.getNoInputTextField();
 		} else {
 			List<NodeInfo> lInputs = new ArrayList<NodeInfo>(sInputs);
 			Collections.sort(lInputs, ObjectComparator.NODE_INFO);
@@ -305,7 +307,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		}
 	}
 	
-	private void getEmptyInputModelTextField(){
+	private void getNoInputTextField(){
 		this.jpNRBottom.removeAll();
 		this.jpNRTop.removeAll();
 		this.jpNLBottom.setVisible(false);

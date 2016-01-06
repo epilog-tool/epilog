@@ -2,6 +2,7 @@ package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -38,6 +39,7 @@ import org.epilogtool.gui.EpiGUI.EpiTabChanged;
 import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
 import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.VisualGridInitialConditions;
+import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.io.ButtonFactory;
 import org.epilogtool.project.ProjectFeatures;
 
@@ -88,7 +90,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.center.add(this.visualGridICs, BorderLayout.CENTER);
 
 		JPanel left = new JPanel(new BorderLayout());
-
+		
 		this.rTop = new JPanel();
 		this.rTop.setLayout(new BoxLayout(this.rTop, BoxLayout.Y_AXIS));
 
@@ -260,7 +262,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		for (int i = 0; i < modelList.size(); i++) {
 			saSBML[i] = this.projectFeatures.getModelName(modelList.get(i));
 		}
-		JComboBox<String> jcb = new JComboBox<String>(saSBML);
+		JComboBox<String> jcb = new JComboWideBox(saSBML);
 		jcb.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

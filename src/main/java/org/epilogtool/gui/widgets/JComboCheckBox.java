@@ -12,7 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-public class JComboCheckBox extends JComboBox {
+public class JComboCheckBox extends JComboWideBox {
 	public JComboCheckBox() {
 		init();
 	}
