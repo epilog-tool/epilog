@@ -10,20 +10,20 @@ import java.io.IOException;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
+import org.epilogtool.TestHelper;
 import org.epilogtool.io.FileIO;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class EpitheliumCellTest {
-	private final static String dirSBML = "testmodels/";
 	private final static String fileSBML = "simple.sbml";
 	private static EpitheliumCell epicell;
 	private static LogicalModel m;
 
 	@BeforeClass
 	public static void loadModelBeforeTests() throws IOException {
-		File fSBML = new File(dirSBML + fileSBML);
+		File fSBML = TestHelper.getTestResource("testmodels", fileSBML);
 		m = FileIO.loadSBMLModel(fSBML);
 	}
 
