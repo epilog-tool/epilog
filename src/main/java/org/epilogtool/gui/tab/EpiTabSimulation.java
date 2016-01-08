@@ -212,7 +212,7 @@ public class EpiTabSimulation extends EpiTab {
 
 		// Button to save all simulated grid images
 		JButton jbSaveAll = ButtonFactory
-				.getImageNoBorder("fotography-mult-31x24.png");
+				.getImageNoBorder("fotography-mult-24x24.png");
 		jbSaveAll
 				.setToolTipText("Save all the simulation grids into different files");
 		jbSaveAll.addActionListener(new ActionListener() {
