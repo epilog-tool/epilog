@@ -82,6 +82,7 @@ public class ProjectFeatures {
 		this.modelColor.remove(m);
 		this.model2String.remove(m);
 		this.string2Model.remove(name);
+		Set<String> emptyNodeIDs = new HashSet<String>();
 		for (String nodeID : this.string2ComponentFeature.keySet()) {
 			Set<ComponentPair> sToRemove = new HashSet<ComponentPair>();
 			for (ComponentPair cf : this.string2ComponentFeature.get(nodeID)) {
@@ -91,10 +92,13 @@ public class ProjectFeatures {
 			}
 			this.string2ComponentFeature.get(nodeID).removeAll(sToRemove);
 			if (this.string2ComponentFeature.get(nodeID).isEmpty()) {
-				this.string2ComponentFeature.remove(nodeID);
-				this.nodeID2Info.remove(nodeID);
-				this.nodeColor.remove(nodeID);
+				emptyNodeIDs.add(nodeID);
 			}
+		}
+		for (String emptyNodeID : emptyNodeIDs){
+			this.string2ComponentFeature.remove(emptyNodeID);
+			this.nodeID2Info.remove(emptyNodeID);
+			this.nodeColor.remove(emptyNodeID);
 		}
 	}
 
