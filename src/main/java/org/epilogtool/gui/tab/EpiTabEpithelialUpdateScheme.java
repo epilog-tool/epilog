@@ -37,6 +37,7 @@ import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
 import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
+import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.integration.IntegrationFunctionEvaluation;
 import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationExpression;
 import org.epilogtool.project.ComponentPair;
@@ -55,6 +56,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	private JPanel jpAlpha;
 	private JPanel jpSigmaSliderPanel;
 	private JScrollPane jspSigmaSliderScroller;
+	private JScrollPane jspAlpha;
 	private JSlider jAlphaSlide;
 	private JLabel jAlphaLabelValue;
 	
@@ -91,7 +93,12 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		
 		// Alpha asynchronism panel
 		this.jpAlpha = new JPanel(new BorderLayout());
-		this.center.add(this.jpAlpha, BorderLayout.NORTH);
+		this.jpAlpha.setPreferredSize(new Dimension(400, 100));
+		this.jpAlpha.setMaximumSize(new Dimension(5000, 100));
+		this.jpAlpha.setMinimumSize(new Dimension(100, 100));
+		this.jspAlpha = new JScrollPane(this.jpAlpha);
+		this.jspAlpha.setBorder(BorderFactory.createEmptyBorder());
+		this.center.add(this.jspAlpha, BorderLayout.NORTH);
 		jpAlpha.setBorder(BorderFactory.createTitledBorder("Alpha - Asynchronism"));
 
 		// JSlider for alpha-asynchronism
@@ -117,6 +124,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		this.jpSigmaSliderPanel.
 			setLayout(new BoxLayout(this.jpSigmaSliderPanel, BoxLayout.Y_AXIS));
 		this.jspSigmaSliderScroller = new JScrollPane(this.jpSigmaSliderPanel);
+		this.jspSigmaSliderScroller.setBorder(BorderFactory.createEmptyBorder());
 		this.jspSigmaSliderScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.jpSigma.add(jspSigmaSliderScroller, BorderLayout.CENTER);
 		//this.jspSigmaSliderScroller.add(this.jpSigmaSliderPanel);
@@ -396,7 +404,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		for (int i = 0; i < modelList.size(); i++) {
 			saSBML[i] = this.projectFeatures.getModelName(modelList.get(i));
 		}
-		JComboBox<String> jcb = new JComboBox<String>(saSBML);
+		JComboBox<String> jcb = new JComboWideBox(saSBML);
 		jcb.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

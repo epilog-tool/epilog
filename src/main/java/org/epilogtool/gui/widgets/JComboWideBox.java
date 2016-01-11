@@ -53,7 +53,7 @@ public class JComboWideBox extends JComboBox{
             layingOut = false; 
         } 
     } 
- 
+
     public Dimension getSize(){ 
         Dimension dim = super.getSize();
         if(!layingOut) 

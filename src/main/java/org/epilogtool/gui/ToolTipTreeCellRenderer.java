@@ -183,7 +183,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	}
 
 	private String getTooltipSimulation(Epithelium epi) {
-		String tipKey = "<html><b>Ideas for information to put here ???</b>";
+		String tipKey = "<html>To get information, please open the Tab";
 		// TODO
 		tipKey += "</html>";
 		return tipKey;

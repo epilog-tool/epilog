@@ -18,7 +18,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JToggleButton;
 import javax.swing.tree.TreePath;
 
@@ -28,6 +27,7 @@ import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
 import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
+import org.epilogtool.gui.widgets.JRadioComponentButton;
 import org.epilogtool.gui.widgets.VisualGridModel;
 import org.epilogtool.project.ProjectFeatures;
 
@@ -35,7 +35,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	private static final long serialVersionUID = -5262665948855829161L;
 
 	private VisualGridModel visualGridModel;
-	private Map<JRadioButton, JButton> mapSBMLMiniPanels;
+	private Map<JRadioComponentButton, JButton> mapSBMLMiniPanels;
 	private LogicalModel[][] modelGridClone;
 	private Map<LogicalModel, Color> colorMapClone;
 	private JPanel lCenter;
@@ -48,7 +48,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	public void initialize() {
 		this.center.setLayout(new BorderLayout());
 
-		this.mapSBMLMiniPanels = new HashMap<JRadioButton, JButton>();
+		this.mapSBMLMiniPanels = new HashMap<JRadioComponentButton, JButton>();
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
 		this.modelGridClone = new LogicalModel[grid.getX()][grid.getY()];
 		this.colorMapClone = new HashMap<LogicalModel, Color>();
@@ -106,12 +106,13 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 			i++;
 			gbc.gridx = 0;
 			gbc.anchor = GridBagConstraints.WEST;
-			JRadioButton jrButton = new JRadioButton(name);
+			JRadioComponentButton jrButton = new JRadioComponentButton(name);
+			jrButton.setToolTipText(name);
 			jrButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					JRadioButton jrb = (JRadioButton) e.getSource();
-					visualGridModel.setSelModelName(jrb.getText());
+					JRadioComponentButton jrb = (JRadioComponentButton) e.getSource();
+					visualGridModel.setSelModelName(jrb.getComponentText());
 				}
 			});
 			this.lCenter.add(jrButton, gbc);
@@ -146,9 +147,9 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	}
 
 	private void setNewColor(JButton jb) {
-		for (JRadioButton jrb : this.mapSBMLMiniPanels.keySet()) {
+		for (JRadioComponentButton jrb : this.mapSBMLMiniPanels.keySet()) {
 			if (this.mapSBMLMiniPanels.get(jrb).equals(jb)) {
-				String name = jrb.getText();
+				String name = jrb.getComponentText();
 				Color newColor = JColorChooser.showDialog(jb, "Color chooser - " + name, jb.getBackground());
 				if (newColor != null) {
 					jb.setBackground(newColor);
@@ -173,8 +174,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		}
 		// Cancel Colors
 		this.colorMapClone.clear();
-		for (JRadioButton jrb : this.mapSBMLMiniPanels.keySet()) {
-			String modelName = jrb.getText();
+		for (JRadioComponentButton jrb : this.mapSBMLMiniPanels.keySet()) {
+			String modelName = jrb.getComponentText();
 			Color c = this.projectFeatures.getModelColor(modelName);
 			this.mapSBMLMiniPanels.get(jrb).setBackground(c);
 			this.colorMapClone.put(this.projectFeatures.getModel(modelName), c);
@@ -193,8 +194,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 			}
 		}
 		// Copy colorMapClone to ProjectModelFeatures
-		for (JRadioButton jrb : this.mapSBMLMiniPanels.keySet()) {
-			String modelName = jrb.getText();
+		for (JRadioComponentButton jrb : this.mapSBMLMiniPanels.keySet()) {
+			String modelName = jrb.getComponentText();
 			if (EmptyModel.getInstance().getName().equals(modelName)){
 				EmptyModel.getInstance().setColor(this.mapSBMLMiniPanels.get(jrb).getBackground());
 			}
@@ -218,8 +219,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 			}
 		}
 		// Check modifications on color
-		for (JRadioButton jrb : this.mapSBMLMiniPanels.keySet()) {
-			String modelName = jrb.getText();
+		for (JRadioComponentButton jrb : this.mapSBMLMiniPanels.keySet()) {
+			String modelName = jrb.getComponentText();
 			Color cOrig = this.projectFeatures.getModelColor(modelName);
 			if (!this.mapSBMLMiniPanels.get(jrb).getBackground().equals(cOrig)) {
 				return true;

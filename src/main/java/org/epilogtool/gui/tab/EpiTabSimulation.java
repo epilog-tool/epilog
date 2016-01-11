@@ -118,6 +118,15 @@ public class EpiTabSimulation extends EpiTab {
 		JPanel jpButtons = new JPanel(new BorderLayout());
 		JPanel jpButtonsC = new JPanel();
 		jpButtons.add(jpButtonsC, BorderLayout.CENTER);
+		
+		JScrollPane jspButtons = new JScrollPane(jpButtons, 
+				JScrollPane.VERTICAL_SCROLLBAR_NEVER, 
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		jspButtons.setPreferredSize(new Dimension(
+				jspButtons.getPreferredSize().width, 
+				jspButtons.getPreferredSize().height  + 
+				jspButtons.getHorizontalScrollBar().getVisibleAmount()*3));
+		jspButtons.setBorder(BorderFactory.createEmptyBorder());
 
 		this.jbRewind = ButtonFactory
 				.getImageNoBorder("media_rewind-26x24.png");
@@ -234,7 +243,7 @@ public class EpiTabSimulation extends EpiTab {
 		jpButtonsL.add(this.jlAttractor);
 
 		jpButtons.add(jpButtonsL, BorderLayout.LINE_START);
-		this.jpRight.add(jpButtons, BorderLayout.SOUTH);
+		this.jpRight.add(jspButtons, BorderLayout.SOUTH);
 
 		this.lLeft = new JPanel(new BorderLayout());
 
@@ -403,7 +412,7 @@ public class EpiTabSimulation extends EpiTab {
 	
 	private void setGridGUICycle(boolean cycle) {
 		if (cycle) {
-			this.jlAttractor.setText("Cycle detected!");
+			this.jlAttractor.setText("Cycle!");
 		} else {
 			this.jlAttractor.setText("           ");
 		}
