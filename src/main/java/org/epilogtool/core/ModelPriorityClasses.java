@@ -23,14 +23,8 @@ public class ModelPriorityClasses {
 	public ModelPriorityClasses(LogicalModel m) {
 		this.model = m;
 		this.priorities = new PriorityClasses();
-		List<NodeInfo> tmpNodeList = new ArrayList<NodeInfo>();
-		for (NodeInfo node: m.getNodeOrder()){
-			if (!node.isInput()){
-				tmpNodeList.add(node);
-			}
-		}
-		int[] tmp = new int[tmpNodeList.size() * 2];
-		for (int n = 0; n < tmpNodeList.size(); n++) {
+		int[] tmp = new int[m.getNodeOrder().size() * 2];
+		for (int n = 0; n < m.getNodeOrder().size(); n++) {
 			tmp[n * 2] = n;
 			tmp[n * 2 + 1] = 0;
 		}
@@ -53,9 +47,7 @@ public class ModelPriorityClasses {
 		List<String> lVars = new ArrayList<String>();
 		int[] iaPCidx = this.priorities.getClass(idxPC);
 		for (int i = 0; i < this.priorities.getClass(idxPC).length; i += 2) {
-			NodeInfo node = model.getNodeOrder().get(iaPCidx[i]);
-			if (node.isInput()) continue;
-			String var = node.getNodeID();
+			String var = model.getNodeOrder().get(iaPCidx[i]).getNodeID();
 			if (iaPCidx[i + 1] == 1) {
 				var += INC;
 			} else if (iaPCidx[i + 1] == -1) {
@@ -85,7 +77,6 @@ public class ModelPriorityClasses {
 				}
 				for (int idx = 0; idx < this.model.getNodeOrder().size(); idx++) {
 					NodeInfo node = this.model.getNodeOrder().get(idx);
-					if (node.isInput()) continue;
 					if (node.getNodeID().equals(var)) {
 						newTmp[i * 2] = idx;
 						newTmp[i * 2 + 1] = split;

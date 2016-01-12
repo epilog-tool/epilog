@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -225,6 +226,7 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 		this.jpIntraCenter.removeAll();
 		this.guiClasses.clear();
 		this.selectedModel = m;
+		this.mergeInputPriorities();
 		ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(m);
 
 		for (int idxPC = 0; idxPC < mpc.size(); idxPC++) {
@@ -237,7 +239,9 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 			// -- Order variables alphabetically
 			Collections.sort(vars, String.CASE_INSENSITIVE_ORDER);
 			for (String var : vars) {
-				lModel.addElement(var);
+				if (!this.projectFeatures.getNodeInfo(var, m).isInput()){
+					lModel.addElement(var);
+				}
 			}
 			JList<String> jList = new JList<String>(lModel);
 			jList.setVisibleRowCount(this.JLIST_LINES);
@@ -288,6 +292,22 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 
 			this.jpIntraCenter.add(jpRankBlock);
 			this.jpIntraCenter.add(Box.createRigidArea(new Dimension(this.JLIST_SPACING, 10)));
+		}
+	}
+	
+	private void mergeInputPriorities(){
+		LogicalModel m = this.selectedModel;
+		ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(m);
+		List<String> vars = mpc.getClassVars(0);
+		boolean allInputFlag = true;
+		for (String var : vars) {
+			if (!this.projectFeatures.getNodeInfo(var, m).isInput()) {
+				allInputFlag = false;
+			}
+		}
+		if (allInputFlag==true & mpc.size() > 1) {
+			List<String> class2Merge = mpc.getClassVars(1);
+			this.userPriorityClasses.getModelPriorityClasses(m).incPriorities(1, class2Merge);
 		}
 	}
 
