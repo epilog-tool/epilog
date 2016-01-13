@@ -1,6 +1,7 @@
 package org.epilogtool.gui.widgets;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -49,17 +50,36 @@ public class JComboCheckBox extends JComboWideBox {
 	public void updateSelected() {
 		this.itemSelected();
 	}
+	
+	public List<JCheckBox> getItems(){
+		List<JCheckBox> lItems = new ArrayList<JCheckBox>();
+		for (int i = 0; i < this.getModel().getSize(); i++) {
+			lItems.add((JCheckBox) this.getModel().getElementAt(i));
+		}
+		return lItems;
+	}
 
 	public List<String> getSelectedItems() {
-		List<String> sItems = new ArrayList<String>();
-
-		for (int i = 0; i < this.getModel().getSize(); i++) {
-			JCheckBox jcb = (JCheckBox) this.getModel().getElementAt(i);
+		List<String> lItemStrings = new ArrayList<String>();
+		List<JCheckBox> lItemJCBs = this.getItems();
+		for (JCheckBox jcb : lItemJCBs){
 			if (jcb.isSelected()) {
-				sItems.add(jcb.getText());
+				lItemStrings.add(jcb.getText());
 			}
 		}
-		return sItems;
+		return lItemStrings;
+	}
+	
+	@Override
+	public void setPreferredWidth(){
+		List<JCheckBox> lItemJCBs = this.getItems();
+		String longestModelName = "";
+		for (JCheckBox jcb : lItemJCBs) {
+			if (jcb.getText().length() > longestModelName.length()) {
+				longestModelName = jcb.getText();
+			}
+		}
+		this.openDim = longestModelName.length()*8;
 	}
 
 	class ComboBoxRenderer implements ListCellRenderer {
