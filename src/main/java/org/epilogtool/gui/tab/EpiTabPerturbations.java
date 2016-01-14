@@ -549,9 +549,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	}
 
 	@Override
-	public void notifyChange() {
-		if (!this.isInitialized)
-			return;
+	public void applyChange() {
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		EpitheliumPerturbations newPerturbs = new EpitheliumPerturbations();
 		for (LogicalModel m : modelList) {

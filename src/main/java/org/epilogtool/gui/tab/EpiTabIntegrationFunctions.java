@@ -374,9 +374,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	}
 
 	@Override
-	public void notifyChange() {
-		if (!this.isInitialized)
-			return;
+	public void applyChange() {
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
 				this.epithelium.getEpitheliumGrid().getModelSet());
 		EpitheliumIntegrationFunctions epiFunc = new EpitheliumIntegrationFunctions();

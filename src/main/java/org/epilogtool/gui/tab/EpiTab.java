@@ -24,18 +24,23 @@ public abstract class EpiTab extends JPanel {
 	public TreePath getPath() {
 		return this.path;
 	}
-
+	
 	public boolean containsPath(TreePath path) {
 		return this.path.equals(path);
 	}
-
+	
 	public boolean containsEpithelium(Epithelium epi) {
-		return (this.epithelium == epi); // TODO: PTGM: not necessary to do .equals()
+		// Reminder: not necessary to do .equals()!!
+		return (this.epithelium == epi);
 	}
 
+	public abstract String getName();
+	
 	public abstract void initialize();
 
 	public abstract boolean canClose();
-	
+
+	public abstract void applyChange();
+
 	public abstract void notifyChange();
 }

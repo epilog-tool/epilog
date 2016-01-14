@@ -230,9 +230,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	}
 
 	@Override
-	public void notifyChange() {
-		if (!this.isInitialized)
-			return;
+	public void applyChange() {
 		this.updateModelList();
 	}
 }

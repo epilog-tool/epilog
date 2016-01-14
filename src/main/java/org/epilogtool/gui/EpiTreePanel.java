@@ -27,12 +27,14 @@ public class EpiTreePanel extends JPanel {
 	private static final long serialVersionUID = -2143708024027520789L;
 
 	private JScrollPane scrollTree;
-	private JMenu menu;
+	private JMenu epiMenu;
+	private JMenu toolsMenu;
 	private JTree epiTree;
 	private EpiTreePopupMenu popupmenu;
 
-	public EpiTreePanel(JMenu epiMenu) {
-		this.menu = epiMenu;
+	public EpiTreePanel(JMenu epiMenu, JMenu toolsMenu) {
+		this.epiMenu = epiMenu;
+		this.toolsMenu = toolsMenu;
 		this.epiTree = null;
 		this.popupmenu = new EpiTreePopupMenu();
 
@@ -103,6 +105,16 @@ public class EpiTreePanel extends JPanel {
 		});
 	}
 
+	public void selectTabJTreePath(TreePath path) {
+		if (this.epiTree.isPathSelected(path)) {
+			return;
+		}
+		this.epiTree.setSelectionPath(path);
+	}
+	public TreePath getSelectionPath() {
+		return this.epiTree.getSelectionPath();
+	}
+
 	public Epithelium getSelectedEpithelium() {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
 				.getLastSelectedPathComponent();
@@ -131,6 +143,10 @@ public class EpiTreePanel extends JPanel {
 		}
 	}
 
+	public void setSelectionPath(TreePath path) {
+		this.epiTree.setSelectionPath(path);
+	}
+
 	public void updateEpiMenuItems() {
 		this.validateTreeNodeSelection();
 	}
@@ -139,10 +155,11 @@ public class EpiTreePanel extends JPanel {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
 				.getLastSelectedPathComponent();
 		boolean bActive = node != null && !node.isLeaf() && !node.isRoot();
-		this.menu.getItem(1).setEnabled(bActive);
-		this.menu.getItem(2).setEnabled(bActive);
-		this.menu.getItem(3).setEnabled(bActive);
-		this.popupmenu.notifySelection(this.menu.isEnabled(), bActive);
+		this.epiMenu.getItem(1).setEnabled(bActive);
+		this.epiMenu.getItem(2).setEnabled(bActive);
+		this.epiMenu.getItem(3).setEnabled(bActive);
+		this.popupmenu.notifySelection(this.epiMenu.isEnabled(), bActive);
+		this.toolsMenu.getItem(0).setEnabled(bActive);
 	}
 
 	public void addEpi2JTree(Epithelium epi) {
@@ -166,9 +183,8 @@ public class EpiTreePanel extends JPanel {
 		DefaultMutableTreeNode eu = new DefaultMutableTreeNode(
 				"Epithelial Updating");
 		epiNode.add(eu);
-		DefaultMutableTreeNode sim = new DefaultMutableTreeNode("Simulation");
-		epiNode.add(sim);
-
+		
+		this.epiTree.setRootVisible(false);
 		DefaultTreeModel model = (DefaultTreeModel) this.epiTree.getModel();
 		model.reload();
 

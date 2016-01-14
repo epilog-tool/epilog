@@ -470,9 +470,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	
 	
 	@Override
-	public void notifyChange() {
-		if (!this.isInitialized)
-			return;
+	public void applyChange() {
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		if (!modelList.contains(this.selectedModel)){
 			this.selectedModel = modelList.get(0);

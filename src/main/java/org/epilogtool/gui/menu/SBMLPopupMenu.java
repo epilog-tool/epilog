@@ -15,7 +15,7 @@ public class SBMLPopupMenu extends JPopupMenu {
 	JMenuItem remove;
 
 	public SBMLPopupMenu() {
-		JMenuItem load = new JMenuItem("Load SBML");
+		JMenuItem load = new JMenuItem("Load model (SBML)");
 		load.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -29,7 +29,7 @@ public class SBMLPopupMenu extends JPopupMenu {
 		});
 		this.add(load);
 
-		this.remove = new JMenuItem("Remove SBML");
+		this.remove = new JMenuItem("Remove model (SBML)");
 		remove.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

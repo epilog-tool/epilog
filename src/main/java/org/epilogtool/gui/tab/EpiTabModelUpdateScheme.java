@@ -342,9 +342,7 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 	}
 
 	@Override
-	public void notifyChange() {
-		if (!this.isInitialized)
-			return;
+	public void applyChange() {
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		EpitheliumUpdateSchemeIntra newPCs = new EpitheliumUpdateSchemeIntra();
 		for (LogicalModel m : modelList) {

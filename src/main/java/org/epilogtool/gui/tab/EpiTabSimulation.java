@@ -51,7 +51,7 @@ import org.epilogtool.io.FileIO;
 import org.epilogtool.project.ProjectFeatures;
 import org.epilogtool.project.Simulation;
 
-public class EpiTabSimulation extends EpiTab {
+public class EpiTabSimulation extends EpiTabTools {
 	private static final long serialVersionUID = 1394895739386499680L;
 
 	private VisualGridSimulation visualGridSimulation;
@@ -587,9 +587,7 @@ public class EpiTabSimulation extends EpiTab {
 	}
 
 	@Override
-	public void notifyChange() {
-		if (!this.isInitialized)
-			return;
+	public void applyChange() {
 		if (this.hasChangedEpithelium()) {
 			JTextPane jtp = new JTextPane();
 			jtp.setContentType("text/html");
@@ -610,5 +608,10 @@ public class EpiTabSimulation extends EpiTab {
 			}
 		}
 		this.updateComponentList(this.jccb.getSelectedItems());
+	}
+	
+	@Override
+	public String getName() {
+		return "Simulation";
 	}
 }

@@ -10,7 +10,7 @@ import org.epilogtool.gui.EpiGUI;
 
 public class SBMLMenu {
 	public static JMenu getMenu() {
-		JMenu menu = new JMenu("SBML");
+		JMenu menu = new JMenu("Intra-cellular models");
 
 		menu.add(new LoadSBMLAction());
 		menu.add(new RemoveSBMLAction());
@@ -23,7 +23,7 @@ class LoadSBMLAction extends AbstractAction {
 	private static final long serialVersionUID = 8657096239401658327L;
 
 	public LoadSBMLAction() {
-		super("Load SBML");
+		super("Load model (SBML)");
 		putValue(SHORT_DESCRIPTION, "Load SBML model from file");
 		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
 		// FrameActionManager.MASK));
@@ -45,7 +45,7 @@ class RemoveSBMLAction extends AbstractAction {
 	private static final long serialVersionUID = -7400365619490423300L;
 
 	public RemoveSBMLAction() {
-		super("Remove SBML");
+		super("Remove model (SBML)");
 		putValue(SHORT_DESCRIPTION, "Remove selected SBML model");
 		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
 		// FrameActionManager.MASK));

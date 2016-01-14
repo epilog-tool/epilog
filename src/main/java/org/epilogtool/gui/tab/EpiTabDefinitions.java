@@ -8,10 +8,12 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.epilogtool.project.ProjectFeatures;
 import org.epilogtool.core.Epithelium;
+import org.epilogtool.gui.EpiGUI;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
 import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
 
@@ -29,6 +31,11 @@ public abstract class EpiTabDefinitions extends EpiTab {
 		this.tabChanged = tabChanged;
 		this.projectFeatures = projectFeatures;
 		this.initializeGUI();
+	}
+
+	public String getName() {
+		DefaultMutableTreeNode epiNode = (DefaultMutableTreeNode) this.path.getLastPathComponent();
+		return epiNode.toString();
 	}
 
 	private void initializeGUI() {
@@ -85,5 +92,12 @@ public abstract class EpiTabDefinitions extends EpiTab {
 		}
 	}
 
+	public void notifyChange() {
+		if (!this.isInitialized) {
+			return;
+		}
+		this.applyChange();
+		EpiGUI.getInstance().selectTabJTreePath(this.path);
+	}
 
 }
