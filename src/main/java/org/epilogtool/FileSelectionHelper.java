@@ -38,7 +38,7 @@ public class FileSelectionHelper {
 		fc.setFileFilter(new EpilogFileFilter("peps"));
 		fc.setDialogTitle("Save file");
 
-		if (fc.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) {
+		if (fc.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) {
 			return null;
 		}
 		File f = fc.getSelectedFile();
