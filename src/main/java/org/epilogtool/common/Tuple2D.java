@@ -94,4 +94,13 @@ public class Tuple2D<T extends Number> {
 		}
 		return newTuple;
 	}
+	
+	public boolean equals(Object o){
+		Tuple2D<T> otherTuple = (Tuple2D<T>) o;
+		return this.getX()==otherTuple.getX() & this.getY() == otherTuple.getY();
+	}
+	
+	public int hashCode(){
+		return this.getX().intValue() * 31 + this.getY().intValue();
+	}
 }

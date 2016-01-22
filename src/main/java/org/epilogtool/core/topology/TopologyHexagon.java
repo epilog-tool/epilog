@@ -12,22 +12,27 @@ public abstract class TopologyHexagon extends Topology {
 
 	@Override
 	public Set<Tuple2D<Integer>> getNeighbours(int x, int y, int minDist, int maxDist) {
-		Set<Tuple2D<Integer>> setComplete = new HashSet<Tuple2D<Integer>>();
-		setComplete.add(new Tuple2D<Integer>(x, y));
-		Set<Tuple2D<Integer>> setN = new HashSet<Tuple2D<Integer>>(setComplete);
-		Set<Tuple2D<Integer>> setMin = new HashSet<Tuple2D<Integer>>(setComplete);
+		Set<Tuple2D<Integer>> setCompleteN = new HashSet<Tuple2D<Integer>>();
+		setCompleteN.add(new Tuple2D<Integer>(x, y));
+		Set<Tuple2D<Integer>> setRingN = new HashSet<Tuple2D<Integer>>(setCompleteN);
+		Set<Tuple2D<Integer>> setMin = new HashSet<Tuple2D<Integer>>(setCompleteN);
 
 		for (int i = 1; i <= maxDist; i++) {
-			for (Tuple2D<Integer> tuple : setN) {
-				setComplete.addAll(this.getNeighbours(tuple, setComplete));
+			Set<Tuple2D<Integer>> tmpSetN = new HashSet<Tuple2D<Integer>>();
+			Set<Tuple2D<Integer>> oldSetCompleteN = new HashSet<Tuple2D<Integer>>(setCompleteN);
+			for (Tuple2D<Integer> tuple : setRingN) {
+				Set<Tuple2D<Integer>> setNewN = this.getNeighbours(tuple, setRingN);
+				tmpSetN.addAll(setNewN);
+				setCompleteN.addAll(setNewN);
 			}
+			tmpSetN.removeAll(oldSetCompleteN);
+			setRingN = new HashSet<Tuple2D<Integer>>(tmpSetN);
 			if (i == (minDist - 1)) {
-				setMin = new HashSet<Tuple2D<Integer>>(setComplete);
+				setMin = new HashSet<Tuple2D<Integer>>(setCompleteN);
 			}
 		}
-		setComplete.removeAll(setMin);
-
-		return setComplete;
+		setCompleteN.removeAll(setMin);
+		return setCompleteN;
 	}
 
 	public abstract Set<Tuple2D<Integer>> getNeighbours(Tuple2D<Integer> elem,
