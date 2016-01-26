@@ -12,51 +12,70 @@ public abstract class TopologyHexagon extends Topology {
 
 	@Override
 	public Set<Tuple2D<Integer>> getNeighbours(int x, int y, int minDist, int maxDist) {
-		Set<Tuple2D<Integer>> setCompleteN = new HashSet<Tuple2D<Integer>>();
-		setCompleteN.add(new Tuple2D<Integer>(x, y));
-		Set<Tuple2D<Integer>> setRingN = new HashSet<Tuple2D<Integer>>(setCompleteN);
-		Set<Tuple2D<Integer>> setMin = new HashSet<Tuple2D<Integer>>(setCompleteN);
-
-		for (int i = 1; i <= maxDist; i++) {
-			Set<Tuple2D<Integer>> tmpSetN = new HashSet<Tuple2D<Integer>>();
-			Set<Tuple2D<Integer>> oldSetCompleteN = new HashSet<Tuple2D<Integer>>(setCompleteN);
-			for (Tuple2D<Integer> tuple : setRingN) {
-				Set<Tuple2D<Integer>> setNewN = this.getNeighbours(tuple, setRingN);
-				tmpSetN.addAll(setNewN);
-				setCompleteN.addAll(setNewN);
-			}
-			tmpSetN.removeAll(oldSetCompleteN);
-			setRingN = new HashSet<Tuple2D<Integer>>(tmpSetN);
-			if (i == (minDist - 1)) {
-				setMin = new HashSet<Tuple2D<Integer>>(setCompleteN);
+		
+		if (maxDist > Math.max(this.maxX/2, this.maxY/2)) {
+			maxDist = Math.max(this.maxX/2, this.maxY/2);
+		}
+		Set<Tuple2D<Integer>> setRelativeNeighbours = new HashSet<Tuple2D<Integer>>();
+		Set < Tuple2D<Integer>> setNeighbours = new HashSet<Tuple2D<Integer>>();
+		
+		for (int i = minDist; i <= maxDist; i++){
+			setRelativeNeighbours.addAll(this.getNeighbours(x, y, i));
+		}
+		
+		for (Tuple2D<Integer> tuple : setRelativeNeighbours){
+			Tuple2D<Integer> posTuple = this.addIntegerTuples(tuple, x, y);
+			if (this.includesNeighbour(posTuple)){
+				this.includeNeighbour(posTuple);
+				setNeighbours.add(posTuple);
 			}
 		}
-		setCompleteN.removeAll(setMin);
-		return setCompleteN;
+		return setNeighbours;
 	}
-
-	public abstract Set<Tuple2D<Integer>> getNeighbours(Tuple2D<Integer> elem,
-			Set<Tuple2D<Integer>> setComplete);
 	
-	protected void includeNeighbour(int i, int j, Set<Tuple2D<Integer>> setN, Set<Tuple2D<Integer>> setComplete) {
-		if (this.rollover != RollOver.VERTICAL && (j < 0 || j >= this.maxY))
-			return;
-		if (this.rollover != RollOver.HORIZONTAL
-				&& (i < 0 || i >= this.maxX))
-			return;
-		if (this.rollover == RollOver.VERTICAL) {
-			if (j < 0)
-				j = (this.maxY - 1);
-			else if (j >= this.maxY)
-				j = 0;
-		} else if (this.rollover == RollOver.HORIZONTAL) {
-			if (i < 0)
-				i = (this.maxX - 1);
-			else if (i >= this.maxX)
-				i = 0;
-		}
-		Tuple2D<Integer> temp = new Tuple2D<Integer>(i, j);
-		if (!setComplete.contains(temp))
-			setN.add(temp);
+	
+	public Tuple2D<Integer> addIntegerTuples(Tuple2D<Integer> tuple, int x, int y){
+		int newX = tuple.getX() + x;
+		int newY = tuple.getY() + y;
+		return new Tuple2D<Integer>(newX, newY);
 	}
+
+	protected boolean includesNeighbour(Tuple2D<Integer> posTuple) {
+		int x = posTuple.getX();
+		int y = posTuple.getY();
+		
+		if (this.rollover != RollOver.VERTICAL & (y < 0 || y >= this.maxY))
+			return false;
+		if (this.rollover != RollOver.HORIZONTAL & (x < 0 || x >= this.maxX))
+			return false;
+		return true;
+	}
+	
+	protected void includeNeighbour(Tuple2D<Integer> posTuple) {
+		int x = posTuple.getX();
+		int y = posTuple.getY();
+
+		if (this.rollover == RollOver.VERTICAL) {
+			if (y < 0)
+				y = (this.maxY + y);
+			else if (y >= this.maxY)
+				y = y - this.maxY;
+		} else if (this.rollover == RollOver.HORIZONTAL) {
+			if (x < 0)
+				x = (this.maxX + x);
+			else if (x >= this.maxX)
+				x = x - this.maxX;
+		}
+
+		posTuple.setX(x);
+		posTuple.setY(y);
+	}
+	
+	
+	public abstract Set<Tuple2D<Integer>> evenNeighboursAt(int distance);
+	
+	public abstract Set<Tuple2D<Integer>> oddNeighboursAt(int distance);
+
+	public abstract Set<Tuple2D<Integer>> getNeighbours(int x, int y, int distance);
 }
+

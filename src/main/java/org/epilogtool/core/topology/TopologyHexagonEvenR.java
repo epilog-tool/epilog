@@ -8,10 +8,6 @@ import org.epilogtool.common.Tuple2D;
 
 public class TopologyHexagonEvenR extends TopologyHexagon {
 
-	private int[] neighboursY = { -1, -1, 0, 1, 1, 0 };
-	private int[][] neighboursX = { { 0, 1, 1, 1, 0, -1 }, // even Y
-			{ -1, 0, 1, 0, -1, -1 } }; // odd Y
-
 	public TopologyHexagonEvenR(int maxX, int maxY, RollOver rollover) {
 		this.maxX = maxX;
 		this.maxY = maxY;
@@ -23,16 +19,89 @@ public class TopologyHexagonEvenR extends TopologyHexagon {
 	}
 
 	@Override
-	public Set<Tuple2D<Integer>> getNeighbours(Tuple2D<Integer> elem,
-			Set<Tuple2D<Integer>> setComplete) {
-		Set<Tuple2D<Integer>> setN = new HashSet<Tuple2D<Integer>>();
+	public Set<Tuple2D<Integer>> getNeighbours(int x, int y,
+			int distance) {
 
-		for (int k = 0; k < neighboursY.length; k++) {
-			int i = elem.getX() + neighboursX[elem.getY() % 2][k];
-			int j = elem.getY() + neighboursY[k];
-			this.includeNeighbour(i, j, setN, setComplete);
+		if (y % 2 == 0){
+			return this.evenNeighboursAt(distance);
+		} else {
+			return this.oddNeighboursAt(distance);
 		}
-		return setN;
+	}
+	
+	public Set<Tuple2D<Integer>> evenNeighboursAt(int distance) {
+		
+		Set<Tuple2D<Integer>> neighbours = new HashSet<Tuple2D<Integer>>();
+
+		int aeXCoordinate = distance;
+		int bdXCoordinate = distance;
+		int cXCoordinate = (int) Math.ceil((float) distance/2);
+		int fXCoordinate = (int) Math.ceil((float) -distance/2);
+		
+		for (int y = 1; y <= distance; y++){
+			
+			if (y % 2 == 0){
+				aeXCoordinate = aeXCoordinate - 1;
+			}
+
+			//'a' region neighbours
+			neighbours.add(new Tuple2D<Integer>(aeXCoordinate, -y));
+			//'b' region neighbours
+			neighbours.add(new Tuple2D<Integer>(bdXCoordinate, y-1));
+			//'c' region neighbours
+			neighbours.add(new Tuple2D<Integer>(cXCoordinate, distance));
+			//'d' region neighbours
+			neighbours.add(new Tuple2D<Integer>(-bdXCoordinate + 1, y));
+			//'e' region neighbours
+			neighbours.add(new Tuple2D<Integer>(-aeXCoordinate, -y+1));
+			//'f' region neighbours
+			neighbours.add(new Tuple2D<Integer>(fXCoordinate, -distance));
+			
+			cXCoordinate = cXCoordinate - 1;
+			fXCoordinate = fXCoordinate + 1;
+			
+			if (y % 2 ==0) {
+				bdXCoordinate = bdXCoordinate -1;
+			}
+		}
+		return neighbours;
+	}
+	
+	public Set<Tuple2D<Integer>> oddNeighboursAt(int distance){
+		Set<Tuple2D<Integer>> neighbours = new HashSet<Tuple2D<Integer>>();
+		
+		int aeXCoordinate = distance;
+		int bdXCoordinate = distance;
+		int cXCoordinate = (int) Math.floor((float) distance/2);
+		int fXCoordinate = (int) Math.floor((float) -distance/2);
+		
+		for (int y = 1; y <= distance; y++){
+			
+			if (y%2==0) {
+				bdXCoordinate = bdXCoordinate - 1;
+			}
+			
+			//'a' region neighbours
+			neighbours.add(new Tuple2D<Integer>(aeXCoordinate-1, -y));
+			//'b' region neighbours
+			neighbours.add(new Tuple2D<Integer>(bdXCoordinate, y-1));
+			//'c' region neighbours
+			neighbours.add(new Tuple2D<Integer>(cXCoordinate, distance));
+			//'d' region neighbours
+			neighbours.add(new Tuple2D<Integer>(-bdXCoordinate, y));
+			//'e' region neighbours
+			neighbours.add(new Tuple2D<Integer>(-aeXCoordinate, -y+1));
+			//'f' region neighbours
+			neighbours.add(new Tuple2D<Integer>(fXCoordinate, -distance));
+			
+			cXCoordinate = cXCoordinate - 1;
+			fXCoordinate = fXCoordinate + 1;
+			
+			if (y%2==0) {
+				aeXCoordinate = aeXCoordinate - 1;
+			}
+		}
+		return neighbours;
 	}
 
 	@Override
