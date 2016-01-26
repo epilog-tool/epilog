@@ -623,6 +623,34 @@ public class EpiGUI extends JFrame {
 		// Select existing Tab
 		this.epiRightFrame.setSelectedIndex(tabIndex);
 	}
+	
+	public void restartSimulationTab(){
+		
+		//save settings
+		int simulationTabIndex = this.epiRightFrame.getSelectedIndex();
+		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
+		TreePath path = this.epiTreePanel.getSelectionPath();
+		
+		//remove tab
+		this.epiRightFrame.removeTabAt(simulationTabIndex);
+		
+		//restart
+		ProjectChangedInTab projChanged = new ProjectChangedInTab();
+		EpiTab tab;
+		tab = new EpiTabSimulation(epi, path, projChanged,
+				this.project.getProjectFeatures(), new SimulationEpiClone());
+		String title = epi.getName() + ":Simulation";
+		this.epiRightFrame.addTab(title, tab);
+		tab.initialize();
+		
+		CloseTabButton tabButton = new CloseTabButton(title,
+				this.epiRightFrame);
+		
+		int tabIndex = this.epiRightFrame.getTabCount() - 1;
+		this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
+		
+		this.epiRightFrame.setSelectedIndex(tabIndex);
+	}
 
 	// Inner Classes
 	public class SimulationEpiClone {

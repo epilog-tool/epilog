@@ -39,6 +39,7 @@ import org.colomoto.logicalmodel.NodeInfo;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
+import org.epilogtool.gui.EpiGUI;
 import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
 import org.epilogtool.gui.EpiGUI.SimulationEpiClone;
 import org.epilogtool.gui.color.ColorUtils;
@@ -585,19 +586,34 @@ public class EpiTabSimulation extends EpiTabTools {
 	private boolean hasChangedEpithelium() {
 		return !this.simulation.getEpithelium().equals(this.epithelium);
 	}
+	
+	private void restart(){
+		EpiGUI.getInstance().restartSimulationTab();
+	}
 
 	@Override
 	public void applyChange() {
 		if (this.hasChangedEpithelium()) {
+			JPanel jpNorth = new JPanel();
+			this.jpRight.add(jpNorth, BorderLayout.NORTH);
 			JTextPane jtp = new JTextPane();
 			jtp.setContentType("text/html");
 			jtp.setText("<html><body style=\"background-color:#ffbebe\">"
 					+ "You have some <b>changed definitions</b> for this Epithelium.<br/>"
 					+ "This simulation is therefore <b>no longer valid</b>!<br/>"
-					+ "You can still perform a clone/screenshot of particular interations.<br/>"
-					+ "Please <b>close/re-open it</b>, to have an updated Simulation Tab."
+					+ "You can still run it and perform a clone/screenshots.<br/>"
+					+ "To apply changes and run a new simulation press <b>Restart</b>"
 					+ "</body></html>");
-			this.jpRight.add(jtp, BorderLayout.NORTH);
+			jpNorth.add(jtp, BorderLayout.NORTH);
+			JButton jbRestart = ButtonFactory.getNoMargins("Restart");
+			jbRestart.setToolTipText("Restart the simulation with recently applied definitions");
+			jbRestart.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					restart();
+				}
+			});
+			jpNorth.add(jbRestart, BorderLayout.EAST);
 		} else {
 			for (int i = 0; i < this.jpRight.getComponentCount(); i++) {
 				Component c = this.jpRight.getComponent(i);
