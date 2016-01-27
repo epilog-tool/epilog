@@ -13,9 +13,11 @@ public abstract class TopologyHexagon extends Topology {
 	@Override
 	public Set<Tuple2D<Integer>> getNeighbours(int x, int y, int minDist, int maxDist) {
 		
-		if (maxDist > Math.max(this.maxX/2, this.maxY/2)) {
-			maxDist = Math.max(this.maxX/2, this.maxY/2);
-		}
+		int epiMaxDiagonal = (int) Math.ceil(Math.sqrt(Math.pow(this.maxX/2, 2) + 
+				   									   Math.pow(this.maxY/2, 2)));
+		
+		maxDist = Math.min(maxDist, epiMaxDiagonal);
+		
 		Set<Tuple2D<Integer>> setRelativeNeighbours = new HashSet<Tuple2D<Integer>>();
 		Set < Tuple2D<Integer>> setNeighbours = new HashSet<Tuple2D<Integer>>();
 		
