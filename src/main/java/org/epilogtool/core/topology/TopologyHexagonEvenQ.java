@@ -17,18 +17,8 @@ public class TopologyHexagonEvenQ extends TopologyHexagon {
 	public String getDescription() {
 		return "Hexagon-Even-FlatTopped";
 	}
-
-	public Set<Tuple2D<Integer>> getNeighbours(int x, int y,
-			int distance) {
-
-		if (x % 2 == 0){
-			return this.evenNeighboursAt(distance);
-		} else {
-			return this.oddNeighboursAt(distance);
-		}
-	}
 	
-	public Set<Tuple2D<Integer>> evenNeighboursAt(int distance){
+	public Set<Tuple2D<Integer>> evenRelativeNeighboursAt(int distance){
 		Set<Tuple2D<Integer>> neighbours = new HashSet<Tuple2D<Integer>>();
 	
 		int bfYCoordinate = distance;
@@ -65,7 +55,7 @@ public class TopologyHexagonEvenQ extends TopologyHexagon {
 		return neighbours;
 	}
 	
-	public Set<Tuple2D<Integer>> oddNeighboursAt(int distance){
+	public Set<Tuple2D<Integer>> oddRelativeNeighboursAt(int distance){
 		Set<Tuple2D<Integer>> neighbours = new HashSet<Tuple2D<Integer>>();
 	
 		int bfYCoordinate = distance;
@@ -199,5 +189,10 @@ public class TopologyHexagonEvenQ extends TopologyHexagon {
 		}
 
 		return new Tuple2D<Integer>(xDiv, yDiv);
+	}
+
+	@Override
+	public boolean isEven(int x, int y) {
+		return x%2==0? true:false;
 	}
 }

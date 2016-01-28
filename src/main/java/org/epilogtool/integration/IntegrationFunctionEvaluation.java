@@ -1,7 +1,9 @@
 package org.epilogtool.integration;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.colomoto.logicalmodel.NodeInfo;
@@ -17,6 +19,7 @@ public class IntegrationFunctionEvaluation {
 
 	private EpitheliumGrid neighboursGrid;
 	private ProjectFeatures features;
+	private Map<IntegrationAtom, Map<Boolean, Set<Tuple2D<Integer>>>> relativeNeighboursCache;
 
 	/**
 	 * Evaluates an expression.
@@ -32,6 +35,8 @@ public class IntegrationFunctionEvaluation {
 			ProjectFeatures features) {
 		this.neighboursGrid = neighboursGrid;
 		this.features = features;
+		this.relativeNeighboursCache = new 
+				HashMap<IntegrationAtom, Map<Boolean, Set<Tuple2D<Integer>>>>();
 	}
 
 	/**
@@ -102,9 +107,21 @@ public class IntegrationFunctionEvaluation {
 
 		} else if (expression instanceof IntegrationAtom) {
 			IntegrationAtom atom = (IntegrationAtom) expression;
+			
+			//TODO: temporary solution, should have its own method
+			if (!this.relativeNeighboursCache.containsKey(atom)) {
+				Map<Boolean, Set<Tuple2D<Integer>>> neighbours = new HashMap<Boolean, Set<Tuple2D<Integer>>>();
+				neighbours.put(true, this.neighboursGrid.getTopology().
+							getRelativeNeighbours(true, atom.getMinDistance(), atom.getMaxDistance()));
+				neighbours.put(false, this.neighboursGrid.getTopology().
+						getRelativeNeighbours(false, atom.getMinDistance(), atom.getMaxDistance()));
+				this.relativeNeighboursCache.put(atom, neighbours);
+			}
+			//End
+			
+			boolean even = this.neighboursGrid.getTopology().isEven(x, y);
 			Set<Tuple2D<Integer>> neighbours = this.neighboursGrid.getTopology()
-					.getNeighbours(x, y, atom.getMinDistance(),
-							atom.getMaxDistance());
+					.getPositionNeighbours(x, y, this.relativeNeighboursCache.get(atom).get(even));
 			NodeInfo node = this.features.getNodeInfo(atom.getComponentName(),
 					this.neighboursGrid.getModel(x, y));
 

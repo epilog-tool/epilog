@@ -14,8 +14,8 @@ public abstract class Topology {
 
 	public abstract String getDescription();
 
-	public abstract Set<Tuple2D<Integer>> getNeighbours(int x, int y,
-			int minDist, int maxDist);
+	public abstract Set<Tuple2D<Integer>> getPositionNeighbours(int x, int y,
+			Set<Tuple2D<Integer>> setRelativeNeighbours);
 
 	public int getX() {
 		return this.maxX;
@@ -86,4 +86,8 @@ public abstract class Topology {
 		return (this.getDescription().equals(tOut.getDescription())
 				&& this.getX() == tOut.getX() && this.getY() == tOut.getY());
 	}
+	
+	public abstract boolean isEven(int x, int y);
+	
+	public abstract Set<Tuple2D<Integer>> getRelativeNeighbours(boolean even, int minDist, int maxDist);
 }
