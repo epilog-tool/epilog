@@ -1,5 +1,6 @@
 package org.epilogtool.integration;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -19,7 +20,7 @@ public class IntegrationFunctionEvaluation {
 
 	private EpitheliumGrid neighboursGrid;
 	private ProjectFeatures features;
-	private Map<IntegrationAtom, Map<Boolean, Set<Tuple2D<Integer>>>> relativeNeighboursCache;
+	private Map<List<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>> relativeNeighboursCache;
 
 	/**
 	 * Evaluates an expression.
@@ -36,7 +37,7 @@ public class IntegrationFunctionEvaluation {
 		this.neighboursGrid = neighboursGrid;
 		this.features = features;
 		this.relativeNeighboursCache = new 
-				HashMap<IntegrationAtom, Map<Boolean, Set<Tuple2D<Integer>>>>();
+				HashMap<List<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>>();
 	}
 
 	/**
@@ -108,20 +109,22 @@ public class IntegrationFunctionEvaluation {
 		} else if (expression instanceof IntegrationAtom) {
 			IntegrationAtom atom = (IntegrationAtom) expression;
 			
+			List<Integer> rangeList = this.getIntegrationAtomRange(atom);
+			
 			//TODO: temporary solution, should have its own method
-			if (!this.relativeNeighboursCache.containsKey(atom)) {
+			if (!this.relativeNeighboursCache.containsKey(rangeList)) {
 				Map<Boolean, Set<Tuple2D<Integer>>> neighbours = new HashMap<Boolean, Set<Tuple2D<Integer>>>();
 				neighbours.put(true, this.neighboursGrid.getTopology().
-							getRelativeNeighbours(true, atom.getMinDistance(), atom.getMaxDistance()));
+							getRelativeNeighbours(true, rangeList.get(0), rangeList.get(1)));
 				neighbours.put(false, this.neighboursGrid.getTopology().
-						getRelativeNeighbours(false, atom.getMinDistance(), atom.getMaxDistance()));
-				this.relativeNeighboursCache.put(atom, neighbours);
+						getRelativeNeighbours(false, rangeList.get(0), rangeList.get(1)));
+				this.relativeNeighboursCache.put(rangeList, neighbours);
 			}
 			//End
 			
 			boolean even = this.neighboursGrid.getTopology().isEven(x, y);
 			Set<Tuple2D<Integer>> neighbours = this.neighboursGrid.getTopology()
-					.getPositionNeighbours(x, y, this.relativeNeighboursCache.get(atom).get(even));
+					.getPositionNeighbours(x, y, this.relativeNeighboursCache.get(rangeList).get(even));
 			NodeInfo node = this.features.getNodeInfo(atom.getComponentName(),
 					this.neighboursGrid.getModel(x, y));
 
@@ -186,5 +189,12 @@ public class IntegrationFunctionEvaluation {
 			sNodeIDs.add(((IntegrationAtom) expr).getComponentName());
 		}
 		return sNodeIDs;
+	}
+	
+	public List<Integer> getIntegrationAtomRange(IntegrationAtom atom) {
+		List<Integer> rangeList = new ArrayList<Integer>();
+		rangeList.add(atom.getMinDistance());
+		rangeList.add(atom.getMaxDistance());
+		return rangeList;
 	}
 }
