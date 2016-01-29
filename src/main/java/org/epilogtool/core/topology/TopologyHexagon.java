@@ -25,6 +25,12 @@ public abstract class TopologyHexagon extends Topology {
 		return setNeighbours;
 	}
 	
+	public Set<Tuple2D<Integer>> getPositionNeighbours(int x, int y, int minDist, int maxDist) {
+		boolean even = this.isEven(x, y);
+		Set<Tuple2D<Integer>> setRelativeNeighbours = this.getRelativeNeighbours(even, minDist, maxDist);
+		return this.getPositionNeighbours(x, y, setRelativeNeighbours);
+	}
+	
 	
 	protected Tuple2D<Integer> relativeToAbsolutePosition(Tuple2D<Integer> tuple, int x, int y){
 		int newX = tuple.getX() + x;

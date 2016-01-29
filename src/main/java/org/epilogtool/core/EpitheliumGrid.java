@@ -176,6 +176,15 @@ public class EpitheliumGrid {
 			this.modelPositions.get(m).add(tmpTuple);
 		}
 	}
+		
+	public boolean hasEmptyModel(){
+		int gridSize = this.getX() * this.getY();
+		int cellNumber = 0;
+		for (LogicalModel m : this.modelPositions.keySet()) {
+			cellNumber = cellNumber + this.modelPositions.get(m).size();
+		}
+		return gridSize != cellNumber;
+	}
 
 	public String toString() {
 		String s = "";
