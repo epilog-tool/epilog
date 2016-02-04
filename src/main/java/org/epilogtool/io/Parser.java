@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -246,9 +247,8 @@ public class Parser {
 						.substring(1)));
 			} else {
 				String[] saTmp = perturb.split(",");
-				ap = new RangePerturbation(node, Integer.parseInt(saTmp[0]
-						.substring(1)), Integer.parseInt(saTmp[0].substring(0,
-						-1)));
+				ap = new RangePerturbation(node, Integer.parseInt(saTmp[0].replace("[", "")), 
+						Integer.parseInt(saTmp[1].replace("]", "")));
 			}
 			lPerturb.add(ap);
 		}
