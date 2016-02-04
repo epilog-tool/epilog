@@ -184,12 +184,11 @@ public class Simulation {
 		byte[] currState = currGrid.getCellState(x, y);
 
 		PriorityUpdater updater = this.updaterCache[x][y];
-		LogicalModel m = updater.getModel();
-
+		LogicalModel m = this.epithelium.getEpitheliumGrid().getModel(x, y);
+		
 		// 2. Update integration components
 		for (NodeInfo node : m.getNodeOrder()) {
 			ComponentPair nodeCP = new ComponentPair(m, node);
-
 			if (node.isInput() && sIntegComponentPairs.contains(nodeCP)) {
 				List<IntegrationExpression> lExpressions = this.epithelium
 						.getIntegrationFunctionsForComponent(nodeCP)
