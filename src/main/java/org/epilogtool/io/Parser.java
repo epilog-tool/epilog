@@ -143,6 +143,7 @@ public class Parser {
 
 			// Initial Conditions grid
 			if (line.startsWith("IC")) {
+				System.out.println(line);
 				saTmp = line.split("\\s+");
 				currEpi.setGridWithComponentValue(saTmp[1],
 						Byte.parseByte(saTmp[2]),
@@ -396,8 +397,10 @@ public class Parser {
 				for (byte value : valueInst.get(m).get(nodeID).keySet()) {
 					List<String> sInsts = compactIntegerSequences(valueInst
 							.get(m).get(nodeID).get(value));
+					if (!sInsts.isEmpty()) {
 					w.println("IC " + nodeID + " " + value + " "
 							+ join(sInsts, ","));
+					}
 				}
 			}
 		}
