@@ -143,7 +143,6 @@ public class Parser {
 
 			// Initial Conditions grid
 			if (line.startsWith("IC")) {
-				System.out.println(line);
 				saTmp = line.split("\\s+");
 				currEpi.setGridWithComponentValue(saTmp[1],
 						Byte.parseByte(saTmp[2]),

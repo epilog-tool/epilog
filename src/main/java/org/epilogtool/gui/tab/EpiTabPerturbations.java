@@ -27,8 +27,10 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
@@ -69,6 +71,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	private JComboBox<Byte> jcbMinVal;
 	private JComboBox<Byte> jcbMaxVal;
 	private JList<AbstractPerturbation> jlPerturb;
+	private JScrollPane jspRBColor;
 	private JPanel jpRBColor;
 	private JPanel lTop;
 
@@ -80,7 +83,10 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	public void initialize() {
 		this.center.setLayout(new BorderLayout());
 
+		this.jspRBColor = new JScrollPane();
+		this.jspRBColor.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.jpRBColor = new JPanel(new GridBagLayout());
+		this.jspRBColor.setViewportView(this.jpRBColor);
 		this.colorMapClone = new HashMap<AbstractPerturbation, Color>();
 		this.mID2AP = new HashMap<String, AbstractPerturbation>();
 		this.mAP2RadioButton = new HashMap<AbstractPerturbation, JRadioButton>();
@@ -384,8 +390,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		});
 		jpColorRect.add(jtbRectFill);
 
-		this.jpRBColor.setBorder(BorderFactory.createTitledBorder("Select to mark cells"));
-		jpColorMark.add(this.jpRBColor, BorderLayout.CENTER);
+		this.jspRBColor.setBorder(BorderFactory.createTitledBorder("Select to mark cells"));
+		jpColorMark.add(this.jspRBColor, BorderLayout.CENTER);
 		JPanel jpColorTop = new JPanel(new BorderLayout());
 		jpColorTop.setBorder(BorderFactory.createTitledBorder("Apply selection"));
 		jpColorTop.add(jpColorApplyClear, BorderLayout.PAGE_START);
