@@ -436,27 +436,21 @@ public class Parser {
 		}
 
 		// Model All Perturbations
-		Map<AbstractPerturbation, List<String>> apInst = new HashMap<AbstractPerturbation, List<String>>();
-		AbstractPerturbation lastAP = grid.getPerturbation(0, 0);
-		for (int y = 0, currI = 0, lastI = 0; y < grid.getY(); y++) {
+		Map<AbstractPerturbation, List<Integer>> apInst = new HashMap<AbstractPerturbation, List<Integer>>();
+		for (int y = 0, currI = 0; y < grid.getY(); y++) {
 			for (int x = 0; x < grid.getX(); x++, currI++) {
 				AbstractPerturbation currAP = grid.getPerturbation(x, y);
-				if (lastAP == null) {
-					lastI = currI;
-				} else if (currAP == null || !currAP.equals(lastAP)) {
-					if (!apInst.containsKey(lastAP))
-						apInst.put(lastAP, new ArrayList<String>());
-					List<String> lTmp = apInst.get(lastAP);
-					if ((currI - 1) == lastI) {
-						lTmp.add("" + lastI);
-					} else {
-						lTmp.add(lastI + "-" + (currI - 1));
+				if (currAP == null) {
+					continue;
+				} else {
+					if (!apInst.containsKey(currAP)) {
+						apInst.put(currAP, new ArrayList<Integer>());
 					}
-					lastI = currI;
+					apInst.get(currAP).add(currI);
 				}
-				lastAP = currAP;
 			}
 		}
+		
 		for (LogicalModel m : model2Key.keySet()) {
 			ModelPerturbations mp = epi.getModelPerturbations(m);
 			if (mp == null)
@@ -468,7 +462,7 @@ public class Parser {
 					w.print(" " + c.getRed() + " " + c.getGreen() + " "
 							+ c.getBlue());
 					if (apInst.containsKey(ap)) {
-						w.print(" " + join(apInst.get(ap), ","));
+						w.print(" " + join(compactIntegerSequences(apInst.get(ap)), ","));
 					}
 				}
 				w.println();
