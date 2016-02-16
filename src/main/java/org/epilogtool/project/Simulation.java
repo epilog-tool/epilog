@@ -146,18 +146,21 @@ public class Simulation {
 			Collections.shuffle(keys,
 					new Random(Double.doubleToLongBits(Math.random())));
 
-			// Updates at least one (asynchronous case - alpha=0)
-			Tuple2D<Integer> key = keys.pop();
-			nextGrid.setCellState(key.getX(), key.getY(), cells2update.get(key));
-
 			// Inter-cellular alpha-asynchronism
 			float alphaProb = epithelium.getUpdateSchemeInter().getAlpha();
 
+			boolean atleastone = false;
 			// Updates the rest of them if alphaProb permits
 			for (int i = 0; i < (alphaProb * keys.size()); i++) {
-				key = keys.get(i);
+				Tuple2D<Integer> key = keys.get(i);
 				nextGrid.setCellState(key.getX(), key.getY(),
 						cells2update.get(key));
+				atleastone = true;
+			}
+			if (!atleastone && !keys.isEmpty()) {
+				// Updates at least one (asynchronous case: alpha=0.0)
+				Tuple2D<Integer> key = keys.pop();
+				nextGrid.setCellState(key.getX(), key.getY(), cells2update.get(key));
 			}
 		} else {
 			this.stable = true;
