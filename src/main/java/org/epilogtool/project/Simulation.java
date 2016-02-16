@@ -151,7 +151,7 @@ public class Simulation {
 
 			boolean atleastone = false;
 			// Updates the rest of them if alphaProb permits
-			for (int i = 0; i < (alphaProb * keys.size()); i++) {
+			for (int i = 0; i < Math.floor(alphaProb * keys.size()); i++) {
 				Tuple2D<Integer> key = keys.get(i);
 				nextGrid.setCellState(key.getX(), key.getY(),
 						cells2update.get(key));
