@@ -222,6 +222,9 @@ public class Simulation {
 	}
 	
 	public boolean hasCycleAt(int i) {
+		if (!(this.epithelium.getUpdateSchemeInter().getAlpha()==1)) {
+			return false;
+		}
 		List<String> tmpList = new ArrayList<String>(this.gridHashHistory.subList(0, i));
 		Set<String> tmpSet = new HashSet<String>(tmpList);
 		return !(tmpSet.size() == tmpList.size());
