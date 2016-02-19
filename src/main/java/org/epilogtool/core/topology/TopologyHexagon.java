@@ -76,17 +76,14 @@ public abstract class TopologyHexagon extends Topology {
 		int maxY = this.maxY;
 		
 		if (this.getRollOver() == RollOver.HORIZONTAL) {
-			maxX = (int) Math.ceil(maxX/2);
+			maxX = (int) Math.ceil(maxX);
 		}
 		
 		if (this.getRollOver()==RollOver.VERTICAL) {
-			maxY = (int) Math.ceil(maxY/2);
+			maxY = (int) Math.ceil(maxY);
 		}
 		
-		int epiMaxDiagonal = (int) Math.floor(Math.sqrt(Math.pow(maxX, 2) + 
-				   Math.pow(maxY, 2)));
-		
-		maxDist = Math.min(maxDist, epiMaxDiagonal);
+		maxDist = Math.min(maxDist, Math.max(maxX, maxY));
 		
 		Set<Tuple2D<Integer>> setRelativeNeighbours = new HashSet<Tuple2D<Integer>>();
 		

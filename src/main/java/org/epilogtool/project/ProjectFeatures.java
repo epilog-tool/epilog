@@ -39,6 +39,13 @@ public class ProjectFeatures {
 		this.string2ComponentFeature = new HashMap<String, Set<ComponentPair>>();
 	}
 	
+	public void addModel(String name, LogicalModel m) {
+		this.string2Model.put(name, m);
+		this.model2String.put(m, name);
+		this.modelColor.put(m, ColorUtils.random());
+		this.addModelComponents(m);
+	}
+	
 	public void addModelComponents(LogicalModel m) {
 		for (NodeInfo node : m.getNodeOrder()) {
 			String nodeID = node.getNodeID();
@@ -67,14 +74,109 @@ public class ProjectFeatures {
 			}
 		}
 	}
+	
+	public boolean hasModel(LogicalModel m) {
+		return EmptyModel.getInstance().isEmptyModel(m)
+				|| this.model2String.containsKey(m);
+	}
+	
+	public LogicalModel getModel(String name) {
+		if (EmptyModel.getInstance().isEmptyModel(name)) {
+			return EmptyModel.getInstance().getModel();
+		}
+		return this.string2Model.get(name);
+	}
+	
+	public Set<LogicalModel> getModels() {
+		return this.model2String.keySet();
+	}
+	
+	public String getModelName(LogicalModel m) {
+		return this.model2String.get(m);
+	}
+	
+	public List<String> getGUIModelNames() {
+		List<String> ltmp = new ArrayList<String>();
+		ltmp.add(EmptyModel.getInstance().getName());
+		ltmp.addAll(this.string2Model.keySet());
+		return ltmp;
+	}
+	
+	public Set<String> getModelNames() {
+		return Collections.unmodifiableSet(this.string2Model.keySet());
+	}
+	
+	public Set<String> getModelNodeIDs(LogicalModel m, boolean input) {
+		Set<String> sComps = new HashSet<String>();
+		for (NodeInfo node : m.getNodeOrder()) {
+			if (!input && !node.isInput() || input && node.isInput()) {
+				sComps.add(node.getNodeID());
+			}
+		}
+		return sComps;
+	}
+	
+	public Set<NodeInfo> getModelNodeInfos(LogicalModel m, boolean input) {
+		Set<NodeInfo> sComps = new HashSet<NodeInfo>();
+		for (NodeInfo node : m.getNodeOrder()) {
+			if (!input && !node.isInput() || input && node.isInput()) {
+				sComps.add(node);
+			}
+		}
+		return sComps;
+	}
 
-	// MODELCOMPONENTFEATURES
-
-	public void addModel(String name, LogicalModel m) {
-		this.string2Model.put(name, m);
-		this.model2String.put(m, name);
-		this.modelColor.put(m, ColorUtils.random());
-		this.addModelComponents(m);
+	public Set<NodeInfo> getModelsNodeInfos(List<LogicalModel> lModels,
+			boolean input) {
+		Set<NodeInfo> sComps = new HashSet<NodeInfo>();
+		if (!lModels.isEmpty()) {
+			for (LogicalModel m : lModels) {
+				sComps.addAll(this.getModelNodeInfos(m, input));
+			}
+		}
+		return sComps;
+	}
+	
+	public Color getModelColor(String name) {
+		if (EmptyModel.getInstance().isEmptyModel(name)) {
+			return EmptyModel.getInstance().getColor();
+		}
+		return this.getModelColor(this.string2Model.get(name));
+	}
+	
+	public Color getModelColor(LogicalModel m) {
+		return this.modelColor.get(m);
+	}
+	
+	public NodeInfo getNodeInfo(String nodeID, LogicalModel m) {
+		Set<ComponentPair> sCP = this.string2ComponentFeature.get(nodeID);
+		if (sCP != null) {
+			for (ComponentPair cp : sCP) {
+				if (cp.getModel().equals(m)) {
+					return cp.getNodeInfo();
+				}
+			}
+		}
+		return null;
+	}
+	
+	public boolean hasNode(String nodeID, LogicalModel m) {
+		if (this.getNodeInfo(nodeID, m) != null) {
+			return true;
+		}
+		return false;
+	}
+	
+	public Color getNodeColor(String nodeID) {
+		return this.nodeColor.get(nodeID);
+	}
+	
+	public Set<String> getNodeIDs() {
+		return Collections.unmodifiableSet(this.nodeColor.keySet());
+	}
+	
+	public Map<String, Color> getNodeID2ColorMap() {
+		return this.nodeColor;
 	}
 
 	public void removeModel(String name) {
@@ -102,133 +204,14 @@ public class ProjectFeatures {
 		}
 	}
 
-	public boolean hasModel(LogicalModel m) {
-		return EmptyModel.getInstance().isEmptyModel(m)
-				|| this.model2String.containsKey(m);
-	}
-
-	public LogicalModel getModel(String name) {
-		if (EmptyModel.getInstance().isEmptyModel(name)) {
-			return EmptyModel.getInstance().getModel();
-		}
-		return this.string2Model.get(name);
-	}
-
-	public Set<String> getModelNames() {
-		return Collections.unmodifiableSet(this.string2Model.keySet());
-	}
-
-	public List<String> getGUIModelNames() {
-		List<String> ltmp = new ArrayList<String>();
-		ltmp.add(EmptyModel.getInstance().getName());
-		ltmp.addAll(this.string2Model.keySet());
-		return ltmp;
-	}
-
-	// ProjectModelFeatures.setColor
 	public void setModelColor(String name, Color c) {
 		this.modelColor.put(this.getModel(name), c);
 	}
-
-	// ProjectModelFeatures.getColor
-	public Color getModelColor(String name) {
-		if (EmptyModel.getInstance().isEmptyModel(name)) {
-			return EmptyModel.getInstance().getColor();
-		}
-		return this.getModelColor(this.string2Model.get(name));
-	}
-
-	// ProjectModelFeatures.getColor
-	public Color getModelColor(LogicalModel m) {
-		return this.modelColor.get(m);
-	}
-
-	// ProjectModelFeatures.changeColor
-	public void changeModelColor(String name, Color c) {
-		this.modelColor.put(this.getModel(name), c);
-	}
-
-	// ProjectModelFeatures.getName
-	public String getModelName(LogicalModel m) {
-		return this.model2String.get(m);
-	}
-
-	// PROJECTCOMPONENTFEATURES
-
-	// ProjectComponentFeatures.getNodeInfo
-	public NodeInfo getNodeInfo(String nodeID, LogicalModel m) {
-		Set<ComponentPair> sCP = this.string2ComponentFeature.get(nodeID);
-		if (sCP != null) {
-			for (ComponentPair cp : sCP) {
-				if (cp.getModel().equals(m)) {
-					return cp.getNodeInfo();
-				}
-			}
-		}
-		return null;
-	}
-
-	public Color getNodeColor(String nodeID) {
-		return this.nodeColor.get(nodeID);
-	}
-
-	public Map<String, Color> getColorMap() {
-		return this.nodeColor;
-	}
-
-	// TODO THIS NEEDS TO BE ADAPTED
-	public Set<String> getComponents() {
-		return Collections.unmodifiableSet(this.nodeColor.keySet());
-		// TODO return unmodifiable lists everywhere!
-	}
-
+	
 	public void setNodeColor(String nodeID, Color color) {
 		if (!this.nodeColor.containsKey(nodeID)
 				|| !color.equals(this.nodeColor.get(nodeID))) {
 			this.nodeColor.put(nodeID, color);
 		}
 	}
-
-	public Set<LogicalModel> getModels() {
-		return this.model2String.keySet();
-	}
-
-	public boolean hasNode(String nodeID, LogicalModel m) {
-		if (this.getNodeInfo(nodeID, m) != null) {
-			return true;
-		}
-		return false;
-	}
-
-	public Set<String> getModelComponents(LogicalModel m, boolean input) {
-		Set<String> sComps = new HashSet<String>();
-		for (NodeInfo node : m.getNodeOrder()) {
-			if (!input && !node.isInput() || input && node.isInput()) {
-				sComps.add(node.getNodeID());
-			}
-		}
-		return sComps;
-	}
-
-	public Set<NodeInfo> getModelNodeInfos(LogicalModel m, boolean input) {
-		Set<NodeInfo> sComps = new HashSet<NodeInfo>();
-		for (NodeInfo node : m.getNodeOrder()) {
-			if (!input && !node.isInput() || input && node.isInput()) {
-				sComps.add(node);
-			}
-		}
-		return sComps;
-	}
-
-	public Set<NodeInfo> getModelsNodeInfos(List<LogicalModel> lModels,
-			boolean input) {
-		Set<NodeInfo> sComps = new HashSet<NodeInfo>();
-		if (!lModels.isEmpty()) {
-			for (LogicalModel m : lModels) {
-				sComps.addAll(this.getModelNodeInfos(m, input));
-			}
-		}
-		return sComps;
-	}
-
 }

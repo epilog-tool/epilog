@@ -55,9 +55,49 @@ public class EpitheliumGrid {
 		this.modelSet = new HashSet<LogicalModel>();
 		this.modelSet.add(m);
 	}
-
+	
+	public int getX() {
+		return this.topology.getX();
+	}
+	
+	public int getY() {
+		return this.topology.getY();
+	}
+	
+	public Topology getTopology() {
+		return this.topology;
+	}
+	
+	public LogicalModel getModel(int x, int y) {
+		return gridEpiCell[x][y].getModel();
+	}
+	
 	public boolean hasModel(LogicalModel m) {
 		return this.modelSet.contains(m);
+	}
+	
+	public byte[] getCellState(int x, int y) {
+		return gridEpiCell[x][y].getState();
+	}
+
+	public AbstractPerturbation getPerturbation(int x, int y) {
+		return gridEpiCell[x][y].getPerturbation();
+	}
+	
+	public Map<LogicalModel, List<Tuple2D<Integer>>> getModelPositions() {
+		return this.modelPositions;
+	}
+	
+	public int getNodeIndex(int x, int y, String nodeID) {
+		return this.gridEpiCell[x][y].getNodeIndex(nodeID);
+	}
+	
+	public Set<LogicalModel> getModelSet() {
+		return Collections.unmodifiableSet(this.modelSet);
+	}
+	
+	public boolean hasEmptyModel(int x, int y) {
+		return this.gridEpiCell[x][y].hasEmptyModel();
 	}
 
 	public void updateModelSet() {
@@ -65,10 +105,10 @@ public class EpitheliumGrid {
 		this.modelPositions = new HashMap<LogicalModel, List<Tuple2D<Integer>>>();
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
-				LogicalModel m = this.gridEpiCell[x][y].getModel();
-				if (EmptyModel.getInstance().isEmptyModel(m)) {
+				if (this.hasEmptyModel(x, y)) {
 					continue;
 				}
+				LogicalModel m = this.gridEpiCell[x][y].getModel();
 				this.modelSet.add(m);
 				Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x, y);
 				if (this.modelPositions.containsKey(m)) {
@@ -81,81 +121,11 @@ public class EpitheliumGrid {
 			}
 		}
 	}
-
-	public Set<LogicalModel> getModelSet() {
-		return Collections.unmodifiableSet(this.modelSet);
-	}
-
+		
 	public void setRollOver(RollOver r) {
 		this.topology.setRollOver(r);
 	}
-
-	public int getX() {
-		return this.topology.getX();
-	}
-
-	public int getY() {
-		return this.topology.getY();
-	}
-
-	public Topology getTopology() {
-		return this.topology;
-	}
-
-	public EpitheliumGrid clone() {
-		EpitheliumCell[][] newGrid = new EpitheliumCell[this.getX()][this
-				.getY()];
-		for (int y = 0; y < this.getY(); y++) {
-			for (int x = 0; x < this.getX(); x++) {
-				newGrid[x][y] = this.gridEpiCell[x][y].clone();
-			}
-		}
-		Topology newTop = this.topology.clone();
-		Set<LogicalModel> newModelSet = new HashSet<LogicalModel>(this.modelSet);
-		Map<LogicalModel, List<Tuple2D<Integer>>> newModelPositions = new HashMap<LogicalModel, List<Tuple2D<Integer>>>(
-				this.modelPositions);
-		return new EpitheliumGrid(newGrid, newTop, newModelSet,
-				newModelPositions);
-	}
-
-	public EpitheliumCell cloneEpitheliumCellAt(int x, int y) {
-		return this.gridEpiCell[x][y].clone();
-	}
-
-	public AbstractPerturbation getPerturbation(int x, int y) {
-		return gridEpiCell[x][y].getPerturbation();
-	}
-
-	public void setPerturbation(int x, int y, AbstractPerturbation ap) {
-		gridEpiCell[x][y].setPerturbation(ap);
-	}
-
-	public void setPerturbation(LogicalModel m, List<Tuple2D<Integer>> lTuples,
-			AbstractPerturbation ap) {
-		for (Tuple2D<Integer> tuple : lTuples) {
-			if (this.gridEpiCell[tuple.getX()][tuple.getY()].getModel().equals(
-					m)) {
-				this.setPerturbation(tuple.getX(), tuple.getY(), ap);
-			}
-		}
-	}
-
-	public byte[] getCellState(int x, int y) {
-		return gridEpiCell[x][y].getState();
-	}
-
-	public void setCellState(int x, int y, byte[] state) {
-		gridEpiCell[x][y].setState(state);
-	}
-
-	public void setCellComponentValue(int x, int y, String nodeID, byte value) {
-		gridEpiCell[x][y].setValue(nodeID, value);
-	}
-
-	public LogicalModel getModel(int x, int y) {
-		return gridEpiCell[x][y].getModel();
-	}
-
+	
 	public void setModel(int x, int y, LogicalModel m) {
 		Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x, y);
 		if (this.gridEpiCell[x][y].getModel() != m) {
@@ -176,14 +146,55 @@ public class EpitheliumGrid {
 			this.modelPositions.get(m).add(tmpTuple);
 		}
 	}
+	
+	public void setPerturbation(LogicalModel m, List<Tuple2D<Integer>> lTuples,
+			AbstractPerturbation ap) {
+		for (Tuple2D<Integer> tuple : lTuples) {
+			if (this.gridEpiCell[tuple.getX()][tuple.getY()].getModel().equals(
+					m)) {
+				this.setPerturbation(tuple.getX(), tuple.getY(), ap);
+			}
+		}
+	}
+	
+	public void setPerturbation(int x, int y, AbstractPerturbation ap) {
+		gridEpiCell[x][y].setPerturbation(ap);
+	}
+	
+	public void setCellState(int x, int y, byte[] state) {
+		gridEpiCell[x][y].setState(state);
+	}
+	
+	public void setCellComponentValue(int x, int y, String nodeID, byte value) {
+		gridEpiCell[x][y].setValue(nodeID, value);
+	}
+
+	public EpitheliumCell cloneEpitheliumCellAt(int x, int y) {
+		return this.gridEpiCell[x][y].clone();
+	}
+	
+	protected void cloneEpitheliumCellTo(int x1, int y1, int x2, int y2) {
+		EpitheliumCell epiCell = this.cloneEpitheliumCellAt(x1, y1);
+		this.gridEpiCell[x2][y2] = epiCell;
+	}
 		
-	public boolean hasEmptyModel(){
+	public int emptyModelNumber(){
 		int gridSize = this.getX() * this.getY();
 		int cellNumber = 0;
 		for (LogicalModel m : this.modelPositions.keySet()) {
-			cellNumber = cellNumber + this.modelPositions.get(m).size();
+			cellNumber += this.modelPositions.get(m).size();
 		}
-		return gridSize != cellNumber;
+		return gridSize - cellNumber;
+	}
+	
+	public String hashGrid() {
+		String hash = "";
+		for (int y = 0; y < this.getY(); y++) {
+			for (int x = 0; x < this.getX(); x++) {
+				hash += this.gridEpiCell[x][y].hashState();
+			}
+		}
+		return hash;
 	}
 
 	public String toString() {
@@ -219,22 +230,20 @@ public class EpitheliumGrid {
 		}
 		return true;
 	}
-
-	public int getNodeIndex(int x, int y, String nodeID) {
-		return this.gridEpiCell[x][y].getNodeIndex(nodeID);
-	}
-
-	public Map<LogicalModel, List<Tuple2D<Integer>>> getModelPositions() {
-		return this.modelPositions;
-	}
-
-	public String hashGrid() {
-		String hash = "";
+	
+	public EpitheliumGrid clone() {
+		EpitheliumCell[][] newGrid = new EpitheliumCell[this.getX()][this
+				.getY()];
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
-				hash += this.gridEpiCell[x][y].hashState();
+				newGrid[x][y] = this.gridEpiCell[x][y].clone();
 			}
 		}
-		return hash;
+		Topology newTop = this.topology.clone();
+		Set<LogicalModel> newModelSet = new HashSet<LogicalModel>(this.modelSet);
+		Map<LogicalModel, List<Tuple2D<Integer>>> newModelPositions = new HashMap<LogicalModel, List<Tuple2D<Integer>>>(
+				this.modelPositions);
+		return new EpitheliumGrid(newGrid, newTop, newModelSet,
+				newModelPositions);
 	}
 }

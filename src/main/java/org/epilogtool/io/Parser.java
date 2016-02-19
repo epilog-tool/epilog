@@ -72,7 +72,7 @@ public class Parser {
 				modelKey2Name.put(saTmp[1], saTmp[2]);
 				Color modelColor = ColorUtils.getColor(saTmp[3], saTmp[4],
 						saTmp[5]);
-				project.getProjectFeatures().changeModelColor(saTmp[2],
+				project.getProjectFeatures().setModelColor(saTmp[2],
 						modelColor);
 			}
 
@@ -283,7 +283,7 @@ public class Parser {
 		w.println();
 
 		// Component colors
-		for (String nodeID : project.getComponentFeatures().getComponents()) {
+		for (String nodeID : project.getComponentFeatures().getNodeIDs()) {
 			Color c = project.getComponentFeatures().getNodeColor(nodeID);
 			w.println("CC " + nodeID + " " + c.getRed() + " " + c.getBlue()
 					+ " " + c.getGreen());

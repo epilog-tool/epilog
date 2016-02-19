@@ -167,7 +167,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		gbc.anchor = GridBagConstraints.WEST;
 		jpPerturbTop.add(new JLabel("Component:"), gbc);
 
-		Set<String> sProper = this.epithelium.getProjectFeatures().getModelComponents(this.selModel, false);
+		Set<String> sProper = this.epithelium.getProjectFeatures().getModelNodeIDs(this.selModel, false);
 
 		String[] saProper = new String[sProper.size()];
 		int i = 0;

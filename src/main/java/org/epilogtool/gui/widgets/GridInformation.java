@@ -82,7 +82,7 @@ public class GridInformation extends JPanel {
 		if (grid != null) {
 			
 			List<String> lAllNodeIDs = new ArrayList<String>(
-					this.projectFeatures.getComponents());
+					this.projectFeatures.getNodeIDs());
 			Collections.sort(lAllNodeIDs, ObjectComparator.STRING);
 			LogicalModel m = grid.getModel(posX, posY);
 

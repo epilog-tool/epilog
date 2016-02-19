@@ -85,7 +85,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				this.epithelium.getIntegrationFunctions(), this.projectFeatures);
 
 		this.visualGridICs = new VisualGridInitialConditions(this.epiGridClone,
-				this.epithelium.getProjectFeatures().getColorMap(),
+				this.epithelium.getProjectFeatures().getNodeID2ColorMap(),
 				this.mNode2ValueSelected, this.lRight);
 		this.center.add(this.visualGridICs, BorderLayout.CENTER);
 
@@ -307,7 +307,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		jpRRCTop.setBorder(BorderFactory
 				.createTitledBorder("Proper components"));
 		List<String> lProper = new ArrayList<String>(this.epithelium
-				.getProjectFeatures().getModelComponents(m, false));
+				.getProjectFeatures().getModelNodeIDs(m, false));
 		Collections.sort(lProper, ObjectComparator.STRING);
 		int y = 0;
 		for (String nodeID : lProper) {
@@ -338,7 +338,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		jpRRCBottom.setBorder(BorderFactory
 				.createTitledBorder("Input components"));
 		List<String> lInputs = new ArrayList<String>(this.epithelium
-				.getProjectFeatures().getModelComponents(m, true));
+				.getProjectFeatures().getModelNodeIDs(m, true));
 		Collections.sort(lInputs, ObjectComparator.STRING);
 		List<String> lEnvInputCompsFromSelectedModels = new ArrayList<String>();
 		for (String nodeID : lInputs) {

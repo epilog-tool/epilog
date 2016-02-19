@@ -11,50 +11,7 @@ public class EpitheliumCell {
 	public EpitheliumCell(LogicalModel m) {
 		this.setModel(m);
 	}
-
-	public EpitheliumCell clone() {
-		EpitheliumCell newCell = new EpitheliumCell(this.model);
-		newCell.setState(this.state.clone());
-		newCell.setPerturbation(this.perturbation);
-		return newCell;
-	}
-
-	public AbstractPerturbation getPerturbation() {
-		return this.perturbation;
-	}
-
-	public long hashState() {
-		long hash = 1;
-		for (int i = 0; i < model.getNodeOrder().size(); i++) {
-			int vals = model.getNodeOrder().get(i).getMax() + 1;
-			hash += i * Math.pow(vals, this.state[i]);
-		}
-		return hash;
-	}
-
-	public void setPerturbation(AbstractPerturbation ap) {
-		this.perturbation = ap;
-	}
-
-	public byte[] getState() {
-		return this.state;
-	}
-
-	public void setState(byte[] state) {
-		this.state = state;
-	}
-
-	public void setValue(String nodeID, byte value) {
-		int index = this.getNodeIndex(nodeID);
-		if (index < 0)
-			return;
-		state[index] = value;
-	}
-
-	public LogicalModel getModel() {
-		return this.model;
-	}
-
+	
 	public void setModel(LogicalModel m) {
 		this.model = m;
 		this.state = new byte[m.getNodeOrder().size()];
@@ -63,6 +20,33 @@ public class EpitheliumCell {
 		}
 		this.perturbation = null;
 	}
+	
+	public void setState(byte[] state) {
+		this.state = state;
+	}
+	
+	public void setPerturbation(AbstractPerturbation ap) {
+		this.perturbation = ap;
+	}
+	
+	public void setValue(String nodeID, byte value) {
+		int index = this.getNodeIndex(nodeID);
+		if (index < 0)
+			return;
+		state[index] = value;
+	}
+
+	public AbstractPerturbation getPerturbation() {
+		return this.perturbation;
+	}
+
+	public byte[] getState() {
+		return this.state;
+	}
+
+	public LogicalModel getModel() {
+		return this.model;
+	}
 
 	public int getNodeIndex(String nodeID) {
 		for (int i = 0; i < this.model.getNodeOrder().size(); i++) {
@@ -70,6 +54,19 @@ public class EpitheliumCell {
 				return i;
 		}
 		return -1;
+	}
+	
+	public boolean hasEmptyModel() {
+		return EmptyModel.getInstance().isEmptyModel(this.getModel());
+	}
+	
+	public long hashState() {
+		long hash = 1;
+		for (int i = 0; i < model.getNodeOrder().size(); i++) {
+			int vals = model.getNodeOrder().get(i).getMax() + 1;
+			hash += i * Math.pow(vals, this.state[i]);
+		}
+		return hash;
 	}
 
 	public boolean equals(Object o) {
@@ -91,5 +88,12 @@ public class EpitheliumCell {
 				return false;
 		}
 		return true;
+	}
+	
+	public EpitheliumCell clone() {
+		EpitheliumCell newCell = new EpitheliumCell(this.model);
+		newCell.setState(this.state.clone());
+		newCell.setPerturbation(this.perturbation);
+		return newCell;
 	}
 }
