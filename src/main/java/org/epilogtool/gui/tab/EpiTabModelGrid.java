@@ -206,7 +206,6 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		// Make Epithelium structures coherent
 		this.epithelium.update();
 		// TODO Open dependent tabs, should
-		System.out.println(this.epithelium.getEpitheliumGrid().emptyModelNumber());
 	}
 
 	@Override

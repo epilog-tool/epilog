@@ -178,7 +178,7 @@ public class EpitheliumGrid {
 		this.gridEpiCell[x2][y2] = epiCell;
 	}
 		
-	public int emptyModelNumber(){
+	protected int emptyModelNumber(){
 		int gridSize = this.getX() * this.getY();
 		int cellNumber = 0;
 		for (LogicalModel m : this.modelPositions.keySet()) {
