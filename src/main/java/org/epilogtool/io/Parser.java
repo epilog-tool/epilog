@@ -12,8 +12,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
@@ -152,38 +154,70 @@ public class Parser {
 			// Component Integration Functions
 			if (line.startsWith("IT")) {
 				saTmp = line.split("\\s+");
+				List<String> tmpList = (List<String>) Arrays.asList(saTmp);
+				int functionIndex = 0;
+				for (String item: tmpList){
+					if(item.contains("(")){
+						break;}
+					functionIndex += 1;
+				}
+				String function = "";
+				for(int i = functionIndex; i<tmpList.size(); i++) {
+					function += tmpList.get(i);
+				}
+				List<String> tmpList2=tmpList.subList(0, functionIndex);
+				tmpList = new ArrayList<String>(tmpList2);
+				tmpList.add(function);
+				saTmp = tmpList.toArray(new String[0]);
+				
+				String[] regulatorsArray = function.split("\\&|\\!|\\|");
+				Set<String> regulatorsSet = new HashSet<String>();
+				for (String atom: regulatorsArray) {
+					if (atom.length()==0) 
+						continue;
+					String[] atomElems = atom.split("\\(");
+					regulatorsSet.add(atomElems[atomElems.length-2]);
+				}
 				if (saTmp.length == 4) {
 					String input = saTmp[1];
-					String proper = saTmp[3].split("\\(")[0];
 					for (LogicalModel m : project.getProjectFeatures()
 							.getModels()) {
-						if (project.getProjectFeatures().hasNode(input, m)
-								& project.getProjectFeatures().hasNode(proper,
-										m)) {
+						if (!project.getProjectFeatures().hasNode(input, m)) {
+							continue;
+						}
+						boolean flag = true;
+						for (String regulator: regulatorsSet) {
+							if (!(project.getProjectFeatures().hasNode(regulator,m))) {
+								flag = false;
+								break;
+							}
+						}
+						if (flag) {
 							currEpi.setIntegrationFunction(saTmp[1], m,
-									Byte.parseByte(saTmp[2]),
-									(saTmp.length > 3) ? saTmp[3] : "");
-							NodeInfo node = project.getProjectFeatures()
-									.getNodeInfo(proper, m);
-							ComponentPair cp = new ComponentPair(m, node);
-							if (!currEpi.getUpdateSchemeInter()
-									.containsCPSigma(cp)) {
-								currEpi.getUpdateSchemeInter().addCP(cp);
+									Byte.parseByte(saTmp[2]), function);
+							for ( String proper: regulatorsSet) { 
+								NodeInfo node = project.getProjectFeatures()
+										.getNodeInfo(proper, m);
+								ComponentPair cp = new ComponentPair(m, node);
+								if (!currEpi.getUpdateSchemeInter()
+										.containsCPSigma(cp)) {
+									currEpi.getUpdateSchemeInter().addCP(cp);
+								}
 							}
 						}
 					}
 				} else {
 					LogicalModel m = project.getModel(modelKey2Name
 							.get(saTmp[1]));
-					String proper = saTmp[4].split("\\(")[0];
-					NodeInfo node = project.getProjectFeatures().getNodeInfo(
-							proper, m);
-					ComponentPair cp = new ComponentPair(m, node);
 					currEpi.setIntegrationFunction(saTmp[2], m, Byte
-							.parseByte(saTmp[3]), (saTmp.length > 4) ? saTmp[4]
-							: "");
-					if (!currEpi.getUpdateSchemeInter().containsCPSigma(cp)) {
-						currEpi.getUpdateSchemeInter().addCP(cp);
+							.parseByte(saTmp[3]), function);
+					for (String regulator: regulatorsSet){
+						NodeInfo node = project.getProjectFeatures().getNodeInfo(
+							regulator, m);
+						ComponentPair cp = new ComponentPair(m, node);
+						if (!currEpi.getUpdateSchemeInter().containsCPSigma(cp)) {
+							currEpi.getUpdateSchemeInter().addCP(cp);
+						}
 					}
 				}
 			}
