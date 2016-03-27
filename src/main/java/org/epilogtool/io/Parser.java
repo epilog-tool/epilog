@@ -173,9 +173,11 @@ public class Parser {
 				String[] regulatorsArray = function.split("\\&|\\!|\\|");
 				Set<String> regulatorsSet = new HashSet<String>();
 				for (String atom: regulatorsArray) {
-					if (atom.length()==0) 
-						continue;
+					if (atom.length()==0) {
+						continue;}
 					String[] atomElems = atom.split("\\(");
+					if (atomElems.length==0)
+						continue;
 					regulatorsSet.add(atomElems[atomElems.length-2]);
 				}
 				if (saTmp.length == 4) {
