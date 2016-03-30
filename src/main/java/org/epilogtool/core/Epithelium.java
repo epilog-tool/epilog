@@ -116,7 +116,7 @@ public class Epithelium {
 			}
 		}
 		// Clean Epithelium components
-		Set<ComponentPair> sCP = this.integrationFunctions.getComponentPair();
+		Set<ComponentPair> sCP = new HashSet<ComponentPair>(this.integrationFunctions.getComponentPair());
 		for (ComponentPair cp : sCP) {
 			NodeInfo node = cp.getNodeInfo();
 			if (!sNodeIDs.contains(node.getNodeID())) {
