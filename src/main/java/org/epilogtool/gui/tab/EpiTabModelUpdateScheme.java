@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -239,7 +238,11 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 			// -- Order variables alphabetically
 			Collections.sort(vars, String.CASE_INSENSITIVE_ORDER);
 			for (String var : vars) {
-				if (!this.projectFeatures.getNodeInfo(var, m).isInput()){
+				String tmpVar = var;
+				if (var.contains("+") | var.contains("-")) {
+					tmpVar = var.split("\\[")[0];
+				}
+				if (!this.projectFeatures.getNodeInfo(tmpVar, m).isInput()){
 					lModel.addElement(var);
 				}
 			}
@@ -301,7 +304,11 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 		List<String> vars = mpc.getClassVars(0);
 		boolean allInputFlag = true;
 		for (String var : vars) {
-			if (!this.projectFeatures.getNodeInfo(var, m).isInput()) {
+			String tmpVar = var;
+			if (var.contains("+") | var.contains("-")) {
+				tmpVar = var.split("\\[")[0];
+			}
+			if (!this.projectFeatures.getNodeInfo(tmpVar, m).isInput()) {
 				allInputFlag = false;
 			}
 		}

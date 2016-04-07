@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -22,10 +23,10 @@ import javax.swing.JToggleButton;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
-import org.epilogtool.core.EpitheliumTension;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
 import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
 import org.epilogtool.gui.widgets.JRadioComponentButton;
@@ -207,15 +208,6 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		// Make Epithelium structures coherent
 		this.epithelium.update();
 		// TODO Open dependent tabs, should
-		EpitheliumTension tension = new EpitheliumTension(this.epithelium.getEpitheliumGrid());
-		float[][] test1 = tension.getTensionGrid();
-		for (int x = 0; x < test1.length; x++) {
-			for (int y = 0; y < test1[0].length; y++) {
-				System.out.print(test1[x][y] + "\t");
-			}
-			System.out.println();
-		}
-		System.out.println();
 	}
 
 	@Override
