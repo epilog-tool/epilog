@@ -92,12 +92,16 @@ public class EpitheliumGrid {
 		return this.gridEpiCell[x][y].getNodeIndex(nodeID);
 	}
 	
+	public byte getCellComponentValue(int x, int y, String nodeID) {
+		return this.gridEpiCell[x][y].getNodeValue(nodeID);
+	}
+	
 	public Set<LogicalModel> getModelSet() {
 		return Collections.unmodifiableSet(this.modelSet);
 	}
 	
-	public boolean hasEmptyModel(int x, int y) {
-		return this.gridEpiCell[x][y].hasEmptyModel();
+	public boolean isEmptyCell(int x, int y) {
+		return this.gridEpiCell[x][y].isEmptyCell();
 	}
 
 	public void updateModelSet() {
@@ -105,7 +109,7 @@ public class EpitheliumGrid {
 		this.modelPositions = new HashMap<LogicalModel, List<Tuple2D<Integer>>>();
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
-				if (this.hasEmptyModel(x, y)) {
+				if (this.isEmptyCell(x, y)) {
 					continue;
 				}
 				LogicalModel m = this.gridEpiCell[x][y].getModel();
@@ -173,7 +177,7 @@ public class EpitheliumGrid {
 		return this.gridEpiCell[x][y].clone();
 	}
 	
-	protected void cloneEpitheliumCellTo(int x1, int y1, int x2, int y2) {
+	protected void cloneEpitheliumCell(int x1, int y1, int x2, int y2) {
 		EpitheliumCell epiCell = this.cloneEpitheliumCellAt(x1, y1);
 		this.gridEpiCell[x2][y2] = epiCell;
 	}
