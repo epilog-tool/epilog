@@ -71,7 +71,7 @@ public class Simulation {
 		Map<LogicalModel, Map<AbstractPerturbation, PriorityUpdater>> tmpMap = new HashMap<LogicalModel, Map<AbstractPerturbation, PriorityUpdater>>();
 		for (int y = 0; y < this.getCurrentGrid().getY(); y++) {
 			for (int x = 0; x < this.getCurrentGrid().getX(); x++) {
-				if (this.getCurrentGrid().hasEmptyModel(x, y)) {
+				if (this.getCurrentGrid().isEmptyCell(x, y)) {
 					continue;
 				}
 				LogicalModel m = this.getCurrentGrid().getModel(x, y);
@@ -123,7 +123,7 @@ public class Simulation {
 
 		for (int y = 0; y < currGrid.getY(); y++) {
 			for (int x = 0; x < currGrid.getX(); x++) {
-				if (currGrid.hasEmptyModel(x, y)) { 
+				if (currGrid.isEmptyCell(x, y)) { 
 					continue;
 				}
 				byte[] currState = currGrid.getCellState(x, y);
