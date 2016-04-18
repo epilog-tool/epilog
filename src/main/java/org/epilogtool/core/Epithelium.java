@@ -67,16 +67,27 @@ public class Epithelium {
 		this.updateSchemeInter = usi;
 	}
 
-	public boolean hasModel(LogicalModel m) {
-		return this.grid.hasModel(m);
-	}
-
 	public Epithelium clone() {
 		return new Epithelium(this.x, this.y, this.topologyLayout, "CopyOf_"
 				+ this.name, this.grid.clone(),
 				this.integrationFunctions.clone(), this.priorities.clone(),
 				this.perturbations.clone(), this.projectFeatures,
 				this.updateSchemeInter.clone());
+	}
+	
+	public String toString() {
+		return this.getName();
+		// return this.name + " ("
+		// + this.grid.getTopology().getRollOver().toString() + ")";
+	}
+	
+	public boolean equals(Object o) {
+		Epithelium otherEpi = (Epithelium) o;
+		return (this.grid.equals(otherEpi.grid)
+				&& this.priorities.equals(otherEpi.priorities)
+				&& this.integrationFunctions.equals(otherEpi.integrationFunctions)
+				&& this.perturbations.equals(otherEpi.perturbations) 
+				&& this.updateSchemeInter.equals(otherEpi.getUpdateSchemeInter()));
 	}
 
 	public void update() {
@@ -124,17 +135,7 @@ public class Epithelium {
 			}
 		}
 	}
-
-	public EpitheliumUpdateSchemeInter getUpdateSchemeInter() {
-		return this.updateSchemeInter;
-	}
-
-	public String toString() {
-		return this.getName();
-		// return this.name + " ("
-		// + this.grid.getTopology().getRollOver().toString() + ")";
-	}
-
+	
 	public String getName() {
 		return this.name;
 	}
@@ -147,14 +148,53 @@ public class Epithelium {
 		return this.grid.getModel(x, y);
 	}
 
+	public boolean hasModel(LogicalModel m) {
+		return this.grid.hasModel(m);
+	}
+	
+	public EpitheliumGrid getEpitheliumGrid() {
+		return this.grid;
+	}
+
 	public ProjectFeatures getProjectFeatures() {
 		return this.projectFeatures;
 	}
 
-	public void setGridWithModel(LogicalModel m, List<Tuple2D<Integer>> lTuples) {
-		for (Tuple2D<Integer> tuple : lTuples) {
-			this.grid.setModel(tuple.getX(), tuple.getY(), m);
+	public EpitheliumUpdateSchemeInter getUpdateSchemeInter() {
+		return this.updateSchemeInter;
+	}
+	
+	public ModelPriorityClasses getPriorityClasses(LogicalModel m) {
+		return this.priorities.getModelPriorityClasses(m);
+	}
+
+	public ComponentIntegrationFunctions getIntegrationFunctionsForComponent(
+			ComponentPair cp) {
+		return this.integrationFunctions
+				.getComponentIntegrationFunctions(cp);
+	}
+
+	public Set<ComponentPair> getIntegrationComponentPairs() {
+		return this.integrationFunctions.getComponentPair();
+	}
+
+	public boolean isIntegrationComponent(NodeInfo node) {
+		for (ComponentPair cp : this.integrationFunctions.getComponentPair()){
+			if (node.equals(cp.getNodeInfo())) return true;
 		}
+		return false;
+	}
+
+	public EpitheliumIntegrationFunctions getIntegrationFunctions() {
+		return this.integrationFunctions;
+	}
+
+	public ModelPerturbations getModelPerturbations(LogicalModel m) {
+		return this.perturbations.getModelPerturbations(m);
+	}
+
+	public EpitheliumPerturbations getEpitheliumPerturbations() {
+		return this.perturbations;
 	}
 
 	public void setGridWithComponentValue(String nodeID, byte value,
@@ -210,45 +250,14 @@ public class Epithelium {
 		}
 	}
 
-	public EpitheliumGrid getEpitheliumGrid() {
-		return this.grid;
-	}
-
-	public ModelPriorityClasses getPriorityClasses(LogicalModel m) {
-		return this.priorities.getModelPriorityClasses(m);
-	}
-
-	public ComponentIntegrationFunctions getIntegrationFunctionsForComponent(
-			ComponentPair cp) {
-		return this.integrationFunctions
-				.getComponentIntegrationFunctions(cp);
-	}
-
-	public Set<ComponentPair> getIntegrationComponentPairs() {
-		return this.integrationFunctions.getComponentPair();
-	}
-
-	public boolean isIntegrationComponent(NodeInfo node) {
-		for (ComponentPair cp : this.integrationFunctions.getComponentPair()){
-			if (node.equals(cp.getNodeInfo())) return true;
-		}
-		return false;
-	}
-
-	public EpitheliumIntegrationFunctions getIntegrationFunctions() {
-		return this.integrationFunctions;
-	}
-
-	public ModelPerturbations getModelPerturbations(LogicalModel m) {
-		return this.perturbations.getModelPerturbations(m);
-	}
-
-	public EpitheliumPerturbations getEpitheliumPerturbations() {
-		return this.perturbations;
-	}
-
 	public void setModel(int x, int y, LogicalModel m) {
 		this.grid.setModel(x, y, m);
+	}
+	
+	public void setGridWithModel(LogicalModel m, List<Tuple2D<Integer>> lTuples) {
+		for (Tuple2D<Integer> tuple : lTuples) {
+			this.setModel(tuple.getX(), tuple.getY(), m);
+		}
 	}
 
 	public int getX() {
@@ -262,15 +271,5 @@ public class Epithelium {
 	public String getTopologyLayout() {
 		// TODO: improve this
 		return this.topologyLayout;
-	}
-
-	public boolean equals(Object o) {
-		Epithelium otherEpi = (Epithelium) o;
-		return (this.grid.equals(otherEpi.grid)
-				&& this.priorities.equals(otherEpi.priorities)
-				&& this.integrationFunctions
-						.equals(otherEpi.integrationFunctions)
-				&& this.perturbations.equals(otherEpi.perturbations) && this.updateSchemeInter
-					.equals(otherEpi.getUpdateSchemeInter()));
 	}
 }

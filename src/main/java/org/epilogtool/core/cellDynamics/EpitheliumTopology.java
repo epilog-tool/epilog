@@ -1,4 +1,4 @@
-package org.epilogtool.core;
+package org.epilogtool.core.cellDynamics;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,22 +10,33 @@ import java.util.Random;
 import java.util.Set;
 
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.topology.Topology;
+import org.epilogtool.core.EpitheliumGrid;
 
-public class PopulationTopology {
+public class EpitheliumTopology {
 	
 	private byte[][] spaceGrid;
 	private float[][] tensionGrid;
 	private Topology topology;
-	private float maxDist;
+	private int maxDist;
 	private Random generator;
 
-	public PopulationTopology(EpitheliumGrid grid) {
-		this.topology = grid.getTopology().clone();
-		this.maxDist = (float) Math.min(this.topology.getX(), this.topology.getY())/4;
+	public EpitheliumTopology(Epithelium epi) {
+		this.topology = epi.getEpitheliumGrid().getTopology().clone();
+		this.maxDist = (int) Math.max(this.topology.getX(), this.topology.getY())/4;
 		this.generator = new Random();
-		this.buildSpaceGrid(grid);
+		this.buildSpaceGrid(epi.getEpitheliumGrid());
 		this.buildTensionGrid();
+	}
+	
+	private EpitheliumTopology(Topology topology, byte[][] 
+			spaceGrid, float[][] tensionGrid) {
+		this.topology = topology.clone();
+		this.spaceGrid = spaceGrid.clone();
+		this.tensionGrid = tensionGrid.clone();
+		this.maxDist = (int) Math.max(this.topology.getX(), this.topology.getY())/4;
+		this.generator = new Random();
 	}
 	
 	private void buildSpaceGrid(EpitheliumGrid grid) {
@@ -45,17 +56,13 @@ public class PopulationTopology {
 		this.tensionGrid = new float[this.topology.getX()][this.topology.getY()];
 		for (int x = 0; x < this.topology.getX(); x++) {
 			for (int y = 0; y < this.topology.getY(); y ++) {
-				this.setTension(x, y);
+				this.setTotalTension(x, y);
 			}
 		}
 	}
 	
-	private void setTension(int x, int y){
+	private void setTotalTension(int x, int y){
 		float totalTension = 0;
-		if (this.spaceGrid[x][y]==0) {
-			this.tensionGrid[x][y] = totalTension;
-			return;
-		}
 		for (int distance = 1; distance <= this.maxDist; distance ++) {
 			float distanceWeight = this.getDistanceWeight(distance);
 			float distTension = (float) 0.0;
@@ -74,7 +81,7 @@ public class PopulationTopology {
 		return (1/this.maxDist)*(1-distance)+1;
 	}
 	
-	public List<Tuple2D<Integer>> path2Border(int x, int y) {
+	public List<Tuple2D<Integer>> divisionPath(int x, int y) {
 		Tuple2D<Integer> currPosition = new Tuple2D<Integer>(x, y);
 		List<Tuple2D<Integer>> path = new ArrayList<Tuple2D<Integer>>();
 		path.add(currPosition);
@@ -89,7 +96,7 @@ public class PopulationTopology {
 				}
 			}
 			if (possiblePaths.size() == 0) {
-				path = this.path2BorderHelper(path);
+				path = this.divisionPathHelper(path);
 				currPosition = path.get(path.size()-1);
 				continue;
 			}
@@ -102,10 +109,11 @@ public class PopulationTopology {
 			}
 			path.add(currPosition);
 		}
+		Collections.reverse(path);
 		return path;
 	}
 	
-	private List<Tuple2D<Integer>> path2BorderHelper(List<Tuple2D<Integer>> path) {
+	private List<Tuple2D<Integer>> divisionPathHelper(List<Tuple2D<Integer>> path) {
 		
 		Tuple2D<Integer> originalPos = path.get(path.size()-1);
 		float currTension = this.tensionGrid[originalPos.getX()][originalPos.getY()];
@@ -163,7 +171,7 @@ public class PopulationTopology {
 		return path;
 	}
 	
-	public List<Tuple2D<Integer>> linearPath2Border(int x, int y) {
+	public List<Tuple2D<Integer>> divisionLinearPath(int x, int y) {
 		List<Tuple2D<Integer>> path = new ArrayList<Tuple2D<Integer>>();
 		
 		//Check cell surroundings until empty spot is found
@@ -215,19 +223,27 @@ public class PopulationTopology {
 		path.add(new Tuple2D<Integer>(x, y));
 		return path;
 	}
+
+	public List<Tuple2D<Integer>> collapsingPath(int x, int y) {
+		List<Tuple2D<Integer>> path = new ArrayList<Tuple2D<Integer>>();
+		
+		return path;
+	}
 	
 	private void updatePopulationTopology(int x, int y, byte value) {
 		if (this.spaceGrid[x][y]==value) {
 			return;
 		}
 		this.spaceGrid[x][y] = value;
+		int sign = (value == 0) ? -1 : 1;
 		for (int distance = 1; distance <= maxDist; distance ++) {
+			float weight = this.getDistanceWeight(distance);
+			float effect = sign/(6*distance)*weight;
 			Set<Tuple2D<Integer>> tuples2update = this.topology.getPositionNeighbours(x, y, distance, distance);
 			for (Tuple2D<Integer> tuple2update : tuples2update) {
-				this.setTension(tuple2update.getX(), tuple2update.getY());
+				this.tensionGrid[tuple2update.getX()][tuple2update.getY()] += effect;
 			}
 		}
-		
 	}
 		
 	public byte[][] getSpaceGrid() {
@@ -236,6 +252,10 @@ public class PopulationTopology {
 	
 	public float[][] getTensionGrid() {
 		return this.tensionGrid;
+	}
+	
+	public EpitheliumTopology clone() {
+		return new EpitheliumTopology(this.topology, this.spaceGrid, this.tensionGrid);
 	}
 
 }

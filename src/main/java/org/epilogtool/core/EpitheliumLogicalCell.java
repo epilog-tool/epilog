@@ -8,11 +8,9 @@ public class EpitheliumLogicalCell {
 	private LogicalModel model;
 	private byte[] state;
 	private AbstractPerturbation perturbation;
-	private StateClassification modelState;
 
 	public EpitheliumLogicalCell(LogicalModel m) {
 		this.setModel(m);
-		this.modelState = StateClassification.DEFAULT;
 	}
 	
 	public void setModel(LogicalModel m) {
@@ -38,10 +36,6 @@ public class EpitheliumLogicalCell {
 			return;
 		state[index] = value;
 	}
-	
-	public void setModelState(StateClassification modelState) {
-		this.modelState = modelState;
-	}
 
 	public AbstractPerturbation getPerturbation() {
 		return this.perturbation;
@@ -65,10 +59,6 @@ public class EpitheliumLogicalCell {
 				return i;
 		}
 		return -1;
-	}
-	
-	public StateClassification getModelState() {
-		return this.modelState;
 	}
 	
 	public boolean isEmptyModel() {

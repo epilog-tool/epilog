@@ -17,7 +17,6 @@ import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.colomoto.logicalmodel.tool.simulation.updater.PriorityClasses;
 import org.colomoto.logicalmodel.tool.simulation.updater.PriorityUpdater;
 import org.epilogtool.common.Tuple2D;
-import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
@@ -32,7 +31,6 @@ import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationEx
  */
 public class Simulation {
 	private Epithelium epithelium;
-	private EpitheliumGrid neighbouringEpi;
 	private List<EpitheliumGrid> gridHistory;
 	private List<String> gridHashHistory;
 	private boolean stable;
@@ -54,7 +52,6 @@ public class Simulation {
 	 */
 	public Simulation(Epithelium e) {
 		this.epithelium = e;
-		this.neighbouringEpi = e.getEpitheliumGrid().clone();
 		this.gridHistory = new ArrayList<EpitheliumGrid>();
 		this.gridHistory.add(this.epithelium.getEpitheliumGrid());
 		this.gridHashHistory = new ArrayList<String>();
@@ -105,8 +102,7 @@ public class Simulation {
 			return currGrid;
 		}
 
-		this.generateNeighboursEpithelium();
-		EpitheliumGrid currNeighboursGrid = this.neighbouringEpi;
+		EpitheliumGrid neighboursGrid = this.getNeighboursGrid();
 
 		EpitheliumGrid nextGrid = currGrid.clone();
 
@@ -114,7 +110,7 @@ public class Simulation {
 				.getIntegrationComponentPairs();
 
 		IntegrationFunctionEvaluation evaluator = new IntegrationFunctionEvaluation(
-				currNeighboursGrid, this.epithelium.getProjectFeatures());
+				neighboursGrid, this.epithelium.getProjectFeatures());
 
 		// Gets the set of cells that can be updated
 		// And builds the default next grid (= current grid)
@@ -245,20 +241,19 @@ public class Simulation {
 		return this.epithelium;
 	}
 
-	private void generateNeighboursEpithelium() {
+	private EpitheliumGrid getNeighboursGrid() {
 		// Creates an epithelium which is only visited to 'see' neighbours and
 		// their states
 
-		EpitheliumGrid tmpNeighbourEpi = this.getGridAt(
-				this.gridHistory.size() - 1).clone();
+		EpitheliumGrid neighbourEpi = this.getCurrentGrid().clone();
 
 		Map<ComponentPair, Float> mSigmaAsync = this.epithelium
 				.getUpdateSchemeInter().getCPSigmas();
 
-		Map<LogicalModel, List<Tuple2D<Integer>>> mapModelPositions = tmpNeighbourEpi
+		Map<LogicalModel, List<Tuple2D<Integer>>> mapModelPositions = neighbourEpi
 				.getModelPositions();
 		if (mSigmaAsync.size() == 0) {
-			this.neighbouringEpi = tmpNeighbourEpi;
+			return neighbourEpi;
 		} else {
 			EpitheliumGrid delayGrid = this.gridHistory.get(0);
 			if (this.gridHistory.size() >= 2) {
@@ -282,13 +277,13 @@ public class Simulation {
 					for (Tuple2D<Integer> tuple : selectedModelPositions) {
 						byte[] delayState = delayGrid.getCellState(
 								tuple.getX(), tuple.getY());
-						tmpNeighbourEpi.setCellComponentValue(tuple.getX(),
+						neighbourEpi.setCellComponentValue(tuple.getX(),
 								tuple.getY(), nodeID,
 								(byte) delayState[nodePosition]);
 					}
 				}
 			}
-			this.neighbouringEpi = tmpNeighbourEpi;
+			return neighbourEpi;
 		}
 	}
 }

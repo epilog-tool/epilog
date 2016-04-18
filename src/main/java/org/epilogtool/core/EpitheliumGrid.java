@@ -177,9 +177,21 @@ public class EpitheliumGrid {
 		return this.gridEpiCell[x][y].clone();
 	}
 	
-	protected void cloneEpitheliumCell(int x1, int y1, int x2, int y2) {
-		EpitheliumCell epiCell = this.cloneEpitheliumCellAt(x1, y1);
-		this.gridEpiCell[x2][y2] = epiCell;
+	private void cloneCellPosition(Tuple2D<Integer> originalPos, Tuple2D<Integer> clonedPos) {
+		LogicalModel originalModel = this.getModel(originalPos.getX(), originalPos.getY());
+		LogicalModel clonedModel = this.getModel(clonedPos.getX(), clonedPos.getY());
+		if (!(clonedModel==originalModel)) {
+			this.modelPositions.get(clonedModel).remove(clonedPos);
+			this.modelPositions.get(originalModel).add(clonedPos);
+		}
+		this.gridEpiCell[clonedPos.getX()][clonedPos.getY()] = 
+				this.gridEpiCell[originalPos.getX()][originalPos.getY()].clone();
+	}
+	
+	public void shiftCells(List<Tuple2D<Integer>> path) {
+		for (int index = 1; index < path.size(); index ++) {
+			this.cloneCellPosition(path.get(index), path.get(index-1));
+		}
 	}
 		
 	protected int emptyModelNumber(){
