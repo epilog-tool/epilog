@@ -2,12 +2,14 @@ package org.epilogtool.core;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
+import org.epilogtool.core.cellDynamics.CellStatus;
 
 public class EpitheliumLogicalCell {
 
 	private LogicalModel model;
 	private byte[] state;
 	private AbstractPerturbation perturbation;
+	private CellStatus cellStatus;
 
 	public EpitheliumLogicalCell(LogicalModel m) {
 		this.setModel(m);
@@ -20,6 +22,7 @@ public class EpitheliumLogicalCell {
 			this.state[i] = 0;
 		}
 		this.perturbation = null;
+		this.cellStatus = CellStatus.DEFAULT;
 	}
 	
 	public void setState(byte[] state) {
@@ -34,7 +37,12 @@ public class EpitheliumLogicalCell {
 		int index = this.getNodeIndex(nodeID);
 		if (index < 0)
 			return;
+		value = (byte) Math.min(value, this.model.getNodeOrder().get(index).getMax());
 		state[index] = value;
+	}
+	
+	public void setCellStatus(CellStatus status) {
+		this.cellStatus = status;
 	}
 
 	public AbstractPerturbation getPerturbation() {
@@ -47,6 +55,10 @@ public class EpitheliumLogicalCell {
 	
 	public byte getNodeValue(String nodeID){
 		return this.getState()[this.getNodeIndex(nodeID)];
+	}
+	
+	public CellStatus getCellStatus() {
+		return this.cellStatus;
 	}
 
 	public LogicalModel getModel() {

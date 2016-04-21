@@ -2,7 +2,6 @@ package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -33,6 +32,7 @@ import org.colomoto.logicalmodel.NodeInfo;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
+import org.epilogtool.core.EpitheliumEnvironmentalInputs;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
 import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
@@ -47,6 +47,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	private final int JTF_WIDTH = 30;
 
 	private EpitheliumIntegrationFunctions userIntegrationFunctions;
+	private EpitheliumEnvironmentalInputs epitheliumInputs;
 	private String activeNodeID;
 	private String activeModel;
 
@@ -68,6 +69,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 
 		this.userIntegrationFunctions = this.epithelium
 				.getIntegrationFunctions().clone();
+		this.epitheliumInputs = this.epithelium.getEnvironmentalInputs().clone();
 		this.activeNodeID = null;
 
 		// North Panel
@@ -155,41 +157,55 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 
 	private void updateNodeID() {
 		this.jpNRTop.removeAll();
+		this.jpNRBottom.removeAll();
 		ButtonGroup group = new ButtonGroup();
 		this.jpNRTop.add(new JLabel(this.activeNodeID + ": "));
-		JRadioButton jrEnv = new JRadioButton("Environment");
+		JRadioButton jrModelInput = new JRadioButton("Model Input");
+		jrModelInput.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				paintModelInputPanel();
+				// Re-Paint
+				getParent().repaint();
+			}
+		});
+		group.add(jrModelInput);
+		this.jpNRTop.add(jrModelInput);
+		JRadioButton jrModelInt = new JRadioButton("Model Integration");
+		jrModelInt.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				paintModelIntegrationPanel();
+				// Re-Paint
+				getParent().repaint();
+			}
+		});
+		group.add(jrModelInt);
+		this.jpNRTop.add(jrModelInt);
+		JRadioButton jrEnv = new JRadioButton("Epithelium Environmental");
 		jrEnv.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				paintEnvironmentPanel();
+				paintEpitheliumInputPanel();
 				// Re-Paint
 				getParent().repaint();
 			}
 		});
 		group.add(jrEnv);
 		this.jpNRTop.add(jrEnv);
-		JRadioButton jrInt = new JRadioButton("Integration");
-		jrInt.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				paintIntegrationPanel();
-				// Re-Paint
-				getParent().repaint();
-			}
-		});
-		group.add(jrInt);
-		this.jpNRTop.add(jrInt);
 		LogicalModel m = this.epithelium.getProjectFeatures().getModel(
 				this.activeModel);
 		NodeInfo node = this.epithelium.getProjectFeatures().getNodeInfo(
 				this.activeNodeID, m);
 		if (this.userIntegrationFunctions
 				.containsComponentPair(new ComponentPair(m, node))) {
-			jrInt.setSelected(true);
-			paintIntegrationPanel();
-		} else {
+			jrModelInt.setSelected(true);
+			paintModelIntegrationPanel();
+		} else if (this.epitheliumInputs.containsComponent(new ComponentPair(m, node))) {
 			jrEnv.setSelected(true);
-			paintEnvironmentPanel();
+		}else {
+			jrModelInput.setSelected(true);
+			paintModelInputPanel();
 		}
 	}
 
@@ -222,14 +238,23 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		}
 	}
 
-	private void paintEnvironmentPanel() {
+	private void paintModelInputPanel() {
 		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
 		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
+		this.userIntegrationFunctions.removeComponent(cp);
+		this.epitheliumInputs.removeComponent(cp);
+		this.jpNRBottom.removeAll();
+	}
+	
+	private void paintEpitheliumInputPanel() {
+		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
+		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
+		this.epitheliumInputs.addComponent(cp);
 		this.userIntegrationFunctions.removeComponent(cp);
 		this.jpNRBottom.removeAll();
 	}
 	
-	private void paintIntegrationPanel() {
+	private void paintModelIntegrationPanel() {
 		// GUI
 		this.jpNRBottom.removeAll();
 
@@ -237,6 +262,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
 		if (!this.userIntegrationFunctions.containsComponentPair(cp)) {
 			this.userIntegrationFunctions.addComponent(cp);
+			this.epitheliumInputs.removeComponent(cp);
 		}
 		ComponentIntegrationFunctions cfi = this.userIntegrationFunctions
 				.getComponentIntegrationFunctions(cp);
@@ -325,6 +351,8 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	protected void buttonReset() {
 		this.userIntegrationFunctions = this.epithelium
 				.getIntegrationFunctions().clone();
+		this.epitheliumInputs = this.epithelium
+				.getEnvironmentalInputs().clone();
 		this.updateNodeID();
 		// Repaint
 		this.getParent().repaint();
@@ -349,6 +377,14 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 									cifClone.getFunctions().get(i - 1));
 				}
 			}
+			if (this.epitheliumInputs.containsComponent(cp) && 
+					!this.epithelium.getEnvironmentalInputs().containsComponent(cp)) {
+				this.epithelium.getEnvironmentalInputs().addComponent(cp);
+			}
+			if (!this.epitheliumInputs.containsComponent(cp) &&
+					this.epithelium.getEnvironmentalInputs().containsComponent(cp)) {
+				this.epithelium.getEnvironmentalInputs().removeComponent(cp);
+			}
 		}
 	}
 
@@ -370,28 +406,19 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 			if (!cifOrig.equals(cifClone))
 				return true;
 		}
+		if (!this.epitheliumInputs.getAllEnvironmentalComponents()
+				.equals(this.epithelium.getEnvironmentalInputs()
+						.getAllEnvironmentalComponents())) 
+			return true;
 		return false;
 	}
 
 	@Override
 	public void applyChange() {
+		//FIXME: if a model is no longer in the epi, should we still save its 
+		//input definitions?
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
 				this.epithelium.getEpitheliumGrid().getModelSet());
-		EpitheliumIntegrationFunctions epiFunc = new EpitheliumIntegrationFunctions();
-		for (LogicalModel m : modelList) {
-			for (NodeInfo node : m.getNodeOrder()) {
-				ComponentPair cp = new ComponentPair(m, node);
-				if (this.userIntegrationFunctions.containsComponentPair(cp)) {
-					// Already exists
-					epiFunc.addComponentFunctions(cp,
-							this.userIntegrationFunctions
-									.getComponentIntegrationFunctions(cp));
-				} else {
-					// Adds a new one
-					epiFunc.addComponent(cp);
-				}
-			}
-		}
 		this.jpNLTop.removeAll();
 		this.jpNLTop.add(this.newModelCombobox(modelList));
 		this.activeModel = this.projectFeatures.getModelName(modelList.get(0));

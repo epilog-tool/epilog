@@ -34,6 +34,7 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.Epithelium;
+import org.epilogtool.core.EpitheliumEnvironmentalInputs;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
 import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
@@ -41,6 +42,7 @@ import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.VisualGridInitialConditions;
 import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.io.ButtonFactory;
+import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
 
 public class EpiTabInitialConditions extends EpiTabDefinitions {
@@ -332,10 +334,10 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.jpRCenter.add(jpRRCTop);
 
 		// Input components
-		JPanel jpRRCBottom = new JPanel(new GridBagLayout());
+		JPanel jpRRCCenter = new JPanel(new GridBagLayout());
 		gbc = new GridBagConstraints();
 		gbc.insets = new Insets(1, 5, 1, 0);
-		jpRRCBottom.setBorder(BorderFactory
+		jpRRCCenter.setBorder(BorderFactory
 				.createTitledBorder("Input components"));
 		List<String> lInputs = new ArrayList<String>(this.epithelium
 				.getProjectFeatures().getModelNodeIDs(m, true));
@@ -343,12 +345,46 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		List<String> lEnvInputCompsFromSelectedModels = new ArrayList<String>();
 		for (String nodeID : lInputs) {
 			if (!this.epithelium.isIntegrationComponent(this.epithelium
-					.getProjectFeatures().getNodeInfo(nodeID, m))) {
+					.getProjectFeatures().getNodeInfo(nodeID, m))
+					&& !this.epithelium.isEnvironmentalComponent(this.epithelium
+							.getProjectFeatures().getNodeInfo(nodeID, m))) {
 				lEnvInputCompsFromSelectedModels.add(nodeID);
 			}
 		}
 		y = 0;
 		for (String nodeID : lEnvInputCompsFromSelectedModels) {
+			gbc.gridy = y;
+			y++;
+			this.lNodeInPanel.add(nodeID);
+			if (this.mNode2Checkbox.get(nodeID).isSelected()) {
+				this.mNode2ValueSelected.put(nodeID, (Byte) this.mNode2Combobox
+						.get(nodeID).getSelectedItem());
+			}
+			gbc.gridx = 0;
+			gbc.anchor = GridBagConstraints.WEST;
+			jpRRCCenter.add(this.mNode2Checkbox.get(nodeID), gbc);
+			gbc.gridx = 1;
+			jpRRCCenter.add(this.mNode2Combobox.get(nodeID), gbc);
+			gbc.gridx = 2;
+			JButton jbTmp = this.mNode2JButton.get(nodeID);
+			jbTmp.setBackground(this.epithelium.getProjectFeatures()
+					.getNodeColor(nodeID));
+			jpRRCCenter.add(jbTmp, gbc);
+		}
+		this.jpRCenter.add(jpRRCCenter);
+		
+		// Environmental components
+		JPanel jpRRCBottom = new JPanel(new GridBagLayout());
+		gbc = new GridBagConstraints();
+		gbc.insets = new Insets(1, 5, 1, 0);
+		List<String> lEnvironmentalComponents = new ArrayList<String>();
+		for (ComponentPair cp : this.epithelium.getEnvironmentalInputs().getModelEnvironmentalComponents(m)){
+			lEnvironmentalComponents.add(cp.getNodeInfo().getNodeID());
+		}
+		jpRRCBottom.setBorder(BorderFactory
+				.createTitledBorder("Environmental components"));
+		y = 0;
+		for (String nodeID : lEnvironmentalComponents) {
 			gbc.gridy = y;
 			y++;
 			this.lNodeInPanel.add(nodeID);

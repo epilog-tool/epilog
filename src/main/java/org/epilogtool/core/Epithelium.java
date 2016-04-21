@@ -25,6 +25,7 @@ public class Epithelium {
 	private String name;
 	private EpitheliumGrid grid;
 	private EpitheliumIntegrationFunctions integrationFunctions;
+	private EpitheliumEnvironmentalInputs environmentalInputs;
 	private EpitheliumPerturbations perturbations;
 	private EpitheliumUpdateSchemeIntra priorities;
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
@@ -44,6 +45,7 @@ public class Epithelium {
 		this.priorities = new EpitheliumUpdateSchemeIntra();
 		this.priorities.addModel(m);
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
+		this.environmentalInputs = new EpitheliumEnvironmentalInputs();
 		this.perturbations = new EpitheliumPerturbations();
 		this.perturbations.addModel(m);
 		this.projectFeatures = projectFeatures;
@@ -53,6 +55,7 @@ public class Epithelium {
 
 	private Epithelium(int x, int y, String topologyLayout, String name,
 			EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
+			EpitheliumEnvironmentalInputs eei,
 			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap,
 			ProjectFeatures pf, EpitheliumUpdateSchemeInter usi) {
 		this.x = x;
@@ -62,6 +65,7 @@ public class Epithelium {
 		this.grid = grid;
 		this.priorities = epc;
 		this.integrationFunctions = eif;
+		this.environmentalInputs = eei;
 		this.projectFeatures = pf;
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
@@ -70,9 +74,9 @@ public class Epithelium {
 	public Epithelium clone() {
 		return new Epithelium(this.x, this.y, this.topologyLayout, "CopyOf_"
 				+ this.name, this.grid.clone(),
-				this.integrationFunctions.clone(), this.priorities.clone(),
-				this.perturbations.clone(), this.projectFeatures,
-				this.updateSchemeInter.clone());
+				this.integrationFunctions.clone(), this.environmentalInputs.clone(), 
+				this.priorities.clone(), this.perturbations.clone(), 
+				this.projectFeatures, this.updateSchemeInter.clone());
 	}
 	
 	public String toString() {
@@ -187,6 +191,17 @@ public class Epithelium {
 
 	public EpitheliumIntegrationFunctions getIntegrationFunctions() {
 		return this.integrationFunctions;
+	}
+	
+	public boolean isEnvironmentalComponent(NodeInfo node) {
+		for (ComponentPair cp : this.environmentalInputs.getAllEnvironmentalComponents()) {
+			if (node.equals(cp.getNodeInfo())) return true;
+		}
+		return false;
+	}
+	
+	public EpitheliumEnvironmentalInputs getEnvironmentalInputs() {
+		return this.environmentalInputs;
 	}
 
 	public ModelPerturbations getModelPerturbations(LogicalModel m) {
