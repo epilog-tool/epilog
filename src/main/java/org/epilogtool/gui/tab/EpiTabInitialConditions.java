@@ -342,17 +342,17 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		List<String> lInputs = new ArrayList<String>(this.epithelium
 				.getProjectFeatures().getModelNodeIDs(m, true));
 		Collections.sort(lInputs, ObjectComparator.STRING);
-		List<String> lEnvInputCompsFromSelectedModels = new ArrayList<String>();
+		List<String> lModelEnvInputs = new ArrayList<String>();
 		for (String nodeID : lInputs) {
 			if (!this.epithelium.isIntegrationComponent(this.epithelium
 					.getProjectFeatures().getNodeInfo(nodeID, m))
-					&& !this.epithelium.isEnvironmentalComponent(this.epithelium
-							.getProjectFeatures().getNodeInfo(nodeID, m))) {
-				lEnvInputCompsFromSelectedModels.add(nodeID);
+					&& !this.epithelium.isEnvironmentalComponent(new ComponentPair(m, this.epithelium
+									.getProjectFeatures().getNodeInfo(nodeID, m)))) {
+				lModelEnvInputs.add(nodeID);
 			}
 		}
 		y = 0;
-		for (String nodeID : lEnvInputCompsFromSelectedModels) {
+		for (String nodeID : lModelEnvInputs) {
 			gbc.gridy = y;
 			y++;
 			this.lNodeInPanel.add(nodeID);

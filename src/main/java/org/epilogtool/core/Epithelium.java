@@ -193,11 +193,8 @@ public class Epithelium {
 		return this.integrationFunctions;
 	}
 	
-	public boolean isEnvironmentalComponent(NodeInfo node) {
-		for (ComponentPair cp : this.environmentalInputs.getAllEnvironmentalComponents()) {
-			if (node.equals(cp.getNodeInfo())) return true;
-		}
-		return false;
+	public boolean isEnvironmentalComponent(ComponentPair cp) {
+		return this.environmentalInputs.containsComponent(cp);
 	}
 	
 	public EpitheliumEnvironmentalInputs getEnvironmentalInputs() {

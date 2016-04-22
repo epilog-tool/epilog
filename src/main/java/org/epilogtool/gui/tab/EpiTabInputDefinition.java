@@ -41,13 +41,13 @@ import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
 
-public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
+public class EpiTabInputDefinition extends EpiTabDefinitions {
 	private static final long serialVersionUID = -2124909766318378839L;
 
 	private final int JTF_WIDTH = 30;
 
 	private EpitheliumIntegrationFunctions userIntegrationFunctions;
-	private EpitheliumEnvironmentalInputs epitheliumInputs;
+	private EpitheliumEnvironmentalInputs environmentalInputs;
 	private String activeNodeID;
 	private String activeModel;
 
@@ -57,7 +57,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	private JPanel jpNRBottom;
 	private JPanel jpNLTop;
 
-	public EpiTabIntegrationFunctions(Epithelium e, TreePath path,
+	public EpiTabInputDefinition(Epithelium e, TreePath path,
 			ProjectChangedInTab projChanged, EpiTabChanged tabChanged,
 			ProjectFeatures projectFeatures) {
 		super(e, path, projChanged, tabChanged, projectFeatures);
@@ -69,7 +69,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 
 		this.userIntegrationFunctions = this.epithelium
 				.getIntegrationFunctions().clone();
-		this.epitheliumInputs = this.epithelium.getEnvironmentalInputs().clone();
+		this.environmentalInputs = this.epithelium.getEnvironmentalInputs().clone();
 		this.activeNodeID = null;
 
 		// North Panel
@@ -201,7 +201,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 				.containsComponentPair(new ComponentPair(m, node))) {
 			jrModelInt.setSelected(true);
 			paintModelIntegrationPanel();
-		} else if (this.epitheliumInputs.containsComponent(new ComponentPair(m, node))) {
+		} else if (this.environmentalInputs.containsComponent(new ComponentPair(m, node))) {
 			jrEnv.setSelected(true);
 		}else {
 			jrModelInput.setSelected(true);
@@ -242,14 +242,14 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
 		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
 		this.userIntegrationFunctions.removeComponent(cp);
-		this.epitheliumInputs.removeComponent(cp);
+		this.environmentalInputs.removeComponent(cp);
 		this.jpNRBottom.removeAll();
 	}
 	
 	private void paintEpitheliumInputPanel() {
 		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
 		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
-		this.epitheliumInputs.addComponent(cp);
+		this.environmentalInputs.addComponent(cp);
 		this.userIntegrationFunctions.removeComponent(cp);
 		this.jpNRBottom.removeAll();
 	}
@@ -262,7 +262,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
 		if (!this.userIntegrationFunctions.containsComponentPair(cp)) {
 			this.userIntegrationFunctions.addComponent(cp);
-			this.epitheliumInputs.removeComponent(cp);
+			this.environmentalInputs.removeComponent(cp);
 		}
 		ComponentIntegrationFunctions cfi = this.userIntegrationFunctions
 				.getComponentIntegrationFunctions(cp);
@@ -351,7 +351,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	protected void buttonReset() {
 		this.userIntegrationFunctions = this.epithelium
 				.getIntegrationFunctions().clone();
-		this.epitheliumInputs = this.epithelium
+		this.environmentalInputs = this.epithelium
 				.getEnvironmentalInputs().clone();
 		this.updateNodeID();
 		// Repaint
@@ -377,11 +377,11 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 									cifClone.getFunctions().get(i - 1));
 				}
 			}
-			if (this.epitheliumInputs.containsComponent(cp) && 
+			if (this.environmentalInputs.containsComponent(cp) && 
 					!this.epithelium.getEnvironmentalInputs().containsComponent(cp)) {
 				this.epithelium.getEnvironmentalInputs().addComponent(cp);
 			}
-			if (!this.epitheliumInputs.containsComponent(cp) &&
+			if (!this.environmentalInputs.containsComponent(cp) &&
 					this.epithelium.getEnvironmentalInputs().containsComponent(cp)) {
 				this.epithelium.getEnvironmentalInputs().removeComponent(cp);
 			}
@@ -406,7 +406,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 			if (!cifOrig.equals(cifClone))
 				return true;
 		}
-		if (!this.epitheliumInputs.getAllEnvironmentalComponents()
+		if (!this.environmentalInputs.getAllEnvironmentalComponents()
 				.equals(this.epithelium.getEnvironmentalInputs()
 						.getAllEnvironmentalComponents())) 
 			return true;

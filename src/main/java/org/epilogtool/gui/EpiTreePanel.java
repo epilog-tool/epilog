@@ -170,7 +170,7 @@ public class EpiTreePanel extends JPanel {
 		DefaultMutableTreeNode gm = new DefaultMutableTreeNode("Model Grid");
 		epiNode.add(gm);
 		DefaultMutableTreeNode it = new DefaultMutableTreeNode(
-				"Integration Components");
+				"Input Definition");
 		epiNode.add(it);
 		DefaultMutableTreeNode ic = new DefaultMutableTreeNode(
 				"Initial Condition");

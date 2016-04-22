@@ -9,24 +9,24 @@ import org.epilogtool.core.cellDynamics.CellStatus;
 import org.epilogtool.project.ComponentPair;
 
 public class EpitheliumCell {
-	private Map<ComponentPair, Byte> inputComponents;
+	private Map<ComponentPair, Byte> environmentalInputs;
 	private EpitheliumLogicalCell logicalCell;
 
 	public EpitheliumCell(LogicalModel m) {
-		this.inputComponents = new HashMap<ComponentPair, Byte>();
+		this.environmentalInputs = new HashMap<ComponentPair, Byte>();
 		this.logicalCell = new EpitheliumLogicalCell(m);
 		this.updateEnvironmentalInputs();
 		
 	}
 	
 	public EpitheliumCell() {
-		this.inputComponents = new HashMap<ComponentPair, Byte>();
+		this.environmentalInputs = new HashMap<ComponentPair, Byte>();
 		this.logicalCell = new EpitheliumLogicalCell(EmptyModel.getInstance().getModel());
 	}
 	
 	private EpitheliumCell(EpitheliumLogicalCell logicalCell, Map<ComponentPair, Byte> inputComponents){
 		this.logicalCell = logicalCell;
-		this.inputComponents = inputComponents;
+		this.environmentalInputs = inputComponents;
 	}
 	
 	private EpitheliumLogicalCell getLogicalCell() {
@@ -39,9 +39,9 @@ public class EpitheliumCell {
 	}
 	
 	private void updateEnvironmentalInputs() {
-		for (ComponentPair cp : this.inputComponents.keySet()) {
+		for (ComponentPair cp : this.environmentalInputs.keySet()) {
 			if (this.logicalCell.getModel().equals(cp.getModel())) {
-				this.setValue(cp.getNodeInfo().getNodeID(), this.inputComponents.get(cp));
+				this.setValue(cp.getNodeInfo().getNodeID(), this.environmentalInputs.get(cp));
 			}
 		}
 	}
@@ -63,12 +63,12 @@ public class EpitheliumCell {
 	}
 	
 	public void addInputComponent(ComponentPair cp, byte value) {
-		this.inputComponents.put(cp, value);
+		this.environmentalInputs.put(cp, value);
 		this.setValue(cp.getNodeInfo().getNodeID(), value);
 	}
 	
 	public void removeInputComponent(ComponentPair cp) {
-		this.inputComponents.remove(cp);
+		this.environmentalInputs.remove(cp);
 		this.setValue(cp.getNodeInfo().getNodeID(), (byte) 0);
 	}
 
@@ -111,7 +111,7 @@ public class EpitheliumCell {
 	
 	public EpitheliumCell clone() {
 		EpitheliumLogicalCell logicalCell = this.logicalCell.clone();
-		Map<ComponentPair, Byte> inputComponents = new HashMap<ComponentPair, Byte>(this.inputComponents);
+		Map<ComponentPair, Byte> inputComponents = new HashMap<ComponentPair, Byte>(this.environmentalInputs);
 		return new EpitheliumCell(logicalCell, inputComponents);
 	}
 }

@@ -42,7 +42,7 @@ import org.epilogtool.gui.menu.ToolsMenu;
 import org.epilogtool.gui.tab.EpiTab;
 import org.epilogtool.gui.tab.EpiTabEpithelialUpdateScheme;
 import org.epilogtool.gui.tab.EpiTabInitialConditions;
-import org.epilogtool.gui.tab.EpiTabIntegrationFunctions;
+import org.epilogtool.gui.tab.EpiTabInputDefinition;
 import org.epilogtool.gui.tab.EpiTabModelGrid;
 import org.epilogtool.gui.tab.EpiTabModelUpdateScheme;
 import org.epilogtool.gui.tab.EpiTabPerturbations;
@@ -555,8 +555,8 @@ public class EpiGUI extends JFrame {
 			if (tabName.equals("Initial Condition")) {
 				epiTab = new EpiTabInitialConditions(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
-			} else if (tabName.equals("Integration Components")) {
-				epiTab = new EpiTabIntegrationFunctions(epi, selPath,
+			} else if (tabName.equals("Input Definition")) {
+				epiTab = new EpiTabInputDefinition(epi, selPath,
 						projChanged, tabChanged,
 						this.project.getProjectFeatures());
 			} else if (tabName.equals("Component Perturbations")) {

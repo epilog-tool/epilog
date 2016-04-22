@@ -51,7 +51,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 						if (sLeaf.equals("Model Grid")) {
 							tipKey = this.getTooltipModelGrid(epi);
 						} else if (sLeaf.equals("Integration Components")) {
-							tipKey = this.getTooltipIntegration(epi);
+							tipKey = this.getTooltipInputDefinition(epi);
 						} else if (sLeaf.equals("Initial Condition")) {
 							tipKey = this.getTooltipInitCond(epi);
 						} else if (sLeaf.equals("Component Perturbations")) {
@@ -95,7 +95,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 		return tipKey;
 	}
 
-	private String getTooltipIntegration(Epithelium epi) {
+	private String getTooltipInputDefinition(Epithelium epi) {
 		String tipKey = "<html>";
 		EpitheliumIntegrationFunctions epiIF = epi.getIntegrationFunctions();
 		for (ComponentPair cp : epiIF.getComponentPair()) {

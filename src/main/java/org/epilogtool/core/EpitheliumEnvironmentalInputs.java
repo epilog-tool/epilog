@@ -1,5 +1,6 @@
 package org.epilogtool.core;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,7 +41,7 @@ public class EpitheliumEnvironmentalInputs {
 	}
 	
 	public Set<ComponentPair> getAllEnvironmentalComponents() {
-		return this.environmentInputs;
+		return Collections.unmodifiableSet(this.environmentInputs);
 	}
 	
 	public Set<ComponentPair> getModelEnvironmentalComponents(LogicalModel m) {
