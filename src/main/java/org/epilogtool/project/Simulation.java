@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 
@@ -16,8 +15,8 @@ import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.colomoto.logicalmodel.tool.simulation.updater.PriorityClasses;
 import org.colomoto.logicalmodel.tool.simulation.updater.PriorityUpdater;
+import org.epilogtool.common.RandomFactory;
 import org.epilogtool.common.Tuple2D;
-import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
@@ -123,7 +122,7 @@ public class Simulation {
 
 		for (int y = 0; y < currGrid.getY(); y++) {
 			for (int x = 0; x < currGrid.getX(); x++) {
-				if (currGrid.hasEmptyModel(x, y)) { 
+				if (currGrid.hasEmptyModel(x, y)) {
 					continue;
 				}
 				byte[] currState = currGrid.getCellState(x, y);
@@ -143,8 +142,8 @@ public class Simulation {
 
 		if (keys.size() > 0) {
 			// Randomize the order of cells to update
-			Collections.shuffle(keys,
-					new Random(Double.doubleToLongBits(Math.random())));
+			Collections.shuffle(keys, RandomFactory.getInstance()
+					.getGenerator());
 
 			// Inter-cellular alpha-asynchronism
 			float alphaProb = epithelium.getUpdateSchemeInter().getAlpha();
@@ -160,7 +159,8 @@ public class Simulation {
 			if (!atleastone && !keys.isEmpty()) {
 				// Updates at least one (asynchronous case: alpha=0.0)
 				Tuple2D<Integer> key = keys.pop();
-				nextGrid.setCellState(key.getX(), key.getY(), cells2update.get(key));
+				nextGrid.setCellState(key.getX(), key.getY(),
+						cells2update.get(key));
 			}
 		} else {
 			this.stable = true;
@@ -188,7 +188,7 @@ public class Simulation {
 
 		PriorityUpdater updater = this.updaterCache[x][y];
 		LogicalModel m = this.epithelium.getEpitheliumGrid().getModel(x, y);
-		
+
 		// 2. Update integration components
 		for (NodeInfo node : m.getNodeOrder()) {
 			ComponentPair nodeCP = new ComponentPair(m, node);
@@ -220,12 +220,13 @@ public class Simulation {
 	public boolean isStableAt(int i) {
 		return (i >= this.gridHistory.size() && this.stable);
 	}
-	
+
 	public boolean hasCycleAt(int i) {
-		if (!(this.epithelium.getUpdateSchemeInter().getAlpha()==1)) {
+		if (!(this.epithelium.getUpdateSchemeInter().getAlpha() == 1)) {
 			return false;
 		}
-		List<String> tmpList = new ArrayList<String>(this.gridHashHistory.subList(0, i));
+		List<String> tmpList = new ArrayList<String>(
+				this.gridHashHistory.subList(0, i));
 		Set<String> tmpSet = new HashSet<String>(tmpList);
 		return !(tmpSet.size() == tmpList.size());
 	}
@@ -275,8 +276,8 @@ public class Simulation {
 							.get(m);
 					int selectedCells = (int) Math.ceil((1 - sigma)
 							* modelPositions.size());
-					Collections.shuffle(modelPositions,
-							new Random(Double.doubleToLongBits(Math.random())));
+					Collections.shuffle(modelPositions, RandomFactory
+							.getInstance().getGenerator());
 					List<Tuple2D<Integer>> selectedModelPositions = modelPositions
 							.subList(0, selectedCells);
 					for (Tuple2D<Integer> tuple : selectedModelPositions) {
