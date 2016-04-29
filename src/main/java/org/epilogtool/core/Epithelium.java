@@ -12,6 +12,7 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.core.cellDynamics.EpitheliumTriggerManager;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
@@ -29,6 +30,7 @@ public class Epithelium {
 	private EpitheliumPerturbations perturbations;
 	private EpitheliumUpdateSchemeIntra priorities;
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
+	private EpitheliumTriggerManager cellStatusManager;
 	private ProjectFeatures projectFeatures;
 
 	public Epithelium(int x, int y, String topologyLayout, String name,
@@ -51,13 +53,15 @@ public class Epithelium {
 		this.projectFeatures = projectFeatures;
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(
 				EpitheliumUpdateSchemeInter.DEFAULT_ALPHA, new HashMap<ComponentPair, Float>());
+		this.cellStatusManager = new EpitheliumTriggerManager(this.grid.getModelSet());
 	}
 
 	private Epithelium(int x, int y, String topologyLayout, String name,
 			EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
 			EpitheliumEnvironmentalInputs eei,
 			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap,
-			ProjectFeatures pf, EpitheliumUpdateSchemeInter usi) {
+			ProjectFeatures pf, EpitheliumUpdateSchemeInter usi, 
+			EpitheliumTriggerManager cellStatusManager) {
 		this.x = x;
 		this.y = y;
 		this.topologyLayout = topologyLayout;
@@ -69,14 +73,15 @@ public class Epithelium {
 		this.projectFeatures = pf;
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
+		this.cellStatusManager = cellStatusManager;
 	}
 
 	public Epithelium clone() {
-		return new Epithelium(this.x, this.y, this.topologyLayout, "CopyOf_"
-				+ this.name, this.grid.clone(),
-				this.integrationFunctions.clone(), this.environmentalInputs.clone(), 
-				this.priorities.clone(), this.perturbations.clone(), 
-				this.projectFeatures, this.updateSchemeInter.clone());
+		return new Epithelium(this.x, this.y, this.topologyLayout, "CopyOf_" + this.name, 
+				this.grid.clone(), this.integrationFunctions.clone(), 
+				this.environmentalInputs.clone(), this.priorities.clone(), 
+				this.perturbations.clone(), this.projectFeatures, 
+				this.updateSchemeInter.clone(), this.cellStatusManager.clone());
 	}
 	
 	public String toString() {
@@ -270,6 +275,10 @@ public class Epithelium {
 		for (Tuple2D<Integer> tuple : lTuples) {
 			this.setModel(tuple.getX(), tuple.getY(), m);
 		}
+	}
+	
+	public EpitheliumTriggerManager getCellStatusManager() {
+		return this.cellStatusManager;
 	}
 
 	public int getX() {

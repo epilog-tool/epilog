@@ -12,8 +12,10 @@ import java.util.Set;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.core.cellDynamics.CellTrigger;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.core.topology.Topology;
+import org.epilogtool.project.ComponentPair;
 import org.epilogtool.services.TopologyService;
 
 public class EpitheliumGrid {
@@ -79,6 +81,14 @@ public class EpitheliumGrid {
 	public byte[] getCellState(int x, int y) {
 		return gridEpiCell[x][y].getState();
 	}
+	
+	public Map<ComponentPair, Byte> getCellEnvironment(int x, int y) {
+		return this.gridEpiCell[x][y].getCellEnvironment();
+	}
+	
+	public byte[] getCellInitialState(int x, int y) {
+		return gridEpiCell[x][y].getInitialState();
+	}
 
 	public AbstractPerturbation getPerturbation(int x, int y) {
 		return gridEpiCell[x][y].getPerturbation();
@@ -98,6 +108,10 @@ public class EpitheliumGrid {
 	
 	public Set<LogicalModel> getModelSet() {
 		return Collections.unmodifiableSet(this.modelSet);
+	}
+	
+	public CellTrigger getCellTrigger(int x, int y) {
+		return this.gridEpiCell[x][y].getCellTrigger();
 	}
 	
 	public boolean isEmptyCell(int x, int y) {
@@ -169,8 +183,36 @@ public class EpitheliumGrid {
 		gridEpiCell[x][y].setState(state);
 	}
 	
+	public void setCellInitialState(int x, int y, byte[] state) {
+		gridEpiCell[x][y].setInitialState(state);
+	}
+	
+	public void setCellTrigger(int x, int y, CellTrigger trigger) {
+		this.gridEpiCell[x][y].setCellTrigger(trigger);
+	}
+	
 	public void setCellComponentValue(int x, int y, String nodeID, byte value) {
 		gridEpiCell[x][y].setValue(nodeID, value);
+	}
+	
+	public void setEnvironmentalInput(int x, int y, ComponentPair cp, byte value) {
+		this.gridEpiCell[x][y].addEnvironmentalInput(cp, value);
+	}
+	
+	public void setGridEnvironment(ComponentPair cp) {
+		for (int x = 0; x < this.getX(); x ++) {
+			for (int y = 0; y < this.getY(); y ++) {
+				this.gridEpiCell[x][y].addEnvironmentalInput(cp, (byte) 0); 
+			}
+		}
+	}
+	
+	public void removeGridEnvironment(ComponentPair cp) {
+		for (int x = 0; x < this.getX(); x ++) {
+			for (int y = 0; y < this.getY(); y ++) {
+				this.gridEpiCell[x][y].removeEnvironmentalInput(cp);
+			}
+		}
 	}
 
 	public EpitheliumCell cloneEpitheliumCellAt(int x, int y) {
@@ -180,12 +222,16 @@ public class EpitheliumGrid {
 	private void cloneCellPosition(Tuple2D<Integer> originalPos, Tuple2D<Integer> clonedPos) {
 		LogicalModel originalModel = this.getModel(originalPos.getX(), originalPos.getY());
 		LogicalModel clonedModel = this.getModel(clonedPos.getX(), clonedPos.getY());
-		if (!(clonedModel==originalModel)) {
-			this.modelPositions.get(clonedModel).remove(clonedPos);
+		if (!(clonedModel.equals(originalModel)) 
+				&& !(EmptyModel.getInstance().isEmptyModel(originalModel))){
 			this.modelPositions.get(originalModel).add(clonedPos);
+			if (!(EmptyModel.getInstance().isEmptyModel(clonedModel))) {
+				this.modelPositions.get(clonedModel).remove(clonedPos);
+			}
 		}
-		this.gridEpiCell[clonedPos.getX()][clonedPos.getY()] = 
-				this.gridEpiCell[originalPos.getX()][originalPos.getY()].clone();
+		this.gridEpiCell[clonedPos.getX()][clonedPos.getY()]
+				.setLogicalCell(this.gridEpiCell[originalPos.getX()][originalPos.getY()]
+						.getLogicalCell().clone());
 	}
 	
 	public void shiftCells(List<Tuple2D<Integer>> path) {
@@ -194,7 +240,7 @@ public class EpitheliumGrid {
 		}
 	}
 		
-	protected int emptyModelNumber(){
+	public int emptyModelNumber(){
 		int gridSize = this.getX() * this.getY();
 		int cellNumber = 0;
 		for (LogicalModel m : this.modelPositions.keySet()) {

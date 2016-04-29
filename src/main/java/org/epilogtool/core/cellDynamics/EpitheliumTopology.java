@@ -24,7 +24,7 @@ public class EpitheliumTopology {
 
 	public EpitheliumTopology(Epithelium epi) {
 		this.topology = epi.getEpitheliumGrid().getTopology().clone();
-		this.maxDist = (int) Math.max(this.topology.getX(), this.topology.getY())/4;
+		this.maxDist = (int) Math.max(this.topology.getX(), this.topology.getY())/3;
 		this.generator = new Random();
 		this.buildSpaceGrid(epi.getEpitheliumGrid());
 		this.buildTensionGrid();
@@ -32,9 +32,9 @@ public class EpitheliumTopology {
 	
 	private EpitheliumTopology(Topology topology, byte[][] 
 			spaceGrid, float[][] tensionGrid) {
-		this.topology = topology.clone();
-		this.spaceGrid = spaceGrid.clone();
-		this.tensionGrid = tensionGrid.clone();
+		this.topology = topology;
+		this.spaceGrid = spaceGrid;
+		this.tensionGrid = tensionGrid;
 		this.maxDist = (int) Math.max(this.topology.getX(), this.topology.getY())/4;
 		this.generator = new Random();
 	}
@@ -95,18 +95,14 @@ public class EpitheliumTopology {
 					possiblePaths.add(neighbour);
 				}
 			}
-			if (possiblePaths.size() == 0) {
+			if (possiblePaths.size()==0) {
 				path = this.divisionPathHelper(path);
 				currPosition = path.get(path.size()-1);
 				continue;
 			}
 			possiblePaths.removeAll(path);
-			if (possiblePaths.size() > 1) {
-				int random = this.generator.nextInt(possiblePaths.size());
-				currPosition = new ArrayList<Tuple2D<Integer>>(possiblePaths).get(random);
-			} else {
-				currPosition = new ArrayList<Tuple2D<Integer>>(possiblePaths).get(0);
-			}
+			int random = this.generator.nextInt(possiblePaths.size());
+			currPosition = new ArrayList<Tuple2D<Integer>>(possiblePaths).get(random);
 			path.add(currPosition);
 		}
 		Collections.reverse(path);
@@ -230,10 +226,11 @@ public class EpitheliumTopology {
 		return path;
 	}
 	
-	private void updatePopulationTopology(int x, int y, byte value) {
+	public void updatePopulationTopology(int x, int y, byte value) {
 		if (this.spaceGrid[x][y]==value) {
 			return;
 		}
+		this.setTotalTension(x, y);
 		this.spaceGrid[x][y] = value;
 		int sign = (value == 0) ? -1 : 1;
 		for (int distance = 1; distance <= maxDist; distance ++) {
@@ -255,7 +252,9 @@ public class EpitheliumTopology {
 	}
 	
 	public EpitheliumTopology clone() {
-		return new EpitheliumTopology(this.topology, this.spaceGrid, this.tensionGrid);
+		return new EpitheliumTopology(this.topology.clone(), 
+				this.spaceGrid.clone(), 
+				this.tensionGrid.clone());
 	}
 
 }

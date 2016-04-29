@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
-import org.epilogtool.core.cellDynamics.CellStatus;
+import org.epilogtool.core.cellDynamics.CellTrigger;
 import org.epilogtool.project.ComponentPair;
 
 public class EpitheliumCell {
@@ -27,9 +27,15 @@ public class EpitheliumCell {
 	private EpitheliumCell(EpitheliumLogicalCell logicalCell, Map<ComponentPair, Byte> inputComponents){
 		this.logicalCell = logicalCell;
 		this.environmentalInputs = inputComponents;
+		this.updateEnvironmentalInputs();
 	}
 	
-	private EpitheliumLogicalCell getLogicalCell() {
+	public void setLogicalCell(EpitheliumLogicalCell logicalCell) {
+		this.logicalCell = logicalCell;
+		this.updateEnvironmentalInputs();
+	}
+	
+	public EpitheliumLogicalCell getLogicalCell() {
 		return this.logicalCell;
 	}
 	
@@ -40,7 +46,7 @@ public class EpitheliumCell {
 	
 	private void updateEnvironmentalInputs() {
 		for (ComponentPair cp : this.environmentalInputs.keySet()) {
-			if (this.logicalCell.getModel().equals(cp.getModel())) {
+			if (this.getModel().equals(cp.getModel())) {
 				this.setValue(cp.getNodeInfo().getNodeID(), this.environmentalInputs.get(cp));
 			}
 		}
@@ -48,6 +54,10 @@ public class EpitheliumCell {
 	
 	public void setState(byte[] state) {
 		this.logicalCell.setState(state);
+	}
+	
+	public void setInitialState(byte[] state) {
+		this.logicalCell.setInitialState(state);
 	}
 	
 	public void setPerturbation(AbstractPerturbation ap) {
@@ -58,18 +68,22 @@ public class EpitheliumCell {
 		this.logicalCell.setValue(nodeID, value);
 	}
 	
-	public void setCellStatus(CellStatus status) {
-		this.logicalCell.setCellStatus(status);
+	public void setCellTrigger(CellTrigger trigger) {
+		this.logicalCell.setCellTrigger(trigger);
 	}
 	
-	public void addInputComponent(ComponentPair cp, byte value) {
+	public void addEnvironmentalInput(ComponentPair cp, byte value) {
 		this.environmentalInputs.put(cp, value);
-		this.setValue(cp.getNodeInfo().getNodeID(), value);
+		if (this.getModel().equals(cp.getModel())) {
+			this.setValue(cp.getNodeInfo().getNodeID(), value);
+		}
 	}
 	
-	public void removeInputComponent(ComponentPair cp) {
+	public void removeEnvironmentalInput(ComponentPair cp) {
 		this.environmentalInputs.remove(cp);
-		this.setValue(cp.getNodeInfo().getNodeID(), (byte) 0);
+		if (this.getModel().equals(cp.getModel())) {
+			this.setValue(cp.getNodeInfo().getNodeID(), (byte) 0);
+		}
 	}
 
 	public AbstractPerturbation getPerturbation() {
@@ -78,6 +92,10 @@ public class EpitheliumCell {
 
 	public byte[] getState() {
 		return this.logicalCell.getState();
+	}
+	
+	public byte[] getInitialState() {
+		return this.logicalCell.getInitialState();
 	}
 
 	public LogicalModel getModel() {
@@ -92,8 +110,12 @@ public class EpitheliumCell {
 		return this.logicalCell.getNodeValue(nodeID);
 	}
 	
-	public CellStatus getCellStatus() {
-		return this.logicalCell.getCellStatus();
+	public CellTrigger getCellTrigger() {
+		return this.logicalCell.getCellTrigger();
+	}
+	
+	public Map<ComponentPair, Byte> getCellEnvironment() {
+		return this.environmentalInputs;
 	}
 	
 	public boolean isEmptyCell() {

@@ -2,7 +2,6 @@ package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -429,6 +428,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				byte[] stateOrig = gridOrig.getCellState(x, y);
 				if (!Arrays.equals(stateOrig, stateClone)) {
 					gridOrig.setCellState(x, y, stateClone);
+					gridOrig.setCellInitialState(x, y, stateClone);
 				}
 			}
 		}

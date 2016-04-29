@@ -2,14 +2,15 @@ package org.epilogtool.core;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
-import org.epilogtool.core.cellDynamics.CellStatus;
+import org.epilogtool.core.cellDynamics.CellTrigger;
 
 public class EpitheliumLogicalCell {
 
 	private LogicalModel model;
 	private byte[] state;
+	private byte[] initialState;
 	private AbstractPerturbation perturbation;
-	private CellStatus cellStatus;
+	private CellTrigger cellTrigger;
 
 	public EpitheliumLogicalCell(LogicalModel m) {
 		this.setModel(m);
@@ -21,12 +22,17 @@ public class EpitheliumLogicalCell {
 		for (int i = 0; i < this.state.length; i++) {
 			this.state[i] = 0;
 		}
+		this.initialState = this.state.clone();
 		this.perturbation = null;
-		this.cellStatus = CellStatus.DEFAULT;
+		this.cellTrigger = CellTrigger.DEFAULT;
 	}
 	
 	public void setState(byte[] state) {
 		this.state = state;
+	}
+	
+	public void setInitialState(byte[] state) {
+		this.initialState = state;
 	}
 	
 	public void setPerturbation(AbstractPerturbation ap) {
@@ -41,8 +47,8 @@ public class EpitheliumLogicalCell {
 		state[index] = value;
 	}
 	
-	public void setCellStatus(CellStatus status) {
-		this.cellStatus = status;
+	public void setCellTrigger(CellTrigger status) {
+		this.cellTrigger = status;
 	}
 
 	public AbstractPerturbation getPerturbation() {
@@ -53,12 +59,16 @@ public class EpitheliumLogicalCell {
 		return this.state;
 	}
 	
+	public byte[] getInitialState() {
+		return this.initialState;
+	}
+	
 	public byte getNodeValue(String nodeID){
 		return this.getState()[this.getNodeIndex(nodeID)];
 	}
 	
-	public CellStatus getCellStatus() {
-		return this.cellStatus;
+	public CellTrigger getCellTrigger() {
+		return this.cellTrigger;
 	}
 
 	public LogicalModel getModel() {
@@ -100,7 +110,7 @@ public class EpitheliumLogicalCell {
 		if (state.length != ecOut.state.length)
 			return false;
 		for (int i = 0; i < state.length; i++) {
-			if (state[i] != ecOut.state[i])
+			if (state[i] != ecOut.state[i] || this.initialState[i] != ecOut.initialState[i])
 				return false;
 		}
 		return true;
@@ -110,6 +120,8 @@ public class EpitheliumLogicalCell {
 		EpitheliumLogicalCell newCell = new EpitheliumLogicalCell(this.model);
 		newCell.setState(this.state.clone());
 		newCell.setPerturbation(this.perturbation);
+		newCell.setInitialState(this.initialState.clone());
+		newCell.setCellTrigger(this.cellTrigger);
 		return newCell;
 	}
 

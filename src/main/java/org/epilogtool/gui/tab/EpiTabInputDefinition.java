@@ -380,10 +380,12 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 			if (this.environmentalInputs.containsComponent(cp) && 
 					!this.epithelium.getEnvironmentalInputs().containsComponent(cp)) {
 				this.epithelium.getEnvironmentalInputs().addComponent(cp);
+				this.epithelium.getEpitheliumGrid().setGridEnvironment(cp);
 			}
 			if (!this.environmentalInputs.containsComponent(cp) &&
 					this.epithelium.getEnvironmentalInputs().containsComponent(cp)) {
 				this.epithelium.getEnvironmentalInputs().removeComponent(cp);
+				this.epithelium.getEpitheliumGrid().removeGridEnvironment(cp);
 			}
 		}
 	}
