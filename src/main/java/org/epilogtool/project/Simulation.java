@@ -173,10 +173,10 @@ public class Simulation {
 				keys.remove(key);
 				nextGrid.setCellState(key.getX(), key.getY(),
 						cells2update.get(key));
-				CellTrigger nextCellStatus = this.epithelium.getCellStatusManager()
-						.getCellStatus(currGrid
+				CellTrigger nextCellTrigger = this.epithelium.getEpitheliumTriggerManager()
+						.getCellTrigger(currGrid
 								.getModel(key.getX(), key.getY()), cells2update.get(key));
-				nextGrid.setCellTrigger(key.getX(), key.getY(), nextCellStatus);
+				nextGrid.setCellTrigger(key.getX(), key.getY(), nextCellTrigger);
 				atleastone = true;
 			}
 			if (!atleastone && !keys.isEmpty()) {
@@ -184,10 +184,10 @@ public class Simulation {
 				Tuple2D<Integer> key = keys.get(randomGenerator.nextInt(keys.size()));
 				keys.remove(key);
 				nextGrid.setCellState(key.getX(), key.getY(), cells2update.get(key));
-				CellTrigger nextCellStatus = this.epithelium.getCellStatusManager()
-						.getCellStatus(currGrid
+				CellTrigger nextCellTrigger = this.epithelium.getEpitheliumTriggerManager()
+						.getCellTrigger(currGrid
 								.getModel(key.getX(), key.getY()), cells2update.get(key));
-				nextGrid.setCellTrigger(key.getX(), key.getY(), nextCellStatus);
+				nextGrid.setCellTrigger(key.getX(), key.getY(), nextCellTrigger);
 			}
 		} 
 		
@@ -197,19 +197,20 @@ public class Simulation {
 		for (int x = 0; x < nextGrid.getX(); x ++) {
 			for (int y = 0; y < nextGrid.getY(); y ++) {
 				if (currGrid.isEmptyCell(x, y)) continue;
-				if (nextGrid.getCellTrigger(x, y).equals(CellTrigger.PROLIFERATION)
-						&& currGrid.getCellTrigger(x, y).equals(CellTrigger.PROLIFERATION)) {
-					cells2divide.add(new Tuple2D<Integer>(x, y));
+				if (currGrid.getCellTrigger(x, y).equals(CellTrigger.PROLIFERATION)) {
+					dynamics = true;
+					if (nextGrid.getCellTrigger(x, y).equals(CellTrigger.PROLIFERATION)) {
+						cells2divide.add(new Tuple2D<Integer>(x, y));
+					}
+				} else {
+					dynamics = false;
 				}
 			}
 		}
-		if (cells2divide.size() == 0) {
-			dynamics = false;
-		} 
-		//if (!updates && !dynamics) {
-		//	this.stable = true;
-		//	return currGrid;
-		//}
+		if (!updates && !dynamics) {
+			this.stable = true;
+			return currGrid;
+		}
 		if (cells2divide.size() > 0) {
 			while (emptyModelNumber > 0) {
 				Tuple2D<Integer> currPosition = cells2divide.get(randomGenerator.nextInt(cells2divide.size()));
@@ -217,13 +218,12 @@ public class Simulation {
 				List<Tuple2D<Integer>> path = this.epiTopology.divisionPath(currPosition.getX(), currPosition.getY());
 				Tuple2D<Integer> motherCell = path.get(path.size()-1).clone();
 				Tuple2D<Integer> daughterCell = path.get(path.size()-2).clone();
-				byte[] initialState = nextGrid.getCellInitialState(motherCell.getX(), motherCell.getY());
 				Tuple2D<Integer> exteriorPos = path.get(0);
 				nextGrid.shiftCells(path);
 				this.epiTopology.updatePopulationTopology(exteriorPos.getX(), exteriorPos.getY(), (byte) 1);
 				this.updateUpdaterCache(nextGrid, path);
-				nextGrid.setCellState(motherCell.getX(), motherCell.getY(), initialState);
-				nextGrid.setCellState(daughterCell.getX(), daughterCell.getY(), initialState);
+				nextGrid.setCell2Naive(motherCell.getX(), motherCell.getY());
+				nextGrid.setCell2Naive(daughterCell.getX(), daughterCell.getY());
 				emptyModelNumber -=1;
 				if (cells2divide.size()==0) break;
 			}

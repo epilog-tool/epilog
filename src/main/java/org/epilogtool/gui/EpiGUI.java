@@ -41,6 +41,7 @@ import org.epilogtool.gui.menu.SBMLMenu;
 import org.epilogtool.gui.menu.ToolsMenu;
 import org.epilogtool.gui.tab.EpiTab;
 import org.epilogtool.gui.tab.EpiTabEpithelialUpdateScheme;
+import org.epilogtool.gui.tab.EpiTabGridDynamics;
 import org.epilogtool.gui.tab.EpiTabInitialConditions;
 import org.epilogtool.gui.tab.EpiTabInputDefinition;
 import org.epilogtool.gui.tab.EpiTabModelGrid;
@@ -573,6 +574,9 @@ public class EpiGUI extends JFrame {
 						this.project.getProjectFeatures());
 			} else if (tabName.equals("Model Grid")) {
 				epiTab = new EpiTabModelGrid(epi, selPath, projChanged,
+						tabChanged, this.project.getProjectFeatures());
+			} else if (tabName.equals("Grid Dynamics")) {
+				epiTab = new EpiTabGridDynamics(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
 			}
 			if (epiTab != null) {

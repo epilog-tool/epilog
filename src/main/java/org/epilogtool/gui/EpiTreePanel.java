@@ -183,6 +183,9 @@ public class EpiTreePanel extends JPanel {
 		DefaultMutableTreeNode eu = new DefaultMutableTreeNode(
 				"Epithelial Updating");
 		epiNode.add(eu);
+		DefaultMutableTreeNode cd = new DefaultMutableTreeNode(
+				"Grid Dynamics");
+		epiNode.add(cd);
 		
 		this.epiTree.setRootVisible(false);
 		DefaultTreeModel model = (DefaultTreeModel) this.epiTree.getModel();
