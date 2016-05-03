@@ -308,8 +308,10 @@ public class EpitheliumGrid {
 		}
 		Topology newTop = this.topology.clone();
 		Set<LogicalModel> newModelSet = new HashSet<LogicalModel>(this.modelSet);
-		Map<LogicalModel, List<Tuple2D<Integer>>> newModelPositions = new HashMap<LogicalModel, List<Tuple2D<Integer>>>(
-				this.modelPositions);
+		Map<LogicalModel, List<Tuple2D<Integer>>> newModelPositions = new HashMap<LogicalModel, List<Tuple2D<Integer>>>();
+		for (LogicalModel m : this.modelPositions.keySet()) {
+			newModelPositions.put(m, new ArrayList<Tuple2D<Integer>>(this.modelPositions.get(m)));
+		}
 		return new EpitheliumGrid(newGrid, newTop, newModelSet,
 				newModelPositions);
 	}
