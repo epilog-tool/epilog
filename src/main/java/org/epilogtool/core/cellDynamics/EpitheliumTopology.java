@@ -62,7 +62,7 @@ public class EpitheliumTopology {
 	}
 	
 	private void setTotalTension(int x, int y){
-		float totalTension = 0;
+		float totalTension = (this.spaceGrid[x][y]==1) ? 10 : 0;
 		for (int distance = 1; distance <= this.maxDist; distance ++) {
 			float distanceWeight = this.getDistanceWeight(distance);
 			float distTension = (float) 0.0;

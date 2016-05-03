@@ -187,6 +187,11 @@ public class EpitheliumGrid {
 		gridEpiCell[x][y].setInitialState(state);
 	}
 	
+	public void setCell2Naive(int x, int  y) {
+		gridEpiCell[x][y].setState(gridEpiCell[x][y].getInitialState().clone());
+		gridEpiCell[x][y].setCellTrigger(CellTrigger.DEFAULT);
+	}
+	
 	public void setCellTrigger(int x, int y, CellTrigger trigger) {
 		this.gridEpiCell[x][y].setCellTrigger(trigger);
 	}

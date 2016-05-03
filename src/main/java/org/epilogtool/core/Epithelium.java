@@ -12,7 +12,7 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
-import org.epilogtool.core.cellDynamics.EpitheliumTriggerManager;
+import org.epilogtool.core.cellDynamics.EpitheliumDynamics;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
@@ -30,7 +30,7 @@ public class Epithelium {
 	private EpitheliumPerturbations perturbations;
 	private EpitheliumUpdateSchemeIntra priorities;
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
-	private EpitheliumTriggerManager cellStatusManager;
+	private EpitheliumDynamics triggerManager;
 	private ProjectFeatures projectFeatures;
 
 	public Epithelium(int x, int y, String topologyLayout, String name,
@@ -53,7 +53,7 @@ public class Epithelium {
 		this.projectFeatures = projectFeatures;
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(
 				EpitheliumUpdateSchemeInter.DEFAULT_ALPHA, new HashMap<ComponentPair, Float>());
-		this.cellStatusManager = new EpitheliumTriggerManager(this.grid.getModelSet());
+		this.triggerManager = new EpitheliumDynamics(this.grid.getModelSet());
 	}
 
 	private Epithelium(int x, int y, String topologyLayout, String name,
@@ -61,7 +61,7 @@ public class Epithelium {
 			EpitheliumEnvironmentalInputs eei,
 			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap,
 			ProjectFeatures pf, EpitheliumUpdateSchemeInter usi, 
-			EpitheliumTriggerManager cellStatusManager) {
+			EpitheliumDynamics triggerManager) {
 		this.x = x;
 		this.y = y;
 		this.topologyLayout = topologyLayout;
@@ -73,7 +73,7 @@ public class Epithelium {
 		this.projectFeatures = pf;
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
-		this.cellStatusManager = cellStatusManager;
+		this.triggerManager = triggerManager;
 	}
 
 	public Epithelium clone() {
@@ -81,7 +81,7 @@ public class Epithelium {
 				this.grid.clone(), this.integrationFunctions.clone(), 
 				this.environmentalInputs.clone(), this.priorities.clone(), 
 				this.perturbations.clone(), this.projectFeatures, 
-				this.updateSchemeInter.clone(), this.cellStatusManager.clone());
+				this.updateSchemeInter.clone(), this.triggerManager.clone());
 	}
 	
 	public String toString() {
@@ -112,6 +112,10 @@ public class Epithelium {
 			// Perturbations
 			if (!this.perturbations.hasModel(mSet))
 				this.perturbations.addModel(mSet);
+			
+			// Grid dynamics
+			if (!this.triggerManager.hasModel(mSet))
+				this.triggerManager.addModel(mSet);
 		}
 
 		// Remove from Epithelium state absent models from modelSet
@@ -277,8 +281,12 @@ public class Epithelium {
 		}
 	}
 	
-	public EpitheliumTriggerManager getCellStatusManager() {
-		return this.cellStatusManager;
+	public EpitheliumDynamics getEpitheliumTriggerManager() {
+		return this.triggerManager;
+	}
+	
+	public void setEpitheliumTriggerManager(EpitheliumDynamics etm) {
+		this.triggerManager = etm;
 	}
 
 	public int getX() {
