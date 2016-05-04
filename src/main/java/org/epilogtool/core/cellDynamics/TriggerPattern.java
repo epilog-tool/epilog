@@ -1,6 +1,5 @@
 package org.epilogtool.core.cellDynamics;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -58,7 +57,6 @@ public class TriggerPattern {
 		String[] tmpArray = expression.split(" ");
 		for (String atom : tmpArray) {
 			String nodeID = atom.split("\\(")[0];
-			System.out.println("NodeID: " + nodeID);
 			byte nodeIndex = -1;
 			for (byte i = 0; i < m.getNodeOrder().size(); i ++){
 				if (m.getNodeOrder().get(i).getNodeID().equals(nodeID)) {

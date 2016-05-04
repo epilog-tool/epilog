@@ -8,9 +8,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -19,14 +18,16 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.cellDynamics.CellTrigger;
-import org.epilogtool.core.cellDynamics.ModelDynamics;
 import org.epilogtool.core.cellDynamics.EpitheliumDynamics;
 import org.epilogtool.core.cellDynamics.TriggerPattern;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
@@ -46,6 +47,10 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 	private JPanel jpRTop;
 	private JPanel jpLTop;
 	private JPanel jpRBottom;
+	
+	private final int SLIDER_MIN = 0;
+	private final int SLIDER_MAX = 100;
+	private final int SLIDER_STEP = 10;
 
 	public EpiTabGridDynamics(Epithelium e, TreePath path,
 			ProjectChangedInTab projChanged, EpiTabChanged tabChanged,
@@ -81,7 +86,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 		this.jpLTop.add(jcbSBML);
 		this.activeModel = (String) jcbSBML.getSelectedItem();
 		
-		this.getTriggerEventPanel();
+		this.callTriggerEventPanel();
 		this.updateModelDynamicsPanel();
 	
 		JButton jbAdd = ButtonFactory.getNoMargins("+");
@@ -120,7 +125,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 		return jcb;
 	}
 	
-	private void getTriggerEventPanel() {
+	private void callTriggerEventPanel() {
 		ButtonGroup group = new ButtonGroup();
 		JRadioButton jrbProliferation = new JRadioButton("Proliferation");
 		jrbProliferation.setSelected(true);
@@ -149,6 +154,11 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 	private void updateModelDynamicsPanel() {
 		this.jpRBottom.removeAll();
 		
+		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
+		JPanel sliderPanel = this.callSliderPanel(m);
+		
+		this.jpRBottom.add(sliderPanel, BorderLayout.NORTH);
+				
 		JButton jbAdd = ButtonFactory.getNoMargins("+");
 		jbAdd.setToolTipText("Add a new pattern");
 		jbAdd.addActionListener(new ActionListener() {
@@ -157,12 +167,11 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 					addPattern();
 				}
 			});
-		this.jpRBottom.add(jbAdd, BorderLayout.NORTH);
+		this.jpRBottom.add(jbAdd, BorderLayout.WEST);
 		
 		JPanel jpPatternPanel = new JPanel(new GridBagLayout());
 		this.jpRBottom.add(jpPatternPanel);
 		
-		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
 		List<TriggerPattern> patternList = this.epiTriggerManager
 		.getTriggerManager(m)
 		.getTriggerPatterns(CellTrigger.string2CellTrigger(this.triggerType));
@@ -210,6 +219,41 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 			jpPatternPanel.add(jtf, gbc);
 		}
 		this.getParent().repaint();
+	}
+	
+	private JPanel callSliderPanel(LogicalModel m) {
+		JPanel sliderPanel = new JPanel(new BorderLayout());
+		sliderPanel.setBorder(BorderFactory.createTitledBorder("Model associated asynchronism"));
+		this.jpRBottom.add(sliderPanel, BorderLayout.NORTH);
+		JSlider asyncSlider = new JSlider(JSlider.HORIZONTAL, 
+				this.SLIDER_MIN, this.SLIDER_MAX, this.SLIDER_MAX);
+		sliderPanel.add(asyncSlider, BorderLayout.CENTER);
+		asyncSlider.setMajorTickSpacing(this.SLIDER_STEP);
+		asyncSlider.setMinorTickSpacing(1);
+		asyncSlider.setPaintTicks(true);
+		asyncSlider.setPaintLabels(true);
+		asyncSlider.setToolTipText("Current value: " + (float) asyncSlider.getValue()/100);
+		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
+		for (int i = this.SLIDER_MIN; i <= this.SLIDER_MAX; i += this.SLIDER_STEP) {
+			labelTable.put(new Integer(i), new JLabel("" + ((float) i / this.SLIDER_MAX)));
+		}
+		asyncSlider.setLabelTable(labelTable);
+		asyncSlider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				JSlider slide = (JSlider) e.getSource();	
+				setModelAsync(slide.getValue());
+				slide.setToolTipText("Current value: " + (float) slide.getValue()/100);
+			}
+		});
+		asyncSlider.setValue((int) (this.epiTriggerManager.getTriggerManager(m).getAsync() * SLIDER_MAX));
+		return sliderPanel;
+	}
+	
+	private void setModelAsync(int value) {
+		float async = (float) value / 100;
+		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
+		this.epiTriggerManager.getTriggerManager(m).setAsync((async));
 	}
 	
 	private void setPatternExpression(int i, String expression) {

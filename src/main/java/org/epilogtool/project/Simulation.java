@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.Stack;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
@@ -104,7 +103,6 @@ public class Simulation {
 			Tuple2D<Integer> originalPos = path.get(index);
 			Tuple2D<Integer> clonedPos = path.get(index-1);
 			LogicalModel m = workingGrid.getModel(originalPos.getX(), originalPos.getY());
-			if (EmptyModel.getInstance().isEmptyModel(m)) continue;
 			AbstractPerturbation ap = workingGrid.getPerturbation(originalPos.getX(), originalPos.getY());
 			LogicalModel perturb = (ap == null) ? m : ap.apply(m);
 			PriorityClasses pcs = this.epithelium.getPriorityClasses(m).getPriorities();
@@ -211,7 +209,9 @@ public class Simulation {
 			this.stable = true;
 			return currGrid;
 		}
-		if (cells2divide.size() > 0) {
+		if (cells2divide.size() > 0 && emptyModelNumber > 0) {
+			float dynamicsAsync = (float) 0.5;
+			int cellnumber = cells2divide.size();
 			while (emptyModelNumber > 0) {
 				Tuple2D<Integer> currPosition = cells2divide.get(randomGenerator.nextInt(cells2divide.size()));
 				cells2divide.remove(currPosition);
@@ -225,7 +225,7 @@ public class Simulation {
 				nextGrid.setCell2Naive(motherCell.getX(), motherCell.getY());
 				nextGrid.setCell2Naive(daughterCell.getX(), daughterCell.getY());
 				emptyModelNumber -=1;
-				if (cells2divide.size()==0) break;
+				if (cells2divide.size() <= (cellnumber - cellnumber*dynamicsAsync)) break;
 			}
 		}
 		this.gridHistory.add(nextGrid);
@@ -267,7 +267,6 @@ public class Simulation {
 				currState[m.getNodeOrder().indexOf(node)] = target;
 			}
 		}
-
 		List<byte[]> succ = updater.getSuccessors(currState);
 		if (succ == null) {
 			return currState;
