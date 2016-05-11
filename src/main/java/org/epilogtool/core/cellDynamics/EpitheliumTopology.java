@@ -17,27 +17,28 @@ import org.epilogtool.core.EpitheliumGrid;
 public class EpitheliumTopology {
 	
 	private byte[][] spaceGrid;
-	private float[][] tensionGrid;
+	private byte[][][] tensionGrid;
 	private Topology topology;
 	private int maxDist;
 	private Random generator;
 
 	public EpitheliumTopology(Epithelium epi) {
 		this.topology = epi.getEpitheliumGrid().getTopology().clone();
-		this.maxDist = (int) Math.max(this.topology.getX(), this.topology.getY())/4;
+		this.maxDist = Math.max(this.topology.getX(), this.topology.getY())/2;
 		this.generator = new Random();
 		this.buildSpaceGrid(epi.getEpitheliumGrid());
 		this.buildTensionGrid();
 	}
 	
 	private EpitheliumTopology(Topology topology, byte[][] 
-			spaceGrid, float[][] tensionGrid) {
+			spaceGrid, byte[][][] tensionGrid, int maxDist) {
 		this.topology = topology;
 		this.spaceGrid = spaceGrid;
 		this.tensionGrid = tensionGrid;
-		this.maxDist = (int) Math.max(this.topology.getX(), this.topology.getY());
+		this.maxDist = maxDist;
 		this.generator = new Random();
 	}
+	
 	
 	private void buildSpaceGrid(EpitheliumGrid grid) {
 		this.spaceGrid = new byte[this.topology.getX()][this.topology.getY()];
@@ -53,44 +54,63 @@ public class EpitheliumTopology {
 	}
 	
 	private void buildTensionGrid() {
-		this.tensionGrid = new float[this.topology.getX()][this.topology.getY()];
+		this.tensionGrid = new byte[this.topology.getX()][this.topology.getY()][this.maxDist];
 		for (int x = 0; x < this.topology.getX(); x++) {
 			for (int y = 0; y < this.topology.getY(); y ++) {
-				this.setTotalTension(x, y);
+				this.setNeighbours(x, y);
 			}
 		}
 	}
 	
-	private void setTotalTension(int x, int y){
-		float totalTension = (this.spaceGrid[x][y]==1) ? 1 : 0;
-		if (totalTension == 0) {
-			this.tensionGrid[x][y] = totalTension;
+	private void setNeighbours(int x, int y){
+		for (int distance = 1; distance <= this.maxDist; distance ++) {
+			this.setDistanceNeighbours(x, y, distance);
+		}
+	}
+	
+	private void setDistanceNeighbours(int x, int y, int distance) {
+		if (this.spaceGrid[x][y]==0) {
+			this.tensionGrid[x][y][distance-1]= (byte) 0;
 			return;
 		}
-		for (int distance = 1; distance <= this.maxDist; distance ++) {
-			float distanceWeight = this.getDistanceWeight(distance);
-			float distTension = (float) 0.0;
-			Set<Tuple2D<Integer>> neighbours = this.topology.getPositionNeighbours(x, y, distance, distance);
-			int falseNeighbours = 6*distance - neighbours.size();
-			for (Tuple2D<Integer> neighbour: neighbours) {
-				if (this.spaceGrid[neighbour.getX()][neighbour.getY()]==1) {
-					distTension +=1;
-				}
+		Set<Tuple2D<Integer>> neighbours = this.topology.getPositionNeighbours(x, y, distance, distance);
+		byte totalNeighbours = (byte) (distance*6);
+		byte countedNeighbours = (byte) (totalNeighbours-neighbours.size());
+		for (Tuple2D<Integer> neighbour: neighbours) {
+			if (this.spaceGrid[neighbour.getX()][neighbour.getY()]==1) {
+				countedNeighbours +=1;
 			}
-			distTension += falseNeighbours;
-			totalTension += distTension/(neighbours.size()+falseNeighbours)*distanceWeight;
 		}
-		this.tensionGrid[x][y] = totalTension;
+		this.tensionGrid[x][y][distance-1] = countedNeighbours;
+	}
+	
+	private float getDistanceTension(Tuple2D<Integer> position, int distance) {
+		int countedNeighbours = this.tensionGrid[position.getX()][position.getY()][distance];
+		int totalNeighbours = distance*6;
+		if (countedNeighbours==0) {
+			return (float) 0;
+		}
+		return 1 / (1 + ((float) Math.exp(2*(-countedNeighbours + (totalNeighbours*0.9)))));
 	}
 	
 	private float getDistanceWeight(int distance) {
-		return (1/this.maxDist)*(1-distance)+1;
+		return ((float) 1- distance) / this.maxDist + 1;
+		//return ((float) 1) / (1 + ((float) Math.exp(-distance + 1.5)) + 1);
+	}
+	
+	private float getTotalTension(Tuple2D<Integer> position) {
+		float totalTension = (float) this.spaceGrid[position.getX()][position.getY()];
+		for (int index = 0; index < this.maxDist; index ++) {
+			totalTension += this.getDistanceTension(position, index)*this.getDistanceWeight(index+1);
+		}
+		return totalTension;
 	}
 	
 	private float getMinimumNeighbourTension(Set<Tuple2D<Integer>> neighbourSet, float currTension) {
 		for (Tuple2D<Integer> neighbour : neighbourSet) {
-			if (this.tensionGrid[neighbour.getX()][neighbour.getY()] < currTension) {
-				currTension = this.tensionGrid[neighbour.getX()][neighbour.getY()];
+			float neighbourTension = this.getTotalTension(neighbour);
+			if (neighbourTension < currTension) {
+				currTension = neighbourTension;
 			}
 		}
 		return currTension;
@@ -110,14 +130,18 @@ public class EpitheliumTopology {
 			return null;
 		}
 		Set<Tuple2D<Integer>> neighbourSet = this.topology.getPositionNeighbours(x, y, 1, 1);
-		Tuple2D<Integer> daughterPosition = new Tuple2D<Integer>(x, y);
+		float motherTension = this.getTotalTension(new Tuple2D<Integer>(x, y));
+		float tmpTension = this.getMinimumNeighbourTension(neighbourSet, motherTension);
+		List<Tuple2D<Integer>> neighbourList = new ArrayList<Tuple2D<Integer>>(neighbourSet);
+		if (tmpTension==motherTension) {
+			return neighbourList.get(this.generator.nextInt(neighbourList.size()));
+		}
 		for (Tuple2D<Integer> neighbour : neighbourSet) {
-			if (this.tensionGrid[neighbour.getX()][neighbour.getY()] <= 
-					this.tensionGrid[daughterPosition.getX()][daughterPosition.getY()]) {
-				daughterPosition = neighbour.clone();
+			if (this.getTotalTension(neighbour) > tmpTension) {
+				neighbourList.remove(neighbour);
 			}
 		}
-		return daughterPosition;
+		return neighbourList.get(this.generator.nextInt(neighbourList.size()));
 	}
 	
 	public List<Tuple2D<Integer>> divisionPath(int x, int y) {
@@ -127,22 +151,19 @@ public class EpitheliumTopology {
 		Tuple2D<Integer> currPosition = this.getDaughterPosition(x, y);
 		path.add(currPosition);
 		while (!(this.spaceGrid[currPosition.getX()][currPosition.getY()]==0)) {
-			
 			Set<Tuple2D<Integer>> neighbourSet = 
 					this.topology.getPositionNeighbours(currPosition.getX(), currPosition.getY(), 1, 1);
 			neighbourSet.removeAll(path);
-			float currTension = this.tensionGrid[currPosition.getX()][currPosition.getY()];
+			float currTension = this.getTotalTension(currPosition);
 			float nextTension = this.getMinimumNeighbourTension(neighbourSet, currTension);
-			if (nextTension==currTension && !this.hasEmptySpace(neighbourSet)) {
+			if (nextTension>=currTension && !this.hasEmptySpace(neighbourSet)) {
 				path = this.divisionPathHelper(path);
 				currPosition = path.get(path.size()-1);
 				continue;
 			}
-			
 			Set<Tuple2D<Integer>> possiblePaths = new HashSet<Tuple2D<Integer>>();
-			
 			for (Tuple2D<Integer> neighbour : neighbourSet) {
-				if (this.tensionGrid[neighbour.getX()][neighbour.getY()] == nextTension) {
+				if (this.getTotalTension(neighbour) <= nextTension) {
 					possiblePaths.add(neighbour);
 				}
 			}
@@ -157,7 +178,7 @@ public class EpitheliumTopology {
 	private List<Tuple2D<Integer>> divisionPathHelper(List<Tuple2D<Integer>> path) {
 		
 		Tuple2D<Integer> originalPos = path.get(path.size()-1);
-		float currTension = this.tensionGrid[originalPos.getX()][originalPos.getY()];
+		float currTension = this.getTotalTension(originalPos);
 		Map<Byte, Set<Tuple2D<Integer>>> neighboursMap = 
 				new HashMap<Byte, Set<Tuple2D<Integer>>>();
 		boolean smallerTensionFlag = false;
@@ -168,12 +189,17 @@ public class EpitheliumTopology {
 					getPositionNeighbours(originalPos.getX(), originalPos.getY(), 
 										distance, distance);
 			tmpSet.removeAll(path);
+			float nextTension = (float) this.maxDist;
 			for (Tuple2D<Integer> neighbour : tmpSet) {
-				if (this.tensionGrid[neighbour.getX()][neighbour.getY()] < currTension
-						|| this.spaceGrid[neighbour.getX()][neighbour.getY()]==0) {
+				float tmpTension = this.getTotalTension(neighbour);
+				if (tmpTension < currTension) {
 					smallerTensionFlag = true;
 				}
+				else {
+					nextTension = Math.min(tmpTension, nextTension);
+				}
 			}
+			currTension = nextTension;
 			neighboursMap.put(distance, tmpSet);
 		}
 		
@@ -182,7 +208,7 @@ public class EpitheliumTopology {
 		List<Tuple2D<Integer>> helperPath = new ArrayList<Tuple2D<Integer>>();
 		Set<Tuple2D<Integer>> tmpSet = new HashSet<Tuple2D<Integer>>(neighboursMap.get(distance));
 		for (Tuple2D<Integer> neighbour: neighboursMap.get(distance)) {
-			if ((this.tensionGrid[neighbour.getX()][neighbour.getY()]>=currTension)) {
+			if ((this.getTotalTension(neighbour)>currTension)) {
 				tmpSet.remove(neighbour);
 			}
 		}
@@ -196,29 +222,20 @@ public class EpitheliumTopology {
 		//backtrack to original cell and add to path
 		distance -= 1;
 		while (distance >= 1) {
-			System.out.println("Distance to origin = " + distance);
 			Tuple2D<Integer> helperPos = helperPath.get(helperPath.size()-1).clone();
-			System.out.println("Current helper position = " + helperPos);
 			tmpSet = new HashSet<Tuple2D<Integer>>(neighboursMap.get(distance));
-			System.out.println("Distance set size = " + tmpSet.size());
 			tmpSet.retainAll(this.topology.getPositionNeighbours
 					(helperPos.getX(), helperPos.getY(), 1, 1));
-			System.out.println("Distance set size after intersection = " + tmpSet.size());
 			if (tmpSet.size() > 1) {
 				int random = this.generator.nextInt(tmpSet.size());
 				helperPath.add(new ArrayList<Tuple2D<Integer>>(tmpSet).get(random));
-				System.out.println("Selected random OK");
 			} else if (tmpSet.size() == 1) { 
 				helperPath.add(new ArrayList<Tuple2D<Integer>>(tmpSet).get(0));
-				System.out.println("Selected one OK");
 			} else {
-				System.out.println("Traceback");
 				distance += 1;
 				tmpSet = new HashSet<Tuple2D<Integer>>(neighboursMap.get(distance));
-				System.out.println("Traceback - Distance set size = " + tmpSet.size());
 				tmpSet.retainAll(this.topology.getPositionNeighbours
 						(helperPos.getX(), helperPos.getY(), 1, 1));
-				System.out.println("Traceback - Distance set size after intersection = " + tmpSet.size());
 				if (tmpSet.size() > 1) {
 					int random = this.generator.nextInt(tmpSet.size());
 					helperPath.add(new ArrayList<Tuple2D<Integer>>(tmpSet).get(random));
@@ -298,18 +315,15 @@ public class EpitheliumTopology {
 			return;
 		}
 		this.spaceGrid[x][y] = value;
-		this.setTotalTension(x, y);
-		float sign = (value == 0) ? -1 : 1;
+		this.setNeighbours(x, y);
+		byte sign = (byte) ((value == 0) ? -1 : 1);
 		for (int distance = 1; distance <= maxDist; distance ++) {
-			float weight = this.getDistanceWeight(distance);
-			float effect = sign/(6*distance)*weight;
 			Set<Tuple2D<Integer>> tuples2update = this.topology.getPositionNeighbours(x, y, distance, distance);
 			for (Tuple2D<Integer> tuple2update : tuples2update) {
-				this.tensionGrid[tuple2update.getX()][tuple2update.getY()] += effect;
-				if (this.tensionGrid[tuple2update.getX()][tuple2update.getY()] < 0) {
-					this.tensionGrid[tuple2update.getX()][tuple2update.getY()] = 0;
-					break;
+				if (this.spaceGrid[tuple2update.getX()][tuple2update.getY()]==0) {
+					continue;
 				}
+				this.tensionGrid[tuple2update.getX()][tuple2update.getY()][distance-1] += sign;
 			}
 		}
 	}
@@ -318,14 +332,14 @@ public class EpitheliumTopology {
 		return this.spaceGrid;
 	}
 	
-	public float[][] getTensionGrid() {
+	public byte[][][] getTensionGrid() {
 		return this.tensionGrid;
 	}
 	
 	public EpitheliumTopology clone() {
 		return new EpitheliumTopology(this.topology.clone(), 
 				this.spaceGrid.clone(), 
-				this.tensionGrid.clone());
+				this.tensionGrid.clone(), this.maxDist);
 	}
 
 }

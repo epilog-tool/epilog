@@ -88,16 +88,6 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 		
 		this.callTriggerEventPanel();
 		this.updateModelDynamicsPanel();
-	
-		JButton jbAdd = ButtonFactory.getNoMargins("+");
-		jbAdd.setToolTipText("Add a new pattern");
-		jbAdd.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					addPattern();
-				}
-			});
-		this.jpRBottom.add(jbAdd, BorderLayout.NORTH);
 		
 		this.isInitialized = true;
 		

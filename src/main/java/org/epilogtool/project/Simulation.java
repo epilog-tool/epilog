@@ -103,6 +103,9 @@ public class Simulation {
 			Tuple2D<Integer> originalPos = path.get(index);
 			Tuple2D<Integer> clonedPos = path.get(index-1);
 			LogicalModel m = workingGrid.getModel(originalPos.getX(), originalPos.getY());
+			if (EmptyModel.getInstance().isEmptyModel(m)) {
+				continue;
+			}
 			AbstractPerturbation ap = workingGrid.getPerturbation(originalPos.getX(), originalPos.getY());
 			LogicalModel perturb = (ap == null) ? m : ap.apply(m);
 			PriorityClasses pcs = this.epithelium.getPriorityClasses(m).getPriorities();
@@ -136,7 +139,7 @@ public class Simulation {
 		// And builds the default next grid (= current grid)
 		HashMap<Tuple2D<Integer>, byte[]> cells2update = new HashMap<Tuple2D<Integer>, byte[]>();
 		List<Tuple2D<Integer>> keys = new ArrayList<Tuple2D<Integer>>();
-		List<Tuple2D<Integer>> cells2divide = new ArrayList<Tuple2D<Integer>>();
+		List<Tuple2D<Integer>> triggeredCells = new ArrayList<Tuple2D<Integer>>();
 		
 		for (int y = 0; y < currGrid.getY(); y++) {
 			for (int x = 0; x < currGrid.getX(); x++) {
@@ -191,31 +194,33 @@ public class Simulation {
 		
 		//update Division events
 		int emptyModelNumber = nextGrid.emptyModelNumber();
-		
 		for (int x = 0; x < nextGrid.getX(); x ++) {
 			for (int y = 0; y < nextGrid.getY(); y ++) {
 				if (currGrid.isEmptyCell(x, y)) continue;
-				if (currGrid.getCellTrigger(x, y).equals(CellTrigger.PROLIFERATION)) {
-					dynamics = true;
-					if (nextGrid.getCellTrigger(x, y).equals(CellTrigger.PROLIFERATION)) {
-						cells2divide.add(new Tuple2D<Integer>(x, y));
-					}
-				} else {
-					dynamics = false;
+				if (currGrid.getCellTrigger(x, y).equals(CellTrigger.DEFAULT) ||
+						nextGrid.getCellTrigger(x, y).equals(CellTrigger.DEFAULT)) {
+					continue;
 				}
+				triggeredCells.add(new Tuple2D<Integer>(x, y));
+				dynamics=true;
 			}
 		}
 		if (!updates && !dynamics) {
-			this.stable = true;
-			return currGrid;
+			//this.stable = true;
+			//return currGrid;
 		}
-		if (cells2divide.size() > 0 && emptyModelNumber > 0) {
-			float dynamicsAsync = (float) 0.5;
-			int cellnumber = cells2divide.size();
+		if (triggeredCells.size() > 0 && emptyModelNumber > 0) {
+			//int testalpha = triggeredCells.size();
 			while (emptyModelNumber > 0) {
-				Tuple2D<Integer> currPosition = cells2divide.get(randomGenerator.nextInt(cells2divide.size()));
-				cells2divide.remove(currPosition);
+				Tuple2D<Integer> currPosition = triggeredCells.get(randomGenerator.nextInt(triggeredCells.size()));
+				triggeredCells.remove(currPosition);
 				List<Tuple2D<Integer>> path = this.epiTopology.divisionPath(currPosition.getX(), currPosition.getY());
+				for (int index = 1; index < path.size(); index ++) {
+					if (triggeredCells.contains(path.get(index))) {
+						triggeredCells.remove(path.get(index).clone());
+						triggeredCells.add(path.get(index-1).clone());
+					}
+				}
 				Tuple2D<Integer> motherCell = path.get(path.size()-1).clone();
 				Tuple2D<Integer> daughterCell = path.get(path.size()-2).clone();
 				Tuple2D<Integer> exteriorPos = path.get(0);
@@ -225,7 +230,8 @@ public class Simulation {
 				nextGrid.setCell2Naive(motherCell.getX(), motherCell.getY());
 				nextGrid.setCell2Naive(daughterCell.getX(), daughterCell.getY());
 				emptyModelNumber -=1;
-				if (cells2divide.size() <= (cellnumber - cellnumber*dynamicsAsync)) break;
+				//if (triggeredCells.size() <= (1-alphaProb)*testalpha) break;
+				if (triggeredCells.size() <= 0) break;
 			}
 		}
 		this.gridHistory.add(nextGrid);
@@ -249,7 +255,6 @@ public class Simulation {
 
 		PriorityUpdater updater = this.updaterCache[x][y];
 		LogicalModel m = currGrid.getModel(x, y);
-		
 		// 2. Update integration components
 		for (NodeInfo node : m.getNodeOrder()) {
 			ComponentPair nodeCP = new ComponentPair(m, node);
@@ -314,7 +319,7 @@ public class Simulation {
 		Map<ComponentPair, Float> mSigmaAsync = this.epithelium
 				.getUpdateSchemeInter().getCPSigmas();
 
-		Map<LogicalModel, List<Tuple2D<Integer>>> mapModelPositions = neighbourEpi
+		Map<LogicalModel, Set<Tuple2D<Integer>>> mapModelPositions = neighbourEpi
 				.getModelPositions();
 		if (mSigmaAsync.size() == 0) {
 			return neighbourEpi;
@@ -330,8 +335,8 @@ public class Simulation {
 					String nodeID = cp.getNodeInfo().getNodeID();
 					List<NodeInfo> modelNodes = m.getNodeOrder();
 					int nodePosition = modelNodes.indexOf(cp.getNodeInfo());
-					List<Tuple2D<Integer>> modelPositions = mapModelPositions
-							.get(m);
+					List<Tuple2D<Integer>> modelPositions = new ArrayList<Tuple2D<Integer>>(mapModelPositions
+							.get(m));
 					int selectedCells = (int) Math.ceil((1 - sigma)
 							* modelPositions.size());
 					Collections.shuffle(modelPositions,

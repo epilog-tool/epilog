@@ -279,6 +279,9 @@ public class Epithelium {
 		for (Tuple2D<Integer> tuple : lTuples) {
 			this.setModel(tuple.getX(), tuple.getY(), m);
 		}
+		if (!this.triggerManager.getModelSet().contains(m)) {
+			this.triggerManager.addModel(m);
+		}
 	}
 	
 	public EpitheliumDynamics getEpitheliumTriggerManager() {
