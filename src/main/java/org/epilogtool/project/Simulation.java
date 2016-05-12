@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
@@ -15,6 +14,7 @@ import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.colomoto.logicalmodel.tool.simulation.updater.PriorityClasses;
 import org.colomoto.logicalmodel.tool.simulation.updater.PriorityUpdater;
+import org.epilogtool.common.RandomFactory;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
@@ -41,7 +41,6 @@ public class Simulation {
 	// Perturbed models cache - avoids repeatedly computing perturbations at
 	// each step
 	private PriorityUpdater[][] updaterCache;
-	private Random randomGenerator;
 
 	/**
 	 * Initializes the simulation. It is called after creating and epithelium.
@@ -64,7 +63,6 @@ public class Simulation {
 				.add(this.epithelium.getEpitheliumGrid().hashGrid());
 		this.stable = false;
 		this.hasCycle = false;
-		this.randomGenerator = new Random();
 		this.buildPriorityUpdaterCache();
 	}
 
@@ -166,11 +164,17 @@ public class Simulation {
 		//Update Logical Model States
 		float alphaProb = epithelium.getUpdateSchemeInter().getAlpha();
 		if (keys.size() > 0) {
+			
 			updates = true;
+
+			// Randomize the order of cells to update
+			Collections.shuffle(keys, RandomFactory.getInstance()
+					.getGenerator());
+
 			boolean atleastone = false;
 			int updateCounter = (int) Math.floor(alphaProb * keys.size());
 			for (int i = 0; i < updateCounter; i++) {
-				Tuple2D<Integer> key = keys.get(randomGenerator.nextInt(keys.size()));
+				Tuple2D<Integer> key = keys.get(0);
 				keys.remove(key);
 				nextGrid.setCellState(key.getX(), key.getY(),
 						cells2update.get(key));
@@ -182,7 +186,7 @@ public class Simulation {
 			}
 			if (!atleastone && !keys.isEmpty()) {
 				// Updates at least one (asynchronous case: alpha=0.0)
-				Tuple2D<Integer> key = keys.get(randomGenerator.nextInt(keys.size()));
+				Tuple2D<Integer> key = keys.get(0);
 				keys.remove(key);
 				nextGrid.setCellState(key.getX(), key.getY(), cells2update.get(key));
 				CellTrigger nextCellTrigger = this.epithelium.getEpitheliumTriggerManager()
@@ -209,10 +213,11 @@ public class Simulation {
 			//this.stable = true;
 			//return currGrid;
 		}
+		//TODO: shuffle
 		if (triggeredCells.size() > 0 && emptyModelNumber > 0) {
 			//int testalpha = triggeredCells.size();
 			while (emptyModelNumber > 0) {
-				Tuple2D<Integer> currPosition = triggeredCells.get(randomGenerator.nextInt(triggeredCells.size()));
+				Tuple2D<Integer> currPosition = triggeredCells.get(0);
 				triggeredCells.remove(currPosition);
 				List<Tuple2D<Integer>> path = this.epiTopology.divisionPath(currPosition.getX(), currPosition.getY());
 				for (int index = 1; index < path.size(); index ++) {
@@ -251,10 +256,11 @@ public class Simulation {
 	private byte[] nextCellValue(int x, int y, EpitheliumGrid currGrid,
 			IntegrationFunctionEvaluation evaluator,
 			Set<ComponentPair> sIntegComponentPairs) {
-		byte[] currState = currGrid.getCellState(x, y);
+		byte[] currState = currGrid.getCellState(x, y).clone();
 
 		PriorityUpdater updater = this.updaterCache[x][y];
 		LogicalModel m = currGrid.getModel(x, y);
+
 		// 2. Update integration components
 		for (NodeInfo node : m.getNodeOrder()) {
 			ComponentPair nodeCP = new ComponentPair(m, node);
@@ -285,12 +291,13 @@ public class Simulation {
 	public boolean isStableAt(int i) {
 		return (i >= this.gridHistory.size() && this.stable);
 	}
-	
+
 	public boolean hasCycleAt(int i) {
-		if (!(this.epithelium.getUpdateSchemeInter().getAlpha()==1)) {
+		if (!(this.epithelium.getUpdateSchemeInter().getAlpha() == 1)) {
 			return false;
 		}
-		List<String> tmpList = new ArrayList<String>(this.gridHashHistory.subList(0, i));
+		List<String> tmpList = new ArrayList<String>(
+				this.gridHashHistory.subList(0, i));
 		Set<String> tmpSet = new HashSet<String>(tmpList);
 		return !(tmpSet.size() == tmpList.size());
 	}
@@ -339,8 +346,8 @@ public class Simulation {
 							.get(m));
 					int selectedCells = (int) Math.ceil((1 - sigma)
 							* modelPositions.size());
-					Collections.shuffle(modelPositions,
-							new Random(Double.doubleToLongBits(Math.random())));
+					Collections.shuffle(modelPositions, RandomFactory
+							.getInstance().getGenerator());
 					List<Tuple2D<Integer>> selectedModelPositions = modelPositions
 							.subList(0, selectedCells);
 					for (Tuple2D<Integer> tuple : selectedModelPositions) {

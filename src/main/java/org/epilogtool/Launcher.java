@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
+import org.epilogtool.common.RandomFactory;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.EpiGUI;
@@ -21,6 +24,8 @@ import com.martiansoftware.jsap.SimpleJSAP;
 import com.martiansoftware.jsap.Switch;
 
 public class Launcher {
+	
+	private static double MIN_JAVA_VERSION = 1.7;
 
 	/**
 	 * @param args
@@ -37,6 +42,7 @@ public class Launcher {
 		int maxiter = 10;
 		boolean bCMD = false;
 		String pepsFile = null;
+		long seed = -1;
 
 		try {
 			jsap = new SimpleJSAP(
@@ -49,6 +55,10 @@ public class Launcher {
 									"" + maxiter, JSAP.NOT_REQUIRED, 'i',
 									"max-iter", "Maximum number of iterations."),
 							new Switch("cmd", JSAP.NO_SHORTFLAG, "cmd"),
+							new FlaggedOption("seed", JSAP.LONG_PARSER,
+									"" + seed, JSAP.NOT_REQUIRED,
+									JSAP.NO_SHORTFLAG, "seed",
+									"Random generator seed number."),
 							new FlaggedOption("peps", JSAP.STRING_PARSER,
 									pepsFile, JSAP.NOT_REQUIRED,
 									JSAP.NO_SHORTFLAG, "peps",
@@ -59,12 +69,22 @@ public class Launcher {
 			maxiter = jsapResult.getInt("max-iter");
 			bCMD = jsapResult.getBoolean("cmd");
 			pepsFile = jsapResult.getString("peps");
+			seed = jsapResult.getLong("seed");
 
 		} catch (JSAPException e) {
 			System.err.println(e.getMessage());
 			System.exit(1);
 		}
 
+		// Check Java version
+		checkJavaVersion(bCMD);
+		
+		// Check Number Generator Seed number
+		System.out.println("Seed["+seed+"]");
+		if (seed != -1) {
+			RandomFactory.getInstance().setSeed(seed);
+		}
+		
 		if (bCMD) {
 			// Command line
 			if (pepsFile != null) {
@@ -89,6 +109,20 @@ public class Launcher {
 				gui.newProject();
 			}
 		}
+	}
+	
+	private static void checkJavaVersion(boolean cmd) {
+		Double version = Double.parseDouble(Runtime.class.getPackage().getSpecificationVersion());
+		if (version < MIN_JAVA_VERSION) {
+			String msg = "You're using Java version " + version + ". Epilog needs Java version >= 1.7";
+			if (cmd) {
+				System.err.println(msg);
+			} else {
+				JOptionPane.showMessageDialog(null, msg);
+			}
+			System.exit(0);
+		}
+
 	}
 
 	private static void commandLine(String pepsFile, int maxiter)
