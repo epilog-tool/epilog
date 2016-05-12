@@ -184,7 +184,7 @@ public class Simulation {
 	private byte[] nextCellValue(int x, int y, EpitheliumGrid currGrid,
 			IntegrationFunctionEvaluation evaluator,
 			Set<ComponentPair> sIntegComponentPairs) {
-		byte[] currState = currGrid.getCellState(x, y);
+		byte[] currState = currGrid.getCellState(x, y).clone();
 
 		PriorityUpdater updater = this.updaterCache[x][y];
 		LogicalModel m = this.epithelium.getEpitheliumGrid().getModel(x, y);
