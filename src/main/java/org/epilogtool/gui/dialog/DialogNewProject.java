@@ -7,20 +7,15 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -30,15 +25,10 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.epilogtool.gui.color.ColorUtils;
-import org.epilogtool.services.TopologyService;
 
 public class DialogNewProject extends EscapableDialog {
 	private static final long serialVersionUID = 1877338344309723137L;
 	
-	private final String DEFAULT_WIDTH = "20";
-	private final String DEFAULT_HEIGHT = "20";
-
-
 	private JList<String> listSBMLs;
 	private JButton buttonRemove;
 	private JButton buttonOK;

@@ -29,6 +29,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 
 	private final String DEFAULT_WIDTH_STRING = "15";
 	private final String DEFAULT_HEIGHT_STRING = "15";
+	private final String ROLLOVER_WARNING = "This dimension must be even due to rollover selection!";
 
 	private JTextField jtfWidth;
 	private JTextField jtfHeight;
@@ -157,7 +158,8 @@ public class DialogNewEpithelium extends EscapableDialog {
 
 		// Rollover JComboBox
 		this.jcbRollover = new JComboBox<RollOver>(new RollOver[] {
-				RollOver.NOROLLOVER, RollOver.HORIZONTAL, RollOver.VERTICAL });
+				RollOver.NONE, RollOver.HORIZ, RollOver.VERT,
+				RollOver.HORIZ_VERT });
 		this.jcbRollover.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -259,12 +261,17 @@ public class DialogNewEpithelium extends EscapableDialog {
 			if (this.width >= 1) {
 				RollOver ro = (RollOver) this.jcbRollover.getSelectedItem();
 				this.bIsWidthOK = (this.width % 2 == 0)
-						|| (ro != RollOver.HORIZONTAL);
+						|| (ro != RollOver.HORIZ && ro!=RollOver.HORIZ_VERT);
 			}
 		} catch (NumberFormatException nfe) {
 		}
-		this.jtfWidth.setBackground(this.bIsWidthOK ? Color.WHITE
-				: ColorUtils.LIGHT_RED);
+		if (this.bIsWidthOK) {
+			this.jtfWidth.setBackground(Color.WHITE);
+			this.jtfWidth.setToolTipText(null);
+		} else {
+			this.jtfWidth.setBackground(ColorUtils.LIGHT_RED);
+			this.jtfWidth.setToolTipText(ROLLOVER_WARNING);
+		}
 		this.validateDialog();
 	}
 
@@ -275,12 +282,18 @@ public class DialogNewEpithelium extends EscapableDialog {
 			if (this.height >= 1) {
 				RollOver ro = (RollOver) this.jcbRollover.getSelectedItem();
 				this.bIsHeightOK = (this.height % 2 == 0)
-						|| (ro != RollOver.VERTICAL);
+						|| (ro != RollOver.VERT && ro!=RollOver.HORIZ_VERT);
 			}
 		} catch (NumberFormatException nfe) {
 		}
-		this.jtfHeight.setBackground(this.bIsHeightOK ? Color.WHITE
-				: ColorUtils.LIGHT_RED);
+		if (this.bIsWidthOK) {
+			this.jtfHeight.setBackground(Color.WHITE);
+			this.jtfHeight.setToolTipText(null);
+		} else {
+			this.jtfHeight.setBackground(ColorUtils.LIGHT_RED);
+			this.jtfHeight.setToolTipText(ROLLOVER_WARNING);
+		}
+
 		this.validateDialog();
 	}
 
