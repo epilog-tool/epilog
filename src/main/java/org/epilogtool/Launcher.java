@@ -80,7 +80,6 @@ public class Launcher {
 		checkJavaVersion(bCMD);
 		
 		// Check Number Generator Seed number
-		System.out.println("Seed["+seed+"]");
 		if (seed != -1) {
 			RandomFactory.getInstance().setSeed(seed);
 		}
