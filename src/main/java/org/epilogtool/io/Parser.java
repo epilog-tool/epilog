@@ -90,7 +90,7 @@ public class Parser {
 			if (line.startsWith("SN")) {
 				epiName = line.split("\\s+")[1];
 				currEpi = null;
-				rollover = RollOver.NOROLLOVER;
+				rollover = RollOver.NONE;
 			}
 
 			if (line.startsWith("GD")) {

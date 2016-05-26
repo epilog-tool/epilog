@@ -184,6 +184,7 @@ public class OptionStore extends DefaultHandler {
 	 *            value to return if this option is not defined
 	 * @return an object representing the value of this option
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> T getOption(String name, T defValue) {
 		Object o = m_option.get(name);
 

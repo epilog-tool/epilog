@@ -96,6 +96,7 @@ public class Tuple2D<T extends Number> {
 	}
 	
 	public boolean equals(Object o){
+		@SuppressWarnings("unchecked")
 		Tuple2D<T> otherTuple = (Tuple2D<T>) o;
 		return this.getX()==otherTuple.getX() & this.getY() == otherTuple.getY();
 	}
