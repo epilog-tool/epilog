@@ -112,21 +112,21 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		this.visualGridSimulation = new VisualGridSimulation(
 				clonedEpi.getEpitheliumGrid(),
-				this.epithelium.getProjectFeatures(), this.lCompON,
-				this.lRight);
+				this.epithelium.getProjectFeatures(), this.lCompON, this.lRight);
 		this.jpRight.add(this.visualGridSimulation, BorderLayout.CENTER);
 
 		JPanel jpButtons = new JPanel(new BorderLayout());
 		JPanel jpButtonsC = new JPanel();
 		jpButtons.add(jpButtonsC, BorderLayout.CENTER);
-		
-		JScrollPane jspButtons = new JScrollPane(jpButtons, 
-				JScrollPane.VERTICAL_SCROLLBAR_NEVER, 
+
+		JScrollPane jspButtons = new JScrollPane(jpButtons,
+				JScrollPane.VERTICAL_SCROLLBAR_NEVER,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		jspButtons.setPreferredSize(new Dimension(
-				jspButtons.getPreferredSize().width, 
-				jspButtons.getPreferredSize().height  + 
-				jspButtons.getHorizontalScrollBar().getVisibleAmount()*3));
+				jspButtons.getPreferredSize().width, jspButtons
+						.getPreferredSize().height
+						+ jspButtons.getHorizontalScrollBar()
+								.getVisibleAmount() * 3));
 		jspButtons.setBorder(BorderFactory.createEmptyBorder());
 
 		this.jbRewind = ButtonFactory
@@ -410,7 +410,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			this.jlAttractor.setText("           ");
 		}
 	}
-	
+
 	private void setGridGUICycle(boolean cycle) {
 		if (cycle) {
 			this.jlAttractor.setText("Cycle!");
@@ -504,8 +504,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		if (newColor != null
 				&& !newColor.equals(projectFeatures.getNodeColor(nodeID))) {
 			jb.setBackground(newColor);
-			this.epithelium.getProjectFeatures().setNodeColor(nodeID,
-					newColor);
+			this.epithelium.getProjectFeatures().setNodeColor(nodeID, newColor);
 			this.projChanged.setChanged(this);
 			this.visualGridSimulation.paintComponent(this.visualGridSimulation
 					.getGraphics());
@@ -516,8 +515,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		JPanel jpRRC = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(5, 5, 4, 0);
-		jpRRC.setBorder(BorderFactory
-				.createTitledBorder(titleBorder));
+		jpRRC.setBorder(BorderFactory.createTitledBorder(titleBorder));
 		List<String> nodeList = new ArrayList<String>(sNodeIDs);
 		Collections.sort(nodeList, ObjectComparator.STRING);
 		int y = 0;
@@ -531,7 +529,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 		this.jpRRCenter.add(jpRRC);
 	}
-	
+
 	private void updateComponentList(List<String> items) {
 		this.jpRRCenter.removeAll();
 		this.lCompON.clear();
@@ -542,33 +540,32 @@ public class EpiTabSimulation extends EpiTabTools {
 			lModels.add(this.projectFeatures.getModel(modelName));
 		}
 		this.lPresentComps = new ArrayList<String>();
-		
+
 		Set<String> sProperNodeIDs = new HashSet<String>();
 		Set<String> sInputNodeIDs = new HashSet<String>();
 		Set<String> sCommonNodeIDs = new HashSet<String>();
-		
+
 		List<NodeInfo> lProper = new ArrayList<NodeInfo>(this.epithelium
 				.getProjectFeatures().getModelsNodeInfos(lModels, false));
-		
+
 		for (NodeInfo node : lProper)
 			sProperNodeIDs.add(node.getNodeID());
-		
+
 		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(this.epithelium
 				.getProjectFeatures().getModelsNodeInfos(lModels, true));
-		
-		for (NodeInfo node : lInputs){
-			if (sProperNodeIDs.contains(node.getNodeID())){
+
+		for (NodeInfo node : lInputs) {
+			if (sProperNodeIDs.contains(node.getNodeID())) {
 				sCommonNodeIDs.add(node.getNodeID());
 				sProperNodeIDs.remove(node.getNodeID());
-			}
-			else {
+			} else {
 				sInputNodeIDs.add(node.getNodeID());
 			}
 		}
-		
+
 		if (!sCommonNodeIDs.isEmpty())
 			this.setComponentTypeList(sCommonNodeIDs, "Input/Proper Components");
-		if (!sProperNodeIDs.isEmpty()) 
+		if (!sProperNodeIDs.isEmpty())
 			this.setComponentTypeList(sProperNodeIDs, "Proper Components");
 		if (!sInputNodeIDs.isEmpty())
 			this.setComponentTypeList(sInputNodeIDs, "Input Components");
@@ -586,34 +583,39 @@ public class EpiTabSimulation extends EpiTabTools {
 	private boolean hasChangedEpithelium() {
 		return !this.simulation.getEpithelium().equals(this.epithelium);
 	}
-	
-	private void restart(){
+
+	private void restart() {
 		EpiGUI.getInstance().restartSimulationTab();
 	}
 
 	@Override
 	public void applyChange() {
 		if (this.hasChangedEpithelium()) {
-			JPanel jpNorth = new JPanel();
+			JPanel jpNorth = new JPanel(new BorderLayout());
 			this.jpRight.add(jpNorth, BorderLayout.NORTH);
 			JTextPane jtp = new JTextPane();
 			jtp.setContentType("text/html");
-			jtp.setText("<html><body style=\"background-color:#ffbebe\">"
-					+ "You have some <b>changed definitions</b> for this Epithelium.<br/>"
-					+ "This simulation is therefore <b>no longer valid</b>!<br/>"
-					+ "You can still run it and perform a clone/screenshots.<br/>"
-					+ "To apply changes and run a new simulation press <b>Restart</b>"
-					+ "</body></html>");
-			jpNorth.add(jtp, BorderLayout.NORTH);
+			String color = ColorUtils
+					.getColorCode(this.jpRight.getBackground());
+			jtp.setText("<html><body style=\"background-color:" + color + "\">"
+					+ "<font color=\"#ff0000\">"
+					+ "New Epithelium definitions detected!!<br/>"
+					+ "Continue current simulation with old definitions, "
+					+ "<br/>or press <b>Restart</b> to apply the new ones."
+					+ "</font></body></html>");
+			jtp.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+			jtp.setHighlighter(null);
+			jpNorth.add(jtp, BorderLayout.PAGE_START);
 			JButton jbRestart = ButtonFactory.getNoMargins("Restart");
-			jbRestart.setToolTipText("Restart the simulation with recently applied definitions");
+			jbRestart
+					.setToolTipText("Restart the simulation with recently applied definitions");
 			jbRestart.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					restart();
 				}
 			});
-			jpNorth.add(jbRestart, BorderLayout.EAST);
+			jpNorth.add(jbRestart, BorderLayout.PAGE_END);
 		} else {
 			for (int i = 0; i < this.jpRight.getComponentCount(); i++) {
 				Component c = this.jpRight.getComponent(i);
@@ -625,7 +627,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 		this.updateComponentList(this.jccb.getSelectedItems());
 	}
-	
+
 	@Override
 	public String getName() {
 		return "Simulation";
