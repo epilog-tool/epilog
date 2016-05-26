@@ -35,6 +35,14 @@ public class EpitheliumLogicalCell {
 		this.initialState = state;
 	}
 	
+	public void setInitialStateComponent(String nodeID, byte value) {
+		int index = this.getNodeIndex(nodeID);
+		if (index < 0)
+			return;
+		value = (byte) Math.min(value, this.model.getNodeOrder().get(index).getMax());
+		this.initialState[index]=value;
+	}
+	
 	public void setPerturbation(AbstractPerturbation ap) {
 		this.perturbation = ap;
 	}
@@ -60,7 +68,7 @@ public class EpitheliumLogicalCell {
 	}
 	
 	public byte[] getInitialState() {
-		return this.initialState;
+		return this.initialState.clone();
 	}
 	
 	public byte getNodeValue(String nodeID){

@@ -1,6 +1,7 @@
 package org.epilogtool.core.cellDynamics;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,7 +25,7 @@ public class EpitheliumTopology {
 
 	public EpitheliumTopology(Epithelium epi) {
 		this.topology = epi.getEpitheliumGrid().getTopology().clone();
-		this.maxDist = Math.max(this.topology.getX(), this.topology.getY())/2;
+		this.maxDist=3;
 		this.generator = new Random();
 		this.buildSpaceGrid(epi.getEpitheliumGrid());
 		this.buildTensionGrid();
@@ -90,7 +91,7 @@ public class EpitheliumTopology {
 		if (countedNeighbours==0) {
 			return (float) 0;
 		}
-		return 1 / (1 + ((float) Math.exp(2*(-countedNeighbours + (totalNeighbours*0.9)))));
+		return 1 / (1 + ((float) Math.exp(2*(-countedNeighbours + (totalNeighbours*0.1)))));
 	}
 	
 	private float getDistanceWeight(int distance) {
@@ -157,7 +158,7 @@ public class EpitheliumTopology {
 			float currTension = this.getTotalTension(currPosition);
 			float nextTension = this.getMinimumNeighbourTension(neighbourSet, currTension);
 			if (nextTension>=currTension && !this.hasEmptySpace(neighbourSet)) {
-				path = this.divisionPathHelper(path);
+				path = this.pathHelper(path);
 				currPosition = path.get(path.size()-1);
 				continue;
 			}
@@ -174,8 +175,8 @@ public class EpitheliumTopology {
 		Collections.reverse(path);
 		return path;
 	}
-	
-	private List<Tuple2D<Integer>> divisionPathHelper(List<Tuple2D<Integer>> path) {
+		
+	private List<Tuple2D<Integer>> pathHelper(List<Tuple2D<Integer>> path) {
 		
 		Tuple2D<Integer> originalPos = path.get(path.size()-1);
 		float currTension = this.getTotalTension(originalPos);
@@ -251,6 +252,22 @@ public class EpitheliumTopology {
 		return path;
 	}
 	
+	public List<Tuple2D<Integer>> apoptosisPath(int x, int y) {
+		List<Tuple2D<Integer>> path = this.divisionPath(x, y);
+		Collections.reverse(path);
+		return path;
+	}
+	
+	public List<Tuple2D<Integer>> getEventPath(int x, int y, CellTrigger trigger) {
+		if (trigger.equals(CellTrigger.PROLIFERATION)) {
+			return this.divisionPath(x, y);
+		}
+		if (trigger.equals(CellTrigger.APOPTOSIS)) {
+			return this.apoptosisPath(x, y);
+		}
+		return null;
+	}
+	
 	public List<Tuple2D<Integer>> divisionLinearPath(int x, int y) {
 		List<Tuple2D<Integer>> path = new ArrayList<Tuple2D<Integer>>();
 		
@@ -310,7 +327,9 @@ public class EpitheliumTopology {
 		return path;
 	}
 	
-	public void updatePopulationTopology(int x, int y, byte value) {
+	public void updatePopulationTopology(Tuple2D<Integer> shiftedCell, byte value) {
+		int x = shiftedCell.getX();
+		int y = shiftedCell.getY();
 		if (this.spaceGrid[x][y]==value) {
 			return;
 		}

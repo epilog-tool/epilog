@@ -223,6 +223,7 @@ public class Epithelium {
 		for (Tuple2D<Integer> tuple : lTuples) {
 			this.grid.setCellComponentValue(tuple.getX(), tuple.getY(), nodeID,
 					value);
+			this.grid.setCellInitialStateComponentValue(tuple.getX(), tuple.getY(), nodeID, value);
 		}
 	}
 

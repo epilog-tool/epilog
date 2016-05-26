@@ -33,7 +33,6 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.Epithelium;
-import org.epilogtool.core.EpitheliumEnvironmentalInputs;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
 import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
@@ -55,6 +54,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private Map<String, JButton> mNode2JButton;
 	private Map<String, JCheckBox> mNode2Checkbox;
 	private Map<String, JComboBox<Byte>> mNode2Combobox;
+	private Map<String, ComponentPair> mSelectedEnvComponents;
+	private Map<String, ComponentPair> mModelEnvComponents;
 
 	private JPanel jpRCenter;
 	private GridInformation lRight;
@@ -78,16 +79,20 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.mNode2JButton = new HashMap<String, JButton>();
 		this.mNode2Checkbox = new HashMap<String, JCheckBox>();
 		this.mNode2Combobox = new HashMap<String, JComboBox<Byte>>();
+		
+		this.mModelEnvComponents = new HashMap<String, ComponentPair>();
+		this.mSelectedEnvComponents = new HashMap<String, ComponentPair>();
+		
 		for (LogicalModel m : this.epiGridClone.getModelSet()) {
 			this.createGUIForModel(m);
 		}
-
 		this.lRight = new GridInformation(
-				this.epithelium.getIntegrationFunctions(), this.projectFeatures);
+				this.epithelium.getIntegrationFunctions(), this.projectFeatures, 
+				this.epithelium.getEnvironmentalInputs());
 
 		this.visualGridICs = new VisualGridInitialConditions(this.epiGridClone,
 				this.epithelium.getProjectFeatures().getNodeID2ColorMap(),
-				this.mNode2ValueSelected, this.lRight);
+				this.mNode2ValueSelected, this.lRight, this.mSelectedEnvComponents);
 		this.center.add(this.visualGridICs, BorderLayout.CENTER);
 
 		JPanel left = new JPanel(new BorderLayout());
@@ -226,8 +231,14 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 					if (jcb.isSelected()) {
 						mNode2ValueSelected.put(nodeID, (Byte) mNode2Combobox
 								.get(nodeID).getSelectedItem());
+						if (mModelEnvComponents.containsKey(nodeID)) {
+							mSelectedEnvComponents.put(nodeID, mModelEnvComponents.get(nodeID));
+						}
 					} else {
 						mNode2ValueSelected.remove(nodeID);
+						if (mModelEnvComponents.containsKey(nodeID)) {
+							mSelectedEnvComponents.remove(nodeID);
+						}
 					}
 					// Repaint
 					visualGridICs.paintComponent(visualGridICs.getGraphics());
@@ -297,6 +308,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.jpRCenter.removeAll();
 		this.mNode2ValueSelected.clear();
 		this.lNodeInPanel.clear();
+		this.mModelEnvComponents.clear();
+		this.mSelectedEnvComponents.clear();
 
 		LogicalModel m = this.projectFeatures.getModel(sModel);
 		this.visualGridICs.setModel(m);
@@ -378,6 +391,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		gbc.insets = new Insets(1, 5, 1, 0);
 		List<String> lEnvironmentalComponents = new ArrayList<String>();
 		for (ComponentPair cp : this.epithelium.getEnvironmentalInputs().getModelEnvironmentalComponents(m)){
+			this.mModelEnvComponents.put(cp.getNodeInfo().getNodeID(), cp);
 			lEnvironmentalComponents.add(cp.getNodeInfo().getNodeID());
 		}
 		jpRRCBottom.setBorder(BorderFactory
@@ -426,9 +440,13 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			for (int y = 0; y < this.epiGridClone.getY(); y++) {
 				byte[] stateClone = this.epiGridClone.getCellState(x, y);
 				byte[] stateOrig = gridOrig.getCellState(x, y);
+				Map<ComponentPair, Byte> envInputsClone = this.epiGridClone.getCellEnvironment(x, y);
+				Map<ComponentPair, Byte> envInputsOrig = gridOrig.getCellEnvironment(x, y);
 				if (!Arrays.equals(stateOrig, stateClone)) {
-					gridOrig.setCellState(x, y, stateClone);
 					gridOrig.setCellInitialState(x, y, stateClone);
+				}
+				if(!(envInputsClone.equals(envInputsOrig))) {
+					gridOrig.setCellEnvironment(x, y, envInputsClone);
 				}
 			}
 		}
@@ -440,9 +458,12 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {
 			for (int y = 0; y < this.epiGridClone.getY(); y++) {
+				Map<ComponentPair, Byte> envInputsClone = this.epiGridClone.getCellEnvironment(x, y);
+				Map<ComponentPair, Byte> envInputsOrig = grid.getCellEnvironment(x, y);
 				byte[] stateClone = this.epiGridClone.getCellState(x, y);
 				byte[] stateOrig = grid.getCellState(x, y);
-				if (!Arrays.equals(stateOrig, stateClone)) {
+				if (!Arrays.equals(stateOrig, stateClone) ||
+						!(envInputsClone.equals(envInputsOrig))) {
 					return true;
 				}
 			}
@@ -467,7 +488,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				}
 			}
 		}
-
+		
 		this.rTop.remove(0);
 		this.rTop.add(this.newModelCombobox(modelList), 0);
 		this.updateComponentList(this.projectFeatures.getModelName(modelList

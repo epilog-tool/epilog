@@ -665,8 +665,7 @@ public class EpiGUI extends JFrame {
 			Epithelium epiClone = project.cloneEpithelium(epi);
 			for (int x = 0; x < currGrid.getX(); x++) {
 				for (int y = 0; y < currGrid.getY(); y++) {
-					byte[] stateClone = currGrid.getCellState(x, y).clone();
-					epiClone.getEpitheliumGrid().setCellState(x, y, stateClone);
+					epiClone.getEpitheliumGrid().setEpitheliumCell(x, y, currGrid.getEpitheliumCell(x, y).clone());
 				}
 			}
 			addEpithelium2JTree(epiClone);

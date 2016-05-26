@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -18,6 +19,7 @@ import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.EmptyModel;
+import org.epilogtool.core.EpitheliumEnvironmentalInputs;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.gui.EpilogGUIFactory;
@@ -31,12 +33,15 @@ public class GridInformation extends JPanel {
 
 	private EpitheliumIntegrationFunctions integrFunctions;
 	private ProjectFeatures projectFeatures;
+	private EpitheliumEnvironmentalInputs envInputs;
 	private JPanel jCellPanel;
 
 	public GridInformation(EpitheliumIntegrationFunctions eif,
-			ProjectFeatures projectFeatures) {
+			ProjectFeatures projectFeatures, 
+			EpitheliumEnvironmentalInputs envInputs) {
 		this.integrFunctions = eif;
 		this.projectFeatures = projectFeatures;
+		this.envInputs = envInputs;
 
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		this.setBorder(BorderFactory.createTitledBorder("Cell information"));
@@ -102,6 +107,33 @@ public class GridInformation extends JPanel {
 				this.constraints(gbc, 0, ++y, 2);
 				jlTmp = new JLabel(EmptyModel.getInstance().getName());
 				this.jCellPanel.add(jlTmp, gbc);
+
+				this.minimalSpace(gbc, ++y);
+				boolean isEmpty = true;
+				jlTmp = new JLabel("Environ. inputs:");
+				this.constraints(gbc, 0, ++y, 1);
+				this.jCellPanel.add(jlTmp, gbc);
+				gbc.gridwidth = 1;
+				if (!(this.envInputs.getAllEnvironmentalComponents().size() == 0)) {
+					for (LogicalModel currModel : this.projectFeatures.getModels()) {
+						Set<ComponentPair> modelEnvInputs = this.envInputs.getModelEnvironmentalComponents(currModel);
+						if (modelEnvInputs.size() > 0) {
+							isEmpty = false;
+							jlTmp = new JLabel("  " + this.projectFeatures.getModelName(currModel));
+							this.constraints(gbc, 0, ++y, 1);
+							this.jCellPanel.add(jlTmp, gbc);
+							for (ComponentPair cp : modelEnvInputs) {
+								jlTmp = new JLabel("      " + cp.getNodeInfo().getNodeID() + " ");
+								this.constraints(gbc, 0, ++y, 1);
+								this.jCellPanel.add(jlTmp, gbc);
+								jlTmp = new JLabel(": " + grid.getCellEnvironment(posX, posY).get(cp));
+								this.constraints(gbc, 1, y, 1);
+								this.jCellPanel.add(jlTmp, gbc);
+							}
+						}
+					}
+				}
+				this.checkEmpty(gbc, ++y, isEmpty);
 			} 
 			
 			else{
@@ -170,7 +202,7 @@ public class GridInformation extends JPanel {
 			this.minimalSpace(gbc, ++y);
 
 			// Environmental Input values
-			jlTmp = new JLabel("Environ. inputs:");
+			jlTmp = new JLabel("Model inputs:");
 			this.constraints(gbc, 0, ++y, 1);
 			this.jCellPanel.add(jlTmp, gbc);
 			gbc.gridwidth = 1;
@@ -179,7 +211,8 @@ public class GridInformation extends JPanel {
 				NodeInfo node = this.projectFeatures.getNodeInfo(nodeID, m);
 				ComponentPair cp = new ComponentPair(m, node);
 				if (node == null || !node.isInput()
-						|| this.integrFunctions.containsComponentPair(cp)) {
+						|| this.integrFunctions.containsComponentPair(cp)
+						|| this.envInputs.containsComponent(cp)) {
 					continue;
 				}
 				jlTmp = new JLabel("  " + nodeID + " ");
@@ -221,6 +254,35 @@ public class GridInformation extends JPanel {
 				jlTmp = new JLabel(": " + grid.getCellState(posX, posY)[index]);
 				this.constraints(gbc, 1, y, 1);
 				this.jCellPanel.add(jlTmp, gbc);
+			}
+			this.checkEmpty(gbc, ++y, isEmpty);
+
+			this.minimalSpace(gbc, ++y);
+			
+			// Epithelial Environmental Input values
+			isEmpty = true;
+			jlTmp = new JLabel("Environ. inputs:");
+			this.constraints(gbc, 0, ++y, 1);
+			this.jCellPanel.add(jlTmp, gbc);
+			gbc.gridwidth = 1;
+			if (!(this.envInputs.getAllEnvironmentalComponents().size() == 0)) {
+				for (LogicalModel currModel : this.projectFeatures.getModels()) {
+					Set<ComponentPair> modelEnvInputs = this.envInputs.getModelEnvironmentalComponents(currModel);
+					if (modelEnvInputs.size() > 0) {
+						isEmpty = false;
+						jlTmp = new JLabel("  " + this.projectFeatures.getModelName(currModel));
+						this.constraints(gbc, 0, ++y, 1);
+						this.jCellPanel.add(jlTmp, gbc);
+						for (ComponentPair cp : modelEnvInputs) {
+							jlTmp = new JLabel("       " + cp.getNodeInfo().getNodeID() + " ");
+							this.constraints(gbc, 0, ++y, 1);
+							this.jCellPanel.add(jlTmp, gbc);
+							jlTmp = new JLabel(": " + grid.getCellEnvironment(posX, posY).get(cp));
+							this.constraints(gbc, 1, y, 1);
+							this.jCellPanel.add(jlTmp, gbc);
+						}
+					}
+				}
 			}
 			this.checkEmpty(gbc, ++y, isEmpty);
 			}

@@ -1,7 +1,6 @@
 package org.epilogtool.core;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -188,7 +187,7 @@ public class EpitheliumGrid {
 	}
 	
 	public void setCell2Naive(int x, int  y) {
-		gridEpiCell[x][y].setState(gridEpiCell[x][y].getInitialState().clone());
+		gridEpiCell[x][y].setState(gridEpiCell[x][y].getInitialState());
 		gridEpiCell[x][y].setCellTrigger(CellTrigger.DEFAULT);
 	}
 	
@@ -200,14 +199,22 @@ public class EpitheliumGrid {
 		gridEpiCell[x][y].setValue(nodeID, value);
 	}
 	
-	public void setEnvironmentalInput(int x, int y, ComponentPair cp, byte value) {
-		this.gridEpiCell[x][y].addEnvironmentalInput(cp, value);
+	public void setCellInitialStateComponentValue(int x, int y, String nodeID, byte value) {
+		gridEpiCell[x][y].setInitialStateComponent(nodeID, value);
 	}
 	
-	public void setGridEnvironment(ComponentPair cp) {
+	public void setEnvironmentalInput(int x, int y, ComponentPair cp, byte value) {
+		this.gridEpiCell[x][y].setEnvironmentalInput(cp, value);
+	}
+	
+	public void setCellEnvironment(int x, int y, Map<ComponentPair, Byte> envInputs) {
+		this.gridEpiCell[x][y].setEnvironment(envInputs);
+	}
+	
+	public void addGridEnvironment(ComponentPair cp) {
 		for (int x = 0; x < this.getX(); x ++) {
 			for (int y = 0; y < this.getY(); y ++) {
-				this.gridEpiCell[x][y].addEnvironmentalInput(cp, (byte) 0); 
+				this.gridEpiCell[x][y].addEnvironmentalInput(cp); 
 			}
 		}
 	}
@@ -233,8 +240,9 @@ public class EpitheliumGrid {
 							.getLogicalCell().clone());
 			return;
 		}
-		if (!(clonedModel.equals(originalModel)) 
-				&& !(EmptyModel.getInstance().isEmptyModel(originalModel))){
+		if (EmptyModel.getInstance().isEmptyModel(originalModel)) {
+			this.modelPositions.get(clonedModel).remove(clonedPos);
+		} else if (!(clonedModel.equals(originalModel))){
 			this.modelPositions.get(originalModel).add(clonedPos);
 			if (!(EmptyModel.getInstance().isEmptyModel(clonedModel))) {
 				this.modelPositions.get(clonedModel).remove(clonedPos);
@@ -249,6 +257,14 @@ public class EpitheliumGrid {
 		for (int index = 1; index < path.size(); index ++) {
 			this.cloneCellPosition(path.get(index), path.get(index-1));
 		}
+	}
+	
+	public EpitheliumCell getEpitheliumCell(int x, int y) {
+		return this.gridEpiCell[x][y];
+	}
+	
+	public void setEpitheliumCell(int x, int y, EpitheliumCell epiCell) {
+		this.gridEpiCell[x][y] = epiCell;
 	}
 		
 	public int emptyModelNumber(){
@@ -285,7 +301,7 @@ public class EpitheliumGrid {
 		}
 		return s;
 	}
-
+	
 	public boolean equals(Object a) {
 		if (a == null || !(a instanceof EpitheliumGrid))
 			return false;

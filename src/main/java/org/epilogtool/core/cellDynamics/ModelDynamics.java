@@ -13,10 +13,8 @@ import org.colomoto.logicalmodel.LogicalModel;
 public class ModelDynamics {
 	
 	private Map<CellTrigger, List<TriggerPattern>> trigger2patternMap;
-	private float async;
 	
 	public ModelDynamics() {
-		this.async = (float) 1.0;
 		this.buildTrigger2PatternMap();
 	}
 
@@ -26,8 +24,7 @@ public class ModelDynamics {
 		this.trigger2patternMap.put(CellTrigger.APOPTOSIS, new ArrayList<TriggerPattern>());
 	}
 	
-	private ModelDynamics(Float async, Map<CellTrigger, List<TriggerPattern>> trigger2Pattern) {
-		this.async = async;
+	private ModelDynamics(Map<CellTrigger, List<TriggerPattern>> trigger2Pattern) {
 		this.trigger2patternMap = trigger2Pattern;
 	}
 	
@@ -38,13 +35,12 @@ public class ModelDynamics {
 			trigger2Pattern
 			.put(trigger, new ArrayList<TriggerPattern>(this.trigger2patternMap.get(trigger)));
 		}
-		return new ModelDynamics(this.async, trigger2Pattern);
+		return new ModelDynamics(trigger2Pattern);
 	}
 	
 	public boolean equals(Object o) {
 		ModelDynamics other = (ModelDynamics) o;
-		return this.trigger2patternMap.equals(other.trigger2patternMap) 
-				&& this.async==other.async;
+		return this.trigger2patternMap.equals(other.trigger2patternMap);
 	}
 	
 	public Map<CellTrigger, List<TriggerPattern>> getDynamicsMap() {
@@ -57,14 +53,6 @@ public class ModelDynamics {
 	
 	public List<TriggerPattern> getTriggerPatterns(CellTrigger trigger) {
 		return this.trigger2patternMap.get(trigger);
-	}
-	
-	public float getAsync() {
-		return this.async;
-	}
-	
-	public void setAsync(float async) {
-		this.async = async;
 	}
 	
 	public void addPattern(TriggerPattern pattern, CellTrigger trigger) {

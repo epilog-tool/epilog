@@ -96,14 +96,11 @@ public class Simulation {
 		}
 	}
 	
-	private void updateUpdaterCache(EpitheliumGrid workingGrid, List<Tuple2D<Integer>> path) {
+	private void updateDivisionUpdaterCache(EpitheliumGrid workingGrid, List<Tuple2D<Integer>> path) {
 		for (int index = 1; index < path.size(); index ++) {
 			Tuple2D<Integer> originalPos = path.get(index);
 			Tuple2D<Integer> clonedPos = path.get(index-1);
 			LogicalModel m = workingGrid.getModel(originalPos.getX(), originalPos.getY());
-			if (EmptyModel.getInstance().isEmptyModel(m)) {
-				continue;
-			}
 			AbstractPerturbation ap = workingGrid.getPerturbation(originalPos.getX(), originalPos.getY());
 			LogicalModel perturb = (ap == null) ? m : ap.apply(m);
 			PriorityClasses pcs = this.epithelium.getPriorityClasses(m).getPriorities();
@@ -196,11 +193,12 @@ public class Simulation {
 			}
 		} 
 		
-		//update Division events
+		//update grid dynamic events
 		int emptyModelNumber = nextGrid.emptyModelNumber();
 		for (int x = 0; x < nextGrid.getX(); x ++) {
 			for (int y = 0; y < nextGrid.getY(); y ++) {
 				if (currGrid.isEmptyCell(x, y)) continue;
+				if (keys.contains(new Tuple2D<Integer>(x, y))) continue;
 				if (currGrid.getCellTrigger(x, y).equals(CellTrigger.DEFAULT) ||
 						nextGrid.getCellTrigger(x, y).equals(CellTrigger.DEFAULT)) {
 					continue;
@@ -210,16 +208,18 @@ public class Simulation {
 			}
 		}
 		if (!updates && !dynamics) {
-			//this.stable = true;
-			//return currGrid;
+			this.stable = true;
+			return currGrid;
 		}
-		//TODO: shuffle
+		
 		if (triggeredCells.size() > 0 && emptyModelNumber > 0) {
-			//int testalpha = triggeredCells.size();
+			Collections.shuffle(triggeredCells, RandomFactory.getInstance()
+					.getGenerator());
 			while (emptyModelNumber > 0) {
 				Tuple2D<Integer> currPosition = triggeredCells.get(0);
 				triggeredCells.remove(currPosition);
 				List<Tuple2D<Integer>> path = this.epiTopology.divisionPath(currPosition.getX(), currPosition.getY());
+				this.updateDivisionUpdaterCache(nextGrid, path);
 				for (int index = 1; index < path.size(); index ++) {
 					if (triggeredCells.contains(path.get(index))) {
 						triggeredCells.remove(path.get(index).clone());
@@ -228,14 +228,12 @@ public class Simulation {
 				}
 				Tuple2D<Integer> motherCell = path.get(path.size()-1).clone();
 				Tuple2D<Integer> daughterCell = path.get(path.size()-2).clone();
-				Tuple2D<Integer> exteriorPos = path.get(0);
+				Tuple2D<Integer> shiftedCell = path.get(0).clone();
 				nextGrid.shiftCells(path);
-				this.epiTopology.updatePopulationTopology(exteriorPos.getX(), exteriorPos.getY(), (byte) 1);
-				this.updateUpdaterCache(nextGrid, path);
+				this.epiTopology.updatePopulationTopology(shiftedCell, (byte) 1);
 				nextGrid.setCell2Naive(motherCell.getX(), motherCell.getY());
 				nextGrid.setCell2Naive(daughterCell.getX(), daughterCell.getY());
 				emptyModelNumber -=1;
-				//if (triggeredCells.size() <= (1-alphaProb)*testalpha) break;
 				if (triggeredCells.size() <= 0) break;
 			}
 		}
@@ -257,7 +255,6 @@ public class Simulation {
 			IntegrationFunctionEvaluation evaluator,
 			Set<ComponentPair> sIntegComponentPairs) {
 		byte[] currState = currGrid.getCellState(x, y).clone();
-
 		PriorityUpdater updater = this.updaterCache[x][y];
 		LogicalModel m = currGrid.getModel(x, y);
 
@@ -351,11 +348,19 @@ public class Simulation {
 					List<Tuple2D<Integer>> selectedModelPositions = modelPositions
 							.subList(0, selectedCells);
 					for (Tuple2D<Integer> tuple : selectedModelPositions) {
-						byte[] delayState = delayGrid.getCellState(
-								tuple.getX(), tuple.getY());
+						/*if (!(delayGrid.getModel(tuple.getX(), tuple.getY()).equals(m))) {
+							neighbourEpi.setCellComponentValue(tuple.getX(),
+									tuple.getY(), nodeID, (byte) 0);
+						}
+						else {
+							byte[] delayState = delayGrid.getCellState(
+									tuple.getX(), tuple.getY());
+							neighbourEpi.setCellComponentValue(tuple.getX(),
+									tuple.getY(), nodeID,
+									(byte) delayState[nodePosition]);
+						}*/
 						neighbourEpi.setCellComponentValue(tuple.getX(),
-								tuple.getY(), nodeID,
-								(byte) delayState[nodePosition]);
+								tuple.getY(), nodeID, (byte) 0);
 					}
 				}
 			}

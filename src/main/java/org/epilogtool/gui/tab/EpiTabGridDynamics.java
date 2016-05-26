@@ -145,9 +145,6 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 		this.jpRBottom.removeAll();
 		
 		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
-		JPanel sliderPanel = this.callSliderPanel(m);
-		
-		this.jpRBottom.add(sliderPanel, BorderLayout.NORTH);
 				
 		JButton jbAdd = ButtonFactory.getNoMargins("+");
 		jbAdd.setToolTipText("Add a new pattern");
@@ -209,41 +206,6 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 			jpPatternPanel.add(jtf, gbc);
 		}
 		this.getParent().repaint();
-	}
-	
-	private JPanel callSliderPanel(LogicalModel m) {
-		JPanel sliderPanel = new JPanel(new BorderLayout());
-		sliderPanel.setBorder(BorderFactory.createTitledBorder("Model associated asynchronism"));
-		this.jpRBottom.add(sliderPanel, BorderLayout.NORTH);
-		JSlider asyncSlider = new JSlider(JSlider.HORIZONTAL, 
-				this.SLIDER_MIN, this.SLIDER_MAX, this.SLIDER_MAX);
-		sliderPanel.add(asyncSlider, BorderLayout.CENTER);
-		asyncSlider.setMajorTickSpacing(this.SLIDER_STEP);
-		asyncSlider.setMinorTickSpacing(1);
-		asyncSlider.setPaintTicks(true);
-		asyncSlider.setPaintLabels(true);
-		asyncSlider.setToolTipText("Current value: " + (float) asyncSlider.getValue()/100);
-		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
-		for (int i = this.SLIDER_MIN; i <= this.SLIDER_MAX; i += this.SLIDER_STEP) {
-			labelTable.put(new Integer(i), new JLabel("" + ((float) i / this.SLIDER_MAX)));
-		}
-		asyncSlider.setLabelTable(labelTable);
-		asyncSlider.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				JSlider slide = (JSlider) e.getSource();	
-				setModelAsync(slide.getValue());
-				slide.setToolTipText("Current value: " + (float) slide.getValue()/100);
-			}
-		});
-		asyncSlider.setValue((int) (this.epiTriggerManager.getTriggerManager(m).getAsync() * SLIDER_MAX));
-		return sliderPanel;
-	}
-	
-	private void setModelAsync(int value) {
-		float async = (float) value / 100;
-		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
-		this.epiTriggerManager.getTriggerManager(m).setAsync((async));
 	}
 	
 	private void setPatternExpression(int i, String expression) {

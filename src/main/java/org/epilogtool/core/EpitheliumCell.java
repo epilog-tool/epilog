@@ -54,10 +54,16 @@ public class EpitheliumCell {
 	
 	public void setState(byte[] state) {
 		this.logicalCell.setState(state);
+		this.updateEnvironmentalInputs();
 	}
 	
 	public void setInitialState(byte[] state) {
 		this.logicalCell.setInitialState(state);
+		this.logicalCell.setState(state.clone());
+	}
+	
+	public void setInitialStateComponent(String nodeID, byte value) {
+		this.logicalCell.setInitialStateComponent(nodeID, value);
 	}
 	
 	public void setPerturbation(AbstractPerturbation ap) {
@@ -72,18 +78,26 @@ public class EpitheliumCell {
 		this.logicalCell.setCellTrigger(trigger);
 	}
 	
-	public void addEnvironmentalInput(ComponentPair cp, byte value) {
+	public void addEnvironmentalInput(ComponentPair cp) {
+		this.environmentalInputs.put(cp, (byte) 0);
+	}
+	
+	public void setEnvironmentalInput(ComponentPair cp, byte value) {
 		this.environmentalInputs.put(cp, value);
-		if (this.getModel().equals(cp.getModel())) {
+		if (cp.getModel().equals(this.getModel())) {
 			this.setValue(cp.getNodeInfo().getNodeID(), value);
-		}
+		};
+	}
+	
+	public void setEnvironment(Map<ComponentPair, Byte> envInputs) {
+		this.environmentalInputs = envInputs;
 	}
 	
 	public void removeEnvironmentalInput(ComponentPair cp) {
-		this.environmentalInputs.remove(cp);
-		if (this.getModel().equals(cp.getModel())) {
+		if (cp.getModel().equals(this.getModel())) {
 			this.setValue(cp.getNodeInfo().getNodeID(), (byte) 0);
 		}
+		this.environmentalInputs.remove(cp);
 	}
 
 	public AbstractPerturbation getPerturbation() {
