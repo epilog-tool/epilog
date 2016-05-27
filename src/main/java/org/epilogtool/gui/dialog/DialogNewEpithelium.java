@@ -261,7 +261,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 			if (this.width >= 1) {
 				RollOver ro = (RollOver) this.jcbRollover.getSelectedItem();
 				this.bIsWidthOK = (this.width % 2 == 0)
-						|| (ro != RollOver.HORIZ && ro!=RollOver.HORIZ_VERT);
+						|| (!ro.isHorizontal());
 			}
 		} catch (NumberFormatException nfe) {
 		}
@@ -282,11 +282,11 @@ public class DialogNewEpithelium extends EscapableDialog {
 			if (this.height >= 1) {
 				RollOver ro = (RollOver) this.jcbRollover.getSelectedItem();
 				this.bIsHeightOK = (this.height % 2 == 0)
-						|| (ro != RollOver.VERT && ro!=RollOver.HORIZ_VERT);
+						|| (!ro.isVertical());
 			}
 		} catch (NumberFormatException nfe) {
 		}
-		if (this.bIsWidthOK) {
+		if (this.bIsHeightOK) {
 			this.jtfHeight.setBackground(Color.WHITE);
 			this.jtfHeight.setToolTipText(null);
 		} else {
