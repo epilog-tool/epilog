@@ -110,7 +110,7 @@ public class TopologyService {
 			if (!Modifier.isAbstract(cTop.getModifiers())) {
 				Constructor<Topology> c = cTop.getConstructor(Integer.TYPE,
 						Integer.TYPE, RollOver.class);
-				Topology instance = c.newInstance(0, 0, RollOver.NOROLLOVER);
+				Topology instance = c.newInstance(0, 0, RollOver.NONE);
 				String desc = instance.getDescription();
 				String topID = className.substring(FILTER_DOT.length());
 				this.mtopID2Constructor.put(topID, c);
