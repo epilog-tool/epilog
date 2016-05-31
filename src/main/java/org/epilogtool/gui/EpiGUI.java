@@ -3,10 +3,14 @@ package org.epilogtool.gui;
 import java.awt.Component;
 import java.awt.Dialog.ModalityType;
 import java.awt.Window;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
@@ -34,6 +38,7 @@ import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.dialog.DialogAbout;
 import org.epilogtool.gui.dialog.DialogNewEpithelium;
 import org.epilogtool.gui.dialog.DialogRenameEpithelium;
+import org.epilogtool.gui.menu.CloseTabPopupMenu;
 import org.epilogtool.gui.menu.EpitheliumMenu;
 import org.epilogtool.gui.menu.FileMenu;
 import org.epilogtool.gui.menu.HelpMenu;
@@ -67,6 +72,8 @@ public class EpiGUI extends JFrame {
 	private ProjDescPanel projDescPanel;
 	private EpiTreePanel epiTreePanel;
 	private Project project;
+	private CloseTabPopupMenu closeTabPopupMenu;
+
 	private static EpiGUI epigui;
 
 	public static EpiGUI getInstance() {
@@ -101,6 +108,8 @@ public class EpiGUI extends JFrame {
 		} catch (UnsupportedLookAndFeelException e2) {
 			e2.printStackTrace();
 		}
+
+		this.closeTabPopupMenu = new CloseTabPopupMenu();
 
 		// BEGIN -- Menu Bar
 		this.epiMenu = new JMenuBar();
@@ -579,6 +588,32 @@ public class EpiGUI extends JFrame {
 				this.epiRightFrame.addTab(title, epiTab);
 				epiTab.initialize();
 
+				this.epiRightFrame.addMouseListener(new MouseListener() {
+					@Override
+					public void mouseReleased(MouseEvent e) {
+					}
+
+					@Override
+					public void mousePressed(MouseEvent e) {
+						if (e.isPopupTrigger()) {
+							closeTabPopupMenu.show(e.getComponent(), e.getX(),
+									e.getY());
+						}
+					}
+
+					@Override
+					public void mouseExited(MouseEvent e) {
+					}
+
+					@Override
+					public void mouseEntered(MouseEvent e) {
+					}
+
+					@Override
+					public void mouseClicked(MouseEvent e) {
+					}
+				});
+
 				CloseTabButton tabButton = new CloseTabButton(title,
 						this.epiRightFrame);
 				tabIndex = this.epiRightFrame.getTabCount() - 1;
@@ -587,6 +622,56 @@ public class EpiGUI extends JFrame {
 		}
 		// Select existing Tab
 		this.epiRightFrame.setSelectedIndex(tabIndex);
+	}
+
+	public void epiTabCloseActiveTab() {
+		EpiTab epi = (EpiTab) this.epiRightFrame.getSelectedComponent();
+		if (epi.canClose()) {
+			this.epiRightFrame.removeTabAt(this.epiRightFrame
+					.getSelectedIndex());
+		}
+	}
+
+	public void epiTabCloseOtherTabs() {
+		List<EpiTab> lEpiTab2Rm = new ArrayList<EpiTab>(); 
+		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
+			if (i != this.epiRightFrame.getSelectedIndex())
+				lEpiTab2Rm.add((EpiTab)this.epiRightFrame.getComponentAt(i));
+		}
+		for (EpiTab tab : lEpiTab2Rm) {
+			if (tab.canClose()) {
+				this.epiRightFrame.remove(tab);
+			}
+		}
+	}
+	
+	public void epiTabCloseAllTabs() {
+		for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
+			EpiTab tab = (EpiTab) this.epiRightFrame.getComponentAt(i);
+			if (tab.canClose()) {
+				this.epiRightFrame.remove(i);
+			}
+		}
+	}
+	
+	public void epiTabCloseActiveEpi() {
+		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
+		for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
+			EpiTab tab = (EpiTab) this.epiRightFrame.getComponentAt(i);
+			if (tab.containsEpithelium(epi) && tab.canClose()) {
+				this.epiRightFrame.remove(i);
+			}
+		}
+	}
+	
+	public void epiTabCloseOtherEpis() {
+		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
+		for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
+			EpiTab tab = (EpiTab) this.epiRightFrame.getComponentAt(i);
+			if (!tab.containsEpithelium(epi) && tab.canClose()) {
+				this.epiRightFrame.remove(i);
+			}
+		}
 	}
 
 	public void openSimulationTab() {
