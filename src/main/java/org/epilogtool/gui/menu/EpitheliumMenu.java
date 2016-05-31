@@ -1,6 +1,7 @@
 package org.epilogtool.gui.menu;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
@@ -10,6 +11,7 @@ import org.epilogtool.gui.EpiGUI;
 public class EpitheliumMenu {
 	public static JMenu getMenu() {
 		JMenu menu = new JMenu("Epithelium");
+		menu.setMnemonic(KeyEvent.VK_E);
 
 		menu.add(new NewEpiAction());
 		menu.add(new DeleteEpiAction());
