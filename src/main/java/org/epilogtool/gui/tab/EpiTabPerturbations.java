@@ -127,7 +127,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 
 		this.jpCenter = new JPanel(new BorderLayout());
 		left.add(jpCenter, BorderLayout.CENTER);
-		
+
 		JPanel jpLeftAggreg = new JPanel(new BorderLayout());
 		jpLeftAggreg.add(left, BorderLayout.LINE_START);
 		jpLeftAggreg.add(this.gridInfo, BorderLayout.LINE_END);
@@ -622,9 +622,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 						this.epiGridClone.getModel(x, y))) {
 					this.epiGridClone.setPerturbation(x, y,
 							grid.getPerturbation(x, y));
-					// FIXME ptgm
-					// this.cellGridClone[x][y] = grid.cloneEpitheliumCellAt(x,
-					// y);
 				}
 			}
 		}

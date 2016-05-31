@@ -2,7 +2,6 @@ package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -38,8 +37,8 @@ import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
 import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
 import org.epilogtool.gui.widgets.GridInformation;
-import org.epilogtool.gui.widgets.VisualGridInitialConditions;
 import org.epilogtool.gui.widgets.JComboWideBox;
+import org.epilogtool.gui.widgets.VisualGridInitialConditions;
 import org.epilogtool.io.ButtonFactory;
 import org.epilogtool.project.ProjectFeatures;
 
