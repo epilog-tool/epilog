@@ -118,7 +118,7 @@ public class VisualGridPerturbation extends VisualGrid {
 			for (int y = 0; y < this.gridY; y++) {
 				AbstractPerturbation ap = this.cellGridClone[x][y]
 						.getPerturbation();
-				if (ap != null && ap.equals(selAbsPerturb)) {
+				if (selAbsPerturb == null || ap != null && ap.equals(selAbsPerturb)) {
 					this.cellGridClone[x][y].setPerturbation(null);
 				}
 			}
