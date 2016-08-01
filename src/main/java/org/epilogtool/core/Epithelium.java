@@ -17,11 +17,6 @@ import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
 
 public class Epithelium {
-
-	private int x;
-	private int y;
-	private String topologyLayout;
-
 	private String name;
 	private EpitheliumGrid grid;
 	private EpitheliumIntegrationFunctions integrationFunctions;
@@ -30,17 +25,14 @@ public class Epithelium {
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
 	private ProjectFeatures projectFeatures;
 
-	public Epithelium(int x, int y, String topologyLayout, String name,
+	public Epithelium(int x, int y, String topologyID, String name,
 			LogicalModel m, RollOver rollover,
 			ProjectFeatures projectFeatures)
 			throws InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
-		this.x = x;
-		this.y = y;
-		this.topologyLayout = topologyLayout;
 		this.name = name;
-		this.grid = new EpitheliumGrid(x, y, topologyLayout, rollover, m);
+		this.grid = new EpitheliumGrid(x, y, topologyID, rollover, m);
 		this.priorities = new EpitheliumUpdateSchemeIntra();
 		this.priorities.addModel(m);
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
@@ -51,13 +43,10 @@ public class Epithelium {
 				EpitheliumUpdateSchemeInter.DEFAULT_ALPHA, new HashMap<ComponentPair, Float>());
 	}
 
-	private Epithelium(int x, int y, String topologyLayout, String name,
+	private Epithelium(String name,
 			EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
 			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap,
 			ProjectFeatures pf, EpitheliumUpdateSchemeInter usi) {
-		this.x = x;
-		this.y = y;
-		this.topologyLayout = topologyLayout;
 		this.name = name;
 		this.grid = grid;
 		this.priorities = epc;
@@ -66,13 +55,17 @@ public class Epithelium {
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
 	}
+	
+	public void updateEpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+		this.grid.updateEpitheliumGrid(gridX, gridY, topologyID, rollover);
+	}
 
 	public boolean hasModel(LogicalModel m) {
 		return this.grid.hasModel(m);
 	}
 
 	public Epithelium clone() {
-		return new Epithelium(this.x, this.y, this.topologyLayout, "CopyOf_"
+		return new Epithelium("CopyOf_"
 				+ this.name, this.grid.clone(),
 				this.integrationFunctions.clone(), this.priorities.clone(),
 				this.perturbations.clone(), this.projectFeatures,
@@ -252,16 +245,11 @@ public class Epithelium {
 	}
 
 	public int getX() {
-		return this.x;
+		return this.grid.getX();
 	}
 
 	public int getY() {
-		return this.y;
-	}
-
-	public String getTopologyLayout() {
-		// TODO: improve this
-		return this.topologyLayout;
+		return this.grid.getY();
 	}
 
 	public boolean equals(Object o) {

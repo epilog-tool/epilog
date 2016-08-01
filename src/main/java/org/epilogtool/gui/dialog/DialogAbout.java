@@ -53,8 +53,8 @@ public class DialogAbout extends EscapableDialog implements HyperlinkListener {
 		s += "<h3>Current Team</h3>\n";
 		s += "<table border=0>\n";
 		s += "<tr><td>Claudine Chaouiya</td><td>Project coordination</td></tr>\n";
+		s += "<tr><td>Pedro T. Monteiro</td><td>Project coordination & Software development</td></tr>\n";
 		s += "<tr><td>Adrien Faur&eacute;</td><td>Biological applications</td></tr>\n";
-		s += "<tr><td>Pedro T. Monteiro</td><td>Software development</td></tr>\n";
 		s += "<tr><td>Pedro L. Varela</td><td>Software development</td></tr>\n";
 		s += "<tr><td>Camila Veludo</td><td>Software development</td></tr>\n";
 		s += "</table>\n";

@@ -77,13 +77,13 @@ public class Project {
 		this.filenamePEPS = filename;
 	}
 
-	public Epithelium newEpithelium(int x, int y, String topologyLayout, 
+	public Epithelium newEpithelium(int x, int y, String topologyID, 
 			String userName, String modelName, RollOver rollover) 
 					throws InstantiationException,
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException {
-		Epithelium epi = new Epithelium(x, y, topologyLayout, userName, 
+		Epithelium epi = new Epithelium(x, y, topologyID, userName, 
 				this.projectFeatures.getModel(modelName), rollover, this.projectFeatures);
 		this.epitheliumList.add(epi);
 		return epi;

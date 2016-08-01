@@ -26,6 +26,7 @@ import org.colomoto.logicalmodel.perturbation.RangePerturbation;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.Project;
 import org.epilogtool.project.ProjectFeatures;
+import org.epilogtool.services.TopologyService;
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.ComponentIntegrationFunctions;
@@ -74,8 +75,8 @@ public class Parser {
 				modelKey2Name.put(saTmp[1], saTmp[2]);
 				Color modelColor = ColorUtils.getColor(saTmp[3], saTmp[4],
 						saTmp[5]);
-				project.getProjectFeatures().setModelColor(saTmp[2],
-						modelColor);
+				project.getProjectFeatures()
+						.setModelColor(saTmp[2], modelColor);
 			}
 
 			if (line.startsWith("CC")) {
@@ -156,29 +157,31 @@ public class Parser {
 				saTmp = line.split("\\s+");
 				List<String> tmpList = (List<String>) Arrays.asList(saTmp);
 				int functionIndex = 0;
-				for (String item: tmpList){
-					if(item.contains("(")){
-						break;}
+				for (String item : tmpList) {
+					if (item.contains("(")) {
+						break;
+					}
 					functionIndex += 1;
 				}
 				String function = "";
-				for(int i = functionIndex; i<tmpList.size(); i++) {
+				for (int i = functionIndex; i < tmpList.size(); i++) {
 					function += tmpList.get(i);
 				}
-				List<String> tmpList2=tmpList.subList(0, functionIndex);
+				List<String> tmpList2 = tmpList.subList(0, functionIndex);
 				tmpList = new ArrayList<String>(tmpList2);
 				tmpList.add(function);
 				saTmp = tmpList.toArray(new String[0]);
-				
+
 				String[] regulatorsArray = function.split("\\&|\\!|\\|");
 				Set<String> regulatorsSet = new HashSet<String>();
-				for (String atom: regulatorsArray) {
-					if (atom.length()==0) {
-						continue;}
-					String[] atomElems = atom.split("\\(");
-					if (atomElems.length==0)
+				for (String atom : regulatorsArray) {
+					if (atom.length() == 0) {
 						continue;
-					regulatorsSet.add(atomElems[atomElems.length-2]);
+					}
+					String[] atomElems = atom.split("\\(");
+					if (atomElems.length == 0)
+						continue;
+					regulatorsSet.add(atomElems[atomElems.length - 2]);
 				}
 				if (saTmp.length == 4) {
 					String input = saTmp[1];
@@ -188,8 +191,9 @@ public class Parser {
 							continue;
 						}
 						boolean flag = true;
-						for (String regulator: regulatorsSet) {
-							if (!(project.getProjectFeatures().hasNode(regulator,m))) {
+						for (String regulator : regulatorsSet) {
+							if (!(project.getProjectFeatures().hasNode(
+									regulator, m))) {
 								flag = false;
 								break;
 							}
@@ -197,7 +201,7 @@ public class Parser {
 						if (flag) {
 							currEpi.setIntegrationFunction(saTmp[1], m,
 									Byte.parseByte(saTmp[2]), function);
-							for ( String proper: regulatorsSet) { 
+							for (String proper : regulatorsSet) {
 								NodeInfo node = project.getProjectFeatures()
 										.getNodeInfo(proper, m);
 								ComponentPair cp = new ComponentPair(m, node);
@@ -211,11 +215,11 @@ public class Parser {
 				} else {
 					LogicalModel m = project.getModel(modelKey2Name
 							.get(saTmp[1]));
-					currEpi.setIntegrationFunction(saTmp[2], m, Byte
-							.parseByte(saTmp[3]), function);
-					for (String regulator: regulatorsSet){
-						NodeInfo node = project.getProjectFeatures().getNodeInfo(
-							regulator, m);
+					currEpi.setIntegrationFunction(saTmp[2], m,
+							Byte.parseByte(saTmp[3]), function);
+					for (String regulator : regulatorsSet) {
+						NodeInfo node = project.getProjectFeatures()
+								.getNodeInfo(regulator, m);
 						ComponentPair cp = new ComponentPair(m, node);
 						if (!currEpi.getUpdateSchemeInter().containsCPSigma(cp)) {
 							currEpi.getUpdateSchemeInter().addCP(cp);
@@ -283,8 +287,9 @@ public class Parser {
 						.substring(1)));
 			} else {
 				String[] saTmp = perturb.split(",");
-				ap = new RangePerturbation(node, Integer.parseInt(saTmp[0].replace("[", "")), 
-						Integer.parseInt(saTmp[1].replace("]", "")));
+				ap = new RangePerturbation(node, Integer.parseInt(saTmp[0]
+						.replace("[", "")), Integer.parseInt(saTmp[1].replace(
+						"]", "")));
 			}
 			lPerturb.add(ap);
 		}
@@ -302,10 +307,10 @@ public class Parser {
 		// + project.getTopologyLayout());
 
 		// SBML numerical identifiers
-		
-		OptionStore.setOption("EM", 
+
+		OptionStore.setOption("EM",
 				ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
-		
+
 		int i = 0;
 		Map<LogicalModel, Integer> model2Key = new HashMap<LogicalModel, Integer>();
 		for (String sbml : project.getModelNames()) {
@@ -338,8 +343,13 @@ public class Parser {
 
 		// Epithelium name
 		w.println("SN " + epi.getName());
-		w.println("GD " + epi.getX() + " " + epi.getY() + " "
-				+ epi.getTopologyLayout());
+		w.println("GD "
+				+ epi.getX()
+				+ " "
+				+ epi.getY()
+				+ " "
+				+ TopologyService.getManager().getTopologyID(
+						epi.getEpitheliumGrid().getTopology().getDescription()));
 
 		// Rollover
 		w.println("RL " + epi.getEpitheliumGrid().getTopology().getRollOver());
@@ -433,8 +443,8 @@ public class Parser {
 					List<String> sInsts = compactIntegerSequences(valueInst
 							.get(m).get(nodeID).get(value));
 					if (!sInsts.isEmpty()) {
-					w.println("IC " + nodeID + " " + value + " "
-							+ join(sInsts, ","));
+						w.println("IC " + nodeID + " " + value + " "
+								+ join(sInsts, ","));
 					}
 				}
 			}
@@ -457,7 +467,7 @@ public class Parser {
 
 		// Model Priority classes
 		for (LogicalModel m : model2Key.keySet()) {
-			if (epi.hasModel(m)){
+			if (epi.hasModel(m)) {
 				ModelPriorityClasses mpc = epi.getPriorityClasses(m);
 				String sPCs = "";
 				for (int idxPC = 0; idxPC < mpc.size(); idxPC++) {
@@ -486,7 +496,7 @@ public class Parser {
 				}
 			}
 		}
-		
+
 		for (LogicalModel m : model2Key.keySet()) {
 			ModelPerturbations mp = epi.getModelPerturbations(m);
 			if (mp == null)
@@ -498,7 +508,9 @@ public class Parser {
 					w.print(" " + c.getRed() + " " + c.getGreen() + " "
 							+ c.getBlue());
 					if (apInst.containsKey(ap)) {
-						w.print(" " + join(compactIntegerSequences(apInst.get(ap)), ","));
+						w.print(" "
+								+ join(compactIntegerSequences(apInst.get(ap)),
+										","));
 					}
 				}
 				w.println();
@@ -508,7 +520,7 @@ public class Parser {
 
 	private static List<String> compactIntegerSequences(List<Integer> iInsts) {
 		List<String> sInsts = new ArrayList<String>();
-		if (iInsts.size()==1) {
+		if (iInsts.size() == 1) {
 			sInsts.add(iInsts.get(0).toString());
 			return sInsts;
 		}

@@ -11,7 +11,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -19,39 +18,39 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.widgets.JComboImageBox;
 import org.epilogtool.services.TopologyService;
 
-public class DialogNewEpithelium extends EscapableDialog {
+public class DialogEditEpithelium extends EscapableDialog {
 	private static final long serialVersionUID = 1877338344309723137L;
 
-	private final String DEFAULT_WIDTH_STRING = "15";
-	private final String DEFAULT_HEIGHT_STRING = "15";
+	private final int COL_SIZE = 20;
 	private final String ROLLOVER_WARNING = "This dimension must be even due to rollover selection!";
 
+	private JTextField jtfEpiName;
 	private JTextField jtfWidth;
 	private JTextField jtfHeight;
-	private JComboBox<String> jcbLayout;
-	private JTextField jtfEpiName;
-	private JComboBox<String> jcbSBMLs;
-	private List<String> listSBMLs;
-	private List<String> listEpiNames;
-	private JButton buttonCancel;
-	private JButton buttonOK;
 	private JComboBox<RollOver> jcbRollover;
+	private JComboBox<String> jcbLayout;
 
+	private List<String> listEpiNames;
 	private int width;
 	private int height;
+	private boolean bIsOK;
 	private boolean bIsNameOK;
 	private boolean bIsWidthOK;
 	private boolean bIsHeightOK;
-	private boolean bIsOK;
 
-	public DialogNewEpithelium(Set<String> sSBMLs, List<String> lEpiNames) {
-		this.listSBMLs = new ArrayList<String>(sSBMLs);
+	private JButton buttonCancel;
+	private JButton buttonOK;
+
+	public DialogEditEpithelium(Epithelium epi, List<String> lEpiNames) {
 		this.listEpiNames = lEpiNames;
+		this.listEpiNames.remove(epi.getName());
+
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		// natural height, maximum width
@@ -62,9 +61,8 @@ public class DialogNewEpithelium extends EscapableDialog {
 		c.gridx = 0;
 		c.gridy = 0;
 		this.add(new JLabel("Width:"), c);
-
 		// Width JTextField
-		this.jtfWidth = new JTextField(DEFAULT_WIDTH_STRING);
+		this.jtfWidth = new JTextField("" + epi.getX());
 		this.jtfWidth.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -89,7 +87,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 		this.add(new JLabel("Height:"), c);
 
 		// Height JTextField
-		this.jtfHeight = new JTextField(DEFAULT_HEIGHT_STRING);
+		this.jtfHeight = new JTextField("" + epi.getY());
 		this.jtfHeight.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -114,7 +112,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 		this.add(new JLabel("Name:"), c);
 
 		// Name JTextField
-		this.jtfEpiName = new JTextField();
+		this.jtfEpiName = new JTextField(epi.getName());
 		this.jtfEpiName.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -133,24 +131,6 @@ public class DialogNewEpithelium extends EscapableDialog {
 		c.gridy = 2;
 		this.add(this.jtfEpiName, c);
 
-		// SBML JLabel
-		c.gridx = 0;
-		c.gridy = 3;
-		this.add(new JLabel("SBML:"), c);
-
-		// SBML JComboBox
-		this.jcbSBMLs = new JComboBox<String>(
-				this.listSBMLs.toArray(new String[this.listSBMLs.size()]));
-		this.jcbSBMLs.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				validateDialog();
-			}
-		});
-		c.gridx = 1;
-		c.gridy = 3;
-		this.add(this.jcbSBMLs, c);
-
 		// Rollover JLabel
 		c.gridx = 0;
 		c.gridy = 4;
@@ -160,6 +140,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 		this.jcbRollover = new JComboBox<RollOver>(new RollOver[] {
 				RollOver.NONE, RollOver.HORIZ, RollOver.VERT,
 				RollOver.HORIZ_VERT });
+		this.jcbRollover.setSelectedItem(epi.getEpitheliumGrid().getTopology().getRollOver());
 		this.jcbRollover.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -177,13 +158,18 @@ public class DialogNewEpithelium extends EscapableDialog {
 		this.add(new JLabel("Topology:"), c);
 
 		// Topology JComboBox
+		int iSelected = 0;
 		List<String> lDescs = new ArrayList<String>(TopologyService
 				.getManager().getTopologyDescriptions());
 		String[] names = new String[lDescs.size()];
 		for (int i = 0; i < lDescs.size(); i++) {
+			if (lDescs.get(i).equals(epi.getEpitheliumGrid().getTopology().getDescription())) {
+				iSelected = i;
+			}
 			names[i] = lDescs.get(i);
 		}
 		this.jcbLayout = new JComboImageBox(names);
+		this.jcbLayout.setSelectedIndex(iSelected);
 		c.gridx = 1;
 		c.gridy = 5;
 		this.add(this.jcbLayout, c);
@@ -217,51 +203,13 @@ public class DialogNewEpithelium extends EscapableDialog {
 		this.validateHeight();
 	}
 
-	public String getEpiName() {
-		return this.jtfEpiName.getText();
-	}
-
-	public String getSBMLName() {
-		return (String) this.jcbSBMLs.getSelectedItem();
-	}
-
-	public RollOver getRollOver() {
-		return (RollOver) this.jcbRollover.getSelectedItem();
-	}
-
-	public int getEpitheliumWidth() {
-		return this.width;
-	}
-
-	public int getEpitheliumHeight() {
-		return this.height;
-	}
-
-	public String getTopologyID() {
-		String desc = (String) this.jcbLayout.getSelectedItem();
-		return TopologyService.getManager().getTopologyID(desc);
-	}
-
-	private void validateTextField() {
-		this.bIsNameOK = false;
-		if (!this.listEpiNames.contains(this.jtfEpiName.getText())
-				&& !this.jtfEpiName.getText().isEmpty()
-				&& !this.jtfEpiName.getText().matches(".*(\\s).*")) {
-			this.bIsNameOK = true;
-		}
-		this.jtfEpiName.setBackground(this.bIsNameOK ? Color.WHITE
-				: ColorUtils.LIGHT_RED);
-		this.validateDialog();
-	}
-
 	private void validateWidth() {
 		this.bIsWidthOK = false;
 		try {
 			this.width = Integer.parseInt(this.jtfWidth.getText());
 			if (this.width >= 1) {
 				RollOver ro = (RollOver) this.jcbRollover.getSelectedItem();
-				this.bIsWidthOK = (this.width % 2 == 0)
-						|| (!ro.isHorizontal());
+				this.bIsWidthOK = (this.width % 2 == 0) || (!ro.isHorizontal());
 			}
 		} catch (NumberFormatException nfe) {
 		}
@@ -281,8 +229,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 			this.height = Integer.parseInt(this.jtfHeight.getText());
 			if (this.height >= 1) {
 				RollOver ro = (RollOver) this.jcbRollover.getSelectedItem();
-				this.bIsHeightOK = (this.height % 2 == 0)
-						|| (!ro.isVertical());
+				this.bIsHeightOK = (this.height % 2 == 0) || (!ro.isVertical());
 			}
 		} catch (NumberFormatException nfe) {
 		}
@@ -293,13 +240,45 @@ public class DialogNewEpithelium extends EscapableDialog {
 			this.jtfHeight.setBackground(ColorUtils.LIGHT_RED);
 			this.jtfHeight.setToolTipText(ROLLOVER_WARNING);
 		}
-
 		this.validateDialog();
+	}
+
+	private void validateTextField() {
+		this.bIsNameOK = false;
+		if (!this.listEpiNames.contains(this.jtfEpiName.getText())
+				&& !this.jtfEpiName.getText().isEmpty()
+				&& !this.jtfEpiName.getText().matches(".*(\\s).*")) {
+			this.bIsNameOK = true;
+		}
+		this.jtfEpiName.setBackground(this.bIsNameOK ? Color.WHITE
+				: ColorUtils.LIGHT_RED);
+		this.validateDialog();
+	}
+
+	public String getEpitheliumName() {
+		return this.jtfEpiName.getText();
+	}
+	public RollOver getRollOver() {
+		return (RollOver) this.jcbRollover.getSelectedItem();
+	}
+	
+	public String getTopologyID() {
+		String desc = (String) this.jcbLayout.getSelectedItem();
+		return TopologyService.getManager().getTopologyID(desc);
+	}
+	
+	public int getGridX() {
+		return this.width;
+	}
+	
+	public int getGridY() {
+		return this.height;
 	}
 
 	private void buttonAction(boolean bIsOK) {
 		this.bIsOK = bIsOK;
 		if (bIsOK && !this.validateDialog()) {
+			// Not valid
 			return;
 		}
 		this.jtfEpiName.setText(this.jtfEpiName.getText().trim());
