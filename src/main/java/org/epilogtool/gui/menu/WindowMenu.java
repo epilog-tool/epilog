@@ -137,7 +137,7 @@ class EpiTabsAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		EpiGUI.getInstance().epiTabCloseActiveEpi();
+		EpiGUI.getInstance().epiTabCloseActiveEpi(false);
 	}
 }
 

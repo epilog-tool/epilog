@@ -97,7 +97,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		this.jrbGroup = new ButtonGroup();
 		this.selModel = null;
 
-		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
 		this.epiGridClone = this.epithelium.getEpitheliumGrid().clone();
 		this.epiPerturbClone = this.epithelium.getEpitheliumPerturbations()
 				.clone();
@@ -591,6 +590,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 				}
 			}
 		}
+
 		// Check modifications on ModelPerturbations
 		return !this.epithelium.getEpitheliumPerturbations().equals(
 				this.epiPerturbClone);

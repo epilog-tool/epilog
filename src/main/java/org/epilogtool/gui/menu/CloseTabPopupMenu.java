@@ -58,7 +58,7 @@ public class CloseTabPopupMenu extends JPopupMenu {
 		closeEpiTabs.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EpiGUI.getInstance().epiTabCloseActiveEpi();
+				EpiGUI.getInstance().epiTabCloseActiveEpi(false);
 			}
 		});
 		this.add(closeEpiTabs);

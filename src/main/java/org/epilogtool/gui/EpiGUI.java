@@ -322,7 +322,7 @@ public class EpiGUI extends JFrame {
 				epi.updateEpitheliumGrid(gridX, gridY,
 						dialogPanel.getTopologyID(), dialogPanel.getRollOver());
 				// The Grid characteristics changed... -> close all tabs
-				this.epiTabCloseActiveEpi();
+				this.epiTabCloseActiveEpi(true);
 				bChanged = true;
 			}
 
@@ -711,12 +711,11 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
-	public void epiTabCloseActiveEpi() {
+	public void epiTabCloseActiveEpi(boolean force) {
 		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
 		for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
 			EpiTab tab = (EpiTab) this.epiRightFrame.getComponentAt(i);
-			// TODO FIXME: if tab has changed dimensions -> force close!!!
-			if (tab.containsEpithelium(epi) && tab.canClose()) {
+			if (tab.containsEpithelium(epi) && (force || tab.canClose())) {
 				this.epiRightFrame.remove(i);
 			}
 		}

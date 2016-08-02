@@ -11,8 +11,8 @@ import org.epilogtool.gui.EpiGUI;
 
 public class SBMLMenu {
 	public static JMenu getMenu() {
-		JMenu menu = new JMenu("Intra-cellular models");
-		menu.setMnemonic(KeyEvent.VK_I);
+		JMenu menu = new JMenu("SBML");
+		menu.setMnemonic(KeyEvent.VK_S);
 
 		menu.add(new LoadSBMLAction());
 		menu.add(new RemoveSBMLAction());
