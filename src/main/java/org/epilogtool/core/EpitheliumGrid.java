@@ -41,7 +41,8 @@ public class EpitheliumGrid {
 		for (int y = 0; y < gridY; y++) {
 			for (int x = 0; x < gridX; x++) {
 				if (x >= this.getX() || y >= this.getY()) {
-					newGrid[x][y] = new EpitheliumCell(EmptyModel.getInstance().getModel());
+					newGrid[x][y] = new EpitheliumCell(EmptyModel.getInstance()
+							.getModel());
 				} else {
 					newGrid[x][y] = this.gridEpiCell[x][y];
 				}
@@ -100,19 +101,23 @@ public class EpitheliumGrid {
 	}
 
 	public LogicalModel getModel(int x, int y) {
-		return gridEpiCell[x][y].getModel();
+		return this.gridEpiCell[x][y].getModel();
 	}
 
 	public boolean hasModel(LogicalModel m) {
 		return this.modelSet.contains(m);
 	}
 
+	public void restrictCellWithPerturbation(int x, int y) {
+		this.gridEpiCell[x][y].restrictValueWithPerturbation();
+	}
+
 	public byte[] getCellState(int x, int y) {
-		return gridEpiCell[x][y].getState();
+		return this.gridEpiCell[x][y].getState();
 	}
 
 	public AbstractPerturbation getPerturbation(int x, int y) {
-		return gridEpiCell[x][y].getPerturbation();
+		return this.gridEpiCell[x][y].getPerturbation();
 	}
 
 	public Map<LogicalModel, List<Tuple2D<Integer>>> getModelPositions() {

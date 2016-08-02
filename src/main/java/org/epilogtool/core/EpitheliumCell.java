@@ -1,7 +1,15 @@
 package org.epilogtool.core;
 
+import java.util.List;
+
 import org.colomoto.logicalmodel.LogicalModel;
+import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
+import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
+import org.colomoto.logicalmodel.perturbation.InteractionPerturbation;
+import org.colomoto.logicalmodel.perturbation.LogicalModelPerturbation;
+import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
+import org.colomoto.logicalmodel.perturbation.RangePerturbation;
 
 public class EpitheliumCell {
 	private LogicalModel model;
@@ -11,7 +19,36 @@ public class EpitheliumCell {
 	public EpitheliumCell(LogicalModel m) {
 		this.setModel(m);
 	}
-	
+
+	public void restrictValueWithPerturbation() {
+		if (this.perturbation != null) {
+			this.restrictValueWith(this.perturbation);
+		}
+	}
+
+	private void restrictValueWith(FixedValuePerturbation ap) {
+		this.state[this.model.getNodeOrder().indexOf(ap.component)] = (byte) ap.value;
+	}
+
+	private void restrictValueWith(RangePerturbation ap) {
+		int nodeIndex = this.model.getNodeOrder().indexOf(ap.component);
+		if (this.state[nodeIndex] < ap.min) {
+			this.state[nodeIndex] = (byte) ap.min;
+		} else if (this.state[nodeIndex] > ap.max) {
+			this.state[nodeIndex] = (byte) ap.max;
+		} // else keep value
+	}
+
+	private void restrictValueWith(InteractionPerturbation ap) {
+		// do nothing
+	}
+
+	private void restrictValueWith(MultiplePerturbation<?> mAp) {
+		for (LogicalModelPerturbation ap : mAp.perturbations) {
+			this.restrictValueWith(ap);
+		}
+	}
+
 	public void setModel(LogicalModel m) {
 		this.model = m;
 		this.state = new byte[m.getNodeOrder().size()];
@@ -20,15 +57,15 @@ public class EpitheliumCell {
 		}
 		this.perturbation = null;
 	}
-	
+
 	public void setState(byte[] state) {
 		this.state = state;
 	}
-	
+
 	public void setPerturbation(AbstractPerturbation ap) {
 		this.perturbation = ap;
 	}
-	
+
 	public void setValue(String nodeID, byte value) {
 		int index = this.getNodeIndex(nodeID);
 		if (index < 0)
@@ -55,11 +92,11 @@ public class EpitheliumCell {
 		}
 		return -1;
 	}
-	
+
 	public boolean hasEmptyModel() {
 		return EmptyModel.getInstance().isEmptyModel(this.getModel());
 	}
-	
+
 	public long hashState() {
 		long hash = 1;
 		for (int i = 0; i < model.getNodeOrder().size(); i++) {
@@ -89,7 +126,7 @@ public class EpitheliumCell {
 		}
 		return true;
 	}
-	
+
 	public EpitheliumCell clone() {
 		EpitheliumCell newCell = new EpitheliumCell(this.model);
 		newCell.setState(this.state.clone());

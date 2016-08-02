@@ -55,13 +55,22 @@ public class Simulation {
 		this.epithelium = e;
 		this.neighbouringEpi = e.getEpitheliumGrid().clone();
 		this.gridHistory = new ArrayList<EpitheliumGrid>();
-		this.gridHistory.add(this.epithelium.getEpitheliumGrid());
+		EpitheliumGrid firstGrid = this.epithelium.getEpitheliumGrid().clone();
+		this.gridHistory.add(this.initGridStateWithPerturbations(firstGrid));
 		this.gridHashHistory = new ArrayList<String>();
-		this.gridHashHistory
-				.add(this.epithelium.getEpitheliumGrid().hashGrid());
+		this.gridHashHistory.add(firstGrid.hashGrid());
 		this.stable = false;
 		this.hasCycle = false;
 		this.buildPriorityUpdaterCache();
+	}
+
+	private EpitheliumGrid initGridStateWithPerturbations(EpitheliumGrid grid) {
+		for (int y = 0; y < grid.getY(); y++) {
+			for (int x = 0; x < grid.getX(); x++) {
+				grid.restrictCellWithPerturbation(x, y);
+			}
+		}
+		return grid;
 	}
 
 	private void buildPriorityUpdaterCache() {
