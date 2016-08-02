@@ -119,6 +119,8 @@ public class EpiTreePanel extends JPanel {
 	public Epithelium getSelectedEpithelium() {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
 				.getLastSelectedPathComponent();
+		if (node == null)
+			return null;
 		if (node.isLeaf()) {
 			// Simulation menu gets an Epithelium even if selection is on a leaf
 			node = (DefaultMutableTreeNode) node.getParent();

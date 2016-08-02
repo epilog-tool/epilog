@@ -44,6 +44,7 @@ import org.epilogtool.gui.menu.FileMenu;
 import org.epilogtool.gui.menu.HelpMenu;
 import org.epilogtool.gui.menu.SBMLMenu;
 import org.epilogtool.gui.menu.ToolsMenu;
+import org.epilogtool.gui.menu.WindowMenu;
 import org.epilogtool.gui.tab.EpiTab;
 import org.epilogtool.gui.tab.EpiTabEpithelialUpdateScheme;
 import org.epilogtool.gui.tab.EpiTabInitialConditions;
@@ -129,6 +130,10 @@ public class EpiGUI extends JFrame {
 		// Tools
 		JMenu toolsMenu = ToolsMenu.getMenu();
 		this.epiMenu.add(toolsMenu);
+
+		// Window tab menu
+		JMenu windowMenu = WindowMenu.getMenu();
+		this.epiMenu.add(windowMenu);
 
 		// Help menu
 		JMenu helpMenu = HelpMenu.getMenu();
@@ -287,7 +292,10 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
-	public void editEpithelium() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+	public void editEpithelium() throws InstantiationException,
+			IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException,
+			SecurityException, ClassNotFoundException {
 		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
 
 		DialogEditEpithelium dialogPanel = new DialogEditEpithelium(epi,
@@ -312,13 +320,12 @@ public class EpiGUI extends JFrame {
 							epi.getEpitheliumGrid().getTopology()
 									.getDescription())) {
 				epi.updateEpitheliumGrid(gridX, gridY,
-						dialogPanel.getTopologyID(),
-						dialogPanel.getRollOver());
+						dialogPanel.getTopologyID(), dialogPanel.getRollOver());
 				// The Grid characteristics changed... -> close all tabs
 				this.epiTabCloseActiveEpi();
 				bChanged = true;
 			}
-			
+
 			// Update just the RollOver, if not together w/ TopologyLayout
 			if (!bChanged
 					&& epi.getEpitheliumGrid().getTopology().getRollOver() != dialogPanel
@@ -653,12 +660,30 @@ public class EpiGUI extends JFrame {
 			}
 		}
 		// Select existing Tab
-		this.epiRightFrame.setSelectedIndex(tabIndex);
+		this.epiTabSelect(tabIndex);
+	}
+
+	public void epiTabSelect(int index) {
+		this.epiRightFrame.setSelectedIndex(index);
+	}
+
+	public List<String> getOpenTabList() {
+		List<String> lTabs = new ArrayList<String>();
+		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
+			lTabs.add(this.epiRightFrame.getTitleAt(i));
+		}
+		return lTabs;
+	}
+
+	public void epiTabCloseTab(int index) {
+		if (index >= 0 && index < this.epiRightFrame.getTabCount()) {
+			this.epiRightFrame.removeTabAt(index);
+		}
 	}
 
 	public void epiTabCloseActiveTab() {
 		EpiTab epi = (EpiTab) this.epiRightFrame.getSelectedComponent();
-		if (epi.canClose()) {
+		if (epi != null && epi.canClose()) {
 			this.epiRightFrame.removeTabAt(this.epiRightFrame
 					.getSelectedIndex());
 		}

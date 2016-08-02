@@ -54,7 +54,7 @@ public class CloseTabPopupMenu extends JPopupMenu {
 
 		this.addSeparator();
 		
-		JMenuItem closeEpiTabs = new JMenuItem("Epithelium tabs");
+		JMenuItem closeEpiTabs = new JMenuItem("Epithelia tabs");
 		closeEpiTabs.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -64,7 +64,7 @@ public class CloseTabPopupMenu extends JPopupMenu {
 		this.add(closeEpiTabs);
 
 		JMenuItem closeOtherEpiTabs = new JMenuItem(
-				"Other epithelium tabs");
+				"Other epithelia tabs");
 		closeOtherEpiTabs.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
