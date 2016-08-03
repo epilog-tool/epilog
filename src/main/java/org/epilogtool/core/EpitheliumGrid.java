@@ -109,7 +109,7 @@ public class EpitheliumGrid {
 	}
 
 	public void restrictCellWithPerturbation(int x, int y) {
-		this.gridEpiCell[x][y].restrictValueWithPerturbation();
+		this.gridEpiCell[x][y].restrictValuesWithPerturbation();
 	}
 
 	public byte[] getCellState(int x, int y) {

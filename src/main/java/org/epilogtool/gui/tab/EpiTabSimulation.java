@@ -111,7 +111,7 @@ public class EpiTabSimulation extends EpiTabTools {
 				this.epithelium.getIntegrationFunctions(), this.projectFeatures);
 
 		this.visualGridSimulation = new VisualGridSimulation(
-				clonedEpi.getEpitheliumGrid(),
+				this.simulation.getGridAt(0),
 				this.epithelium.getProjectFeatures(), this.lCompON, this.lRight);
 		this.jpRight.add(this.visualGridSimulation, BorderLayout.CENTER);
 

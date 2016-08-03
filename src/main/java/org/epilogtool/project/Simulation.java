@@ -56,7 +56,7 @@ public class Simulation {
 		this.neighbouringEpi = e.getEpitheliumGrid().clone();
 		this.gridHistory = new ArrayList<EpitheliumGrid>();
 		EpitheliumGrid firstGrid = this.epithelium.getEpitheliumGrid().clone();
-		this.gridHistory.add(this.initGridStateWithPerturbations(firstGrid));
+		this.gridHistory.add(this.restrictGridWithPerturbations(firstGrid));
 		this.gridHashHistory = new ArrayList<String>();
 		this.gridHashHistory.add(firstGrid.hashGrid());
 		this.stable = false;
@@ -64,7 +64,7 @@ public class Simulation {
 		this.buildPriorityUpdaterCache();
 	}
 
-	private EpitheliumGrid initGridStateWithPerturbations(EpitheliumGrid grid) {
+	private EpitheliumGrid restrictGridWithPerturbations(EpitheliumGrid grid) {
 		for (int y = 0; y < grid.getY(); y++) {
 			for (int x = 0; x < grid.getX(); x++) {
 				grid.restrictCellWithPerturbation(x, y);

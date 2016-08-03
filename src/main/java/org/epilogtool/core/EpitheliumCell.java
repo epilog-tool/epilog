@@ -1,15 +1,7 @@
 package org.epilogtool.core;
 
-import java.util.List;
-
 import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
-import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
-import org.colomoto.logicalmodel.perturbation.InteractionPerturbation;
-import org.colomoto.logicalmodel.perturbation.LogicalModelPerturbation;
-import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
-import org.colomoto.logicalmodel.perturbation.RangePerturbation;
 
 public class EpitheliumCell {
 	private LogicalModel model;
@@ -20,32 +12,9 @@ public class EpitheliumCell {
 		this.setModel(m);
 	}
 
-	public void restrictValueWithPerturbation() {
-		if (this.perturbation != null) {
-			this.restrictValueWith(this.perturbation);
-		}
-	}
-
-	private void restrictValueWith(FixedValuePerturbation ap) {
-		this.state[this.model.getNodeOrder().indexOf(ap.component)] = (byte) ap.value;
-	}
-
-	private void restrictValueWith(RangePerturbation ap) {
-		int nodeIndex = this.model.getNodeOrder().indexOf(ap.component);
-		if (this.state[nodeIndex] < ap.min) {
-			this.state[nodeIndex] = (byte) ap.min;
-		} else if (this.state[nodeIndex] > ap.max) {
-			this.state[nodeIndex] = (byte) ap.max;
-		} // else keep value
-	}
-
-	private void restrictValueWith(InteractionPerturbation ap) {
-		// do nothing
-	}
-
-	private void restrictValueWith(MultiplePerturbation<?> mAp) {
-		for (LogicalModelPerturbation ap : mAp.perturbations) {
-			this.restrictValueWith(ap);
+	public void restrictValuesWithPerturbation() {
+		if (perturbation != null) {
+			this.perturbation.restrictValues(state, model.getNodeOrder());
 		}
 	}
 
