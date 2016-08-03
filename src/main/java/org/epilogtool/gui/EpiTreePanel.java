@@ -116,6 +116,16 @@ public class EpiTreePanel extends JPanel {
 		return this.epiTree.getSelectionPath();
 	}
 
+	public TreePath getSelectionEpiPath() {
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
+				.getLastSelectedPathComponent();
+		TreePath path = this.getSelectionPath();
+		if (node.isLeaf()) {
+			path = path.getParentPath();
+		}
+		return path;
+	}
+
 	public Epithelium getSelectedEpithelium() {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
 				.getLastSelectedPathComponent();

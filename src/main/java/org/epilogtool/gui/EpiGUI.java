@@ -747,8 +747,9 @@ public class EpiGUI extends JFrame {
 		EpiTab tab;
 		if (tabIndex < 0) {
 			ProjectChangedInTab projChanged = new ProjectChangedInTab();
+			TreePath path = this.epiTreePanel.getSelectionEpiPath();
 			tab = new EpiTabSimulation(epi,
-					this.epiTreePanel.getSelectionPath(), projChanged,
+					path, projChanged,
 					this.project.getProjectFeatures(), new SimulationEpiClone());
 			String title = epi.getName() + ":Simulation";
 			this.epiRightFrame.addTab(title, tab);
@@ -771,7 +772,7 @@ public class EpiGUI extends JFrame {
 		// save settings
 		int simulationTabIndex = this.epiRightFrame.getSelectedIndex();
 		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
-		TreePath path = this.epiTreePanel.getSelectionPath();
+		TreePath path = this.epiTreePanel.getSelectionEpiPath();
 
 		// remove tab
 		this.epiRightFrame.removeTabAt(simulationTabIndex);
