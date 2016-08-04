@@ -14,8 +14,8 @@ import javax.swing.tree.TreePath;
 import org.epilogtool.project.ProjectFeatures;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.gui.EpiGUI;
-import org.epilogtool.gui.EpiGUI.EpiTabChanged;
-import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
+import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
+import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 
 public abstract class EpiTabDefinitions extends EpiTab {
 	private static final long serialVersionUID = -2587480492648550086L;
@@ -23,10 +23,11 @@ public abstract class EpiTabDefinitions extends EpiTab {
 	protected ProjectFeatures projectFeatures;
 	protected JPanel center;
 	private JPanel south;
-	private EpiTabChanged tabChanged;
+	private TabChangeNotifyProj tabChanged;
 
-	protected EpiTabDefinitions(Epithelium e, TreePath path, ProjectChangedInTab projChanged,
-			EpiTabChanged tabChanged, ProjectFeatures projectFeatures) {
+	protected EpiTabDefinitions(Epithelium e, TreePath path,
+			ProjChangeNotifyTab projChanged, TabChangeNotifyProj tabChanged,
+			ProjectFeatures projectFeatures) {
 		super(e, path, projChanged);
 		this.tabChanged = tabChanged;
 		this.projectFeatures = projectFeatures;
@@ -34,7 +35,8 @@ public abstract class EpiTabDefinitions extends EpiTab {
 	}
 
 	public String getName() {
-		DefaultMutableTreeNode epiNode = (DefaultMutableTreeNode) this.path.getLastPathComponent();
+		DefaultMutableTreeNode epiNode = (DefaultMutableTreeNode) this.path
+				.getLastPathComponent();
 		return epiNode.toString();
 	}
 
@@ -45,7 +47,7 @@ public abstract class EpiTabDefinitions extends EpiTab {
 		south = new ModificationsPanel();
 		this.add(south, BorderLayout.SOUTH);
 	}
-	
+
 	abstract protected void buttonReset();
 
 	abstract protected void buttonAccept();
@@ -61,7 +63,7 @@ public abstract class EpiTabDefinitions extends EpiTab {
 				"Question", JOptionPane.YES_NO_OPTION);
 		return (n == JOptionPane.YES_OPTION);
 	}
-	
+
 	private class ModificationsPanel extends JPanel {
 		private static final long serialVersionUID = -2133956602678321512L;
 
@@ -75,6 +77,7 @@ public abstract class EpiTabDefinitions extends EpiTab {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					buttonReset();
+					buttonEnable(false);
 				}
 			});
 			this.add(reset);
@@ -86,9 +89,28 @@ public abstract class EpiTabDefinitions extends EpiTab {
 						buttonAccept();
 						tabChanged.setEpiChanged();
 					}
+					buttonEnable(false);
 				}
 			});
 			this.add(accept);
+			// Initial state is disabled
+			this.buttonEnable(false);
+		}
+
+		public void buttonEnable(boolean enable) {
+			this.accept.setEnabled(enable);
+			this.reset.setEnabled(enable);
+		}
+
+	}
+
+	public class TabProbablyChanged {
+		public void setChanged() {
+			((ModificationsPanel) south).buttonEnable(true);
+		}
+
+		public boolean isChanged() {
+			return ((ModificationsPanel) south).accept.isEnabled();
 		}
 	}
 

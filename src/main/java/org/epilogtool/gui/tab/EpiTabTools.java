@@ -4,12 +4,12 @@ import javax.swing.tree.TreePath;
 
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.gui.EpiGUI;
-import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
+import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 
 public abstract class EpiTabTools extends EpiTab {
 	private static final long serialVersionUID = -8985332131102726886L;
 
-	protected EpiTabTools(Epithelium e, TreePath path, ProjectChangedInTab projChanged) {
+	protected EpiTabTools(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged) {
 		super(e, path, projChanged);
 	}
 

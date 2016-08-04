@@ -40,7 +40,7 @@ import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.EpiGUI;
-import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
+import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.SimulationEpiClone;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.widgets.GridInformation;
@@ -81,7 +81,7 @@ public class EpiTabSimulation extends EpiTabTools {
 	private JComboCheckBox jccb;
 
 	public EpiTabSimulation(Epithelium e, TreePath path,
-			ProjectChangedInTab projChanged, ProjectFeatures projectFeatures,
+			ProjChangeNotifyTab projChanged, ProjectFeatures projectFeatures,
 			SimulationEpiClone simEpiClone) {
 		super(e, path, projChanged);
 		this.projectFeatures = projectFeatures;

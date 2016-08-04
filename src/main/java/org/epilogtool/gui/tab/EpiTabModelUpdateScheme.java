@@ -31,8 +31,8 @@ import org.epilogtool.common.Web;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumUpdateSchemeIntra;
 import org.epilogtool.core.ModelPriorityClasses;
-import org.epilogtool.gui.EpiGUI.EpiTabChanged;
-import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
+import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
+import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.io.ButtonFactory;
 import org.epilogtool.project.ProjectFeatures;
@@ -47,13 +47,14 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 	private EpitheliumUpdateSchemeIntra userPriorityClasses;
 	private LogicalModel selectedModel;
 	private List<JList<String>> guiClasses;
+	private TabProbablyChanged tpc;
 
 	private JPanel jpNorth;
 	private JPanel jpNorthLeft;
 	private JPanel jpSouth;
 	private JPanel jpIntraCenter;
 
-	public EpiTabModelUpdateScheme(Epithelium e, TreePath path, ProjectChangedInTab projChanged, EpiTabChanged tabChanged,
+	public EpiTabModelUpdateScheme(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged, TabChangeNotifyProj tabChanged,
 			ProjectFeatures projectFeatures) {
 		super(e, path, projChanged, tabChanged, projectFeatures);
 	}
@@ -66,6 +67,7 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 			this.userPriorityClasses.addModelPriorityClasses(this.epithelium.getPriorityClasses(m).clone());
 		}
 		this.guiClasses = new ArrayList<JList<String>>();
+		this.tpc = new TabProbablyChanged();
 
 		this.jpNorth = new JPanel(new BorderLayout());
 		this.center.add(this.jpNorth, BorderLayout.NORTH);
@@ -172,6 +174,7 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 			if (!values.isEmpty()) {
 				for (String var : values)
 					mpc.split(i, var);
+				tpc.setChanged();
 				break;
 			}
 		}
@@ -185,6 +188,7 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 			if (!values.isEmpty()) {
 				for (String var : values)
 					mpc.unsplit(i, var);
+				tpc.setChanged();
 				break;
 			}
 		}
@@ -197,6 +201,7 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 			List<String> values = this.guiClasses.get(i).getSelectedValuesList();
 			if (!values.isEmpty()) {
 				mpc.incPriorities(i, values);
+				tpc.setChanged();
 				break;
 			}
 		}
@@ -209,6 +214,7 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 			List<String> values = this.guiClasses.get(i).getSelectedValuesList();
 			if (!values.isEmpty()) {
 				mpc.decPriorities(i, values);
+				tpc.setChanged();
 				break;
 			}
 		}
@@ -217,6 +223,7 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 
 	private void createSingleClass() {
 		this.userPriorityClasses.getModelPriorityClasses(this.selectedModel).singlePriorityClass();
+		tpc.setChanged();
 		this.updatePriorityList(this.selectedModel);
 	}
 

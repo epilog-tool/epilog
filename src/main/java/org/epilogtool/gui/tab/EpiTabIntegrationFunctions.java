@@ -2,7 +2,6 @@ package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -34,8 +33,8 @@ import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
-import org.epilogtool.gui.EpiGUI.EpiTabChanged;
-import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
+import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
+import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.project.ComponentPair;
@@ -49,6 +48,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	private EpitheliumIntegrationFunctions userIntegrationFunctions;
 	private String activeNodeID;
 	private String activeModel;
+	private TabProbablyChanged tpc;
 
 	private Map<NodeInfo, JRadioButton> mNode2RadioButton;
 	private JPanel jpNLBottom;
@@ -57,7 +57,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	private JPanel jpNLTop;
 
 	public EpiTabIntegrationFunctions(Epithelium e, TreePath path,
-			ProjectChangedInTab projChanged, EpiTabChanged tabChanged,
+			ProjChangeNotifyTab projChanged, TabChangeNotifyProj tabChanged,
 			ProjectFeatures projectFeatures) {
 		super(e, path, projChanged, tabChanged, projectFeatures);
 		this.mNode2RadioButton = new HashMap<NodeInfo, JRadioButton>();
@@ -69,7 +69,8 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		this.userIntegrationFunctions = this.epithelium
 				.getIntegrationFunctions().clone();
 		this.activeNodeID = null;
-
+		this.tpc = new TabProbablyChanged();
+		
 		// North Panel
 		JPanel jpNorth = new JPanel(new BorderLayout());
 		JPanel jpNLeft = new JPanel(new BorderLayout());
@@ -162,6 +163,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				paintEnvironmentPanel();
+				tpc.setChanged();
 				// Re-Paint
 				getParent().repaint();
 			}
@@ -173,6 +175,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				paintIntegrationPanel();
+				tpc.setChanged();
 				// Re-Paint
 				getParent().repaint();
 			}
@@ -265,6 +268,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 
 					setIntegrationFunction(value, jtf.getText());
 					validateIntegrationFunction(jtf);
+					tpc.setChanged();
 				}
 
 				@Override

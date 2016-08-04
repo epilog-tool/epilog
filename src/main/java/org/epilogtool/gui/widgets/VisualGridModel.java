@@ -13,8 +13,9 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.epilogtool.project.ProjectFeatures;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.topology.Topology;
+import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
 
-public class VisualGridModel extends VisualGrid {
+public class VisualGridModel extends VisualGridDefinitions {
 	private static final long serialVersionUID = -8878704517273291774L;
 
 	private LogicalModel[][] modelGridClone;
@@ -27,8 +28,8 @@ public class VisualGridModel extends VisualGrid {
 	public VisualGridModel(int gridX, int gridY, Topology topology,
 			LogicalModel[][] modelGridClone,
 			Map<LogicalModel, Color> colorMapClone,
-			ProjectFeatures projectFeatures) {
-		super(gridX, gridY, topology);
+			ProjectFeatures projectFeatures, TabProbablyChanged tpc) {
+		super(gridX, gridY, topology, tpc);
 		this.modelGridClone = modelGridClone;
 		this.colorMapClone = colorMapClone;
 		this.projectFeatures = projectFeatures;
@@ -105,6 +106,9 @@ public class VisualGridModel extends VisualGrid {
 		if (this.selModelName == null)
 			return;
 		LogicalModel m = this.projectFeatures.getModel(this.selModelName);
+		if (!this.tpc.isChanged() && !this.modelGridClone[x][y].equals(m)) {
+			this.tpc.setChanged();
+		}
 		this.modelGridClone[x][y] = m;
 	}
 

@@ -16,8 +16,9 @@ import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.topology.Topology;
+import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
 
-public class VisualGridPerturbation extends VisualGrid {
+public class VisualGridPerturbation extends VisualGridDefinitions {
 	private static final long serialVersionUID = -8878704517273291774L;
 
 	private EpitheliumGrid epiGrid;
@@ -32,8 +33,8 @@ public class VisualGridPerturbation extends VisualGrid {
 	public VisualGridPerturbation(int gridX, int gridY, Topology topology,
 			EpitheliumGrid epiGrid,
 			Map<AbstractPerturbation, Color> colorMapClone,
-			GridInformation valuePanel) {
-		super(gridX, gridY, topology);
+			GridInformation valuePanel, TabProbablyChanged tpc) {
+		super(gridX, gridY, topology, tpc);
 		this.epiGrid = epiGrid;
 		this.colorMapClone = colorMapClone;
 		this.selectedModel = null;
@@ -120,6 +121,11 @@ public class VisualGridPerturbation extends VisualGrid {
 
 	protected void applyDataAt(int x, int y) {
 		if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
+			if (!this.tpc.isChanged()
+					&& (this.epiGrid.getPerturbation(x, y) == null || !this.epiGrid
+							.getPerturbation(x, y).equals(this.selAbsPerturb))) {
+				this.tpc.setChanged();
+			}
 			this.epiGrid.setPerturbation(x, y, this.selAbsPerturb);
 		}
 	}
@@ -152,9 +158,9 @@ public class VisualGridPerturbation extends VisualGrid {
 					cPerturb = EmptyModel.getInstance().getColor();
 				}
 
-				else if (this.epiGrid.getModel(x, y).equals(
-						this.selectedModel)) {
-					AbstractPerturbation ap = this.epiGrid.getPerturbation(x, y);
+				else if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
+					AbstractPerturbation ap = this.epiGrid
+							.getPerturbation(x, y);
 					if (ap != null) {
 						cPerturb = this.colorMapClone.get(ap);
 						stroke = this.strokePerturb;

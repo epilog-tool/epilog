@@ -43,8 +43,8 @@ import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumPerturbations;
 import org.epilogtool.core.ModelPerturbations;
-import org.epilogtool.gui.EpiGUI.EpiTabChanged;
-import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
+import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
+import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboWideBox;
@@ -75,9 +75,10 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	private JPanel jpRBColor;
 	private JPanel lTop;
 	private GridInformation gridInfo;
+	private TabProbablyChanged tpc;
 
 	public EpiTabPerturbations(Epithelium e, TreePath path,
-			ProjectChangedInTab projChanged, EpiTabChanged tabChanged,
+			ProjChangeNotifyTab projChanged, TabChangeNotifyProj tabChanged,
 			ProjectFeatures projectFeatures) {
 		super(e, path, projChanged, tabChanged, projectFeatures);
 	}
@@ -104,11 +105,12 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		this.gridInfo = new GridInformation(
 				this.epithelium.getIntegrationFunctions(), this.projectFeatures);
 
+		this.tpc = new TabProbablyChanged();
 		this.visualGridPerturb = new VisualGridPerturbation(this.epithelium
 				.getEpitheliumGrid().getX(), this.epithelium
 				.getEpitheliumGrid().getY(), this.epithelium
 				.getEpitheliumGrid().getTopology(), this.epiGridClone,
-				colorMapClone, this.gridInfo);
+				colorMapClone, this.gridInfo, this.tpc);
 		this.center.add(this.visualGridPerturb, BorderLayout.CENTER);
 
 		// Perturbation creation Panel
@@ -237,6 +239,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 					lm.addElement(ap);
 					epiPerturbClone.addPerturbation(selModel, ap);
 					mID2AP.put(ap.toString(), ap);
+					tpc.setChanged();
 				}
 			}
 		});
@@ -264,6 +267,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 					lm.removeElementAt(lOkIndex.get(i));
 					mID2AP.remove(ap.toString());
 					mAP2RadioButton.remove(ap);
+					tpc.setChanged();
 				}
 				repaintAPColorsPanel();
 			}
@@ -339,6 +343,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 						c = ColorUtils.random();
 					}
 					addColor2MarkPanel(ap, c);
+					tpc.setChanged();
 				}
 				repaintAPColorsPanel();
 			}
@@ -360,6 +365,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 						colorMapClone.remove(ap);
 						epiPerturbClone.getModelPerturbations(selModel)
 								.delPerturbationColor(ap);
+						tpc.setChanged();
 						repaintAPColorsPanel();
 						return;
 					}

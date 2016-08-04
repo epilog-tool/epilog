@@ -598,8 +598,8 @@ public class EpiGUI extends JFrame {
 			// Create new Tab
 			EpiTab epiTab = null;
 			String title = epi.getName() + ":" + tabName;
-			EpiTabChanged tabChanged = new EpiTabChanged();
-			ProjectChangedInTab projChanged = new ProjectChangedInTab();
+			TabChangeNotifyProj tabChanged = new TabChangeNotifyProj();
+			ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
 			if (tabName.equals("Initial Condition")) {
 				epiTab = new EpiTabInitialConditions(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
@@ -746,7 +746,7 @@ public class EpiGUI extends JFrame {
 		}
 		EpiTab tab;
 		if (tabIndex < 0) {
-			ProjectChangedInTab projChanged = new ProjectChangedInTab();
+			ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
 			TreePath path = this.epiTreePanel.getSelectionEpiPath();
 			tab = new EpiTabSimulation(epi,
 					path, projChanged,
@@ -778,7 +778,7 @@ public class EpiGUI extends JFrame {
 		this.epiRightFrame.removeTabAt(simulationTabIndex);
 
 		// restart
-		ProjectChangedInTab projChanged = new ProjectChangedInTab();
+		ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
 		EpiTab tab;
 		tab = new EpiTabSimulation(epi, path, projChanged,
 				this.project.getProjectFeatures(), new SimulationEpiClone());
@@ -811,14 +811,14 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
-	public class EpiTabChanged {
+	public class TabChangeNotifyProj {
 		public void setEpiChanged() {
 			project.setChanged(true);
 			validateGUI();
 		}
 	}
 
-	public class ProjectChangedInTab {
+	public class ProjChangeNotifyTab {
 		public void setChanged(EpiTab changedTab) {
 			project.setChanged(true);
 			for (int i = 0; i < epiRightFrame.getTabCount(); i++) {

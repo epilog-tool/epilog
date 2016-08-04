@@ -34,8 +34,8 @@ import org.colomoto.logicalmodel.NodeInfo;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
-import org.epilogtool.gui.EpiGUI.EpiTabChanged;
-import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
+import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
+import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.gui.widgets.VisualGridInitialConditions;
@@ -53,13 +53,14 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private Map<String, JButton> mNode2JButton;
 	private Map<String, JCheckBox> mNode2Checkbox;
 	private Map<String, JComboBox<Byte>> mNode2Combobox;
+	private TabProbablyChanged tpc;
 
 	private JPanel jpRCenter;
 	private GridInformation lRight;
 	private JPanel rTop;
 
 	public EpiTabInitialConditions(Epithelium e, TreePath path,
-			ProjectChangedInTab projChanged, EpiTabChanged tabChanged,
+			ProjChangeNotifyTab projChanged, TabChangeNotifyProj tabChanged,
 			ProjectFeatures projectFeatures) {
 		super(e, path, projChanged, tabChanged, projectFeatures);
 	}
@@ -83,9 +84,10 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.lRight = new GridInformation(
 				this.epithelium.getIntegrationFunctions(), this.projectFeatures);
 
+		this.tpc = new TabProbablyChanged();
 		this.visualGridICs = new VisualGridInitialConditions(this.epiGridClone,
 				this.epithelium.getProjectFeatures().getNodeID2ColorMap(),
-				this.mNode2ValueSelected, this.lRight);
+				this.mNode2ValueSelected, this.lRight, this.tpc);
 		this.center.add(this.visualGridICs, BorderLayout.CENTER);
 
 		JPanel left = new JPanel(new BorderLayout());
@@ -375,8 +377,14 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	@Override
 	protected void buttonReset() {
 		// Cancel CellGrid
-		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
-		this.epiGridClone = grid.clone();
+		for (int x = 0; x < this.epiGridClone.getX(); x++) {
+			for (int y = 0; y < this.epiGridClone.getY(); y++) {
+				byte[] currState = this.epiGridClone.getCellState(x, y);
+				for (int i = 0; i < currState.length; i++) {
+					currState[i] = this.epithelium.getEpitheliumGrid().getCellState(x, y)[i];
+				}
+			}
+		}
 
 		// Repaint
 		this.visualGridICs.paintComponent(this.visualGridICs.getGraphics());
@@ -415,6 +423,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 	@Override
 	public void applyChange() {
+		System.out.println("EpiTab.applyChange");
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
 				this.epithelium.getEpitheliumGrid().getModelSet());
 		// Update grid

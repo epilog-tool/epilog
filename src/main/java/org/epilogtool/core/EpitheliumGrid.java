@@ -115,6 +115,10 @@ public class EpitheliumGrid {
 	public byte[] getCellState(int x, int y) {
 		return this.gridEpiCell[x][y].getState();
 	}
+	
+	public byte getCellValue(int x, int y, String nodeID) {
+		return this.gridEpiCell[x][y].getValue(nodeID);
+	}
 
 	public AbstractPerturbation getPerturbation(int x, int y) {
 		return this.gridEpiCell[x][y].getPerturbation();

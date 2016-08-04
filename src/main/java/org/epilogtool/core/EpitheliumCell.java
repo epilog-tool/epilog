@@ -41,6 +41,12 @@ public class EpitheliumCell {
 			return;
 		state[index] = value;
 	}
+	public byte getValue(String nodeID) {
+		int index = this.getNodeIndex(nodeID);
+		if (index < 0)
+			return 0; // Should not happen!!
+		return state[index];
+	}
 
 	public AbstractPerturbation getPerturbation() {
 		return this.perturbation;

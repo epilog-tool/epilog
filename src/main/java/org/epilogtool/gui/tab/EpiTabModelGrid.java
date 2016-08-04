@@ -25,8 +25,8 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
-import org.epilogtool.gui.EpiGUI.EpiTabChanged;
-import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
+import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
+import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.widgets.JRadioComponentButton;
 import org.epilogtool.gui.widgets.VisualGridModel;
 import org.epilogtool.project.ProjectFeatures;
@@ -39,9 +39,10 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	private LogicalModel[][] modelGridClone;
 	private Map<LogicalModel, Color> colorMapClone;
 	private JPanel lCenter;
+	private TabProbablyChanged tpc;
 
 	public EpiTabModelGrid(Epithelium e, TreePath path,
-			ProjectChangedInTab projChanged, EpiTabChanged tabChanged,
+			ProjChangeNotifyTab projChanged, TabChangeNotifyProj tabChanged,
 			ProjectFeatures projectFeatures) {
 		super(e, path, projChanged, tabChanged, projectFeatures);
 	}
@@ -88,11 +89,12 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		left.add(lTop, BorderLayout.CENTER);
 		this.center.add(left, BorderLayout.LINE_START);
 
+		this.tpc = new TabProbablyChanged();
 		this.visualGridModel = new VisualGridModel(this.epithelium
 				.getEpitheliumGrid().getX(), this.epithelium
 				.getEpitheliumGrid().getY(), this.epithelium
 				.getEpitheliumGrid().getTopology(), this.modelGridClone,
-				this.colorMapClone, this.projectFeatures);
+				this.colorMapClone, this.projectFeatures, this.tpc);
 		this.center.add(this.visualGridModel, BorderLayout.CENTER);
 
 		this.buttonReset();
