@@ -16,7 +16,6 @@ import org.colomoto.logicalmodel.tool.simulation.updater.PriorityClasses;
 import org.colomoto.logicalmodel.tool.simulation.updater.PriorityUpdater;
 import org.epilogtool.common.RandomFactory;
 import org.epilogtool.common.Tuple2D;
-import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
@@ -119,8 +118,8 @@ public class Simulation {
 			return currGrid;
 		}
 		
-		boolean updates = false;
-		boolean dynamics = false;
+		boolean cellUpdates = false;
+		boolean popUpdates = false;
 
 		EpitheliumGrid neighboursGrid = this.getNeighboursGrid();
 		EpitheliumGrid nextGrid = currGrid.clone();
@@ -134,7 +133,7 @@ public class Simulation {
 		// And builds the default next grid (= current grid)
 		HashMap<Tuple2D<Integer>, byte[]> cells2update = new HashMap<Tuple2D<Integer>, byte[]>();
 		List<Tuple2D<Integer>> keys = new ArrayList<Tuple2D<Integer>>();
-		List<Tuple2D<Integer>> triggeredCells = new ArrayList<Tuple2D<Integer>>();
+		List<Tuple2D<Integer>> cells2divide = new ArrayList<Tuple2D<Integer>>();
 		
 		for (int y = 0; y < currGrid.getY(); y++) {
 			for (int x = 0; x < currGrid.getX(); x++) {
@@ -161,20 +160,17 @@ public class Simulation {
 		//Update Logical Model States
 		float alphaProb = epithelium.getUpdateSchemeInter().getAlpha();
 		if (keys.size() > 0) {
-			
-			updates = true;
-
+			cellUpdates = true;
 			// Randomize the order of cells to update
-			Collections.shuffle(keys, RandomFactory.getInstance()
-					.getGenerator());
-
+			Collections.shuffle(keys, RandomFactory.getInstance().getGenerator());
 			boolean atleastone = false;
+			
 			int updateCounter = (int) Math.floor(alphaProb * keys.size());
+			//Updates the cells if alpha > 0.0
 			for (int i = 0; i < updateCounter; i++) {
 				Tuple2D<Integer> key = keys.get(0);
 				keys.remove(key);
-				nextGrid.setCellState(key.getX(), key.getY(),
-						cells2update.get(key));
+				nextGrid.setCellState(key.getX(), key.getY(),cells2update.get(key));
 				CellTrigger nextCellTrigger = this.epithelium.getEpitheliumTriggerManager()
 						.getCellTrigger(currGrid
 								.getModel(key.getX(), key.getY()), cells2update.get(key));
@@ -193,37 +189,40 @@ public class Simulation {
 			}
 		} 
 		
-		//update grid dynamic events
+		//If there are no updates nor space to divide, grid is stable
 		int emptyModelNumber = nextGrid.emptyModelNumber();
+		if (!cellUpdates && (emptyModelNumber==0)) {
+			this.stable = true;
+			return currGrid;
+		}
+		
+		//Update cell division and death events
 		for (int x = 0; x < nextGrid.getX(); x ++) {
 			for (int y = 0; y < nextGrid.getY(); y ++) {
 				if (currGrid.isEmptyCell(x, y)) continue;
+				//Skips cells not considered in the alpha-asynchronous cases
 				if (keys.contains(new Tuple2D<Integer>(x, y))) continue;
 				if (currGrid.getCellTrigger(x, y).equals(CellTrigger.DEFAULT) ||
 						nextGrid.getCellTrigger(x, y).equals(CellTrigger.DEFAULT)) {
 					continue;
 				}
-				triggeredCells.add(new Tuple2D<Integer>(x, y));
-				dynamics=true;
+				cells2divide.add(new Tuple2D<Integer>(x, y));
+				popUpdates = true;
 			}
 		}
-		if (!updates && !dynamics) {
-			this.stable = true;
-			return currGrid;
-		}
 		
-		if (triggeredCells.size() > 0 && emptyModelNumber > 0) {
-			Collections.shuffle(triggeredCells, RandomFactory.getInstance()
-					.getGenerator());
+		if (popUpdates) {
+			Collections.shuffle(cells2divide, RandomFactory.getInstance().getGenerator());
+			int cells2divideSize = cells2divide.size();
 			while (emptyModelNumber > 0) {
-				Tuple2D<Integer> currPosition = triggeredCells.get(0);
-				triggeredCells.remove(currPosition);
+				Tuple2D<Integer> currPosition = cells2divide.get(0);
+				cells2divide.remove(currPosition);
 				List<Tuple2D<Integer>> path = this.epiTopology.divisionPath(currPosition.getX(), currPosition.getY());
 				this.updateDivisionUpdaterCache(nextGrid, path);
 				for (int index = 1; index < path.size(); index ++) {
-					if (triggeredCells.contains(path.get(index))) {
-						triggeredCells.remove(path.get(index).clone());
-						triggeredCells.add(path.get(index-1).clone());
+					if (cells2divide.contains(path.get(index))) {
+						cells2divide.remove(path.get(index).clone());
+						cells2divide.add(path.get(index-1).clone());
 					}
 				}
 				Tuple2D<Integer> motherCell = path.get(path.size()-1).clone();
@@ -234,7 +233,7 @@ public class Simulation {
 				nextGrid.setCell2Naive(motherCell.getX(), motherCell.getY());
 				nextGrid.setCell2Naive(daughterCell.getX(), daughterCell.getY());
 				emptyModelNumber -=1;
-				if (triggeredCells.size() <= 0) break;
+				if (cells2divide.size() <= (1-alphaProb)*cells2divideSize) break;
 			}
 		}
 		this.gridHistory.add(nextGrid);
@@ -348,7 +347,7 @@ public class Simulation {
 					List<Tuple2D<Integer>> selectedModelPositions = modelPositions
 							.subList(0, selectedCells);
 					for (Tuple2D<Integer> tuple : selectedModelPositions) {
-						/*if (!(delayGrid.getModel(tuple.getX(), tuple.getY()).equals(m))) {
+						if (!(delayGrid.getModel(tuple.getX(), tuple.getY()).equals(m))) {
 							neighbourEpi.setCellComponentValue(tuple.getX(),
 									tuple.getY(), nodeID, (byte) 0);
 						}
@@ -358,9 +357,7 @@ public class Simulation {
 							neighbourEpi.setCellComponentValue(tuple.getX(),
 									tuple.getY(), nodeID,
 									(byte) delayState[nodePosition]);
-						}*/
-						neighbourEpi.setCellComponentValue(tuple.getX(),
-								tuple.getY(), nodeID, (byte) 0);
+						}
 					}
 				}
 			}
