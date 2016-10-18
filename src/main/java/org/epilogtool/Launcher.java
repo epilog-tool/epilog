@@ -37,6 +37,8 @@ public class Launcher {
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		SimpleJSAP jsap = null;
 		JSAPResult jsapResult = null;
+		
+		System.out.println("Teste");
 
 		// Default values
 		int maxiter = 10;
