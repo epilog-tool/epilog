@@ -57,6 +57,11 @@ import org.epilogtool.gui.widgets.CloseTabButton;
 import org.epilogtool.io.FileIO;
 import org.epilogtool.project.Project;
 
+/**
+ * Class that defines the GUI of EPILOG
+ *
+ */
+
 public class EpiGUI extends JFrame {
 	private static final long serialVersionUID = -3266121588934662490L;
 
@@ -529,7 +534,7 @@ public class EpiGUI extends JFrame {
 						JOptionPane.WARNING_MESSAGE);
 				return;
 			}
-			this.projDescPanel.addModel(fc.getSelectedFile().getName());
+			this.projDescPanel.loadModel(fc.getSelectedFile().getName());
 			LogicalModel m = FileIO.loadSBMLModel(fc.getSelectedFile());
 			this.project.addModel(fc.getSelectedFile().getName(), m);
 			this.notifyEpiModelGrids();
@@ -537,6 +542,20 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
+	
+	public void renameSBML() {
+		String model = this.projDescPanel.getSelected();
+		if (model != null) {
+			//TODO
+			if (this.project.removeModel(model)) {
+			} else {
+				JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning",
+						JOptionPane.WARNING_MESSAGE); 
+			}
+		}
+		this.validateGUI();
+	}
+	
 	public void removeSBML() {
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
@@ -548,6 +567,17 @@ public class EpiGUI extends JFrame {
 						+ "' is being used!", "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			}
+		}
+		this.validateGUI();
+	}
+	
+	public void exportSBML() {
+		String model = this.projDescPanel.getSelected();
+		if (model != null) {
+			// ???
+		} else {
+			JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning",
+					JOptionPane.WARNING_MESSAGE);
 		}
 		this.validateGUI();
 	}
@@ -834,4 +864,5 @@ public class EpiGUI extends JFrame {
 			validateGUI();
 		}
 	}
+
 }
