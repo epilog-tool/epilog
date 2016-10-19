@@ -18,6 +18,12 @@ import javax.swing.event.ListSelectionListener;
 
 import org.epilogtool.gui.menu.SBMLPopupMenu;
 
+/**
+ * Container with all the SBML. It is here that it is defined if the options in the menu bar are enabled,
+ * the dimensions of the panel with the list of SBML, visual operations of loading, deleting and renaming SBML.
+ * 
+ *
+ */
 public class ProjDescPanel extends JPanel {
 	private static final long serialVersionUID = -8691538114476162311L;
 
@@ -96,6 +102,12 @@ public class ProjDescPanel extends JPanel {
 		menu.getItem(0).setEnabled(true);
 		menu.getItem(1).setEnabled(
 				this.listSBMLs.getSelectionModel().getMinSelectionIndex() >= 0);
+		menu.getItem(2).setEnabled(
+				this.listSBMLs.getSelectionModel().getMinSelectionIndex() >= 0);
+		menu.getItem(3).setEnabled(
+				this.listSBMLs.getSelectionModel().getMinSelectionIndex() >= 0);
+		menu.getItem(4).setEnabled(
+				this.listSBMLs.getSelectionModel().getMinSelectionIndex() >= 1);
 	}
 
 	public void loadModel(String model) {

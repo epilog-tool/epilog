@@ -27,6 +27,7 @@ public class SBMLMenu {
 		menu.add(new RenameSBMLAction());
 		menu.add(new RemoveSBMLAction());
 		menu.add(new ExportSBMLAction());
+		menu.add(new ReplaceSBMLAction());
 
 		return menu;
 	}
@@ -89,9 +90,6 @@ class RemoveSBMLAction extends AbstractAction {
 
 }
 
-
-
-
 class ExportSBMLAction extends AbstractAction {
 	private static final long serialVersionUID = -7400365619490423300L;
 
@@ -105,6 +103,23 @@ class ExportSBMLAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		EpiGUI.getInstance().exportSBML();
+	}
+
+}
+
+class ReplaceSBMLAction extends AbstractAction {
+	private static final long serialVersionUID = -7400365619490423300L;
+
+	public ReplaceSBMLAction() {
+		super("Replace model (SBML)");
+		putValue(SHORT_DESCRIPTION, "Replace selected SBML model");
+		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
+		// FrameActionManager.MASK));
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		EpiGUI.getInstance().replaceSBML();
 	}
 
 }

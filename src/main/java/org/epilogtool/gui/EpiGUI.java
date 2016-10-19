@@ -58,7 +58,13 @@ import org.epilogtool.io.FileIO;
 import org.epilogtool.project.Project;
 
 /**
- * Class that defines the GUI of EPILOG
+ * Class that defines the GUI of EPILOG. This is the main window where the GUI is built.
+ * Panels (or more specifically containers) can be added. The containers added are:
+ * epiMenu 			-> toolbar
+ * epiMainFrame	    ->
+ * epiRightFrame	->
+ * projDescPanel    -> Where the SBML panel is stored
+ * epiTreePanel     -> Where the epithelium is defined
  *
  */
 
@@ -546,13 +552,12 @@ public class EpiGUI extends JFrame {
 	public void renameSBML() {
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
-			//TODO
-			if (this.project.removeModel(model)) {
-			} else {
+			System.out.println("the name of the SBMl is:");
+		}
+		else {
 				JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning",
 						JOptionPane.WARNING_MESSAGE); 
 			}
-		}
 		this.validateGUI();
 	}
 	
@@ -572,6 +577,17 @@ public class EpiGUI extends JFrame {
 	}
 	
 	public void exportSBML() {
+		String model = this.projDescPanel.getSelected();
+		if (model != null) {
+			// ???
+		} else {
+			JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning",
+					JOptionPane.WARNING_MESSAGE);
+		}
+		this.validateGUI();
+	}
+	
+	public void replaceSBML() {
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
 			// ???
