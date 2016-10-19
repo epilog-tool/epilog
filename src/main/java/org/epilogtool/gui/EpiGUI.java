@@ -438,7 +438,7 @@ public class EpiGUI extends JFrame {
 			// this.projDescPanel.setDimension(this.project.getX(),
 			// this.project.getY());
 			for (String sbml : this.project.getModelNames()) {
-				this.projDescPanel.addModel(sbml);
+				this.projDescPanel.loadModel(sbml);
 			}
 			this.project.setChanged(false);
 			this.epiTreePanel.initEpitheliumJTree(this.project
@@ -484,7 +484,7 @@ public class EpiGUI extends JFrame {
 		this.cleanGUI();
 		this.setTitle(TITLE_APPNAME + " - " + this.project.getFilenamePEPS());
 		for (String sbml : this.project.getModelNames()) {
-			this.projDescPanel.addModel(sbml);
+			this.projDescPanel.loadModel(sbml);
 		}
 
 		this.epiTreePanel
