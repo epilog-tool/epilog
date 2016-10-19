@@ -98,7 +98,7 @@ public class ProjDescPanel extends JPanel {
 				this.listSBMLs.getSelectionModel().getMinSelectionIndex() >= 0);
 	}
 
-	public void addModel(String model) {
+	public void loadModel(String model) {
 		if (model.isEmpty() || this.hasModel(model))
 			return;
 		((DefaultListModel<String>) this.listSBMLs.getModel())
