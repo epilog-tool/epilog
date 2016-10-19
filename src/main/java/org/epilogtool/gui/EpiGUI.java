@@ -38,6 +38,7 @@ import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.dialog.DialogAbout;
 import org.epilogtool.gui.dialog.DialogEditEpithelium;
 import org.epilogtool.gui.dialog.DialogNewEpithelium;
+import org.epilogtool.gui.dialog.DialogRenameSBML;
 import org.epilogtool.gui.menu.CloseTabPopupMenu;
 import org.epilogtool.gui.menu.EpitheliumMenu;
 import org.epilogtool.gui.menu.FileMenu;
@@ -552,7 +553,30 @@ public class EpiGUI extends JFrame {
 	public void renameSBML() {
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
-			System.out.println("the name of the SBMl is:");
+
+			DialogRenameSBML dialogPanel = new DialogRenameSBML(model,
+					this.project.getComponentFeatures().getGUIModelNames());
+			Window win = SwingUtilities.getWindowAncestor(this);
+			JDialog dialog = new JDialog(win, "Rename SBML",
+					ModalityType.APPLICATION_MODAL);
+			dialog.getContentPane().add(dialogPanel);
+			dialog.pack();
+			dialog.setLocationRelativeTo(null);
+			dialog.setVisible(true);
+
+			boolean bChanged = false;
+			// Update Model name
+			if (!model.equals(dialogPanel.getModelName())) {
+				String newModel = dialogPanel.getModelName();
+				this.project.getComponentFeatures().getModel(model);
+				this.project.getComponentFeatures().renameModel(model,newModel);
+				// TODO
+				bChanged = true;
+			}
+			this.project.setChanged(bChanged);
+			this.validateGUI();
+//			
+			
 		}
 		else {
 				JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning",
@@ -579,7 +603,7 @@ public class EpiGUI extends JFrame {
 	public void exportSBML() {
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
-			// ???
+			// TODO
 		} else {
 			JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning",
 					JOptionPane.WARNING_MESSAGE);

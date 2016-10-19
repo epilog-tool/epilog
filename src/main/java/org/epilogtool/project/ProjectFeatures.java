@@ -214,4 +214,10 @@ public class ProjectFeatures {
 			this.nodeColor.put(nodeID, color);
 		}
 	}
+
+	public void renameModel(String model, String newModel) {
+		this.model2String.put(this.string2Model.get(model), newModel);
+		this.string2Model.put(newModel, string2Model.remove(model));
+		
+	}
 }
