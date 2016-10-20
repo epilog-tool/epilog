@@ -12,17 +12,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.epilogtool.gui.color.ColorUtils;
 
-public class DialogRenameSBML extends EscapableDialog {
+public class DialogReplaceSBML extends EscapableDialog {
 	private static final long serialVersionUID = 1877338344309723137L;
 
 
-	private JTextField jtfModelName;
+	private JComboBox jcbModelName;
 
 
 	private List<String> listModelNames;
@@ -33,7 +34,7 @@ public class DialogRenameSBML extends EscapableDialog {
 	private JButton buttonOK;
 	private String model;
 
-	public DialogRenameSBML(String model, List<String> modelNames) {
+	public DialogReplaceSBML(String model, List<String> modelNames) {
 		this.listModelNames = modelNames;
 		this.listModelNames.remove(model);
 		this.model = model;
@@ -44,11 +45,13 @@ public class DialogRenameSBML extends EscapableDialog {
 		// Name JLabel
 		c.gridx = 0;
 		c.gridy = 2;
-		this.add(new JLabel("Name:"), c);
+		this.add(new JLabel("Replace: " + model + " with: "), c);
 
-		// Name JTextField
-		this.jtfModelName = new JTextField(model);
-		this.jtfModelName.addKeyListener(new KeyListener() {
+		// Name JComboBox
+		String[] array = this.listModelNames.toArray(new String[this.listModelNames.size()]);
+		this.jcbModelName = new JComboBox(array);
+		
+		this.jcbModelName.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				validateTextField();
@@ -64,7 +67,7 @@ public class DialogRenameSBML extends EscapableDialog {
 		});
 		c.gridx = 1;
 		c.gridy = 2;
-		this.add(this.jtfModelName, c);
+		this.add(this.jcbModelName, c);
 
 		// Bottom Panel
 		JPanel bottom = new JPanel(new FlowLayout());
@@ -102,30 +105,16 @@ public class DialogRenameSBML extends EscapableDialog {
 			String newName = modelName.substring(0, modelName.length()-5);
 			listShortModelNames.add(newName);
 		}
-
-		String newModelName = this.jtfModelName.getText();
-		if (newModelName.endsWith(".SBML")){
-			newModelName = newModelName.substring(0, newModelName.length()-5) + ".sbml";
-		}
-			
-		if (!this.listModelNames.contains(newModelName)
-				&& !newModelName.isEmpty()
-				&& !newModelName.matches(".*(\\s).*")
-				&& !listShortModelNames.contains(newModelName))
-				 {
-			this.bIsNameOK = true;
-		}
-		this.jtfModelName.setBackground(this.bIsNameOK ? Color.WHITE
-				: ColorUtils.LIGHT_RED);
+		
 		this.validateDialog();
 	}
 
 	private void buttonAction(boolean bIsOK) {
 		this.bIsOK = bIsOK;
 		if (bIsOK && !this.validateDialog()) {
+			// Not valid
 			return;
 		}
-		this.jtfModelName.setText(this.jtfModelName.getText().trim());
 		this.dispose();
 	}
 
@@ -141,15 +130,10 @@ public class DialogRenameSBML extends EscapableDialog {
 
 	@Override
 	public void focusComponentOnLoad() {
-		this.jtfModelName.requestFocusInWindow();
+		this.jcbModelName.requestFocusInWindow();
 	}
 
 	public String getModelName() {
-		return this.jtfModelName.getText();
-	}
-
-	public boolean getButtonAction() {
-		
-		return bIsOK;
+		return this.jcbModelName.getName();
 	}
 }

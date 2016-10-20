@@ -42,6 +42,7 @@ import org.epilogtool.gui.dialog.DialogAbout;
 import org.epilogtool.gui.dialog.DialogEditEpithelium;
 import org.epilogtool.gui.dialog.DialogNewEpithelium;
 import org.epilogtool.gui.dialog.DialogRenameSBML;
+import org.epilogtool.gui.dialog.DialogReplaceSBML;
 import org.epilogtool.gui.menu.CloseTabPopupMenu;
 import org.epilogtool.gui.menu.EpitheliumMenu;
 import org.epilogtool.gui.menu.FileMenu;
@@ -559,9 +560,7 @@ public class EpiGUI extends JFrame {
 	 * Once the new name is validated
 	 */
 	public void renameSBML() {
-		//TODO: deal with the SBML case
 		//TODO: Make sure that the model does not change place in list
-		//TODO: Make sure that EPILOG knows that something is changed and needs to be saved
 		//TODO: If a tab is open, and the name of a model is changed, should it just be refreshed?
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
@@ -570,10 +569,13 @@ public class EpiGUI extends JFrame {
 			Window win = SwingUtilities.getWindowAncestor(this);
 			JDialog dialog = new JDialog(win, "Rename SBML",
 					ModalityType.APPLICATION_MODAL);
+			dialog.setSize(100, 50);
 			dialog.getContentPane().add(dialogPanel);
 			dialog.pack();
 			dialog.setLocationRelativeTo(null);
 			dialog.setVisible(true);
+		
+			if (dialogPanel.getButtonAction()){
 
 			boolean bChanged = false;
 			// Update Model name
@@ -587,11 +589,12 @@ public class EpiGUI extends JFrame {
 				this.project.getComponentFeatures().renameModel(model,newModel);
 				this.projDescPanel.renameModel(model,newModel);
 				this.notifyEpiModelGrids();
-				// TODO
+				
 				bChanged = true;
 			}
 			this.project.setChanged(bChanged);
 			this.validateGUI();
+			}
 //			
 			
 		}
@@ -622,7 +625,6 @@ public class EpiGUI extends JFrame {
 		String stringModel = this.projDescPanel.getSelected();
 		if (stringModel != null) {
 			String filename = FileSelectionHelper.saveFilename("sbml");
-			//TODO:
 			if (filename != null) {
 				filename += (filename.endsWith(".sbml") ? "" : ".sbml");
 				LogicalModel logicalModel = this.project.getComponentFeatures().getModel(stringModel);
@@ -643,7 +645,21 @@ public class EpiGUI extends JFrame {
 	public void replaceSBML() {
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
-			// ???
+			// TODO:
+			DialogReplaceSBML dialogPanel = new DialogReplaceSBML(model,
+						this.project.getComponentFeatures().getGUIModelNames());
+			Window win = SwingUtilities.getWindowAncestor(this);
+			JDialog dialog = new JDialog(win, "Replace SBML",
+						ModalityType.APPLICATION_MODAL);
+				dialog.getContentPane().add(dialogPanel);
+				dialog.pack();
+				dialog.setLocationRelativeTo(null);
+				dialog.setVisible(true);
+
+			boolean bChanged = false;
+				// Update Model name
+			String newModel = dialogPanel.getModelName();
+			
 		} else {
 			JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning",
 					JOptionPane.WARNING_MESSAGE);
