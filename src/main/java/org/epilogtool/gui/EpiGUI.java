@@ -569,7 +569,7 @@ public class EpiGUI extends JFrame {
 			Window win = SwingUtilities.getWindowAncestor(this);
 			JDialog dialog = new JDialog(win, "Rename SBML",
 					ModalityType.APPLICATION_MODAL);
-			dialog.setSize(100, 50);
+			dialog.setSize(300, 50);
 			dialog.getContentPane().add(dialogPanel);
 			dialog.pack();
 			dialog.setLocationRelativeTo(null);

@@ -1,6 +1,8 @@
 package org.epilogtool.gui.dialog;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -31,21 +33,18 @@ public class DialogRenameSBML extends EscapableDialog {
 
 	private JButton buttonCancel;
 	private JButton buttonOK;
-	private String model;
 
 	public DialogRenameSBML(String model, List<String> modelNames) {
 		this.listModelNames = modelNames;
 		this.listModelNames.remove(model);
-		this.model = model;
 
-		this.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
+		this.setLayout(new BorderLayout());
 
+		JPanel northPanel = new JPanel(new FlowLayout());
 		// Name JLabel
-		c.gridx = 0;
-		c.gridy = 2;
-		this.add(new JLabel("Name:"), c);
-
+		JLabel text = new JLabel("Change "+model+ " to:");
+		northPanel.add(text);
+		
 		// Name JTextField
 		this.jtfModelName = new JTextField(model);
 		this.jtfModelName.addKeyListener(new KeyListener() {
@@ -62,9 +61,10 @@ public class DialogRenameSBML extends EscapableDialog {
 			public void keyPressed(KeyEvent e) {
 			}
 		});
-		c.gridx = 1;
-		c.gridy = 2;
-		this.add(this.jtfModelName, c);
+
+		northPanel.add(this.jtfModelName);
+		
+		this.add(northPanel,BorderLayout.NORTH);
 
 		// Bottom Panel
 		JPanel bottom = new JPanel(new FlowLayout());
@@ -85,10 +85,8 @@ public class DialogRenameSBML extends EscapableDialog {
 			}
 		});
 		bottom.add(this.buttonOK);
-		c.gridx = 0;
-		c.gridy = 6;
-		c.gridwidth = 2;
-		this.add(bottom, c);
+
+		this.add(bottom,BorderLayout.SOUTH);
 
 		this.validateTextField();
 
