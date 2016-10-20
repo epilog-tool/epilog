@@ -1,5 +1,6 @@
 package org.epilogtool.gui.dialog;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -33,28 +34,30 @@ public class DialogReplaceSBML extends EscapableDialog {
 	private JButton buttonCancel;
 	private JButton buttonOK;
 	private String model;
+	private String newModel;
 
 	public DialogReplaceSBML(String model, List<String> modelNames) {
 		this.listModelNames = modelNames;
 		this.listModelNames.remove(model);
+		this.listModelNames.remove("Empty cell");
 		this.model = model;
+		this.newModel = null;
 
-		this.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
+		this.setLayout(new BorderLayout());
+		
+		// North Panel
+		JPanel northPanel = new JPanel(new FlowLayout());
 
-		// Name JLabel
-		c.gridx = 0;
-		c.gridy = 2;
-		this.add(new JLabel("Replace: " + model + " with: "), c);
+		northPanel.add(new JLabel("Replace: " + model + " with: "));
 
 		// Name JComboBox
 		String[] array = this.listModelNames.toArray(new String[this.listModelNames.size()]);
 		this.jcbModelName = new JComboBox(array);
 		
 		this.jcbModelName.addKeyListener(new KeyListener() {
+
 			@Override
 			public void keyReleased(KeyEvent e) {
-				validateTextField();
 			}
 
 			@Override
@@ -65,10 +68,12 @@ public class DialogReplaceSBML extends EscapableDialog {
 			public void keyPressed(KeyEvent e) {
 			}
 		});
-		c.gridx = 1;
-		c.gridy = 2;
-		this.add(this.jcbModelName, c);
-
+		northPanel.add(this.jcbModelName);
+		this.add(northPanel,BorderLayout.NORTH);
+		
+		//Center Panel
+		JPanel center = getCenterpanel();
+		
 		// Bottom Panel
 		JPanel bottom = new JPanel(new FlowLayout());
 		this.buttonCancel = new JButton("Cancel");
@@ -88,10 +93,8 @@ public class DialogReplaceSBML extends EscapableDialog {
 			}
 		});
 		bottom.add(this.buttonOK);
-		c.gridx = 0;
-		c.gridy = 6;
-		c.gridwidth = 2;
-		this.add(bottom, c);
+
+		this.add(bottom, BorderLayout.SOUTH);
 
 		this.validateTextField();
 
@@ -106,15 +109,10 @@ public class DialogReplaceSBML extends EscapableDialog {
 			listShortModelNames.add(newName);
 		}
 		
-		this.validateDialog();
 	}
 
 	private void buttonAction(boolean bIsOK) {
 		this.bIsOK = bIsOK;
-		if (bIsOK && !this.validateDialog()) {
-			// Not valid
-			return;
-		}
 		this.dispose();
 	}
 
@@ -122,18 +120,14 @@ public class DialogReplaceSBML extends EscapableDialog {
 		return this.bIsOK;
 	}
 
-	private boolean validateDialog() {
-		boolean isValid = bIsNameOK;
-		this.buttonOK.setEnabled(isValid);
-		return isValid;
+
+	public String getModelName() {
+		return this.jcbModelName.getName();
 	}
 
 	@Override
 	public void focusComponentOnLoad() {
-		this.jcbModelName.requestFocusInWindow();
-	}
-
-	public String getModelName() {
-		return this.jcbModelName.getName();
+		// TODO Auto-generated method stub
+		
 	}
 }

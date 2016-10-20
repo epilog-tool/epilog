@@ -146,8 +146,10 @@ public class DialogRenameSBML extends EscapableDialog {
 		return this.jtfModelName.getText();
 	}
 
+	/**Returns true, if the user selected ok, false if cancel.
+	 * @return
+	 */
 	public boolean getButtonAction() {
-		
 		return bIsOK;
 	}
 }
