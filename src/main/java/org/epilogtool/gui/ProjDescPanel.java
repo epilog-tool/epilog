@@ -126,6 +126,11 @@ public class ProjDescPanel extends JPanel {
 		((DefaultListModel<String>) this.listSBMLs.getModel())
 				.removeElement(model);
 	}
+	
+	public void renameModel(String model) {
+	 int index = this.listSBMLs.getSelectedIndex();
+	 ((DefaultListModel<String>) this.listSBMLs.add(model, index);
+	}
 
 	public boolean hasModel(String model) {
 		return ((DefaultListModel<String>) this.listSBMLs.getModel())

@@ -550,10 +550,15 @@ public class EpiGUI extends JFrame {
 	}
 
 	
+	/**
+	 * To rename an SBML a dialog has to be created, with the new name to be inserted. 
+	 * It does not allow the same name of another model (with or without the extension ".sbml").
+	 * Once the new name is validated
+	 */
 	public void renameSBML() {
+		//TODO: deal with the SBML case
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
-
 			DialogRenameSBML dialogPanel = new DialogRenameSBML(model,
 					this.project.getComponentFeatures().getGUIModelNames());
 			Window win = SwingUtilities.getWindowAncestor(this);
@@ -568,7 +573,10 @@ public class EpiGUI extends JFrame {
 			// Update Model name
 			if (!model.equals(dialogPanel.getModelName())) {
 				String newModel = dialogPanel.getModelName();
-				this.project.getComponentFeatures().getModel(model);
+				//If the user did not add the .sbml extension, it is added.
+				if (!newModel.contains(".sbml")){
+					newModel = newModel + ".sbml";
+				}
 				this.project.getComponentFeatures().renameModel(model,newModel);
 				// TODO
 				bChanged = true;

@@ -10,7 +10,16 @@ import javax.swing.JPopupMenu;
 import org.epilogtool.gui.EpiGUI;
 
 /**
- * Class that implements the options popup for the SBML. instead of going to the "SBML" menu bar the user can select the action here
+ * Class that implements the options popup for the SBML. 
+ * Instead of going to the "SBML" menu bar the user can select the action here. 
+ * There are 4 possible actions: 
+ * Load (Add an SBML file to the list of SBLMs in the project) 
+ * Rename (Rename an existing SBML)
+ * Remove (Remove an SBML from the project) - Check dependencies
+ * Export (Save an SBML as an .SBML file in a chosen directory)  
+ * 
+ * Once an option is selected it is the EpiGUI that calls the shots.
+ *
  *
  */
 public class SBMLPopupMenu extends JPopupMenu {

@@ -15,6 +15,8 @@ import org.epilogtool.gui.EpiGUI;
  * Rename (Rename an existing SBML)
  * Remove (Remove an SBML from the project) - Check dependencies
  * Export (Save an SBML as an .SBML file in a chosen directory)  
+ * 
+ * Once an option is selected it is the EpiGUI that calls the shots.
  *
  */
 

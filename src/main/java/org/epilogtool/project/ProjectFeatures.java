@@ -215,6 +215,10 @@ public class ProjectFeatures {
 		}
 	}
 
+	/** This function renames the model.
+	 * @param model
+	 * @param newModel
+	 */
 	public void renameModel(String model, String newModel) {
 		this.model2String.put(this.string2Model.get(model), newModel);
 		this.string2Model.put(newModel, string2Model.remove(model));
