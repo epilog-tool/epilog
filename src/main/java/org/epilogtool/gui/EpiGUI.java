@@ -7,6 +7,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 import org.epilogtool.FileSelectionHelper;
 import org.epilogtool.OptionStore;
 import org.epilogtool.core.Epithelium;
@@ -574,8 +577,11 @@ public class EpiGUI extends JFrame {
 
 			boolean bChanged = false;
 			// Update Model name
+			String newModel = dialogPanel.getModelName();
+			if (newModel.endsWith(".SBML")){
+				newModel = newModel.substring(0, newModel.length()-5) + ".sbml";
+			}
 			if (!model.equals(dialogPanel.getModelName())) {
-				String newModel = dialogPanel.getModelName();
 				//If the user did not add the .sbml extension, it is added.
 				newModel += (newModel.endsWith(".sbml") ? "" : ".sbml");
 				this.project.getComponentFeatures().renameModel(model,newModel);
@@ -612,11 +618,20 @@ public class EpiGUI extends JFrame {
 		this.validateGUI();
 	}
 	
-	public void exportSBML() {
-		String model = this.projDescPanel.getSelected();
-		if (model != null) {
+	public void exportSBML() throws IOException {
+		String stringModel = this.projDescPanel.getSelected();
+		if (stringModel != null) {
 			String filename = FileSelectionHelper.saveFilename("sbml");
 			//TODO:
+			if (filename != null) {
+				filename += (filename.endsWith(".sbml") ? "" : ".sbml");
+				LogicalModel logicalModel = this.project.getComponentFeatures().getModel(stringModel);
+				FileOutputStream outSBML = new FileOutputStream(filename);
+				SBMLFormat sbmlFormat = new SBMLFormat();
+				sbmlFormat.export(logicalModel, outSBML);
+				outSBML.close();
+				this.validateGUI();
+			}
 		} else {
 			JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning",
 					JOptionPane.WARNING_MESSAGE);

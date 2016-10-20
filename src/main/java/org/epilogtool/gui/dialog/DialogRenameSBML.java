@@ -99,16 +99,19 @@ public class DialogRenameSBML extends EscapableDialog {
 		
 		List<String> listShortModelNames = new ArrayList<String>();
 		for (String modelName:listModelNames){
-			String newName = modelName.substring(0, model.length()-5);
+			String newName = modelName.substring(0, modelName.length()-5);
 			listShortModelNames.add(newName);
 		}
-			
 
-		if (!this.listModelNames.contains(this.jtfModelName.getText())
-				&& !this.jtfModelName.getText().isEmpty()
-				&& !this.jtfModelName.getText().matches(".*(\\s).*")
-//				&& !model.substring(0, model.length()-5).equals(this.jtfModelName.getText())
-				&& !listShortModelNames.contains(this.jtfModelName.getText()))
+		String newModelName = this.jtfModelName.getText();
+		if (newModelName.endsWith(".SBML")){
+			newModelName = newModelName.substring(0, newModelName.length()-5) + ".sbml";
+		}
+			
+		if (!this.listModelNames.contains(newModelName)
+				&& !newModelName.isEmpty()
+				&& !newModelName.matches(".*(\\s).*")
+				&& !listShortModelNames.contains(newModelName))
 				 {
 			this.bIsNameOK = true;
 		}

@@ -104,9 +104,13 @@ class ExportSBMLAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		EpiGUI.getInstance().exportSBML();
+		try {
+			EpiGUI.getInstance().exportSBML();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
-
 }
 
 class ReplaceSBMLAction extends AbstractAction {
