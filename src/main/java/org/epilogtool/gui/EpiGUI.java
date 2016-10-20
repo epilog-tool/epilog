@@ -557,6 +557,7 @@ public class EpiGUI extends JFrame {
 	 */
 	public void renameSBML() {
 		//TODO: deal with the SBML case
+		//TODO: Make sure that the model does nto change place in list
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
 			DialogRenameSBML dialogPanel = new DialogRenameSBML(model,
@@ -578,6 +579,7 @@ public class EpiGUI extends JFrame {
 					newModel = newModel + ".sbml";
 				}
 				this.project.getComponentFeatures().renameModel(model,newModel);
+				this.projDescPanel.renameModel(model,newModel);
 				// TODO
 				bChanged = true;
 			}

@@ -1,6 +1,7 @@
 package org.epilogtool.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -127,9 +128,11 @@ public class ProjDescPanel extends JPanel {
 				.removeElement(model);
 	}
 	
-	public void renameModel(String model) {
-	 int index = this.listSBMLs.getSelectedIndex();
-	 ((DefaultListModel<String>) this.listSBMLs.add(model, index);
+	public void renameModel(String model, String newModel) {
+		((DefaultListModel<String>) this.listSBMLs.getModel())
+		.removeElement(model);
+		((DefaultListModel<String>) this.listSBMLs.getModel())
+		.addElement(newModel);
 	}
 
 	public boolean hasModel(String model) {
