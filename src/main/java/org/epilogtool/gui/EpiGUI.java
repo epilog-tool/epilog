@@ -464,7 +464,7 @@ public class EpiGUI extends JFrame {
 		if (!this.canClose("Do you really want load another project?")) {
 			return false;
 		}
-		String filename = FileSelectionHelper.openFilename();
+		String filename = FileSelectionHelper.openFilename("peps");
 		if (filename != null) {
 			try {
 				this.project = FileIO.loadPEPS(filename);
@@ -503,7 +503,7 @@ public class EpiGUI extends JFrame {
 	}
 
 	public void saveAsPEPS() throws IOException {
-		String filename = FileSelectionHelper.saveFilename();
+		String filename = FileSelectionHelper.saveFilename("peps");
 
 		if (filename != null) {
 			filename += (filename.endsWith(".peps") ? "" : ".peps");
@@ -557,7 +557,9 @@ public class EpiGUI extends JFrame {
 	 */
 	public void renameSBML() {
 		//TODO: deal with the SBML case
-		//TODO: Make sure that the model does nto change place in list
+		//TODO: Make sure that the model does not change place in list
+		//TODO: Make sure that EPILOG knows that something is changed and needs to be saved
+		//TODO: If a tab is open, and the name of a model is changed, should it just be refreshed?
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
 			DialogRenameSBML dialogPanel = new DialogRenameSBML(model,
@@ -575,11 +577,10 @@ public class EpiGUI extends JFrame {
 			if (!model.equals(dialogPanel.getModelName())) {
 				String newModel = dialogPanel.getModelName();
 				//If the user did not add the .sbml extension, it is added.
-				if (!newModel.contains(".sbml")){
-					newModel = newModel + ".sbml";
-				}
+				newModel += (newModel.endsWith(".sbml") ? "" : ".sbml");
 				this.project.getComponentFeatures().renameModel(model,newModel);
 				this.projDescPanel.renameModel(model,newModel);
+				this.notifyEpiModelGrids();
 				// TODO
 				bChanged = true;
 			}
@@ -614,7 +615,8 @@ public class EpiGUI extends JFrame {
 	public void exportSBML() {
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
-			// TODO
+			String filename = FileSelectionHelper.saveFilename("sbml");
+			//TODO:
 		} else {
 			JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning",
 					JOptionPane.WARNING_MESSAGE);
