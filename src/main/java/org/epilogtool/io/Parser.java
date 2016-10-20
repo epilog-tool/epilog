@@ -71,7 +71,7 @@ public class Parser {
 				saTmp = line.split("\\s+");
 
 				File fSBML = new File(fConfig.getParent() + "/" + saTmp[2]);
-				project.addModel(fSBML.getName(), FileIO.loadSBMLModel(fSBML));
+				project.loadModel(fSBML.getName(), FileIO.loadSBMLModel(fSBML));
 				modelKey2Name.put(saTmp[1], saTmp[2]);
 				Color modelColor = ColorUtils.getColor(saTmp[3], saTmp[4],
 						saTmp[5]);

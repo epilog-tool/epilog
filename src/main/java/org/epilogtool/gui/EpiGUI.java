@@ -435,7 +435,7 @@ public class EpiGUI extends JFrame {
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException {
-		if (!this.canClose("Do you really want load another project?")) {
+		if (!this.canClose("Do you really want to load another project?")) {
 			return;
 		}
 		if (this.loadPEPS()) {
@@ -543,7 +543,7 @@ public class EpiGUI extends JFrame {
 			}
 			this.projDescPanel.loadModel(fc.getSelectedFile().getName());
 			LogicalModel m = FileIO.loadSBMLModel(fc.getSelectedFile());
-			this.project.addModel(fc.getSelectedFile().getName(), m);
+			this.project.loadModel(fc.getSelectedFile().getName(), m);
 			this.notifyEpiModelGrids();
 			this.validateGUI();
 		}
@@ -583,6 +583,7 @@ public class EpiGUI extends JFrame {
 						JOptionPane.WARNING_MESSAGE); 
 			}
 		this.validateGUI();
+		projDescPanel.repaint();
 	}
 	
 	public void removeSBML() {
@@ -609,6 +610,7 @@ public class EpiGUI extends JFrame {
 					JOptionPane.WARNING_MESSAGE);
 		}
 		this.validateGUI();
+		
 	}
 	
 	public void replaceSBML() {

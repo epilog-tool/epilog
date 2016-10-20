@@ -98,7 +98,7 @@ public class Project {
 	// return name;
 	// }
 
-	public void addModel(String name, LogicalModel m) {
+	public void loadModel(String name, LogicalModel m) {
 		this.projectFeatures.addModel(name, m);
 		// TODO: should the model be inserted somewhere else?
 		this.isChanged = true;

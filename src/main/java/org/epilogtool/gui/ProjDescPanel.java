@@ -98,6 +98,11 @@ public class ProjDescPanel extends JPanel {
 		this.add(scroll, BorderLayout.CENTER);
 	}
 
+	/**Updates the SBML Menu in the tool bar. 
+	 * At any time a new SBML can be loaded (always enabled); 
+	 * Operations remove, rename or export are only enabled there is at least a SBML model loaded
+	 * The user can one replace a model if there are at-least 2 SBML models loaded.
+	 */
 	public void updateSBMLMenuItems() {
 		menu.getItem(0).setEnabled(true);
 		menu.getItem(1).setEnabled(
