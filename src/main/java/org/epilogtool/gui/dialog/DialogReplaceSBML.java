@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -89,9 +90,15 @@ public class DialogReplaceSBML extends EscapableDialog {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
+
+		this.jpCenter.add(new JLabel("Epithelium(s) to replace:"), c);
+		
 			for (Epithelium epi: epiList ){
-				this.jpCenter.add(new JLabel(epi.getName()), c);
 				c.gridy = c.gridy+1;
+				JCheckBox jcheckb = new JCheckBox(epi.getName(), false);
+				this.jpCenter.add(jcheckb, c);
+//				this.jpCenter.add(new JLabel(epi.getName()), c);
+			
 			}
 		
 		this.add(jpCenter);
