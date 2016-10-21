@@ -150,7 +150,6 @@ public class Project {
 				}
 			}
 			model2EpitheliumList.put(model, epiList);
-			System.out.println(model+' '+epiList);
 			}
 		return model2EpitheliumList;
 	}

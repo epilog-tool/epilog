@@ -663,12 +663,23 @@ public class EpiGUI extends JFrame {
 			boolean bChanged = false;
 				// Update Model name
 			String newModel = dialogPanel.getModelName();
-
+			List<Epithelium> epilist = dialogPanel.getEpiList();
+			
+			if (dialogPanel.isDefined()){
+				System.out.println("the model " + model + " is to be replaced with " + newModel);
+				//TODO: Check EpiList
+				//TODO: Check Initialconditions
+				//TODO: Check IntegrationFunction
+				//TODO: Check Perturbations
+				//TODO: Check ModelUpdating
+			}
 			
 		} else {
 			JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning",
 					JOptionPane.WARNING_MESSAGE);
 		}
+		
+
 		this.validateGUI();
 	}
 

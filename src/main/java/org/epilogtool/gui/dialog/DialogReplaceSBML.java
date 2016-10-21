@@ -1,27 +1,20 @@
 package org.epilogtool.gui.dialog;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import org.epilogtool.core.Epithelium;
-import org.epilogtool.gui.color.ColorUtils;
 
 public class DialogReplaceSBML extends EscapableDialog {
 	private static final long serialVersionUID = 1877338344309723137L;
@@ -32,15 +25,13 @@ public class DialogReplaceSBML extends EscapableDialog {
 
 	private List<String> listModelNames;
 	private boolean bIsOK;
-	private boolean bIsNameOK;
 
 	private JButton buttonCancel;
 	private JButton buttonOK;
-	private String model;
-	private String newModel;
-	private  List<Epithelium> epiList;
+	private String model;				        // Model to be replaced
+	private  List<Epithelium> epiList;         // Epithelium list that contain the model to be replaced
+	private  List<Epithelium> selectedEpiList; //Epithelium List selected y the user to modify
 
-	private JPanel jpCenter;
 	
 	/**
 	 * This method creates the Dialog that appears when replacing an SBML. Once the replacing model is defined, the user
@@ -57,8 +48,7 @@ public class DialogReplaceSBML extends EscapableDialog {
 		this.listModelNames.remove("Empty cell");
 		this.model = model;
 		this.epiList = epiList;
-		this.newModel = null;
-		this.jpCenter = new JPanel();
+		this.epiList = selectedEpiList;
 
 		this.setLayout(new BorderLayout());
 		
@@ -71,34 +61,33 @@ public class DialogReplaceSBML extends EscapableDialog {
 		String[] array = this.listModelNames.toArray(new String[this.listModelNames.size()]);
 		this.jcbModelName = new JComboBox(array);
 		
-		
-		jcbModelName.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				@SuppressWarnings("unchecked")
-				String selectedModel = (String) jcbModelName.getSelectedItem();
-				System.out.println(selectedModel);
-			}
-		});
+//		jcbModelName.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				@SuppressWarnings("unchecked")
+//				String selectedModel = (String) jcbModelName.getSelectedItem();
+//				System.out.println(selectedModel);
+//			}
+//		});
 
 		northPanel.add(this.jcbModelName);
 		this.add(northPanel,BorderLayout.NORTH);
 		
 		//Center Panel
 		
-		this.jpCenter.setLayout(new GridBagLayout());
+		JPanel jpCenter = new JPanel();
+		jpCenter.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
 
-		this.jpCenter.add(new JLabel("Epithelium(s) to replace:"), c);
+		jpCenter.add(new JLabel("Epithelium(s) to replace:"), c);
 		
 			for (Epithelium epi: epiList ){
 				c.gridy = c.gridy+1;
 				JCheckBox jcheckb = new JCheckBox(epi.getName(), false);
-				this.jpCenter.add(jcheckb, c);
-//				this.jpCenter.add(new JLabel(epi.getName()), c);
-			
+				
+				jpCenter.add(jcheckb, c);
 			}
 		
 		this.add(jpCenter);
@@ -127,20 +116,6 @@ public class DialogReplaceSBML extends EscapableDialog {
 		bottom.add(this.buttonOK);
 
 		this.add(bottom, BorderLayout.SOUTH);
-
-		this.validateTextField();
-
-	}
-
-	private void validateTextField() {
-		this.bIsNameOK = false;
-		
-		List<String> listShortModelNames = new ArrayList<String>();
-		for (String modelName:listModelNames){
-			String newName = modelName.substring(0, modelName.length()-5);
-			listShortModelNames.add(newName);
-		}
-		
 	}
 
 	private void buttonAction(boolean bIsOK) {
@@ -154,14 +129,20 @@ public class DialogReplaceSBML extends EscapableDialog {
 
 
 	public String getModelName() {
-		return this.jcbModelName.getName();
+		return (String) jcbModelName.getSelectedItem();
 	}
-
+	
+	public List<Epithelium> getEpiList() {
+		return this.selectedEpiList;
+	}
+	
 
 	@Override
 	public void focusComponentOnLoad() {
 		// TODO Auto-generated method stub
 		
 	}
+
+
 
 }
