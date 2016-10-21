@@ -643,13 +643,15 @@ public class EpiGUI extends JFrame {
 		
 	}
 	
+	/**
+	 * 
+	 */
 	public void replaceSBML() {
 		String model = this.projDescPanel.getSelected();
-		this.project.getHashModel2EpitheliumList();
 		if (model != null) {
 			// TODO:
 			DialogReplaceSBML dialogPanel = new DialogReplaceSBML(model,
-						this.project.getComponentFeatures().getGUIModelNames());
+						this.project.getComponentFeatures().getGUIModelNames(),this.project.getHashModel2EpitheliumList().get(model));
 			Window win = SwingUtilities.getWindowAncestor(this);
 			JDialog dialog = new JDialog(win, "Replace SBML",
 						ModalityType.APPLICATION_MODAL);

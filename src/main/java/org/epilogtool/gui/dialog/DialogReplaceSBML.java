@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -18,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.epilogtool.core.Epithelium;
 import org.epilogtool.gui.color.ColorUtils;
 
 public class DialogReplaceSBML extends EscapableDialog {
@@ -35,14 +37,25 @@ public class DialogReplaceSBML extends EscapableDialog {
 	private JButton buttonOK;
 	private String model;
 	private String newModel;
+	private  List<Epithelium> epiList;
 
 	private JPanel jpCenter;
 	
-	public DialogReplaceSBML(String model, List<String> modelNames) {
+	/**
+	 * This method creates the Dialog that appears when replacing an SBML. Once the replacing model is defined, the user
+	 * must choose in which epitheliums this change is to be made.
+	 * 
+	 * @param model -> Model to be replaced
+	 * @param modelNames -> Models existing in the project (STRING)
+	 * @param mapModel2Epithelium -> Map that receives as key a model and as value a list of epitheliums that contain the model
+	 */
+	public DialogReplaceSBML(String model, List<String> modelNames, List<Epithelium> epiList) {
+		//TODO: Replace receiving list in Dialog
 		this.listModelNames = modelNames;
 		this.listModelNames.remove(model);
 		this.listModelNames.remove("Empty cell");
 		this.model = model;
+		this.epiList = epiList;
 		this.newModel = null;
 		this.jpCenter = new JPanel();
 
@@ -64,7 +77,6 @@ public class DialogReplaceSBML extends EscapableDialog {
 				@SuppressWarnings("unchecked")
 				String selectedModel = (String) jcbModelName.getSelectedItem();
 				System.out.println(selectedModel);
-				upateEpitheliumList(selectedModel);
 			}
 		});
 
@@ -72,8 +84,19 @@ public class DialogReplaceSBML extends EscapableDialog {
 		this.add(northPanel,BorderLayout.NORTH);
 		
 		//Center Panel
+		
 		this.jpCenter.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+			for (Epithelium epi: epiList ){
+				this.jpCenter.add(new JLabel(epi.getName()), c);
+				c.gridy = c.gridy+1;
+			}
+		
+		this.add(jpCenter);
+	
+		
 		
 		
 		// Bottom Panel
@@ -126,23 +149,12 @@ public class DialogReplaceSBML extends EscapableDialog {
 	public String getModelName() {
 		return this.jcbModelName.getName();
 	}
-	
-	public List<String> getEpitheliumList() {
-		
-		return null;
-	}
+
 
 	@Override
 	public void focusComponentOnLoad() {
 		// TODO Auto-generated method stub
 		
 	}
-	
-	private void upateEpitheliumList(String model){
-		this.jpCenter.removeAll();
-	
-	
-	
-		
-	}
+
 }

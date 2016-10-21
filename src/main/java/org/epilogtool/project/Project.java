@@ -136,6 +136,9 @@ public class Project {
 		return this.projectFeatures;
 	}
 	
+	/** Method that returns an Hash with models as keys and a list of epitheliums with each model as value.
+	 * @return
+	 */
 	public Map<String,List<Epithelium>>  getHashModel2EpitheliumList(){
 		Map<String,List<Epithelium>> model2EpitheliumList = new HashMap<String, List<Epithelium>>();
 		
