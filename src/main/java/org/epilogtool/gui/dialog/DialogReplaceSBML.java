@@ -36,12 +36,15 @@ public class DialogReplaceSBML extends EscapableDialog {
 	private String model;
 	private String newModel;
 
+	private JPanel jpCenter;
+	
 	public DialogReplaceSBML(String model, List<String> modelNames) {
 		this.listModelNames = modelNames;
 		this.listModelNames.remove(model);
 		this.listModelNames.remove("Empty cell");
 		this.model = model;
 		this.newModel = null;
+		this.jpCenter = new JPanel();
 
 		this.setLayout(new BorderLayout());
 		
@@ -54,25 +57,24 @@ public class DialogReplaceSBML extends EscapableDialog {
 		String[] array = this.listModelNames.toArray(new String[this.listModelNames.size()]);
 		this.jcbModelName = new JComboBox(array);
 		
-		this.jcbModelName.addKeyListener(new KeyListener() {
-
+		
+		jcbModelName.addActionListener(new ActionListener() {
 			@Override
-			public void keyReleased(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
+			public void actionPerformed(ActionEvent e) {
+				@SuppressWarnings("unchecked")
+				String selectedModel = (String) jcbModelName.getSelectedItem();
+				System.out.println(selectedModel);
+				upateEpitheliumList(selectedModel);
 			}
 		});
+
 		northPanel.add(this.jcbModelName);
 		this.add(northPanel,BorderLayout.NORTH);
 		
 		//Center Panel
-		JPanel center = getCenterpanel();
+		this.jpCenter.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		
 		
 		// Bottom Panel
 		JPanel bottom = new JPanel(new FlowLayout());
@@ -124,10 +126,23 @@ public class DialogReplaceSBML extends EscapableDialog {
 	public String getModelName() {
 		return this.jcbModelName.getName();
 	}
+	
+	public List<String> getEpitheliumList() {
+		
+		return null;
+	}
 
 	@Override
 	public void focusComponentOnLoad() {
 		// TODO Auto-generated method stub
+		
+	}
+	
+	private void upateEpitheliumList(String model){
+		this.jpCenter.removeAll();
+	
+	
+	
 		
 	}
 }

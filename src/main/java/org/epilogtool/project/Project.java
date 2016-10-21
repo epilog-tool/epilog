@@ -2,7 +2,9 @@ package org.epilogtool.project;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
@@ -133,4 +135,21 @@ public class Project {
 	public ProjectFeatures getProjectFeatures() {
 		return this.projectFeatures;
 	}
+	
+	public Map<String,List<Epithelium>>  getHashModel2EpitheliumList(){
+		Map<String,List<Epithelium>> model2EpitheliumList = new HashMap<String, List<Epithelium>>();
+		
+		for (String model: this.getModelNames()){
+			List<Epithelium> epiList = new ArrayList<Epithelium>() ;
+			for (Epithelium epi: this.getEpitheliumList()){
+				if (epi.hasModel(this.getModel(model))){
+					epiList.add(epi);
+				}
+			}
+			model2EpitheliumList.put(model, epiList);
+			System.out.println(model+' '+epiList);
+			}
+		return model2EpitheliumList;
+	}
+	
 }

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
@@ -644,6 +645,7 @@ public class EpiGUI extends JFrame {
 	
 	public void replaceSBML() {
 		String model = this.projDescPanel.getSelected();
+		this.project.getHashModel2EpitheliumList();
 		if (model != null) {
 			// TODO:
 			DialogReplaceSBML dialogPanel = new DialogReplaceSBML(model,
@@ -659,6 +661,7 @@ public class EpiGUI extends JFrame {
 			boolean bChanged = false;
 				// Update Model name
 			String newModel = dialogPanel.getModelName();
+
 			
 		} else {
 			JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning",
