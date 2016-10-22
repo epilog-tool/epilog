@@ -672,6 +672,8 @@ public class EpiGUI extends JFrame {
 				//TODO: Check IntegrationFunction
 				//TODO: Check Perturbations
 				//TODO: Check ModelUpdating
+				
+				this.project.replaceModel(model, newModel, selectedEpiList);
 			}
 			
 		} else {

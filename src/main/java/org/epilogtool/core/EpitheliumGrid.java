@@ -166,6 +166,11 @@ public class EpitheliumGrid {
 		this.topology.setRollOver(r);
 	}
 
+	/** Sets a given cell(x,y) with model m
+	 * @param x
+	 * @param y
+	 * @param m
+	 */
 	public void setModel(int x, int y, LogicalModel m) {
 		Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x, y);
 		if (this.gridEpiCell[x][y].getModel() != m) {

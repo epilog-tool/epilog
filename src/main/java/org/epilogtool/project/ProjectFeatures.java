@@ -223,5 +223,7 @@ public class ProjectFeatures {
 		this.model2String.put(this.string2Model.get(model), newModel);
 		this.string2Model.put(newModel, string2Model.remove(model));
 		
+	
+		
 	}
 }

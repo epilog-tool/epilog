@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.epilogtool.core.Epithelium;
+import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.topology.RollOver;
 
 public class Project {
@@ -154,4 +155,44 @@ public class Project {
 		return model2EpitheliumList;
 	}
 	
+	/** Given an EpitheliumName (String) return the Epithelium
+	 * @param epiName
+	 * @return Epithelium
+	 */
+	private Epithelium getEpitheliumFromName (String epiName){
+		
+		for (Epithelium epi: this.getEpitheliumList()){
+			if (epi.getName()==epiName){
+				return epi;
+			}
+		}
+		return null;
+	}
+	
+	public void replaceModel(String oldModelString, String newModelString, List<String> epiList){
+		
+		LogicalModel oldModel = this.getModel(oldModelString);
+		LogicalModel newModel = this.getModel(newModelString);
+		
+		for (String epi: epiList){
+			Epithelium epithelium = getEpitheliumFromName(epi);
+			EpitheliumGrid grid = epithelium.getEpitheliumGrid();
+			
+			//TODO: START REPLACING
+		
+			for (int y = 0; y < epithelium.getY(); y++) {
+				for (int x = 0; x < epithelium.getX(); x++) {
+					LogicalModel cellModel =grid.getModel(x, y);
+//					System.out.println(cellModel.toString() +" "+oldModel.toString() );
+					if (cellModel==oldModel){
+						System.out.println(cellModel.toString() +" "+oldModel.toString() );
+					grid.setModel(x, y, newModel);
+					}
+					
+				}
+				
+			}
+			
+	
+		}}
 }
