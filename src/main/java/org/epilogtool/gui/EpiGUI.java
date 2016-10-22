@@ -663,11 +663,11 @@ public class EpiGUI extends JFrame {
 			boolean bChanged = false;
 				// Update Model name
 			String newModel = dialogPanel.getModelName();
-			List<Epithelium> epilist = dialogPanel.getEpiList();
+			List<String> selectedEpiList = dialogPanel.getEpiList();
+	
 			
 			if (dialogPanel.isDefined()){
-				System.out.println("the model " + model + " is to be replaced with " + newModel);
-				//TODO: Check EpiList
+
 				//TODO: Check Initialconditions
 				//TODO: Check IntegrationFunction
 				//TODO: Check Perturbations

@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -30,7 +31,7 @@ public class DialogReplaceSBML extends EscapableDialog {
 	private JButton buttonOK;
 	private String model;				        // Model to be replaced
 	private  List<Epithelium> epiList;         // Epithelium list that contain the model to be replaced
-	private  List<Epithelium> selectedEpiList; //Epithelium List selected y the user to modify
+	private  List<String> selectedEpiList; //Epithelium List selected y the user to modify
 
 	
 	/**
@@ -48,7 +49,7 @@ public class DialogReplaceSBML extends EscapableDialog {
 		this.listModelNames.remove("Empty cell");
 		this.model = model;
 		this.epiList = epiList;
-		this.epiList = selectedEpiList;
+		this.selectedEpiList = new ArrayList<String>();
 
 		this.setLayout(new BorderLayout());
 		
@@ -85,13 +86,27 @@ public class DialogReplaceSBML extends EscapableDialog {
 		
 			for (Epithelium epi: epiList ){
 				c.gridy = c.gridy+1;
-				JCheckBox jcheckb = new JCheckBox(epi.getName(), false);
+				final String name = epi.getName();
+				JCheckBox jcheckb = new JCheckBox(name, false);
+				jcheckb.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						JCheckBox jcb = (JCheckBox) e.getSource();
+						if (jcb.isSelected()) {
+							addEpithelium2SelectedList(name);
+						} else {
+							removeEpithelium2SelectedList(name);
+						}
+					}
+
+				});
 				
 				jpCenter.add(jcheckb, c);
 			}
 		
 		this.add(jpCenter);
 	
+		
 		
 		
 		
@@ -132,10 +147,21 @@ public class DialogReplaceSBML extends EscapableDialog {
 		return (String) jcbModelName.getSelectedItem();
 	}
 	
-	public List<Epithelium> getEpiList() {
+	public List<String> getEpiList() {
 		return this.selectedEpiList;
 	}
 	
+	
+	private void addEpithelium2SelectedList(String name) {
+		if (!this.selectedEpiList.contains(name)){
+			this.selectedEpiList.add(name);
+		}
+	}
+
+	private void removeEpithelium2SelectedList(String name) {
+		if (this.selectedEpiList.contains(name))
+			this.selectedEpiList.remove(name);
+	}
 
 	@Override
 	public void focusComponentOnLoad() {
