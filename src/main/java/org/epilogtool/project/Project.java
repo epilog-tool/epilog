@@ -8,8 +8,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.colomoto.logicalmodel.NodeInfo;
+import org.colomoto.logicalmodel.tool.simulation.updater.PriorityClasses;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
+import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.core.topology.RollOver;
 
 public class Project {
@@ -179,24 +182,73 @@ public class Project {
 			Epithelium epithelium = getEpitheliumFromName(epi);
 			Epithelium oldEpi = cloneEpithelium(epithelium);
 			EpitheliumGrid grid = epithelium.getEpitheliumGrid();
+			List<String> commonNodeNames = new ArrayList<String>();
 			
 			//TODO: START REPLACING
 		
+			
 			for (int y = 0; y < epithelium.getY(); y++) {
 				for (int x = 0; x < epithelium.getX(); x++) {
 					LogicalModel cellModel =grid.getModel(x, y);
 					if (cellModel==oldModel){
-						grid.setModel(x, y, newModel);
-						for (NodeInfo comp: cellModel.getNodeOrder()){
+						grid.setModel(x, y, newModel); //ReplaceModel
+
+					}}}
+		
+			for (NodeInfo node: newModel.getNodeOrder()){
+				epithelium.initPriorityClasses(newModel);
+				
+				for (NodeInfo oldNode: oldModel.getNodeOrder()){
+					if (node.toString().equals(oldNode.toString())){ //there is a node with the same name n both epitheliums
+						//TODO:If there is a node with the same name n both epitheliums
+						if (node.isInput() && oldNode.isInput()){//The shared node is an input in both epitheliums
+							if (oldEpi.isIntegrationComponent(oldNode)){//If the input is a integration Input it remais as an integration input
+								//TODO: set epi.integration function, but check if the regulators are there
+							}
+							else{
+								//TODO: Set node as env input and set initial condition
+							}
+						}
+						else if(!node.isInput() && oldNode.isInput()){
+							if (!oldEpi.isIntegrationComponent(oldNode)){
+								//TODO: set initial conditions of new internal comp (node) with value of the the env input (oldNode)
+							}
+						}
+						else if(node.isInput() && !oldNode.isInput()){
+								//TODO: set initial conditions of new env comp (node-by default it starts as env) with value of the intiial conditions of the internal comp (oldNode)
+							}
+						else if(!node.isInput() && !oldNode.isInput()){
+							//TODO: set initial conditions
+							//TODO: If there is a perturbation associated with this node then set it on the new epithelium
+							//TODO: Set priorities for the common internal nodes
+							commonNodeNames.add(node.toString());
+							
+							
+
+						}
 							
 						}
-					
+				
 					}
-					
+				}
+			
+			//TODO: check of the remaining models in the epithelium if the regulator is
+			
+			ModelPriorityClasses oldModelPriorityClasses = oldEpi.getPriorityClasses(oldModel);
+			PriorityClasses oldPriorityClasses = oldModelPriorityClasses.getPriorities();
+			
+
+			for (int i = 0; i<oldPriorityClasses.size();i++){
+				for (String nodeName: oldModelPriorityClasses.getClassVars(i)){
+					epithelium.getPriorityClasses(newModel).
 				}
 				
 			}
 			
+			this.removeEpithelium(oldEpi);
+			epithelium.update();
+			}
+			
 	
 		}}
-}
+
