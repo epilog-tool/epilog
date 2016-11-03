@@ -178,9 +178,7 @@ public class Epithelium {
 	}
 
 	public void setPriorityClasses(LogicalModel m, String pcs) {
-		System.out.println(pcs);
 		ModelPriorityClasses mpc = new ModelPriorityClasses(m);
-		mpc.setPriorities(pcs);
 		this.priorities.addModelPriorityClasses(mpc);
 	}
 
@@ -274,26 +272,18 @@ public class Epithelium {
 	 */
 	public void replacePriorities(Epithelium oldEpi, LogicalModel oldModel, LogicalModel newModel, List<String> commonNodeNames) {
 		// TODO Auto-generated method stub
-		ModelPriorityClasses oldModelPriorityClasses = oldEpi.getPriorityClasses(oldModel);
-		PriorityClasses oldPriorityClasses = oldModelPriorityClasses.getPriorities();
+		ModelPriorityClasses oldMpc = oldEpi.getPriorityClasses(oldModel);
 		
+		String sPCs = "";
+		for (int idxPC = 0; idxPC < oldMpc.size(); idxPC++) {
+			if (!sPCs.isEmpty())
+				sPCs += ":";
+			List<String> pcVars = oldMpc.getClassVars(idxPC);
+			sPCs += join(pcVars, ",");
+			System.out.println(sPCs);
 
-		for (int i = 0; i<oldPriorityClasses.size();i++){
-			List<String> prts = new ArrayList<String>();
-			
-			
-//			this.getPriorityClasses(newModel).setPriorities(pcs);
-//			this.priorities.addModelPriorityClasses(mpc);
-			for (String nodeName: oldModelPriorityClasses.getClassVars(i)){
-				//TODO: Deal with + and -
-				if (commonNodeNames.contains(nodeName)){
-					prts.add(nodeName);
-				}
-			}
-			this.getPriorityClasses(newModel).incPriorities(i, prts);
-			System.out.println(prts);
+
 		}
-		
 	}
 
 	/**
@@ -354,6 +344,16 @@ public class Epithelium {
 		//TODO: check of the remaining models in the epithelium if the regulator is
 		this.replacePriorities(oldEpi,oldModel,newModel,commonNodeNames);
 		
+	}
+	
+	private static String join(List<String> list, String sep) {
+		String s = "";
+		for (int i = 0; i < list.size(); i++) {
+			if (i > 0)
+				s += sep;
+			s += list.get(i);
+		}
+		return s;
 	}
 	
 }
