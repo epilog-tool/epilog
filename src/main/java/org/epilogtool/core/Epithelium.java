@@ -180,6 +180,7 @@ public class Epithelium {
 	public void setPriorityClasses(LogicalModel m, String pcs) {
 		ModelPriorityClasses mpc = new ModelPriorityClasses(m);
 		this.priorities.addModelPriorityClasses(mpc);
+		System.out.println(pcs);
 	}
 
 	public void setPriorityClasses(ModelPriorityClasses mpc) {
@@ -274,6 +275,7 @@ public class Epithelium {
 		// TODO Auto-generated method stub
 		ModelPriorityClasses oldMpc = oldEpi.getPriorityClasses(oldModel);
 		
+
 		String sPCs = "";
 		for (int idxPC = 0; idxPC < oldMpc.size(); idxPC++) {
 			if (!sPCs.isEmpty())
