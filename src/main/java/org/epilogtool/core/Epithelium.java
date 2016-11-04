@@ -11,7 +11,6 @@ import java.util.Set;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
-import org.colomoto.logicalmodel.tool.simulation.updater.PriorityClasses;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.project.ComponentPair;
@@ -179,8 +178,8 @@ public class Epithelium {
 
 	public void setPriorityClasses(LogicalModel m, String pcs) {
 		ModelPriorityClasses mpc = new ModelPriorityClasses(m);
+		mpc.setPriorities(pcs);
 		this.priorities.addModelPriorityClasses(mpc);
-		System.out.println(pcs);
 	}
 
 	public void setPriorityClasses(ModelPriorityClasses mpc) {
@@ -261,101 +260,13 @@ public class Epithelium {
 				&& this.perturbations.equals(otherEpi.perturbations) && this.updateSchemeInter
 					.equals(otherEpi.getUpdateSchemeInter()));
 	}
-	
-	
-	
-	/** 
-	 * @param epithelium
-	 * @param oldEpi
-	 * @param oldModel
-	 * @param newModel
-	 * @param commonNodeNames
-	 */
-	public void replacePriorities(Epithelium oldEpi, LogicalModel oldModel, LogicalModel newModel, List<String> commonNodeNames) {
-		// TODO Auto-generated method stub
-		ModelPriorityClasses oldMpc = oldEpi.getPriorityClasses(oldModel);
-		
 
-		String sPCs = "";
-		for (int idxPC = 0; idxPC < oldMpc.size(); idxPC++) {
-			if (!sPCs.isEmpty())
-				sPCs += ":";
-			List<String> pcVars = oldMpc.getClassVars(idxPC);
-			sPCs += join(pcVars, ",");
-			System.out.println(sPCs);
-
-
-		}
-	}
-
-	/**
-	 * @param oldModel
-	 * @param newModel
-	 * @param oldEpi
-	 */
 	public void replacemodel(LogicalModel oldModel, LogicalModel newModel, Epithelium oldEpi) {
 		// TODO Auto-generated method stub
 		
-		
-		EpitheliumGrid grid = this.getEpitheliumGrid();
-		List<String> commonNodeNames = new ArrayList<String>();
-		
-		//TODO: START REPLACING
-	
-		
-		for (int y = 0; y < this.getY(); y++) {
-			for (int x = 0; x < this.getX(); x++) {
-				LogicalModel cellModel =grid.getModel(x, y);
-				if (cellModel==oldModel){
-					grid.setModel(x, y, newModel); //ReplaceModel
-
-				}}}
-		
-		for (NodeInfo node: newModel.getNodeOrder()){
-			this.initPriorityClasses(newModel);
-			
-			for (NodeInfo oldNode: oldModel.getNodeOrder()){
-				if (node.toString().equals(oldNode.toString())){ //there is a node with the same name n both epitheliums
-					//TODO:If there is a node with the same name n both epitheliums
-					if (node.isInput() && oldNode.isInput()){//The shared node is an input in both epitheliums
-						if (oldEpi.isIntegrationComponent(oldNode)){//If the input is a integration Input it remais as an integration input
-							//TODO: set epi.integration function, but check if the regulators are there
-						}
-						else{
-							//TODO: Set node as env input and set initial condition
-						}
-					}
-					else if(!node.isInput() && oldNode.isInput()){
-						if (!oldEpi.isIntegrationComponent(oldNode)){
-							//TODO: set initial conditions of new internal comp (node) with value of the the env input (oldNode)
-						}
-					}
-					else if(node.isInput() && !oldNode.isInput()){
-							//TODO: set initial conditions of new env comp (node-by default it starts as env) with value of the intiial conditions of the internal comp (oldNode)
-						}
-					else if(!node.isInput() && !oldNode.isInput()){
-						//TODO: set initial conditions
-						//TODO: If there is a perturbation associated with this node then set it on the new epithelium
-						//TODO: Set priorities for the common internal nodes
-						commonNodeNames.add(node.toString());
-					}
-					}
-				}
-			}
-		
-		//TODO: check of the remaining models in the epithelium if the regulator is
-		this.replacePriorities(oldEpi,oldModel,newModel,commonNodeNames);
-		
 	}
 	
-	private static String join(List<String> list, String sep) {
-		String s = "";
-		for (int i = 0; i < list.size(); i++) {
-			if (i > 0)
-				s += sep;
-			s += list.get(i);
-		}
-		return s;
-	}
+	
+	
 	
 }
