@@ -232,7 +232,7 @@ public class Parser {
 				saTmp = line.split("\\s+");
 				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
 				currEpi.setPriorityClasses(m, saTmp[2]);
-				System.out.println(saTmp[2]);
+//				System.out.println(saTmp[2]);
 			}
 			// Model All Perturbations
 			if (line.startsWith("PT")) {
