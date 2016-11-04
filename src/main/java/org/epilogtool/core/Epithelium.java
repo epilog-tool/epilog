@@ -263,6 +263,71 @@ public class Epithelium {
 	
 	
 	
+
+	
+	
+	/**
+	 * @param oldModel
+	 * @param newModel
+	 * @param oldEpi
+	 */
+	public void replacemodel(LogicalModel oldModel, LogicalModel newModel, Epithelium oldEpi) {
+		// TODO Auto-generated method stub
+		
+		EpitheliumGrid grid = this.getEpitheliumGrid();
+		List<String> commonNodeNames = new ArrayList<String>();
+		
+		//TODO: START REPLACING
+		
+		for (int y = 0; y < this.getY(); y++) {
+			for (int x = 0; x < this.getX(); x++) {
+				LogicalModel cellModel =grid.getModel(x, y);
+				if (cellModel==oldModel){
+					grid.setModel(x, y, newModel); //ReplaceModel
+
+				}}}
+		
+		for (NodeInfo node: newModel.getNodeOrder()){
+			this.initPriorityClasses(newModel);
+			
+			
+			//Check multivalued
+			for (NodeInfo oldNode: oldModel.getNodeOrder()){
+				if (node.toString().equals(oldNode.toString())){ //there is a node with the same name n both epitheliums
+					//TODO:If there is a node with the same name n both epitheliums
+					if (node.isInput() && oldNode.isInput()){//The shared node is an input in both epitheliums
+						if (oldEpi.isIntegrationComponent(oldNode)){//If the input is a integration Input it remais as an integration input
+							//TODO: set epi.integration function, but check if the regulators are there
+						}
+						else{
+							//TODO: Set node as env input and set initial condition
+						}
+					}
+					else if(!node.isInput() && oldNode.isInput()){
+						if (!oldEpi.isIntegrationComponent(oldNode)){
+							//TODO: set initial conditions of new internal comp (node) with value of the the env input (oldNode)
+						}
+					}
+					else if(node.isInput() && !oldNode.isInput()){
+							//TODO: set initial conditions of new env comp (node-by default it starts as env) with value of the intiial conditions of the internal comp (oldNode)
+						}
+					else if(!node.isInput() && !oldNode.isInput()){
+						//TODO: set initial conditions
+						//TODO: If there is a perturbation associated with this node then set it on the new epithelium
+						//TODO: Set priorities for the common internal nodes
+						commonNodeNames.add(node.toString());
+					}
+					}
+				}
+			}
+		
+		//TODO: check of the remaining models in the epithelium if the regulator is
+		
+		this.replacePriorities(oldEpi,oldModel,newModel,commonNodeNames);
+		this.replacePerturbations(oldEpi,oldModel,newModel,commonNodeNames);
+	}
+
+	
 	/** 
 	 * @param epithelium
 	 * @param oldEpi
@@ -295,63 +360,29 @@ public class Epithelium {
 		this.setPriorityClasses(newModel, sPCs);}
 	
 	
-	/**
-	 * @param oldModel
-	 * @param newModel
-	 * @param oldEpi
-	 */
-	public void replacemodel(LogicalModel oldModel, LogicalModel newModel, Epithelium oldEpi) {
+	private void replacePerturbations(Epithelium oldEpi, LogicalModel oldModel, LogicalModel newModel,
+			List<String> commonNodeNames) {
 		// TODO Auto-generated method stub
+		ModelPerturbations oldPerturbations = this.perturbations.getModelPerturbations(oldModel);
 		
-		EpitheliumGrid grid = this.getEpitheliumGrid();
-		List<String> commonNodeNames = new ArrayList<String>();
-		
-		//TODO: START REPLACING
-		
-		for (int y = 0; y < this.getY(); y++) {
-			for (int x = 0; x < this.getX(); x++) {
-				LogicalModel cellModel =grid.getModel(x, y);
-				if (cellModel==oldModel){
-					grid.setModel(x, y, newModel); //ReplaceModel
+		if (oldPerturbations!=null){
+			for (String newComponent:commonNodeNames ){
+				NodeInfo newNode = this.projectFeatures.getNodeInfo(newComponent, newModel);
+				boolean test = false;
+			for (AbstractPerturbation p :oldPerturbations.getAllPerturbations()){
+				if (p.affectsNode(newNode)){
+					test = true;
 
-				}}}
-		
-		for (NodeInfo node: newModel.getNodeOrder()){
-			this.initPriorityClasses(newModel);
 			
-			for (NodeInfo oldNode: oldModel.getNodeOrder()){
-				if (node.toString().equals(oldNode.toString())){ //there is a node with the same name n both epitheliums
-					//TODO:If there is a node with the same name n both epitheliums
-					if (node.isInput() && oldNode.isInput()){//The shared node is an input in both epitheliums
-						if (oldEpi.isIntegrationComponent(oldNode)){//If the input is a integration Input it remais as an integration input
-							//TODO: set epi.integration function, but check if the regulators are there
-						}
-						else{
-							//TODO: Set node as env input and set initial condition
-						}
-					}
-					else if(!node.isInput() && oldNode.isInput()){
-						if (!oldEpi.isIntegrationComponent(oldNode)){
-							//TODO: set initial conditions of new internal comp (node) with value of the the env input (oldNode)
-						}
-					}
-					else if(node.isInput() && !oldNode.isInput()){
-							//TODO: set initial conditions of new env comp (node-by default it starts as env) with value of the intiial conditions of the internal comp (oldNode)
-						}
-					else if(!node.isInput() && !oldNode.isInput()){
-						//TODO: set initial conditions
-						//TODO: If there is a perturbation associated with this node then set it on the new epithelium
-						//TODO: Set priorities for the common internal nodes
-						commonNodeNames.add(node.toString());
-					}
-					}
-				}
 			}
-		
-		//TODO: check of the remaining models in the epithelium if the regulator is
-		this.replacePriorities(oldEpi,oldModel,newModel,commonNodeNames);
+			}
+			if (test){
+				System.out.println("keep p: " +newComponent);}
+			else{
+				System.out.println("remove p: "+ newComponent);}
+		}}
 	}
-	
+
 	private static String join(List<String> list, String sep) {
 		String s = "";
 		for (int i = 0; i < list.size(); i++) {
