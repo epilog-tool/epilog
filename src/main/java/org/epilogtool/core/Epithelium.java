@@ -11,6 +11,9 @@ import java.util.Set;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
+import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
+import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
+import org.colomoto.logicalmodel.perturbation.RangePerturbation;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.project.ComponentPair;
@@ -364,24 +367,57 @@ public class Epithelium {
 			List<String> commonNodeNames) {
 		// TODO Auto-generated method stub
 		ModelPerturbations oldPerturbations = this.perturbations.getModelPerturbations(oldModel);
-		
-		if (oldPerturbations!=null){
-			for (String newComponent:commonNodeNames ){
-				NodeInfo newNode = this.projectFeatures.getNodeInfo(newComponent, newModel);
-				boolean test = false;
-			for (AbstractPerturbation p :oldPerturbations.getAllPerturbations()){
-				if (p.affectsNode(newNode)){
-					test = true;
+		List<AbstractPerturbation> perturbation = new ArrayList<AbstractPerturbation>();
 
-			
+
+		
+		for (AbstractPerturbation p :oldPerturbations.getAllPerturbations()){
+			List<String> perturbedComponents = new ArrayList<String>();
+			int indexPerturbationShared = 0;
+			for (String pert: p.toString().split(",")){
+				if (commonNodeNames.contains(pert.split(" ")[0].trim())){
+					indexPerturbationShared = ++indexPerturbationShared;}
 			}
-			}
-			if (test){
-				System.out.println("keep p: " +newComponent);}
-			else{
-				System.out.println("remove p: "+ newComponent);}
-		}}
+			if (p.toString().contains(",")){
+				
+					if(indexPerturbationShared==p.toString().split(",").length){
+						perturbation.add(p);
+						this.addPerturbation(newModel, p);
+//						this.getModelPerturbations(newModel).addPerturbation(p);
+//						Color c = oldEpi.getModelPerturbations(oldModel).getPerturbationColor(p);
+//						this.getModelPerturbations(newModel).addPerturbationColor(p, c);
+			}}
+					else{
+						if(indexPerturbationShared==1){
+							perturbation.add(p);
+							this.addPerturbation(newModel, p);
+//							this.getModelPerturbations(newModel).addPerturbation(p);
+//							Color c = oldEpi.getModelPerturbations(oldModel).getPerturbationColor(p);
+//							this.getModelPerturbations(newModel).addPerturbationColor(p, c);
+							System.out.println("Added pert [single]: "+ p );
+							
+					}}}
+
+		
+		//Add perturbation to cell
+		for (int y = 0; y < this.getY(); y++) {
+			for (int x = 0; x < this.getX(); x++) {
+				AbstractPerturbation p = oldEpi.getEpitheliumGrid().getPerturbation(x, y);
+//				System.out.println(p);
+				Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x, y);
+				List<Tuple2D<Integer>> tmpList = new ArrayList<Tuple2D<Integer>>();
+				Color c = oldEpi.getModelPerturbations(oldModel).getPerturbationColor(p);
+				if (p!=null & perturbation.contains(p)){
+					
+					tmpList.add(tmpTuple);
+					this.getEpitheliumGrid().setPerturbation(x, y, p);
+					
+					
+				}this.applyPerturbation(newModel, p, c,tmpList);
+			}}
+		
 	}
+	
 
 	private static String join(List<String> list, String sep) {
 		String s = "";
