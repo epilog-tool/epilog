@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
-import org.epilogtool.core.cellDynamics.CellTrigger;
+import org.epilogtool.core.cellDynamics.CellularEvent;
 import org.epilogtool.project.ComponentPair;
 
 public class EpitheliumCell {
@@ -74,8 +74,8 @@ public class EpitheliumCell {
 		this.logicalCell.setValue(nodeID, value);
 	}
 	
-	public void setCellTrigger(CellTrigger trigger) {
-		this.logicalCell.setCellTrigger(trigger);
+	public void setCellEvent(CellularEvent event) {
+		this.logicalCell.setCellEvent(event);
 	}
 	
 	public void addEnvironmentalInput(ComponentPair cp) {
@@ -124,8 +124,8 @@ public class EpitheliumCell {
 		return this.logicalCell.getNodeValue(nodeID);
 	}
 	
-	public CellTrigger getCellTrigger() {
-		return this.logicalCell.getCellTrigger();
+	public CellularEvent getCellEvent() {
+		return this.logicalCell.getCellEvent();
 	}
 	
 	public Map<ComponentPair, Byte> getCellEnvironment() {

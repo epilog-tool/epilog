@@ -19,7 +19,7 @@ import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
-import org.epilogtool.core.cellDynamics.CellTrigger;
+import org.epilogtool.core.cellDynamics.CellularEvent;
 import org.epilogtool.core.cellDynamics.EpitheliumTopology;
 import org.epilogtool.integration.IntegrationFunctionEvaluation;
 import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationExpression;
@@ -39,7 +39,7 @@ public class Simulation {
 	private boolean hasCycle;
 	// Perturbed models cache - avoids repeatedly computing perturbations at
 	// each step
-	private PriorityUpdater[][] updaterCache;
+	private Map<LogicalModel, Map<AbstractPerturbation, PriorityUpdater>> updaterCache;
 
 	/**
 	 * Initializes the simulation. It is called after creating and epithelium.
@@ -64,47 +64,30 @@ public class Simulation {
 		this.hasCycle = false;
 		this.buildPriorityUpdaterCache();
 	}
-
+	
 	private void buildPriorityUpdaterCache() {
-		this.updaterCache = new PriorityUpdater[this.getCurrentGrid().getX()][this
-				.getCurrentGrid().getY()];
-		Map<LogicalModel, Map<AbstractPerturbation, PriorityUpdater>> tmpMap = new HashMap<LogicalModel, Map<AbstractPerturbation, PriorityUpdater>>();
+		//updaterCache stores the PriorityUpdater to avoid unnecessary computing
+		this.updaterCache = new HashMap<LogicalModel, Map<AbstractPerturbation, PriorityUpdater>>();
 		for (int y = 0; y < this.getCurrentGrid().getY(); y++) {
 			for (int x = 0; x < this.getCurrentGrid().getX(); x++) {
 				if (this.getCurrentGrid().isEmptyCell(x, y)) {
 					continue;
 				}
 				LogicalModel m = this.getCurrentGrid().getModel(x, y);
-				AbstractPerturbation ap = this.getCurrentGrid()
-						.getPerturbation(x, y);
-				if (!tmpMap.containsKey(m))
-					tmpMap.put(
-							m,
-							new HashMap<AbstractPerturbation, PriorityUpdater>());
-				if (!tmpMap.get(m).containsKey(ap)) {
+				AbstractPerturbation ap = this.epithelium.getEpitheliumGrid().getPerturbation(x, y);
+				if (!this.updaterCache.containsKey(m)) {
+					this.updaterCache.put(m, new HashMap<AbstractPerturbation, PriorityUpdater>());
+				}
+				if (!this.updaterCache.get(m).containsKey(ap)) {
 					// Apply model perturbation
 					LogicalModel perturb = (ap == null) ? m : ap.apply(m);
 					// Get Priority classes
 					PriorityClasses pcs = this.epithelium.getPriorityClasses(m)
 							.getPriorities();
 					PriorityUpdater updater = new PriorityUpdater(perturb, pcs);
-					tmpMap.get(m).put(ap, updater);
+					this.updaterCache.get(m).put(ap, updater);
 				}
-				this.updaterCache[x][y] = tmpMap.get(m).get(ap);
 			}
-		}
-	}
-	
-	private void updateDivisionUpdaterCache(EpitheliumGrid workingGrid, List<Tuple2D<Integer>> path) {
-		for (int index = 1; index < path.size(); index ++) {
-			Tuple2D<Integer> originalPos = path.get(index);
-			Tuple2D<Integer> clonedPos = path.get(index-1);
-			LogicalModel m = workingGrid.getModel(originalPos.getX(), originalPos.getY());
-			AbstractPerturbation ap = workingGrid.getPerturbation(originalPos.getX(), originalPos.getY());
-			LogicalModel perturb = (ap == null) ? m : ap.apply(m);
-			PriorityClasses pcs = this.epithelium.getPriorityClasses(m).getPriorities();
-			PriorityUpdater updater = new PriorityUpdater(perturb, pcs);
-			this.updaterCache[clonedPos.getX()][clonedPos.getY()] = updater;
 		}
 	}
 
@@ -133,7 +116,7 @@ public class Simulation {
 		// And builds the default next grid (= current grid)
 		HashMap<Tuple2D<Integer>, byte[]> cells2update = new HashMap<Tuple2D<Integer>, byte[]>();
 		List<Tuple2D<Integer>> keys = new ArrayList<Tuple2D<Integer>>();
-		List<Tuple2D<Integer>> cells2divide = new ArrayList<Tuple2D<Integer>>();
+		List<Tuple2D<Integer>> cells2Divide = new ArrayList<Tuple2D<Integer>>();
 		
 		for (int y = 0; y < currGrid.getY(); y++) {
 			for (int x = 0; x < currGrid.getX(); x++) {
@@ -154,7 +137,6 @@ public class Simulation {
 				}
 			}
 		}
-		
 
 		// Inter-cellular alpha-asynchronism
 		//Update Logical Model States
@@ -171,10 +153,10 @@ public class Simulation {
 				Tuple2D<Integer> key = keys.get(0);
 				keys.remove(key);
 				nextGrid.setCellState(key.getX(), key.getY(),cells2update.get(key));
-				CellTrigger nextCellTrigger = this.epithelium.getEpitheliumTriggerManager()
-						.getCellTrigger(currGrid
+				CellularEvent nextCellEvent = this.epithelium.getTopologyEventManager()
+						.getCellularEvent(currGrid
 								.getModel(key.getX(), key.getY()), cells2update.get(key));
-				nextGrid.setCellTrigger(key.getX(), key.getY(), nextCellTrigger);
+				nextGrid.setCellEvent(key.getX(), key.getY(), nextCellEvent);
 				atleastone = true;
 			}
 			if (!atleastone && !keys.isEmpty()) {
@@ -182,10 +164,10 @@ public class Simulation {
 				Tuple2D<Integer> key = keys.get(0);
 				keys.remove(key);
 				nextGrid.setCellState(key.getX(), key.getY(), cells2update.get(key));
-				CellTrigger nextCellTrigger = this.epithelium.getEpitheliumTriggerManager()
-						.getCellTrigger(currGrid
-								.getModel(key.getX(), key.getY()), cells2update.get(key));
-				nextGrid.setCellTrigger(key.getX(), key.getY(), nextCellTrigger);
+				CellularEvent nextCellEvent = this.epithelium.getTopologyEventManager()
+						.getCellularEvent(currGrid.getModel(
+								key.getX(), key.getY()), cells2update.get(key));
+				nextGrid.setCellEvent(key.getX(), key.getY(), nextCellEvent);
 			}
 		} 
 		
@@ -202,38 +184,22 @@ public class Simulation {
 				if (currGrid.isEmptyCell(x, y)) continue;
 				//Skips cells not considered in the alpha-asynchronous cases
 				if (keys.contains(new Tuple2D<Integer>(x, y))) continue;
-				if (currGrid.getCellTrigger(x, y).equals(CellTrigger.DEFAULT) ||
-						nextGrid.getCellTrigger(x, y).equals(CellTrigger.DEFAULT)) {
+				if (currGrid.getCellEvent(x, y).equals(CellularEvent.DEFAULT) ||
+						nextGrid.getCellEvent(x, y).equals(CellularEvent.DEFAULT)) {
 					continue;
 				}
-				cells2divide.add(new Tuple2D<Integer>(x, y));
+				cells2Divide.add(new Tuple2D<Integer>(x, y));
 				popUpdates = true;
 			}
 		}
 		
 		if (popUpdates) {
-			Collections.shuffle(cells2divide, RandomFactory.getInstance().getGenerator());
-			int cells2divideSize = cells2divide.size();
-			while (emptyModelNumber > 0) {
-				Tuple2D<Integer> currPosition = cells2divide.get(0);
-				cells2divide.remove(currPosition);
-				List<Tuple2D<Integer>> path = this.epiTopology.divisionPath(currPosition.getX(), currPosition.getY());
-				this.updateDivisionUpdaterCache(nextGrid, path);
-				for (int index = 1; index < path.size(); index ++) {
-					if (cells2divide.contains(path.get(index))) {
-						cells2divide.remove(path.get(index).clone());
-						cells2divide.add(path.get(index-1).clone());
-					}
-				}
-				Tuple2D<Integer> motherCell = path.get(path.size()-1).clone();
-				Tuple2D<Integer> daughterCell = path.get(path.size()-2).clone();
-				Tuple2D<Integer> shiftedCell = path.get(0).clone();
-				nextGrid.shiftCells(path);
-				this.epiTopology.updatePopulationTopology(shiftedCell, (byte) 1);
-				nextGrid.setCell2Naive(motherCell.getX(), motherCell.getY());
-				nextGrid.setCell2Naive(daughterCell.getX(), daughterCell.getY());
+			Collections.shuffle(cells2Divide, RandomFactory.getInstance().getGenerator());
+			int totalDivisions = (int) (((1-alphaProb)*cells2Divide.size()<1)? 1 : (1-alphaProb)*cells2Divide.size());
+			cells2Divide = cells2Divide.subList(0, totalDivisions);
+			while (emptyModelNumber > 0 && cells2Divide.size()>0) {
+				this.divideCell(nextGrid, cells2Divide);
 				emptyModelNumber -=1;
-				if (cells2divide.size() <= (1-alphaProb)*cells2divideSize) break;
 			}
 		}
 		this.gridHistory.add(nextGrid);
@@ -254,8 +220,9 @@ public class Simulation {
 			IntegrationFunctionEvaluation evaluator,
 			Set<ComponentPair> sIntegComponentPairs) {
 		byte[] currState = currGrid.getCellState(x, y).clone();
-		PriorityUpdater updater = this.updaterCache[x][y];
 		LogicalModel m = currGrid.getModel(x, y);
+		AbstractPerturbation ap = currGrid.getPerturbation(x, y);
+		PriorityUpdater updater = this.updaterCache.get(m).get(ap);
 
 		// 2. Update integration components
 		for (NodeInfo node : m.getNodeOrder()) {
@@ -282,6 +249,31 @@ public class Simulation {
 			// throw new Exception("Argh");
 		}
 		return succ.get(0);
+	}
+	
+	private void divideCell(EpitheliumGrid nextGrid, List<Tuple2D<Integer>> cells2Divide) {
+		Tuple2D<Integer> cell2Divide = cells2Divide.get(0);
+		cells2Divide.remove(0);
+		//byte[] motherState = nextGrid.getCellState(cell2Divide.getX(), cell2Divide.getY());
+		List<Tuple2D<Integer>> path = this.epiTopology.divisionPath(cell2Divide);
+		if (path.size()<2 ) {
+			System.out.println("There was an error, path size is " + path.size());
+			for (Tuple2D<Integer> pos : path) {
+				System.out.println("( " + (pos.getX()+1) + ", " + (pos.getY()+1) + ")");
+				return;
+			}
+		}
+		for (int index = 1; index < path.size(); index ++) {
+			if (cells2Divide.contains(path.get(index))) {
+				cells2Divide.remove(path.get(index).clone());
+				cells2Divide.add(path.get(index-1).clone());
+			}
+		}
+		Tuple2D<Integer> motherPosition = path.get(path.size()-1).clone();
+		Tuple2D<Integer> daughterPosition = path.get(path.size()-2).clone();
+		nextGrid.shiftCells(path);
+		nextGrid.setCell2Naive(motherPosition.getX(), motherPosition.getY());
+		nextGrid.setCell2Naive(daughterPosition.getX(), daughterPosition.getY());
 	}
 
 	public boolean isStableAt(int i) {
@@ -316,7 +308,6 @@ public class Simulation {
 	private EpitheliumGrid getNeighboursGrid() {
 		// Creates an epithelium which is only visited to 'see' neighbours and
 		// their states
-
 		EpitheliumGrid neighbourEpi = this.getCurrentGrid().clone();
 
 		Map<ComponentPair, Float> mSigmaAsync = this.epithelium

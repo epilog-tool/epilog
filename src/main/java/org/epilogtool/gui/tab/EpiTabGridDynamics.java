@@ -27,9 +27,9 @@ import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.epilogtool.core.Epithelium;
-import org.epilogtool.core.cellDynamics.CellTrigger;
-import org.epilogtool.core.cellDynamics.EpitheliumDynamics;
-import org.epilogtool.core.cellDynamics.TriggerPattern;
+import org.epilogtool.core.cellDynamics.CellularEvent;
+import org.epilogtool.core.cellDynamics.TopologyEventManager;
+import org.epilogtool.core.cellDynamics.ModelPattern;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
 import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
 import org.epilogtool.gui.widgets.JComboWideBox;
@@ -40,7 +40,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 	private static final long serialVersionUID = 4613661342531014915L;
 	private final int JTF_WIDTH = 30;
 	
-	private EpitheliumDynamics epiTriggerManager;
+	private TopologyEventManager epiTriggerManager;
 	private String activeModel;
 	private String triggerType;
 	private JPanel jpTop;
@@ -61,7 +61,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 	@Override
 	public void initialize() {
 		
-		this.epiTriggerManager = this.epithelium.getEpitheliumTriggerManager().clone();
+		this.epiTriggerManager = this.epithelium.getTopologyEventManager().clone();
 		
 		this.center.setLayout(new BorderLayout());
 		
@@ -159,9 +159,9 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 		JPanel jpPatternPanel = new JPanel(new GridBagLayout());
 		this.jpRBottom.add(jpPatternPanel);
 		
-		List<TriggerPattern> patternList = this.epiTriggerManager
-		.getTriggerManager(m)
-		.getTriggerPatterns(CellTrigger.string2CellTrigger(this.triggerType));
+		List<ModelPattern> patternList = this.epiTriggerManager
+		.getModelManager(m)
+		.getModelEventPatterns(CellularEvent.string2Event(this.triggerType));
 		GridBagConstraints gbc = new GridBagConstraints();
 		for (int i = 0; i < patternList.size(); i ++) {
 			gbc.gridy = i;
@@ -210,27 +210,27 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 	
 	private void setPatternExpression(int i, String expression) {
 		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
-		CellTrigger trigger = CellTrigger.string2CellTrigger(this.triggerType);
-		this.epiTriggerManager.getTriggerManager(m).getTriggerPatterns(trigger).get(i).setPatternExpression(expression, m);
+		CellularEvent trigger = CellularEvent.string2Event(this.triggerType);
+		this.epiTriggerManager.getModelManager(m).getModelEventPatterns(trigger).get(i).setPatternExpression(expression);
 	}
 	
 	private void addPattern() {
 		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
-		CellTrigger trigger = CellTrigger.string2CellTrigger(this.triggerType);
-		this.epiTriggerManager.getTriggerManager(m).getTriggerPatterns(trigger).add(new TriggerPattern());
+		CellularEvent trigger = CellularEvent.string2Event(this.triggerType);
+		this.epiTriggerManager.getModelManager(m).getModelEventPatterns(trigger).add(new ModelPattern());
 		this.updateModelDynamicsPanel();
 	}
 	
 	private void removePattern(int i) {
 		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
-		CellTrigger trigger = CellTrigger.string2CellTrigger(this.triggerType);
-		this.epiTriggerManager.getTriggerManager(m).getTriggerPatterns(trigger).remove(i);
+		CellularEvent trigger = CellularEvent.string2Event(this.triggerType);
+		this.epiTriggerManager.getModelManager(m).getModelEventPatterns(trigger).remove(i);
 		this.updateModelDynamicsPanel();
 	}
 
 	@Override
 	protected void buttonReset() {
-		this.epiTriggerManager = this.epithelium.getEpitheliumTriggerManager().clone();
+		this.epiTriggerManager = this.epithelium.getTopologyEventManager().clone();
 		this.updateModelDynamicsPanel();
 		this.getParent().repaint();
 		
@@ -239,14 +239,14 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 	@Override
 	protected void buttonAccept() {
 		for (LogicalModel m : this.epiTriggerManager.getModelSet()) {
-			List<TriggerPattern> tmpList = new ArrayList<TriggerPattern>();
-			for (CellTrigger trigger : this.epiTriggerManager.getTriggerManager(m).getCellTriggerSet()) {
-				if (this.epiTriggerManager.getTriggerManager(m).getTriggerPatterns(trigger)
-						.equals(this.epithelium.getEpitheliumTriggerManager().getTriggerManager(m).getTriggerPatterns(trigger))) {
-					tmpList.addAll(this.epiTriggerManager.getTriggerManager(m).getTriggerPatterns(trigger));
+			List<ModelPattern> tmpList = new ArrayList<ModelPattern>();
+			for (CellularEvent trigger : this.epiTriggerManager.getModelManager(m).getCellularEventSet()) {
+				if (this.epiTriggerManager.getModelManager(m).getModelEventPatterns(trigger)
+						.equals(this.epithelium.getTopologyEventManager().getModelManager(m).getModelEventPatterns(trigger))) {
+					tmpList.addAll(this.epiTriggerManager.getModelManager(m).getModelEventPatterns(trigger));
 					continue;
 				}
-				for (TriggerPattern pattern : this.epiTriggerManager.getTriggerManager(m).getTriggerPatterns(trigger)) {
+				for (ModelPattern pattern : this.epiTriggerManager.getModelManager(m).getModelEventPatterns(trigger)) {
 					if (pattern.getPatternExpression()==null
 							|| !(pattern.isExpressionValid(pattern.getPatternExpression(), m))) {
 						this.callParsingError();
@@ -269,7 +269,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 				return;
 			}
 		}
-		this.epithelium.setEpitheliumTriggerManager(this.epiTriggerManager.clone());
+		this.epithelium.setTopologyEventManager(this.epiTriggerManager.clone());
 	}
 	
 	private void callParsingError() {
@@ -318,7 +318,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 
 	@Override
 	protected boolean isChanged() {
-		return !(this.epiTriggerManager.equals(this.epithelium.getEpitheliumTriggerManager()));
+		return !(this.epiTriggerManager.equals(this.epithelium.getTopologyEventManager()));
 	}
 
 	@Override
@@ -326,12 +326,12 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
 				this.epithelium.getEpitheliumGrid().getModelSet());
 		for (LogicalModel m : modelList) {
-			if (this.epithelium.getEpitheliumTriggerManager().hasModel(m)
+			if (this.epithelium.getTopologyEventManager().hasModel(m)
 					&& !this.epiTriggerManager.hasModel(m)) {
-				this.epiTriggerManager.addTriggerManager(m, 
+				this.epiTriggerManager.addModelManager(m, 
 						this.epithelium
-						.getEpitheliumTriggerManager()
-						.getTriggerManager(m).clone());
+						.getTopologyEventManager()
+						.getModelManager(m).clone());
 			}
 		}
 		this.jpLTop.removeAll();

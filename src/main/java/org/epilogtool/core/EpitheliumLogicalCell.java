@@ -2,7 +2,7 @@ package org.epilogtool.core;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
-import org.epilogtool.core.cellDynamics.CellTrigger;
+import org.epilogtool.core.cellDynamics.CellularEvent;
 
 public class EpitheliumLogicalCell {
 
@@ -10,7 +10,7 @@ public class EpitheliumLogicalCell {
 	private byte[] state;
 	private byte[] initialState;
 	private AbstractPerturbation perturbation;
-	private CellTrigger cellTrigger;
+	private CellularEvent cellEvent;
 
 	public EpitheliumLogicalCell(LogicalModel m) {
 		this.setModel(m);
@@ -24,7 +24,7 @@ public class EpitheliumLogicalCell {
 		}
 		this.initialState = this.state.clone();
 		this.perturbation = null;
-		this.cellTrigger = CellTrigger.DEFAULT;
+		this.cellEvent = CellularEvent.DEFAULT;
 	}
 	
 	public void setState(byte[] state) {
@@ -55,8 +55,8 @@ public class EpitheliumLogicalCell {
 		state[index] = value;
 	}
 	
-	public void setCellTrigger(CellTrigger status) {
-		this.cellTrigger = status;
+	public void setCellEvent(CellularEvent event) {
+		this.cellEvent = event;
 	}
 
 	public AbstractPerturbation getPerturbation() {
@@ -75,8 +75,8 @@ public class EpitheliumLogicalCell {
 		return this.getState()[this.getNodeIndex(nodeID)];
 	}
 	
-	public CellTrigger getCellTrigger() {
-		return this.cellTrigger;
+	public CellularEvent getCellEvent() {
+		return this.cellEvent;
 	}
 
 	public LogicalModel getModel() {
@@ -129,7 +129,7 @@ public class EpitheliumLogicalCell {
 		newCell.setState(this.state.clone());
 		newCell.setPerturbation(this.perturbation);
 		newCell.setInitialState(this.initialState.clone());
-		newCell.setCellTrigger(this.cellTrigger);
+		newCell.setCellEvent(this.cellEvent);
 		return newCell;
 	}
 

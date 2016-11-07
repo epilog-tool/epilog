@@ -7,17 +7,17 @@ import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
 
-public class TriggerPattern {
+public class ModelPattern {
 	
 	private String expression;
 	private Map<Byte, byte[]> pattern;
 
-	public TriggerPattern() {
+	public ModelPattern() {
 		this.expression = null;
 		this.pattern = null;
 	}
 	
-	public void setPatternExpression(String expression, LogicalModel m) {
+	public void setPatternExpression(String expression) {
 		this.expression = expression;
 	}
 	
@@ -25,7 +25,7 @@ public class TriggerPattern {
 		return this.expression;
 	}
 	
-	private TriggerPattern(String expression, Map<Byte, byte[]> pattern) {
+	private ModelPattern(String expression, Map<Byte, byte[]> pattern) {
 		this.expression = expression;
 		this.pattern = pattern;
 	}
@@ -86,7 +86,7 @@ public class TriggerPattern {
 	
 	public boolean overlaps(Object o) {
 		//Tests if two Patterns can contain the same state, making them "overlap"
-		TriggerPattern other = (TriggerPattern) o;
+		ModelPattern other = (ModelPattern) o;
 		Set<Byte> thisPositions = this.pattern.keySet();
 		Set<Byte> otherPositions = other.pattern.keySet();
 		Set<Byte> commonTestSet = new HashSet<Byte>(thisPositions);
@@ -108,12 +108,12 @@ public class TriggerPattern {
 	}
 	
 	public boolean equals(Object o) {
-		TriggerPattern other = (TriggerPattern) o;
+		ModelPattern other = (ModelPattern) o;
 		return this.pattern.equals(other.pattern);
 	}
 	
-	public TriggerPattern clone() {
-		return new TriggerPattern(new String(this.expression), 
+	public ModelPattern clone() {
+		return new ModelPattern(new String(this.expression), 
 				new HashMap<Byte, byte[]>(this.pattern));
 	}
 }

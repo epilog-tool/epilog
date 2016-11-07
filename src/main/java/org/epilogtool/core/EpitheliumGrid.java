@@ -11,7 +11,7 @@ import java.util.Set;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
-import org.epilogtool.core.cellDynamics.CellTrigger;
+import org.epilogtool.core.cellDynamics.CellularEvent;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.project.ComponentPair;
@@ -109,8 +109,8 @@ public class EpitheliumGrid {
 		return Collections.unmodifiableSet(this.modelSet);
 	}
 	
-	public CellTrigger getCellTrigger(int x, int y) {
-		return this.gridEpiCell[x][y].getCellTrigger();
+	public CellularEvent getCellEvent(int x, int y) {
+		return this.gridEpiCell[x][y].getCellEvent();
 	}
 	
 	public boolean isEmptyCell(int x, int y) {
@@ -188,11 +188,11 @@ public class EpitheliumGrid {
 	
 	public void setCell2Naive(int x, int  y) {
 		gridEpiCell[x][y].setState(gridEpiCell[x][y].getInitialState());
-		gridEpiCell[x][y].setCellTrigger(CellTrigger.DEFAULT);
+		gridEpiCell[x][y].setCellEvent(CellularEvent.DEFAULT);
 	}
 	
-	public void setCellTrigger(int x, int y, CellTrigger trigger) {
-		this.gridEpiCell[x][y].setCellTrigger(trigger);
+	public void setCellEvent(int x, int y, CellularEvent event) {
+		this.gridEpiCell[x][y].setCellEvent(event);
 	}
 	
 	public void setCellComponentValue(int x, int y, String nodeID, byte value) {
