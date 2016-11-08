@@ -408,25 +408,21 @@ public class Epithelium {
 			List<String> perturbedComponents = new ArrayList<String>();
 			int indexPerturbationShared = 0;
 			for (String pert: p.toString().split(",")){
-				if (commonNodeNames.contains(pert.split(" ")[0].trim())){
+				System.out.println(pert);
+				if (commonNodeNames.contains(pert.trim().split(" ")[0].trim())){
 					indexPerturbationShared = ++indexPerturbationShared;}
 			}
 			if (p.toString().contains(",")){
-				
+				System.out.println(p + " "+ indexPerturbationShared);
 					if(indexPerturbationShared==p.toString().split(",").length){
 						perturbation.add(p);
 						this.addPerturbation(newModel, p);
-//						this.getModelPerturbations(newModel).addPerturbation(p);
-//						Color c = oldEpi.getModelPerturbations(oldModel).getPerturbationColor(p);
-//						this.getModelPerturbations(newModel).addPerturbationColor(p, c);
+						System.out.println("Added pert [multiple]: "+ p );
 			}}
 					else{
 						if(indexPerturbationShared==1){
 							perturbation.add(p);
 							this.addPerturbation(newModel, p);
-//							this.getModelPerturbations(newModel).addPerturbation(p);
-//							Color c = oldEpi.getModelPerturbations(oldModel).getPerturbationColor(p);
-//							this.getModelPerturbations(newModel).addPerturbationColor(p, c);
 							System.out.println("Added pert [single]: "+ p );
 							
 					}}}
