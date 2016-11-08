@@ -174,7 +174,6 @@ public class Project {
 	
 	public void replaceModel(String oldModelString, String newModelString, List<String> epiList){
 		
-		
 		LogicalModel oldModel = this.getModel(oldModelString);
 		LogicalModel newModel = this.getModel(newModelString);
 

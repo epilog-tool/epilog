@@ -275,12 +275,10 @@ public class Epithelium {
 	 * @param oldEpi
 	 */
 	public void replacemodel(LogicalModel oldModel, LogicalModel newModel, Epithelium oldEpi) {
-		// TODO Auto-generated method stub
 		
 		EpitheliumGrid grid = this.getEpitheliumGrid();
 		List<String> commonNodeNames = new ArrayList<String>();
 		
-		//TODO: START REPLACING
 		
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
@@ -289,35 +287,71 @@ public class Epithelium {
 					grid.setModel(x, y, newModel); //ReplaceModel
 
 				}}}
+	
 		
 		for (NodeInfo node: newModel.getNodeOrder()){
 			this.initPriorityClasses(newModel);
 			
 			
+			
+			
+			
+			
+			
 			//Check multivalued
 			for (NodeInfo oldNode: oldModel.getNodeOrder()){
 				if (node.toString().equals(oldNode.toString())){ //there is a node with the same name n both epitheliums
-					//TODO:If there is a node with the same name n both epitheliums
+					
+					//TODO:If there is a node with the same name in both epitheliums
 					if (node.isInput() && oldNode.isInput()){//The shared node is an input in both epitheliums
+						
 						if (oldEpi.isIntegrationComponent(oldNode)){//If the input is a integration Input it remais as an integration input
-							//TODO: set epi.integration function, but check if the regulators are there
-						}
-						else{
-							//TODO: Set node as env input and set initial condition
-						}
-					}
-					else if(!node.isInput() && oldNode.isInput()){
+								ComponentPair cp = new ComponentPair(oldModel, oldNode);
+								ComponentIntegrationFunctions cif = oldEpi
+										.getIntegrationFunctionsForComponent(cp);
+								List<String> lFunctions = cif.getFunctions();
+								if (node.getMax()>=oldNode.getMax()){//Does the new component has at least as many levels as the old component?
+								for (int i = 0; i < lFunctions.size(); i++) {
+									this.setIntegrationFunction(node.toString(), newModel, (byte) (i+1), lFunctions.get(i));
+								}}
+							else {//The new component has less levels then the old component.
+								for (int i = 0; i < node.getMax(); i++) {
+									this.setIntegrationFunction(node.toString(), newModel, (byte) (i+1), lFunctions.get(i));
+								}
+								//TODO: VALIDATE INTEGRATION FUNCTION
+								}}}
+					
+					else if(!node.isInput() && oldNode.isInput()){//The new node is an input but the oldNode wasnt
 						if (!oldEpi.isIntegrationComponent(oldNode)){
-							//TODO: set initial conditions of new internal comp (node) with value of the the env input (oldNode)
+							
+							
+							for (int y = 0; y < this.getY(); y++) {
+								for (int x = 0; x < this.getX(); x++) {
+									byte value = oldEpi.getEpitheliumGrid().getCellValue(x, y, oldNode.toString());
+									if (node.getMax()>=oldNode.getMax() || (node.getMax()<oldNode.getMax() && value<=node.getMax())){
+									this.getEpitheliumGrid().setCellComponentValue(x, y, node.toString(), value);
+									}
+								}}
 						}
 					}
 					else if(node.isInput() && !oldNode.isInput()){
-							//TODO: set initial conditions of new env comp (node-by default it starts as env) with value of the intiial conditions of the internal comp (oldNode)
+						for (int y = 0; y < this.getY(); y++) {
+							for (int x = 0; x < this.getX(); x++) {
+								byte value = oldEpi.getEpitheliumGrid().getCellValue(x, y, oldNode.toString());
+								if (node.getMax()>=oldNode.getMax() || (node.getMax()<oldNode.getMax() && value<=node.getMax())){
+								this.getEpitheliumGrid().setCellComponentValue(x, y, node.toString(), value);
+								}
+							}}
 						}
 					else if(!node.isInput() && !oldNode.isInput()){
-						//TODO: set initial conditions
-						//TODO: If there is a perturbation associated with this node then set it on the new epithelium
-						//TODO: Set priorities for the common internal nodes
+						
+						for (int y = 0; y < this.getY(); y++) {
+							for (int x = 0; x < this.getX(); x++) {
+								byte value = oldEpi.getEpitheliumGrid().getCellValue(x, y, oldNode.toString());
+								if (node.getMax()>=oldNode.getMax() || (node.getMax()<oldNode.getMax() && value<=node.getMax())){
+								this.getEpitheliumGrid().setCellComponentValue(x, y, node.toString(), value);
+								}
+							}}
 						commonNodeNames.add(node.toString());
 					}
 					}
@@ -325,7 +359,6 @@ public class Epithelium {
 			}
 		
 		//TODO: check of the remaining models in the epithelium if the regulator is
-		
 		this.replacePriorities(oldEpi,oldModel,newModel,commonNodeNames);
 		this.replacePerturbations(oldEpi,oldModel,newModel,commonNodeNames);
 	}
@@ -365,7 +398,7 @@ public class Epithelium {
 	
 	private void replacePerturbations(Epithelium oldEpi, LogicalModel oldModel, LogicalModel newModel,
 			List<String> commonNodeNames) {
-		// TODO Auto-generated method stub
+		// TODO CHECK MULTIPLE PERTURBATIONS
 		ModelPerturbations oldPerturbations = this.perturbations.getModelPerturbations(oldModel);
 		List<AbstractPerturbation> perturbation = new ArrayList<AbstractPerturbation>();
 
