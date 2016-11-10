@@ -650,6 +650,10 @@ public class EpiGUI extends JFrame {
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
 			// TODO:
+			if (this.project.getHashModel2EpitheliumList().get(model).isEmpty()){
+				JOptionPane.showMessageDialog(null, "There are no epitheliums with this model.");
+			}
+			else {
 			DialogReplaceSBML dialogPanel = new DialogReplaceSBML(model,
 						this.project.getComponentFeatures().getGUIModelNames(),this.project.getHashModel2EpitheliumList().get(model));
 			Window win = SwingUtilities.getWindowAncestor(this);
@@ -676,7 +680,7 @@ public class EpiGUI extends JFrame {
 				this.project.replaceModel(model, newModel, selectedEpiList);
 			}
 			
-		} else {
+		} }else {
 			JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning",
 					JOptionPane.WARNING_MESSAGE);
 		}

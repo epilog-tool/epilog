@@ -95,15 +95,6 @@ public class Project {
 		return epi;
 	}
 
-	// TODO: test with same name models in diff directories
-	// public String getNextModelName(File file) {
-	// String name = file.getName().substring(0, file.getName().indexOf("."));
-	// while (this.modelMap.containsKey(name)) {
-	// name += "_";
-	// }
-	// return name;
-	// }
-
 	public void loadModel(String name, LogicalModel m) {
 		this.projectFeatures.addModel(name, m);
 		// TODO: should the model be inserted somewhere else?

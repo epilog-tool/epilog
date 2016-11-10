@@ -278,25 +278,16 @@ public class Epithelium {
 		
 		EpitheliumGrid grid = this.getEpitheliumGrid();
 		List<String> commonNodeNames = new ArrayList<String>();
-		
-		
+			
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
 				LogicalModel cellModel =grid.getModel(x, y);
 				if (cellModel==oldModel){
 					grid.setModel(x, y, newModel); //ReplaceModel
-
 				}}}
 	
-		
 		for (NodeInfo node: newModel.getNodeOrder()){
 			this.initPriorityClasses(newModel);
-			
-			
-			
-			
-			
-			
 			
 			//Check multivalued
 			for (NodeInfo oldNode: oldModel.getNodeOrder()){
@@ -330,19 +321,16 @@ public class Epithelium {
 									byte value = oldEpi.getEpitheliumGrid().getCellValue(x, y, oldNode.toString());
 									if (node.getMax()>=oldNode.getMax() || (node.getMax()<oldNode.getMax() && value<=node.getMax())){
 									this.getEpitheliumGrid().setCellComponentValue(x, y, node.toString(), value);
-									}
-								}}
-						}
-					}
+									}}}}}
+					
 					else if(node.isInput() && !oldNode.isInput()){
 						for (int y = 0; y < this.getY(); y++) {
 							for (int x = 0; x < this.getX(); x++) {
 								byte value = oldEpi.getEpitheliumGrid().getCellValue(x, y, oldNode.toString());
 								if (node.getMax()>=oldNode.getMax() || (node.getMax()<oldNode.getMax() && value<=node.getMax())){
 								this.getEpitheliumGrid().setCellComponentValue(x, y, node.toString(), value);
-								}
-							}}
-						}
+								}}}}
+					
 					else if(!node.isInput() && !oldNode.isInput()){
 						
 						for (int y = 0; y < this.getY(); y++) {
@@ -350,13 +338,9 @@ public class Epithelium {
 								byte value = oldEpi.getEpitheliumGrid().getCellValue(x, y, oldNode.toString());
 								if (node.getMax()>=oldNode.getMax() || (node.getMax()<oldNode.getMax() && value<=node.getMax())){
 								this.getEpitheliumGrid().setCellComponentValue(x, y, node.toString(), value);
-								}
-							}}
+								}}}
 						commonNodeNames.add(node.toString());
-					}
-					}
-				}
-			}
+					}}}}
 		
 		//TODO: check of the remaining models in the epithelium if the regulator is
 		this.replacePriorities(oldEpi,oldModel,newModel,commonNodeNames);
@@ -401,8 +385,6 @@ public class Epithelium {
 		// TODO CHECK MULTIPLE PERTURBATIONS
 		ModelPerturbations oldPerturbations = this.perturbations.getModelPerturbations(oldModel);
 		List<AbstractPerturbation> perturbation = new ArrayList<AbstractPerturbation>();
-
-
 		
 		for (AbstractPerturbation p :oldPerturbations.getAllPerturbations()){
 			List<String> perturbedComponents = new ArrayList<String>();
@@ -424,8 +406,7 @@ public class Epithelium {
 							perturbation.add(p);
 							this.addPerturbation(newModel, p);
 							System.out.println("Added pert [single]: "+ p );
-							
-					}}}
+							}}}
 
 		
 		//Add perturbation to cell
@@ -443,9 +424,7 @@ public class Epithelium {
 					
 					
 				}this.applyPerturbation(newModel, p, c,tmpList);
-			}}
-		
-	}
+			}}}
 	
 
 	private static String join(List<String> list, String sep) {
@@ -456,6 +435,4 @@ public class Epithelium {
 			s += list.get(i);
 		}
 		return s;
-	}
-	
-}
+	}}
