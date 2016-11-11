@@ -671,12 +671,6 @@ public class EpiGUI extends JFrame {
 	
 			
 			if (dialogPanel.isDefined()){
-
-				//TODO: Check Initialconditions
-				//TODO: Check IntegrationFunction
-				//TODO: Check Perturbations
-				//TODO: Check ModelUpdating
-				
 				this.project.replaceModel(model, newModel, selectedEpiList);
 			}
 			

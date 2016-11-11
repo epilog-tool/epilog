@@ -50,7 +50,8 @@ public class Project {
 
 	public Epithelium cloneEpithelium(Epithelium epi) {
 		Epithelium epiClone = epi.clone();
-		epiClone.setName(this.getNextAvailableName(epi.getName()));
+		String name = this.getNextAvailableName(epi.getName());
+		epiClone.setName(name);
 		this.epitheliumList.add(epiClone);
 		return epiClone;
 	}
@@ -154,10 +155,18 @@ public class Project {
 	 * @return Epithelium
 	 */
 	private Epithelium getEpitheliumFromName (String epiName){
-		
+//		System.out.println("-------------");
+//		System.out.println("LIST: " + this.getEpitheliumList());
+//		System.out.println(" ");
 		for (Epithelium epi: this.getEpitheliumList()){
-			if (epi.getName()==epiName){
+//			System.out.println("Looking for an epithelium with the name: " + epiName);
+//			System.out.println("Just found the epitheium: " + epi);
+			if (epi.getName().equals(epiName)){
+//				System.out.println("There is a match between both: " + epi);
 				return epi;
+			}
+			else{
+//				System.out.println("There is NO match between both: " + epi);
 			}
 		}
 		return null;
@@ -169,12 +178,10 @@ public class Project {
 		LogicalModel newModel = this.getModel(newModelString);
 
 		for (String epi: epiList){
-			Epithelium epithelium = getEpitheliumFromName(epi);
-			Epithelium oldEpi = cloneEpithelium(epithelium);
-			
+			Epithelium epithelium = this.getEpitheliumFromName(epi);
+			Epithelium oldEpi = epithelium;
+
 			epithelium.replacemodel(oldModel,newModel, oldEpi);
-			
-			this.removeEpithelium(oldEpi);
 			epithelium.update();
 			}
 		}

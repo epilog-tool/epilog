@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
@@ -265,10 +266,6 @@ public class Epithelium {
 	}
 	
 	
-	
-
-	
-	
 	/**
 	 * @param oldModel
 	 * @param newModel
@@ -342,12 +339,61 @@ public class Epithelium {
 						commonNodeNames.add(node.toString());
 					}}}}
 		
-		//TODO: check of the remaining models in the epithelium if the regulator is
+		this.validateAllIntegrationFunctions(oldEpi,oldModel,newModel);
 		this.replacePriorities(oldEpi,oldModel,newModel,commonNodeNames);
 		this.replacePerturbations(oldEpi,oldModel,newModel,commonNodeNames);
 	}
 
 	
+	private void validateAllIntegrationFunctions(Epithelium oldEpi, LogicalModel oldModel, LogicalModel newModel) {
+//		// TODO Auto-generated method stub
+		
+		List<NodeInfo> properComponentsAllModels = new ArrayList<NodeInfo>();
+		for (LogicalModel model: this.getEpitheliumGrid().getModelSet()){
+			for (NodeInfo node: model.getNodeOrder()){
+				if (!node.isInput()){
+					properComponentsAllModels.add(node);
+				}
+			}
+		}
+		EpitheliumIntegrationFunctions intFunctions = this.getIntegrationFunctions();
+		Map<ComponentPair, ComponentIntegrationFunctions> funcs = intFunctions.getAllIntegrationFunctions();
+		
+		for (ComponentPair cf: intFunctions.getComponentPair()){
+			for (String integrationString: funcs.get(cf).getFunctions()){
+				Set<String> regulators = getRegulators(integrationString);
+				for (String reg: regulators){
+					if (!properComponentsAllModels.contains(reg)){
+						System.out.println("There is a problem with an intFu");
+					}
+					}
+				}
+					{
+			}
+//			System.out.println(funcs.get(cf).getFunctions());
+		}
+		
+		
+		
+	}
+	
+
+	private Set<String> getRegulators(String integrationString) {
+		// TODO Auto-generated method stub
+		String[] regulatorsArray = integrationString.split("\\&|\\!|\\|");
+		Set<String> regulatorsSet = new HashSet<String>();
+		for (String atom : regulatorsArray) {
+			if (atom.length() == 0) {
+				continue;
+			}
+			String[] atomElems = atom.split("\\(");
+			if (atomElems.length == 0)
+				continue;
+			regulatorsSet.add(atomElems[atomElems.length - 2]);
+		}
+		return regulatorsSet;
+	}
+
 	/** 
 	 * @param epithelium
 	 * @param oldEpi
@@ -382,30 +428,30 @@ public class Epithelium {
 	
 	private void replacePerturbations(Epithelium oldEpi, LogicalModel oldModel, LogicalModel newModel,
 			List<String> commonNodeNames) {
-		// TODO CHECK MULTIPLE PERTURBATIONS
+
 		ModelPerturbations oldPerturbations = this.perturbations.getModelPerturbations(oldModel);
 		List<AbstractPerturbation> perturbation = new ArrayList<AbstractPerturbation>();
 		
+		
+		if (oldPerturbations!=null){
 		for (AbstractPerturbation p :oldPerturbations.getAllPerturbations()){
 			List<String> perturbedComponents = new ArrayList<String>();
 			int indexPerturbationShared = 0;
 			for (String pert: p.toString().split(",")){
-				System.out.println(pert);
+	
 				if (commonNodeNames.contains(pert.trim().split(" ")[0].trim())){
 					indexPerturbationShared = ++indexPerturbationShared;}
 			}
 			if (p.toString().contains(",")){
-				System.out.println(p + " "+ indexPerturbationShared);
+
 					if(indexPerturbationShared==p.toString().split(",").length){
 						perturbation.add(p);
 						this.addPerturbation(newModel, p);
-						System.out.println("Added pert [multiple]: "+ p );
 			}}
 					else{
 						if(indexPerturbationShared==1){
 							perturbation.add(p);
 							this.addPerturbation(newModel, p);
-							System.out.println("Added pert [single]: "+ p );
 							}}}
 
 		
@@ -424,7 +470,7 @@ public class Epithelium {
 					
 					
 				}this.applyPerturbation(newModel, p, c,tmpList);
-			}}}
+			}}}}
 	
 
 	private static String join(List<String> list, String sep) {
