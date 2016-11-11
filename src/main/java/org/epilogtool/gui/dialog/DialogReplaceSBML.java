@@ -1,6 +1,7 @@
 package org.epilogtool.gui.dialog;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -75,7 +76,9 @@ public class DialogReplaceSBML extends EscapableDialog {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
-		c.insets = new Insets(10,0,0,0);
+		c.gridwidth = 1;
+		c.gridheight = 1;
+		c.anchor = GridBagConstraints.WEST;
 
 		jpCenter.add(new JLabel("Epithelium(s) to replace:"), c);
 		
