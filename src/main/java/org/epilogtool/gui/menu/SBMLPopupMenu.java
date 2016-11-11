@@ -66,7 +66,7 @@ public class SBMLPopupMenu extends JPopupMenu {
 		
 		
 		// Export SBML
-		JMenuItem export = new JMenuItem("Export model (SBML)");
+		JMenuItem export = new JMenuItem("Save model (SBML)");
 		export.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

@@ -96,8 +96,8 @@ class ExportSBMLAction extends AbstractAction {
 	private static final long serialVersionUID = -7400365619490423300L;
 
 	public ExportSBMLAction() {
-		super("Export model (SBML)");
-		putValue(SHORT_DESCRIPTION, "Export selected SBML model");
+		super("Save model (SBML)");
+		putValue(SHORT_DESCRIPTION, "Save selected SBML model");
 		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
 		// FrameActionManager.MASK));
 	}
