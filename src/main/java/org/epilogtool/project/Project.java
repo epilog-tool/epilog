@@ -21,11 +21,13 @@ public class Project {
 	private String filenamePEPS;
 	private boolean isChanged;
 
+
 	public Project(){
 		this.epitheliumList = new ArrayList<Epithelium>();
 		this.projectFeatures = new ProjectFeatures();
 		this.filenamePEPS = null;
 		this.isChanged = true;
+
 	}
 
 	public boolean hasChanged() {
@@ -155,20 +157,11 @@ public class Project {
 	 * @return Epithelium
 	 */
 	private Epithelium getEpitheliumFromName (String epiName){
-//		System.out.println("-------------");
-//		System.out.println("LIST: " + this.getEpitheliumList());
-//		System.out.println(" ");
+
 		for (Epithelium epi: this.getEpitheliumList()){
-//			System.out.println("Looking for an epithelium with the name: " + epiName);
-//			System.out.println("Just found the epitheium: " + epi);
 			if (epi.getName().equals(epiName)){
-//				System.out.println("There is a match between both: " + epi);
 				return epi;
-			}
-			else{
-//				System.out.println("There is NO match between both: " + epi);
-			}
-		}
+			}}
 		return null;
 	}
 	
@@ -185,6 +178,8 @@ public class Project {
 			epithelium.update();
 			}
 		}
+	
+	
 
 	}
 

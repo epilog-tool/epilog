@@ -654,6 +654,7 @@ public class EpiGUI extends JFrame {
 				JOptionPane.showMessageDialog(null, "There are no epitheliums with this model.");
 			}
 			else {
+	
 			DialogReplaceSBML dialogPanel = new DialogReplaceSBML(model,
 						this.project.getComponentFeatures().getGUIModelNames(),this.project.getHashModel2EpitheliumList().get(model));
 			Window win = SwingUtilities.getWindowAncestor(this);
@@ -671,7 +672,15 @@ public class EpiGUI extends JFrame {
 	
 			
 			if (dialogPanel.isDefined()){
+				this.project.getProjectFeatures().initializeReplaceMessages();
 				this.project.replaceModel(model, newModel, selectedEpiList);
+				
+			
+				JPanel jp = new JPanel();
+				String msgs = join(project.getProjectFeatures().getReplaceMessages(),"\n");
+				JOptionPane.showMessageDialog(jp,
+						msgs, "Warning",
+						JOptionPane.WARNING_MESSAGE);
 			}
 			
 		} }else {
@@ -683,6 +692,16 @@ public class EpiGUI extends JFrame {
 		this.validateGUI();
 	}
 
+	private static String join(List<String> list, String sep) {
+		String s = "";
+		for (int i = 0; i < list.size(); i++) {
+			if (i > 0)
+				s += sep;
+			s += list.get(i);
+		}
+		return s;
+	}
+	
 	private void notifyEpiModelGrids() {
 		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
 			Component c = this.epiRightFrame.getComponentAt(i);

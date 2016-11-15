@@ -20,6 +20,8 @@ public class ProjectFeatures {
 	private Map<String, LogicalModel> string2Model;
 	private Map<LogicalModel, String> model2String;
 	private Map<LogicalModel, Color> modelColor;
+	
+	private List<String> replaceMessages; 
 
 	// FIXME
 	private Map<String, Set<NodeInfo>> nodeID2Info;
@@ -37,6 +39,7 @@ public class ProjectFeatures {
 		this.nodeColor = new HashMap<String, Color>();
 		// model 2 nodes
 		this.string2ComponentFeature = new HashMap<String, Set<ComponentPair>>();
+		this.replaceMessages = new ArrayList<String>();
 	}
 	
 	public void addModel(String name, LogicalModel m) {
@@ -44,6 +47,19 @@ public class ProjectFeatures {
 		this.model2String.put(m, name);
 		this.modelColor.put(m, ColorUtils.random());
 		this.addModelComponents(m);
+	}
+	
+	
+	public List<String> getReplaceMessages(){
+		return this.replaceMessages;
+	}
+	
+	public void initializeReplaceMessages(){
+		this.replaceMessages = new ArrayList<String>();
+	}
+	
+	public void addReplaceMessages(String msg){
+		this.replaceMessages.add(msg);
 	}
 	
 	public void addModelComponents(LogicalModel m) {

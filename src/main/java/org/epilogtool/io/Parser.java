@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
@@ -174,6 +177,7 @@ public class Parser {
 
 				String[] regulatorsArray = function.split("\\&|\\!|\\|");
 				Set<String> regulatorsSet = new HashSet<String>();
+				Boolean flagWarning = false;
 				for (String atom : regulatorsArray) {
 					if (atom.length() == 0) {
 						continue;
@@ -194,7 +198,7 @@ public class Parser {
 						for (String regulator : regulatorsSet) {
 							if (!(project.getProjectFeatures().hasNode(
 									regulator, m))) {
-								flag = false;
+//								flag = false;
 								break;
 							}
 						}
@@ -220,11 +224,23 @@ public class Parser {
 					for (String regulator : regulatorsSet) {
 						NodeInfo node = project.getProjectFeatures()
 								.getNodeInfo(regulator, m);
+						if (node!=null){
 						ComponentPair cp = new ComponentPair(m, node);
 						if (!currEpi.getUpdateSchemeInter().containsCPSigma(cp)) {
 							currEpi.getUpdateSchemeInter().addCP(cp);
 						}
 					}
+						else{flagWarning = true;
+				
+							
+						}
+				}}
+				if (flagWarning){
+					JPanel jp = new JPanel();
+					JOptionPane.showMessageDialog(jp,
+							"There is a problem with the integration functions", "Warning",
+							JOptionPane.WARNING_MESSAGE);
+					break;
 				}
 			}
 			// Model Priority classes
