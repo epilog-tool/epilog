@@ -21,6 +21,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.gui.menu.EpiTreePopupMenu;
+import org.epilogtool.gui.tab.EpiTab;
 import org.epilogtool.project.ProjectFeatures;
 
 public class EpiTreePanel extends JPanel {
@@ -185,21 +186,17 @@ public class EpiTreePanel extends JPanel {
 		((DefaultMutableTreeNode) this.epiTree.getModel().getRoot())
 				.add(epiNode);
 
-		DefaultMutableTreeNode gm = new DefaultMutableTreeNode("Model Grid");
+		DefaultMutableTreeNode gm = new DefaultMutableTreeNode(EpiTab.TAB_MODELGRID);
 		epiNode.add(gm);
-		DefaultMutableTreeNode it = new DefaultMutableTreeNode(
-				"Integration Components");
+		DefaultMutableTreeNode it = new DefaultMutableTreeNode(EpiTab.TAB_INTEGRATION);
 		epiNode.add(it);
-		DefaultMutableTreeNode ic = new DefaultMutableTreeNode(
-				"Initial Condition");
+		DefaultMutableTreeNode ic = new DefaultMutableTreeNode(EpiTab.TAB_INITCONDITIONS);
 		epiNode.add(ic);
-		DefaultMutableTreeNode ptc = new DefaultMutableTreeNode(
-				"Component Perturbations");
+		DefaultMutableTreeNode ptc = new DefaultMutableTreeNode(EpiTab.TAB_PERTURBATIONS);
 		epiNode.add(ptc);
-		DefaultMutableTreeNode mu = new DefaultMutableTreeNode("Model Updating");
+		DefaultMutableTreeNode mu = new DefaultMutableTreeNode(EpiTab.TAB_PRIORITIES);
 		epiNode.add(mu);
-		DefaultMutableTreeNode eu = new DefaultMutableTreeNode(
-				"Epithelial Updating");
+		DefaultMutableTreeNode eu = new DefaultMutableTreeNode(EpiTab.TAB_EPIUPDATING);
 		epiNode.add(eu);
 
 		this.epiTree.setRootVisible(false);

@@ -26,8 +26,9 @@ import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationEx
 /**
  * Initializes and implements the simulation on epilog.
  * 
- * @author Pedro Monteiro and Pedro Varela
- * 
+ * @author Pedro T. Monteiro
+ * @author Pedro L. Varela
+ * @author Camila V. Ramos
  */
 public class Simulation {
 	private Epithelium epithelium;

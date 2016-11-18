@@ -600,26 +600,24 @@ public class EpiGUI extends JFrame {
 			String title = epi.getName() + ":" + tabName;
 			TabChangeNotifyProj tabChanged = new TabChangeNotifyProj();
 			ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
-			if (tabName.equals("Initial Condition")) {
+			if (tabName.equals(EpiTab.TAB_INITCONDITIONS)) {
 				epiTab = new EpiTabInitialConditions(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
-			} else if (tabName.equals("Integration Components")) {
+			} else if (tabName.equals(EpiTab.TAB_INTEGRATION)) {
 				epiTab = new EpiTabIntegrationFunctions(epi, selPath,
 						projChanged, tabChanged,
 						this.project.getProjectFeatures());
-			} else if (tabName.equals("Component Perturbations")) {
+			} else if (tabName.equals(EpiTab.TAB_PERTURBATIONS)) {
 				epiTab = new EpiTabPerturbations(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
-			} else if (tabName.equals("Epithelial Perturbations")) {
-				// TODO
-			} else if (tabName.equals("Model Updating")) {
+			} else if (tabName.equals(EpiTab.TAB_PRIORITIES)) {
 				epiTab = new EpiTabModelUpdateScheme(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
-			} else if (tabName.equals("Epithelial Updating")) {
+			} else if (tabName.equals(EpiTab.TAB_EPIUPDATING)) {
 				epiTab = new EpiTabEpithelialUpdateScheme(epi, selPath,
 						projChanged, tabChanged,
 						this.project.getProjectFeatures());
-			} else if (tabName.equals("Model Grid")) {
+			} else if (tabName.equals(EpiTab.TAB_MODELGRID)) {
 				epiTab = new EpiTabModelGrid(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
 			}
@@ -739,7 +737,7 @@ public class EpiGUI extends JFrame {
 		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
 			EpiTab epiInTab = (EpiTab) this.epiRightFrame.getComponentAt(i);
 			if (epiInTab.containsEpithelium(epi)
-					&& epiInTab.getName().endsWith("Simulation")) {
+					&& epiInTab.getName().endsWith(EpiTab.TOOL_SIMULATION)) {
 				tabIndex = i;
 				break;
 			}
