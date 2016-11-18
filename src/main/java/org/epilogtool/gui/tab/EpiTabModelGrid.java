@@ -27,6 +27,7 @@ import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
+import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JRadioComponentButton;
 import org.epilogtool.gui.widgets.VisualGridModel;
 import org.epilogtool.project.ProjectFeatures;
@@ -39,6 +40,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	private LogicalModel[][] modelGridClone;
 	private Map<LogicalModel, Color> colorMapClone;
 	private JPanel lCenter;
+	private GridInformation gridInfo;
 	private TabProbablyChanged tpc;
 
 	public EpiTabModelGrid(Epithelium e, TreePath path,
@@ -54,6 +56,9 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
 		this.modelGridClone = new LogicalModel[grid.getX()][grid.getY()];
 		this.colorMapClone = new HashMap<LogicalModel, Color>();
+
+		this.gridInfo = new GridInformation(
+				this.epithelium.getIntegrationFunctions(), this.projectFeatures);
 
 		JPanel lTopButtons = new JPanel(new FlowLayout());
 		lTopButtons.setBorder(BorderFactory
@@ -85,6 +90,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		JPanel left = new JPanel(new BorderLayout());
 		JPanel lTop = new JPanel(new BorderLayout());
 		lTop.add(this.lCenter, BorderLayout.PAGE_START);
+		lTop.add(this.gridInfo);
 		lTop.add(lTopButtons, BorderLayout.PAGE_END);
 		left.add(lTop, BorderLayout.CENTER);
 		this.center.add(left, BorderLayout.LINE_START);
@@ -94,7 +100,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 				.getEpitheliumGrid().getX(), this.epithelium
 				.getEpitheliumGrid().getY(), this.epithelium
 				.getEpitheliumGrid().getTopology(), this.modelGridClone,
-				this.colorMapClone, this.projectFeatures, this.tpc);
+				this.colorMapClone, this.projectFeatures, this.gridInfo,
+				this.tpc);
 		this.center.add(this.visualGridModel, BorderLayout.CENTER);
 
 		this.buttonReset();

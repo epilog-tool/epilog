@@ -24,11 +24,13 @@ public class VisualGridModel extends VisualGridDefinitions {
 	private String selModelName;
 	private boolean isRectFill;
 	private Tuple2D<Integer> initialRectPos;
+	private GridInformation valuePanel;
 
 	public VisualGridModel(int gridX, int gridY, Topology topology,
 			LogicalModel[][] modelGridClone,
 			Map<LogicalModel, Color> colorMapClone,
-			ProjectFeatures projectFeatures, TabProbablyChanged tpc) {
+			ProjectFeatures projectFeatures, GridInformation valuePanel,
+			TabProbablyChanged tpc) {
 		super(gridX, gridY, topology, tpc);
 		this.modelGridClone = modelGridClone;
 		this.colorMapClone = colorMapClone;
@@ -36,11 +38,13 @@ public class VisualGridModel extends VisualGridDefinitions {
 		this.selModelName = null;
 		this.isRectFill = false;
 		this.initialRectPos = null;
+		this.valuePanel = valuePanel;
 
 		this.addMouseMotionListener(new MouseMotionListener() {
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				mousePosition2Grid(e);
+				updateComponentValues(mouseGrid);
 			}
 
 			@Override
@@ -92,6 +96,14 @@ public class VisualGridModel extends VisualGridDefinitions {
 		// Paint the rectangle
 		super.highlightCellsOverRectangle(this.initialRectPos, this.mouseGrid,
 				c);
+	}
+
+	private void updateComponentValues(Tuple2D<Integer> pos) {
+		if (!isInGrid(pos))
+			return;
+
+		this.valuePanel.updateValues(pos.getX(), pos.getY(), null,
+				this.modelGridClone);
 	}
 
 	public void setSelModelName(String name) {

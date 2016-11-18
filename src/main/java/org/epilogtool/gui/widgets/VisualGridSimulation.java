@@ -83,7 +83,7 @@ public class VisualGridSimulation extends VisualGrid {
 		if (!isInGrid(pos))
 			return;
 		this.lastPos = pos;
-		this.valuePanel.updateValues(pos.getX(), pos.getY(), this.epiGrid);
+		this.valuePanel.updateValues(pos.getX(), pos.getY(), this.epiGrid, null);
 	}
 
 	public void setEpitheliumGrid(EpitheliumGrid grid) {
