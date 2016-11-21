@@ -18,15 +18,15 @@ public class EpitheliumIntegrationFunctions {
 	public EpitheliumIntegrationFunctions clone() {
 		EpitheliumIntegrationFunctions newEIF = new EpitheliumIntegrationFunctions();
 		Map<ComponentPair, ComponentIntegrationFunctions> newFuncs = new HashMap<ComponentPair, ComponentIntegrationFunctions>();
-		for (ComponentPair cf : this.functions.keySet()) {
-			newFuncs.put(cf, this.functions.get(cf).clone());
+		for (ComponentPair cp : this.functions.keySet()) {
+			newFuncs.put(cp, this.functions.get(cp).clone());
 		}
 		newEIF.functions = newFuncs;
 		return newEIF;
 	}
 
-	public void setFunctionAtLevel(ComponentPair cf, byte value, String function) {
-		this.functions.get(cf).setFunctionAtLevel(value, function);
+	public void setFunctionAtLevel(ComponentPair cp, byte value, String function) {
+		this.functions.get(cp).setFunctionAtLevel(value, function);
 	}
 
 	public void addComponent(ComponentPair cp) {
@@ -34,13 +34,13 @@ public class EpitheliumIntegrationFunctions {
 				.getNodeInfo().getMax()));
 	}
 
-	public void addComponentFunctions(ComponentPair cf,
+	public void addComponentFunctions(ComponentPair cp,
 			ComponentIntegrationFunctions funcs) {
-		this.functions.put(cf, funcs);
+		this.functions.put(cp, funcs);
 	}
 
-	public void removeComponent(ComponentPair cf) {
-		this.functions.remove(cf);
+	public void removeComponent(ComponentPair cp) {
+		this.functions.remove(cp);
 	}
 
 	public boolean containsComponentPair(ComponentPair cp) {
@@ -52,8 +52,8 @@ public class EpitheliumIntegrationFunctions {
 	}
 
 	public ComponentIntegrationFunctions getComponentIntegrationFunctions(
-			ComponentPair cf) {
-		return this.functions.get(cf);
+			ComponentPair cp) {
+		return this.functions.get(cp);
 	}
 	
 	public Map<ComponentPair, ComponentIntegrationFunctions> getAllIntegrationFunctions() {
@@ -65,11 +65,11 @@ public class EpitheliumIntegrationFunctions {
 		Set<ComponentPair> sAllNodes = new HashSet<ComponentPair>();
 		sAllNodes.addAll(this.functions.keySet());
 		sAllNodes.addAll(eifOut.functions.keySet());
-		for (ComponentPair cf : sAllNodes) {
-			if (!this.functions.containsKey(cf)
-					|| !eifOut.functions.containsKey(cf))
+		for (ComponentPair cp : sAllNodes) {
+			if (!this.functions.containsKey(cp)
+					|| !eifOut.functions.containsKey(cp))
 				return false;
-			if (!this.functions.get(cf).equals(eifOut.functions.get(cf)))
+			if (!this.functions.get(cp).equals(eifOut.functions.get(cp)))
 				return false;
 		}
 		return true;

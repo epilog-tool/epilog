@@ -178,7 +178,6 @@ public class IntegrationFunctionSpecification {
 		public int getMaxDistance() {
 			return this.maxDistance;
 		}
-
 	}
 
 	/**
@@ -303,19 +302,29 @@ public class IntegrationFunctionSpecification {
 
 	public IntegrationExpression parse(String specificationString)
 			throws RecognitionException {
-
+		
 		IntegrationExpression r = null;
+		
+		Boolean bValid=false;
+		
 		if (specificationString != null) {
 			specificationString.replaceAll("\\s", "");
-
+			
 			ANTLRStringStream in = new ANTLRStringStream(specificationString);
+			
 			IntegrationGrammarLexer lexer = new IntegrationGrammarLexer(in);
+			if (!lexer.failed()){
+				System.out.println("lexer did not fail");
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			IntegrationGrammarParser parser = new IntegrationGrammarParser(
 					tokens);
 			r = parser.eval();
-		}
+			}}
+
 		return r;
+		
+		
 	}
+	
 
 }

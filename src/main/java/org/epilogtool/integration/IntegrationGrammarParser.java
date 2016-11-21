@@ -65,10 +65,12 @@ public class IntegrationGrammarParser extends Parser {
         }
         catch (RecognitionException re) {
             reportError(re);
+            System.out.println(re);
             recover(input,re);
         }
         finally {
         }
+    
         return value;
     }
     // $ANTLR end "eval"

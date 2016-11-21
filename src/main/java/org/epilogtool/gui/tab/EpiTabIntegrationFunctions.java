@@ -219,7 +219,7 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 				.getComponentIntegrationFunctions(cp);
 		byte value = Byte.parseByte(jtf.getToolTipText());
 		if (jtf.getText().trim().isEmpty() || cif.isValidAtLevel(value)) {
-			jtf.setBackground(Color.WHITE);
+			jtf.setBackground(Color.YELLOW);
 		} else {
 			jtf.setBackground(ColorUtils.LIGHT_RED);
 		}
@@ -265,9 +265,9 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 				public void keyReleased(KeyEvent e) {
 					JTextField jtf = (JTextField) e.getSource();
 					byte value = Byte.parseByte(jtf.getToolTipText());
-
-					setIntegrationFunction(value, jtf.getText());
 					validateIntegrationFunction(jtf);
+					setIntegrationFunction(value, jtf.getText());
+					
 					tpc.setChanged();
 				}
 

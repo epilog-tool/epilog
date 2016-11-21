@@ -272,30 +272,13 @@ public class Epithelium {
 	/**
 	 * @param oldModel
 	 * @param newModel
-	 * @param oldEpi
 	 */
-	public void replacemodel(LogicalModel oldModel, LogicalModel newModel, Epithelium oldEpi) {
+	public void replacemodel(LogicalModel oldModel, LogicalModel newModel) {
 		
-
-		EpitheliumGrid grid = this.getEpitheliumGrid();
+		Epithelium oldEpi = this;
+		EpitheliumGrid gridCopy = this.getEpitheliumGrid().clone();
+	
 		List<String> commonNodeNames = new ArrayList<String>();
-		
-
-		
-		for (NodeInfo node: oldModel.getNodeOrder()){
-			Boolean flag = false;
-			for (NodeInfo nNode: newModel.getNodeOrder()){
-				if (node.toString().equals(nNode.toString())){
-					flag = true;
-				}}
-				if (!flag){
-				this.getProjectFeatures().addReplaceMessages("Node " + node.toString() + " does not exist in this new model.");
-			}
-			else{
-				commonNodeNames.add(node.toString());
-			}
-		}
-
 		
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
@@ -303,15 +286,61 @@ public class Epithelium {
 				if (cellModel==oldModel){
 					grid.setModel(x, y, newModel); //ReplaceModel
 				}}}
-
 		
+		for (NodeInfo node: oldModel.getNodeOrder()){
+			Boolean flag = false;
+			String mes = "";
+			for (NodeInfo nNode: newModel.getNodeOrder()){
+				
+				if (node.toString().equals(nNode.toString())){
+					flag = true;
+					this.replaceInitialConditions(node,nNode,gridCopy);
+					commonNodeNames.add(node.toString());
+					
+					if (oldEpi.isIntegrationComponent(node) && nNode.isInput()){
+						//TODO validate IntegrationFunction
+						
+					}
+						
+					if (node.isInput() && !nNode.isInput()){
+						mes = "Input component " + node.toString() + " is now an internal component.";
+						if (!this.getProjectFeatures().getReplaceMessages().contains(mes)){
+							this.getProjectFeatures().addReplaceMessages(mes);
+						}
+					}
+					if (!node.isInput() && nNode.isInput()){
+						mes = "Internal component " + node.toString() + " is now an input component.";
+						if (!this.getProjectFeatures().getReplaceMessages().contains(mes)){
+							this.getProjectFeatures().addReplaceMessages(mes);
+					}}
+
+					if (node.getMax()>nNode.getMax()){
+						mes = "Node "+ node.toString() + " has now a lower maximum value.";
+						if (!this.getProjectFeatures().getReplaceMessages().contains(mes)){
+							this.getProjectFeatures().addReplaceMessages(mes);
+						}
+						
+					}
+						
+				if (node.getMax()<nNode.getMax()){
+					mes = "Node "+ node.toString() + " has now a higher maximum value.";
+					if (!this.getProjectFeatures().getReplaceMessages().contains(mes)){
+						this.getProjectFeatures().addReplaceMessages(mes);
+					}
+				}}}
+				if (!flag){
+					mes = "Node " + node.toString() + " does not exist in this new model.";
+					if (!this.getProjectFeatures().getReplaceMessages().contains(mes)){
+						this.getProjectFeatures().addReplaceMessages(mes);
+					}
+					}}
+
 		
 		for (NodeInfo node: newModel.getNodeOrder()){
 			this.initPriorityClasses(newModel);
 			//TODO CAN BE OPTIMIZED
 		
 
-			//Check multivalued
 			for (NodeInfo oldNode: oldModel.getNodeOrder()){
 				if (node.toString().equals(oldNode.toString())){ //there is a node with the same name n both epitheliums
 
@@ -320,80 +349,47 @@ public class Epithelium {
 
 						if (oldEpi.isIntegrationComponent(oldNode)){//If the input is a integration Input it remains as an integration input
 							ComponentPair cp = new ComponentPair(oldModel, oldNode);
-							ComponentIntegrationFunctions cif = oldEpi
-									.getIntegrationFunctionsForComponent(cp);
+							EpitheliumIntegrationFunctions eif = this.getIntegrationFunctions();
+							 ComponentIntegrationFunctions cif = eif.getComponentIntegrationFunctions(cp);
 							List<String> lFunctions = cif.getFunctions();
 							if (node.getMax()>=oldNode.getMax()){//Does the new component has at least as many levels as the old component?
 								for (int i = 0; i < lFunctions.size(); i++) {
-									this.setIntegrationFunction(node.toString(), newModel, (byte) (i+1), lFunctions.get(i));
+									String function = lFunctions.get(i);
+									if (validateIntegrationFunction(function)){
+									this.setIntegrationFunction(node.toString(), newModel, (byte) (i+1), lFunctions.get(i));}
 								}
-								if (node.getMax()>oldNode.getMax())
-									this.getProjectFeatures().addReplaceMessages("The integration component "+ node.toString() + " has now a higher maximum value");}
+
+							}
 							else {//The new component has less levels then the old component.
 								for (int i = 0; i < node.getMax(); i++) {
 									this.setIntegrationFunction(node.toString(), newModel, (byte) (i+1), lFunctions.get(i));
-									this.getProjectFeatures().addReplaceMessages("The integration component "+ node.toString() + " has now a lower maximum value");
-								}
+	}
 								//TODO: VALIDATE INTEGRATION FUNCTION
 							}}}
 
-					else if(!node.isInput() && oldNode.isInput()){//The new node is an input but the oldNode wasnt
-						if (!oldEpi.isIntegrationComponent(oldNode)){
-							this.getProjectFeatures().addReplaceMessages("The input component "+ node.toString() + " is now an internal component");
-							for (int y = 0; y < this.getY(); y++) {
-								for (int x = 0; x < this.getX(); x++) {
-									byte value = oldEpi.getEpitheliumGrid().getCellValue(x, y, oldNode.toString());
-									if (node.getMax()>=oldNode.getMax() || (node.getMax()<oldNode.getMax() && value<=node.getMax())){
-										this.getEpitheliumGrid().setCellComponentValue(x, y, node.toString(), value);
-									}}}
-							if (node.getMax()>oldNode.getMax()){
-								this.getProjectFeatures().addReplaceMessages("The component "+ node.toString() + " has now a higher maximum value");
-							}
-							if (node.getMax()<oldNode.getMax()){
-								this.getProjectFeatures().addReplaceMessages("The component "+ node.toString() + " has now a lower maximum value");
-							}
-						}}
-
-					else if(node.isInput() && !oldNode.isInput()){
-						this.getProjectFeatures().addReplaceMessages("The internal component "+ node.toString() + " is now set as a environment input");
-						for (int y = 0; y < this.getY(); y++) {
-							for (int x = 0; x < this.getX(); x++) {
-								byte value = oldEpi.getEpitheliumGrid().getCellValue(x, y, oldNode.toString());
-								if (node.getMax()>=oldNode.getMax() || (node.getMax()<oldNode.getMax() && value<=node.getMax())){
-									this.getEpitheliumGrid().setCellComponentValue(x, y, node.toString(), value);
-								}}
-							if (node.getMax()>oldNode.getMax()){
-								this.getProjectFeatures().addReplaceMessages("The component "+ node.toString() + " has now a higher maximum value");
-							}
-							if (node.getMax()<oldNode.getMax()){
-								this.getProjectFeatures().addReplaceMessages("The component "+ node.toString() + " has now a lower maximum value");
-							}
-						}}
-
-					else if(!node.isInput() && !oldNode.isInput()){
-
-						for (int y = 0; y < this.getY(); y++) {
-							for (int x = 0; x < this.getX(); x++) {
-								byte value = oldEpi.getEpitheliumGrid().getCellValue(x, y, oldNode.toString());
-								if (node.getMax()>=oldNode.getMax() || (node.getMax()<oldNode.getMax() && value<=node.getMax())){
-									this.getEpitheliumGrid().setCellComponentValue(x, y, node.toString(), value);
-								}}}
-						if (node.getMax()>oldNode.getMax()){
-							this.getProjectFeatures().addReplaceMessages("The component "+ node.toString() + " has now a higher maximum value");
-						}
-						if (node.getMax()<oldNode.getMax()){
-							this.getProjectFeatures().addReplaceMessages("The component "+ node.toString() + " has now a lower maximum value");
-						}
-						commonNodeNames.add(node.toString());
-					}}}}
+				}}}
 
 		this.validateAllIntegrationFunctions(oldEpi,oldModel,newModel);
 		this.replacePriorities(oldEpi,oldModel,newModel,commonNodeNames);
-		this.replacePerturbations(oldEpi,oldModel,newModel,commonNodeNames);
 		
+		if (this.getModelPerturbations(oldModel)!=null){
+			ModelPerturbations mpClone = this.getModelPerturbations(oldModel).clone();
+			EpitheliumPerturbations epClone = this.getEpitheliumPerturbations().clone();
+			this.replacePerturbations(gridCopy,mpClone,epClone,oldModel,newModel,commonNodeNames);
+		}
 	}
 
-	//THis make sense for all the other integration systems
+
+	private boolean validateIntegrationFunction(String func){
+		
+		boolean flag = false;
+		
+		
+		
+		return flag;
+	}
+
+	//This make sense for all the other integration systems
 	private void validateAllIntegrationFunctions(Epithelium oldEpi, LogicalModel oldModel, LogicalModel newModel) {
 		//		// TODO MESSAGE
 
@@ -420,7 +416,6 @@ public class Epithelium {
 		}
 	}
 
-
 	private Set<String> getRegulators(String integrationString) {
 		// TODO Auto-generated method stub
 		String[] regulatorsArray = integrationString.split("\\&|\\!|\\|");
@@ -436,6 +431,22 @@ public class Epithelium {
 		}
 		return regulatorsSet;
 	}
+	
+	
+	
+	private void replaceInitialConditions(NodeInfo oldNode, NodeInfo newNode, EpitheliumGrid oldGrid){
+		
+		for (int y = 0; y < this.getY(); y++) {
+			for (int x = 0; x < this.getX(); x++) {
+				byte value = oldGrid.getCellValue(x, y, oldNode.toString());
+				if (value>0){
+
+				if (value<=newNode.getMax()){
+
+					this.getEpitheliumGrid().setCellComponentValue(x, y, newNode.toString(), value);
+	
+				}}}	}
+	}
 
 	/** 
 	 * @param epithelium
@@ -447,6 +458,10 @@ public class Epithelium {
 	public void replacePriorities(Epithelium oldEpi, LogicalModel oldModel, LogicalModel newModel, List<String> commonNodeNames) {
 		ModelPriorityClasses oldMpc = oldEpi.getPriorityClasses(oldModel);
 
+		System.out.println(commonNodeNames);
+		
+		Boolean hasChanged = false;
+		
 		String sPCs = "";
 		for (int idxPC = 0; idxPC < oldMpc.size(); idxPC++) {
 			if (!sPCs.isEmpty())
@@ -458,34 +473,45 @@ public class Epithelium {
 			for (int pcVarIndex = 0; pcVarIndex<pcVars.size();++pcVarIndex){
 				String component = pcVars.get(pcVarIndex);
 				if (commonNodeNames.contains(component)){
+					
 					newPCVars.add(component);
 				}
 				if (pcVarIndex==0 && idxPC == 0){
 					for (NodeInfo node:newModel.getNodeOrder()){
 						if (!commonNodeNames.contains(node.toString()) && !node.isInput()){
+							System.out.println(node);
 							newPCVars.add(node.toString());
 						}}}}
-			sPCs += join(newPCVars, ",");}
-		this.setPriorityClasses(newModel, sPCs);}
+			sPCs += join(newPCVars, ",");
+			
+			if (!pcVars.equals(newPCVars)) hasChanged= true;}
+		this.setPriorityClasses(newModel, sPCs);
+		
+		
+		if (hasChanged){
+			String msg = ""+this.toString() +": " + "Priorities were changed.";
+		if (!this.getProjectFeatures().getReplaceMessages().contains(msg)){
+			this.getProjectFeatures().addReplaceMessages(msg);
+		}}
+	}
+	
 
 
-	private void replacePerturbations(Epithelium oldEpi, LogicalModel oldModel, LogicalModel newModel,
-			List<String> commonNodeNames) {
+	private void replacePerturbations(EpitheliumGrid gridCopy, ModelPerturbations mpClone,
+			EpitheliumPerturbations epClone, LogicalModel oldModel, LogicalModel newModel,
+			List<String> commonNodeNames)  {
 
 		ModelPerturbations oldPerturbations = this.perturbations.getModelPerturbations(oldModel);
 		List<AbstractPerturbation> perturbation = new ArrayList<AbstractPerturbation>();
-
+		Boolean hasChanged = false;
 		if (oldPerturbations!=null){
 			for (AbstractPerturbation p :oldPerturbations.getAllPerturbations()){
-				List<String> perturbedComponents = new ArrayList<String>();
 				int indexPerturbationShared = 0;
 				for (String pert: p.toString().split(",")){
-
 					if (commonNodeNames.contains(pert.trim().split(" ")[0].trim())){
 						indexPerturbationShared = ++indexPerturbationShared;}
 				}
 				if (p.toString().contains(",")){
-
 					if(indexPerturbationShared==p.toString().split(",").length){
 						perturbation.add(p);
 						this.addPerturbation(newModel, p);
@@ -494,30 +520,37 @@ public class Epithelium {
 					if(indexPerturbationShared==1){
 						perturbation.add(p);
 						this.addPerturbation(newModel, p);
-					}}}
+					}}
+				if (!perturbation.contains(p)) hasChanged=true;
+			}
 
 
 			//Add perturbation to cell
 			for (int y = 0; y < this.getY(); y++) {
 				for (int x = 0; x < this.getX(); x++) {
-					AbstractPerturbation p = oldEpi.getEpitheliumGrid().getPerturbation(x, y);
+					AbstractPerturbation p = gridCopy.getPerturbation(x, y);
+					
 					if (p!=null){
-						Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x, y);
+						Boolean apply = false;
+//						System.out.println(p);
+//						Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x, y);
 						List<Tuple2D<Integer>> tmpList = new ArrayList<Tuple2D<Integer>>();
-						Color c = oldEpi.getModelPerturbations(oldModel).getPerturbationColor(p);
+						Color c = mpClone.getPerturbationColor(p);
+						
 						if (perturbation.contains(p)){
-
-							tmpList.add(tmpTuple);
+							tmpList.add(new Tuple2D<Integer>(x, y));
 							this.getEpitheliumGrid().setPerturbation(x, y, p);
-
-
-						}this.applyPerturbation(newModel, p, c,tmpList);
-					}
-				}}}
+							apply = true;
+						}	
+						if (apply)
+						this.applyPerturbation(newModel, p, c,tmpList);
+					}}}}
 		
-		if (oldEpi.getEpitheliumPerturbations().equals(this.getEpitheliumPerturbations())){
-			this.getProjectFeatures().addReplaceMessages("Perturbations were changed.");
-		}
+		if (hasChanged){
+			String msg = ""+this.toString() +": " + "Perturbations were changed.";
+		if (!this.getProjectFeatures().getReplaceMessages().contains(msg)){
+			this.getProjectFeatures().addReplaceMessages(msg);
+		}}
 	}
 
 

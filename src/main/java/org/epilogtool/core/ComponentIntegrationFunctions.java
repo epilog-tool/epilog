@@ -40,10 +40,16 @@ public class ComponentIntegrationFunctions {
 			expression = spec.parse(expr);
 		} catch (RecognitionException e) {
 			e.printStackTrace();
+			
 		}
 		return expression;
 	}
 
+	public boolean validFunction(String expr){
+		IntegrationFunctionSpecification spec = new IntegrationFunctionSpecification();
+		return spec.validFunction(expr);
+	}
+	
 	public void setFunctionAtLevel(byte value, String function) {
 		this.stringExpr[value - 1] = function;
 		this.computedExpr[value - 1] = this.string2Expression(function);
@@ -51,7 +57,10 @@ public class ComponentIntegrationFunctions {
 
 	public boolean isValidAtLevel(byte level) {
 		// TODO 1: use parser to validate syntax
+		System.out.println(this.getFunctions().get(level-1));
+		//
 		// TODO 2: use nodeID to validate semantics (nodeID, values, ...)
+	
 		return true;
 	}
 

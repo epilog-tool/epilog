@@ -22,6 +22,7 @@ conjunction    returns [IntegrationFunctionSpecification.IntegrationExpression v
 	;
 		
 	
+
 atom	 returns [ IntegrationFunctionSpecification.IntegrationExpression value]
 	: id=ID '(' threshold=ENUMBER ',' min=ENUMBER ',' max=ENUMBER ')' 
 	{ $value = IntegrationFunctionSpecification.createAtom($id.text,$threshold.text,$max.text,$min.text);}
@@ -35,6 +36,10 @@ atom	 returns [ IntegrationFunctionSpecification.IntegrationExpression value]
 	{ $value = IntegrationFunctionSpecification.createAtom($id.text,$threshold.text,$min.text,$max.text,$dist.text);}
 	| id=ID '(' threshold=RANGE ',' min=ENUMBER ',' max=ENUMBER ',' dist=RANGE ')'
 	{ $value = IntegrationFunctionSpecification.createAtom($id.text,$threshold.text,$min.text,$max.text,$dist.text);}
+	
+	| '(' id1=ID ',' id2=ID ')' '(' threshold=ENUMBER ',' min=ENUMBER ',' max=ENUMBER ')' 
+	{ $value = IntegrationFunctionSpecification.createAtom($id1.text,$id2.text,$threshold.text,$max.text,$min.text);}
+	
 	|'(' exp=expression ')' { $value = IntegrationFunctionSpecification.createAtom($exp.value);}
 	| NOT a=atom { $value = IntegrationFunctionSpecification.createNegation($a.value);}
 	;	

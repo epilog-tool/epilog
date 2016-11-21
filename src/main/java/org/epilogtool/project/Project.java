@@ -172,9 +172,7 @@ public class Project {
 
 		for (String epi: epiList){
 			Epithelium epithelium = this.getEpitheliumFromName(epi);
-			Epithelium oldEpi = epithelium;
-
-			epithelium.replacemodel(oldModel,newModel, oldEpi);
+			epithelium.replacemodel(oldModel,newModel);
 			epithelium.update();
 			}
 		}
