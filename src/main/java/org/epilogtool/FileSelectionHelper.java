@@ -25,26 +25,6 @@ public class FileSelectionHelper {
 		return FileSelectionHelper.saveFileDialog("Save file", filter);
 	}
 	
-	private static String saveFileDialog(String title) {
-		JFileChooser fc = new JFileChooser();
-		fc.setCurrentDirectory(new File(lastDirectory));
-		fc.setFileFilter(new EpilogFileFilter("peps"));
-		fc.setDialogTitle(title);
-		if (fc.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) {
-			return null;
-		}
-		File f = fc.getSelectedFile();
-		if (f == null) {
-			return null;
-		}
-		lastDirectory = fc.getCurrentDirectory().getAbsolutePath();
-		OptionStore.setOption(DIRKEY, lastDirectory);
-
-		return f.getAbsolutePath();
-		
->>>>>>> master
-	}
-	
 	private static String saveFileDialog(String title, String filter) {
 		
 		JFileChooser fc = new JFileChooser();
@@ -65,7 +45,6 @@ public class FileSelectionHelper {
 		OptionStore.setOption(DIRKEY, lastDirectory);
 
 		return f.getAbsolutePath();
-	
 	}
 	
 	
