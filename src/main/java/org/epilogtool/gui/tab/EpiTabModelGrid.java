@@ -40,6 +40,9 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	private Map<LogicalModel, Color> colorMapClone;
 	private JPanel lCenter;
 	private TabProbablyChanged tpc;
+	
+	JToggleButton jtbRectFill;
+	JButton jbApplyAll;
 
 	public EpiTabModelGrid(Epithelium e, TreePath path,
 			ProjChangeNotifyTab projChanged, TabChangeNotifyProj tabChanged,
@@ -58,7 +61,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		JPanel lTopButtons = new JPanel(new FlowLayout());
 		lTopButtons.setBorder(BorderFactory
 				.createTitledBorder("Apply selection"));
-		JButton jbApplyAll = new JButton("Apply All");
+		this.jbApplyAll = new JButton("Apply All");
+		jbApplyAll.setEnabled(false);
 		jbApplyAll.setMargin(new Insets(0, 0, 0, 0));
 		jbApplyAll.addActionListener(new ActionListener() {
 			@Override
@@ -67,7 +71,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 			}
 		});
 		lTopButtons.add(jbApplyAll);
-		JToggleButton jtbRectFill = new JToggleButton("Rectangle Fill", false);
+		this.jtbRectFill = new JToggleButton("Rectangle Fill", false);
+		jtbRectFill.setEnabled(false);
 		jtbRectFill.setMargin(new Insets(0, 0, 0, 0));
 		jtbRectFill.addItemListener(new ItemListener() {
 			@Override
@@ -102,6 +107,12 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		this.isInitialized = true;
 	}
 
+	
+	private void updateButtons() {
+		this.jtbRectFill.setEnabled(true);
+		this.jbApplyAll.setEnabled(true);
+		
+	}
 	private void updateModelList() {
 		this.lCenter.removeAll();
 		ButtonGroup group = new ButtonGroup();
@@ -120,8 +131,10 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 				public void actionPerformed(ActionEvent e) {
 					JRadioComponentButton jrb = (JRadioComponentButton) e
 							.getSource();
+					updateButtons();
 					visualGridModel.setSelModelName(jrb.getComponentText());
 				}
+
 			});
 			this.lCenter.add(jrButton, gbc);
 			group.add(jrButton);
@@ -152,6 +165,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 				}
 			}
 		}
+		
 		visualGridModel.setSelModelName(null);
 		this.revalidate();
 		this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
