@@ -24,8 +24,8 @@ class SimulationAction extends AbstractAction {
 	private static final long serialVersionUID = 1728730440633848251L;
 
 	public SimulationAction() {
-		super("dd");
-		putValue(SHORT_DESCRIPTION, "dd");
+		super("Simulation");
+		putValue(SHORT_DESCRIPTION, "Simulation");
 		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
 		// FrameActionManager.MASK));
 	}

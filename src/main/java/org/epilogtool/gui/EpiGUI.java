@@ -66,7 +66,7 @@ import org.epilogtool.project.Project;
 /**
  * Class that defines the GUI of EPILOG. This is the main window where the GUI is built.
  * Panels (or more specifically containers) can be added. The containers added are:
- * epiMenu 			-> toolbar
+ * epiMenu 			-> toolbar (0-File; )
  * epiMainFrame	    ->
  * epiRightFrame	->
  * projDescPanel    -> Where the SBML panel is stored
@@ -403,15 +403,11 @@ public class EpiGUI extends JFrame {
 		this.projDescPanel.updateSBMLMenuItems();
 
 		// Epithelium Menu
-		bIsValid = this.projDescPanel.countModels() > 0;
-		JMenu sbml = this.epiMenu.getMenu(2);
-		sbml.setEnabled(bIsValid);
-		sbml.getItem(1).setEnabled(false);
-		sbml.getItem(2).setEnabled(false);
-		sbml.getItem(3).setEnabled(false);
 		this.epiTreePanel.updateEpiMenuItems();
-
 		this.epiTreePanel.validateJTreeExpansion();
+		
+		//Tools Menu
+		
 	}
 
 	private boolean canClose(String msg) {
@@ -720,10 +716,7 @@ public class EpiGUI extends JFrame {
 			this.epiRightFrame.removeTabAt(0);
 		}
 		this.projDescPanel.clean();
-		// SBML Menu
-		JMenu sbml = this.epiMenu.getMenu(1);
-		sbml.getItem(0).setEnabled(false);
-		sbml.getItem(1).setEnabled(false);
+
 	}
 
 	public void selectTabJTreePath(TreePath path) {
@@ -880,6 +873,41 @@ public class EpiGUI extends JFrame {
 			}
 		}
 	}
+	public void openMonteCarloTab() {
+		// JTree
+		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
+		// TabbedPane
+		int tabIndex = -1;
+		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
+			EpiTab epiInTab = (EpiTab) this.epiRightFrame.getComponentAt(i);
+			if (epiInTab.containsEpithelium(epi)
+					&& epiInTab.getName().endsWith("MonteCarlo")) {
+				tabIndex = i;
+				break;
+			}
+		}
+		EpiTab tab;
+		if (tabIndex < 0) {
+			ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
+			TreePath path = this.epiTreePanel.getSelectionEpiPath();
+			tab = new EpiTabSimulation(epi,
+					path, projChanged,
+					this.project.getProjectFeatures(), new SimulationEpiClone());
+			String title = epi.getName() + ":MonteCarlo";
+			this.epiRightFrame.addTab(title, tab);
+			tab.initialize();
+
+			CloseTabButton tabButton = new CloseTabButton(title,
+					this.epiRightFrame);
+			tabIndex = this.epiRightFrame.getTabCount() - 1;
+			this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
+
+		} else {
+			tab = (EpiTab) this.epiRightFrame.getComponentAt(tabIndex);
+		}
+		// Select existing Tab
+		this.epiRightFrame.setSelectedIndex(tabIndex);
+	}
 
 	public void openSimulationTab() {
 		// JTree
@@ -917,41 +945,7 @@ public class EpiGUI extends JFrame {
 		this.epiRightFrame.setSelectedIndex(tabIndex);
 	}
 	
-	public void openMonteCarloTab() {
-		// JTree
-		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
-		// TabbedPane
-		int tabIndex = -1;
-		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
-			EpiTab epiInTab = (EpiTab) this.epiRightFrame.getComponentAt(i);
-			if (epiInTab.containsEpithelium(epi)
-					&& epiInTab.getName().endsWith("MonteCarlo")) {
-				tabIndex = i;
-				break;
-			}
-		}
-		EpiTab tab;
-		if (tabIndex < 0) {
-			ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
-			TreePath path = this.epiTreePanel.getSelectionEpiPath();
-			tab = new EpiTabSimulation(epi,
-					path, projChanged,
-					this.project.getProjectFeatures(), new SimulationEpiClone());
-			String title = epi.getName() + ":MonteCarlo";
-			this.epiRightFrame.addTab(title, tab);
-			tab.initialize();
 
-			CloseTabButton tabButton = new CloseTabButton(title,
-					this.epiRightFrame);
-			tabIndex = this.epiRightFrame.getTabCount() - 1;
-			this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
-
-		} else {
-			tab = (EpiTab) this.epiRightFrame.getComponentAt(tabIndex);
-		}
-		// Select existing Tab
-		this.epiRightFrame.setSelectedIndex(tabIndex);
-	}
 
 
 	public void restartSimulationTab() {
@@ -1021,5 +1015,6 @@ public class EpiGUI extends JFrame {
 			validateGUI();
 		}
 	}
+	
 
 }
