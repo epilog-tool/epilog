@@ -541,32 +541,32 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 		this.lPresentComps = new ArrayList<String>();
 
-		Set<String> sProperNodeIDs = new HashSet<String>();
+		Set<String> sInternalNodeIDs = new HashSet<String>();
 		Set<String> sInputNodeIDs = new HashSet<String>();
 		Set<String> sCommonNodeIDs = new HashSet<String>();
 
-		List<NodeInfo> lProper = new ArrayList<NodeInfo>(this.epithelium
+		List<NodeInfo> lInternal = new ArrayList<NodeInfo>(this.epithelium
 				.getProjectFeatures().getModelsNodeInfos(lModels, false));
 
-		for (NodeInfo node : lProper)
-			sProperNodeIDs.add(node.getNodeID());
+		for (NodeInfo node : lInternal)
+			sInternalNodeIDs.add(node.getNodeID());
 
 		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(this.epithelium
 				.getProjectFeatures().getModelsNodeInfos(lModels, true));
 
 		for (NodeInfo node : lInputs) {
-			if (sProperNodeIDs.contains(node.getNodeID())) {
+			if (sInternalNodeIDs.contains(node.getNodeID())) {
 				sCommonNodeIDs.add(node.getNodeID());
-				sProperNodeIDs.remove(node.getNodeID());
+				sInternalNodeIDs.remove(node.getNodeID());
 			} else {
 				sInputNodeIDs.add(node.getNodeID());
 			}
 		}
 
 		if (!sCommonNodeIDs.isEmpty())
-			this.setComponentTypeList(sCommonNodeIDs, "Input/Proper Components");
-		if (!sProperNodeIDs.isEmpty())
-			this.setComponentTypeList(sProperNodeIDs, "Proper Components");
+			this.setComponentTypeList(sCommonNodeIDs, "Input/Internal Components");
+		if (!sInternalNodeIDs.isEmpty())
+			this.setComponentTypeList(sInternalNodeIDs, "Internal Components");
 		if (!sInputNodeIDs.isEmpty())
 			this.setComponentTypeList(sInputNodeIDs, "Input Components");
 		this.visualGridSimulation.paintComponent(this.visualGridSimulation

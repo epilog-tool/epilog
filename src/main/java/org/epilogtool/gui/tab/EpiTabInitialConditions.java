@@ -275,6 +275,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		return jcb;
 	}
 
+	//Assign a new color to a component
 	private void setNewColor(JButton jb) {
 		String nodeID = jb.getToolTipText();
 		Color newColor = JColorChooser.showDialog(jb, "Color chooser - "
@@ -293,6 +294,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		}
 	}
 
+	//When a new model is selected, 
 	private void updateComponentList(String sModel) {
 		this.jpRCenter.removeAll();
 		this.mNode2ValueSelected.clear();
@@ -301,17 +303,17 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		LogicalModel m = this.projectFeatures.getModel(sModel);
 		this.visualGridICs.setModel(m);
 
-		// Proper components
+		// Internal components
 		JPanel jpRRCTop = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(1, 5, 1, 0);
 		jpRRCTop.setBorder(BorderFactory
-				.createTitledBorder("Proper components"));
-		List<String> lProper = new ArrayList<String>(this.epithelium
+				.createTitledBorder("Internal components"));
+		List<String> lInternal = new ArrayList<String>(this.epithelium
 				.getProjectFeatures().getModelNodeIDs(m, false));
-		Collections.sort(lProper, ObjectComparator.STRING);
+		Collections.sort(lInternal, ObjectComparator.STRING);
 		int y = 0;
-		for (String nodeID : lProper) {
+		for (String nodeID : lInternal) {
 			gbc.gridy = y;
 			y++;
 			this.lNodeInPanel.add(nodeID);
