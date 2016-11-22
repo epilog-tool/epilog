@@ -19,11 +19,13 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
@@ -136,8 +138,12 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		this.rTop
 				.setBorder(BorderFactory.createTitledBorder("Display options"));
-		left.add(this.rTop, BorderLayout.NORTH);
+		
+		
 
+		left.add(rTop, BorderLayout.NORTH);
+		
+		//INternal and Proper compontes JScrollPanel
 		this.jpRCenter = new JPanel();
 		this.jpRCenter.setLayout(new BoxLayout(jpRCenter, BoxLayout.Y_AXIS));
 		JScrollPane jscroll = new JScrollPane(this.jpRCenter);
@@ -191,19 +197,47 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		rBottom.add(rBottomApplyClear);
 		rBottom.add(rBottomRect);
 		
+
 		//Create Panel for the random initial conditions
 		
-		JPanel RBottomRandomInitialConditions = new JPanel(new BorderLayout());
+		JPanel RRandomInitialConditions = new JPanel(new BorderLayout());
 		
-//		RBottomRandomInitialConditions.setBorder(BorderFactory.createTitledBorder("Random Initial Conditions"));
+		RRandomInitialConditions.setBorder(BorderFactory.createTitledBorder("Random Initial Conditions"));
+		ButtonGroup group = new ButtonGroup();
+//		JCheckBox randomInitialConditions = new JCheckBox("Random Initial Conditions");
+		JRadioButton allNodes = new JRadioButton ("All components");
+		JRadioButton selectedNodes = new JRadioButton ("Selected components");
 		
-		JCheckBox randomInitialConditions = new JCheckBox("Random Initial Conditions");
-		RBottomRandomInitialConditions.add(randomInitialConditions);
+		group.add(allNodes);
+		group.add(selectedNodes);
 		
+		JButton jbApplyRandom = ButtonFactory.getNoMargins("Apply");
+		jbApplyRandom.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				for (String nodeID : lNodeInPanel) {
+					if (mNode2Checkbox.get(nodeID).isSelected()) {
+						mNode2ValueSelected.put(nodeID, (Byte) mNode2Combobox
+								.get(nodeID).getSelectedItem());
+					}
+				}
+				visualGridICs.applyDataToAll();
+			}
+		});
 		
-		rBottom.add(RBottomRandomInitialConditions);
+//		RBottomRandomInitialConditions.add(randomInitialConditions);
+		RRandomInitialConditions.add(allNodes, BorderLayout.NORTH);
+		RRandomInitialConditions.add(selectedNodes, BorderLayout.CENTER);
+		RRandomInitialConditions.add(jbApplyRandom, BorderLayout.SOUTH);
 		
-		left.add(rBottom, BorderLayout.SOUTH);
+		JPanel RRbottom = new JPanel(new BorderLayout());
+		
+		RRbottom.add(rBottom, BorderLayout.NORTH);
+		RRbottom.add(RRandomInitialConditions, BorderLayout.SOUTH);
+		
+
+		
+		left.add(RRbottom, BorderLayout.SOUTH);
 
 		JPanel jpLeftAggreg = new JPanel(new BorderLayout());
 		jpLeftAggreg.add(left, BorderLayout.LINE_START);
@@ -315,17 +349,22 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		LogicalModel m = this.projectFeatures.getModel(sModel);
 		this.visualGridICs.setModel(m);
-
-		// Internal components
-		JPanel jpRRCTop = new JPanel(new GridBagLayout());
+		
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(1, 5, 1, 0);
-		jpRRCTop.setBorder(BorderFactory
-				.createTitledBorder("Internal components"));
+		int y = 0;
+
+		// Internal components
+
 		List<String> lInternal = new ArrayList<String>(this.epithelium
 				.getProjectFeatures().getModelNodeIDs(m, false));
 		Collections.sort(lInternal, ObjectComparator.STRING);
-		int y = 0;
+		
+		if (lInternal.size()>0){
+		
+		JPanel jpRRCTop = new JPanel(new GridBagLayout());
+		jpRRCTop.setBorder(BorderFactory
+				.createTitledBorder("Internal components"));
 		for (String nodeID : lInternal) {
 			gbc.gridy = y;
 			y++;
@@ -346,7 +385,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			jpRRCTop.add(jbTmp, gbc);
 		}
 		this.jpRCenter.add(jpRRCTop);
-
+		}
 		// Input components
 		
 		List<String> lInputs = new ArrayList<String>(this.epithelium
@@ -359,11 +398,9 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				lEnvInputCompsFromSelectedModels.add(nodeID);
 			}
 		}
-		
+		//If no env inputs then the box is not created
 		if (lEnvInputCompsFromSelectedModels.size()!=0)
 			{
-			System.out.println("There are no inputs");
-			
 		JPanel jpRRCBottom = new JPanel(new GridBagLayout());
 		gbc = new GridBagConstraints();
 		gbc.insets = new Insets(1, 5, 1, 0);
@@ -446,7 +483,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 	@Override
 	public void applyChange() {
-		System.out.println("EpiTab.applyChange");
+//		System.out.println("EpiTab.applyChange");
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
 				this.epithelium.getEpitheliumGrid().getModelSet());
 		// Update grid
