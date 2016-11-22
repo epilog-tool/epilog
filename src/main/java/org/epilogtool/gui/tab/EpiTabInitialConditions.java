@@ -190,6 +190,19 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		rBottom.add(rBottomApplyClear);
 		rBottom.add(rBottomRect);
+		
+		//Create Panel for the random initial conditions
+		
+		JPanel RBottomRandomInitialConditions = new JPanel(new BorderLayout());
+		
+//		RBottomRandomInitialConditions.setBorder(BorderFactory.createTitledBorder("Random Initial Conditions"));
+		
+		JCheckBox randomInitialConditions = new JCheckBox("Random Initial Conditions");
+		RBottomRandomInitialConditions.add(randomInitialConditions);
+		
+		
+		rBottom.add(RBottomRandomInitialConditions);
+		
 		left.add(rBottom, BorderLayout.SOUTH);
 
 		JPanel jpLeftAggreg = new JPanel(new BorderLayout());
@@ -335,11 +348,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.jpRCenter.add(jpRRCTop);
 
 		// Input components
-		JPanel jpRRCBottom = new JPanel(new GridBagLayout());
-		gbc = new GridBagConstraints();
-		gbc.insets = new Insets(1, 5, 1, 0);
-		jpRRCBottom.setBorder(BorderFactory
-				.createTitledBorder("Input components"));
+		
 		List<String> lInputs = new ArrayList<String>(this.epithelium
 				.getProjectFeatures().getModelNodeIDs(m, true));
 		Collections.sort(lInputs, ObjectComparator.STRING);
@@ -350,6 +359,17 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				lEnvInputCompsFromSelectedModels.add(nodeID);
 			}
 		}
+		
+		if (lEnvInputCompsFromSelectedModels.size()!=0)
+			{
+			System.out.println("There are no inputs");
+			
+		JPanel jpRRCBottom = new JPanel(new GridBagLayout());
+		gbc = new GridBagConstraints();
+		gbc.insets = new Insets(1, 5, 1, 0);
+		jpRRCBottom.setBorder(BorderFactory
+				.createTitledBorder("Input components"));
+
 		y = 0;
 		for (String nodeID : lEnvInputCompsFromSelectedModels) {
 			gbc.gridy = y;
@@ -372,9 +392,10 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		}
 		this.jpRCenter.add(jpRRCBottom);
 
-		// Re-Paint
-		this.getParent().repaint();
+	
 	}
+		// Re-Paint
+		this.getParent().repaint();}
 
 	@Override
 	protected void buttonReset() {
