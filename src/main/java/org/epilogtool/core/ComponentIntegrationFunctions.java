@@ -45,10 +45,10 @@ public class ComponentIntegrationFunctions {
 		return expression;
 	}
 
-	public boolean validFunction(String expr){
-		IntegrationFunctionSpecification spec = new IntegrationFunctionSpecification();
-		return spec.validFunction(expr);
-	}
+//	public boolean validFunction(String expr){
+//		IntegrationFunctionSpecification spec = new IntegrationFunctionSpecification();
+//		return spec.validFunction(expr);
+//	}
 	
 	public void setFunctionAtLevel(byte value, String function) {
 		this.stringExpr[value - 1] = function;
