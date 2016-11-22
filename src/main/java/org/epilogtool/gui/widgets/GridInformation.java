@@ -141,8 +141,8 @@ public class GridInformation extends JPanel {
 			// Separation
 			this.minimalSpace(gbc, ++y);
 
-			// Proper values
-			jlTmp = new JLabel("Proper:");
+			// Internal values
+			jlTmp = new JLabel("Internal:");
 			this.constraints(gbc, 0, ++y, 1);
 			this.jCellPanel.add(jlTmp, gbc);
 			gbc.gridwidth = 1;
