@@ -34,6 +34,12 @@ public class Simulation {
 	private EpitheliumGrid neighbouringEpi;
 	private List<EpitheliumGrid> gridHistory;
 	private List<String> gridHashHistory;
+	
+	public  List<Integer> schuffledInstances;
+	public  List<Integer> runningSchuffledInstances;
+	public List<Double> exponentialInstances;
+	private ArrayList<Double> exponentialInstances_aux;
+	
 	private boolean stable;
 	private boolean hasCycle;
 	// Perturbed models cache - avoids repeatedly computing perturbations at
@@ -62,6 +68,10 @@ public class Simulation {
 		this.stable = false;
 		this.hasCycle = false;
 		this.buildPriorityUpdaterCache();
+		
+		this.schuffledInstances = schuffledInstances;
+		this.runningSchuffledInstances = runningSchuffledInstances;
+		this.exponentialInstances = null;
 	}
 
 	private EpitheliumGrid restrictGridWithPerturbations(EpitheliumGrid grid) {

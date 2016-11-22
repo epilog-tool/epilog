@@ -164,11 +164,8 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
 				JComboBox<String> jcUpdateMode = (JComboBox<String>) e.getSource();
-				String er = (String) jcUpdateMode.getSelectedItem();
-				//TODO Updatemode
 				
-				System.out.println(er);
-				
+				changeUpdateMode((String) jcUpdateMode.getSelectedItem());
 			}
 		});
 		
@@ -178,6 +175,10 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		this.center.add(jpUpdateMode,BorderLayout.SOUTH);
 	}
 
+	private void changeUpdateMode(String updateMode){
+		this.epithelium.setUpdateMode(updateMode);
+	}
+	
 	private void generateAlphaSlider() {
 		JPanel jpAlphaInfo = new JPanel(new BorderLayout());
 		jpAlphaInfo.add(new JLabel("Current alpha: "), BorderLayout.LINE_START);
