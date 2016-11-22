@@ -916,6 +916,43 @@ public class EpiGUI extends JFrame {
 		// Select existing Tab
 		this.epiRightFrame.setSelectedIndex(tabIndex);
 	}
+	
+	public void openMonteCarloTab() {
+		// JTree
+		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
+		// TabbedPane
+		int tabIndex = -1;
+		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
+			EpiTab epiInTab = (EpiTab) this.epiRightFrame.getComponentAt(i);
+			if (epiInTab.containsEpithelium(epi)
+					&& epiInTab.getName().endsWith("MonteCarlo")) {
+				tabIndex = i;
+				break;
+			}
+		}
+		EpiTab tab;
+		if (tabIndex < 0) {
+			ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
+			TreePath path = this.epiTreePanel.getSelectionEpiPath();
+			tab = new EpiTabSimulation(epi,
+					path, projChanged,
+					this.project.getProjectFeatures(), new SimulationEpiClone());
+			String title = epi.getName() + ":MonteCarlo";
+			this.epiRightFrame.addTab(title, tab);
+			tab.initialize();
+
+			CloseTabButton tabButton = new CloseTabButton(title,
+					this.epiRightFrame);
+			tabIndex = this.epiRightFrame.getTabCount() - 1;
+			this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
+
+		} else {
+			tab = (EpiTab) this.epiRightFrame.getComponentAt(tabIndex);
+		}
+		// Select existing Tab
+		this.epiRightFrame.setSelectedIndex(tabIndex);
+	}
+
 
 	public void restartSimulationTab() {
 

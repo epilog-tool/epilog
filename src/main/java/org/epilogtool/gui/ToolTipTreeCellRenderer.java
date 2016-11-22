@@ -62,6 +62,8 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 							tipKey = this.getTooltipEpithelialUpdateScheme(epi);
 						} else if (sLeaf.equals("Simulation")) {
 							tipKey = this.getTooltipSimulation(epi);
+						} else if (sLeaf.equals("MonteCarlo")) {
+							tipKey = this.getTooltipSimulation(epi);
 						}
 					}
 				}
