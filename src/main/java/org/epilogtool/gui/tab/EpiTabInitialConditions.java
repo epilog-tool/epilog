@@ -265,6 +265,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			lNodes.add(node);
 		}
 			visualGridICs.setRandomValue(lNodes);
+		
 	
 		
 	}

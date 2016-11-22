@@ -64,6 +64,8 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 
 	private JPanel jpSigma;
 	private JPanel jpSigmaModelSelection;
+	
+	private JPanel jpUpdateMode;
 
 	private Map<ComponentPair, JSlider> mCP2Sliders;
 	private Map<JSlider, Set<ComponentPair>> mSliders2CP;
@@ -139,6 +141,41 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		// this.jspSigmaSliderScroller.add(this.jpSigmaSliderPanel);
 		this.updateSigmaSlidersScrollPane(this.selectedModel);
 		this.isInitialized = true;
+		
+		
+		//Updating Mode selector
+		
+		this.jpUpdateMode = new JPanel(new BorderLayout());
+		this.jpUpdateMode.setBorder(BorderFactory
+				.createTitledBorder("Select Updating Mode"));
+		
+		String[] lUpdatemode = new String[5];
+		
+		lUpdatemode[0]="Synchronous";
+		lUpdatemode[1]="Asynchronous: Random independent";
+		lUpdatemode[2]="Asynchronous: Random Order";
+		lUpdatemode[3]="Asynchronous: Cyclic Order";
+		lUpdatemode[4]="Asynchronous: Exponential clocked";
+		
+		JComboBox<String> jcUpdateMode = new JComboWideBox(lUpdatemode);
+		
+		jcUpdateMode.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				@SuppressWarnings("unchecked")
+				JComboBox<String> jcUpdateMode = (JComboBox<String>) e.getSource();
+				String er = (String) jcUpdateMode.getSelectedItem();
+				//TODO Updatemode
+				
+				System.out.println(er);
+				
+			}
+		});
+		
+		
+		
+		this.jpUpdateMode.add(jcUpdateMode);
+		this.center.add(jpUpdateMode,BorderLayout.SOUTH);
 	}
 
 	private void generateAlphaSlider() {
