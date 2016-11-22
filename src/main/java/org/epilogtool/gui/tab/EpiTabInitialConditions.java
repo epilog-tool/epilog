@@ -51,6 +51,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private EpitheliumGrid epiGridClone;
 	private List<String> lNodeInPanel;
 	private Map<String, Byte> mNode2ValueSelected;
+	
 	// Reference for all Nodes
 	private Map<String, JButton> mNode2JButton;
 	private Map<String, JCheckBox> mNode2Checkbox;
@@ -60,6 +61,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private JPanel jpRCenter;
 	private GridInformation lRight;
 	private JPanel rTop;
+	
+	private LogicalModel selectedModel;
 
 	public EpiTabInitialConditions(Epithelium e, TreePath path,
 			ProjChangeNotifyTab projChanged, TabChangeNotifyProj tabChanged,
@@ -102,6 +105,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				this.epithelium.getEpitheliumGrid().getModelSet());
 		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
 		this.rTop.add(jcbSBML);
+		this.selectedModel = this.epithelium.getProjectFeatures().getModel((String) jcbSBML.getSelectedItem());
 
 		// Select / Deselect buttons
 		JPanel rTopSel = new JPanel(new FlowLayout());
@@ -208,6 +212,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		JRadioButton allNodes = new JRadioButton ("All components");
 		JRadioButton selectedNodes = new JRadioButton ("Selected components");
 		
+		allNodes.setSelected(true);
 		group.add(allNodes);
 		group.add(selectedNodes);
 		
@@ -215,14 +220,17 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		jbApplyRandom.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
+				List<String> nodes = new ArrayList<String>();
 				for (String nodeID : lNodeInPanel) {
-					if (mNode2Checkbox.get(nodeID).isSelected()) {
-						mNode2ValueSelected.put(nodeID, (Byte) mNode2Combobox
-								.get(nodeID).getSelectedItem());
+					if (allNodes.isSelected() | (selectedNodes.isSelected() & mNode2Checkbox.get(nodeID).isSelected())) {
+						nodes.add(nodeID);
+						
 					}
-				}
-				visualGridICs.applyDataToAll();
+					}
+				randomMarkCells(nodes);
 			}
+
 		});
 		
 //		RBottomRandomInitialConditions.add(randomInitialConditions);
@@ -248,6 +256,18 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.isInitialized = true;
 	}
 
+	private void randomMarkCells(List<String> nodes) {
+		// TODO Auto-generated method stub
+		List<NodeInfo> lNodes = new ArrayList<NodeInfo>();
+		for (String sNode: nodes){
+		NodeInfo node = this.epithelium.getProjectFeatures().getNodeInfo(sNode, this.selectedModel);
+		if (!node.isInput())
+			lNodes.add(node);
+		}
+			visualGridICs.setRandomValue(lNodes);
+	
+		
+	}
 	private void createGUIForModel(LogicalModel m) {
 		for (NodeInfo node : m.getNodeOrder()) {
 			String nodeID = node.getNodeID();
@@ -316,10 +336,15 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
 				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
+				setSelectedModel((String) jcb.getSelectedItem());
 				updateComponentList((String) jcb.getSelectedItem());
 			}
 		});
 		return jcb;
+	}
+	
+	private void setSelectedModel(String model){
+		this.selectedModel = this.projectFeatures.getModel(model);
 	}
 
 	//Assign a new color to a component
@@ -341,7 +366,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		}
 	}
 
-	//When a new model is selected, 
+	//When a new model is selected, and at the beggining 
 	private void updateComponentList(String sModel) {
 		this.jpRCenter.removeAll();
 		this.mNode2ValueSelected.clear();
