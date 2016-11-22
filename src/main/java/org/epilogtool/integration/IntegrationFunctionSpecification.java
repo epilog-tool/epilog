@@ -313,13 +313,13 @@ public class IntegrationFunctionSpecification {
 			ANTLRStringStream in = new ANTLRStringStream(specificationString);
 			
 			IntegrationGrammarLexer lexer = new IntegrationGrammarLexer(in);
-			if (!lexer.failed()){
-				System.out.println("lexer did not fail");
+//			if (!lexer.failed()){
+//				System.out.println("lexer did not fail");
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			IntegrationGrammarParser parser = new IntegrationGrammarParser(
 					tokens);
 			r = parser.eval();
-			}}
+			}
 
 		return r;
 		
