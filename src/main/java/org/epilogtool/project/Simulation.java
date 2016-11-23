@@ -143,6 +143,7 @@ public class Simulation {
 		// And builds the default next grid (= current grid)
 		HashMap<Tuple2D<Integer>, byte[]> cells2update = new HashMap<Tuple2D<Integer>, byte[]>();
 		Stack<Tuple2D<Integer>> keys = new Stack<Tuple2D<Integer>>();
+		Stack<Tuple2D<Integer>> changedKeys = new Stack<Tuple2D<Integer>>();
 
 		for (int y = 0; y < currGrid.getY(); y++) {
 			for (int x = 0; x < currGrid.getX(); x++) {
@@ -160,14 +161,20 @@ public class Simulation {
 				if (allCellsCalledToUpdate){
 					cells2update.put(key, nextState);
 					keys.add(key);}
-				else if (nextState == null || (!Arrays.equals(currState, nextState))) {
-//						System.out.println("only some cells");
-						cells2update.put(key, nextState);
-						keys.add(key);
-				}
+					if (nextState == null || (!Arrays.equals(currState, nextState))) 
+						changedKeys.add(key);
+				
 				
 			}
 		}
+		
+		if (changedKeys.size()==0){
+			this.stable = true;
+			return currGrid;
+		}
+		if (!allCellsCalledToUpdate)
+			keys = changedKeys;
+		
 		if (keys.size() > 0) {
 			
 			nextGrid = updateGrid(this.epithelium.getUpdateSchemeInter().getUpdateMode(),keys,nextGrid,cells2update);
