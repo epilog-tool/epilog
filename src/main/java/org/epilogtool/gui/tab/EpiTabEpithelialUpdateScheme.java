@@ -166,6 +166,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 				JComboBox<String> jcUpdateMode = (JComboBox<String>) e.getSource();
 				
 				changeUpdateMode((String) jcUpdateMode.getSelectedItem());
+				tpc.setChanged();
 			}
 		});
 		

@@ -12,10 +12,12 @@ public class EpitheliumUpdateSchemeInter {
 
 	private float alphaAsyncParam;
 	private Map<ComponentPair, Float> componentPairSigma;
+	private String updateMode;
 
 	public EpitheliumUpdateSchemeInter(float alpha, Map<ComponentPair, Float> sigmaAsync) {
 		this.alphaAsyncParam = alpha;
 		this.componentPairSigma = sigmaAsync;
+		this.updateMode = updateMode;
 	}
 
 	public EpitheliumUpdateSchemeInter clone() {
@@ -27,6 +29,12 @@ public class EpitheliumUpdateSchemeInter {
 	
 	public void setAlpha(float alpha) {
 		this.alphaAsyncParam = alpha;
+	}
+	
+	// Update Mode methods
+	
+	public void setUpdateMode(String uMode) {
+		this.updateMode = uMode;
 	}
 
 	public float getAlpha() {
@@ -80,6 +88,8 @@ public class EpitheliumUpdateSchemeInter {
 		if (this.alphaAsyncParam != otherObj.getAlpha())
 			return false;
 		if (!this.componentPairSigma.equals(otherObj.componentPairSigma))
+			return false;
+		if (!this.updateMode.equals(otherObj.updateMode))
 			return false;
 		return true;
 	}
