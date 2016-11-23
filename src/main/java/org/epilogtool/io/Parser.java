@@ -135,6 +135,22 @@ public class Parser {
 				currEpi.getUpdateSchemeInter().setAlpha(
 						Float.parseFloat(saTmp[1]));
 			}
+			
+			// updateMode value
+			if (line.startsWith("UPM")) {
+				saTmp = line.split("\\s+");
+			
+				int n=saTmp.length-1;
+				String[] newArray=new String[n];
+				System.arraycopy(saTmp,1,newArray,0,n);
+				
+				String updateMode = String.join(" ", newArray);
+				
+				currEpi.getUpdateSchemeInter().setUpdateMode(
+						updateMode);
+				
+				System.out.println("REading from parse " +updateMode);
+			}
 
 			// sigma-asynchronism values
 			if (line.startsWith("SS")) {
@@ -411,6 +427,11 @@ public class Parser {
 
 		// Alpha asynchronism
 		w.println("AS " + epi.getUpdateSchemeInter().getAlpha());
+		w.println();
+		
+		// UpdateMode asynchronism
+		w.println("UPM " + epi.getUpdateSchemeInter().getUpdateMode());
+		System.out.println ("UPM " + epi.getUpdateSchemeInter().getUpdateMode());
 		w.println();
 
 		// Sigma asynchronism

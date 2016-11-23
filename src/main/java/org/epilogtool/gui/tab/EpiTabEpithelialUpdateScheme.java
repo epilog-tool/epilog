@@ -79,6 +79,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 	}
 
 	public void initialize() {
+		
 		this.center.setLayout(new BorderLayout());
 		this.mCP2Sliders = new HashMap<ComponentPair, JSlider>();
 		this.mSliders2CP = new HashMap<JSlider, Set<ComponentPair>>();
@@ -89,6 +90,8 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
 				this.epithelium.getEpitheliumGrid().getModelSet());
 		this.updateSchemeInter = this.epithelium.getUpdateSchemeInter().clone();
+		
+		System.out.println("The current updateMode: " + this.updateSchemeInter.getUpdateMode());
 		if (this.updateSchemeInter.getCPSigmas().size() > 0) {
 			for (ComponentPair cp : this.updateSchemeInter.getCPSigmas()
 					.keySet()) {
@@ -159,6 +162,10 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		
 		JComboBox<String> jcUpdateMode = new JComboWideBox(lUpdatemode);
 		
+		jcUpdateMode.setSelectedItem(this.updateSchemeInter.getUpdateMode());
+		
+		System.out.println(this.updateSchemeInter.getUpdateMode());
+		
 		jcUpdateMode.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -170,14 +177,13 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 			}
 		});
 		
-		
-		
 		this.jpUpdateMode.add(jcUpdateMode);
 		this.center.add(jpUpdateMode,BorderLayout.SOUTH);
 	}
 
 	private void changeUpdateMode(String updateMode){
 		this.epithelium.setUpdateMode(updateMode);
+		this.updateSchemeInter.setUpdateMode(updateMode);
 	}
 	
 	private void generateAlphaSlider() {
@@ -482,8 +488,12 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 
 	@Override
 	protected void buttonAccept() {
+		System.out.println("buttonAccept: " + this.updateSchemeInter.getUpdateMode());
 		this.epithelium.getUpdateSchemeInter().setAlpha(
 				this.updateSchemeInter.getAlpha());
+		
+		this.epithelium.getUpdateSchemeInter().setUpdateMode(this.updateSchemeInter.getUpdateMode());
+		
 		for (ComponentPair cp : this.updateSchemeInter.getCPSigmas().keySet()) {
 			this.epithelium.getUpdateSchemeInter().setCPSigma(cp,
 					this.updateSchemeInter.getCPSigma(cp));
@@ -494,6 +504,9 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 	protected boolean isChanged() {
 		if (this.epithelium.getUpdateSchemeInter().getAlpha() != this.updateSchemeInter
 				.getAlpha())
+			return true;
+		if (this.epithelium.getUpdateSchemeInter().getUpdateMode() != this.updateSchemeInter
+				.getUpdateMode())
 			return true;
 		if (this.mCP2Sliders != null) {
 			for (ComponentPair cp : this.mCP2Sliders.keySet()) {

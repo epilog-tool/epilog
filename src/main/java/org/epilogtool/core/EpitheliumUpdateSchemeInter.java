@@ -3,18 +3,21 @@ package org.epilogtool.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.print.DocFlavor.STRING;
+
 import org.colomoto.logicalmodel.LogicalModel;
 import org.epilogtool.project.ComponentPair;
 
 public class EpitheliumUpdateSchemeInter {
 	public static float DEFAULT_ALPHA = (float) 1.0;
 	public static float DEFAULT_SIGMA = (float) 1.0;
+	public static String DEFAULT_UPDATEMODE = "Synchronous";
 
 	private float alphaAsyncParam;
 	private Map<ComponentPair, Float> componentPairSigma;
 	private String updateMode;
 
-	public EpitheliumUpdateSchemeInter(float alpha, Map<ComponentPair, Float> sigmaAsync) {
+	public EpitheliumUpdateSchemeInter(float alpha, Map<ComponentPair, Float> sigmaAsync, String updateMode) {
 		this.alphaAsyncParam = alpha;
 		this.componentPairSigma = sigmaAsync;
 		this.updateMode = updateMode;
@@ -22,7 +25,7 @@ public class EpitheliumUpdateSchemeInter {
 
 	public EpitheliumUpdateSchemeInter clone() {
 		return new EpitheliumUpdateSchemeInter(this.alphaAsyncParam, 
-				new HashMap<ComponentPair, Float>(this.componentPairSigma));
+				new HashMap<ComponentPair, Float>(this.componentPairSigma), this.updateMode);
 	}
 
 	// Alpha asynchronism methods
@@ -30,17 +33,19 @@ public class EpitheliumUpdateSchemeInter {
 	public void setAlpha(float alpha) {
 		this.alphaAsyncParam = alpha;
 	}
+	public float getAlpha() {
+		return this.alphaAsyncParam;
+	}
 	
 	// Update Mode methods
 	
 	public void setUpdateMode(String uMode) {
 		this.updateMode = uMode;
 	}
-
-	public float getAlpha() {
-		return this.alphaAsyncParam;
+	public String getUpdateMode() {
+		return this.updateMode ;
 	}
-	
+
 	// Sigma asynchronism methods
 	
 	public void setCPSigma(ComponentPair cp, float sigma){

@@ -46,9 +46,10 @@ public class Epithelium {
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
 		this.perturbations = new EpitheliumPerturbations();
 		this.projectFeatures = projectFeatures;
-		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(
-				EpitheliumUpdateSchemeInter.DEFAULT_ALPHA, new HashMap<ComponentPair, Float>());
 		this.updatingMode = "Synchronous"; //Initialize the updating mode as Synchronous
+		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(
+				EpitheliumUpdateSchemeInter.DEFAULT_ALPHA, new HashMap<ComponentPair, Float>(),this.updatingMode);
+	
 	}
 
 	private Epithelium(String name,

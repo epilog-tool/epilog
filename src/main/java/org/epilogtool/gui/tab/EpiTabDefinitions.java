@@ -69,6 +69,7 @@ public abstract class EpiTabDefinitions extends EpiTab {
 
 		private JButton accept;
 		private JButton reset;
+		
 
 		public ModificationsPanel() {
 			this.setLayout(new FlowLayout());
