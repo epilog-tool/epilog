@@ -160,27 +160,9 @@ public class Simulation {
 		}
 
 		if (keys.size() > 0) {
-			// Randomize the order of cells to update
-			Collections.shuffle(keys, RandomFactory.getInstance()
-					.getGenerator());
-
-			// Inter-cellular alpha-asynchronism
-			float alphaProb = epithelium.getUpdateSchemeInter().getAlpha();
-
-			boolean atleastone = false;
-			// Updates the rest of them if alphaProb permits
-			for (int i = 0; i < Math.floor(alphaProb * keys.size()); i++) {
-				Tuple2D<Integer> key = keys.get(i);
-				nextGrid.setCellState(key.getX(), key.getY(),
-						cells2update.get(key));
-				atleastone = true;
-			}
-			if (!atleastone && !keys.isEmpty()) {
-				// Updates at least one (asynchronous case: alpha=0.0)
-				Tuple2D<Integer> key = keys.pop();
-				nextGrid.setCellState(key.getX(), key.getY(),
-						cells2update.get(key));
-			}
+			
+			nextGrid = updateGrid(this.epithelium.getUpdateMode(),keys,nextGrid,cells2update);
+		
 		} else {
 			this.stable = true;
 			return currGrid;
@@ -189,6 +171,89 @@ public class Simulation {
 		this.gridHistory.add(nextGrid);
 		this.gridHashHistory.add(nextGrid.hashGrid());
 		return nextGrid;
+	}
+
+	private EpitheliumGrid updateGrid(String updateMode, Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid, HashMap<Tuple2D<Integer>, byte[]> cells2update) {
+		// TODO Auto-generated method stub
+		
+		if (updateMode =="Synchronous")
+			nextGrid = updateModeSynchronous(keys, nextGrid, cells2update);
+
+		else if (updateMode =="Random Independent")
+			nextGrid= updateModeRandomIndependent(keys, nextGrid, cells2update);
+
+		else if (updateMode =="Random Order")
+			nextGrid = updateModeRandomOrder(keys, nextGrid, cells2update);
+
+		else if (updateMode =="Cyclic Order")
+			nextGrid= updateModeCyclicOrder(keys, nextGrid, cells2update);
+
+		else if (updateMode =="Exponential Clocked")
+			nextGrid= updateModeExponentialClocked(keys, nextGrid, cells2update);
+		
+
+		
+		return nextGrid;
+		
+	}
+
+	private EpitheliumGrid updateModeExponentialClocked(Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid,
+			HashMap<Tuple2D<Integer>, byte[]> cells2update) {
+		// TODO Auto-generated method stub
+		return nextGrid;
+	}
+
+	private EpitheliumGrid updateModeCyclicOrder(Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid,
+			HashMap<Tuple2D<Integer>, byte[]> cells2update) {
+		// TODO Auto-generated method stub
+		return nextGrid;
+	}
+
+	private EpitheliumGrid updateModeRandomOrder(Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid,
+			HashMap<Tuple2D<Integer>, byte[]> cells2update) {
+		// TODO Auto-generated method stub
+		return nextGrid;
+	}
+
+	private EpitheliumGrid updateModeRandomIndependent(Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid,
+			HashMap<Tuple2D<Integer>, byte[]> cells2update) {
+		// TODO Auto-generated method stub
+		
+		// Randomize the order of cells to update
+		Collections.shuffle(keys, RandomFactory.getInstance()
+				.getGenerator());
+		
+		// Inter-cellular alpha-asynchronism
+		float alphaProb = epithelium.getUpdateSchemeInter().getAlpha();
+		
+		boolean atleastone = false;
+		// Updates the rest of them if alphaProb permits
+		for (int i = 0; i < Math.floor(alphaProb * keys.size()); i++) {
+			Tuple2D<Integer> key = keys.get(i);
+			nextGrid.setCellState(key.getX(), key.getY(),
+					cells2update.get(key));
+			atleastone = true;
+		}
+		if (!atleastone && !keys.isEmpty()) {
+			// Updates at least one (asynchronous case: alpha=0.0)
+			Tuple2D<Integer> key = keys.pop();
+			nextGrid.setCellState(key.getX(), key.getY(),
+					cells2update.get(key));
+		}
+		return nextGrid;
+	}
+
+	private EpitheliumGrid updateModeSynchronous(Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid,
+			HashMap<Tuple2D<Integer>, byte[]> cells2update) {
+				
+		// TODO Auto-generated method stub
+				for (int i = 0; i < keys.size(); i++) {
+					Tuple2D<Integer> key = keys.get(i);
+					nextGrid.setCellState(key.getX(), key.getY(),
+							cells2update.get(key));
+				}
+				return nextGrid;
+		
 	}
 
 	public boolean hasCycle() {
