@@ -91,7 +91,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 				this.epithelium.getEpitheliumGrid().getModelSet());
 		this.updateSchemeInter = this.epithelium.getUpdateSchemeInter().clone();
 		
-		System.out.println("The current updateMode: " + this.updateSchemeInter.getUpdateMode());
+//		System.out.println("The current updateMode: " + this.updateSchemeInter.getUpdateMode());
 		if (this.updateSchemeInter.getCPSigmas().size() > 0) {
 			for (ComponentPair cp : this.updateSchemeInter.getCPSigmas()
 					.keySet()) {
@@ -164,7 +164,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		
 		jcUpdateMode.setSelectedItem(this.updateSchemeInter.getUpdateMode());
 		
-		System.out.println(this.updateSchemeInter.getUpdateMode());
+//		System.out.println(this.updateSchemeInter.getUpdateMode());
 		
 		jcUpdateMode.addActionListener(new ActionListener() {
 			@Override
@@ -182,7 +182,6 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 	}
 
 	private void changeUpdateMode(String updateMode){
-		this.epithelium.setUpdateMode(updateMode);
 		this.updateSchemeInter.setUpdateMode(updateMode);
 	}
 	
@@ -488,7 +487,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 
 	@Override
 	protected void buttonAccept() {
-		System.out.println("buttonAccept: " + this.updateSchemeInter.getUpdateMode());
+//		System.out.println("buttonAccept: " + this.updateSchemeInter.getUpdateMode());
 		this.epithelium.getUpdateSchemeInter().setAlpha(
 				this.updateSchemeInter.getAlpha());
 		

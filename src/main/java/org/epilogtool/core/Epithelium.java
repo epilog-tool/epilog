@@ -31,7 +31,6 @@ public class Epithelium {
 	private EpitheliumUpdateSchemeIntra priorities;
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
 	private ProjectFeatures projectFeatures;
-	private String updatingMode;
 
 	public Epithelium(int x, int y, String topologyID, String name,
 			LogicalModel m, RollOver rollover,
@@ -46,9 +45,8 @@ public class Epithelium {
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
 		this.perturbations = new EpitheliumPerturbations();
 		this.projectFeatures = projectFeatures;
-		this.updatingMode = "Synchronous"; //Initialize the updating mode as Synchronous
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(
-				EpitheliumUpdateSchemeInter.DEFAULT_ALPHA, new HashMap<ComponentPair, Float>(),this.updatingMode);
+				EpitheliumUpdateSchemeInter.DEFAULT_ALPHA, new HashMap<ComponentPair, Float>(),EpitheliumUpdateSchemeInter.DEFAULT_UPDATEMODE);
 	
 	}
 
@@ -63,7 +61,6 @@ public class Epithelium {
 		this.projectFeatures = pf;
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
-		this.updatingMode = "Synchronous"; //Initialize the updating mode as Synchronous
 	}
 
 	public void updateEpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
@@ -82,13 +79,6 @@ public class Epithelium {
 				this.updateSchemeInter.clone());
 	}
 	
-	public void setUpdateMode(String updateMode){
-		this.updatingMode = updateMode;
-	}
-	
-	public String getUpdateMode(){
-		return this.updatingMode;
-	}
 
 	public void update() {
 		this.grid.updateModelSet();

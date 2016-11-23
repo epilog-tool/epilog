@@ -149,7 +149,6 @@ public class Parser {
 				currEpi.getUpdateSchemeInter().setUpdateMode(
 						updateMode);
 				
-				System.out.println("REading from parse " +updateMode);
 			}
 
 			// sigma-asynchronism values
@@ -431,7 +430,6 @@ public class Parser {
 		
 		// UpdateMode asynchronism
 		w.println("UPM " + epi.getUpdateSchemeInter().getUpdateMode());
-		System.out.println ("UPM " + epi.getUpdateSchemeInter().getUpdateMode());
 		w.println();
 
 		// Sigma asynchronism
