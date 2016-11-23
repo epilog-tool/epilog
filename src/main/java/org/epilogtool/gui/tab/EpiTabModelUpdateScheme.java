@@ -1,4 +1,4 @@
-package org.epilogtool.gui.tab;
+fpackage org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
