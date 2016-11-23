@@ -158,13 +158,10 @@ public class Simulation {
 						evaluator, sIntegComponentPairs);
 				// If the cell state changed then add it to the pool
 				Tuple2D<Integer> key = new Tuple2D<Integer>(x, y);
-				if (allCellsCalledToUpdate){
-					cells2update.put(key, nextState);
-					keys.add(key);}
-					if (nextState == null || (!Arrays.equals(currState, nextState))) 
-						changedKeys.add(key);
-				
-				
+				cells2update.put(key, nextState);
+				keys.add(key);
+				if (nextState == null || (!Arrays.equals(currState, nextState))) 
+				changedKeys.add(key);
 			}
 		}
 		
@@ -175,16 +172,18 @@ public class Simulation {
 		if (!allCellsCalledToUpdate)
 			keys = changedKeys;
 		
-		if (keys.size() > 0) {
-			
-			nextGrid = updateGrid(this.epithelium.getUpdateSchemeInter().getUpdateMode(),keys,nextGrid,cells2update);
-		
-		} else {
+		if (keys.size() <= 0) {
 			this.stable = true;
 			return currGrid;
 		}
+		else{
 
+			nextGrid = updateGrid(this.epithelium.getUpdateSchemeInter().getUpdateMode(),keys,nextGrid,cells2update);
+		}
+
+//		System.out.println(nextGrid);
 		this.gridHistory.add(nextGrid);
+		
 		this.gridHashHistory.add(nextGrid.hashGrid());
 		return nextGrid;
 	}
@@ -230,26 +229,31 @@ public class Simulation {
 		}
 		
 		
-//		System.out.println(this.exponentialInstances);
+		System.out.println("The system is performing an evaluation over an intial number of : "+ keys.size()+ " cells");
 		//for each cell in keys; how many are we going to call to update?
 		
 		float alphaProb = epithelium.getUpdateSchemeInter().getAlpha();
 				
 		int numberCellsCalledToUpdate = (int) Math.floor(alphaProb * keys.size());
-//		System.out.println(numberCellsCalledToUpdate);
+
 		
 		if (numberCellsCalledToUpdate ==0)
 			numberCellsCalledToUpdate =1;
 		
-		//I want to reduce the number of exponentialinstances to the keys
+		System.out.println("of which only : "+ numberCellsCalledToUpdate+ " are going to be updated!");
+
 		
 		Map<Tuple2D, Double> updatableCellsList = UpdateMode.findMinIdx(this.exponentialInstances, numberCellsCalledToUpdate,keys) ;
 			//TODO: 
 		
-		System.out.println(updatableCellsList);
-		System.out.println(updatableCellsList.size());
+//		System.out.println(updatableCellsList);
+//		System.out.println(updatableCellsList.size());
 		
 		for (Tuple2D<Integer> key :updatableCellsList.keySet()) {
+//		System.out.println(key.getX());
+//		System.out.println(key.getY());
+//		System.out.println(cells2update.get(key));
+		
 			nextGrid.setCellState(key.getX(), key.getY(),
 					cells2update.get(key));
 			double aux = Math.log(1-randomno.nextDouble())/(-lambda);
