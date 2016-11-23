@@ -31,7 +31,7 @@ import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationEx
  */
 public class Simulation {
 	private Epithelium epithelium;
-	private EpitheliumGrid neighbouringEpi;
+	private EpitheliumGrid neighbouringEpi;  //Epithelium Grid used to see neighbouring relationship (imp for sigma)
 	private List<EpitheliumGrid> gridHistory;
 	private List<String> gridHashHistory;
 	
@@ -123,7 +123,7 @@ public class Simulation {
 			return currGrid;
 		}
 
-		this.generateNeighboursEpithelium();
+		this.generateNeighboursEpithelium(); // updates the neighbouringEpi
 		EpitheliumGrid currNeighboursGrid = this.neighbouringEpi;
 
 		EpitheliumGrid nextGrid = currGrid.clone();
@@ -267,7 +267,7 @@ public class Simulation {
 
 	private void generateNeighboursEpithelium() {
 		// Creates an epithelium which is only visited to 'see' neighbours and
-		// their states
+		// their states, especially when using the sigma, where the previous grids values are seen.
 
 		EpitheliumGrid tmpNeighbourEpi = this.getGridAt(
 				this.gridHistory.size() - 1).clone();
