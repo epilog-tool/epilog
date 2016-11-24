@@ -62,6 +62,7 @@ import org.epilogtool.gui.tab.EpiTabPerturbations;
 import org.epilogtool.gui.tab.EpiTabSimulation;
 import org.epilogtool.gui.widgets.CloseTabButton;
 import org.epilogtool.io.FileIO;
+import org.epilogtool.project.MonteCarlo;
 import org.epilogtool.project.Project;
 
 /**
@@ -893,7 +894,7 @@ public class EpiGUI extends JFrame {
 			TreePath path = this.epiTreePanel.getSelectionEpiPath();
 			tab = new EpiTabMonteCarlo(epi,
 					path, projChanged,
-					this.project.getProjectFeatures(), new SimulationEpiClone());
+					this.project.getProjectFeatures(), new MonteCarlo(epi));
 			String title = epi.getName() + ":MonteCarlo";
 			this.epiRightFrame.addTab(title, tab);
 			tab.initialize();
