@@ -36,12 +36,30 @@ public class MonteCarlo {
 	
 	private int numberRuns;
 	private int maxNumberIterations;
+	private String monteCarloInitialConditions;
+	
+	private int stableStatesFound;
+	private Map<EpitheliumGrid,Integer> stablestate2iteration;
+	
 	
 	public MonteCarlo(Epithelium e){
 	
+		
 	this.epithelium = e;
 	this.numberRuns = numberRuns;
 	this.maxNumberIterations = maxNumberIterations;
+	this.monteCarloInitialConditions  = monteCarloInitialConditions;
+	this.stablestate2iteration = new HashMap<EpitheliumGrid,Integer>();
+	
+	}
+	
+	
+	public String getMonteCarloInitialConditions(){
+		return this.monteCarloInitialConditions;
+	}
+	
+	public void setMonteCarloInitialConditions(String mcInic){
+		this.monteCarloInitialConditions = mcInic;
 	}
 	
 	public int getNumberRuns(){
@@ -62,6 +80,10 @@ public class MonteCarlo {
 
 	public void run() {
 		// TODO Auto-generated method stub
+		
+		System.out.println("The montecarlo simulation is running with the paramenters: ");
+		System.out.println("MAxRuns: " + this.numberRuns);
+		System.out.println("MaxIter: " + this.maxNumberIterations);
 		for (int i = 0; i<this.numberRuns; i++){
 			Simulation sim =new Simulation(this.epithelium);
 			boolean flag = false;
@@ -69,13 +91,17 @@ public class MonteCarlo {
 			for (int j=0; j<this.maxNumberIterations;j++){
 				EpitheliumGrid nextGrid = sim.getGridAt(j + 1);
 				if (sim.isStableAt(j+1)){
+					stablestate2iteration.put(nextGrid, j);
 					flag = true;
 					break;	
-					
+
 				}
 			}
 			if (flag)
 				System.out.println("Found Stable State");
+			else{
+				System.out.println("Missed a  Stable State");
+			}
 			
 		}
 	}

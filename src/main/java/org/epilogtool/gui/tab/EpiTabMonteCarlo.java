@@ -1,13 +1,16 @@
 package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -17,19 +20,20 @@ import javax.swing.tree.TreePath;
 
 
 import org.epilogtool.core.Epithelium;
-import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
-import org.epilogtool.gui.EpiGUI.SimulationEpiClone;
+import org.epilogtool.gui.color.ColorUtils;
+import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
 import org.epilogtool.project.MonteCarlo;
 import org.epilogtool.project.ProjectFeatures;
-import org.epilogtool.project.Simulation;
 
 public class EpiTabMonteCarlo extends EpiTabTools {
 	private static final long serialVersionUID = 1394895739386499680L;
 	
-	private static int WIDTH = 145;
+//	private static int WIDTH = 145;
 //	private int numberRuns;
 //	private int maxNumberIterations;
+	private JButton jbRun;
+	private TabProbablyChanged tpc;
 
 	private MonteCarlo monteCarlo;
 
@@ -39,6 +43,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		super(e, path, projChanged);
 		
 		this.monteCarlo = monteCarlo;
+		this.jbRun = new JButton("Run");
 	}
 
 	public void initialize() {
@@ -49,7 +54,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		
 		//MonteCarlo Definitions Panel
 		JPanel monteCarloDefinitions = createMonteCarloDefinitions();
-		JPanel aux = createMonteCarloDefinitions();
 		left.add(monteCarloDefinitions,BorderLayout.PAGE_START);
 		
 		JPanel monteCarloInfo = createMonteCarloInfo();
@@ -99,17 +103,44 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		
 		jpRunNum.add(new JLabel("Number of Simulations "));
 		
-		JTextField jtfNumRuns = new JTextField("100");
-		jtfNumRuns.setToolTipText("Insert number of simulations");
-		jtfNumRuns.addActionListener(new ActionListener() {
+		JTextField jtfNumRuns = new JTextField("100",10);
+
+		jtfNumRuns.addKeyListener(new KeyListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				fireChangeNumRuns(jtfNumRuns.getText());
+			public void keyPressed(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				
+				JTextField jtf = (JTextField) e.getSource();
+				tpc.setChanged();
+				try {
+					int nRuns = Integer.parseInt(jtf.getText());
+					if (nRuns>0){
+					jtf.setBackground(Color.WHITE);
+					fireChangeNumRuns(nRuns);
+					fireEnableRun(true);
+					}
+					
+					else{
+						jtf.setBackground(ColorUtils.LIGHT_RED);
+						fireEnableRun(false);
+					}
+				} catch (NumberFormatException nfe) {
+					jtf.setBackground(ColorUtils.LIGHT_RED);
+					fireEnableRun(false);
+				}
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
 			}
 		});
 		
 		this.monteCarlo.setNumberRuns(Integer.parseInt(jtfNumRuns.getText()));
 		
+		jtfNumRuns.setToolTipText("Insert number of simulations");
 		jpRunNum.add(jtfNumRuns);
 
 		// Maximum Number of Iterations
@@ -119,10 +150,38 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		
 		JTextField jtfMaxIte = new JTextField("100");
 		jtfMaxIte.setToolTipText("Insert maximum iteration number per simulation");
-		jtfMaxIte.addActionListener(new ActionListener() {
+		jtfMaxIte.addKeyListener(new KeyListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				fireChangeMaxIter(jtfMaxIte.getText());
+			public void keyPressed(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				
+				JTextField jtf = (JTextField) e.getSource();
+				try {
+					tpc.setChanged();
+					int maxIter = Integer.parseInt(jtf.getText());
+					if (maxIter>0){
+					jtf.setBackground(Color.WHITE);
+					fireChangeMaxIter(maxIter);
+					fireEnableRun(true);
+					}
+					else{
+						jtf.setBackground(ColorUtils.LIGHT_RED);
+						fireEnableRun(false);
+					}
+				} catch (NumberFormatException nfe) {
+					jtf.setBackground(ColorUtils.LIGHT_RED);
+					fireEnableRun(false);
+				}
+
+				
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+				
 			}
 		});
 
@@ -130,36 +189,72 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		
 		jpMaxIte.add(jtfMaxIte);
 
+		
+		//Choose Initial Conditions
+		
+		String[] ListInitialConditions = new String[2];
+	
+		ListInitialConditions[0]="Epithelium Initial Conditions";
+		ListInitialConditions[1]="Random";
+		
+		JComboBox<String> jcbInitialConditions = new JComboBox(ListInitialConditions);
+		jcbInitialConditions.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				@SuppressWarnings("unchecked")
+				JComboBox<String> jcbInitialConditions = (JComboBox<String>) e.getSource();
+				
+				changeMonteCarloInitialConditions((String) jcbInitialConditions.getSelectedItem());
+				tpc.setChanged();
+			}
+		});
+		
+		
 		//Run Button
-		JButton jbRun = new JButton("Run");
+
 		jbRun.setToolTipText("Run Monte Carlo ");
 		jbRun.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//TODO run 
 				fireRun();
 			}
 		});
 		
-		//Add to Panel
-		monteCarloDefinitions.add(jpRunNum,BorderLayout.PAGE_START);
-		monteCarloDefinitions.add(jpMaxIte,BorderLayout.CENTER);
+		//Arrange Panels
+		JPanel textPanels = new JPanel(new BorderLayout());
+		
+		textPanels.add(jpRunNum,BorderLayout.PAGE_START);
+		textPanels.add(jpMaxIte,BorderLayout.CENTER);
+		
+		monteCarloDefinitions.add(textPanels,BorderLayout.PAGE_START);
+		monteCarloDefinitions.add(jcbInitialConditions,BorderLayout.CENTER);
 		monteCarloDefinitions.add(jbRun,BorderLayout.PAGE_END);
 		
 		return monteCarloDefinitions;
 	}
 
-	protected void fireChangeMaxIter(String text) {
-		this.monteCarlo.setMaxIter(Integer.parseInt(text));
+	protected void changeMonteCarloInitialConditions(String selectedItem) {
+		this.monteCarlo.setMonteCarloInitialConditions(selectedItem);
 		
 	}
 
-	protected void fireChangeNumRuns(String text) {
-		this.monteCarlo.setNumberRuns(Integer.parseInt(text));
+	protected void fireEnableRun(boolean b) {
+		this.jbRun.setEnabled(b);
+		this.repaint();
+		
+	}
+
+	protected void fireChangeMaxIter(int text) {
+		this.monteCarlo.setMaxIter(text);
+		
+	}
+
+	protected void fireChangeNumRuns(int nRuns) {
+		this.monteCarlo.setNumberRuns(nRuns);
+		System.out.println("Number of Runs changed to: " + nRuns);
 	}
 
 	protected void fireRun() {
-		// TODO Auto-generated method stub
 		this.monteCarlo.run();
 		
 	}
@@ -171,7 +266,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	@Override
 	public boolean canClose() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
