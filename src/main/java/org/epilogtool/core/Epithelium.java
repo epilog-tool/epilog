@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
@@ -564,5 +565,43 @@ public class Epithelium {
 			s += list.get(i);
 		}
 		return s;
+	}
+	
+
+	public String getUsedModels() {
+		
+		 List<String> usedModels = new ArrayList<String>();
+	
+		for (int y = 0; y < this.getY(); y++) {
+			for (int x = 0; x < this.getX(); x++) {
+				
+				LogicalModel m = this.getModel(x, y);
+				if (!usedModels.contains(this.getProjectFeatures().getModelName(m))){
+					usedModels.add(this.getProjectFeatures().getModelName(m));
+				}
+			}}
+		
+		String models = join(usedModels,", ");
+		return models;
+	}
+
+	public void setRandomInitialConditions() {
+		// TODO Auto-generated method stub
+		
+
+	    Random randomGenerator = new Random();
+		
+		for (int x = 0; x < this.getX(); x++) {
+			for (int y = 0; y < this.getY(); y++) {
+				List<NodeInfo> listNodes = this.getModel(x, y).getNodeOrder();
+				for  (NodeInfo node: listNodes){
+					if (!node.isInput()){
+						byte maxValue = node.getMax();
+						int value = randomGenerator.nextInt(maxValue+1);
+						this.getEpitheliumGrid().setCellComponentValue(x, y, node.getNodeID(), (byte) value);
+					}
+				}
+		}}
+		
 	}
 	}

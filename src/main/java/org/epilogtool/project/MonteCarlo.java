@@ -36,7 +36,7 @@ public class MonteCarlo {
 	
 	private int numberRuns;
 	private int maxNumberIterations;
-	private String monteCarloInitialConditions;
+	private boolean randomIniC;
 	
 	private int stableStatesFound;
 	private Map<EpitheliumGrid,Integer> stablestate2iteration;
@@ -48,18 +48,17 @@ public class MonteCarlo {
 	this.epithelium = e;
 	this.numberRuns = numberRuns;
 	this.maxNumberIterations = maxNumberIterations;
-	this.monteCarloInitialConditions  = monteCarloInitialConditions;
+	this.randomIniC  = randomIniC;
 	this.stablestate2iteration = new HashMap<EpitheliumGrid,Integer>();
 	
 	}
 	
-	
-	public String getMonteCarloInitialConditions(){
-		return this.monteCarloInitialConditions;
+	public boolean getMonteCarloInitialConditions(){
+		return this.randomIniC;
 	}
 	
-	public void setMonteCarloInitialConditions(String mcInic){
-		this.monteCarloInitialConditions = mcInic;
+	public void setMonteCarloInitialConditions(boolean mcInic){
+		this.randomIniC = mcInic;
 	}
 	
 	public int getNumberRuns(){
@@ -81,11 +80,18 @@ public class MonteCarlo {
 	public void run() {
 		// TODO Auto-generated method stub
 		
+	
+		
 		System.out.println("The montecarlo simulation is running with the paramenters: ");
 		System.out.println("MAxRuns: " + this.numberRuns);
 		System.out.println("MaxIter: " + this.maxNumberIterations);
 		for (int i = 0; i<this.numberRuns; i++){
-			Simulation sim =new Simulation(this.epithelium);
+			Epithelium clonedEpi = this.epithelium.clone();
+			if (randomIniC)
+				clonedEpi.setRandomInitialConditions();
+			Simulation sim =new Simulation(clonedEpi);
+
+			
 			boolean flag = false;
 			System.out.println("Running Simulation: "+i);
 			for (int j=0; j<this.maxNumberIterations;j++){

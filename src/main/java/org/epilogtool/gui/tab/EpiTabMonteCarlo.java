@@ -33,7 +33,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 //	private int numberRuns;
 //	private int maxNumberIterations;
 	private JButton jbRun;
-	private TabProbablyChanged tpc;
 
 	private MonteCarlo monteCarlo;
 
@@ -44,13 +43,16 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		
 		this.monteCarlo = monteCarlo;
 		this.jbRun = new JButton("Run");
+		
 	}
 
 	public void initialize() {
 		setLayout(new BorderLayout());
 		
 		
+		
 		JPanel left = new JPanel(new BorderLayout());
+		JPanel center = new JPanel(new BorderLayout());
 		
 		//MonteCarlo Definitions Panel
 		JPanel monteCarloDefinitions = createMonteCarloDefinitions();
@@ -62,7 +64,8 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		JPanel monteCarloVisualDefinitions = createMonteCarloVisualDefinitions();
 		left.add(monteCarloVisualDefinitions,BorderLayout.CENTER);
 		
-		this.add(left);
+		this.add(left,BorderLayout.WEST);
+		this.add(center,BorderLayout.CENTER);
 	}
 
 	private JPanel createMonteCarloVisualDefinitions() {
@@ -81,14 +84,25 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	}
 
 	private JPanel createMonteCarloInfo() {
-		JPanel monteCarloInfo = new JPanel();
+		JPanel monteCarloInfo = new JPanel(new BorderLayout());
+		
+		JPanel monteCarloInfoUp= new JPanel(new BorderLayout());
+		JPanel monteCarloInfoCenter= new JPanel(new BorderLayout());
+		
 		monteCarloInfo.setBorder(BorderFactory.createTitledBorder("MonteCarlo Specifications"));
 //		monteCarloInfo.setSize(250,500);
 		
-		monteCarloInfo.add(new JLabel("Update Mode: " + this.epithelium.getUpdateSchemeInter().getUpdateMode()));
-		monteCarloInfo.add(new JLabel("Alpha: " + this.epithelium.getUpdateSchemeInter().getAlpha()));
-		monteCarloInfo.add(new JLabel("Sigma: " + this.epithelium.getUpdateSchemeInter().getCPSigmas()));
+		monteCarloInfoUp.add(new JLabel("Epithelium: " + this.epithelium.getName()),BorderLayout.PAGE_START);
+		monteCarloInfoUp.add(new JLabel("Models: " + this.epithelium.getUsedModels()),BorderLayout.CENTER);
+		
+		monteCarloInfoCenter.add(new JLabel("Update Mode: " + this.epithelium.getUpdateSchemeInter().getUpdateMode()),BorderLayout.PAGE_START);
+		monteCarloInfoCenter.add(new JLabel("Alpha: " + this.epithelium.getUpdateSchemeInter().getAlpha()),BorderLayout.CENTER);
+		monteCarloInfoCenter.add(new JLabel("Sigma: " + this.epithelium.getUpdateSchemeInter().getCPSigmas()),BorderLayout.PAGE_END);
 
+		monteCarloInfo.add(monteCarloInfoUp,BorderLayout.PAGE_START);
+		monteCarloInfo.add(monteCarloInfoCenter,BorderLayout.CENTER);
+		
+		
 		return monteCarloInfo;
 	}
 
@@ -114,7 +128,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			public void keyReleased(KeyEvent e) {
 				
 				JTextField jtf = (JTextField) e.getSource();
-				tpc.setChanged();
+		
 				try {
 					int nRuns = Integer.parseInt(jtf.getText());
 					if (nRuns>0){
@@ -160,7 +174,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 				
 				JTextField jtf = (JTextField) e.getSource();
 				try {
-					tpc.setChanged();
+			
 					int maxIter = Integer.parseInt(jtf.getText());
 					if (maxIter>0){
 					jtf.setBackground(Color.WHITE);
@@ -205,7 +219,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 				JComboBox<String> jcbInitialConditions = (JComboBox<String>) e.getSource();
 				
 				changeMonteCarloInitialConditions((String) jcbInitialConditions.getSelectedItem());
-				tpc.setChanged();
+	
 			}
 		});
 		
@@ -234,7 +248,10 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	}
 
 	protected void changeMonteCarloInitialConditions(String selectedItem) {
-		this.monteCarlo.setMonteCarloInitialConditions(selectedItem);
+		boolean flag = false;
+		if (selectedItem.equals("Random")) flag = true;
+		this.monteCarlo.setMonteCarloInitialConditions(flag);
+		System.out.println("Just changed the initial conditions");
 		
 	}
 
