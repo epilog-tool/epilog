@@ -358,7 +358,7 @@ public class Simulation {
 			Tuple2D<Integer> key = keys.get(i);
 			nextGrid.setCellState(key.getX(), key.getY(),
 					cells2update.get(key));
-			System.out.println("" + cells2update.get(key));
+//			System.out.println("" + cells2update.get(key));
 			atleastone = true;
 		}
 		if (!atleastone && !keys.isEmpty()) {

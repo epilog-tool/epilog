@@ -22,12 +22,14 @@ import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
@@ -69,23 +71,60 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	public void initialize() {
 		setLayout(new BorderLayout());
 		
+		JPanel left = new JPanel();
 		JPanel monteCarloDefinitions = createMonteCarloDefinitions();
-		this.add(monteCarloDefinitions,BorderLayout.PAGE_START);
+		JPanel aux = createMonteCarloDefinitions();
+		left.add(monteCarloDefinitions);
 		
+		JPanel monteCarloInfo = createMonteCarloInfo();
+		left.add(monteCarloInfo);
 		
+		JPanel monteCarloVisualDefinitions = createMonteCarloVisualDefinitions();
+		left.add(monteCarloVisualDefinitions);
+		
+		this.add(left);
+	}
+
+	private JPanel createMonteCarloVisualDefinitions() {
+		JPanel monteCarloVisualDefinitions = new JPanel();
+		
+		monteCarloVisualDefinitions.setBorder(BorderFactory.createTitledBorder("MonteCarlo Visual Definitions"));
+		ButtonGroup group = new ButtonGroup();
+		JRadioButton jrbStableStates = new JRadioButton("Stable States");
+		JRadioButton jrbCumulative = new JRadioButton("Cumulative");
+		group.add(jrbStableStates);
+		group.add(jrbCumulative);
+		monteCarloVisualDefinitions.add(jrbCumulative);
+		monteCarloVisualDefinitions.add(jrbStableStates);
+		
+		return monteCarloVisualDefinitions;
+	}
+
+	private JPanel createMonteCarloInfo() {
+		JPanel monteCarloInfo = new JPanel();
+		monteCarloInfo.setBorder(BorderFactory.createTitledBorder("MonteCarlo Specifications"));
+		monteCarloInfo.setSize(250,500);
+		
+		monteCarloInfo.add(new JLabel("Update Mode: " + this.epithelium.getUpdateSchemeInter().getUpdateMode()));
+		monteCarloInfo.add(new JLabel("Alpha: " + this.epithelium.getUpdateSchemeInter().getAlpha()));
+		monteCarloInfo.add(new JLabel("Sigma: " + this.epithelium.getUpdateSchemeInter().getCPSigmas()));
+
+		return monteCarloInfo;
 	}
 
 	private JPanel createMonteCarloDefinitions() {
-
+		
 		JPanel monteCarloDefinitions = new JPanel();
 		monteCarloDefinitions.setBorder(BorderFactory.createTitledBorder("MonteCarlo Definitions"));
+		monteCarloDefinitions.setSize(250,500);;
 		
 		JButton jbRun = new JButton("Run");
-		jbRun.setToolTipText("Run the Monte Carlo ");
+		jbRun.setToolTipText("Run Monte Carlo ");
 		jbRun.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//TODO run 
+				fireRun();
 			}
 		});
 		
@@ -102,13 +141,54 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			}
 		});
 		
+		numberRuns = Integer.parseInt(jtfNumRuns.getText());
 		jpRunNum.add(jtfNumRuns);
 
-		//TODO Maximum Number of Iterations
+		// Maximum Number of Iterations
+		JPanel jpMaxIte = new JPanel();
+		
+		jpMaxIte.add(new JLabel("Maximum Number of Iterations"));
+		
+		JTextField jtfMaxIte = new JTextField("100");
+		jtfMaxIte.setToolTipText("Insert maximum iteration number per simulation");
+		jtfMaxIte.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//TODO run 
+			}
+		});
 
-		monteCarloDefinitions.add(jbRun);
+		maxNumberIterations = Integer.parseInt(jtfMaxIte.getText());
+		
+		jpMaxIte.add(jtfMaxIte);
+
+		//Add to Panel
 		monteCarloDefinitions.add(jpRunNum);
+		monteCarloDefinitions.add(jpMaxIte);
+		monteCarloDefinitions.add(jbRun);
+		
 		return monteCarloDefinitions;
+	}
+
+	protected void fireRun() {
+		// TODO Auto-generated method stub
+		for (int i = 0; i<this.numberRuns; i++){
+			Simulation sim =new Simulation(epithelium);
+			boolean flag = false;
+			System.out.println("Running Simulation: "+i);
+			for (int j=0; j<this.maxNumberIterations;j++){
+				EpitheliumGrid nextGrid = sim.getGridAt(j + 1);
+				if (sim.isStableAt(j+1)){
+					flag = true;
+					break;	
+					
+				}
+				
+			}
+			if (flag)
+				System.out.println("Found Stable State");
+			
+		}
 	}
 
 	@Override
