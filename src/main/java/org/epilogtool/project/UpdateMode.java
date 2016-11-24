@@ -20,54 +20,27 @@ public abstract class UpdateMode {
 	
 	public abstract String getDescription();
 
-	  public static List<Integer> shuffleAndSelect(int numberCellsGrid, int numberCellsToUpdate) {
-		  List<Integer> arrayNumbers = new ArrayList<Integer>(); //array with numberCellsGrid boxes
-		  List<Integer> shufledAndCutArray = new ArrayList<Integer>();  // arrayNumbers shufled and cut up to numberCellsToUpdate
+	
+	public static Map<Tuple2D<Integer>, byte[]> shuffleAndSelect(HashMap<Tuple2D<Integer>, byte[]> cells2update, int numberCellsToUpdate) {
+		
+		List<Tuple2D> listTuples = new ArrayList<Tuple2D>(); //array with numberCellsGrid boxes
+		Map<Tuple2D<Integer>, byte[]> shufledAndCutArray = new HashMap<Tuple2D<Integer>, byte[]>();  // arrayNumbers shufled and cut up to numberCellsToUpdate
 		  
-		  for (int instance = 0; instance < numberCellsGrid; instance++){
-			  arrayNumbers.add(instance);
+		  for (Tuple2D key: cells2update.keySet()){
+			  listTuples.add(key);
 		  }
 		  
-		  Collections.shuffle(arrayNumbers);
+		  Collections.shuffle(listTuples);
 
 		  for (int n =0; n<numberCellsToUpdate; n++){
-			  shufledAndCutArray.add(arrayNumbers.get(n));
+			  Tuple2D key = listTuples.get(n);
+			  shufledAndCutArray.put(key,cells2update.get(key));
 		  }
 		  return shufledAndCutArray;
 	  }
 	  
-		public static List<Integer> selectInstances(List<Integer> schuffledInstances, int numberCells) {
 
-			List<Integer> b = schuffledInstances;
-			List<Integer> a = new ArrayList<Integer>();
-			
-			for (int n = 0; n< numberCells;n++){
-				a.add(b.get(n));
-			}
-			return a;
-		}
 		
-		public static List<Integer> findMinIdx(List<Double> exponentialInstances, int numberCells) {
-		    if (exponentialInstances == null || exponentialInstances.size() == 0) return null; // Saves time for empty array
-		    List<Integer> b =  new ArrayList<Integer>();
-
-		    Double minVal =  Collections.max(exponentialInstances);// Keeps a running count of the smallest value so far
-		    Double minVal_Aux = (double) 0; 
-		    for (int n = 0; n<numberCells; n++){
-		    	int minIdx = 0;
-		    	minVal =  Collections.max(exponentialInstances);
-			    for(int idx=0; idx<exponentialInstances.size(); idx++) {
-			    	
-			        if(exponentialInstances.get(idx) <= minVal && exponentialInstances.get(idx)>minVal_Aux) {
-			            minVal = exponentialInstances.get(idx);
-			            minIdx = idx;
-			        }
-			    }
-			    minVal_Aux = minVal;
-			    b.add(minIdx);
-		    }
-		    return b;
-		}
 	
 	public static Map<Tuple2D, Double> findMinIdx(Map<Tuple2D, Double> exponentialInstances, int numberCellsCalledToUpdate,
 			Stack<Tuple2D<Integer>> keys) {

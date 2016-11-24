@@ -57,6 +57,7 @@ import org.epilogtool.gui.tab.EpiTabInitialConditions;
 import org.epilogtool.gui.tab.EpiTabIntegrationFunctions;
 import org.epilogtool.gui.tab.EpiTabModelGrid;
 import org.epilogtool.gui.tab.EpiTabModelUpdateScheme;
+import org.epilogtool.gui.tab.EpiTabMonteCarlo;
 import org.epilogtool.gui.tab.EpiTabPerturbations;
 import org.epilogtool.gui.tab.EpiTabSimulation;
 import org.epilogtool.gui.widgets.CloseTabButton;
@@ -890,7 +891,7 @@ public class EpiGUI extends JFrame {
 		if (tabIndex < 0) {
 			ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
 			TreePath path = this.epiTreePanel.getSelectionEpiPath();
-			tab = new EpiTabSimulation(epi,
+			tab = new EpiTabMonteCarlo(epi,
 					path, projChanged,
 					this.project.getProjectFeatures(), new SimulationEpiClone());
 			String title = epi.getName() + ":MonteCarlo";
