@@ -38,9 +38,11 @@ public class Simulation {
 	
 	private boolean allCellsCalledToUpdate;
 	
-	public  Map<Tuple2D<Integer>, byte[]> schuffledInstances;
-	public  Map<Tuple2D<Integer>, byte[]> runningSchuffledInstances;
-	public Map<Tuple2D, Double> exponentialInstances;
+	private  Map<Tuple2D<Integer>, byte[]> schuffledInstances;
+	private  Map<Tuple2D<Integer>, byte[]> runningSchuffledInstances;
+	private  Map<Tuple2D, Double> exponentialInstances;
+	private boolean flagReshufle;
+	private int indxRandOder; 
 
 	
 	private boolean stable;
@@ -77,6 +79,7 @@ public class Simulation {
 		this.exponentialInstances = null;
 		
 		this.allCellsCalledToUpdate = true;
+		this.flagReshufle = false;
 	}
 
 	private EpitheliumGrid restrictGridWithPerturbations(EpitheliumGrid grid) {
@@ -214,7 +217,7 @@ public class Simulation {
 		int lambda = 1;
 		Random randomno = new Random();
 
-		int maxNumberCells = this.getCurrentGrid().getX()*this.getCurrentGrid().getY();
+//		int maxNumberCells = this.getCurrentGrid().getX()*this.getCurrentGrid().getY();
 		//Initializes the exponential array for all cells of the grid. The array of dimension maxNumberCells,
 		// has a random exponential value for each cell
 		if (this.exponentialInstances == null){
@@ -276,70 +279,55 @@ public class Simulation {
 		}
 		
 		List<Tuple2D> finalListOfCells = new ArrayList<Tuple2D>();
-		int index = 0;
-		for (Tuple2D tuple: this.schuffledInstances.keySet()){
-			if (index >=numberCellsCalledToUpdate) break;
-			if (keys.contains(tuple)){
-				finalListOfCells.add(tuple);
-				index = index +1;
-				keys.remove(tuple);
+		this.indxRandOder = 0;
+		while(this.indxRandOder<numberCellsCalledToUpdate){
+			System.out.println("The index number now is: " + indxRandOder);
+			System.out.println("I am going to change " +numberCellsCalledToUpdate+ " cells" );
+			finalListOfCells= getShuffledRandomOrder(numberCellsCalledToUpdate, keys, finalListOfCells);
+			System.out.println("The index number now is (After finalList): " + indxRandOder);
+			System.out.println("The list of cells: " + finalListOfCells);
+			if (this.flagReshufle){
+				System.out.println("I resfufled" );
+				this.schuffledInstances = UpdateMode.shuffleAndSelect(cells2update
+						, cells2update.size());
 			}
+				
 		}
-		
-//		System.out.println
-		
-//			for (int n = 0; n<numberCells; n++)
-//				if (updatableCells.contains(this.runningSchuffledInstances.get(0))){
-//					updatableCellsList.add(this.runningSchuffledInstances.get(0));
-//					this.runningSchuffledInstances.remove(0);
-//					if (this.runningSchuffledInstances.size()==0){
-//						this.schuffledInstances = utils.shuffleAndSelect(currentGlobalState
-//								.getNumberInstances(), maxNumberCells);
-//						for (int k =0; k<this.schuffledInstances.size();k++)
-//							this.runningSchuffledInstances.add(k, this.schuffledInstances.get(k));
-//					}
-//
-//				}	
-//				else{
-//					this.runningSchuffledInstances.remove(0);
-//					if (this.runningSchuffledInstances.size()==0){
-//						this.schuffledInstances = utils.shuffleAndSelect(currentGlobalState
-//								.getNumberInstances(), maxNumberCells);
-//						for (int k =0; k<this.schuffledInstances.size();k++)
-//							this.runningSchuffledInstances.add(k, this.schuffledInstances.get(k));
-//					}
-//
-//					n = n-1;
-//
-//
-//				}}
-//		else{
-//			numberCells = (int) Math.ceil(this.alpha * mainFrame.simulation.currentGlobalState.getNumberInstances()/100);
-//			if (numberCells ==0)
-//				numberCells = 1;
-//
-//			updatableCellsList = new ArrayList<Integer>();
-//			for (int n = 0; n<numberCells; n++){
-//				updatableCellsList.add(this.runningSchuffledInstances.get(0));
-//				this.runningSchuffledInstances.remove(0);
-//
-//				if (this.runningSchuffledInstances.size()==0){
-//					this.schuffledInstances = utils.shuffleAndSelect(currentGlobalState
-//							.getNumberInstances(), maxNumberCells);
-//					for (int k =0; k<this.schuffledInstances.size();k++)
-//						this.runningSchuffledInstances.add(k, this.schuffledInstances.get(k));
-//				}
-//			}}
-//
-//		nextGlobalState = globalModel.getNextState(currentGlobalState,updatableCellsList);
-//		this.cellIteration = this.cellIteration + numberCells;
-//
-//	}
-		
+		System.out.println("I have reached " +finalListOfCells.size()+ " cells" );
+		for (Tuple2D<Integer> key :finalListOfCells) {
+			nextGrid.setCellState(key.getX(), key.getY(),
+					cells2update.get(key));
+		}
 		
 		
 		return nextGrid;
 	}
+
+private List<Tuple2D> getShuffledRandomOrder(int numberCellsCalledToUpdate, Stack<Tuple2D<Integer>> keys, List<Tuple2D> finalListOfCells){
+	
+	
+for (Tuple2D tuple: this.schuffledInstances.keySet()){
+	System.out.println("Final result "  +finalListOfCells);
+	if (this.indxRandOder >=numberCellsCalledToUpdate) return finalListOfCells;
+	System.out.println("tuple "  +tuple);
+	System.out.println("keys "  +keys);
+	if (keys.contains(tuple)){
+		finalListOfCells.add(tuple);
+		System.out.println("added finalListOfCells "  +tuple);
+		this.indxRandOder = this.indxRandOder +1;
+	}}
+
+for (Tuple2D tuple:finalListOfCells){
+	if (this.schuffledInstances.keySet().contains(tuple)){
+		this.schuffledInstances.remove(tuple);
+		keys.remove(tuple);
+	}
+}
+this.flagReshufle = true;
+
+return finalListOfCells;
+}
+
 
 	private EpitheliumGrid updateModeRandomIndependent(Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid,
 			HashMap<Tuple2D<Integer>, byte[]> cells2update) {

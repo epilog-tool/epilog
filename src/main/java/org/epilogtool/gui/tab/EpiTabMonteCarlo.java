@@ -183,7 +183,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 					break;	
 					
 				}
-				
 			}
 			if (flag)
 				System.out.println("Found Stable State");
