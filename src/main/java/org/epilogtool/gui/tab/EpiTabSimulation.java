@@ -113,6 +113,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.visualGridSimulation = new VisualGridSimulation(
 				this.simulation.getGridAt(0),
 				this.epithelium.getProjectFeatures(), this.lCompON, this.lRight);
+		
 		this.jpRight.add(this.visualGridSimulation, BorderLayout.CENTER);
 
 		JPanel jpButtons = new JPanel(new BorderLayout());
@@ -530,13 +531,13 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jpRRCenter.add(jpRRC);
 	}
 
-	private void updateComponentList(List<String> items) {
+	private void updateComponentList(List<String> modelNames) {
 		this.jpRRCenter.removeAll();
 		this.lCompON.clear();
 		this.colorButton2Node.clear();
 
 		List<LogicalModel> lModels = new ArrayList<LogicalModel>();
-		for (String modelName : items) {
+		for (String modelName : modelNames) {
 			lModels.add(this.projectFeatures.getModel(modelName));
 		}
 		this.lPresentComps = new ArrayList<String>();

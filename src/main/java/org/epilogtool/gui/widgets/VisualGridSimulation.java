@@ -31,10 +31,13 @@ public class VisualGridSimulation extends VisualGrid {
 			ProjectFeatures projectFeatures, List<String> lCompON,
 			GridInformation valuePanel) {
 		super(epiGrid.getX(), epiGrid.getY(), epiGrid.getTopology());
+		
 		this.projectFeatures = projectFeatures;
 		this.epiGrid = epiGrid;
 		this.lCompON = lCompON;
 		this.valuePanel = valuePanel;
+		
+		System.out.println("Graphics when creating the vgSim " + this.getGraphics());
 
 		this.addMouseMotionListener(new MouseMotionListener() {
 			@Override

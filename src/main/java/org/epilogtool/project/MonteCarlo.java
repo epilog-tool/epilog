@@ -39,6 +39,7 @@ public class MonteCarlo {
 	private boolean randomIniC;
 	
 	private int stableStatesFound;
+	private List<EpitheliumGrid> stableStates;
 	private Map<EpitheliumGrid,Integer> stablestate2iteration;
 	
 	
@@ -50,7 +51,16 @@ public class MonteCarlo {
 	this.maxNumberIterations = maxNumberIterations;
 	this.randomIniC  = randomIniC;
 	this.stablestate2iteration = new HashMap<EpitheliumGrid,Integer>();
+	this.stableStates = new ArrayList<EpitheliumGrid>();
 	
+	}
+	
+	public Map<EpitheliumGrid,Integer> getStableState2Iteration(){
+		return this.stablestate2iteration;
+	}
+	
+	public List<EpitheliumGrid> getStableStates(){
+		return this.stableStates;
 	}
 	
 	public boolean getMonteCarloInitialConditions(){
@@ -97,6 +107,7 @@ public class MonteCarlo {
 			for (int j=0; j<this.maxNumberIterations;j++){
 				EpitheliumGrid nextGrid = sim.getGridAt(j + 1);
 				if (sim.isStableAt(j+1)){
+					stableStates.add(nextGrid);
 					stablestate2iteration.put(nextGrid, j);
 					flag = true;
 					break;	
@@ -110,6 +121,8 @@ public class MonteCarlo {
 			}
 			
 		}
+		System.out.println("MonteCarlo OVER");
 	}
+	
 	
 }
