@@ -570,7 +570,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		
 		jscroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.jpRCenter.setBackground(backColor);
-		this.monteCarloVisualDefinitionsCenter.add(jpRCenter, BorderLayout.CENTER);
+		this.monteCarloVisualDefinitionsCenter.add(jscroll, BorderLayout.CENTER);
 
 		this.monteCarloVisualDefinitionsCenter.setBackground(backColor);
 		
@@ -741,9 +741,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			}
 		});
 		
-		
 		//Run Button
-
 		jbRun.setToolTipText("Run Monte Carlo ");
 		jbRun.addActionListener(new ActionListener() {
 			@Override
@@ -812,7 +810,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	protected void fireRun() {
 		this.monteCarlo.run(this.clonedEpi);
-		if (this.monteCarlo.getStableStates()!=null & this.monteCarlo.getStableStates().size()>0){
 			if (this.lastStableStateIndex >1){
 				this.jbBack.setEnabled(true);
 				this.jbRewind.setEnabled(true);
@@ -831,7 +828,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			}
 			EpitheliumGrid stableState= this.monteCarlo.getStableStates().get(0);
 			this.vgCellState = new VisualGridSimulation(stableState,this.projectFeatures,this.lCompON,this.gridInformation);
-			this.lastStableStateIndex = this.lastStableStateIndex+1;
+			simulationStepFwr();
 			updatejlIteration(stableState);
 //			this.visualGridSimulation.setEpitheliumGrid(stableState);
 //			this.vgCellState.paintComponent(vgCellState.getGraphics());
@@ -840,7 +837,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		}
 			
 			
-	}
+	
 
 	@Override
 	public String getName() {
@@ -974,6 +971,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setNewColor((JButton) e.getSource());
+				fireVisualChange();
 			}
 		});
 		jp.add(jbColor, gbc);
@@ -1032,7 +1030,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	private void cloneEpiWithCurrGrid() {
 //		this.epithelium.cloneEpithelium(this.epithelium,
 //				this.monteCarlo.getStableStates().get(this.lastStableStateIndex));
-		System.out.println("NOT WORKING");
+//		System.out.println("NOT WORKING");
 		JPanel frame = new JPanel();
 		JOptionPane.showMessageDialog(frame, "Not Working yet");
 		

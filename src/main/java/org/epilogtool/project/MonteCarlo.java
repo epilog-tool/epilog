@@ -111,11 +111,11 @@ public class MonteCarlo {
 
 				}
 			}
-			if (flag)
-				System.out.println("Found Stable State");
-			else{
-				System.out.println("Missed a  Stable State");
-			}
+//			if (flag)
+////				System.out.println("Found Stable State");
+//			else{
+////				System.out.println("Missed a  Stable State");
+//			}
 			
 		}
 		System.out.println("MonteCarlo OVER");
