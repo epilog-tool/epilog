@@ -335,11 +335,9 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		JOptionPane.showMessageDialog(frame, "Not Working yet");
 	}
 	
-	
-	
 	protected void simulationFastFwr() {
-		this.lastStableStateIndex = this.monteCarlo.getStableStates().size()-1;
-		EpitheliumGrid stableState = this.monteCarlo.getStableStates().get(this.lastStableStateIndex);
+		this.lastStableStateIndex = this.monteCarlo.getStableStates().size();
+		EpitheliumGrid stableState = this.monteCarlo.getStableStates().get(this.lastStableStateIndex-1);
 		for (int x = 0; x < stableState.getX(); x++) {
 			for (int y = 0; y < stableState.getY(); y++) {
 				this.clonedEpi.getEpitheliumGrid().setCellState(x, y, stableState.getCellState(x, y));
@@ -369,8 +367,8 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 
 	protected void simulationStepBack() {
-			this.lastStableStateIndex = this.lastStableStateIndex - 1;
-			EpitheliumGrid stableState = this.monteCarlo.getStableStates().get(this.lastStableStateIndex);
+			this.lastStableStateIndex = this.lastStableStateIndex-1;
+			EpitheliumGrid stableState = this.monteCarlo.getStableStates().get(this.lastStableStateIndex-1);
 			for (int x = 0; x < stableState.getX(); x++) {
 				for (int y = 0; y < stableState.getY(); y++) {
 					this.clonedEpi.getEpitheliumGrid().setCellState(x, y, stableState.getCellState(x, y));
@@ -400,7 +398,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	protected void simulationRewind() {
 		this.lastStableStateIndex = 1;
-		EpitheliumGrid stableState = this.monteCarlo.getStableStates().get(this.lastStableStateIndex);
+		EpitheliumGrid stableState = this.monteCarlo.getStableStates().get(this.lastStableStateIndex-1);
 		for (int x = 0; x < stableState.getX(); x++) {
 			for (int y = 0; y < stableState.getY(); y++) {
 				this.clonedEpi.getEpitheliumGrid().setCellState(x, y, stableState.getCellState(x, y));
@@ -430,7 +428,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	protected void simulationStepFwr() {
 		this.lastStableStateIndex = this.lastStableStateIndex + 1;
-		EpitheliumGrid stableState = this.monteCarlo.getStableStates().get(this.lastStableStateIndex);
+		EpitheliumGrid stableState = this.monteCarlo.getStableStates().get(this.lastStableStateIndex-1);
 		for (int x = 0; x < stableState.getX(); x++) {
 			for (int y = 0; y < stableState.getY(); y++) {
 				this.clonedEpi.getEpitheliumGrid().setCellState(x, y, stableState.getCellState(x, y));
