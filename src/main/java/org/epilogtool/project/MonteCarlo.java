@@ -100,7 +100,6 @@ public class MonteCarlo {
 			if (randomIniC)
 				clonedEpi.setRandomInitialConditions();
 			Simulation sim =new Simulation(clonedEpi);
-
 			
 			boolean flag = false;
 			System.out.println("Running Simulation: "+i);
