@@ -2,7 +2,6 @@ package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -14,10 +13,8 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -26,7 +23,9 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -39,17 +38,14 @@ import org.colomoto.logicalmodel.NodeInfo;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
-import org.epilogtool.core.topology.Topology;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.color.ColorUtils;
-import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
 import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboCheckBox;
-import org.epilogtool.gui.widgets.JComboWideBox;
-import org.epilogtool.gui.widgets.VisualGrid;
-import org.epilogtool.gui.widgets.VisualGridMonteCarlo;
 import org.epilogtool.gui.widgets.VisualGridSimulation;
 import org.epilogtool.io.ButtonFactory;
+import org.epilogtool.io.EpilogFileFilter;
+import org.epilogtool.io.FileIO;
 import org.epilogtool.project.MonteCarlo;
 import org.epilogtool.project.ProjectFeatures;
 
@@ -88,7 +84,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	private Map<String, JCheckBox> mNode2Checkbox;
 	private List<String> lCompON;
 
-	private LogicalModel selectedModel;
 	private List<String> lNodeInPanel;
 	private Map<String, Byte> mNode2ValueSelected;
 	
@@ -168,8 +163,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.vgCellState = new VisualGridSimulation(this.epithelium.getEpitheliumGrid(),this.projectFeatures,this.lCompON,this.gridInformation);
 		
 		
-		
-		
 		//MonteCarlo GridInformation
 		
 		if (!this.jrbCumulative.isSelected()){
@@ -177,7 +170,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			left.add(jpLeft,BorderLayout.WEST);
 			left.add(this.gridInformation,BorderLayout.CENTER);
 			jpLeft = left;
-			
 		}
 		
 		//Bottom Right Panel
@@ -247,8 +239,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		jbClone.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				cloneEpiWithCurrGrid();
-//				TODO
+				cloneEpiWithCurrGrid();
 			}
 		});
 		jpButtonsR.add(jbClone);
@@ -260,14 +251,23 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		jbPicture.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				saveEpiGrid2File();
-//				TODO
+				saveEpiGrid2File();
 			}
 		});
-		jpButtonsR.add(jbPicture);		
+			
 		
 
-
+		// Button to save all simulated grid images
+		JButton jbSaveAll = ButtonFactory
+				.getImageNoBorder("fotography-mult-24x24.png");
+		jbSaveAll
+				.setToolTipText("Save all the simulation grids into different files");
+		jbSaveAll.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				saveAllEpiGrid2File();
+			}
+		});
+		jpButtonsR.add(jbSaveAll);	
 		
 		jpButtons.add(jpButtonsR, BorderLayout.LINE_END);
 
@@ -299,6 +299,43 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.revalidate();
 
 	}
+	
+	// get current simulation step
+	private void saveEpiGrid2File() {
+//		JFileChooser fc = new JFileChooser();
+//		fc.setFileFilter(new EpilogFileFilter("png"));
+//		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+//			String file = fc.getSelectedFile().getAbsolutePath();
+//			String ext = "PNG";
+//			file += (file.endsWith(ext) ? "" : "." + ext);
+//			FileIO.writeEpitheliumGrid2File(file, this.vgMonteCarlo,
+//					ext);
+//		}
+		JPanel frame = new JPanel();
+		JOptionPane.showMessageDialog(frame, "Not Working yet");
+	}
+	
+	private void saveAllEpiGrid2File() {
+//		JFileChooser fc = new JFileChooser();
+//		fc.setFileFilter(new EpilogFileFilter("png"));
+//		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+//			String file = fc.getSelectedFile().getAbsolutePath();
+//			String ext = "PNG";
+//			file += (file.endsWith(ext) ? "" : "." + ext);
+//			for (int i = 0; i <= this.iCurrSimIter; i++) {
+//				String file_name = file.replace(".", "_" + i + ".");
+//				EpitheliumGrid grid = this.simulation.getGridAt(i);
+//				this.visualGridSimulation.setEpitheliumGrid(grid);
+//				FileIO.writeEpitheliumGrid2File(file_name,
+//						this.visualGridSimulation, ext);
+//			}
+//		}
+		JPanel frame = new JPanel();
+		JOptionPane.showMessageDialog(frame, "Not Working yet");
+	}
+	
+	
+	
 	protected void simulationFastFwr() {
 		this.lastStableStateIndex = this.monteCarlo.getStableStates().size()-1;
 		EpitheliumGrid stableState = this.monteCarlo.getStableStates().get(this.lastStableStateIndex);
@@ -395,13 +432,12 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		return iteration;
 	}
 
-	private JPanel createMonteCarloVisualDefinitions() {
-		JPanel monteCarloVisualDefinitions = new JPanel(new BorderLayout());
+	
+	
+	private JPanel createMonteCarloVisualDefinitionsTop(){
 		
 		JPanel monteCarloVisualDefinitionsTOP = new JPanel(new BorderLayout());
-		this.monteCarloVisualDefinitionsCenter = new JPanel();
 		
-		monteCarloVisualDefinitions.setBorder(BorderFactory.createTitledBorder("MonteCarlo Visual Definitions"));
 		ButtonGroup group = new ButtonGroup();
 
 		this.jrbStableStates.setSelected(true);
@@ -430,21 +466,12 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		monteCarloVisualDefinitionsTOP.add(this.jrbCumulative,BorderLayout.EAST);
 		monteCarloVisualDefinitionsTOP.add(this.jrbStableStates,BorderLayout.WEST);
 		
-//		if (jrbStableStates.isSelected())
-//			fireStableStatesGrid(monteCarloVisualDefinitionsCenter);
-//		else
-//			fireCumulativeGrid(monteCarloVisualDefinitionsCenter);
+		return monteCarloVisualDefinitionsTOP;
+	}
+	
+	private void createMonteCarloVisualDefinitionsCenter(){
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		//monteCarloVisualDefinitionsCenter
+		this.monteCarloVisualDefinitionsCenter = new JPanel(new BorderLayout());
 		
 		this.rTop = new JPanel();
 		this.rTop.setLayout(new BoxLayout(this.rTop, BoxLayout.Y_AXIS));
@@ -479,6 +506,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			}
 		});
 		rTopSel.add(jbSelectAll);
+		
 		JButton jbDeselectAll = new JButton("Deselect All");
 		jbDeselectAll.setMargin(new Insets(0, 0, 0, 0));
 		jbDeselectAll.addActionListener(new ActionListener() {
@@ -498,25 +526,30 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.rTop
 				.setBorder(BorderFactory.createTitledBorder("Display options"));
 		
+		this.monteCarloVisualDefinitionsCenter.add(this.rTop, BorderLayout.PAGE_START);
 		
-
-		this.monteCarloVisualDefinitionsCenter.add(rTop, BorderLayout.NORTH);
-		
-		
-		//Components
 		this.jpRCenter = new JPanel();
-		//TODO
-//		updateComponentList((String) jcbSBML.getSelectedItem());
-		
+
 		
 		this.jpRCenter.setLayout(new BoxLayout(jpRCenter, BoxLayout.Y_AXIS));
 		JScrollPane jscroll = new JScrollPane(this.jpRCenter);
 		
 		jscroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.jpRCenter.setBackground(backColor);
-		this.monteCarloVisualDefinitionsCenter.add(jscroll, BorderLayout.CENTER);
+		this.monteCarloVisualDefinitionsCenter.add(jpRCenter, BorderLayout.CENTER);
 
 		this.monteCarloVisualDefinitionsCenter.setBackground(backColor);
+		
+	}
+	
+	private JPanel createMonteCarloVisualDefinitions() {
+		
+		JPanel monteCarloVisualDefinitions = new JPanel(new BorderLayout());
+		
+		JPanel monteCarloVisualDefinitionsTOP = createMonteCarloVisualDefinitionsTop();
+		createMonteCarloVisualDefinitionsCenter();
+		
+		monteCarloVisualDefinitions.setBorder(BorderFactory.createTitledBorder("MonteCarlo Visual Definitions"));
 		monteCarloVisualDefinitions.add(monteCarloVisualDefinitionsTOP,BorderLayout.PAGE_START);
 		monteCarloVisualDefinitions.add(this.monteCarloVisualDefinitionsCenter,BorderLayout.CENTER);
 		
@@ -662,7 +695,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		ListInitialConditions[0]="Epithelium Initial Conditions";
 		ListInitialConditions[1]="Random";
 		
-		JComboBox<String> jcbInitialConditions = new JComboBox(ListInitialConditions);
+		JComboBox<String> jcbInitialConditions = new JComboBox<String>(ListInitialConditions);
 		jcbInitialConditions.addActionListener(new ActionListener() {
 			@Override
 			
@@ -792,9 +825,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 //		return jcb;
 //	}
 	
-	private void setSelectedModel(String model){
-		this.selectedModel = this.projectFeatures.getModel(model);
-	}
 
 	//Assign a new color to a component
 	private void setNewColor(JButton jb) {
@@ -952,6 +982,14 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		}
 	}
 
+	private void cloneEpiWithCurrGrid() {
+//		this.epithelium.cloneEpithelium(this.epithelium,
+//				this.monteCarlo.getStableStates().get(this.lastStableStateIndex));
+		System.out.println("NOT WORKING");
+		JPanel frame = new JPanel();
+		JOptionPane.showMessageDialog(frame, "Not Working yet");
+		
+	}
 	
 	
 }
