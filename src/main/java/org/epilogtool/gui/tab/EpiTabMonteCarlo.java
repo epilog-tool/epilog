@@ -13,8 +13,10 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -78,11 +80,17 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	
 	private JRadioButton jrbCumulative ;
 	private JRadioButton jrbStableStates ;
-	
+	private Map<JButton, String> colorButton2Node;
 
 	private Map<String, JButton> mNode2JButton;
 	private Map<String, JCheckBox> mNode2Checkbox;
+	private Map<String, Boolean> mSelCheckboxes;
+	private Map<String, JCheckBox> mNodeID2Checkbox;
+	
+
+	
 	private List<String> lCompON;
+	private List<String> lPresentComps;
 
 	private List<String> lNodeInPanel;
 	private Map<String, Byte> mNode2ValueSelected;
@@ -97,6 +105,15 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.gridInformation = new GridInformation(
 				this.epithelium.getIntegrationFunctions(), this.projectFeatures);
 		
+		this.mSelCheckboxes = new HashMap<String, Boolean>();
+		this.mNodeID2Checkbox = new HashMap<String, JCheckBox>();
+		this.colorButton2Node = new HashMap<JButton, String>();
+		
+		for (LogicalModel m : this.epithelium.getEpitheliumGrid().getModelSet()) {
+			for (NodeInfo node : m.getNodeOrder()) {
+				this.mSelCheckboxes.put(node.getNodeID(), false);
+			}
+		}
 		
 		this.monteCarlo = monteCarlo;
 		this.jbRun = new JButton("Run");
@@ -767,7 +784,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			this.lastStableStateIndex = this.lastStableStateIndex+1;
 			updatejlIteration(stableState);
 //			this.visualGridSimulation.setEpitheliumGrid(stableState);
-			this.vgCellState.paintComponent(vgCellState.getGraphics());
+//			this.vgCellState.paintComponent(vgCellState.getGraphics());
 			this.vgCellState.repaint();
 			this.repaint();
 		}
@@ -804,150 +821,134 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	this.jccb = new JComboCheckBox(items);
 	}
 	
-//	rrTop.add(this.jccb);
+
+
+
 	
-//	private JComboBox<String> newModelCombobox(List<LogicalModel> modelList) {
-//		// Model selection list
-//		String[] saSBML = new String[modelList.size()];
-//		for (int i = 0; i < modelList.size(); i++) {
-//			saSBML[i] = this.projectFeatures.getModelName(modelList.get(i));
-//		}
-//		JComboBox<String> jcb = new JComboWideBox(saSBML);
-//		jcb.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				@SuppressWarnings("unchecked")
-//				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
-//				setSelectedModel((String) jcb.getSelectedItem());
-//				updateComponentList((String) jcb.getSelectedItem());
-//			}
-//		});
-//		return jcb;
-//	}
 	
 
-	//Assign a new color to a component
+	//When a new model is selected, and at the beggining 
+	private void updateComponentList(List<String> modelNames) {
+		this.jpRCenter.removeAll();
+		this.mNode2ValueSelected.clear();
+		this.lCompON.clear();
+
+		this.lCompON.clear();
+
+		List<LogicalModel> lModels = new ArrayList<LogicalModel>();
+		for (String modelName : modelNames) {
+			lModels.add(this.projectFeatures.getModel(modelName));
+		}
+		this.lPresentComps = new ArrayList<String>();
+
+		Set<String> sInternalNodeIDs = new HashSet<String>();
+		Set<String> sInputNodeIDs = new HashSet<String>();
+		Set<String> sCommonNodeIDs = new HashSet<String>();
+
+		List<NodeInfo> lInternal = new ArrayList<NodeInfo>(this.epithelium
+				.getProjectFeatures().getModelsNodeInfos(lModels, false));
+
+		for (NodeInfo node : lInternal)
+			sInternalNodeIDs.add(node.getNodeID());
+
+		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(this.epithelium
+				.getProjectFeatures().getModelsNodeInfos(lModels, true));
+
+		for (NodeInfo node : lInputs) {
+			if (sInternalNodeIDs.contains(node.getNodeID())) {
+				sCommonNodeIDs.add(node.getNodeID());
+				sInternalNodeIDs.remove(node.getNodeID());
+			} else {
+				sInputNodeIDs.add(node.getNodeID());
+			}
+		}
+
+		if (!sCommonNodeIDs.isEmpty())
+			this.setComponentTypeList(sCommonNodeIDs, "Input/Internal Components");
+		if (!sInternalNodeIDs.isEmpty())
+			this.setComponentTypeList(sInternalNodeIDs, "Internal Components");
+		if (!sInputNodeIDs.isEmpty())
+			this.setComponentTypeList(sInputNodeIDs, "Input Components");
+		this.vgCellState.paintComponent(this.vgCellState
+				.getGraphics());
+		this.jpRCenter.revalidate();
+		this.jpRCenter.repaint();
+	}
+	
+	private void setComponentTypeList(Set<String> sNodeIDs, String titleBorder) {
+		JPanel jpRRC = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(5, 5, 4, 0);
+		jpRRC.setBorder(BorderFactory.createTitledBorder(titleBorder));
+		List<String> nodeList = new ArrayList<String>(sNodeIDs);
+		Collections.sort(nodeList, ObjectComparator.STRING);
+		int y = 0;
+		for (String nodeID : nodeList) {
+			this.lPresentComps.add(nodeID);
+			if (mSelCheckboxes.get(nodeID)) {
+				this.lCompON.add(nodeID);
+			}
+			this.getCompMiniPanel(jpRRC, gbc, y, nodeID);
+			y++;
+		}
+		this.jpRCenter.add(jpRRC);
+	}
+
+	
+	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y,
+			String nodeID) {
+		gbc.gridy = y;
+		gbc.gridx = 0;
+		gbc.anchor = GridBagConstraints.WEST;
+		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
+		if (jcb == null) {
+			jcb = new JCheckBox(nodeID, mSelCheckboxes.get(nodeID));
+			jcb.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JCheckBox jcb = (JCheckBox) e.getSource();
+					mSelCheckboxes.put(jcb.getText(), jcb.isSelected());
+					if (jcb.isSelected()) {
+						lCompON.add(jcb.getText());
+					} else {
+						lCompON.remove(jcb.getText());
+					}
+					vgCellState.paintComponent(vgCellState
+							.getGraphics());
+				}
+			});
+			this.mNodeID2Checkbox.put(nodeID, jcb);
+		}
+		jp.add(jcb, gbc);
+		gbc.gridx = 1;
+		JButton jbColor = new JButton();
+		jbColor.setBackground(this.epithelium.getProjectFeatures()
+				.getNodeColor(nodeID));
+		jbColor.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setNewColor((JButton) e.getSource());
+			}
+		});
+		jp.add(jbColor, gbc);
+		this.colorButton2Node.put(jbColor, nodeID);
+	}
+
 	private void setNewColor(JButton jb) {
-		String nodeID = jb.getToolTipText();
+		String nodeID = this.colorButton2Node.get(jb);
 		Color newColor = JColorChooser.showDialog(jb, "Color chooser - "
 				+ nodeID, jb.getBackground());
 		if (newColor != null
 				&& !newColor.equals(projectFeatures.getNodeColor(nodeID))) {
 			jb.setBackground(newColor);
-			this.epithelium.getProjectFeatures().setNodeColor(nodeID,
-					newColor);
+			this.epithelium.getProjectFeatures().setNodeColor(nodeID, newColor);
 			this.projChanged.setChanged(this);
-			if (this.mNode2ValueSelected.containsKey(nodeID)) {
-				// Paint only if NodeID is selected!!
-				this.vgCellState.paintComponent(this.vgCellState
-						.getGraphics());
-			}
+			this.vgCellState.paintComponent(this.vgCellState
+					.getGraphics());
 		}
 	}
 	
 	
-
-	//When a new model is selected, and at the beggining 
-	private void updateComponentList(List<String> list) {
-		this.jpRCenter.removeAll();
-		this.mNode2ValueSelected.clear();
-		this.lCompON.clear();
-		
-		this.lNodeInPanel.clear();
-		for (String model: list){
-
-		LogicalModel m = this.projectFeatures.getModel(model);
-//		this.visualGridICs.setModel(m);
-		
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(1, 5, 1, 0);
-		int y = 0;
-
-		// Internal components
-
-		
-		List<String> lInternal = new ArrayList<String>(this.epithelium
-				.getProjectFeatures().getModelNodeIDs(m, false));
-		Collections.sort(lInternal, ObjectComparator.STRING);
-		
-		if (lInternal.size()>0){
-		
-		JPanel jpRRCTop = new JPanel(new GridBagLayout());
-		jpRRCTop.setBorder(BorderFactory
-				.createTitledBorder("Internal components"));
-		for (String nodeID : lInternal) {
-			gbc.gridy = y;
-			y++;
-			this.lNodeInPanel.add(nodeID);
-			if (this.mNode2Checkbox.get(nodeID).isSelected()) {
-				this.lCompON.add(nodeID);
-			}
-			else if (this.lCompON.contains(nodeID)){
-				this.lCompON.get(this.lCompON.indexOf(nodeID));
-			}
-			gbc.gridx = 0;
-			gbc.anchor = GridBagConstraints.WEST;
-			jpRRCTop.add(this.mNode2Checkbox.get(nodeID), gbc);
-			gbc.gridx = 1;
-			jpRRCTop.add(this.mNode2Checkbox.get(nodeID), gbc);
-			gbc.gridx = 2;
-			JButton jbTmp = this.mNode2JButton.get(nodeID);
-			jbTmp.setBackground(this.epithelium.getProjectFeatures()
-					.getNodeColor(nodeID));
-			jpRRCTop.add(jbTmp, gbc);
-		}
-		this.jpRCenter.add(jpRRCTop);
-		}
-		// Input components
-		
-		List<String> lInputs = new ArrayList<String>(this.epithelium
-				.getProjectFeatures().getModelNodeIDs(m, true));
-		Collections.sort(lInputs, ObjectComparator.STRING);
-		List<String> lEnvInputCompsFromSelectedModels = new ArrayList<String>();
-		for (String nodeID : lInputs) {
-			if (!this.epithelium.isIntegrationComponent(this.epithelium
-					.getProjectFeatures().getNodeInfo(nodeID, m))) {
-				lEnvInputCompsFromSelectedModels.add(nodeID);
-			}
-		}
-		//If no env inputs then the box is not created
-		if (lEnvInputCompsFromSelectedModels.size()!=0)
-			{
-		JPanel jpRRCBottom = new JPanel(new GridBagLayout());
-		gbc = new GridBagConstraints();
-		gbc.insets = new Insets(1, 5, 1, 0);
-		jpRRCBottom.setBorder(BorderFactory
-				.createTitledBorder("Input components"));
-
-		y = 0;
-		for (String nodeID : lEnvInputCompsFromSelectedModels) {
-			gbc.gridy = y;
-			y++;
-			this.lNodeInPanel.add(nodeID);
-			if (this.mNode2Checkbox.get(nodeID).isSelected()) {
-				this.lCompON.add(nodeID);
-			}
-			else if (this.lCompON.contains(nodeID)){
-				this.lCompON.get(this.lCompON.indexOf(nodeID));
-			}
-			gbc.gridx = 0;
-			gbc.anchor = GridBagConstraints.WEST;
-			jpRRCBottom.add(this.mNode2Checkbox.get(nodeID), gbc);
-			gbc.gridx = 1;
-			jpRRCBottom.add(this.mNode2Checkbox.get(nodeID), gbc);
-			gbc.gridx = 2;
-			JButton jbTmp = this.mNode2JButton.get(nodeID);
-			jbTmp.setBackground(this.epithelium.getProjectFeatures()
-					.getNodeColor(nodeID));
-			jpRRCBottom.add(jbTmp, gbc);
-		}
-		this.jpRCenter.add(jpRRCBottom);
-			}
-
-	
-	}
-		// Re-Paint
-		this.getParent().repaint();}
 	
 	private void createGUIForModel(LogicalModel m) {
 
