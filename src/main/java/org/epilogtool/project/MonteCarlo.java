@@ -87,14 +87,12 @@ public class MonteCarlo {
 		this.maxNumberIterations = maxIter;
 	}
 
-	public void run() {
-		// TODO Auto-generated method stub
-		
-	
-		
-		System.out.println("The montecarlo simulation is running with the paramenters: ");
-		System.out.println("MAxRuns: " + this.numberRuns);
-		System.out.println("MaxIter: " + this.maxNumberIterations);
+	public void run(Epithelium epi ) {
+
+		this.epithelium = epi;
+//		System.out.println("The montecarlo simulation is running with the paramenters: ");
+//		System.out.println("MAxRuns: " + this.numberRuns);
+//		System.out.println("MaxIter: " + this.maxNumberIterations);
 		for (int i = 0; i<this.numberRuns; i++){
 			Epithelium clonedEpi = this.epithelium.clone();
 			if (randomIniC)
@@ -102,7 +100,7 @@ public class MonteCarlo {
 			Simulation sim =new Simulation(clonedEpi);
 			
 			boolean flag = false;
-			System.out.println("Running Simulation: "+i);
+//			System.out.println("Running Simulation: "+i);
 			for (int j=0; j<this.maxNumberIterations;j++){
 				EpitheliumGrid nextGrid = sim.getGridAt(j + 1);
 				if (sim.isStableAt(j+1)){

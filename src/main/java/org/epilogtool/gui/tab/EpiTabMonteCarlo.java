@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -768,11 +769,32 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		boolean flag = false;
 		if (selectedItem.equals("Random")) flag = true;
 		if (flag){
-			
-		}else
-			
+			setRandom();
+		}else{
+			setInicialConditions();
+		}
+		this.vgCellState.paintComponent(this.vgCellState.getGraphics());
 		this.monteCarlo.setMonteCarloInitialConditions(flag);		
 	}
+	
+	private void setRandom(){
+		
+	    Random randomGenerator = new Random();
+	    
+			for (int x = 0; x < this.clonedEpi.getX(); x++) {
+				for (int y = 0; y < this.clonedEpi.getY(); y++) {
+					for (NodeInfo node: this.clonedEpi.getModel(x, y).getNodeOrder()){
+						if (!node.isInput()){
+							byte maxValue = node.getMax();
+							int value = randomGenerator.nextInt(maxValue+1);
+							this.clonedEpi.getEpitheliumGrid().setCellComponentValue(x, y, node.getNodeID(), (byte) value);
+						}}}}}
+
+	private void setInicialConditions(){
+			for (int x = 0; x < this.clonedEpi.getX(); x++) {
+				for (int y = 0; y < this.clonedEpi.getY(); y++) {
+					this.clonedEpi.getEpitheliumGrid().setCellState(x, y, this.epithelium.getEpitheliumGrid().getCellState(x, y));
+					}}}
 
 	protected void fireEnableRun(boolean b) {
 		this.jbRun.setEnabled(b);
@@ -785,11 +807,11 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	protected void fireChangeNumRuns(int nRuns) {
 		this.monteCarlo.setNumberRuns(nRuns);
-		System.out.println("Number of Runs changed to: " + nRuns);
+//		System.out.println("Number of Runs changed to: " + nRuns);
 	}
 
 	protected void fireRun() {
-		this.monteCarlo.run();
+		this.monteCarlo.run(this.clonedEpi);
 		if (this.monteCarlo.getStableStates()!=null & this.monteCarlo.getStableStates().size()>0){
 			if (this.lastStableStateIndex >1){
 				this.jbBack.setEnabled(true);
