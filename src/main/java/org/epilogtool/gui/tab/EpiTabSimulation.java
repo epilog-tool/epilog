@@ -533,8 +533,8 @@ public class EpiTabSimulation extends EpiTabTools {
 
 	private void updateComponentList(List<String> modelNames) {
 		this.jpRRCenter.removeAll();
-		this.lCompON.clear();
 		this.colorButton2Node.clear();
+		this.lCompON.clear();
 
 		List<LogicalModel> lModels = new ArrayList<LogicalModel>();
 		for (String modelName : modelNames) {

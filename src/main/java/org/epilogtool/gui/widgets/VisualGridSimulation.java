@@ -32,12 +32,14 @@ public class VisualGridSimulation extends VisualGrid {
 			GridInformation valuePanel) {
 		super(epiGrid.getX(), epiGrid.getY(), epiGrid.getTopology());
 		
+
 		this.projectFeatures = projectFeatures;
 		this.epiGrid = epiGrid;
 		this.lCompON = lCompON;
 		this.valuePanel = valuePanel;
 		
 		System.out.println("Graphics when creating the vgSim " + this.getGraphics());
+
 
 		this.addMouseMotionListener(new MouseMotionListener() {
 			@Override
@@ -98,6 +100,7 @@ public class VisualGridSimulation extends VisualGrid {
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 
+		System.out.println(lCompON);
 		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY,
 				this.getSize().width, this.getSize().height);
 
