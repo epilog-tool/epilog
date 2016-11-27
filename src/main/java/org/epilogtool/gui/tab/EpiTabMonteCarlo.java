@@ -295,10 +295,11 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.add(jpLeft,BorderLayout.WEST);
 		this.add(this.vgCellState,BorderLayout.CENTER);
 		updateComponentList(this.jccb.getSelectedItems());
-		System.out.println("teste" +jccb.getSelectedItems() );
+		this.vgCellState.paintComponent(this.vgCellState.getGraphics());
+
 		this.repaint();
 		this.revalidate();
-
+		this.vgCellState.repaint();
 	}
 	
 	// get current simulation step
@@ -914,6 +915,11 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	}
 
 	
+	private void fireVisualChange(){
+		this.vgCellState.paintComponent(this.vgCellState
+				.getGraphics());
+	}
+	
 	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y,
 			String nodeID) {
 		gbc.gridy = y;
@@ -932,8 +938,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 					} else {
 						lCompON.remove(jcb.getText());
 					}
-					vgCellState.paintComponent(vgCellState
-							.getGraphics());
+					fireVisualChange();
 				}
 			});
 			this.mNodeID2Checkbox.put(nodeID, jcb);
