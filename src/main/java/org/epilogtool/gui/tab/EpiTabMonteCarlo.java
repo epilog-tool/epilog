@@ -363,6 +363,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			this.jbStep.setEnabled(false);
 			this.jbFastFwr.setEnabled(false);
 		}
+		updateComponentList(this.jccb.getSelectedItems());
 		this.vgCellState.repaint();
 		this.repaint();	
 	}
@@ -393,6 +394,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 				this.jbStep.setEnabled(false);
 				this.jbFastFwr.setEnabled(false);
 			}
+			updateComponentList(this.jccb.getSelectedItems());
 			this.vgCellState.repaint();
 			this.repaint();
 			
@@ -424,6 +426,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			this.jbStep.setEnabled(false);
 			this.jbFastFwr.setEnabled(false);
 		}
+		updateComponentList(this.jccb.getSelectedItems());
 		this.vgCellState.repaint();
 		this.repaint();
 	}
@@ -454,6 +457,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			this.jbStep.setEnabled(false);
 			this.jbFastFwr.setEnabled(false);
 		}
+		updateComponentList(this.jccb.getSelectedItems());
 		this.vgCellState.repaint();
 		this.repaint();	
 	}
@@ -773,6 +777,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		}
 		this.vgCellState.paintComponent(this.vgCellState.getGraphics());
 		this.monteCarlo.setMonteCarloInitialConditions(flag);		
+		
 	}
 	
 	private void setRandom(){
@@ -909,7 +914,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		if (!sInputNodeIDs.isEmpty())
 			this.setComponentTypeList(sInputNodeIDs, "Input Components");
 		
-		this.vgCellState.paintComponent(this.vgCellState.getGraphics());
+//		this.vgCellState.paintComponent(this.vgCellState.getGraphics());
 		this.jpRCenter.revalidate();
 		this.jpRCenter.repaint();
 	}
@@ -941,10 +946,15 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	
 	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y,
 			String nodeID) {
+		
+		JLabel percentage = new JLabel(this.clonedEpi.getEpitheliumGrid().getPercentage(nodeID));
+		
 		gbc.gridy = y;
 		gbc.gridx = 0;
 		gbc.anchor = GridBagConstraints.WEST;
 		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
+		JPanel jpanel = new JPanel(new BorderLayout());
+		
 		if (jcb == null) {
 			jcb = new JCheckBox(nodeID, mSelCheckboxes.get(nodeID));
 			jcb.addActionListener(new ActionListener() {
@@ -962,7 +972,14 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			});
 			this.mNodeID2Checkbox.put(nodeID, jcb);
 		}
-		jp.add(jcb, gbc);
+		
+		jpanel.add(jcb,BorderLayout.CENTER);
+//		jpanel.add(this.monteCarlo.getPercentage(nodeID,this.clonedEpi.getEpitheliumGrid()),BorderLayout.EAST);
+		
+//		this.clonedEpi.getEpitheliumGrid().getPercentage(nodeID);
+		
+//		jp.add(jcb, gbc);
+		jp.add(jpanel,gbc);
 		gbc.gridx = 1;
 		JButton jbColor = new JButton();
 		jbColor.setBackground(this.projectFeatures
@@ -975,9 +992,14 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			}
 		});
 		jp.add(jbColor, gbc);
+		gbc.gridx = 2;
+		jp.add(percentage,gbc);
 		this.colorButton2Node.put(jbColor, nodeID);
+		
 	}
 
+
+	
 	private void setNewColor(JButton jb) {
 		String nodeID = this.colorButton2Node.get(jb);
 		Color newColor = JColorChooser.showDialog(jb, "Color chooser - "

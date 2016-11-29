@@ -378,6 +378,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jbBack.setEnabled(false);
 		this.jbForward.setEnabled(true);
 		this.jbFastFwr.setEnabled(true);
+		this.updateComponentList(this.jccb.getSelectedItems());
 		// Re-Paint
 		this.repaint();
 	}
@@ -398,6 +399,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 		this.jbForward.setEnabled(true);
 		this.jbFastFwr.setEnabled(true);
+		this.updateComponentList(this.jccb.getSelectedItems());
 		// Re-Paint
 		this.repaint();
 	}
@@ -435,6 +437,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 		this.jbRewind.setEnabled(true);
 		this.jbBack.setEnabled(true);
+		this.updateComponentList(this.jccb.getSelectedItems());
 		// Re-Paint
 		this.repaint();
 	}
@@ -455,12 +458,17 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jlStep.setText("Iteration: " + this.iCurrSimIter);
 		this.jbRewind.setEnabled(true);
 		this.jbBack.setEnabled(true);
+		this.updateComponentList(this.jccb.getSelectedItems());
 		// Re-Paint
 		this.repaint();
 	}
 
 	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y,
 			String nodeID) {
+		EpitheliumGrid nextGrid = this.simulation.getGridAt(this.iCurrSimIter);
+		JLabel percentage = new JLabel(nextGrid.getPercentage(nodeID));
+
+		
 		gbc.gridy = y;
 		gbc.gridx = 0;
 		gbc.anchor = GridBagConstraints.WEST;
@@ -495,6 +503,8 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		jp.add(jbColor, gbc);
+		gbc.gridx = 2;
+		jp.add(percentage,gbc);
 		this.colorButton2Node.put(jbColor, nodeID);
 	}
 

@@ -11,6 +11,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 
+import javax.swing.JLabel;
+
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
@@ -41,6 +43,7 @@ public class MonteCarlo {
 	private int stableStatesFound;
 	private List<EpitheliumGrid> stableStates;
 	private Map<EpitheliumGrid,Integer> stablestate2iteration;
+	
 	
 	
 	public MonteCarlo(Epithelium e){
@@ -120,6 +123,8 @@ public class MonteCarlo {
 		}
 		System.out.println("MonteCarlo OVER");
 	}
+
+
 	
 	
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.topology.RollOver;
@@ -21,6 +22,8 @@ public class EpitheliumGrid {
 	private Topology topology;
 	private Set<LogicalModel> modelSet;
 	private Map<LogicalModel, List<Tuple2D<Integer>>> modelPositions;
+	
+	private Map<String, Integer> component2Count ;
 
 	private EpitheliumGrid(EpitheliumCell[][] gridEpiCell, Topology topology,
 			Set<LogicalModel> modelSet,
@@ -29,6 +32,8 @@ public class EpitheliumGrid {
 		this.topology = topology;
 		this.modelSet = modelSet;
 		this.modelPositions = modelPositions;
+		
+		this.component2Count = new HashMap<String, Integer>();
 	}
 
 	public void updateEpitheliumGrid(int gridX, int gridY, String topologyID,
@@ -292,4 +297,106 @@ public class EpitheliumGrid {
 		return new EpitheliumGrid(newGrid, newTop, newModelSet,
 				newModelPositions);
 	}
+	
+	
+	private void initializeComponent2Count(){
+		
+		Set<LogicalModel> lModels = this.getModelSet();
+		this.component2Count = new HashMap<String, Integer>();
+		//Initialize the component2Count
+		for (LogicalModel model: lModels){
+			for (NodeInfo node: model.getNodeOrder()){
+				for (Byte val=1;val<=node.getMax();val++){
+				
+					String name = node.getNodeID()+"_"+val;
+						this.component2Count.put(name,0);
+					}
+			}
+		}
+//		System.out.println(this.component2Count);
+		for (int x = 0; x < this.getX(); x++) {
+			for (int y = 0; y < this.getY(); y++) {
+				LogicalModel model = this.getModel(x, y);
+				for (NodeInfo node: model.getNodeOrder()){
+					for (Byte val=1;val<=node.getMax();val++){
+						String name = node.getNodeID()+"_"+val;
+						if (this.getCellValue(x, y, node.getNodeID())>0){
+							int count = this.component2Count.get(name)+1;
+							this.component2Count.put(name,count);
+						}
+					}
+				}
+			}
+			
+			}
+		
+		
+	}
+	
+	
+	public String getPercentage(String nodeID) {
+		// TODO Auto-generated method stub
+
+		initializeComponent2Count();
+		byte max = 0;
+		
+		
+		for (LogicalModel model: this.getModelSet()){
+			for (NodeInfo node: model.getNodeOrder()){
+				if (node.getNodeID().equals(nodeID))
+					max = node.getMax();
+			}
+		}
+		
+		
+		
+//		int nCells = 0;
+//		for (LogicalModel model: lModels){
+//		nCells = nCells + this.getModelPositions().get(model).size();
+//		}
+//		
+//		System.out.println(this.component2Count);
+		String output = "";
+		int nCells = this.getX()*this.getY();
+		for (Byte val=1;val<=max;val++){
+			String name = nodeID+"_"+val;
+			float count = this.component2Count.get(name);
+			float percentage = (count/nCells)*100;
+			output = output +"("+ val+" : "+ percentage +  "%)";
+//			System.out.println(" " + count + " " +nodeID +" "+val);
+			}
+		
+		return output;
+		
+
+				
+
+		
+		
+		
+//		Map<String, LogicalModel> model2Node = new HashMap<String, LogicalModel>();
+//		Map<Byte, Integer> value2Count = new HashMap<Byte, Integer>();
+//		Map<Map<String, LogicalModel>,Map<Byte, Integer>> node4count = new HashMap<Map<String, LogicalModel>,Map<Byte, Integer>>();
+//		
+//		
+//		for (int x = 0; x < epitheliumGrid.getX(); x++) {
+//			for (int y = 0; y < epitheliumGrid.getY(); y++) {
+//				List<NodeInfo> lNode= epitheliumGrid.getModel(x, y).getNodeOrder();
+//				for (NodeInfo node: lNode){
+//					if (node.getNodeID().equals(nodeID)){
+////						model2Node.put(epitheliumGrid.getModel(x, y), nodeID);
+//						byte value = epitheliumGrid.getCellValue(x, y, nodeID);
+//						int count = value2Count.get(value);
+//						value2Count.put(value, count);
+//						node4count.put(model2Node, value2Count);
+//					}
+//				}
+//				
+//			}
+//			}
+		
+		
+	}
+	
+	
 }
