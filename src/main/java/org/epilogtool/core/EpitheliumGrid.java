@@ -299,7 +299,6 @@ public class EpitheliumGrid {
 				newModelPositions);
 	}
 	
-	
 	private void initializeComponent2Count(){
 		
 		Set<LogicalModel> lModels = this.getModelSet();
@@ -314,7 +313,7 @@ public class EpitheliumGrid {
 					}
 			}
 		}
-//		System.out.println(this.component2Count);
+
 		for (int x = 0; x < this.getX(); x++) {
 			for (int y = 0; y < this.getY(); y++) {
 				LogicalModel model = this.getModel(x, y);
@@ -367,7 +366,6 @@ public class EpitheliumGrid {
 			float count = this.component2Count.get(name);
 			float percentage = (count/nCells)*100;
 			output = output +"("+ val+" : "+ perc.format(percentage) +  "%)";
-//			System.out.println(" " + count + " " +nodeID +" "+val);
 			}
 		
 		return output;

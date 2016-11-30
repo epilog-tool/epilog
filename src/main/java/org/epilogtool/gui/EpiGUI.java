@@ -34,6 +34,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 import org.epilogtool.FileSelectionHelper;
 import org.epilogtool.OptionStore;
@@ -543,7 +544,24 @@ public class EpiGUI extends JFrame {
 								+ "' already exists!", "Warning",
 						JOptionPane.WARNING_MESSAGE);
 				return;
+				
 			}
+			List<NodeInfo> lNodes = FileIO.loadSBMLModel(fc.getSelectedFile()).getNodeOrder();
+			for (NodeInfo node: lNodes) {
+				for (LogicalModel model: this.project.getProjectFeatures().getModels()){
+					for (NodeInfo ExistingNode: model.getNodeOrder()) {
+						if (node.toString().equals(ExistingNode.toString())){
+							if (node.getMax()!=ExistingNode.getMax());
+								JOptionPane.showMessageDialog(this,
+										"A component with the same name and with different maximum value exists in the project!", "Warning",
+										JOptionPane.WARNING_MESSAGE);
+								return;
+						}
+					}
+				}
+
+			}
+			
 			this.projDescPanel.loadModel(fc.getSelectedFile().getName());
 			LogicalModel m = FileIO.loadSBMLModel(fc.getSelectedFile());
 			this.project.loadModel(fc.getSelectedFile().getName(), m);
