@@ -851,7 +851,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	@Override
 	public boolean canClose() {
-		return false;
+		return true;
 	}
 
 	@Override
