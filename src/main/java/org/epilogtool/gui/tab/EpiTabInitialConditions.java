@@ -24,6 +24,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -63,6 +64,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private JPanel rTop;
 	
 	private LogicalModel selectedModel;
+	
+	private JComboBox<String> jcbSBML;
 
 	public EpiTabInitialConditions(Epithelium e, TreePath path,
 			ProjChangeNotifyTab projChanged, TabChangeNotifyProj tabChanged,
@@ -103,9 +106,9 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		// Model selection list
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
 				this.epithelium.getEpitheliumGrid().getModelSet());
-		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
-		this.rTop.add(jcbSBML);
-		this.selectedModel = this.epithelium.getProjectFeatures().getModel((String) jcbSBML.getSelectedItem());
+		this.jcbSBML = this.newModelCombobox(modelList);
+		this.rTop.add(this.jcbSBML);
+		this.selectedModel = this.epithelium.getProjectFeatures().getModel((String) this.jcbSBML.getSelectedItem());
 
 		// Select / Deselect buttons
 		JPanel rTopSel = new JPanel(new FlowLayout());
@@ -252,9 +255,10 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		jpLeftAggreg.add(this.lRight, BorderLayout.LINE_END);
 
 		this.center.add(jpLeftAggreg, BorderLayout.LINE_START);
-		updateComponentList((String) jcbSBML.getSelectedItem());
+		updateComponentList((String) this.jcbSBML.getSelectedItem());
 		this.isInitialized = true;
 	}
+
 
 	private void randomMarkCells(List<String> nodes) {
 		// TODO Auto-generated method stub
@@ -264,7 +268,9 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		if (!node.isInput())
 			lNodes.add(node);
 		}
-			visualGridICs.setRandomValue(lNodes);
+			this.visualGridICs.setRandomValue(lNodes);
+		
+			updateComponentList((String) this.jcbSBML.getSelectedItem());
 		
 	
 		
@@ -379,6 +385,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(1, 5, 1, 0);
 		int y = 0;
+		
+		
 
 		// Internal components
 
@@ -392,6 +400,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		jpRRCTop.setBorder(BorderFactory
 				.createTitledBorder("Internal components"));
 		for (String nodeID : lInternal) {
+			
 			gbc.gridy = y;
 			y++;
 			this.lNodeInPanel.add(nodeID);
@@ -408,7 +417,13 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			JButton jbTmp = this.mNode2JButton.get(nodeID);
 			jbTmp.setBackground(this.epithelium.getProjectFeatures()
 					.getNodeColor(nodeID));
+			
 			jpRRCTop.add(jbTmp, gbc);
+			
+			JLabel percentage = new JLabel(this.visualGridICs.getEpitheliumGrid().getPercentage(nodeID));
+			System.out.println(this.epithelium.getEpitheliumGrid());
+			gbc.gridx = 3;
+			jpRRCTop.add(percentage,gbc);
 		}
 		this.jpRCenter.add(jpRRCTop);
 		}
@@ -435,6 +450,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		y = 0;
 		for (String nodeID : lEnvInputCompsFromSelectedModels) {
+			
 			gbc.gridy = y;
 			y++;
 			this.lNodeInPanel.add(nodeID);
@@ -451,7 +467,12 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			JButton jbTmp = this.mNode2JButton.get(nodeID);
 			jbTmp.setBackground(this.epithelium.getProjectFeatures()
 					.getNodeColor(nodeID));
+			
 			jpRRCBottom.add(jbTmp, gbc);
+			
+			JLabel percentage = new JLabel(this.visualGridICs.getEpitheliumGrid().getPercentage(nodeID));
+			gbc.gridx = 3;
+			jpRRCBottom.add(percentage,gbc);
 		}
 		this.jpRCenter.add(jpRRCBottom);
 
@@ -528,7 +549,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		this.rTop.remove(0);
 		this.rTop.add(this.newModelCombobox(modelList), 0);
-		this.updateComponentList(this.projectFeatures.getModelName(modelList
-				.get(0)));
+//		this.updateComponentList(this.projectFeatures.getModelName(modelList
+//				.get(0)));
 	}
 }

@@ -1,6 +1,7 @@
 package org.epilogtool.core;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -356,13 +357,16 @@ public class EpitheliumGrid {
 //		}
 //		
 //		System.out.println(this.component2Count);
+		DecimalFormat perc = new DecimalFormat();
+		perc.setMaximumFractionDigits(2);
+		
 		String output = "";
 		int nCells = this.getX()*this.getY();
 		for (Byte val=1;val<=max;val++){
 			String name = nodeID+"_"+val;
 			float count = this.component2Count.get(name);
 			float percentage = (count/nCells)*100;
-			output = output +"("+ val+" : "+ percentage +  "%)";
+			output = output +"("+ val+" : "+ perc.format(percentage) +  "%)";
 //			System.out.println(" " + count + " " +nodeID +" "+val);
 			}
 		

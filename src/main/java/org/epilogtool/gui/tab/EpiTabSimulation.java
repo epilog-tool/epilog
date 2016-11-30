@@ -465,6 +465,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y,
 			String nodeID) {
+		
 		EpitheliumGrid nextGrid = this.simulation.getGridAt(this.iCurrSimIter);
 		JLabel percentage = new JLabel(nextGrid.getPercentage(nodeID));
 

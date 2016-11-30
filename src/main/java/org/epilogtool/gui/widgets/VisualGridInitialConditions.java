@@ -198,7 +198,10 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 		}}}
 		this.paint(getGraphics());
 	}
-
+	
+	public EpitheliumGrid getEpitheliumGrid(){
+		return epiGrid;
+	}
 		
 	}
 
