@@ -775,7 +775,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		}else{
 			setInicialConditions();
 		}
-		this.vgCellState.paintComponent(this.vgCellState.getGraphics());
+		fireVisualChange();
 		this.monteCarlo.setMonteCarloInitialConditions(flag);		
 		
 	}
@@ -814,6 +814,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	}
 
 	protected void fireRun() {
+		this.lastStableStateIndex=0;
 		this.monteCarlo.run(this.clonedEpi);
 			if (this.lastStableStateIndex >1){
 				this.jbBack.setEnabled(true);
@@ -835,8 +836,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			this.vgCellState = new VisualGridSimulation(stableState,this.projectFeatures,this.lCompON,this.gridInformation);
 			simulationStepFwr();
 			updatejlIteration(stableState);
-//			this.visualGridSimulation.setEpitheliumGrid(stableState);
-//			this.vgCellState.paintComponent(vgCellState.getGraphics());
 			this.vgCellState.repaint();
 			this.repaint();
 		}
@@ -940,8 +939,11 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	
 	private void fireVisualChange(){
+		if (this.vgCellState
+				.getGraphics()!=null)
 		this.vgCellState.paintComponent(this.vgCellState
 				.getGraphics());
+		this.vgCellState.repaint();
 	}
 	
 	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y,

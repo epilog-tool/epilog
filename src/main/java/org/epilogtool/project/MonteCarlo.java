@@ -53,9 +53,7 @@ public class MonteCarlo {
 	this.numberRuns = numberRuns;
 	this.maxNumberIterations = maxNumberIterations;
 	this.randomIniC  = randomIniC;
-	this.stablestate2iteration = new HashMap<EpitheliumGrid,Integer>();
-	this.stableStates = new ArrayList<EpitheliumGrid>();
-	
+
 	}
 	
 	public Map<EpitheliumGrid,Integer> getStableState2Iteration(){
@@ -93,6 +91,9 @@ public class MonteCarlo {
 	public void run(Epithelium epi ) {
 
 		this.epithelium = epi;
+		this.stablestate2iteration = new HashMap<EpitheliumGrid,Integer>();
+		this.stableStates = new ArrayList<EpitheliumGrid>();
+		this.stableStatesFound = 0;
 //		System.out.println("The montecarlo simulation is running with the paramenters: ");
 //		System.out.println("MAxRuns: " + this.numberRuns);
 //		System.out.println("MaxIter: " + this.maxNumberIterations);
