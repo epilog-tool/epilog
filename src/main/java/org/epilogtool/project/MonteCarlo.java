@@ -91,41 +91,68 @@ public class MonteCarlo {
 	public void run(Epithelium epi ) {
 
 		this.epithelium = epi;
+		
 		this.stablestate2iteration = new HashMap<EpitheliumGrid,Integer>();
 		this.stableStates = new ArrayList<EpitheliumGrid>();
 		this.stableStatesFound = 0;
-//		System.out.println("The montecarlo simulation is running with the paramenters: ");
-//		System.out.println("MAxRuns: " + this.numberRuns);
-//		System.out.println("MaxIter: " + this.maxNumberIterations);
+
+		
 		for (int i = 0; i<this.numberRuns; i++){
 			Epithelium clonedEpi = this.epithelium.clone();
+			
 			if (randomIniC)
 				clonedEpi.setRandomInitialConditions();
+		
 			Simulation sim =new Simulation(clonedEpi);
 			
-			boolean flag = false;
-//			System.out.println("Running Simulation: "+i);
-			for (int j=0; j<this.maxNumberIterations;j++){
-				EpitheliumGrid nextGrid = sim.getGridAt(j + 1);
-				if (sim.isStableAt(j+1)){
-					stableStates.add(nextGrid);
-					stablestate2iteration.put(nextGrid, j);
-					flag = true;
+
+			for (int indexIteration=0; indexIteration<this.maxNumberIterations;indexIteration++){
+				
+				EpitheliumGrid nextGrid = sim.getGridAt(indexIteration + 1);
+				
+//				System.out.println("  ");
+//				System.out.println("Run: " + i);
+//				System.out.println(sim.getGridAt(indexIteration));
+//				System.out.println(nextGrid);
+				
+				if (sim.isStableAt(indexIteration+1)){
+//					if (compareStableStates(nextGrid)){
+						stableStates.add(nextGrid);
+						stablestate2iteration.put(nextGrid, indexIteration);
+						
+//					}
 					break;	
 
 				}
 			}
-//			if (flag)
-////				System.out.println("Found Stable State");
-//			else{
-////				System.out.println("Missed a  Stable State");
-//			}
 			
 		}
+		
 		System.out.println("MonteCarlo OVER");
 	}
 
 
-	
+	private boolean compareStableStates(EpitheliumGrid stableState){
+		
+		if (this.stableStates.size()==0)
+			return true;
+		else{
+			for (EpitheliumGrid sState: this.stableStates)
+				for (int x = 0; x < sState.getX(); x++) {
+					for (int y = 0; y < sState.getY(); y++) {
+						for (NodeInfo node: sState.getModel(x, y).getNodeOrder()){
+							if (sState.getCellValue(x, y, node.getNodeID())!=stableState.getCellValue(x, y, node.getNodeID())){
+								return true;
+						}
+
+						}
+					}
+					
+					} 
+			System.out.println("found the same state");
+			return false;
+		}
+	}
+
 	
 }

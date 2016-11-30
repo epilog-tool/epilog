@@ -412,7 +412,7 @@ public class Epithelium {
 				Set<String> regulators = getRegulators(integrationString);
 				for (String reg: regulators){
 					if (!properComponentsAllModels.contains(reg)){
-						System.out.println("There is a problem with an intFu " + reg  + properComponentsAllModels);
+//						System.out.println("There is a problem with an intFu " + reg  + properComponentsAllModels);
 					}
 				}
 			}
@@ -461,7 +461,7 @@ public class Epithelium {
 	public void replacePriorities(Epithelium oldEpi, LogicalModel oldModel, LogicalModel newModel, List<String> commonNodeNames) {
 		ModelPriorityClasses oldMpc = oldEpi.getPriorityClasses(oldModel);
 
-		System.out.println(commonNodeNames);
+//		System.out.println(commonNodeNames);
 		
 		Boolean hasChanged = false;
 		
@@ -482,7 +482,7 @@ public class Epithelium {
 				if (pcVarIndex==0 && idxPC == 0){
 					for (NodeInfo node:newModel.getNodeOrder()){
 						if (!commonNodeNames.contains(node.toString()) && !node.isInput()){
-							System.out.println(node);
+//							System.out.println(node);
 							newPCVars.add(node.toString());
 						}}}}
 			sPCs += join(newPCVars, ",");
