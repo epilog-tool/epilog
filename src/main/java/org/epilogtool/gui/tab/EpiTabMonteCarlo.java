@@ -47,6 +47,8 @@ import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboCheckBox;
 import org.epilogtool.gui.widgets.VisualGridSimulation;
 import org.epilogtool.io.ButtonFactory;
+import org.epilogtool.io.EpilogFileFilter;
+import org.epilogtool.io.FileIO;
 import org.epilogtool.project.MonteCarlo;
 import org.epilogtool.project.ProjectFeatures;
 
@@ -74,6 +76,11 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	private JButton jbBack;
 	private JButton jbStep;
 	private JButton jbFastFwr;
+	
+	private JButton jbClone;
+	private JButton jbPicture;
+	private JButton jbSaveAll;
+	
 	private JLabel jlStep;
 	
 	private JLabel uniqueSS;
@@ -150,11 +157,20 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 				.getImageNoBorder("media_rewind-26x24.png");
 		this.jbFastFwr = ButtonFactory
 				.getImageNoBorder("media_fast_forward-26x24.png");
+		this.jbPicture = ButtonFactory
+				.getImageNoBorder("fotography-24x24.png");
+		this.jbSaveAll = ButtonFactory
+				.getImageNoBorder("fotography-mult-24x24.png");
+		this.jbClone = ButtonFactory.getNoMargins("Clone");
+		
 		
 		this.jbRewind.setEnabled(false);
 		this.jbBack.setEnabled(false);
 		this.jbStep.setEnabled(false);
 		this.jbFastFwr.setEnabled(false);
+		this.jbClone.setEnabled(false);
+		this.jbPicture.setEnabled(false);
+		this.jbSaveAll.setEnabled(false);
 	}
 
 	public void  initialize()  {
@@ -245,40 +261,39 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		jpButtonsC.add(this.jbFastFwr);
 
 		JPanel jpButtonsR = new JPanel();
-		JButton jbClone = ButtonFactory.getNoMargins("Clone");
-		jbClone.setToolTipText("Create a new Epithelium with initial conditions as the current grid");
-		jbClone.addActionListener(new ActionListener() {
+
+		this.jbClone.setToolTipText("Create a new Epithelium with initial conditions as the current grid");
+		this.jbClone.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cloneEpiWithCurrGrid();
 			}
 		});
-		jpButtonsR.add(jbClone);
+		this.jbClone.setEnabled(false);
+		jpButtonsR.add(this.jbClone);
 
 		// Button to save an image from the simulated grid
-		JButton jbPicture = ButtonFactory
-				.getImageNoBorder("fotography-24x24.png");
-		jbPicture.setToolTipText("Save the image of the current grid to file");
-		jbPicture.addActionListener(new ActionListener() {
+		this.jbPicture.setToolTipText("Save the image of the current grid to file");
+		this.jbPicture.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				saveEpiGrid2File();
 			}
 		});
-			
+		this.jbPicture.setEnabled(false);
+		jpButtonsR.add(this.jbPicture);
 		
 
 		// Button to save all simulated grid images
-		JButton jbSaveAll = ButtonFactory
-				.getImageNoBorder("fotography-mult-24x24.png");
-		jbSaveAll
+		this.jbSaveAll
 				.setToolTipText("Save all the simulation grids into different files");
-		jbSaveAll.addActionListener(new ActionListener() {
+		this.jbSaveAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				saveAllEpiGrid2File();
 			}
 		});
-		jpButtonsR.add(jbSaveAll);	
+		this.jbSaveAll.setEnabled(false);
+		jpButtonsR.add(this.jbSaveAll);	
 		
 		jpButtons.add(jpButtonsR, BorderLayout.LINE_END);
 
@@ -339,36 +354,33 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	// get current simulation step
 	private void saveEpiGrid2File() {
-//		JFileChooser fc = new JFileChooser();
-//		fc.setFileFilter(new EpilogFileFilter("png"));
-//		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-//			String file = fc.getSelectedFile().getAbsolutePath();
-//			String ext = "PNG";
-//			file += (file.endsWith(ext) ? "" : "." + ext);
-//			FileIO.writeEpitheliumGrid2File(file, this.vgMonteCarlo,
-//					ext);
-//		}
-		JPanel frame = new JPanel();
-		JOptionPane.showMessageDialog(frame, "Not Working yet");
+		JFileChooser fc = new JFileChooser();
+		fc.setFileFilter(new EpilogFileFilter("png"));
+		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+			String file = fc.getSelectedFile().getAbsolutePath();
+			String ext = "PNG";
+			file += (file.endsWith(ext) ? "" : "." + ext);
+			FileIO.writeEpitheliumGrid2File(file, this.vgCellState,
+					ext);
+		}
 	}
 	
 	private void saveAllEpiGrid2File() {
-//		JFileChooser fc = new JFileChooser();
-//		fc.setFileFilter(new EpilogFileFilter("png"));
-//		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-//			String file = fc.getSelectedFile().getAbsolutePath();
-//			String ext = "PNG";
-//			file += (file.endsWith(ext) ? "" : "." + ext);
-//			for (int i = 0; i <= this.iCurrSimIter; i++) {
-//				String file_name = file.replace(".", "_" + i + ".");
-//				EpitheliumGrid grid = this.simulation.getGridAt(i);
-//				this.visualGridSimulation.setEpitheliumGrid(grid);
-//				FileIO.writeEpitheliumGrid2File(file_name,
-//						this.visualGridSimulation, ext);
-//			}
-//		}
-		JPanel frame = new JPanel();
-		JOptionPane.showMessageDialog(frame, "Not Working yet");
+		JFileChooser fc = new JFileChooser();
+		fc.setFileFilter(new EpilogFileFilter("png"));
+		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+			String file = fc.getSelectedFile().getAbsolutePath();
+			String ext = "PNG";
+			file += (file.endsWith(ext) ? "" : "." + ext);
+			int i = 1;
+			for (EpitheliumGrid stableState: this.monteCarlo.getUniqueStableStates().keySet()) {
+				String file_name = file.replace(".", "_" + i + ".");;
+				this.vgCellState.setEpitheliumGrid(stableState);
+				i = i+1;
+				FileIO.writeEpitheliumGrid2File(file_name,
+						this.vgCellState, ext);
+			}
+		}
 	}
 	
 	protected void simulationFastFwr() {
@@ -874,6 +886,10 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			this.vgCellState = new VisualGridSimulation(stableState,this.projectFeatures,this.lCompON,this.gridInformation);
 			this.repaint();
 			simulationStepFwr();
+			this.jbClone.setEnabled(true);
+			this.jbPicture.setEnabled(true);
+			this.jbSaveAll.setEnabled(true);
+
 
 			updatejlIteration(stableState);
 			this.repaint();
