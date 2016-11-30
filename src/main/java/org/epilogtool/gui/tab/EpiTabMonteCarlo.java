@@ -457,7 +457,9 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			this.jbStep.setEnabled(false);
 			this.jbFastFwr.setEnabled(false);
 		}
+		this.vgCellState = new VisualGridSimulation(stableState,this.projectFeatures,this.lCompON,this.gridInformation);
 		updateComponentList(this.jccb.getSelectedItems());
+		
 		this.vgCellState.repaint();
 		this.repaint();	
 	}
@@ -599,12 +601,8 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	protected JPanel fireCumulativeGrid(JPanel jpanel) {
 		//TODO
 		System.out.println("Starting the Cumulative");
+		this.monteCarlo.createCumulative();
 		
-		
-		
-		for (EpitheliumGrid stableState: this.monteCarlo.getStableStates()){
-			
-		}
 		return jpanel;
 	}
 
@@ -808,8 +806,8 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	protected void fireRun() {
 		this.lastStableStateIndex=0;
-		this.clonedEpi = this.epithelium.clone();
-		this.monteCarlo.run(this.clonedEpi);
+//		this.clonedEpi = this.epithelium.clone();
+		this.monteCarlo.run(this.epithelium.clone());
 		
 			if (this.lastStableStateIndex >1){
 				this.jbBack.setEnabled(true);
@@ -830,8 +828,10 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			if (this.monteCarlo.getStableStates().size()>0){
 			EpitheliumGrid stableState= this.monteCarlo.getStableStates().get(0);
 			this.vgCellState = new VisualGridSimulation(stableState,this.projectFeatures,this.lCompON,this.gridInformation);
+			this.repaint();
 			simulationStepFwr();
 			updatejlIteration(stableState);
+			this.repaint();
 			}
 			this.vgCellState.repaint();
 			this.repaint();
