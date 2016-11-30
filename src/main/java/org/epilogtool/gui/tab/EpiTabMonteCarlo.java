@@ -577,10 +577,15 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		jbSelectAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				for (String nodeID : lNodeInPanel) {
-					mNode2Checkbox.get(nodeID).setSelected(true);
+				for (String nodeID : lPresentComps) {
+				if (mNodeID2Checkbox.containsKey(nodeID)) {
+					mNodeID2Checkbox.get(nodeID).setSelected(true);
 				}
-				vgCellState.paintComponent(vgCellState.getGraphics());
+				mSelCheckboxes.put(nodeID, true);
+				if (!lCompON.contains(nodeID))
+					lCompON.add(nodeID);
+			}
+				fireVisualChange();
 			}
 		});
 		rTopSel.add(jbSelectAll);
@@ -590,11 +595,14 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		jbDeselectAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				for (String nodeID : lNodeInPanel) {
-					mNode2Checkbox.get(nodeID).setSelected(false);
-					mNode2ValueSelected.remove(nodeID);
+				for (String nodeID : lPresentComps) {
+				if (mNodeID2Checkbox.containsKey(nodeID)) {
+					mNodeID2Checkbox.get(nodeID).setSelected(false);
 				}
-				vgCellState.paintComponent(vgCellState.getGraphics());
+				mSelCheckboxes.put(nodeID, false);
+				lCompON.remove(nodeID);
+			}
+				fireVisualChange();
 			}
 		});
 		rTopSel.add(jbDeselectAll);
