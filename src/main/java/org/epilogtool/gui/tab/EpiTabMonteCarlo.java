@@ -770,28 +770,13 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	protected void changeMonteCarloInitialConditions(String selectedItem) {
 		boolean flag = false;
 		if (selectedItem.equals("Random")) flag = true;
-		if (flag){
-			setRandom();
-		}else{
+		if (!flag)
 			setInicialConditions();
-		}
+		
 		fireVisualChange();
 		this.monteCarlo.setMonteCarloInitialConditions(flag);		
 		
 	}
-	
-	private void setRandom(){
-		
-	    Random randomGenerator = new Random();
-	    
-			for (int x = 0; x < this.clonedEpi.getX(); x++) {
-				for (int y = 0; y < this.clonedEpi.getY(); y++) {
-					for (NodeInfo node: this.clonedEpi.getModel(x, y).getNodeOrder()){
-						if (!node.isInput()){
-							byte maxValue = node.getMax();
-							int value = randomGenerator.nextInt(maxValue+1);
-							this.clonedEpi.getEpitheliumGrid().setCellComponentValue(x, y, node.getNodeID(), (byte) value);
-						}}}}}
 
 	private void setInicialConditions(){
 			for (int x = 0; x < this.clonedEpi.getX(); x++) {
@@ -940,10 +925,12 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	
 	private void fireVisualChange(){
 		if (this.vgCellState
-				.getGraphics()!=null)
+				.getGraphics()!=null){
 		this.vgCellState.paintComponent(this.vgCellState
 				.getGraphics());
 		this.vgCellState.repaint();
+		}
+		this.repaint();
 	}
 	
 	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y,
@@ -964,6 +951,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 				public void actionPerformed(ActionEvent e) {
 					JCheckBox jcb = (JCheckBox) e.getSource();
 					mSelCheckboxes.put(jcb.getText(), jcb.isSelected());
+					fireVisualChange();
 					if (jcb.isSelected()) {
 						lCompON.add(jcb.getText());
 					} else {
