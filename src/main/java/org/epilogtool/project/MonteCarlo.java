@@ -44,7 +44,7 @@ public class MonteCarlo {
 	private int stableStatesFound;
 	private List<EpitheliumGrid> stableStates;
 	private Map<EpitheliumGrid,Integer> stablestate2iteration;
-	private Map<EpitheliumGrid,Integer> repeatedStableState;
+	private Map<EpitheliumGrid,Integer> uniqueStableStates;
 	
 	
 	
@@ -95,7 +95,7 @@ public class MonteCarlo {
 		this.epithelium = epi;
 		
 		this.stablestate2iteration = new HashMap<EpitheliumGrid,Integer>();
-		this.repeatedStableState = new HashMap<EpitheliumGrid,Integer>();
+		this.uniqueStableStates = new HashMap<EpitheliumGrid,Integer>();
 		this.stableStates = new ArrayList<EpitheliumGrid>();
 		
 		this.stableStatesFound = 0;
@@ -120,77 +120,70 @@ public class MonteCarlo {
 //				System.out.println(nextGrid);
 				
 				if (sim.isStableAt(indexIteration+1)){
-					if (compareStableStates(nextGrid)){
-						stableStates.add(nextGrid);
-						stablestate2iteration.put(nextGrid, indexIteration);
-					}
-					break;	
+					stableStates.add(nextGrid);
+					stablestate2iteration.put(nextGrid, indexIteration);
+					stableStateExists(nextGrid);
 
-				}
-			}
-			
-		}
+					break;	
+				}}}
 		
 		System.out.println("MonteCarlo OVER");
 	}
 
 
-	private boolean compareStableStates(EpitheliumGrid stableState){
+	private boolean stableStateExists(EpitheliumGrid stableState){
 		
 		if (this.stableStates.size()==0)
-			return true;
+			return false;
 		else{
 			for (EpitheliumGrid sState: this.stableStates){
 				if (sState.equals(stableState)){
-					System.out.println("found the same state");
-					if (this.repeatedStableState.containsKey(sState))
-						this.repeatedStableState.put(sState,this.repeatedStableState.get(sState)+1);
-					return false;
-				}
-				
-				
-				
-//				for (int x = 0; x < sState.getX(); x++) {
-//					for (int y = 0; y < sState.getY(); y++) {
-//						for (NodeInfo node: sState.getModel(x, y).getNodeOrder()){
-//							if (sState.getCellValue(x, y, node.getNodeID())!=stableState.getCellValue(x, y, node.getNodeID())){
-//								System.out.println(x + " "+ y);
-//								return true;
-//						}}}}
+					if (this.uniqueStableStates.containsKey(sState))
+						this.uniqueStableStates.put(sState,this.uniqueStableStates.get(sState)+1);
+					else{
+						this.uniqueStableStates.put(sState,1);
+					}
+					return true;
+				}	
 			}
-			return true;
+			return false;
 		}
 	}
-
 	
+	public Map<EpitheliumGrid, Integer> getUniqueStableStates(){
+		return this.uniqueStableStates;
+	}
+
+
 	public void createCumulative() {
 		// TODO Auto-generated method stub
 		
-		Map<Tuple3D,Integer> cellNode2Count = new HashMap<Tuple3D,Integer>();
+		Map<Tuple3D,Float> cellNode2Count = new HashMap<Tuple3D,Float>();
 		
-		if (this.stableStates.size()>0)
+		if ((this.stableStates!=null) && (this.stableStates.size()>0)){
 			for (EpitheliumGrid stableState: this.stableStates){
 				for (int x = 0; x < stableState.getX(); x++) {
 					for (int y = 0; y < stableState.getY(); y++) {
 						for (NodeInfo node: stableState.getModel(x,y).getNodeOrder()){
 							Tuple3D cellNode = new Tuple3D(x,y,node.getNodeID());
 							if (!cellNode2Count.keySet().contains(cellNode)){
-								cellNode2Count.put(cellNode, 1);
+								cellNode2Count.put(cellNode, (float) 1);
 							}
 							else{
 							int count = stableState.getCellValue(x, y, node.getNodeID());
 							cellNode2Count.put(cellNode, cellNode2Count.get(cellNode)+count);
-							}
-							
-						}
-					}
-					
-					}
+							}}}}
 				
+			
+			for (Tuple3D t: cellNode2Count.keySet()){
+				int numCells = this.epithelium.getX()*this.epithelium.getY();
+				float res = cellNode2Count.get(t)/numCells;
+				cellNode2Count.put(t, res);
+			}
 			}
 		System.out.println(cellNode2Count);
 			
-	}
+	}}
 
 	
 }

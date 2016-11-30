@@ -65,6 +65,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	private JPanel monteCarloVisualDefinitionsCenter;
 	private JPanel jpRCenter;
 	private JPanel rTop;
+	private JPanel informationPanel;
 	
 	private int lastStableStateIndex;
 	
@@ -74,6 +75,9 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	private JButton jbStep;
 	private JButton jbFastFwr;
 	private JLabel jlStep;
+	
+	private JLabel uniqueSS;
+	private JLabel notReachedSS;
 	
 	private JComboCheckBox jccb;
 	private Color backColor;
@@ -119,6 +123,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.jbRun = new JButton("Run");
 		this.jpRight = new JPanel(new BorderLayout());
 		this.jpLeft = new JPanel(new BorderLayout());
+		this.informationPanel = new JPanel(new BorderLayout());
 		
 		this.jrbCumulative = new JRadioButton("Cumulative");
 		this.jrbStableStates = new JRadioButton("Stable States");
@@ -168,14 +173,15 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 		JPanel monteCarloVisualDefinitions = createMonteCarloVisualDefinitions();
 		jpLeft.add(monteCarloVisualDefinitions,BorderLayout.CENTER);
-		//MonteCarlo GridInformation
 		
-		if (!this.jrbCumulative.isSelected()){
-			JPanel left = new JPanel(new BorderLayout());
-			left.add(jpLeft,BorderLayout.WEST);
-			left.add(this.gridInformation,BorderLayout.CENTER);
-			jpLeft = left;
-		}
+		//MonteCarlo GridInformation
+		createInformationPanel();
+
+		JPanel left = new JPanel(new BorderLayout());
+		left.add(jpLeft,BorderLayout.WEST);
+		left.add(informationPanel,BorderLayout.CENTER);
+		jpLeft = left;
+
 		
 		//Bottom Right Panel
 		JPanel jpButtons = new JPanel(new BorderLayout());
@@ -303,6 +309,34 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.vgCellState.repaint();
 	}
 	
+	private void createInformationPanel() {
+		// TODO
+		
+		JPanel informationPanelMonteCarlo = new JPanel(new GridBagLayout());
+		informationPanelMonteCarlo.setBackground(backColor);
+		
+		informationPanelMonteCarlo.setBorder(BorderFactory.createTitledBorder("Monte Carlo"));
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.anchor = GridBagConstraints.WEST;
+		
+
+		gbc.gridy = 0;
+		gbc.gridx = 0;
+		this.uniqueSS = new JLabel("");
+		this.uniqueSS.setText("Unique SS: " );
+		informationPanelMonteCarlo.add(this.uniqueSS,gbc);
+		
+		gbc.gridy = 1;
+		gbc.gridx = 0;
+		this.notReachedSS = new JLabel("");
+		this.notReachedSS.setText("Not reached: ");
+		informationPanelMonteCarlo.add(this.notReachedSS,gbc);
+		
+		informationPanel.add(this.gridInformation,BorderLayout.CENTER);
+		informationPanel.add(informationPanelMonteCarlo,BorderLayout.PAGE_START);
+		return ;
+	}
+
 	// get current simulation step
 	private void saveEpiGrid2File() {
 //		JFileChooser fc = new JFileChooser();
@@ -465,8 +499,11 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	}
 
 	private int updatejlIteration(EpitheliumGrid stableState) {
+		//TODO: The iteration must be a range
+		//TODO: Only the unique should be shown
+		//TODO: How many repeated stable states are there
 		int iteration = this.monteCarlo.getStableState2Iteration().get(stableState);
-		this.jlStep.setText("Stable State: " +this.lastStableStateIndex + " of "+this.monteCarlo.getStableState2Iteration().size()+ " [Iteration: " +iteration+"]");
+		this.jlStep.setText("Stable State: " +this.lastStableStateIndex + " of "+this.monteCarlo.getUniqueStableStates().size()+ " [Iteration: " +iteration+"]");
 		this.jlStep.repaint();
 		return iteration;
 	}
@@ -806,7 +843,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	protected void fireRun() {
 		this.lastStableStateIndex=0;
-//		this.clonedEpi = this.epithelium.clone();
 		this.monteCarlo.run(this.epithelium.clone());
 		
 			if (this.lastStableStateIndex >1){
@@ -830,15 +866,31 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			this.vgCellState = new VisualGridSimulation(stableState,this.projectFeatures,this.lCompON,this.gridInformation);
 			this.repaint();
 			simulationStepFwr();
+
 			updatejlIteration(stableState);
 			this.repaint();
 			}
+			
+			updateInformationPanel();
+			
 			this.vgCellState.repaint();
 			this.repaint();
 		}
 			
 			
 	
+
+	private void updateInformationPanel() {
+
+		System.out.println(this.monteCarlo.getStableStates().size());
+		this.uniqueSS.setText("Unique SS: " + this.monteCarlo.getUniqueStableStates().size());
+		this.notReachedSS.setText("Not reached SS: " + (this.monteCarlo.getNumberRuns() - this.monteCarlo.getStableStates().size()));
+		this.uniqueSS.repaint();
+		this.notReachedSS.repaint();
+		this.informationPanel.repaint();
+		this.jpLeft.repaint();
+		
+	}
 
 	@Override
 	public String getName() {
