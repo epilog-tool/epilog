@@ -151,7 +151,9 @@ public class VisualGridMonteCarlo extends VisualGrid {
 
 
 
-
+	public EpitheliumGrid getEpitheliumGrid(){
+		return epiGrid;
+	}
 
 	@Override
 	protected void applyDataAt(int x, int y) {

@@ -149,4 +149,9 @@ public class VisualGridSimulation extends VisualGrid {
 			}
 		}
 	}
+	
+	public EpitheliumGrid getEpitheliumGrid(){
+		return epiGrid;
+	}
+
 }

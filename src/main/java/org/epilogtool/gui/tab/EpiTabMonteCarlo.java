@@ -42,6 +42,7 @@ import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
+import org.epilogtool.gui.EpiGUI.SimulationEpiClone;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboCheckBox;
@@ -104,10 +105,12 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	private List<String> lNodeInPanel;
 	private Map<String, Byte> mNode2ValueSelected;
 	
+	private SimulationEpiClone simEpiClone;
+	
 
 	public EpiTabMonteCarlo(Epithelium e, TreePath path,
 			ProjChangeNotifyTab projChanged, ProjectFeatures projectFeatures,
-			MonteCarlo monteCarlo) {
+			MonteCarlo monteCarlo, SimulationEpiClone simEpiClone) {
 		super(e, path, projChanged);
 		
 		this.projectFeatures = projectFeatures;
@@ -115,6 +118,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 				this.epithelium.getIntegrationFunctions(), this.projectFeatures);
 		
 		this.clonedEpi = this.epithelium.clone();
+		this.simEpiClone = simEpiClone;
 		
 		this.mSelCheckboxes = new HashMap<String, Boolean>();
 		this.mNodeID2Checkbox = new HashMap<String, JCheckBox>();
@@ -1128,11 +1132,11 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	}
 
 	private void cloneEpiWithCurrGrid() {
-//		this.epithelium.cloneEpithelium(this.epithelium,
-//				this.monteCarlo.getStableStates().get(this.lastStableStateIndex));
+		this.simEpiClone.cloneEpithelium(this.epithelium,
+				this.vgCellState.getEpitheliumGrid());
 //		System.out.println("NOT WORKING");
-		JPanel frame = new JPanel();
-		JOptionPane.showMessageDialog(frame, "Not Working yet");
+//		JPanel frame = new JPanel();
+//		JOptionPane.showMessageDialog(frame, "Not Working yet");
 		
 	}
 	

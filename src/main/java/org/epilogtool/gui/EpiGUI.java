@@ -912,7 +912,7 @@ public class EpiGUI extends JFrame {
 			TreePath path = this.epiTreePanel.getSelectionEpiPath();
 			tab = new EpiTabMonteCarlo(epi,
 					path, projChanged,
-					this.project.getProjectFeatures(), new MonteCarlo(epi));
+					this.project.getProjectFeatures(), new MonteCarlo(epi), new SimulationEpiClone());
 			String title = epi.getName() + ":MonteCarlo";
 			this.epiRightFrame.addTab(title, tab);
 			tab.initialize();

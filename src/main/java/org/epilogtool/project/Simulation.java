@@ -194,7 +194,6 @@ public class Simulation {
 	private EpitheliumGrid updateGrid(String updateMode, Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid, HashMap<Tuple2D<Integer>, byte[]> cells2update) {
 		// TODO Auto-generated method stub
 	
-
 		if (updateMode.equals("Synchronous"))
 			nextGrid = updateModeSynchronous(keys, nextGrid, cells2update);
 		else if (updateMode.equals("Asynchronous: Random independent"))
