@@ -529,7 +529,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		String iteration;
 		List<Integer> iterationList = this.monteCarlo.getUniqueStableStates2Frequency().get(stableState);
 		if (iterationList.size()>1){
-			this.stableStateRepeated.setText("SS repeated: "+ iterationList.size());
+			this.stableStateRepeated.setText("SS repeated: "+ (iterationList.size()-1));
 			this.stableStateRepeated.repaint();
 		}
 		else{
