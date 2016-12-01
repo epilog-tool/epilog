@@ -43,8 +43,9 @@ public class MonteCarlo {
 	
 	private int stableStatesFound;
 	private List<EpitheliumGrid> stableStates;
+	private List<EpitheliumGrid> uniqueStableStates;
 	private Map<EpitheliumGrid,Integer> stablestate2iteration;
-	private Map<EpitheliumGrid,Integer> uniqueStableStates;
+	private Map<EpitheliumGrid,List<Integer>> uniqueStableStates2frequency;
 	
 	
 	
@@ -95,10 +96,10 @@ public class MonteCarlo {
 		this.epithelium = epi;
 		
 		this.stablestate2iteration = new HashMap<EpitheliumGrid,Integer>();
-		this.uniqueStableStates = new HashMap<EpitheliumGrid,Integer>();
+		this.uniqueStableStates2frequency = new HashMap<EpitheliumGrid,List<Integer>>();
 		this.stableStates = new ArrayList<EpitheliumGrid>();
+		this.uniqueStableStates = new ArrayList<EpitheliumGrid>();
 		
-		this.stableStatesFound = 0;
 
 		
 		for (int i = 0; i<this.numberRuns; i++){
@@ -138,10 +139,18 @@ public class MonteCarlo {
 		else{
 			for (EpitheliumGrid sState: this.stableStates){
 				if (sState.equals(stableState)){
-					if (this.uniqueStableStates.containsKey(sState))
-						this.uniqueStableStates.put(sState,this.uniqueStableStates.get(sState)+1);
+			
+					List<Integer> freq = new ArrayList<Integer>();
+					
+					if (this.uniqueStableStates2frequency.containsKey(sState)){
+						freq = this.uniqueStableStates2frequency.get(sState);
+						freq.add(stablestate2iteration.get(stableState));
+						this.uniqueStableStates2frequency.put(sState,freq);
+				}
 					else{
-						this.uniqueStableStates.put(sState,1);
+						freq.add(stablestate2iteration.get(stableState));
+						this.uniqueStableStates2frequency.put(sState,freq);
+						this.uniqueStableStates.add(sState);
 					}
 					return true;
 				}	
@@ -150,8 +159,12 @@ public class MonteCarlo {
 		}
 	}
 	
-	public Map<EpitheliumGrid, Integer> getUniqueStableStates(){
-		return this.uniqueStableStates;
+	public List<EpitheliumGrid> getUniqueStableStates(){
+	return this.uniqueStableStates;
+	}
+	
+	public Map<EpitheliumGrid, List<Integer>> getUniqueStableStates2Frequency(){
+		return this.uniqueStableStates2frequency;
 	}
 
 

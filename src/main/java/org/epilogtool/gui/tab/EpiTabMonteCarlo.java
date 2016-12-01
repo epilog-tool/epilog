@@ -86,6 +86,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	
 	private JLabel uniqueSS;
 	private JLabel notReachedSS;
+	private JLabel stableStateRepeated;
 	
 	private JComboCheckBox jccb;
 	private Color backColor;
@@ -332,7 +333,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		// TODO
 		
 		JPanel informationPanelMonteCarlo = new JPanel(new GridBagLayout());
-		informationPanelMonteCarlo.setBackground(backColor);
+//		informationPanelMonteCarlo.setBackground(backColor);
 		
 		informationPanelMonteCarlo.setBorder(BorderFactory.createTitledBorder("Monte Carlo"));
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -350,6 +351,11 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.notReachedSS = new JLabel("");
 		this.notReachedSS.setText("Not reached: ");
 		informationPanelMonteCarlo.add(this.notReachedSS,gbc);
+		
+		gbc.gridy = 2;
+		gbc.gridx = 0;
+		this.stableStateRepeated = new JLabel("");
+		informationPanelMonteCarlo.add(this.stableStateRepeated,gbc);
 		
 		informationPanel.add(this.gridInformation,BorderLayout.CENTER);
 		informationPanel.add(informationPanelMonteCarlo,BorderLayout.PAGE_START);
@@ -377,7 +383,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			String ext = "PNG";
 			file += (file.endsWith(ext) ? "" : "." + ext);
 			int i = 1;
-			for (EpitheliumGrid stableState: this.monteCarlo.getUniqueStableStates().keySet()) {
+			for (EpitheliumGrid stableState: this.monteCarlo.getUniqueStableStates()) {
 				String file_name = file.replace(".", "_" + i + ".");;
 				this.vgCellState.setEpitheliumGrid(stableState);
 				i = i+1;
@@ -388,8 +394,8 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	}
 	
 	protected void simulationFastFwr() {
-		this.lastStableStateIndex = this.monteCarlo.getStableStates().size();
-		EpitheliumGrid stableState = this.monteCarlo.getStableStates().get(this.lastStableStateIndex-1);
+		this.lastStableStateIndex = this.monteCarlo.getUniqueStableStates().size();
+		EpitheliumGrid stableState = this.monteCarlo.getUniqueStableStates().get(this.lastStableStateIndex-1);
 		for (int x = 0; x < stableState.getX(); x++) {
 			for (int y = 0; y < stableState.getY(); y++) {
 				this.clonedEpi.getEpitheliumGrid().setCellState(x, y, stableState.getCellState(x, y));
@@ -405,7 +411,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 				this.jbBack.setEnabled(false);
 				this.jbRewind.setEnabled(false);	
 			}
-		if (this.lastStableStateIndex !=this.monteCarlo.getStableStates().size()){
+		if (this.lastStableStateIndex !=this.monteCarlo.getUniqueStableStates().size()){
 			this.jbStep.setEnabled(true);
 			this.jbFastFwr.setEnabled(true);
 		}
@@ -421,7 +427,8 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	protected void simulationStepBack() {
 			this.lastStableStateIndex = this.lastStableStateIndex-1;
-			EpitheliumGrid stableState = this.monteCarlo.getStableStates().get(this.lastStableStateIndex-1);
+			EpitheliumGrid stableState = this.monteCarlo.getUniqueStableStates().get(this.lastStableStateIndex-1);
+
 			for (int x = 0; x < stableState.getX(); x++) {
 				for (int y = 0; y < stableState.getY(); y++) {
 					this.clonedEpi.getEpitheliumGrid().setCellState(x, y, stableState.getCellState(x, y));
@@ -436,7 +443,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 					this.jbBack.setEnabled(false);
 					this.jbRewind.setEnabled(false);	
 				}
-			if (this.lastStableStateIndex !=this.monteCarlo.getStableStates().size()){
+			if (this.lastStableStateIndex !=this.monteCarlo.getUniqueStableStates().size()){
 				this.jbStep.setEnabled(true);
 				this.jbFastFwr.setEnabled(true);
 			}
@@ -452,7 +459,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	protected void simulationRewind() {
 		this.lastStableStateIndex = 1;
-		EpitheliumGrid stableState = this.monteCarlo.getStableStates().get(this.lastStableStateIndex-1);
+		EpitheliumGrid stableState = this.monteCarlo.getUniqueStableStates().get(this.lastStableStateIndex-1);
 		for (int x = 0; x < stableState.getX(); x++) {
 			for (int y = 0; y < stableState.getY(); y++) {
 				this.clonedEpi.getEpitheliumGrid().setCellState(x, y, stableState.getCellState(x, y));
@@ -468,7 +475,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 				this.jbBack.setEnabled(false);
 				this.jbRewind.setEnabled(false);	
 			}
-		if (this.lastStableStateIndex !=this.monteCarlo.getStableStates().size()){
+		if (this.lastStableStateIndex !=this.monteCarlo.getUniqueStableStates().size()){
 			this.jbStep.setEnabled(true);
 			this.jbFastFwr.setEnabled(true);
 		}
@@ -483,7 +490,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	protected void simulationStepFwr() {
 		this.lastStableStateIndex = this.lastStableStateIndex + 1;
-		EpitheliumGrid stableState = this.monteCarlo.getStableStates().get(this.lastStableStateIndex-1);
+		EpitheliumGrid stableState = this.monteCarlo.getUniqueStableStates().get(this.lastStableStateIndex-1);
 		for (int x = 0; x < stableState.getX(); x++) {
 			for (int y = 0; y < stableState.getY(); y++) {
 				this.clonedEpi.getEpitheliumGrid().setCellState(x, y, stableState.getCellState(x, y));
@@ -499,7 +506,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 				this.jbBack.setEnabled(false);
 				this.jbRewind.setEnabled(false);	
 			}
-		if (this.lastStableStateIndex !=this.monteCarlo.getStableStates().size()){
+		if (this.lastStableStateIndex !=this.monteCarlo.getUniqueStableStates().size()){
 			this.jbStep.setEnabled(true);
 			this.jbFastFwr.setEnabled(true);
 		}
@@ -514,14 +521,37 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.repaint();	
 	}
 
-	private int updatejlIteration(EpitheliumGrid stableState) {
+	private void updatejlIteration(EpitheliumGrid stableState) {
 		//TODO: The iteration must be a range
 		//TODO: Only the unique should be shown
 		//TODO: How many repeated stable states are there
-		int iteration = this.monteCarlo.getStableState2Iteration().get(stableState);
+//		int iteration = this.monteCarlo.getStableState2Iteration().get(stableState);
+		String iteration;
+		List<Integer> iterationList = this.monteCarlo.getUniqueStableStates2Frequency().get(stableState);
+		if (iterationList.size()>1){
+			this.stableStateRepeated.setText("SS repeated: "+ iterationList.size());
+			this.stableStateRepeated.repaint();
+		}
+		else{
+			this.stableStateRepeated.setText("");
+			this.stableStateRepeated.repaint();
+		}
+			
+		
+		int minIter  = Collections.min(iterationList);
+		int maxIter =  Collections.max(iterationList);
+
+		if (minIter==maxIter){
+			iteration = "" + minIter;
+		}else{
+			iteration = minIter +"-" + maxIter;
+
+		}
+		
+		
 		this.jlStep.setText("Stable State: " +this.lastStableStateIndex + " of "+this.monteCarlo.getUniqueStableStates().size()+ " [Iteration: " +iteration+"]");
 		this.jlStep.repaint();
-		return iteration;
+		return;
 	}
 
 	
