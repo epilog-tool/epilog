@@ -3,6 +3,7 @@ package org.epilogtool.project;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+//import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -168,10 +169,11 @@ public class MonteCarlo {
 	}
 
 
-	public void createCumulative() {
+	public Map<Tuple3D,Float> createCumulative() {
 		// TODO Auto-generated method stub
 		
 		Map<Tuple3D,Float> cellNode2Count = new HashMap<Tuple3D,Float>();
+		Map<Tuple3D,Float> cellNode2Average = new HashMap<Tuple3D,Float>();
 		
 		if ((this.stableStates!=null) && (this.stableStates.size()>0)){
 			for (EpitheliumGrid stableState: this.stableStates){
@@ -191,12 +193,15 @@ public class MonteCarlo {
 			for (Tuple3D t: cellNode2Count.keySet()){
 				int numCells = this.epithelium.getX()*this.epithelium.getY();
 				float res = cellNode2Count.get(t)/numCells;
-				cellNode2Count.put(t, res);
+				cellNode2Average.put(t, res);
 			}
 			}
 		System.out.println(cellNode2Count);
+		System.out.println(Collections.min(cellNode2Count.values()));
+		System.out.println(Collections.max(cellNode2Count.values()));
 			
-	}}
+	}
+		return cellNode2Average;}
 
 	
 }

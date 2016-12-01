@@ -10,9 +10,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.common.Tuple3D;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.color.ColorUtils;
@@ -26,6 +28,8 @@ public class VisualGridSimulation extends VisualGrid {
 	private List<String> lCompON;
 	private GridInformation valuePanel;
 	private Tuple2D<Integer> lastPos;
+	
+	private Map<Tuple3D, Float> cellNode2Average;
 
 	public VisualGridSimulation(EpitheliumGrid epiGrid,
 			ProjectFeatures projectFeatures, List<String> lCompON,
@@ -154,4 +158,44 @@ public class VisualGridSimulation extends VisualGrid {
 		return epiGrid;
 	}
 
+	
+	public void paintCumulative(Graphics g, Map<Tuple3D,Float> cellnode2Average) {
+		Graphics2D g2 = (Graphics2D) g;
+
+		System.out.println("Painting");
+		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY,
+				this.getSize().width, this.getSize().height);
+
+		for (int x = 0; x < this.gridX; x++) {
+			for (int y = 0; y < this.gridY; y++) {
+				BasicStroke stroke = this.strokeBasic;
+				if (this.epiGrid.getPerturbation(x, y) != null) {
+					stroke = this.strokePerturb;
+				}
+				LogicalModel m = this.epiGrid.getModel(x, y);
+				List<Color> lColors = new ArrayList<Color>();
+				if (EmptyModel.getInstance().isEmptyModel(m)) {
+					lColors.add(EmptyModel.getInstance().getColor());
+				}
+		
+				Color cCombined = Color.BLUE;
+				Tuple2D<Double> center = topology.getPolygonCenter(this.radius,
+						x, y);
+				Polygon polygon = topology
+						.createNewPolygon(this.radius, center);
+				this.paintPolygon(stroke, cCombined, polygon, g2);
+				// Highlights the selected cell
+				if (this.lastPos != null && this.lastPos.getX() == x
+						&& this.lastPos.getY() == y) {
+					center = topology.getPolygonCenter(this.radius, x, y);
+					polygon = topology
+							.createNewPolygon(this.radius / 3, center);
+					this.paintPolygon(stroke, ColorUtils.LIGHT_RED, polygon, g2);
+				}
+			}
+		}
+	}
+	
+	
+	
 }

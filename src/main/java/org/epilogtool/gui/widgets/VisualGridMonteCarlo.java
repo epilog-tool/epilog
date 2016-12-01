@@ -9,13 +9,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.common.Tuple3D;
 import org.epilogtool.core.EmptyModel;
-import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.project.ProjectFeatures;
@@ -23,61 +24,68 @@ import org.epilogtool.project.ProjectFeatures;
 public class VisualGridMonteCarlo extends VisualGrid {
 	private static final long serialVersionUID = -3880244278613986980L;
 
-	private EpitheliumGrid epiGrid;
 	private ProjectFeatures projectFeatures;
-	private Tuple2D<Integer> lastPos;
+	private EpitheliumGrid epiGrid;
+	private List<String> lCompON;
 	private GridInformation valuePanel;
+	private Tuple2D<Integer> lastPos;
+	private Map<Tuple3D,Float> cellNode2Average;
 
-	public VisualGridMonteCarlo(EpitheliumGrid epiGrid,ProjectFeatures projectFeatures,GridInformation valuePanel) {
-
+	public VisualGridMonteCarlo(EpitheliumGrid epiGrid,
+			ProjectFeatures projectFeatures, List<String> lCompON,
+			GridInformation valuePanel,Map<Tuple3D,Float> cellNode2Average) {
 		super(epiGrid.getX(), epiGrid.getY(), epiGrid.getTopology());
+		
 
-	this.epiGrid = epiGrid;
-	this.projectFeatures = projectFeatures;
-	this.valuePanel = valuePanel;
-	
-//	System.out.println("Graphics when creating the vgMC " + this.getGraphics());
-	
-	this.addMouseMotionListener(new MouseMotionListener() {
-		@Override
-		public void mouseMoved(MouseEvent e) {
-			mousePosition2Grid(e);
-		}
+		this.projectFeatures = projectFeatures;
+		this.epiGrid = epiGrid;
+		this.lCompON = lCompON;
+		this.valuePanel = valuePanel;
+		this.cellNode2Average = cellNode2Average;
 
-		@Override
-		public void mouseDragged(MouseEvent e) {
-			mousePosition2Grid(e);
-			updateComponentValues(mouseGrid);
-			paintComponent(getGraphics());
-//			System.out.println(getGraphics());
-		}
-	});
-	this.addMouseListener(new MouseListener() {
-		@Override
-		public void mouseReleased(MouseEvent e) {
-		}
+		this.addMouseMotionListener(new MouseMotionListener() {
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				mousePosition2Grid(e);
+			}
 
-		@Override
-		public void mousePressed(MouseEvent e) {
-			updateComponentValues(mouseGrid);
-			paintComponent(getGraphics());
-		}
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				mousePosition2Grid(e);
+				updateComponentValues(mouseGrid);
+				paintComponent(getGraphics());
+			}
+		});
+		this.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
 
-		@Override
-		public void mouseExited(MouseEvent e) {
-		}
+			@Override
+			public void mousePressed(MouseEvent e) {
+				updateComponentValues(mouseGrid);
+				paintComponent(getGraphics());
+			}
 
-		@Override
-		public void mouseEntered(MouseEvent e) {
-		}
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
 
-		@Override
-		public void mouseClicked(MouseEvent e) {
-		}
-	});
-}
-	
-	
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
+		});
+	}
+
+	@Override
+	protected void applyDataAt(int x, int y) {
+		// Does not need to apply data
+	}
+
 	private void updateComponentValues(Tuple2D<Integer> pos) {
 		if (!isInGrid(pos))
 			return;
@@ -94,6 +102,7 @@ public class VisualGridMonteCarlo extends VisualGrid {
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 
+		System.out.println(lCompON);
 		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY,
 				this.getSize().width, this.getSize().height);
 
@@ -104,15 +113,11 @@ public class VisualGridMonteCarlo extends VisualGrid {
 					stroke = this.strokePerturb;
 				}
 				LogicalModel m = this.epiGrid.getModel(x, y);
-//				System.out.println("I am painting the cell with logical model " + m);
 				List<Color> lColors = new ArrayList<Color>();
 				if (EmptyModel.getInstance().isEmptyModel(m)) {
 					lColors.add(EmptyModel.getInstance().getColor());
 				} else {
-					for (NodeInfo node : m.getNodeOrder()) {
-						String nodeID = node.getNodeID();
-//						System.out.println("I am painting the node " + nodeID);
-				
+					for (String nodeID : this.lCompON) {
 						Color cBase = this.projectFeatures.getNodeColor(nodeID);
 						if (this.projectFeatures.hasNode(nodeID, m)) {
 							byte max = this.projectFeatures.getNodeInfo(nodeID,
@@ -130,13 +135,11 @@ public class VisualGridMonteCarlo extends VisualGrid {
 					}
 				}
 				Color cCombined = ColorUtils.combine(lColors);
-//				System.out.println("The resulting color is  " + cCombined);
 				Tuple2D<Double> center = topology.getPolygonCenter(this.radius,
 						x, y);
 				Polygon polygon = topology
 						.createNewPolygon(this.radius, center);
 				this.paintPolygon(stroke, cCombined, polygon, g2);
-//				System.out.println("I just painted an hexagon  ");
 				// Highlights the selected cell
 				if (this.lastPos != null && this.lastPos.getX() == x
 						&& this.lastPos.getY() == y) {
@@ -148,16 +151,9 @@ public class VisualGridMonteCarlo extends VisualGrid {
 			}
 		}
 	}
-
-
-
+	
 	public EpitheliumGrid getEpitheliumGrid(){
 		return epiGrid;
 	}
 
-	@Override
-	protected void applyDataAt(int x, int y) {
-		// TODO Auto-generated method stub
-		
-	}
 }
