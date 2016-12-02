@@ -956,7 +956,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	private void updateInformationPanel() {
 
-		System.out.println(this.monteCarlo.getStableStates().size());
+//		System.out.println(this.monteCarlo.getStableStates().size());
 		this.uniqueSS.setText("Unique SS: " + this.monteCarlo.getUniqueStableStates().size());
 		this.notReachedSS.setText("Not reached SS: " + (this.monteCarlo.getNumberRuns() - this.monteCarlo.getStableStates().size()));
 		this.uniqueSS.repaint();
@@ -1065,17 +1065,22 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		if (this.vgCellState
 				.getGraphics()!=null & this.cellNode2Count!=null){
 			if (this.isCumulative){
+				if (this.cellNode2Count.size()>0){
 				this.vgCellState.paintCumulative(this.vgCellState
 						.getGraphics(),this.cellNode2Count);
-
+				}
 			}
 			else{
 		this.vgCellState.paintComponent(this.vgCellState
 				.getGraphics());
+		this.vgCellState.repaint();
 		this.repaint();
 			}
 		}
 		
+		if (!this.isCumulative){
+			this.repaint();
+		}
 	}
 	
 	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y,

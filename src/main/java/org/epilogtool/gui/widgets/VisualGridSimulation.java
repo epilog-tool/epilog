@@ -42,9 +42,6 @@ public class VisualGridSimulation extends VisualGrid {
 		this.epiGrid = epiGrid;
 		this.lCompON = lCompON;
 		this.valuePanel = valuePanel;
-		
-//		System.out.println("Graphics when creating the vgSim " + this.getGraphics());
-
 
 		this.addMouseMotionListener(new MouseMotionListener() {
 			@Override
@@ -104,8 +101,7 @@ public class VisualGridSimulation extends VisualGrid {
 	@Override
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
-
-//		System.out.println(lCompON);
+		
 		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY,
 				this.getSize().width, this.getSize().height);
 
@@ -179,7 +175,7 @@ public class VisualGridSimulation extends VisualGrid {
 					lColors.add(EmptyModel.getInstance().getColor());
 				} else {
 					for (String nodeID : this.lCompON) {
-						System.out.println(this.lCompON);
+		
 						float max= getMaxNodeCellCount(nodeID);
 						
 						Color cBase = this.projectFeatures.getNodeColor(nodeID);

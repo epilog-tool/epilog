@@ -129,7 +129,7 @@ public class MonteCarlo {
 					break;	
 				}}}
 		
-		System.out.println("MonteCarlo OVER");
+//		System.out.println("MonteCarlo OVER");
 	}
 
 
