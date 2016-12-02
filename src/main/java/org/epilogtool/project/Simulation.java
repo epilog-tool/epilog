@@ -18,6 +18,7 @@ import org.colomoto.logicalmodel.tool.simulation.updater.PriorityClasses;
 import org.colomoto.logicalmodel.tool.simulation.updater.PriorityUpdater;
 import org.epilogtool.common.RandomFactory;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.common.Tuple3D;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
@@ -489,5 +490,26 @@ return finalListOfCells;
 			}
 			this.neighbouringEpi = tmpNeighbourEpi;
 		}
+	}
+	
+	public List<String> getCell2Percentage(){
+		//TODO as csv
+		//If node already in list then do not print
+		Map<String, List<Integer>> cell2Percentage = new HashMap<String, List<Integer>>();
+		
+		List<String> mesList = new ArrayList<String>();
+		
+		int index = 0;
+		for (EpitheliumGrid grid: this.gridHistory){
+			for (LogicalModel model : grid.getModelSet()){
+				for (NodeInfo node: model.getNodeOrder()){
+					  String  mes = index + ": " +node.getNodeID() + " " + grid.getPercentage(node.getNodeID());
+					  mesList.add(mes);
+				}
+			}
+			index = index +1;
+		}
+		
+		return mesList;
 	}
 }

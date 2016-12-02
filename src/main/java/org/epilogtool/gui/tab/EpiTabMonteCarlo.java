@@ -61,7 +61,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	private Epithelium clonedEpi;
 	private MonteCarlo monteCarlo;
 	private VisualGridSimulation vgCellState;
-	private GridInformation gridInformation;
+	private GridInformation cellInformation;
 	private EpitheliumGrid epiGrid;
 	
 	private Map<Tuple3D, Float> cellNode2Count;
@@ -120,7 +120,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		super(e, path, projChanged);
 		
 		this.projectFeatures = projectFeatures;
-		this.gridInformation = new GridInformation(
+		this.cellInformation = new GridInformation(
 				this.epithelium.getIntegrationFunctions(), this.projectFeatures);
 		
 		this.clonedEpi = this.epithelium.clone();
@@ -196,7 +196,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		JPanel monteCarloInfo = createMonteCarloInfo();
 		jpLeft.add(monteCarloInfo,BorderLayout.PAGE_END);
 		
-		this.vgCellState = new VisualGridSimulation(this.clonedEpi.getEpitheliumGrid(),this.projectFeatures,this.lCompON,this.gridInformation);
+		this.vgCellState = new VisualGridSimulation(this.clonedEpi.getEpitheliumGrid(),this.projectFeatures,this.lCompON,this.cellInformation);
 
 		JPanel monteCarloVisualDefinitions = createMonteCarloVisualDefinitions();
 		jpLeft.add(monteCarloVisualDefinitions,BorderLayout.CENTER);
@@ -324,18 +324,16 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.add(jpLeft,BorderLayout.WEST);
 		this.add(this.vgCellState,BorderLayout.CENTER);
 		updateComponentList(this.jccb.getSelectedItems());
-//		this.vgCellState.paintComponent(this.vgCellState.getGraphics());
 		fireVisualChange();
-		this.repaint();
-		this.revalidate();
-		this.vgCellState.repaint();
+//		this.repaint();
+//		this.revalidate();
+//		this.vgCellState.repaint();
 	}
 	
 	private void createInformationPanel() {
 		// TODO
 		
 		JPanel informationPanelMonteCarlo = new JPanel(new GridBagLayout());
-//		informationPanelMonteCarlo.setBackground(backColor);
 		
 		informationPanelMonteCarlo.setBorder(BorderFactory.createTitledBorder("Monte Carlo"));
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -359,7 +357,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.stableStateRepeated = new JLabel("");
 		informationPanelMonteCarlo.add(this.stableStateRepeated,gbc);
 		
-		informationPanel.add(this.gridInformation,BorderLayout.CENTER);
+		informationPanel.add(this.cellInformation,BorderLayout.CENTER);
 		informationPanel.add(informationPanelMonteCarlo,BorderLayout.PAGE_START);
 		return ;
 	}
@@ -422,9 +420,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			this.jbFastFwr.setEnabled(false);
 		}
 		updateComponentList(this.jccb.getSelectedItems());
-		this.vgCellState.repaint();
 		fireVisualChange();
-		this.repaint();	
 	}
 
 
@@ -455,7 +451,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 				this.jbFastFwr.setEnabled(false);
 			}
 			updateComponentList(this.jccb.getSelectedItems());
-//			this.vgCellState.repaint();
 			fireVisualChange();
 			this.repaint();
 			
@@ -488,7 +483,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			this.jbFastFwr.setEnabled(false);
 		}
 		updateComponentList(this.jccb.getSelectedItems());
-//		this.vgCellState.repaint();
 		fireVisualChange();
 		this.repaint();
 	}
@@ -519,18 +513,13 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			this.jbStep.setEnabled(false);
 			this.jbFastFwr.setEnabled(false);
 		}
-//		this.vgCellState = new VisualGridSimulation(stableState,this.projectFeatures,this.lCompON,this.gridInformation);
+
 		updateComponentList(this.jccb.getSelectedItems());
 		fireVisualChange();
-//		this.vgCellState.repaint();
-//		this.repaint();	
 	}
 
 	private void updatejlIteration(EpitheliumGrid stableState) {
-		//TODO: The iteration must be a range
-		//TODO: Only the unique should be shown
-		//TODO: How many repeated stable states are there
-//		int iteration = this.monteCarlo.getStableState2Iteration().get(stableState);
+
 		String iteration;
 		List<Integer> iterationList = this.monteCarlo.getUniqueStableStates2Frequency().get(stableState);
 		if (iterationList.size()>1){
@@ -550,10 +539,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			iteration = "" + minIter;
 		}else{
 			iteration = minIter +"-" + maxIter;
-
 		}
-		
-		
 		this.jlStep.setText("Stable State: " +this.lastStableStateIndex + " of "+this.monteCarlo.getUniqueStableStates().size()+ " [Iteration: " +iteration+"]");
 		this.jlStep.repaint();
 		return;
@@ -575,7 +561,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.jrbStableStates.addActionListener(new ActionListener() {
 	        @Override
 	        public void actionPerformed(ActionEvent e) {
-	            fireStableStatesGrid(monteCarloVisualDefinitionsCenter);
+	            fireStableStatesGrid();
 	   
 	        }
 	    });
@@ -586,7 +572,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.jrbCumulative.addActionListener(new ActionListener() {
 	        @Override
 	        public void actionPerformed(ActionEvent e) {
-	            fireCumulativeGrid(monteCarloVisualDefinitionsCenter);
+	            fireCumulativeGrid();
 
 	        }
 	    });
@@ -697,7 +683,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 
 
-	protected JPanel fireCumulativeGrid(JPanel jpanel) {
+	protected void fireCumulativeGrid() {
 		//TODO
 		this.isCumulative = true;
 		
@@ -710,17 +696,14 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.jbPicture.setEnabled(false);
 		this.jbSaveAll.setEnabled(false);
 
-		
-		System.out.println("Starting the Cumulative" + "this.isCumulative is: " + this.isCumulative);
 		this.cellNode2Count = this.monteCarlo.createCumulative();
-//		this.vgCellState = new VisualGridSimulation(this.epiGrid,this.projectFeatures,this.lCompON,this.gridInformation);
 		fireVisualChange();
 		
-		return jpanel;
+		return;
 	}
 
 
-	protected JPanel fireStableStatesGrid(JPanel jpanel) {
+	protected void fireStableStatesGrid() {
 		
 		//TODO not necessarily all true (do the chekingbuttons function)
 		this.isCumulative = false;
@@ -735,7 +718,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.jbSaveAll.setEnabled(true);
 		
 		fireVisualChange();
-		return jpanel;
+		return;
 	}
 
 
@@ -953,13 +936,9 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			}
 			if (this.monteCarlo.getStableStates().size()>0){
 			EpitheliumGrid stableState= this.monteCarlo.getStableStates().get(0);
-//			this.vgCellState = new VisualGridSimulation(stableState,this.projectFeatures,this.lCompON,this.gridInformation);
-
 
 			simulationStepFwr();
-//			this.fireVisualChange();
-//			this.vgCellState.repaint();
-//			this.repaint();
+
 			this.jbClone.setEnabled(true);
 			this.jbPicture.setEnabled(true);
 			this.jbSaveAll.setEnabled(true);
@@ -971,8 +950,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			
 			updateInformationPanel();
 			fireVisualChange();
-//			this.vgCellState.repaint();
-//			this.repaint();
+
 		}
 			
 			
@@ -1060,7 +1038,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		if (!sInputNodeIDs.isEmpty())
 			this.setComponentTypeList(sInputNodeIDs, "Input Components");
 		
-//		this.vgCellState.paintComponent(this.vgCellState.getGraphics());
 		this.jpRCenter.revalidate();
 		this.jpRCenter.repaint();
 	}
@@ -1086,14 +1063,12 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	
 	private void fireVisualChange(){
-		System.out.println("Estou no fireVisualGrid: this.isCumulative: " + this.isCumulative);
-		System.out.println("Estou no fireVisualGrid: this.vgCellState.getGraphics(): " + this.vgCellState.getGraphics());
+
 		if (this.vgCellState
-				.getGraphics()!=null & this.cellNode2Count!=null){
+				.getGraphics()!=null & this.cellNode2Count!=null & this.cellNode2Count.size()>0){
 			if (this.isCumulative){
 				this.vgCellState.paintCumulative(this.vgCellState
 						.getGraphics(),this.cellNode2Count);
-				System.out.println("teste");
 			}
 			else{
 		this.vgCellState.paintComponent(this.vgCellState
@@ -1168,8 +1143,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			jb.setBackground(newColor);
 			this.clonedEpi.getProjectFeatures().setNodeColor(nodeID, newColor);
 			this.projChanged.setChanged(this);
-//			this.vgCellState.paintComponent(this.vgCellState
-//					.getGraphics());
+
 			fireVisualChange();
 		}
 	}
@@ -1201,7 +1175,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 					String nodeID = jcb.getText();
 				
 					// Repaint
-//					vgCellState.paintComponent(vgCellState.getGraphics());
+
 					fireVisualChange();
 				}
 			});

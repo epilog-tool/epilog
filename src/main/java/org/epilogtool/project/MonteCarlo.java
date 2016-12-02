@@ -196,9 +196,9 @@ public class MonteCarlo {
 				cellNode2Average.put(t, res);
 			}
 			}
-		System.out.println(cellNode2Count);
-		System.out.println(Collections.min(cellNode2Count.values()));
-		System.out.println(Collections.max(cellNode2Count.values()));
+//		System.out.println(cellNode2Count);
+//		System.out.println(Collections.min(cellNode2Count.values()));
+//		System.out.println(Collections.max(cellNode2Count.values()));
 			
 	}
 		return cellNode2Count;}

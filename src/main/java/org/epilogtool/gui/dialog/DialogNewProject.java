@@ -200,4 +200,6 @@ public class DialogNewProject extends EscapableDialog {
 		return isValid;
 	}
 
+	
+	
 }

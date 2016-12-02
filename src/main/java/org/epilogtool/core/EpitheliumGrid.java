@@ -349,13 +349,7 @@ public class EpitheliumGrid {
 		}
 		
 		
-		
-//		int nCells = 0;
-//		for (LogicalModel model: lModels){
-//		nCells = nCells + this.getModelPositions().get(model).size();
-//		}
-//		
-//		System.out.println(this.component2Count);
+	
 		DecimalFormat perc = new DecimalFormat();
 		perc.setMaximumFractionDigits(2);
 		

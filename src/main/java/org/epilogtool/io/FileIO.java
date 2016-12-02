@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -237,5 +238,17 @@ public class FileIO {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public static void writePercentage2File(String file, List<String> lPercentage, String ext) throws IOException {
+		// TODO Auto-generated method stub
+
+		PrintWriter w = new PrintWriter(new FileWriter(file));
+		
+		for (String m : lPercentage){
+			System.out.println(m);
+			w.println(m);
+		}
+		w.close();
 	}
 }

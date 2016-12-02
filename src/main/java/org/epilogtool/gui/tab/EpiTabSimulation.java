@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -208,6 +209,17 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		jpButtonsR.add(jbClone);
+		
+		//Button to create the export of the percentages
+		JButton jbExport = ButtonFactory.getNoMargins("Export");
+		jbExport.setToolTipText("Exports the percentages of all component per iteration.");
+		jbExport.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				exportPercentage();
+			}
+		});
+		jpButtonsR.add(jbExport);
 
 		// Button to save an image from the simulated grid
 		JButton jbPicture = ButtonFactory
@@ -363,6 +375,32 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 	}
 
+	
+	/**Calls the method to export the CSV of the simulation so far
+	 * 
+	 */
+	protected void exportPercentage() {
+
+//		Map<String, List<Integer>> cell2Percentage = this.simulation.getCell2Percentage();
+		List<String> lPercentage = this.simulation.getCell2Percentage();
+		
+		JFileChooser fc = new JFileChooser();
+		fc.setFileFilter(new EpilogFileFilter("csv"));
+		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+			String file = fc.getSelectedFile().getAbsolutePath();
+			String ext = "CSV";
+			file += (file.endsWith(ext) ? "" : "." + ext);
+			try {
+				FileIO.writePercentage2File(file, lPercentage,ext);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+	}
+	}
+	
+	
 	private void cloneEpiWithCurrGrid() {
 		this.simEpiClone.cloneEpithelium(this.epithelium,
 				this.simulation.getGridAt(this.iCurrSimIter));

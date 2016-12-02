@@ -27,7 +27,7 @@ import org.epilogtool.services.TopologyService;
 public class DialogEditEpithelium extends EscapableDialog {
 	private static final long serialVersionUID = 1877338344309723137L;
 
-	private final int COL_SIZE = 20;
+//	private final int COL_SIZE = 20;
 	private final String ROLLOVER_WARNING = "This dimension must be even due to rollover selection!";
 
 	private JTextField jtfEpiName;
@@ -168,7 +168,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 			}
 			names[i] = lDescs.get(i);
 		}
-		this.jcbLayout = new JComboImageBox(names);
+//		this.jcbLayout = new JComboImageBox(names);
 		this.jcbLayout.setSelectedIndex(iSelected);
 		c.gridx = 1;
 		c.gridy = 5;
