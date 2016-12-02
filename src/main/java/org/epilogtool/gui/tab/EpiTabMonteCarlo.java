@@ -943,13 +943,11 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			this.jbPicture.setEnabled(true);
 			this.jbSaveAll.setEnabled(true);
 
-
 			updatejlIteration(stableState);
-			this.repaint();
 			}
 			
 			updateInformationPanel();
-			fireVisualChange();
+//			fireVisualChange();
 
 		}
 			
@@ -1065,16 +1063,19 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	private void fireVisualChange(){
 
 		if (this.vgCellState
-				.getGraphics()!=null & this.cellNode2Count!=null & this.cellNode2Count.size()>0){
+				.getGraphics()!=null & this.cellNode2Count!=null){
 			if (this.isCumulative){
 				this.vgCellState.paintCumulative(this.vgCellState
 						.getGraphics(),this.cellNode2Count);
+
 			}
 			else{
 		this.vgCellState.paintComponent(this.vgCellState
 				.getGraphics());
+		this.repaint();
 			}
 		}
+		
 	}
 	
 	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y,
