@@ -87,4 +87,17 @@ public class ColorUtils {
 		int b = 255 - (255 - color.getBlue()) * value / max;
 		return new Color(r, g, b);
 	}
+	
+	public static Color getColorAtValue(Color color, Float max, Float value) {
+		if (max == value) {
+			return color;
+		} else if (value == 0) {
+			return Color.WHITE;
+		}
+		int r = (int) (255 - (255 - color.getRed()) * value / max);
+		int g = (int) (255 - (255 - color.getGreen()) * value / max);
+		int b = (int) (255 - (255 - color.getBlue()) * value / max);
+		System.out.println(r);
+		return new Color(r, g, b);
+	}
 }

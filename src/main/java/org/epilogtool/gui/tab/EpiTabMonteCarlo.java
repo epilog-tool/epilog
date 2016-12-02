@@ -64,7 +64,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	private GridInformation gridInformation;
 	private EpitheliumGrid epiGrid;
 	
-	private Map<Tuple3D, Float> cellNode2Average;
+	private Map<Tuple3D, Float> cellNode2Count;
 	
 	private JPanel jpRight;
 	private JPanel jpLeft;
@@ -712,7 +712,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 		
 		System.out.println("Starting the Cumulative" + "this.isCumulative is: " + this.isCumulative);
-		this.cellNode2Average = this.monteCarlo.createCumulative();
+		this.cellNode2Count = this.monteCarlo.createCumulative();
 //		this.vgCellState = new VisualGridSimulation(this.epiGrid,this.projectFeatures,this.lCompON,this.gridInformation);
 		fireVisualChange();
 		
@@ -1089,10 +1089,10 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		System.out.println("Estou no fireVisualGrid: this.isCumulative: " + this.isCumulative);
 		System.out.println("Estou no fireVisualGrid: this.vgCellState.getGraphics(): " + this.vgCellState.getGraphics());
 		if (this.vgCellState
-				.getGraphics()!=null){
+				.getGraphics()!=null & this.cellNode2Count!=null){
 			if (this.isCumulative){
 				this.vgCellState.paintCumulative(this.vgCellState
-						.getGraphics(),this.cellNode2Average);
+						.getGraphics(),this.cellNode2Count);
 				System.out.println("teste");
 			}
 			else{

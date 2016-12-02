@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ public class VisualGridSimulation extends VisualGrid {
 	private GridInformation valuePanel;
 	private Tuple2D<Integer> lastPos;
 	
-	private Map<Tuple3D, Float> cellNode2Average;
+	private Map<Tuple3D, Float> cellNode2Count;
 
 	public VisualGridSimulation(EpitheliumGrid epiGrid,
 			ProjectFeatures projectFeatures, List<String> lCompON,
@@ -159,10 +160,10 @@ public class VisualGridSimulation extends VisualGrid {
 	}
 
 	
-	public void paintCumulative(Graphics g, Map<Tuple3D,Float> cellnode2Average) {
+	public void paintCumulative(Graphics g, Map<Tuple3D,Float> cellNode2Count) {
+		this.cellNode2Count = cellNode2Count;
+		
 		Graphics2D g2 = (Graphics2D) g;
-
-		System.out.println("Painting");
 		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY,
 				this.getSize().width, this.getSize().height);
 
@@ -176,9 +177,22 @@ public class VisualGridSimulation extends VisualGrid {
 				List<Color> lColors = new ArrayList<Color>();
 				if (EmptyModel.getInstance().isEmptyModel(m)) {
 					lColors.add(EmptyModel.getInstance().getColor());
-				}
+				} else {
+					for (String nodeID : this.lCompON) {
+						System.out.println(this.lCompON);
+						float max= getMaxNodeCellCount(nodeID);
+						
+						Color cBase = this.projectFeatures.getNodeColor(nodeID);
 		
-				Color cCombined = Color.BLUE;
+								float value = this.cellNode2Count.get(new Tuple3D(x,y,nodeID));
+								if (value > 0) {
+									lColors.add(ColorUtils.getColorAtValue(cBase, max, value));
+								
+							}
+						}
+					
+				}
+				Color cCombined = ColorUtils.combine(lColors);
 				Tuple2D<Double> center = topology.getPolygonCenter(this.radius,
 						x, y);
 				Polygon polygon = topology
@@ -195,7 +209,19 @@ public class VisualGridSimulation extends VisualGrid {
 			}
 		}
 	}
+
+private Float getMaxNodeCellCount(String nodeID){
 	
+	List<Float> value= new ArrayList<Float>();
 	
+	for (int x = 0; x < this.gridX; x++) {
+		for (int y = 0; y < this.gridY; y++) {
+
+			float m = this.cellNode2Count.get(new Tuple3D(x,y,nodeID));
+			value.add(m);
+		}}
+		
+	return Collections.max(value);
+}
 	
 }

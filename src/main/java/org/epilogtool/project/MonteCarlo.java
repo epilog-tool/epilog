@@ -170,9 +170,9 @@ public class MonteCarlo {
 
 
 	public Map<Tuple3D,Float> createCumulative() {
-		// TODO Auto-generated method stub
+		// TODO Should I add the value? I am just 
 		
-		Map<Tuple3D,Float> cellNode2Count = new HashMap<Tuple3D,Float>();
+		Map<Tuple3D,Float> cellNode2Count = new HashMap<Tuple3D,Float>(); //Ncells with cell node
 		Map<Tuple3D,Float> cellNode2Average = new HashMap<Tuple3D,Float>();
 		
 		if ((this.stableStates!=null) && (this.stableStates.size()>0)){
@@ -201,7 +201,7 @@ public class MonteCarlo {
 		System.out.println(Collections.max(cellNode2Count.values()));
 			
 	}
-		return cellNode2Average;}
+		return cellNode2Count;}
 
 	
 }
