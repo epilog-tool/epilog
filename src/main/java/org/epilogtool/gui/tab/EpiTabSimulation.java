@@ -108,8 +108,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		}
 		this.lRight = new GridInformation(
-				this.epithelium.getIntegrationFunctions(), this.projectFeatures,
-				this.epithelium.getEnvironmentalInputs());
+				this.epithelium.getIntegrationFunctions(), this.projectFeatures);
 
 		this.visualGridSimulation = new VisualGridSimulation(
 				clonedEpi.getEpitheliumGrid(),

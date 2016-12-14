@@ -1,6 +1,7 @@
 package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -8,49 +9,52 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSlider;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.colomoto.logicalmodel.NodeInfo;
+import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.cellDynamics.CellularEvent;
+import org.epilogtool.core.cellDynamics.ModelHeritableNodes;
 import org.epilogtool.core.cellDynamics.TopologyEventManager;
 import org.epilogtool.core.cellDynamics.ModelPattern;
 import org.epilogtool.gui.EpiGUI.EpiTabChanged;
 import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
 import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.io.ButtonFactory;
+import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
 
 public class EpiTabGridDynamics extends EpiTabDefinitions {
 	private static final long serialVersionUID = 4613661342531014915L;
 	private final int JTF_WIDTH = 30;
 	
-	private TopologyEventManager epiTriggerManager;
-	private String activeModel;
-	private String triggerType;
-	private JPanel jpTop;
-	private JPanel jpRTop;
-	private JPanel jpLTop;
-	private JPanel jpRBottom;
+	private TopologyEventManager eventManager;
+	private ModelHeritableNodes modelHeritableNodes;
+	private CellularEvent eventType;
 	
-	private final int SLIDER_MIN = 0;
-	private final int SLIDER_MAX = 100;
-	private final int SLIDER_STEP = 10;
+	private String activeModel;
+	private JPanel jpTopModelSelection;
+	private JPanel jpModelSelection;
+	private JPanel jpCenter;
+	private JPanel jpCellDivision;
+	private JPanel jpCellDeath;
+	private Map<String, JCheckBox> mString2CheckBox;
 
 	public EpiTabGridDynamics(Epithelium e, TreePath path,
 			ProjectChangedInTab projChanged, EpiTabChanged tabChanged,
@@ -61,33 +65,37 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 	@Override
 	public void initialize() {
 		
-		this.epiTriggerManager = this.epithelium.getTopologyEventManager().clone();
+		this.eventManager = this.epithelium.getTopologyEventManager().clone();
+		this.modelHeritableNodes = this.epithelium.getModelHeritableNodes().clone();
 		
 		this.center.setLayout(new BorderLayout());
 		
-		this.jpTop = new JPanel(new BorderLayout());
-		this.center.add(jpTop, BorderLayout.NORTH);
+		this.jpTopModelSelection = new JPanel(new BorderLayout());
+		this.center.add(jpTopModelSelection, BorderLayout.NORTH);
 		
-		this.jpLTop = new JPanel();
-		this.jpLTop.setBorder(BorderFactory
+		this.jpModelSelection = new JPanel();
+		this.jpModelSelection.setBorder(BorderFactory
 				.createTitledBorder("Model selection"));
-		this.jpTop.add(jpLTop, BorderLayout.WEST);
+		this.jpTopModelSelection.add(jpModelSelection, BorderLayout.WEST);
 		
-		this.jpRTop = new JPanel();
-		this.jpRTop.setBorder(BorderFactory.createTitledBorder("Event type"));
-		this.jpTop.add(jpRTop, BorderLayout.CENTER);
+		this.jpCenter = new JPanel(new BorderLayout());
+		this.center.add(jpCenter, BorderLayout.CENTER);
 		
-		this.jpRBottom = new JPanel(new BorderLayout());
-		this.center.add(jpRBottom, BorderLayout.CENTER);
+		this.jpCellDivision = new JPanel(new BorderLayout());
+		this.jpCellDivision.setBorder(BorderFactory.createTitledBorder("Cell division"));
+		this.jpCenter.add(this.jpCellDivision, BorderLayout.NORTH);
+		
+		this.jpCellDeath = new JPanel(new BorderLayout());
+		this.jpCellDeath.setBorder(BorderFactory.createTitledBorder("Cell death"));
+		this.jpCenter.add(this.jpCellDeath, BorderLayout.CENTER);
 		
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
 				this.epithelium.getEpitheliumGrid().getModelSet());
 		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
-		this.jpLTop.add(jcbSBML);
+		this.jpModelSelection.add(jcbSBML);
 		this.activeModel = (String) jcbSBML.getSelectedItem();
-		
-		this.callTriggerEventPanel();
 		this.updateModelDynamicsPanel();
+		this.getParent().repaint();
 		
 		this.isInitialized = true;
 		
@@ -115,53 +123,132 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 		return jcb;
 	}
 	
-	private void callTriggerEventPanel() {
-		ButtonGroup group = new ButtonGroup();
-		JRadioButton jrbProliferation = new JRadioButton("Proliferation");
-		jrbProliferation.setSelected(true);
-		this.triggerType = "Proliferation";
-		this.jpRTop.add(jrbProliferation);
-		jrbProliferation.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				triggerType = "Proliferation";
-				updateModelDynamicsPanel();
-			}
-		});
-		group.add(jrbProliferation);
-		JRadioButton jrbApoptosis = new JRadioButton("Apoptosis");
-		this.jpRTop.add(jrbApoptosis);
-		jrbApoptosis.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				triggerType = "Apoptosis";
-				updateModelDynamicsPanel();
-			}
-		});
-		group.add(jrbApoptosis);
-	}
-	
-	private void updateModelDynamicsPanel() {
-		this.jpRBottom.removeAll();
-		
+	private void updateCellDivisionPanel() {
+		this.jpCellDivision.removeAll();
 		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
-				
+		
+		JPanel jpHeritableComponents = new JPanel(new GridBagLayout());  
+		GridBagConstraints gbcMHN = new GridBagConstraints();
+		
+		List<String> modelNodesList = new ArrayList<String>(this.mString2CheckBox.keySet());
+		Collections.sort(modelNodesList, ObjectComparator.STRING);
+		int i;
+		for (i = 0; i < modelNodesList.size(); i++) {
+			String node = modelNodesList.get(i);
+			gbcMHN.gridy = i;
+			gbcMHN.gridx = 0;
+			gbcMHN.insets.bottom = 5;
+			gbcMHN.gridx = 0;
+			gbcMHN.anchor = GridBagConstraints.WEST;
+			jpHeritableComponents.add(this.mString2CheckBox.get(node), gbcMHN);
+			if (this.modelHeritableNodes.isHeritableNode(m, node)) {
+				this.mString2CheckBox.get(node).setSelected(true);
+			} else {
+				this.mString2CheckBox.get(node).setSelected(false);
+			}
+		}
+		JScrollPane jspHeritableComponents = new JScrollPane(jpHeritableComponents);
+		jspHeritableComponents.setBorder(BorderFactory.createTitledBorder("Inheritable Traits"));
+		jspHeritableComponents.setPreferredSize(new Dimension(Math.max(170, jpHeritableComponents.getWidth()), Math.min(200, i*50)));
+		jspHeritableComponents.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		jpCellDivision.add(jspHeritableComponents, BorderLayout.WEST);
+		
 		JButton jbAdd = ButtonFactory.getNoMargins("+");
-		jbAdd.setToolTipText("Add a new pattern");
+		jbAdd.setToolTipText("Add a new Cell Division trigger");
+		jbAdd.setPreferredSize(new Dimension(25, 25));
 		jbAdd.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
+					eventType = CellularEvent.PROLIFERATION;
 					addPattern();
 				}
 			});
-		this.jpRBottom.add(jbAdd, BorderLayout.WEST);
+		JPanel jpAdd = new JPanel(new BorderLayout());
+		jpAdd.add(jbAdd, BorderLayout.EAST);
+		this.jpCellDivision.add(jpAdd, BorderLayout.PAGE_START);
+		
+		JPanel jpCellDivisionPattern = new JPanel(new GridBagLayout());
+		this.jpCellDivision.add(jpCellDivisionPattern, BorderLayout.CENTER);
+		
+		List<ModelPattern> patternList = this.eventManager
+		.getModelManager(m)
+		.getModelEventPatterns(CellularEvent.PROLIFERATION);
+		GridBagConstraints gbc = new GridBagConstraints();
+		for (int j = 0; j < patternList.size(); j ++) {
+			gbc.gridy = j;
+			gbc.ipady = 5;
+			gbc.insets.bottom = 5;
+			gbc.gridx = 0;
+			gbc.anchor = GridBagConstraints.WEST;
+			
+			JButton jbRemove = ButtonFactory.getNoMargins("X");
+			jbRemove.setToolTipText("Remove this Cell Division trigger");
+			jbRemove.setPreferredSize(new Dimension(25, 19));
+			jbRemove.setActionCommand("" + j);
+			jbRemove.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					eventType = CellularEvent.PROLIFERATION;
+					JButton jbRemove = (JButton) e.getSource();
+					removePattern(Integer.parseInt(jbRemove.getActionCommand()));
+				}
+			});
+			jpCellDivisionPattern.add(jbRemove, gbc);
+			
+			gbc.gridx = 1;
+			JTextField jtf = new JTextField(patternList.get(j).getPatternExpression());
+			jtf.setToolTipText("" + j);
+			
+			jtf.addKeyListener(new KeyListener() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+				}
+
+				@Override
+				public void keyReleased(KeyEvent e) {
+					eventType = CellularEvent.PROLIFERATION;
+					JTextField jtf = (JTextField) e.getSource();
+					setPatternExpression(Integer.parseInt(jtf.getToolTipText()), 
+							jtf.getText());
+				}
+
+				@Override
+				public void keyPressed(KeyEvent e) {
+				}
+			});
+			jtf.setColumns(this.JTF_WIDTH);
+			jpCellDivisionPattern.add(jtf, gbc);
+		}
+	}
+	
+	private void updateCellDeathPanel() {
+		this.jpCellDeath.removeAll();
+		
+		JPanel jpHiddenPanel = new JPanel(new BorderLayout());
+		jpHiddenPanel.setPreferredSize(new Dimension(170, 200));
+		jpCellDeath.add(jpHiddenPanel, BorderLayout.WEST);
+		
+		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
+		JButton jbAdd = ButtonFactory.getNoMargins("+");
+		jbAdd.setPreferredSize(new Dimension(25, 25));
+		jbAdd.setToolTipText("Add a new Cell Death trigger");
+		jbAdd.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					eventType = CellularEvent.APOPTOSIS;
+					addPattern();
+				}
+			});
+		JPanel jpAdd = new JPanel(new BorderLayout());
+		jpAdd.add(jbAdd, BorderLayout.EAST);
+		this.jpCellDeath.add(jpAdd, BorderLayout.PAGE_START);
 		
 		JPanel jpPatternPanel = new JPanel(new GridBagLayout());
-		this.jpRBottom.add(jpPatternPanel);
+		this.jpCellDeath.add(jpPatternPanel, BorderLayout.CENTER);
 		
-		List<ModelPattern> patternList = this.epiTriggerManager
+		List<ModelPattern> patternList = this.eventManager
 		.getModelManager(m)
-		.getModelEventPatterns(CellularEvent.string2Event(this.triggerType));
+		.getModelEventPatterns(CellularEvent.APOPTOSIS);
 		GridBagConstraints gbc = new GridBagConstraints();
 		for (int i = 0; i < patternList.size(); i ++) {
 			gbc.gridy = i;
@@ -171,11 +258,13 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 			gbc.anchor = GridBagConstraints.WEST;
 			
 			JButton jbRemove = ButtonFactory.getNoMargins("X");
-			jbRemove.setToolTipText("Remove this pattern");
+			jbRemove.setPreferredSize(new Dimension(25, 19));
+			jbRemove.setToolTipText("Remove this Cell Death trigger");
 			jbRemove.setActionCommand("" + i);
 			jbRemove.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
+					eventType = CellularEvent.APOPTOSIS;
 					JButton jbRemove = (JButton) e.getSource();
 					removePattern(Integer.parseInt(jbRemove.getActionCommand()));
 				}
@@ -193,6 +282,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 
 				@Override
 				public void keyReleased(KeyEvent e) {
+					eventType = CellularEvent.APOPTOSIS;
 					JTextField jtf = (JTextField) e.getSource();
 					setPatternExpression(Integer.parseInt(jtf.getToolTipText()), 
 							jtf.getText());
@@ -205,48 +295,83 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 			jtf.setColumns(this.JTF_WIDTH);
 			jpPatternPanel.add(jtf, gbc);
 		}
+	}
+	
+	private void updateHeritableNodes() {
+		this.mString2CheckBox = new HashMap<String, JCheckBox>();
+		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
+		for (NodeInfo node : m.getNodeOrder()) {
+			if (this.epithelium.getIntegrationComponentPairs().contains(new ComponentPair(m, node))) continue;
+			JCheckBox jcheckb = new JCheckBox(node.getNodeID(), false);
+			jcheckb.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JCheckBox jcb = (JCheckBox) e.getSource();
+					String nodeID = jcb.getText();
+					if (jcb.isSelected()) {
+						selectHeritableNode(nodeID);
+					} else {
+						removeHeritableNode(nodeID);
+					}
+				}
+			});
+			this.mString2CheckBox.put(node.getNodeID(), jcheckb);
+		}
+	}
+	
+	private void selectHeritableNode(String node) {
+		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
+		this.modelHeritableNodes.addNode(m, node);
+	}
+	
+	private void removeHeritableNode(String node) {
+		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
+		this.modelHeritableNodes.removeNode(m, node);
+	}
+	
+	private void updateModelDynamicsPanel() {
+		this.updateHeritableNodes();
+		this.updateCellDivisionPanel();
+		this.updateCellDeathPanel();
 		this.getParent().repaint();
 	}
 	
 	private void setPatternExpression(int i, String expression) {
 		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
-		CellularEvent trigger = CellularEvent.string2Event(this.triggerType);
-		this.epiTriggerManager.getModelManager(m).getModelEventPatterns(trigger).get(i).setPatternExpression(expression);
+		this.eventManager.getModelManager(m).getModelEventPatterns(this.eventType).get(i).setPatternExpression(expression);
 	}
 	
 	private void addPattern() {
 		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
-		CellularEvent trigger = CellularEvent.string2Event(this.triggerType);
-		this.epiTriggerManager.getModelManager(m).getModelEventPatterns(trigger).add(new ModelPattern());
+		this.eventManager.getModelManager(m).getModelEventPatterns(this.eventType).add(new ModelPattern());
 		this.updateModelDynamicsPanel();
 	}
 	
 	private void removePattern(int i) {
 		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
-		CellularEvent trigger = CellularEvent.string2Event(this.triggerType);
-		this.epiTriggerManager.getModelManager(m).getModelEventPatterns(trigger).remove(i);
+		this.eventManager.getModelManager(m).getModelEventPatterns(this.eventType).remove(i);
 		this.updateModelDynamicsPanel();
 	}
 
 	@Override
 	protected void buttonReset() {
-		this.epiTriggerManager = this.epithelium.getTopologyEventManager().clone();
+		this.eventManager = this.epithelium.getTopologyEventManager().clone();
+		this.modelHeritableNodes = this.epithelium.getModelHeritableNodes().clone();
 		this.updateModelDynamicsPanel();
-		this.getParent().repaint();
 		
 	}
 
 	@Override
 	protected void buttonAccept() {
-		for (LogicalModel m : this.epiTriggerManager.getModelSet()) {
+		for (LogicalModel m : this.eventManager.getModelSet()) {
 			List<ModelPattern> tmpList = new ArrayList<ModelPattern>();
-			for (CellularEvent trigger : this.epiTriggerManager.getModelManager(m).getCellularEventSet()) {
-				if (this.epiTriggerManager.getModelManager(m).getModelEventPatterns(trigger)
+			for (CellularEvent trigger : this.eventManager.getModelManager(m).getCellularEventSet()) {
+				if (this.eventManager.getModelManager(m).getModelEventPatterns(trigger)
 						.equals(this.epithelium.getTopologyEventManager().getModelManager(m).getModelEventPatterns(trigger))) {
-					tmpList.addAll(this.epiTriggerManager.getModelManager(m).getModelEventPatterns(trigger));
+					tmpList.addAll(this.eventManager.getModelManager(m).getModelEventPatterns(trigger));
 					continue;
 				}
-				for (ModelPattern pattern : this.epiTriggerManager.getModelManager(m).getModelEventPatterns(trigger)) {
+				for (ModelPattern pattern : this.eventManager.getModelManager(m).getModelEventPatterns(trigger)) {
 					if (pattern.getPatternExpression()==null
 							|| !(pattern.isExpressionValid(pattern.getPatternExpression(), m))) {
 						this.callParsingError();
@@ -269,12 +394,13 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 				return;
 			}
 		}
-		this.epithelium.setTopologyEventManager(this.epiTriggerManager.clone());
+		this.epithelium.setTopologyEventManager(this.eventManager.clone());
+		this.epithelium.setModelHeritableNode(this.modelHeritableNodes.clone());
 	}
 	
 	private void callParsingError() {
 		JPanel jpErrorLog = new JPanel(new BorderLayout());
-		this.jpRBottom.add(jpErrorLog, BorderLayout.SOUTH);
+		this.jpCenter.add(jpErrorLog, BorderLayout.SOUTH);
 		JTextPane jtpErrorLog = new JTextPane();
 		jtpErrorLog.setContentType("text/html");
 		jtpErrorLog.setText("<html><body style=\"background-color:#ffbebe\">"
@@ -296,15 +422,16 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 	
 	private void callOverLappingError() {
 		JPanel jpOverlapLog = new JPanel(new BorderLayout());
-		this.jpRBottom.add(jpOverlapLog, BorderLayout.SOUTH);
+		this.jpCenter.add(jpOverlapLog, BorderLayout.SOUTH);
 		JTextPane jtpOverlapLog = new JTextPane();
 		jtpOverlapLog.setContentType("text/html");
 		jtpOverlapLog.setText("<html><body style=\"background-color:#ffbebe\">"
-				+ "You have defined overlapping patterns.<br/>"
+				+ "You have defined concurrent triggers.<br/>"
 				+ "It is not possible to save the specified settings."
 				+ "</body></html>");
 		jpOverlapLog.add(jtpOverlapLog, BorderLayout.CENTER);
 		JButton jbOK = ButtonFactory.getNoMargins("OK");
+		jbOK.setPreferredSize(new Dimension(40, 40));
 		jbOK.setToolTipText("Dismiss this warning");
 		jbOK.addActionListener(new ActionListener() {
 			@Override
@@ -318,7 +445,8 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 
 	@Override
 	protected boolean isChanged() {
-		return !(this.epiTriggerManager.equals(this.epithelium.getTopologyEventManager()));
+		return (!(this.eventManager.equals(this.epithelium.getTopologyEventManager()))
+				|| !(this.modelHeritableNodes.equals(this.epithelium.getModelHeritableNodes())));
 	}
 
 	@Override
@@ -327,18 +455,21 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 				this.epithelium.getEpitheliumGrid().getModelSet());
 		for (LogicalModel m : modelList) {
 			if (this.epithelium.getTopologyEventManager().hasModel(m)
-					&& !this.epiTriggerManager.hasModel(m)) {
-				this.epiTriggerManager.addModelManager(m, 
+					&& !this.eventManager.hasModel(m)) {
+				this.eventManager.addModelManager(m, 
 						this.epithelium
 						.getTopologyEventManager()
 						.getModelManager(m).clone());
 			}
+			if (this.epithelium.getModelHeritableNodes().hasModel(m) && !this.modelHeritableNodes.hasModel(m)) {
+				this.modelHeritableNodes.addModel(m);
+			}
 		}
-		this.jpLTop.removeAll();
-		this.jpRBottom.removeAll();
-		this.jpLTop.add(this.newModelCombobox(modelList));
+		this.jpModelSelection.removeAll();
+		this.jpModelSelection.add(this.newModelCombobox(modelList));
 		this.activeModel = this.projectFeatures.getModelName(modelList.get(0));
 		this.updateModelDynamicsPanel();
+		this.getParent().repaint();
 		
 	}
 

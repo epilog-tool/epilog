@@ -123,6 +123,10 @@ public class Parser {
 									.instances2Tuples2D(saTmp[2].split(",")));
 					currEpi.initPriorityClasses(m);
 					currEpi.initComponentFeatures(m);
+					currEpi.initTopologyEventManager();
+					currEpi.getTopologyEventManager().addModel(m);
+					currEpi.initModelHeritableNodes();
+					currEpi.getModelHeritableNodes().addModel(m);
 				}
 			}
 			// alpha-asynchronous value
@@ -502,6 +506,15 @@ public class Parser {
 					}
 				}
 				w.println();
+			}
+		}
+		
+		//Model heritable components
+		//HN #model node1 node2 ...
+		for (LogicalModel m: model2Key.keySet()) {
+			w.print("HN " + model2Key.get(m) + " ");
+			for (String node : epi.getModelHeritableNodes().getModelHeritableNodes(m)) {
+				w.print(node + " ");
 			}
 		}
 	}

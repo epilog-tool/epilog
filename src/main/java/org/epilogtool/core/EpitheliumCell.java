@@ -1,153 +1,165 @@
 package org.epilogtool.core;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.core.cellDynamics.CellularEvent;
-import org.epilogtool.project.ComponentPair;
 
 public class EpitheliumCell {
-	private Map<ComponentPair, Byte> environmentalInputs;
-	private EpitheliumLogicalCell logicalCell;
+
+	private LogicalModel model;
+	private byte[] state;
+	private AbstractPerturbation perturbation;
+	private CellularEvent cellEvent;
+	private EpitheliumCellIdentifier id;
 
 	public EpitheliumCell(LogicalModel m) {
-		this.environmentalInputs = new HashMap<ComponentPair, Byte>();
-		this.logicalCell = new EpitheliumLogicalCell(m);
-		this.updateEnvironmentalInputs();
-		
+		this.setModel(m);
 	}
 	
-	public EpitheliumCell() {
-		this.environmentalInputs = new HashMap<ComponentPair, Byte>();
-		this.logicalCell = new EpitheliumLogicalCell(EmptyModel.getInstance().getModel());
+	public void setRoot(int root) {
+		this.id = new EpitheliumCellIdentifier(root);
 	}
 	
-	private EpitheliumCell(EpitheliumLogicalCell logicalCell, Map<ComponentPair, Byte> inputComponents){
-		this.logicalCell = logicalCell;
-		this.environmentalInputs = inputComponents;
-		this.updateEnvironmentalInputs();
-	}
-	
-	public void setLogicalCell(EpitheliumLogicalCell logicalCell) {
-		this.logicalCell = logicalCell;
-		this.updateEnvironmentalInputs();
-	}
-	
-	public EpitheliumLogicalCell getLogicalCell() {
-		return this.logicalCell;
+	public boolean isEmptyCell() {
+		return EmptyModel.getInstance().isEmptyModel(this.model);
 	}
 	
 	public void setModel(LogicalModel m) {
-		this.logicalCell.setModel(m);
-		this.updateEnvironmentalInputs();
-	}
-	
-	private void updateEnvironmentalInputs() {
-		for (ComponentPair cp : this.environmentalInputs.keySet()) {
-			if (this.getModel().equals(cp.getModel())) {
-				this.setValue(cp.getNodeInfo().getNodeID(), this.environmentalInputs.get(cp));
-			}
+		this.model = m;
+		this.state = new byte[m.getNodeOrder().size()];
+		for (int i = 0; i < this.state.length; i++) {
+			this.state[i] = 0;
+		}
+		this.perturbation = null;
+		this.cellEvent = CellularEvent.DEFAULT;
+		if (EmptyModel.getInstance().isEmptyModel(m)) {
+			this.id = new EpitheliumCellIdentifier(0);
+			
 		}
 	}
 	
 	public void setState(byte[] state) {
-		this.logicalCell.setState(state);
-		this.updateEnvironmentalInputs();
-	}
-	
-	public void setInitialState(byte[] state) {
-		this.logicalCell.setInitialState(state);
-		this.logicalCell.setState(state.clone());
+		this.state = state;
 	}
 	
 	public void setInitialStateComponent(String nodeID, byte value) {
-		this.logicalCell.setInitialStateComponent(nodeID, value);
+		int index = this.getNodeIndex(nodeID);
+		if (index < 0)
+			return;
+		value = (byte) Math.min(value, this.model.getNodeOrder().get(index).getMax());
 	}
 	
 	public void setPerturbation(AbstractPerturbation ap) {
-		this.logicalCell.setPerturbation(ap);
+		this.perturbation = ap;
 	}
 	
 	public void setValue(String nodeID, byte value) {
-		this.logicalCell.setValue(nodeID, value);
+		int index = this.getNodeIndex(nodeID);
+		if (index < 0)
+			return;
+		value = (byte) Math.min(value, this.model.getNodeOrder().get(index).getMax());
+		state[index] = value;
 	}
 	
 	public void setCellEvent(CellularEvent event) {
-		this.logicalCell.setCellEvent(event);
-	}
-	
-	public void addEnvironmentalInput(ComponentPair cp) {
-		this.environmentalInputs.put(cp, (byte) 0);
-	}
-	
-	public void setEnvironmentalInput(ComponentPair cp, byte value) {
-		this.environmentalInputs.put(cp, value);
-		if (cp.getModel().equals(this.getModel())) {
-			this.setValue(cp.getNodeInfo().getNodeID(), value);
-		};
-	}
-	
-	public void setEnvironment(Map<ComponentPair, Byte> envInputs) {
-		this.environmentalInputs = envInputs;
-	}
-	
-	public void removeEnvironmentalInput(ComponentPair cp) {
-		if (cp.getModel().equals(this.getModel())) {
-			this.setValue(cp.getNodeInfo().getNodeID(), (byte) 0);
-		}
-		this.environmentalInputs.remove(cp);
+		this.cellEvent = event;
 	}
 
 	public AbstractPerturbation getPerturbation() {
-		return this.logicalCell.getPerturbation();
+		return this.perturbation;
 	}
 
 	public byte[] getState() {
-		return this.logicalCell.getState();
+		return this.state;
 	}
 	
-	public byte[] getInitialState() {
-		return this.logicalCell.getInitialState();
-	}
-
-	public LogicalModel getModel() {
-		return this.logicalCell.getModel();
-	}
-
-	public int getNodeIndex(String nodeID) {
-		return this.logicalCell.getNodeIndex(nodeID);
-	}
-	
-	public byte getNodeValue(String nodeID) {
-		return this.logicalCell.getNodeValue(nodeID);
+	public byte getNodeValue(String nodeID){
+		return this.getState()[this.getNodeIndex(nodeID)];
 	}
 	
 	public CellularEvent getCellEvent() {
-		return this.logicalCell.getCellEvent();
+		return this.cellEvent;
 	}
-	
-	public Map<ComponentPair, Byte> getCellEnvironment() {
-		return this.environmentalInputs;
+
+	public LogicalModel getModel() {
+		return this.model;
 	}
-	
-	public boolean isEmptyCell() {
-		return this.logicalCell.isEmptyModel();
+
+	public int getNodeIndex(String nodeID) {
+		for (int i = 0; i < this.model.getNodeOrder().size(); i++) {
+			if (this.model.getNodeOrder().get(i).getNodeID().equals(nodeID))
+				return i;
+		}
+		return -1;
 	}
 	
 	public String hashState() {
-		return this.logicalCell.hashState();
+		String hash = "";
+		for (int i = 0; i < this.state.length; i++) {
+			hash += this.state[i];
+		}
+		return hash;
+	}
+	
+	public boolean isSame(Object o) {
+		EpitheliumCell ecOut = (EpitheliumCell) o;
+		return this.id.equals(ecOut.id);
+	}
+	
+	public EpitheliumCellIdentifier getID() {
+		return this.id;
+	}
+	
+	public EpitheliumCell daughterCell() {
+		EpitheliumCell daughterCell = new EpitheliumCell(this.model);
+		daughterCell.setPerturbation(this.perturbation);
+		daughterCell.setCellEvent(CellularEvent.DEFAULT);
+		daughterCell.id = this.id.clone();
+		return daughterCell;
+	}
+	
+	public List<EpitheliumCell> daughterCells() {
+		EpitheliumCell daughterCell1 = this.daughterCell();
+		daughterCell1.id.addDepth(true);
+		EpitheliumCell daughterCell2 = this.daughterCell();
+		daughterCell2.id.addDepth(false);
+		List<EpitheliumCell> daughterCellSet = new ArrayList<EpitheliumCell>();
+		daughterCellSet.add(daughterCell1);
+		daughterCellSet.add(daughterCell2);
+		return daughterCellSet;
 	}
 
 	public boolean equals(Object o) {
-		EpitheliumCell eOut = (EpitheliumCell) o;
-		return this.logicalCell.equals(eOut.getLogicalCell());
+		EpitheliumCell ecOut = (EpitheliumCell) o;
+		if (!this.model.equals(ecOut.model))
+			return false;
+		if (this.perturbation == null) {
+			if (ecOut.perturbation != null)
+				return false;
+		} else {
+			if (ecOut.perturbation == null
+					|| !this.perturbation.equals(ecOut.perturbation))
+				return false;
+		}
+		if (state.length != ecOut.state.length)
+			return false;
+		for (int i = 0; i < state.length; i++) {
+			if (state[i] != ecOut.state[i])
+				return false;
+		}
+		return true;
 	}
 	
 	public EpitheliumCell clone() {
-		EpitheliumLogicalCell logicalCell = this.logicalCell.clone();
-		Map<ComponentPair, Byte> inputComponents = new HashMap<ComponentPair, Byte>(this.environmentalInputs);
-		return new EpitheliumCell(logicalCell, inputComponents);
+		EpitheliumCell newCell = new EpitheliumCell(this.model);
+		newCell.setState(this.state.clone());
+		newCell.setPerturbation(this.perturbation);
+		newCell.setCellEvent(this.cellEvent);
+		newCell.id = this.id.clone();
+		return newCell;
 	}
+
 }

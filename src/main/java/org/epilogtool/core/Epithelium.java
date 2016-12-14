@@ -27,13 +27,14 @@ public class Epithelium {
 	private String name;
 	private EpitheliumGrid grid;
 	private EpitheliumIntegrationFunctions integrationFunctions;
-	private EpitheliumEnvironmentalInputs environmentalInputs;
 	private EpitheliumPerturbations perturbations;
 	private EpitheliumUpdateSchemeIntra priorities;
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
+	private ProjectFeatures projectFeatures;
+	
+	//TODO: requires refactoring - these are the static properties used for cell division
 	private TopologyEventManager topologyEventsManager;
 	private ModelHeritableNodes modelHeritableNodes;
-	private ProjectFeatures projectFeatures;
 
 	public Epithelium(int x, int y, String topologyLayout, String name,
 			LogicalModel m, RollOver rollover,
@@ -49,7 +50,6 @@ public class Epithelium {
 		this.priorities = new EpitheliumUpdateSchemeIntra();
 		this.priorities.addModel(m);
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
-		this.environmentalInputs = new EpitheliumEnvironmentalInputs();
 		this.perturbations = new EpitheliumPerturbations();
 		this.perturbations.addModel(m);
 		this.projectFeatures = projectFeatures;
@@ -62,7 +62,6 @@ public class Epithelium {
 
 	private Epithelium(int x, int y, String topologyLayout, String name,
 			EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
-			EpitheliumEnvironmentalInputs eei,
 			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap,
 			ProjectFeatures pf, EpitheliumUpdateSchemeInter usi, 
 			TopologyEventManager eventsManager,
@@ -74,18 +73,16 @@ public class Epithelium {
 		this.grid = grid;
 		this.priorities = epc;
 		this.integrationFunctions = eif;
-		this.environmentalInputs = eei;
 		this.projectFeatures = pf;
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
 		this.topologyEventsManager = eventsManager;
-		this.modelHeritableNodes = modelHeritableNodes;
+		this.modelHeritableNodes = modelHeritableNodes;;
 	}
 
 	public Epithelium clone() {
 		return new Epithelium(this.x, this.y, this.topologyLayout, "CopyOf_" + this.name, 
-				this.grid.clone(), this.integrationFunctions.clone(), 
-				this.environmentalInputs.clone(), this.priorities.clone(), 
+				this.grid.clone(), this.integrationFunctions.clone(), this.priorities.clone(), 
 				this.perturbations.clone(), this.projectFeatures, 
 				this.updateSchemeInter.clone(), this.topologyEventsManager.clone(),
 				this.modelHeritableNodes.clone());
@@ -215,14 +212,6 @@ public class Epithelium {
 	public EpitheliumIntegrationFunctions getIntegrationFunctions() {
 		return this.integrationFunctions;
 	}
-	
-	public boolean isEnvironmentalComponent(ComponentPair cp) {
-		return this.environmentalInputs.containsComponent(cp);
-	}
-	
-	public EpitheliumEnvironmentalInputs getEnvironmentalInputs() {
-		return this.environmentalInputs;
-	}
 
 	public ModelPerturbations getModelPerturbations(LogicalModel m) {
 		return this.perturbations.getModelPerturbations(m);
@@ -230,6 +219,14 @@ public class Epithelium {
 
 	public EpitheliumPerturbations getEpitheliumPerturbations() {
 		return this.perturbations;
+	}
+	
+	public ModelHeritableNodes getModelHeritableNodes() {
+		return this.modelHeritableNodes;
+	}
+	
+	public void setModelHeritableNode(ModelHeritableNodes mhn) {
+		this.modelHeritableNodes = mhn;
 	}
 
 	public void setGridWithComponentValue(String nodeID, byte value,
@@ -297,6 +294,14 @@ public class Epithelium {
 		if (!this.topologyEventsManager.getModelSet().contains(m)) {
 			this.topologyEventsManager.addModel(m);
 		}
+	}
+	
+	public void initTopologyEventManager() {
+		this.topologyEventsManager = new TopologyEventManager();
+	}
+	
+	public void initModelHeritableNodes() {
+		this.modelHeritableNodes = new ModelHeritableNodes();
 	}
 	
 	public TopologyEventManager getTopologyEventManager() {

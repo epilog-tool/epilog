@@ -16,14 +16,12 @@ import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.color.ColorUtils;
-import org.epilogtool.project.ComponentPair;
 
 public class VisualGridInitialConditions extends VisualGrid {
 	private static final long serialVersionUID = 7590023855645466271L;
 
 	private EpitheliumGrid epiGrid;
 	private Map<String, Byte> mNode2ValueSelected;
-	private Map<String, ComponentPair> mEnvironmentalComponents;
 	private Map<String, Color> colorMapClone;
 	private boolean isRectFill;
 	private Tuple2D<Integer> initialRectPos;
@@ -31,13 +29,11 @@ public class VisualGridInitialConditions extends VisualGrid {
 	private GridInformation valuePanel;
 
 	public VisualGridInitialConditions(EpitheliumGrid gridClone, Map<String, Color> colorMapClone,
-			Map<String, Byte> mNode2ValueSelected, GridInformation valuePanel,
-			Map<String, ComponentPair> mEnvironmentalComponents) {
+			Map<String, Byte> mNode2ValueSelected, GridInformation valuePanel) {
 		super(gridClone.getX(), gridClone.getY(), gridClone.getTopology());
 		this.epiGrid = gridClone;
 		this.colorMapClone = colorMapClone;
 		this.mNode2ValueSelected = mNode2ValueSelected;
-		this.mEnvironmentalComponents = mEnvironmentalComponents;
 		this.isRectFill = false;
 		this.initialRectPos = null;
 		this.selectedModel = null;
@@ -97,8 +93,7 @@ public class VisualGridInitialConditions extends VisualGrid {
 		if (!this.isInGrid(pos))
 			return;
 
-		if (epiGrid.getModel(pos.getX(), pos.getY()).equals(this.selectedModel) ||
-				!this.mEnvironmentalComponents.isEmpty())
+		if (epiGrid.getModel(pos.getX(), pos.getY()).equals(this.selectedModel))
 			super.paintCellAt(pos);
 	}
 
@@ -129,14 +124,8 @@ public class VisualGridInitialConditions extends VisualGrid {
 
 	protected void applyDataAt(int x, int y) {
 		for (String nodeID : this.mNode2ValueSelected.keySet()) {
-			if (!this.mEnvironmentalComponents.containsKey(nodeID)) {
-				this.epiGrid.setCellComponentValue(x, y, nodeID, this.mNode2ValueSelected.get(nodeID));
-				this.epiGrid.setCellInitialStateComponentValue(x, y, nodeID, this.mNode2ValueSelected.get(nodeID));
-			} else {
-				this.epiGrid
-				.setEnvironmentalInput(x, y, this.mEnvironmentalComponents.get(nodeID), 
-						this.mNode2ValueSelected.get(nodeID));
-			}
+			this.epiGrid.setCellComponentValue(x, y, nodeID, this.mNode2ValueSelected.get(nodeID));
+			this.epiGrid.setCellInitialStateComponentValue(x, y, nodeID, this.mNode2ValueSelected.get(nodeID));
 		}
 	}
 
@@ -151,21 +140,6 @@ public class VisualGridInitialConditions extends VisualGrid {
 			for (int y = 0; y < this.gridY; y++) {
 				List<Color> colorList = new ArrayList<Color>();
 				
-				//environmental components
-				if (!this.mEnvironmentalComponents.isEmpty()) {
-					List<Color> lColors = new ArrayList<Color>();
-					for (String nodeID : this.mEnvironmentalComponents.keySet()) {
-						Color cBase = this.colorMapClone.get(nodeID);
-						byte value = this.epiGrid.getCellEnvironment(x, y)
-								.get(this.mEnvironmentalComponents.get(nodeID));
-						if (value > 0) {
-							byte max = this.mEnvironmentalComponents.get(nodeID).getNodeInfo().getMax();
-							lColors.add(ColorUtils.getColorAtValue(cBase, max, value));
-						}
-					}
-					colorList.addAll(lColors);
-				}
-				
 				//empty cells
 				if (this.epiGrid.isEmptyCell(x, y)){
 					colorList.add(EmptyModel.getInstance().getColor());
@@ -175,15 +149,13 @@ public class VisualGridInitialConditions extends VisualGrid {
 				else if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
 					List<Color> lColors = new ArrayList<Color>();
 					for (String nodeID : this.mNode2ValueSelected.keySet()) {
-						if (!(this.mEnvironmentalComponents.containsKey(nodeID))) { 
-							int index = this.epiGrid.getNodeIndex(x, y, nodeID);
-							if (index >= 0) { // if cell has nodeID
-								Color cBase = this.colorMapClone.get(nodeID);
-								byte value = this.epiGrid.getCellState(x, y)[index];
-								if (value > 0) {
-									byte max = this.epiGrid.getModel(x, y).getNodeOrder().get(index).getMax();
-									lColors.add(ColorUtils.getColorAtValue(cBase, max, value));
-								}
+						int index = this.epiGrid.getNodeIndex(x, y, nodeID);
+						if (index >= 0) { // if cell has nodeID
+							Color cBase = this.colorMapClone.get(nodeID);
+							byte value = this.epiGrid.getCellState(x, y)[index];
+							if (value > 0) {
+								byte max = this.epiGrid.getModel(x, y).getNodeOrder().get(index).getMax();
+								lColors.add(ColorUtils.getColorAtValue(cBase, max, value));
 							}
 						}
 					}

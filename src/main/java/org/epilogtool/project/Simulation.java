@@ -20,7 +20,6 @@ import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
 import org.epilogtool.core.cellDynamics.CellularEvent;
-import org.epilogtool.core.cellDynamics.EpitheliumTopology;
 import org.epilogtool.integration.IntegrationFunctionEvaluation;
 import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationExpression;
 
@@ -32,7 +31,6 @@ import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationEx
  */
 public class Simulation {
 	private Epithelium epithelium;
-	private EpitheliumTopology epiTopology;
 	private List<EpitheliumGrid> gridHistory;
 	private List<String> gridHashHistory;
 	private boolean stable;
@@ -54,9 +52,9 @@ public class Simulation {
 	 */
 	public Simulation(Epithelium e) {
 		this.epithelium = e.clone();
-		this.epiTopology = new EpitheliumTopology(this.epithelium);
 		this.gridHistory = new ArrayList<EpitheliumGrid>();
 		this.gridHistory.add(this.epithelium.getEpitheliumGrid());
+		//TODO: improve this
 		this.gridHashHistory = new ArrayList<String>();
 		this.gridHashHistory
 				.add(this.epithelium.getEpitheliumGrid().hashGrid());
@@ -100,7 +98,6 @@ public class Simulation {
 		if (this.stable) {
 			return currGrid;
 		}
-		
 		boolean cellUpdates = false;
 		boolean popUpdates = false;
 
@@ -116,11 +113,13 @@ public class Simulation {
 		// And builds the default next grid (= current grid)
 		HashMap<Tuple2D<Integer>, byte[]> cells2update = new HashMap<Tuple2D<Integer>, byte[]>();
 		List<Tuple2D<Integer>> keys = new ArrayList<Tuple2D<Integer>>();
-		List<Tuple2D<Integer>> cells2Divide = new ArrayList<Tuple2D<Integer>>();
+		HashMap<Tuple2D<Integer>, CellularEvent> cells2event = new HashMap<Tuple2D<Integer>, CellularEvent>();
 		
 		for (int y = 0; y < currGrid.getY(); y++) {
 			for (int x = 0; x < currGrid.getX(); x++) {
+				Tuple2D<Integer> key = new Tuple2D<Integer>(x,y);
 				if (currGrid.isEmptyCell(x, y)) { 
+					keys.add(key);
 					continue;
 				}
 				byte[] currState = currGrid.getCellState(x, y);
@@ -129,77 +128,89 @@ public class Simulation {
 				// Compute next state
 				byte[] nextState = this.nextCellValue(x, y, currGrid,
 						evaluator, sIntegComponentPairs);
-				// If the cell state changed then add it to the pool
+				cells2update.put(key, (nextState==null ? currState.clone(): nextState));
+				keys.add(key);
+				CellularEvent prevCellEvent = currGrid.getCellEvent(x, y);
+				CellularEvent nextCellEvent = this.epithelium.getTopologyEventManager()
+						.getCellularEvent(currGrid
+								.getModel(key.getX(), key.getY()), cells2update.get(key));
+				cells2event.put(key, nextCellEvent);
 				if (nextState == null || !Arrays.equals(currState, nextState)) {
-					Tuple2D<Integer> key = new Tuple2D<Integer>(x, y);
-					cells2update.put(key, nextState);
-					keys.add(key);
+					cellUpdates = true;
+				}
+				if (!prevCellEvent.equals(CellularEvent.DEFAULT) && prevCellEvent.equals(nextCellEvent)) {
+					popUpdates = true;
 				}
 			}
 		}
 
+		float alphaProb = epithelium.getUpdateSchemeInter().getAlpha();
+		List<Tuple2D<Integer>> divisionUpdates = new ArrayList<Tuple2D<Integer>>();
+		List<Tuple2D<Integer>> deathUpdates = new ArrayList<Tuple2D<Integer>>();
 		// Inter-cellular alpha-asynchronism
 		//Update Logical Model States
-		float alphaProb = epithelium.getUpdateSchemeInter().getAlpha();
-		if (keys.size() > 0) {
-			cellUpdates = true;
-			// Randomize the order of cells to update
+		if (cellUpdates == true) {
 			Collections.shuffle(keys, RandomFactory.getInstance().getGenerator());
-			boolean atleastone = false;
-			
+			boolean atLeastOne = false;
 			int updateCounter = (int) Math.floor(alphaProb * keys.size());
-			//Updates the cells if alpha > 0.0
 			for (int i = 0; i < updateCounter; i++) {
+				atLeastOne = true;
 				Tuple2D<Integer> key = keys.get(0);
 				keys.remove(key);
+				if (!cells2update.containsKey(key)) continue;
 				nextGrid.setCellState(key.getX(), key.getY(),cells2update.get(key));
-				CellularEvent nextCellEvent = this.epithelium.getTopologyEventManager()
-						.getCellularEvent(currGrid
-								.getModel(key.getX(), key.getY()), cells2update.get(key));
-				nextGrid.setCellEvent(key.getX(), key.getY(), nextCellEvent);
-				atleastone = true;
+				nextGrid.setCellEvent(key.getX(), key.getY(), cells2event.get(key));
+				CellularEvent currCellEvent = currGrid.getCellEvent(key.getX(), key.getY());
+				CellularEvent nextCellEvent = cells2event.get(key);
+				if (!currCellEvent.equals(CellularEvent.DEFAULT) && currCellEvent.equals(nextCellEvent)) {
+					if (currCellEvent.equals(CellularEvent.PROLIFERATION)) {
+						divisionUpdates.add(key);	
+					} else {
+						deathUpdates.add(key);
+					}
+					
+				}
 			}
-			if (!atleastone && !keys.isEmpty()) {
-				// Updates at least one (asynchronous case: alpha=0.0)
+			if (!atLeastOne) {
 				Tuple2D<Integer> key = keys.get(0);
 				keys.remove(key);
-				nextGrid.setCellState(key.getX(), key.getY(), cells2update.get(key));
-				CellularEvent nextCellEvent = this.epithelium.getTopologyEventManager()
-						.getCellularEvent(currGrid.getModel(
-								key.getX(), key.getY()), cells2update.get(key));
-				nextGrid.setCellEvent(key.getX(), key.getY(), nextCellEvent);
-			}
-		} 
-		
-		//If there are no updates nor space to divide, grid is stable
-		int emptyModelNumber = nextGrid.emptyModelNumber();
-		if (!cellUpdates && (emptyModelNumber==0)) {
-			this.stable = true;
-			return currGrid;
-		}
-		
-		//Update cell division and death events
-		for (int x = 0; x < nextGrid.getX(); x ++) {
-			for (int y = 0; y < nextGrid.getY(); y ++) {
-				if (currGrid.isEmptyCell(x, y)) continue;
-				//Skips cells not considered in the alpha-asynchronous cases
-				if (keys.contains(new Tuple2D<Integer>(x, y))) continue;
-				if (currGrid.getCellEvent(x, y).equals(CellularEvent.DEFAULT) ||
-						nextGrid.getCellEvent(x, y).equals(CellularEvent.DEFAULT)) {
-					continue;
+				if (cells2update.containsKey(key)) {
+					nextGrid.setCellState(key.getX(), key.getY(),cells2update.get(key));
+					nextGrid.setCellEvent(key.getX(), key.getY(), cells2event.get(key));
+					CellularEvent currCellEvent = currGrid.getCellEvent(key.getX(), key.getY());
+					CellularEvent nextCellEvent = cells2event.get(key);
+					if (!currCellEvent.equals(CellularEvent.DEFAULT) && currCellEvent.equals(nextCellEvent)) {
+						if (currCellEvent.equals(CellularEvent.PROLIFERATION)) {
+							divisionUpdates.add(key);	
+						} else {
+							deathUpdates.add(key);
+						}
+					}
 				}
-				cells2Divide.add(new Tuple2D<Integer>(x, y));
-				popUpdates = true;
 			}
+		}
+
+		int emptyModelNumber = nextGrid.emptyModelNumber();
+		if (deathUpdates.size()==0 && emptyModelNumber==0) {
+			popUpdates = false;
+		}
+			if (!cellUpdates && !popUpdates) {
+				this.stable= true;
+				//this.printConnections(currGrid);
+				//this.printLineage(currGrid);
+				return currGrid;
 		}
 		
 		if (popUpdates) {
-			Collections.shuffle(cells2Divide, RandomFactory.getInstance().getGenerator());
-			int totalDivisions = (int) (((1-alphaProb)*cells2Divide.size()<1)? 1 : (1-alphaProb)*cells2Divide.size());
-			cells2Divide = cells2Divide.subList(0, totalDivisions);
-			while (emptyModelNumber > 0 && cells2Divide.size()>0) {
-				this.divideCell(nextGrid, cells2Divide);
-				emptyModelNumber -=1;
+			Collections.shuffle(divisionUpdates, RandomFactory.getInstance().getGenerator());
+			Collections.shuffle(deathUpdates, RandomFactory.getInstance().getGenerator());
+			for (Tuple2D<Integer> cell : deathUpdates) {
+				nextGrid.removeCell(cell.getX(), cell.getY());
+				emptyModelNumber += 1;
+			}
+			while (emptyModelNumber > 0 && divisionUpdates.size()>0) {
+				this.divideCell(nextGrid, divisionUpdates);
+				emptyModelNumber -= 1;
 			}
 		}
 		this.gridHistory.add(nextGrid);
@@ -251,18 +262,12 @@ public class Simulation {
 		return succ.get(0);
 	}
 	
-	private void divideCell(EpitheliumGrid nextGrid, List<Tuple2D<Integer>> cells2Divide) {
+	private void divideCell(EpitheliumGrid nextGrid, List<Tuple2D<Integer>> cells2Divide) { 
 		Tuple2D<Integer> cell2Divide = cells2Divide.get(0);
 		cells2Divide.remove(0);
-		//byte[] motherState = nextGrid.getCellState(cell2Divide.getX(), cell2Divide.getY());
-		List<Tuple2D<Integer>> path = this.epiTopology.divisionPath(cell2Divide);
-		if (path.size()<2 ) {
-			System.out.println("There was an error, path size is " + path.size());
-			for (Tuple2D<Integer> pos : path) {
-				System.out.println("( " + (pos.getX()+1) + ", " + (pos.getY()+1) + ")");
-				return;
-			}
-		}
+		LogicalModel m = nextGrid.getModel(cell2Divide.getX(), cell2Divide.getY());
+		byte[] motherState = nextGrid.getCellState(cell2Divide.getX(), cell2Divide.getY()).clone();
+		List<Tuple2D<Integer>> path = nextGrid.divisionPath(cell2Divide);
 		for (int index = 1; index < path.size(); index ++) {
 			if (cells2Divide.contains(path.get(index))) {
 				cells2Divide.remove(path.get(index).clone());
@@ -272,8 +277,21 @@ public class Simulation {
 		Tuple2D<Integer> motherPosition = path.get(path.size()-1).clone();
 		Tuple2D<Integer> daughterPosition = path.get(path.size()-2).clone();
 		nextGrid.shiftCells(path);
-		nextGrid.setCell2Naive(motherPosition.getX(), motherPosition.getY());
-		nextGrid.setCell2Naive(daughterPosition.getX(), daughterPosition.getY());
+		nextGrid.divideCell(motherPosition.getX(), motherPosition.getY(),
+		daughterPosition.getX(), daughterPosition.getY());
+		
+		if (this.epithelium.getModelHeritableNodes().hasHeritableNodes(m)) {
+			for (String node : this.epithelium.getModelHeritableNodes().getModelHeritableNodes(m)) {
+				int nodeIndex = nextGrid.getNodeIndex(motherPosition.getX(), motherPosition.getY(), node);
+				nextGrid.setCellComponentValue(motherPosition.getX(), motherPosition.getY(), node, motherState[nodeIndex]);
+				nextGrid.setCellComponentValue(daughterPosition.getX(), daughterPosition.getY(), node, motherState[nodeIndex]);
+			}
+		}
+		nextGrid.updateEpiCellConnections(path);
+	}
+	
+	public void removeCell(EpitheliumGrid nextGrid, int x, int y) {
+		nextGrid.removeCell(x, y);
 	}
 
 	public boolean isStableAt(int i) {
@@ -354,5 +372,33 @@ public class Simulation {
 			}
 			return neighbourEpi;
 		}
+	}
+	
+	private void printConnections(EpitheliumGrid grid) {
+		String result = "";
+		for (int x = 0; x < grid.getX(); x++) {
+			for (int y = 0; y < grid.getY(); y++) {
+				if (grid.isEmptyCell(x, y)) {
+					result += " \t";
+				}
+				result += grid.getEpiCellConnections().size(grid.getCellID(x, y)) + "\t";
+			}
+			result += "\n";
+		}
+		System.out.println(result);
+	}
+	
+	private void printLineage(EpitheliumGrid grid) {
+		String result = "";
+		for (int x = 0; x < grid.getX(); x++) {
+			for (int y = 0; y < grid.getY(); y++) {
+				if (grid.isEmptyCell(x, y)) {
+					result += " \t";
+				}
+				result += grid.getCellID(x, y).getDepth() + "\t";
+			}
+			result += "\n";
+		}
+		System.out.println(result);
 	}
 }

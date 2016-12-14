@@ -91,5 +91,9 @@ public abstract class Topology {
 	
 	public abstract Set<Tuple2D<Integer>> getPositionNeighbours(int x, int y, int minDist, int maxDist);
 	
+	public Set<Tuple2D<Integer>> getPositionNeighbours(int x, int y, int exactDist) {
+		return this.getPositionNeighbours(x, y, exactDist, exactDist);
+	}
+	
 	public abstract Set<Tuple2D<Integer>> getRelativeNeighbours(boolean even, int minDist, int maxDist);
 }

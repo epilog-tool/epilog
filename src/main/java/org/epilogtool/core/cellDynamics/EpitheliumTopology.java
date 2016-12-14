@@ -1,14 +1,13 @@
 package org.epilogtool.core.cellDynamics;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
+import org.epilogtool.common.RandomFactory;
 import org.epilogtool.common.Tuple2D;
-import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.core.EpitheliumGrid;
 
@@ -17,23 +16,17 @@ public class EpitheliumTopology {
 	private byte[][][] compressionGrid;
 	private Topology topology;
 	private int maxDist;
-	private Random generator;
-	private CellLineage cellLineage;
 
-	public EpitheliumTopology(Epithelium epi) {
-		this.topology = epi.getEpitheliumGrid().getTopology().clone();
+	public EpitheliumTopology(EpitheliumGrid epi) {
+		this.topology = epi.getTopology().clone();
 		this.maxDist=3;
-		this.generator = new Random();
-		this.cellLineage = new CellLineage();
-		this.buildGrid(epi.getEpitheliumGrid());
+		this.buildGrid(epi);
 	}
 	
-	private EpitheliumTopology(Topology topology,  byte[][][] compressionGrid, int maxDist, CellLineage cellLineage) {
+	private EpitheliumTopology(Topology topology,  byte[][][] compressionGrid, int maxDist) {
 		this.topology = topology;
 		this.compressionGrid = compressionGrid;
 		this.maxDist = maxDist;
-		this.generator = new Random();
-		this.cellLineage = cellLineage;
 	}
 	
 	
@@ -67,28 +60,28 @@ public class EpitheliumTopology {
 		}
 	}
 	
-	private Set<Tuple2D<Integer>> setDistanceNeighbours(int x, int y, int distance, Set<Tuple2D<Integer>> connectedNeighbours) {
+	private Set<Tuple2D<Integer>> setDistanceNeighbours(int x, int y, int distance, Set<Tuple2D<Integer>> currConnectedNeighbours) {
 		if (this.compressionGrid[x][y][0]==0) {
 			this.compressionGrid[x][y][distance]= (byte) 0;
 			return null;
 		}
+		Set<Tuple2D<Integer>> newDistancePositions = new HashSet<Tuple2D<Integer>>();
 		Set<Tuple2D<Integer>> newConnectedNeighbours = new HashSet<Tuple2D<Integer>>();
-		Set<Tuple2D<Integer>> neighbours = this.topology.getPositionNeighbours(x, y, distance, distance);
+		Set<Tuple2D<Integer>> distanceNeighbours = this.topology.getPositionNeighbours(x, y, distance);
 		byte totalNeighbours = (byte) (distance*6);
-		byte countedNeighbours = (byte) (totalNeighbours-neighbours.size());
-		for (Tuple2D<Integer> neighbour: neighbours) {
-			if (this.isOccupied(neighbour)) {
-				for (Tuple2D<Integer> connectedNeighbour : connectedNeighbours) {
-					if (this.topology.getPositionNeighbours(connectedNeighbour.getX(), connectedNeighbour.getY(), 1, 1).contains(neighbour)) {
-						countedNeighbours += 1;
-						newConnectedNeighbours.add(neighbour);
-						break;
-					}
-				}
+		byte countedNeighbours = (byte) (totalNeighbours-distanceNeighbours.size());
+		for (Tuple2D<Integer> currConnectedNeighbour : currConnectedNeighbours) {
+			newDistancePositions.addAll(this.topology.getPositionNeighbours
+					(currConnectedNeighbour.getX(), currConnectedNeighbour.getY(), 1));
+		}
+		newDistancePositions.retainAll(distanceNeighbours);
+		for (Tuple2D<Integer> position : newDistancePositions) {
+			if (this.isOccupied(position)) {
+				newConnectedNeighbours.add(position);
 			}
 		}
-		this.compressionGrid[x][y][distance] = countedNeighbours;
-		return newConnectedNeighbours;
+		this.compressionGrid[x][y][distance] = (byte) (newConnectedNeighbours.size() + countedNeighbours);
+		return newDistancePositions;
 	}
 	
 	private boolean isOccupied(Tuple2D<Integer> position) {
@@ -108,7 +101,7 @@ public class EpitheliumTopology {
 		return ((float) 1- distance) / this.maxDist + 1;
 	}
 	
-	private float getCompression(Tuple2D<Integer> position) {
+	public float getCompression(Tuple2D<Integer> position) {
 		float compression = (float) this.compressionGrid[position.getX()][position.getY()][0];
 		for (int index = 1; index <= this.maxDist; index ++) {
 			compression += this.getDistanceCompression(position, index)*this.getDistanceWeight(index);
@@ -116,7 +109,7 @@ public class EpitheliumTopology {
 		return compression;
 	}
 	
-	public Tuple2D<Integer> selectEmptyPosition(Tuple2D<Integer> originalPos) {
+	public Tuple2D<Integer> getEmptyPosition(Tuple2D<Integer> originalPos) {
 		//Selects the direction of cell displacement for division of cell in the position (x, y)
 		Tuple2D<Integer> currPosition = originalPos.clone();
 		float currCompression = this.getCompression(currPosition);
@@ -127,7 +120,7 @@ public class EpitheliumTopology {
 		while (nextPositionsList.isEmpty()) {
 			Set<Tuple2D<Integer>> neighbourSet = 
 					this.topology.getPositionNeighbours(currPosition.getX(), currPosition.getY(),
-							currDistance, currDistance);
+							currDistance);
 			for (Tuple2D<Integer> neighbour : neighbourSet) {
 				float neighbourCompression = this.getCompression(neighbour);
 				if (neighbourCompression == currCompression) {
@@ -142,20 +135,36 @@ public class EpitheliumTopology {
 			currDistance += 1;
 		}
 		
-		if (currCompression == 0) {
-			return nextPositionsList.get(this.generator.nextInt(nextPositionsList.size())).clone();
-		}
-		
 		List<Tuple2D<Integer>> emptyPositionsList = new ArrayList<Tuple2D<Integer>>();
+		int occupiedNum = 0;
+		
+		if (currCompression == 0) {
+			for (Tuple2D<Integer> emptyPosition : nextPositionsList) {
+				int tmpOccupiedNum = 0;
+				for (Tuple2D<Integer> tmpTuple : this.topology.getPositionNeighbours(emptyPosition.getX(), emptyPosition.getY(), 1)) {
+					if (this.isOccupied(tmpTuple)) {
+						tmpOccupiedNum += 1;
+					}
+				}
+				if (tmpOccupiedNum == occupiedNum) {
+					emptyPositionsList.add(emptyPosition);
+				}
+				if (tmpOccupiedNum > occupiedNum) {
+					emptyPositionsList.clear();
+					emptyPositionsList.add(emptyPosition);
+					occupiedNum = tmpOccupiedNum;
+				}
+			}
+			return emptyPositionsList.get(RandomFactory.getInstance().nextInt(emptyPositionsList.size())).clone();
+		}
 		
 		//second search: there are measurable differences in compression, find path to border
 		while (emptyPositionsList.isEmpty()) {
 			Tuple2D<Integer> nextPosition = nextPositionsList.get(
-					this.generator.nextInt(nextPositionsList.size())).clone();
+					RandomFactory.getInstance().nextInt(nextPositionsList.size())).clone();
 			nextPositionsList.clear();
 			Set<Tuple2D<Integer>> neighbourSet = 
-					this.topology.getPositionNeighbours(nextPosition.getX(), nextPosition.getY(),
-							1,1);
+					this.topology.getPositionNeighbours(nextPosition.getX(), nextPosition.getY(),1);
 			Set<Tuple2D<Integer>> neighbourSetClone = new HashSet<Tuple2D<Integer>>(neighbourSet);
 			for (Tuple2D<Integer> neighbour : neighbourSet) {
 				if (!this.isOccupied(neighbour)) {
@@ -179,102 +188,70 @@ public class EpitheliumTopology {
 				neighbourSetClone.remove(neighbour);
 			}
 		}
-		Tuple2D<Integer> endPosition = emptyPositionsList.get(this.generator.nextInt(emptyPositionsList.size()));
+		
+		List<Tuple2D<Integer>> emptyPositionsListClone = new ArrayList<Tuple2D<Integer>>();
+		for (Tuple2D<Integer> emptyPosition : emptyPositionsList) {
+			int tmpOccupiedNum = 0;
+			for (Tuple2D<Integer> tmpTuple : this.topology.getPositionNeighbours(emptyPosition.getX(), emptyPosition.getY(), 1)) {
+				if (this.isOccupied(tmpTuple)) {
+					tmpOccupiedNum += 1;
+				}
+			}
+			if (tmpOccupiedNum == occupiedNum) {
+				emptyPositionsListClone.add(emptyPosition);
+			}
+			if (tmpOccupiedNum > occupiedNum) {
+				emptyPositionsListClone.clear();
+				emptyPositionsListClone.add(emptyPosition);
+				occupiedNum = tmpOccupiedNum;
+			}
+		}
+		
+		Tuple2D<Integer> endPosition = emptyPositionsListClone.get(RandomFactory.getInstance().nextInt(emptyPositionsListClone.size()));
 		return endPosition;
 	}
 	
-	private Tuple2D<Integer> distanceVector(Tuple2D<Integer> init, Tuple2D<Integer> end) {
-		return new Tuple2D<Integer>(end.getX()-init.getX(), 
-						end.getY()-init.getY());
-	}
-	
-	public List<Tuple2D<Integer>> divisionPath(Tuple2D<Integer> cell2Divide) {
-		List<Tuple2D<Integer>> path = new ArrayList<Tuple2D<Integer>>();
-		
-		Tuple2D<Integer> currPosition = cell2Divide.clone();
-		Tuple2D<Integer> endPosition = this.selectEmptyPosition(cell2Divide);
-		Tuple2D<Integer> distanceTuple = this.distanceVector(currPosition, endPosition);
-		
-		path.add(cell2Divide);
-		
-		List<Tuple2D<Integer>> possiblePaths = new ArrayList<Tuple2D<Integer>>();
-		
-		while (this.isOccupied(currPosition)) {
-			Set<Tuple2D<Integer>> neighbours = this.topology.getPositionNeighbours(currPosition.getX(), currPosition.getY(), 1, 1);
-			for (Tuple2D<Integer> cell : neighbours) {
-				Tuple2D<Integer> cellDistance = this.distanceVector(cell, endPosition);
-				if (cellDistance.euclideanDistance() == distanceTuple.euclideanDistance()) {
-					possiblePaths.add(cell.clone());
-				}
-				else if (cellDistance.euclideanDistance() < distanceTuple.euclideanDistance()) {
-					possiblePaths.clear();
-					possiblePaths.add(cell);
-					distanceTuple = cellDistance.clone();
-				}
-			}
-			currPosition = possiblePaths.get(this.generator.nextInt(possiblePaths.size()));
-			path.add(currPosition);
+	public int distance(Tuple2D<Integer> init, Tuple2D<Integer> end) {
+		int i = 0;
+		Set<Tuple2D<Integer>> tmpSet = new HashSet<Tuple2D<Integer>>();
+		tmpSet.add(init);
+		while (!tmpSet.contains(end)) {
+			i+= 1;
+			tmpSet = this.topology.getPositionNeighbours(init.getX(), init.getY(), i);
 		}
-		
-		Collections.reverse(path);
-		this.update4Division(path.get(0));
-		return path;
+		return i;
 	}
 	
-	public List<Tuple2D<Integer>> apoptosisPath(int x, int y) {
-		List<Tuple2D<Integer>> path = new ArrayList<Tuple2D<Integer>>();
-		Collections.reverse(path);
-		return path;
-	}
-	
-	public void update4Division(Tuple2D<Integer> cell) {
+	public void addCell(Tuple2D<Integer> cell) {
+		//Set cell to occupied
 		int x = cell.getX();
 		int y = cell.getY();
 		this.compressionGrid[x][y][0] = (byte) 1;
-		byte sign = (byte) 1;
-		Set<Tuple2D<Integer>> currConnectedCellsSet = new HashSet<Tuple2D<Integer>>();
-		currConnectedCellsSet.add(cell);
-		Set<Tuple2D<Integer>> nextConnectedCellsSet = new HashSet<Tuple2D<Integer>>();
+		
+		//Store connected cells from one distance to the next
+		Set<Tuple2D<Integer>> currConnectedNeighbours = new HashSet<Tuple2D<Integer>>();
+		currConnectedNeighbours.add(cell);
 		for (int distance = 1; distance <= this.maxDist; distance ++) {
-			Set<Tuple2D<Integer>> distanceCellsSet = this.topology.getPositionNeighbours(x, y, distance, distance);
-			
-			int borderNeighbours = distance*6 - distanceCellsSet.size();
-			this.compressionGrid[x][y][distance] = (byte) (nextConnectedCellsSet.size() + borderNeighbours);
-			
-			for (Tuple2D<Integer> distanceCell : distanceCellsSet) {
-				if (this.isOccupied(distanceCell)) {
-					for (Tuple2D<Integer> connectedCell : currConnectedCellsSet) {
-						if (this.topology.getPositionNeighbours(connectedCell.getX(), connectedCell.getY(), 1, 1).contains(distanceCell)) {
-							nextConnectedCellsSet.add(distanceCell);
-							this.compressionGrid[x][y][distance] += 1;
-							break;
-						}
-					}
-				}
+			currConnectedNeighbours = this.setDistanceNeighbours(x, y, distance, currConnectedNeighbours);
+			for (Tuple2D<Integer> currConnectedNeighbour : currConnectedNeighbours) {
+				//TODO: this may be improved
+				this.setNeighbours(currConnectedNeighbour.getX(), currConnectedNeighbour.getY());
 			}
-			
-			for (Tuple2D<Integer> nextCell : nextConnectedCellsSet) {
-				//There is a bug somewhere in the original code, this is the slowest way
-				this.setNeighbours(nextCell.getX(), nextCell.getY());
-			}
-			currConnectedCellsSet = new HashSet<Tuple2D<Integer>>(nextConnectedCellsSet);
-			nextConnectedCellsSet.clear();
 		}
 	}
 	
-	public void update4Death(Tuple2D<Integer> cell) {
+	public void removeCell(Tuple2D<Integer> cell) {
 		int x = cell.getX();
 		int y = cell.getY();
 		this.compressionGrid[x][y][0] = (byte) 0;
 		this.setNeighbours(x, y);
-		byte sign = (byte) -1;
 		for (int distance = 1; distance <= this.maxDist; distance ++) {
-			Set<Tuple2D<Integer>> cells2UpdateSet = this.topology.getPositionNeighbours(x, y, distance, distance);
+			Set<Tuple2D<Integer>> cells2UpdateSet = this.topology.getPositionNeighbours(x, y, distance);
 			for (Tuple2D<Integer> cell2Update : cells2UpdateSet) {
 				if (!this.isOccupied(cell2Update)) {
 					continue;
 				}
-				this.compressionGrid[cell2Update.getX()][cell2Update.getY()][distance] += sign;
+				this.setNeighbours(cell2Update.getX(), cell2Update.getY());
 			}
 		}
 	}
@@ -284,7 +261,20 @@ public class EpitheliumTopology {
 	}
 	
 	public EpitheliumTopology clone() {
-		return new EpitheliumTopology(this.topology.clone(), this.compressionGrid.clone(), this.maxDist, this.cellLineage.clone());
+		byte[][][] newCompressionGrid = new byte[this.topology.getX()][this.topology.getY()][this.maxDist+1];
+		for (int x = 0; x < this.topology.getX(); x ++) {
+			for (int y = 0; y < this.topology.getY(); y ++) {
+				newCompressionGrid[x][y] = Arrays.copyOf(this.compressionGrid[x][y], this.maxDist+1);
+			}
+		}
+		return new EpitheliumTopology(this.topology.clone(), newCompressionGrid, this.maxDist);
+	}
+	
+	public boolean equals(Object o) {
+		EpitheliumTopology oET = (EpitheliumTopology) o;
+		return Arrays.equals(this.compressionGrid, oET.compressionGrid)
+				&& this.maxDist==oET.maxDist 
+				&& this.topology.equals(oET.topology);
 	}
 
 }

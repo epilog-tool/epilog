@@ -48,6 +48,10 @@ public class ModelHeritableNodes {
 		return this.heritableNodesMap.get(m).contains(node);
 	}
 	
+	public boolean hasHeritableNodes(LogicalModel m) {
+		return !this.heritableNodesMap.get(m).isEmpty();
+	}
+	
 	public Set<String> getModelHeritableNodes(LogicalModel m) {
 		return this.heritableNodesMap.get(m);
 	}
