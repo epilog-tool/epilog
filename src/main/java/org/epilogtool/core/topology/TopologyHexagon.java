@@ -76,11 +76,6 @@ public abstract class TopologyHexagon extends Topology {
 	public Set<Tuple2D<Integer>> getRelativeNeighbours(boolean even,
 			int minDist, int maxDist) {
 
-		int maxX = this.maxX;
-		int maxY = this.maxY;
-
-		maxDist = Math.min(maxDist, Math.max(maxX, maxY));
-
 		Set<Tuple2D<Integer>> setRelativeNeighbours = new HashSet<Tuple2D<Integer>>();
 
 		if (even) {
