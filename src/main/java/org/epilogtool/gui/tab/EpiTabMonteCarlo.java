@@ -2,6 +2,7 @@ package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -33,6 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.tree.TreePath;
 
@@ -42,6 +44,7 @@ import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.common.Tuple3D;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
+import org.epilogtool.gui.EpiGUI;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.SimulationEpiClone;
 import org.epilogtool.gui.color.ColorUtils;
@@ -978,7 +981,15 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	@Override
 	public void applyChange() {
-		//No changes are applied
+		System.out.println("Here");
+	}
+	
+	private boolean hasChangedEpithelium() {
+		return !this.monteCarlo.getEpithelium().equals(this.epithelium);
+	}
+	
+	private void restart() {
+		EpiGUI.getInstance().restartMonteCarloTab();
 	}
 	
 	
@@ -1193,9 +1204,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	private void cloneEpiWithCurrGrid() {
 		this.simEpiClone.cloneEpithelium(this.epithelium,
 				this.vgCellState.getEpitheliumGrid());
-//		System.out.println("NOT WORKING");
-//		JPanel frame = new JPanel();
-//		JOptionPane.showMessageDialog(frame, "Not Working yet");
 		
 	}
 	

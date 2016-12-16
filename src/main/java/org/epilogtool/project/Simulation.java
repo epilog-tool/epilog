@@ -39,11 +39,11 @@ public class Simulation {
 	
 	private boolean allCellsCalledToUpdate;
 	
-	private  List<Tuple2D> schuffledInstances;
+	private  List<Tuple2D<Integer>> schuffledInstances;
 	private  List<Tuple2D<Integer>> runningSchuffledInstances;
-	private  Map<Tuple2D, Double> exponentialInstances;
+	private  Map<Tuple2D<Integer>, Double> exponentialInstances;
 	private boolean flagReshufle;
-	private int indxRandOder; 
+	private int indxOrder; 
 
 	
 	private boolean stable;
@@ -201,6 +201,8 @@ public class Simulation {
 			nextGrid= updateModeRandomIndependent(keys, nextGrid, cells2update);
 		else if (updateMode.equals("Random Order"))
 			nextGrid = updateModeRandomOrder(keys, nextGrid, cells2update);
+		else if (updateMode.equals("Cyclic Order"))
+			nextGrid = updateModeCyclicOrder(keys, nextGrid, cells2update);
 
 //		}
 		return nextGrid;
@@ -254,12 +256,6 @@ public class Simulation {
 //		return nextGrid;
 //	}
 
-//	private EpitheliumGrid updateModeCyclicOrder(Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid,
-//			HashMap<Tuple2D<Integer>, byte[]> cells2update) {
-//		// TODO Auto-generated method stub
-//		return nextGrid;
-//	}
-
 	/**
 	 * @param keys - > cells to update
 	 * @param nextGrid -> current grid clone, that is supposed to be updated
@@ -277,70 +273,56 @@ public class Simulation {
 		
 		if (this.schuffledInstances == null){//Create the initial shuffled array of cells
 			this.schuffledInstances = UpdateMode.shuffle(cells2update.keySet());
-//			System.out.println("Shuffled initial set: "+this.schuffledInstances);
 		}
 		
-		this.indxRandOder = 0;
-		List<Tuple2D> cellsUpdatedThisStep = new ArrayList<Tuple2D>();
+		List<Tuple2D<Integer>> cellsUpdatedThisStep = new ArrayList<Tuple2D<Integer>>();
 		
 		for (int idx = 0; idx<numberCellsCalledToUpdate; idx++){
 			if (this.schuffledInstances.size()<1)
 				this.schuffledInstances = UpdateMode.shuffle(cells2update.keySet());
 				if (cellsUpdatedThisStep.contains(this.schuffledInstances.get(0))){
-					idx = idx -1;
-				}
+					idx = idx -1;}
 				else{
-				cellsUpdatedThisStep.add(this.schuffledInstances.get(0));
-			}
-				this.schuffledInstances.remove(0);
-			}
+				cellsUpdatedThisStep.add(this.schuffledInstances.get(0));}
+				this.schuffledInstances.remove(0);}
 		
 //		System.out.println("Called to update: "+cellsUpdatedThisStep);
+		for (Tuple2D<Integer> key :cellsUpdatedThisStep) {
+			nextGrid.setCellState(key.getX(), key.getY(),
+					cells2update.get(key));}
+		return nextGrid;}
+	
+	private EpitheliumGrid updateModeCyclicOrder(Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid,
+			HashMap<Tuple2D<Integer>, byte[]> cells2update) {
 		
+		float alphaProb = epithelium.getUpdateSchemeInter().getAlpha();
+		
+		int numberCellsCalledToUpdate = (int) Math.floor(alphaProb * keys.size());
+		if (numberCellsCalledToUpdate == 0)
+			numberCellsCalledToUpdate =1;
+		
+		if (this.schuffledInstances == null){//Create the initial shuffled array of cells
+			this.schuffledInstances = UpdateMode.shuffle(cells2update.keySet());
+			this.indxOrder = 0;
+		}
+		List<Tuple2D<Integer>> cellsUpdatedThisStep = new ArrayList<Tuple2D<Integer>>();
+		
+		for (int idx = 0; idx<numberCellsCalledToUpdate; idx++){
+			if (indxOrder==this.schuffledInstances.size())
+				indxOrder = 0;
+			
+			cellsUpdatedThisStep.add(this.schuffledInstances.get(indxOrder));
+			indxOrder = indxOrder+1;
+			}	
+//		System.out.println("Called to update: "+cellsUpdatedThisStep);
 
 		for (Tuple2D<Integer> key :cellsUpdatedThisStep) {
 			nextGrid.setCellState(key.getX(), key.getY(),
-					cells2update.get(key));
-		}
-		
-		
-		return nextGrid;
-	}
-
-private List<Tuple2D> getShuffledRandomOrder(int numberCellsCalledToUpdate, Stack<Tuple2D<Integer>> keys, List<Tuple2D> finalListOfCells){
-	
-	
-for (Tuple2D tuple: this.schuffledInstances){
-	
-//	System.out.println("Final result "  +finalListOfCells);
-	
-	if (this.indxRandOder >=numberCellsCalledToUpdate) return finalListOfCells;
-	
-//	System.out.println("tuple "  +tuple);
-//	System.out.println("keys "  +keys);
-	
-	if (keys.contains(tuple)){
-		finalListOfCells.add(tuple);
-		
-//		System.out.println("added finalListOfCells "  +tuple);
-		this.indxRandOder = this.indxRandOder +1;
-	}}
-
-for (Tuple2D tuple:finalListOfCells){
-	if (this.schuffledInstances.contains(tuple)){
-		this.schuffledInstances.remove(tuple);
-		keys.remove(tuple);
-	}
-}
-this.flagReshufle = true;
-
-return finalListOfCells;
-}
-
+					cells2update.get(key));}
+		return nextGrid;}
 
 	private EpitheliumGrid updateModeRandomIndependent(Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid,
 			HashMap<Tuple2D<Integer>, byte[]> cells2update) {
-		// TODO IMPROVE
 		
 		// Randomize the order of cells to update
 		Collections.shuffle(keys, RandomFactory.getInstance()
@@ -365,19 +347,6 @@ return finalListOfCells;
 					cells2update.get(key));
 		}
 		return nextGrid;
-	}
-
-	private EpitheliumGrid updateModeSynchronous(Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid,
-			HashMap<Tuple2D<Integer>, byte[]> cells2update) {
-				
-		// TODO Auto-generated method stub
-				for (int i = 0; i < keys.size(); i++) {
-					Tuple2D<Integer> key = keys.get(i);
-					nextGrid.setCellState(key.getX(), key.getY(),
-							cells2update.get(key));
-				}
-				return nextGrid;
-		
 	}
 
 	public boolean hasCycle() {

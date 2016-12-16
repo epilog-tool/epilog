@@ -621,6 +621,9 @@ public class EpiGUI extends JFrame {
 		projDescPanel.repaint();
 	}
 	
+	/**
+	 * 
+	 */
 	public void removeSBML() {
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
@@ -636,6 +639,9 @@ public class EpiGUI extends JFrame {
 		this.validateGUI();
 	}
 	
+	/**
+	 * @throws IOException
+	 */
 	public void exportSBML() throws IOException {
 		String stringModel = this.projDescPanel.getSelected();
 		if (stringModel != null) {
@@ -705,25 +711,10 @@ public class EpiGUI extends JFrame {
 
 		this.validateGUI();
 	}
-
-	private static String join(List<String> list, String sep) {
-		String s = "";
-		for (int i = 0; i < list.size(); i++) {
-			if (i > 0)
-				s += sep;
-			s += list.get(i);
-		}
-		return s;
-	}
 	
-	private void notifyEpiModelGrids() {
-		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
-			Component c = this.epiRightFrame.getComponentAt(i);
-			if (c instanceof EpiTabModelGrid) {
-				((EpiTabModelGrid) c).notifyChange();
-			}
-		}
-	}
+	
+	
+
 
 	private void cleanGUI() {
 		// Close & delete all TABS
@@ -962,9 +953,6 @@ public class EpiGUI extends JFrame {
 		// Select existing Tab
 		this.epiRightFrame.setSelectedIndex(tabIndex);
 	}
-	
-
-
 
 	public void restartSimulationTab() {
 
@@ -1009,7 +997,44 @@ public class EpiGUI extends JFrame {
 			addEpithelium2JTree(epiClone);
 		}
 	}
+	
+	public void restartMonteCarloTab() {
+		// TODO Auto-generated method stub
+		System.out.println("REstarat");
+	}
+	
+	private static String join(List<String> list, String sep) {
+		String s = "";
+		for (int i = 0; i < list.size(); i++) {
+			if (i > 0)
+				s += sep;
+			s += list.get(i);
+		}
+		return s;
+	}
 
+
+	
+	//*****************   NOTIFICATION OF CHANGES ****************************
+	
+	/**
+	 * Notify the Model grid, that an sbml model has been loaded, renamed or removed at project level.
+	 */
+	private void notifyEpiModelGrids() {
+		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
+			Component c = this.epiRightFrame.getComponentAt(i);
+			if (c instanceof EpiTabModelGrid) {
+				((EpiTabModelGrid) c).notifyChange();
+			}
+		}
+	}
+	
+	
+	/**
+	 * Notifies the project that a tab has changed, by setting a boolean variable as true.
+	 * Forces the validation of the GUI;
+	 *
+	 */
 	public class TabChangeNotifyProj {
 		public void setEpiChanged() {
 			project.setChanged(true);
@@ -1017,13 +1042,17 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
+	/**
+	 * Notifies the project that something has changed (so far only color changing have such a global warning)
+	 *
+	 */
 	public class ProjChangeNotifyTab {
 		public void setChanged(EpiTab changedTab) {
 			project.setChanged(true);
 			for (int i = 0; i < epiRightFrame.getTabCount(); i++) {
 				Component c = epiRightFrame.getComponentAt(i);
 				if (c instanceof EpiTabSimulation
-						|| c instanceof EpiTabInitialConditions) {
+						|| c instanceof EpiTabInitialConditions || c instanceof EpiTabMonteCarlo) {
 					EpiTab tab = (EpiTab) c;
 					if (!tab.equals(changedTab)) {
 						tab.notifyChange();
@@ -1033,6 +1062,6 @@ public class EpiGUI extends JFrame {
 			validateGUI();
 		}
 	}
-	
+
 
 }

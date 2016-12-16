@@ -91,6 +91,10 @@ public class MonteCarlo {
 	public void setMaxIter(int maxIter){
 		this.maxNumberIterations = maxIter;
 	}
+	
+	public Epithelium getEpithelium(){
+		return this.epithelium;
+	}
 
 	public void run(Epithelium epi ) {
 

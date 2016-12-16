@@ -152,10 +152,11 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		this.jpUpdateOrder.setBorder(BorderFactory
 				.createTitledBorder("Select Updating Order"));
 		
-		String[] lUpdateOrder = new String[2];
+		String[] lUpdateOrder = new String[3];
 		
 		lUpdateOrder[0]="Random Independent";
 		lUpdateOrder[1]="Random Order";
+		lUpdateOrder[2]="Cyclic Order";
 		
 		JComboBox<String> jcUpdateOrder = new JComboWideBox(lUpdateOrder);
 		

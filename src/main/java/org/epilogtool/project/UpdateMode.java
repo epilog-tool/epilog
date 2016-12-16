@@ -22,11 +22,11 @@ public abstract class UpdateMode {
 	public abstract String getDescription();
 
 	
-	public static List<Tuple2D> shuffle(Set<Tuple2D<Integer>> cells2update) {
+	public static List<Tuple2D<Integer>> shuffle(Set<Tuple2D<Integer>> cells2update) {
 		
-		List<Tuple2D> listTuples = new ArrayList<Tuple2D>(); //array with numberCellsGrid boxes
+		List<Tuple2D<Integer>> listTuples = new ArrayList<Tuple2D<Integer>>(); //array with numberCellsGrid boxes
 		
-		  for (Tuple2D key: cells2update){
+		  for (Tuple2D<Integer> key: cells2update){
 			  listTuples.add(key);
 		  }
 		  
@@ -37,17 +37,17 @@ public abstract class UpdateMode {
 	
 	public static Map<Tuple2D<Integer>, byte[]> shuffleAndSelect(HashMap<Tuple2D<Integer>, byte[]> cells2update, int numberCellsToUpdate) {
 		
-		List<Tuple2D> listTuples = new ArrayList<Tuple2D>(); //array with numberCellsGrid boxes
+		List<Tuple2D<Integer>> listTuples = new ArrayList<Tuple2D<Integer>>(); //array with numberCellsGrid boxes
 		Map<Tuple2D<Integer>, byte[]> shufledAndCutArray = new HashMap<Tuple2D<Integer>, byte[]>();  // arrayNumbers shufled and cut up to numberCellsToUpdate
 		  
-		  for (Tuple2D key: cells2update.keySet()){
+		  for (Tuple2D<Integer> key: cells2update.keySet()){
 			  listTuples.add(key);
 		  }
 		  
 		  Collections.shuffle(listTuples);
 
 		  for (int n =0; n<numberCellsToUpdate; n++){
-			  Tuple2D key = listTuples.get(n);
+			  Tuple2D<Integer> key = listTuples.get(n);
 			  shufledAndCutArray.put(key,cells2update.get(key));
 		  }
 		  return shufledAndCutArray;
@@ -56,7 +56,7 @@ public abstract class UpdateMode {
 
 		
 	
-	public static Map<Tuple2D, Double> findMinIdx(Map<Tuple2D, Double> exponentialInstances, int numberCellsCalledToUpdate,
+	public static Map<Tuple2D<Integer>, Double> findMinIdx(Map<Tuple2D<Integer>, Double> exponentialInstances, int numberCellsCalledToUpdate,
 			Stack<Tuple2D<Integer>> keys) {
 			
 		// TODO Auto-generated method stub
@@ -64,10 +64,10 @@ public abstract class UpdateMode {
 		 if (exponentialInstances == null || exponentialInstances.size() == 0) return null;
 		 
 		 //We will look for cells that are in the key cells (cells called to update)
-		 Map<Tuple2D, Double> exponentialInstancesCalledToUpdate  = new HashMap<Tuple2D, Double>();
-		 Map<Tuple2D, Double> cutExponentialInstancesCalledToUpdate = new HashMap<Tuple2D, Double>();
+		 Map<Tuple2D<Integer>, Double> exponentialInstancesCalledToUpdate  = new HashMap<Tuple2D<Integer>, Double>();
+		 Map<Tuple2D<Integer>, Double> cutExponentialInstancesCalledToUpdate = new HashMap<Tuple2D<Integer>, Double>();
 		 
-		 for (Tuple2D t: keys){
+		 for (Tuple2D<Integer> t: keys){
 			 exponentialInstancesCalledToUpdate.put(t,exponentialInstances.get(t));
 		 }
 		 
@@ -75,7 +75,7 @@ public abstract class UpdateMode {
 		 Double minVal_Aux = (double) 0; 
 		 
 		 for (int n = 0; n<numberCellsCalledToUpdate; n++){
-			 Tuple2D<Integer> minIdx = new Tuple2D(0,0);
+			 Tuple2D<Integer> minIdx = new Tuple2D<Integer>(0,0);
 			 minVal =  Collections.max(exponentialInstancesCalledToUpdate.values());
 			    for(Tuple2D<Integer> t: exponentialInstancesCalledToUpdate.keySet()) {
 		    	
