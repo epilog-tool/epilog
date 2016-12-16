@@ -267,8 +267,10 @@ public class Epithelium {
 				&& this.priorities.equals(otherEpi.priorities)
 				&& this.integrationFunctions
 				.equals(otherEpi.integrationFunctions)
-				&& this.perturbations.equals(otherEpi.perturbations) && this.updateSchemeInter
-				.equals(otherEpi.getUpdateSchemeInter()));
+				&& this.perturbations.equals(otherEpi.perturbations) 
+				&& this.updateSchemeInter
+				.equals(otherEpi.getUpdateSchemeInter())
+				);
 	}
 
 

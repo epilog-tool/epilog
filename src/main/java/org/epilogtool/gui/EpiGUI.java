@@ -901,7 +901,7 @@ public class EpiGUI extends JFrame {
 			TreePath path = this.epiTreePanel.getSelectionEpiPath();
 			tab = new EpiTabMonteCarlo(epi,
 					path, projChanged,
-					this.project.getProjectFeatures(), new MonteCarlo(epi), new SimulationEpiClone());
+					this.project.getProjectFeatures(), new SimulationEpiClone());
 			String title = epi.getName() + ":MonteCarlo";
 			this.epiRightFrame.addTab(title, tab);
 			tab.initialize();
@@ -1000,7 +1000,7 @@ public class EpiGUI extends JFrame {
 	
 	public void restartMonteCarloTab() {
 		// TODO Auto-generated method stub
-		System.out.println("REstarat");
+		
 	}
 	
 	private static String join(List<String> list, String sep) {

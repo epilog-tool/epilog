@@ -119,7 +119,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	public EpiTabMonteCarlo(Epithelium e, TreePath path,
 			ProjChangeNotifyTab projChanged, ProjectFeatures projectFeatures,
-			MonteCarlo monteCarlo, SimulationEpiClone simEpiClone) {
+			SimulationEpiClone simEpiClone) {
 		super(e, path, projChanged);
 		
 		this.projectFeatures = projectFeatures;
@@ -128,6 +128,8 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		
 		this.clonedEpi = this.epithelium.clone();
 		this.simEpiClone = simEpiClone;
+		
+		this.monteCarlo = new MonteCarlo(this.clonedEpi) ;
 		
 		this.mSelCheckboxes = new HashMap<String, Boolean>();
 		this.mNodeID2Checkbox = new HashMap<String, JCheckBox>();
@@ -331,6 +333,8 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 //		this.repaint();
 //		this.revalidate();
 //		this.vgCellState.repaint();
+		
+		this.isInitialized = true;
 	}
 	
 	private void createInformationPanel() {
@@ -914,7 +918,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	protected void fireChangeNumRuns(int nRuns) {
 		this.monteCarlo.setNumberRuns(nRuns);
-//		System.out.println("Number of Runs changed to: " + nRuns);
 	}
 
 	protected void fireRun() {
@@ -959,7 +962,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	private void updateInformationPanel() {
 
-//		System.out.println(this.monteCarlo.getStableStates().size());
 		this.uniqueSS.setText("Unique SS: " + this.monteCarlo.getUniqueStableStates().size());
 		this.notReachedSS.setText("Not reached SS: " + (this.monteCarlo.getNumberRuns() - this.monteCarlo.getStableStates().size()));
 		this.uniqueSS.repaint();
@@ -981,7 +983,44 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	@Override
 	public void applyChange() {
-		System.out.println("Here");
+		System.out.println("The Monte Carlo knows that something has changed");
+		if (this.hasChangedEpithelium()) {
+			System.out.println("The Monte Carlo knows that the epithelium has changed");
+			JPanel jpNorth = new JPanel(new BorderLayout());
+			this.jpRight.add(jpNorth, BorderLayout.NORTH);
+			JTextPane jtp = new JTextPane();
+			jtp.setContentType("text/html");
+			String color = ColorUtils
+					.getColorCode(this.jpRight.getBackground());
+			jtp.setText("<html><body style=\"background-color:" + color + "\">"
+					+ "<font color=\"#ff0000\">"
+					+ "New Epithelium definitions detected!!<br/>"
+					+ "Continue current simulation with old definitions, "
+					+ "<br/>or press <b>Restart</b> to apply the new ones."
+					+ "</font></body></html>");
+			jtp.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+			jtp.setHighlighter(null);
+			jpNorth.add(jtp, BorderLayout.PAGE_START);
+			JButton jbRestart = ButtonFactory.getNoMargins("Restart");
+			jbRestart
+					.setToolTipText("Restart the simulation with recently applied definitions");
+			jbRestart.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					restart();
+				}
+			});
+			jpNorth.add(jbRestart, BorderLayout.PAGE_END);
+		} else {
+			for (int i = 0; i < this.jpRight.getComponentCount(); i++) {
+				Component c = this.jpRight.getComponent(i);
+				if (c instanceof JTextPane) {
+					this.jpRight.remove(i);
+					break;
+				}
+			}
+		}
+		this.updateComponentList(this.jccb.getSelectedItems());
 	}
 	
 	private boolean hasChangedEpithelium() {
@@ -1125,11 +1164,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		}
 		
 		jpanel.add(jcb,BorderLayout.CENTER);
-//		jpanel.add(this.monteCarlo.getPercentage(nodeID,this.clonedEpi.getEpitheliumGrid()),BorderLayout.EAST);
-		
-//		this.clonedEpi.getEpitheliumGrid().getPercentage(nodeID);
-		
-//		jp.add(jcb, gbc);
+
 		jp.add(jpanel,gbc);
 		gbc.gridx = 1;
 		JButton jbColor = new JButton();
@@ -1148,8 +1183,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.colorButton2Node.put(jbColor, nodeID);
 		
 	}
-
-
 	
 	private void setNewColor(JButton jb) {
 		String nodeID = this.colorButton2Node.get(jb);
@@ -1164,8 +1197,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			fireVisualChange();
 		}
 	}
-	
-	
 	
 	private void createGUIForModel(LogicalModel m) {
 

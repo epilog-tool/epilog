@@ -421,7 +421,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			jpRRCTop.add(jbTmp, gbc);
 			
 			JLabel percentage = new JLabel(this.visualGridICs.getEpitheliumGrid().getPercentage(nodeID));
-			System.out.println(this.epithelium.getEpitheliumGrid());
 			gbc.gridx = 3;
 			jpRRCTop.add(percentage,gbc);
 		}
