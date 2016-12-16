@@ -15,7 +15,7 @@ import org.epilogtool.common.RandomFactory;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.cellDynamics.CellularEvent;
 import org.epilogtool.core.cellDynamics.EpitheliumCellConnections;
-import org.epilogtool.core.cellDynamics.EpitheliumTopology;
+import org.epilogtool.core.cellDynamics.GridTopology;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.services.TopologyService;
@@ -27,21 +27,18 @@ public class EpitheliumGrid {
 	private Map<LogicalModel, Set<Tuple2D<Integer>>> modelPositions;
 	
 	//TODO:maybe this should not be here, but we need to store dynamic properties of the grid
-	private Map<EpitheliumCellIdentifier, Tuple2D<Integer>> epiCellPositions;
-	private EpitheliumTopology epiTopology;
+	private GridTopology gridTopology;
 	private EpitheliumCellConnections epiCellConnections;
 	
 	private EpitheliumGrid(EpitheliumCell[][] gridEpiCell, Topology topology,
 			Set<LogicalModel> modelSet,
 			Map<LogicalModel, Set<Tuple2D<Integer>>> modelPositions,
-			Map<EpitheliumCellIdentifier, Tuple2D<Integer>> epiCellPositions,
-			EpitheliumTopology epiTopology, EpitheliumCellConnections epiCellConnections) {
+			GridTopology gridTopology, EpitheliumCellConnections epiCellConnections) {
 		this.gridEpiCell = gridEpiCell;
 		this.topology = topology;
 		this.modelSet = modelSet;
 		this.modelPositions = modelPositions;
-		this.epiCellPositions = epiCellPositions;
-		this.epiTopology = epiTopology;
+		this.gridTopology = gridTopology;
 		this.epiCellConnections = epiCellConnections;
 	}
 
@@ -53,15 +50,13 @@ public class EpitheliumGrid {
 		this.topology = TopologyService.getManager().getNewTopology(
 				topologyLayout, gridX, gridY, rollover);
 		this.modelPositions = new HashMap<LogicalModel, Set<Tuple2D<Integer>>>();
-		this.epiCellPositions = new HashMap<EpitheliumCellIdentifier, Tuple2D<Integer>>();
 		this.gridEpiCell = new EpitheliumCell[gridX][gridY];
 		for (int y = 0; y < gridY; y++) {
 			for (int x = 0; x < gridX; x++) {
 				this.gridEpiCell[x][y] = new EpitheliumCell(m);
 				//root id is number of columns times row index plus (column index + one)
-				this.gridEpiCell[x][y].setRoot(this.getY()*x+y+1);
 				if (!EmptyModel.getInstance().isEmptyModel(m)) {
-					this.epiCellPositions.put(this.gridEpiCell[x][y].getID(), new Tuple2D<Integer>(x,y));
+					this.gridEpiCell[x][y].getID().setRoot(this.getY()*y+x);
 				}
 				if (this.modelPositions.keySet().contains(m)) {
 					this.modelPositions.get(m).add(new Tuple2D<Integer>(x, y));
@@ -74,7 +69,7 @@ public class EpitheliumGrid {
 		}
 		this.modelSet = new HashSet<LogicalModel>();
 		this.modelSet.add(m);
-		this.epiTopology = new EpitheliumTopology(this);
+		this.gridTopology = new GridTopology(this);
 	}
 	
 	public int getX() {
@@ -129,10 +124,6 @@ public class EpitheliumGrid {
 		return this.gridEpiCell[x][y].getID();
 	}
 	
-	public Tuple2D<Integer> getCellPosition(EpitheliumCellIdentifier cellID) {
-		return this.epiCellPositions.get(cellID);
-	}
-	
 	public boolean isEmptyCell(int x, int y) {
 		return this.gridEpiCell[x][y].isEmptyCell();
 	}
@@ -140,19 +131,18 @@ public class EpitheliumGrid {
 	public void updateModelSet() {
 		this.modelSet.clear();
 		this.modelPositions.clear();
-		this.epiCellPositions.clear();
 		this.epiCellConnections = new EpitheliumCellConnections();
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
 				if (this.isEmptyCell(x, y)) {
-					this.gridEpiCell[x][y].setRoot(0);
 					continue;
 				}
 				LogicalModel m = this.gridEpiCell[x][y].getModel();
 				this.modelSet.add(m);
 				Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x, y);
-				this.gridEpiCell[x][y].setRoot(this.getY()*x+y+1);
-				this.epiCellPositions.put(this.gridEpiCell[x][y].getID(), tmpTuple);
+				if (this.gridEpiCell[x][y].getID().getRoot()==-1) {
+					this.gridEpiCell[x][y].getID().setRoot(this.getY()*y+x);
+				}
 				this.epiCellConnections.addCellIdentifier(this.gridEpiCell[x][y].getID());
 				if (!this.modelPositions.containsKey(m)) {
 					this.modelPositions.put(m, new HashSet<Tuple2D<Integer>>());
@@ -162,7 +152,7 @@ public class EpitheliumGrid {
 			}
 		}
 		//TODO: this should be dynamically updated
-		this.epiTopology = new EpitheliumTopology(this);
+		this.gridTopology = new GridTopology(this);
 	}
 		
 	public void setRollOver(RollOver r) {
@@ -179,18 +169,15 @@ public class EpitheliumGrid {
 		if (!EmptyModel.getInstance().isEmptyModel(origModel) && EmptyModel.getInstance().isEmptyModel(newModel)){
 			//original model is not empty and new model is empty
 			this.modelPositions.get(origModel).remove(tmpTuple);
-			this.epiCellPositions.remove(this.getCellID(x,y));
-		}
-		if(EmptyModel.getInstance().isEmptyModel(origModel)) {
-			//original model is empty and new model is not
-			this.gridEpiCell[x][y].setRoot(this.getY()*x+y+1);
-			this.epiCellPositions.put(this.getCellID(x,y), tmpTuple);
 		}
 		if (!this.modelPositions.containsKey(newModel)) {
 			this.modelPositions.put(newModel, new HashSet<Tuple2D<Integer>>());
 		}
 		this.modelPositions.get(newModel).add(tmpTuple);
 		gridEpiCell[x][y].setModel(newModel);
+		if (!EmptyModel.getInstance().isEmptyModel(newModel)) { 
+			this.gridEpiCell[x][y].getID().setRoot(this.getY()*y+x);
+		}
 	}
 	
 	public void setPerturbation(LogicalModel m, List<Tuple2D<Integer>> lTuples,
@@ -232,10 +219,6 @@ public class EpitheliumGrid {
 	}
 	
 	public void setEpitheliumCell(int x, int y, EpitheliumCell epiCell) {
-		if (!epiCell.isSame(this.gridEpiCell[x][y])) {
-			this.epiCellPositions.remove(this.gridEpiCell[x][y].getID());
-			this.epiCellPositions.put(epiCell.getID(), new Tuple2D<Integer>(x,y));
-		}
 		this.gridEpiCell[x][y] = epiCell;
 	}
 		
@@ -308,11 +291,10 @@ public class EpitheliumGrid {
 		for (LogicalModel m : this.modelPositions.keySet()) {
 			newModelPositions.put(m, new HashSet<Tuple2D<Integer>>(this.modelPositions.get(m)));
 		}
-		EpitheliumTopology newEpiTop = this.epiTopology.clone();
+		GridTopology newEpiTop = this.gridTopology.clone();
 		EpitheliumCellConnections newEpiCellConnections = this.epiCellConnections.clone();
-		Map<EpitheliumCellIdentifier, Tuple2D<Integer>> epiCellPositions = new HashMap<EpitheliumCellIdentifier, Tuple2D<Integer>>(this.epiCellPositions);
 		return new EpitheliumGrid(newGrid, newTop, newModelSet,
-				newModelPositions, epiCellPositions, newEpiTop, newEpiCellConnections);
+				newModelPositions, newEpiTop, newEpiCellConnections);
 	}
 	
 	//TODO:this should not be here
@@ -321,15 +303,12 @@ public class EpitheliumGrid {
 	}
 	public void divideCell(int x1, int y1, int x2, int y2) {
 		List<EpitheliumCell> daughterList = this.gridEpiCell[x1][y1].daughterCells();
-		this.epiCellPositions.remove(this.getCellID(x1, y1));
 		
 		EpitheliumCell daughterCell1 = daughterList.get(0);
 		this.setEpitheliumCell(x1, y1, daughterCell1);
-		this.epiCellPositions.put(daughterCell1.getID(), new Tuple2D<Integer>(x1, y1));
 		
 		EpitheliumCell daughterCell2 = daughterList.get(1);
 		this.setEpitheliumCell(x2, y2, daughterCell2);
-		this.epiCellPositions.put(daughterCell2.getID(), new Tuple2D<Integer>(x2, y2));
 		this.modelPositions.get(this.gridEpiCell[x1][y1].getModel()).add(new Tuple2D<Integer>(x2, y2));
 		this.modelPositions.get(this.gridEpiCell[x1][y1].getModel()).add(new Tuple2D<Integer>(x1, y1));
 	}
@@ -338,7 +317,6 @@ public class EpitheliumGrid {
 		Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x, y);
 		EpitheliumCellIdentifier cellID = this.getCellID(x, y);
 		this.modelPositions.get(this.getModel(x, y)).remove(tmpTuple);
-		this.epiCellPositions.remove(cellID);
 		this.epiCellConnections.delete(cellID);
 		this.setModel(x, y, EmptyModel.getInstance().getModel());
 	}
@@ -360,18 +338,14 @@ public class EpitheliumGrid {
 	
 	private void shiftCellPosition(Tuple2D<Integer> initPos, Tuple2D<Integer> endPos) {
 		LogicalModel initModel = this.getModel(initPos.getX(), initPos.getY());
-		EpitheliumCellIdentifier initID = this.getCellID(initPos.getX(), initPos.getY());
 		LogicalModel endModel = this.getModel(endPos.getX(), endPos.getY());
-		EpitheliumCellIdentifier endID = this.getCellID(initPos.getX(), initPos.getY());
 		
 		if (this.isEmptyCell(initPos.getX(), initPos.getY())) {
 			//if the initial position is empty its epithelium shrinkage
 			this.modelPositions.get(endModel).remove(endPos);
-			this.epiCellPositions.remove(endID);
 			this.gridEpiCell[endPos.getX()][endPos.getY()] = new EpitheliumCell(initModel);
 			return;
 		}
-		this.epiCellPositions.put(initID, endPos);
 		this.modelPositions.get(initModel).add(endPos);
 		if (!this.isEmptyCell(endPos.getX(), endPos.getY()) && !initModel.equals(endModel)) {
 			//if the final position is empty it is epithelium growth
@@ -419,21 +393,21 @@ public class EpitheliumGrid {
 	//TODO: division method should not be here 
 	public List<Tuple2D<Integer>> divisionPath(Tuple2D<Integer> initPosition) {
 		List<Tuple2D<Integer>> path = new ArrayList<Tuple2D<Integer>>();
-		Tuple2D<Integer> endPosition = this.epiTopology.getEmptyPosition(initPosition);
+		Tuple2D<Integer> endPosition = this.gridTopology.getEmptyPosition(initPosition);
 		path.add(initPosition);
 		Tuple2D<Integer> currPosition = initPosition.clone();
 		int distance2end;
 		List<Tuple2D<Integer>> possiblePaths = new ArrayList<Tuple2D<Integer>>();
 		
 		while (!this.isEmptyCell(currPosition.getX(), currPosition.getY())) {
-			distance2end = this.epiTopology.distance(currPosition, endPosition);
+			distance2end = this.gridTopology.distance(currPosition, endPosition);
 			Set<Tuple2D<Integer>> contactSet = this.getTopology().
 					getPositionNeighbours(currPosition.getX(), currPosition.getY(), 1);
 			for (Tuple2D<Integer> contact : contactSet) {
 				if (path.contains(contact)) {
 					continue;
 				}
-				if (this.epiTopology.distance(contact, endPosition) < distance2end) {
+				if (this.gridTopology.distance(contact, endPosition) < distance2end) {
 					possiblePaths.add(contact);
 				}
 			}
@@ -441,7 +415,7 @@ public class EpitheliumGrid {
 			path.add(currPosition);
 			possiblePaths.clear();
 		}
-		this.epiTopology.addCell(path.get(path.size()-1));
+		this.gridTopology.addCell(path.get(path.size()-1));
 		Collections.reverse(path);
 		possiblePaths.clear();
 		return path;

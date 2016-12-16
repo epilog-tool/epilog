@@ -16,11 +16,8 @@ public class EpitheliumCell {
 	private EpitheliumCellIdentifier id;
 
 	public EpitheliumCell(LogicalModel m) {
+		this.id = new EpitheliumCellIdentifier();
 		this.setModel(m);
-	}
-	
-	public void setRoot(int root) {
-		this.id = new EpitheliumCellIdentifier(root);
 	}
 	
 	public boolean isEmptyCell() {
@@ -28,6 +25,9 @@ public class EpitheliumCell {
 	}
 	
 	public void setModel(LogicalModel m) {
+		if (this.model != null && this.model.equals(m)) {
+			return;
+		}
 		this.model = m;
 		this.state = new byte[m.getNodeOrder().size()];
 		for (int i = 0; i < this.state.length; i++) {
@@ -35,10 +35,7 @@ public class EpitheliumCell {
 		}
 		this.perturbation = null;
 		this.cellEvent = CellularEvent.DEFAULT;
-		if (EmptyModel.getInstance().isEmptyModel(m)) {
-			this.id = new EpitheliumCellIdentifier(0);
-			
-		}
+		this.id.clear();
 	}
 	
 	public void setState(byte[] state) {
@@ -47,8 +44,7 @@ public class EpitheliumCell {
 	
 	public void setInitialStateComponent(String nodeID, byte value) {
 		int index = this.getNodeIndex(nodeID);
-		if (index < 0)
-			return;
+		if (index < 0) return;
 		value = (byte) Math.min(value, this.model.getNodeOrder().get(index).getMax());
 	}
 	
