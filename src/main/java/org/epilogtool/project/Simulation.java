@@ -149,7 +149,7 @@ public class Simulation {
 		List<Tuple2D<Integer>> deathUpdates = new ArrayList<Tuple2D<Integer>>();
 		// Inter-cellular alpha-asynchronism
 		//Update Logical Model States
-		if (cellUpdates == true) {
+		if (cellUpdates == true || popUpdates == true) {
 			Collections.shuffle(keys, RandomFactory.getInstance().getGenerator());
 			boolean atLeastOne = false;
 			int updateCounter = (int) Math.floor(alphaProb * keys.size());
