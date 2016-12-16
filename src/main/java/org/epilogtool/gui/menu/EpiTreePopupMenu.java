@@ -2,6 +2,7 @@ package org.epilogtool.gui.menu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -36,11 +37,16 @@ public class EpiTreePopupMenu extends JPopupMenu {
 		});
 		this.add(delete);
 
-		JMenuItem rename = new JMenuItem("Rename");
+		JMenuItem rename = new JMenuItem("Edit");
 		rename.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EpiGUI.getInstance().renameEpithelium();
+				try {
+					EpiGUI.getInstance().editEpithelium();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		this.add(rename);

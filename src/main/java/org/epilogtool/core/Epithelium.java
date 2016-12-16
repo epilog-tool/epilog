@@ -19,11 +19,6 @@ import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
 
 public class Epithelium {
-
-	private int x;
-	private int y;
-	private String topologyLayout;
-
 	private String name;
 	private EpitheliumGrid grid;
 	private EpitheliumIntegrationFunctions integrationFunctions;
@@ -31,44 +26,34 @@ public class Epithelium {
 	private EpitheliumUpdateSchemeIntra priorities;
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
 	private ProjectFeatures projectFeatures;
-	
-	//TODO: requires refactoring - these are the static properties used for cell division
+
+	// TODO: requires refactoring - these are the static properties used for
+	// cell division
 	private TopologyEventManager topologyEventsManager;
 	private ModelHeritableNodes modelHeritableNodes;
 
-	public Epithelium(int x, int y, String topologyLayout, String name,
-			LogicalModel m, RollOver rollover,
+	public Epithelium(int x, int y, String topologyID, String name, LogicalModel m, RollOver rollover,
 			ProjectFeatures projectFeatures)
-			throws InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException,
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
-		this.x = x;
-		this.y = y;
-		this.topologyLayout = topologyLayout;
 		this.name = name;
-		this.grid = new EpitheliumGrid(x, y, topologyLayout, rollover, m);
+		this.grid = new EpitheliumGrid(x, y, topologyID, rollover, m);
 		this.priorities = new EpitheliumUpdateSchemeIntra();
 		this.priorities.addModel(m);
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
 		this.perturbations = new EpitheliumPerturbations();
-		this.perturbations.addModel(m);
 		this.projectFeatures = projectFeatures;
-		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(
-				EpitheliumUpdateSchemeInter.DEFAULT_ALPHA, new HashMap<ComponentPair, Float>());
+		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(EpitheliumUpdateSchemeInter.DEFAULT_ALPHA,
+				new HashMap<ComponentPair, Float>());
 		this.topologyEventsManager = new TopologyEventManager(this.grid.getModelSet());
 		this.modelHeritableNodes = new ModelHeritableNodes();
 		this.modelHeritableNodes.addModel(m);
 	}
 
-	private Epithelium(int x, int y, String topologyLayout, String name,
-			EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
-			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap,
-			ProjectFeatures pf, EpitheliumUpdateSchemeInter usi, 
-			TopologyEventManager eventsManager,
+	private Epithelium(String name, EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
+			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap, ProjectFeatures pf,
+			EpitheliumUpdateSchemeInter usi, TopologyEventManager eventsManager,
 			ModelHeritableNodes modelHeritableNodes) {
-		this.x = x;
-		this.y = y;
-		this.topologyLayout = topologyLayout;
 		this.name = name;
 		this.grid = grid;
 		this.priorities = epc;
@@ -77,32 +62,40 @@ public class Epithelium {
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
 		this.topologyEventsManager = eventsManager;
-		this.modelHeritableNodes = modelHeritableNodes;;
+		this.modelHeritableNodes = modelHeritableNodes;
+		;
 	}
 
 	public Epithelium clone() {
-		return new Epithelium(this.x, this.y, this.topologyLayout, "CopyOf_" + this.name, 
-				this.grid.clone(), this.integrationFunctions.clone(), this.priorities.clone(), 
-				this.perturbations.clone(), this.projectFeatures, 
-				this.updateSchemeInter.clone(), this.topologyEventsManager.clone(),
-				this.modelHeritableNodes.clone());
+		return new Epithelium("CopyOf_" + this.name, this.grid.clone(), this.integrationFunctions.clone(),
+				this.priorities.clone(), this.perturbations.clone(), this.projectFeatures,
+				this.updateSchemeInter.clone(), this.topologyEventsManager.clone(), this.modelHeritableNodes.clone());
 	}
-	
+
 	public String toString() {
 		return this.getName();
 		// return this.name + " ("
 		// + this.grid.getTopology().getRollOver().toString() + ")";
 	}
-	
+
 	public boolean equals(Object o) {
 		Epithelium otherEpi = (Epithelium) o;
-		return (this.grid.equals(otherEpi.grid)
-				&& this.priorities.equals(otherEpi.priorities)
+		return (this.grid.equals(otherEpi.grid) && this.priorities.equals(otherEpi.priorities)
 				&& this.integrationFunctions.equals(otherEpi.integrationFunctions)
-				&& this.perturbations.equals(otherEpi.perturbations) 
+				&& this.perturbations.equals(otherEpi.perturbations)
 				&& this.updateSchemeInter.equals(otherEpi.getUpdateSchemeInter())
 				&& this.modelHeritableNodes.equals(otherEpi.modelHeritableNodes));
-		//TODO: cell division classes are not tested
+		// TODO: cell division classes are not tested
+	}
+
+	public void updateEpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
+		this.grid.updateEpitheliumGrid(gridX, gridY, topologyID, rollover);
+	}
+
+	public boolean hasModel(LogicalModel m) {
+		return this.grid.hasModel(m);
 	}
 
 	public void update() {
@@ -118,11 +111,11 @@ public class Epithelium {
 			// Perturbations
 			if (!this.perturbations.hasModel(mSet))
 				this.perturbations.addModel(mSet);
-			
+
 			// Grid dynamics
 			if (!this.topologyEventsManager.hasModel(mSet))
 				this.topologyEventsManager.addModel(mSet);
-			
+
 			// Heritable components
 			if (!this.modelHeritableNodes.hasModel(mSet)) {
 				this.modelHeritableNodes.addModel(mSet);
@@ -130,14 +123,12 @@ public class Epithelium {
 		}
 
 		// Remove from Epithelium state absent models from modelSet
-		for (LogicalModel mPriorities : new ArrayList<LogicalModel>(
-				this.priorities.getModelSet())) {
+		for (LogicalModel mPriorities : new ArrayList<LogicalModel>(this.priorities.getModelSet())) {
 			if (!modelSet.contains(mPriorities)) {
 				this.priorities.removeModel(mPriorities);
 			}
 		}
-		for (LogicalModel mPerturbation : new ArrayList<LogicalModel>(
-				this.perturbations.getModelSet())) {
+		for (LogicalModel mPerturbation : new ArrayList<LogicalModel>(this.perturbations.getModelSet())) {
 			if (!modelSet.contains(mPerturbation)) {
 				this.perturbations.removeModel(mPerturbation);
 			}
@@ -159,7 +150,7 @@ public class Epithelium {
 			}
 		}
 	}
-	
+
 	public String getName() {
 		return this.name;
 	}
@@ -172,10 +163,6 @@ public class Epithelium {
 		return this.grid.getModel(x, y);
 	}
 
-	public boolean hasModel(LogicalModel m) {
-		return this.grid.hasModel(m);
-	}
-	
 	public EpitheliumGrid getEpitheliumGrid() {
 		return this.grid;
 	}
@@ -187,15 +174,13 @@ public class Epithelium {
 	public EpitheliumUpdateSchemeInter getUpdateSchemeInter() {
 		return this.updateSchemeInter;
 	}
-	
+
 	public ModelPriorityClasses getPriorityClasses(LogicalModel m) {
 		return this.priorities.getModelPriorityClasses(m);
 	}
 
-	public ComponentIntegrationFunctions getIntegrationFunctionsForComponent(
-			ComponentPair cp) {
-		return this.integrationFunctions
-				.getComponentIntegrationFunctions(cp);
+	public ComponentIntegrationFunctions getIntegrationFunctionsForComponent(ComponentPair cp) {
+		return this.integrationFunctions.getComponentIntegrationFunctions(cp);
 	}
 
 	public Set<ComponentPair> getIntegrationComponentPairs() {
@@ -203,8 +188,9 @@ public class Epithelium {
 	}
 
 	public boolean isIntegrationComponent(NodeInfo node) {
-		for (ComponentPair cp : this.integrationFunctions.getComponentPair()){
-			if (node.equals(cp.getNodeInfo())) return true;
+		for (ComponentPair cp : this.integrationFunctions.getComponentPair()) {
+			if (node.equals(cp.getNodeInfo()))
+				return true;
 		}
 		return false;
 	}
@@ -220,26 +206,22 @@ public class Epithelium {
 	public EpitheliumPerturbations getEpitheliumPerturbations() {
 		return this.perturbations;
 	}
-	
+
 	public ModelHeritableNodes getModelHeritableNodes() {
 		return this.modelHeritableNodes;
 	}
-	
+
 	public void setModelHeritableNode(ModelHeritableNodes mhn) {
 		this.modelHeritableNodes = mhn;
 	}
 
-	public void setGridWithComponentValue(String nodeID, byte value,
-			List<Tuple2D<Integer>> lTuples) {
+	public void setGridWithComponentValue(String nodeID, byte value, List<Tuple2D<Integer>> lTuples) {
 		for (Tuple2D<Integer> tuple : lTuples) {
-			this.grid.setCellComponentValue(tuple.getX(), tuple.getY(), nodeID,
-					value);
-			this.grid.setCellInitialStateComponentValue(tuple.getX(), tuple.getY(), nodeID, value);
+			this.grid.setCellComponentValue(tuple.getX(), tuple.getY(), nodeID, value);
 		}
 	}
 
-	public void setIntegrationFunction(String nodeID, LogicalModel m, byte value,
-			String function) {
+	public void setIntegrationFunction(String nodeID, LogicalModel m, byte value, String function) {
 		NodeInfo node = this.projectFeatures.getNodeInfo(nodeID, m);
 		ComponentPair cp = new ComponentPair(m, node);
 		if (!this.integrationFunctions.containsComponentPair(cp)) {
@@ -275,8 +257,7 @@ public class Epithelium {
 		this.perturbations.delPerturbation(m, ap);
 	}
 
-	public void applyPerturbation(LogicalModel m, AbstractPerturbation ap,
-			Color c, List<Tuple2D<Integer>> lTuples) {
+	public void applyPerturbation(LogicalModel m, AbstractPerturbation ap, Color c, List<Tuple2D<Integer>> lTuples) {
 		this.perturbations.addPerturbationColor(m, ap, c);
 		if (lTuples != null) {
 			this.grid.setPerturbation(m, lTuples, ap);
@@ -286,7 +267,7 @@ public class Epithelium {
 	public void setModel(int x, int y, LogicalModel m) {
 		this.grid.setModel(x, y, m);
 	}
-	
+
 	public void setGridWithModel(LogicalModel m, List<Tuple2D<Integer>> lTuples) {
 		for (Tuple2D<Integer> tuple : lTuples) {
 			this.setModel(tuple.getX(), tuple.getY(), m);
@@ -295,33 +276,28 @@ public class Epithelium {
 			this.topologyEventsManager.addModel(m);
 		}
 	}
-	
+
 	public void initTopologyEventManager() {
 		this.topologyEventsManager = new TopologyEventManager();
 	}
-	
+
 	public void initModelHeritableNodes() {
 		this.modelHeritableNodes = new ModelHeritableNodes();
 	}
-	
+
 	public TopologyEventManager getTopologyEventManager() {
 		return this.topologyEventsManager;
 	}
-	
+
 	public void setTopologyEventManager(TopologyEventManager tem) {
 		this.topologyEventsManager = tem;
 	}
 
 	public int getX() {
-		return this.x;
+		return this.grid.getX();
 	}
 
 	public int getY() {
-		return this.y;
-	}
-
-	public String getTopologyLayout() {
-		// TODO: improve this
-		return this.topologyLayout;
+		return this.grid.getY();
 	}
 }

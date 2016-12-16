@@ -16,8 +16,9 @@ import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.color.ColorUtils;
+import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
 
-public class VisualGridInitialConditions extends VisualGrid {
+public class VisualGridInitialConditions extends VisualGridDefinitions {
 	private static final long serialVersionUID = 7590023855645466271L;
 
 	private EpitheliumGrid epiGrid;
@@ -29,8 +30,8 @@ public class VisualGridInitialConditions extends VisualGrid {
 	private GridInformation valuePanel;
 
 	public VisualGridInitialConditions(EpitheliumGrid gridClone, Map<String, Color> colorMapClone,
-			Map<String, Byte> mNode2ValueSelected, GridInformation valuePanel) {
-		super(gridClone.getX(), gridClone.getY(), gridClone.getTopology());
+			Map<String, Byte> mNode2ValueSelected, GridInformation valuePanel, TabProbablyChanged tpc) {
+		super(gridClone.getX(), gridClone.getY(), gridClone.getTopology(), tpc);
 		this.epiGrid = gridClone;
 		this.colorMapClone = colorMapClone;
 		this.mNode2ValueSelected = mNode2ValueSelected;
@@ -93,7 +94,7 @@ public class VisualGridInitialConditions extends VisualGrid {
 		if (!this.isInGrid(pos))
 			return;
 
-		if (epiGrid.getModel(pos.getX(), pos.getY()).equals(this.selectedModel))
+		if (this.epiGrid.getModel(pos.getX(), pos.getY()).equals(this.selectedModel))
 			super.paintCellAt(pos);
 	}
 
@@ -124,8 +125,11 @@ public class VisualGridInitialConditions extends VisualGrid {
 
 	protected void applyDataAt(int x, int y) {
 		for (String nodeID : this.mNode2ValueSelected.keySet()) {
+			if (!this.tpc.isChanged()
+					&& !this.mNode2ValueSelected.get(nodeID).equals(this.epiGrid.getCellValue(x, y, nodeID))) {
+				this.tpc.setChanged();
+			}
 			this.epiGrid.setCellComponentValue(x, y, nodeID, this.mNode2ValueSelected.get(nodeID));
-			this.epiGrid.setCellInitialStateComponentValue(x, y, nodeID, this.mNode2ValueSelected.get(nodeID));
 		}
 	}
 
@@ -138,15 +142,10 @@ public class VisualGridInitialConditions extends VisualGrid {
 
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
-				List<Color> colorList = new ArrayList<Color>();
-				
-				//empty cells
-				if (this.epiGrid.isEmptyCell(x, y)){
-					colorList.add(EmptyModel.getInstance().getColor());
-				}
-				
-				//current model
-				else if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
+				Color cCombined;
+				if (EmptyModel.getInstance().isEmptyModel(this.epiGrid.getModel(x, y))) {
+					cCombined = EmptyModel.getInstance().getColor();
+				} else if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
 					List<Color> lColors = new ArrayList<Color>();
 					for (String nodeID : this.mNode2ValueSelected.keySet()) {
 						int index = this.epiGrid.getNodeIndex(x, y, nodeID);
@@ -159,11 +158,10 @@ public class VisualGridInitialConditions extends VisualGrid {
 							}
 						}
 					}
-					colorList.addAll(lColors);
-				} else { //other models
-					colorList.add(this.getParent().getBackground());
+					cCombined = ColorUtils.combine(lColors);
+				} else { // other models
+					cCombined = this.getParent().getBackground();
 				}
-				Color cCombined = ColorUtils.combine(colorList);
 				Tuple2D<Double> center = topology.getPolygonCenter(this.radius, x, y);
 				Polygon polygon = topology.createNewPolygon(this.radius, center);
 				this.paintPolygon(this.strokeBasic, cCombined, polygon, g2);

@@ -16,6 +16,7 @@ import org.epilogtool.gui.GUIInfo;
 public class FileMenu {
 	public static JMenu getMenu() {
 		JMenu menu = new JMenu("File");
+		menu.setMnemonic(KeyEvent.VK_F);
 
 		menu.add(new NewProjAction());
 		menu.add(new LoadProjAction());

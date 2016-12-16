@@ -3,10 +3,14 @@ package org.epilogtool.gui;
 import java.awt.Component;
 import java.awt.Dialog.ModalityType;
 import java.awt.Window;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
@@ -32,13 +36,15 @@ import org.epilogtool.OptionStore;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.dialog.DialogAbout;
+import org.epilogtool.gui.dialog.DialogEditEpithelium;
 import org.epilogtool.gui.dialog.DialogNewEpithelium;
-import org.epilogtool.gui.dialog.DialogRenameEpithelium;
+import org.epilogtool.gui.menu.CloseTabPopupMenu;
 import org.epilogtool.gui.menu.EpitheliumMenu;
 import org.epilogtool.gui.menu.FileMenu;
 import org.epilogtool.gui.menu.HelpMenu;
 import org.epilogtool.gui.menu.SBMLMenu;
 import org.epilogtool.gui.menu.ToolsMenu;
+import org.epilogtool.gui.menu.WindowMenu;
 import org.epilogtool.gui.tab.EpiTab;
 import org.epilogtool.gui.tab.EpiTabEpithelialUpdateScheme;
 import org.epilogtool.gui.tab.EpiTabGridDynamics;
@@ -68,6 +74,8 @@ public class EpiGUI extends JFrame {
 	private ProjDescPanel projDescPanel;
 	private EpiTreePanel epiTreePanel;
 	private Project project;
+	private CloseTabPopupMenu closeTabPopupMenu;
+
 	private static EpiGUI epigui;
 
 	public static EpiGUI getInstance() {
@@ -103,6 +111,8 @@ public class EpiGUI extends JFrame {
 			e2.printStackTrace();
 		}
 
+		this.closeTabPopupMenu = new CloseTabPopupMenu();
+
 		// BEGIN -- Menu Bar
 		this.epiMenu = new JMenuBar();
 
@@ -121,6 +131,10 @@ public class EpiGUI extends JFrame {
 		// Tools
 		JMenu toolsMenu = ToolsMenu.getMenu();
 		this.epiMenu.add(toolsMenu);
+
+		// Window tab menu
+		JMenu windowMenu = WindowMenu.getMenu();
+		this.epiMenu.add(windowMenu);
 
 		// Help menu
 		JMenu helpMenu = HelpMenu.getMenu();
@@ -240,7 +254,7 @@ public class EpiGUI extends JFrame {
 			Epithelium newEpi = this.project.newEpithelium(
 					dialogPanel.getEpitheliumWidth(),
 					dialogPanel.getEpitheliumHeight(),
-					dialogPanel.getTopologyLayout(), dialogPanel.getEpiName(),
+					dialogPanel.getTopologyID(), dialogPanel.getEpiName(),
 					dialogPanel.getSBMLName(), dialogPanel.getRollOver());
 			this.addEpithelium2JTree(newEpi);
 		}
@@ -279,31 +293,65 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
-	public void renameEpithelium() {
+	public void editEpithelium() throws InstantiationException,
+			IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException,
+			SecurityException, ClassNotFoundException {
 		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
 
-		DialogRenameEpithelium dialogPanel = new DialogRenameEpithelium(
-				epi.getName(), this.project.getEpitheliumNameList());
+		DialogEditEpithelium dialogPanel = new DialogEditEpithelium(epi,
+				this.project.getEpitheliumNameList());
 		Window win = SwingUtilities.getWindowAncestor(this);
-		JDialog dialog = new JDialog(win, "Rename Epithelium",
+		JDialog dialog = new JDialog(win, "Edit Epithelium",
 				ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(dialogPanel);
 		dialog.pack();
 		dialog.setLocationRelativeTo(null);
 		dialog.setVisible(true);
 
-		if (dialogPanel.isDefined()
-				&& !epi.toString().equals(dialogPanel.getEpitheliumName())) {
-			this.project.setChanged(true);
-			epi.setName(dialogPanel.getEpitheliumName());
-			for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
-				EpiTab epitab = (EpiTab) this.epiRightFrame.getComponentAt(i);
-				if (epitab.containsEpithelium(epi)) {
-					String title = epi.getName() + ":" + epitab.getName();
-					((CloseTabButton) epiRightFrame.getTabComponentAt(i))
-							.changeTitle(title);
-				}
+		if (dialogPanel.isDefined()) {
+			// Update Epithelium Name
+			boolean bChanged = false;
+
+			int gridX = dialogPanel.getGridX();
+			int gridY = dialogPanel.getGridY();
+			if (gridX != epi.getX()
+					|| gridY != epi.getY()
+					|| !dialogPanel.getTopologyID().equals(
+							epi.getEpitheliumGrid().getTopology()
+									.getDescription())) {
+				epi.updateEpitheliumGrid(gridX, gridY,
+						dialogPanel.getTopologyID(), dialogPanel.getRollOver());
+				// The Grid characteristics changed... -> close all tabs
+				this.epiTabCloseActiveEpi(true);
+				bChanged = true;
 			}
+
+			// Update just the RollOver, if not together w/ TopologyLayout
+			if (!bChanged
+					&& epi.getEpitheliumGrid().getTopology().getRollOver() != dialogPanel
+							.getRollOver()) {
+				epi.getEpitheliumGrid().setRollOver(dialogPanel.getRollOver());
+				bChanged = true;
+			}
+
+			// Update Epithelium name
+			if (!epi.getName().equals(dialogPanel.getEpitheliumName())) {
+				epi.setName(dialogPanel.getEpitheliumName());
+				// Update open Tab names
+				for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
+					EpiTab epitab = (EpiTab) this.epiRightFrame
+							.getComponentAt(i);
+					if (epitab.containsEpithelium(epi)) {
+						String title = epi.getName() + ":" + epitab.getName();
+						((CloseTabButton) epiRightFrame.getTabComponentAt(i))
+								.changeTitle(title);
+					}
+				}
+				bChanged = true;
+			}
+
+			this.project.setChanged(bChanged);
 			this.validateGUI();
 		}
 	}
@@ -551,8 +599,8 @@ public class EpiGUI extends JFrame {
 			// Create new Tab
 			EpiTab epiTab = null;
 			String title = epi.getName() + ":" + tabName;
-			EpiTabChanged tabChanged = new EpiTabChanged();
-			ProjectChangedInTab projChanged = new ProjectChangedInTab();
+			TabChangeNotifyProj tabChanged = new TabChangeNotifyProj();
+			ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
 			if (tabName.equals("Initial Condition")) {
 				epiTab = new EpiTabInitialConditions(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
@@ -583,6 +631,32 @@ public class EpiGUI extends JFrame {
 				this.epiRightFrame.addTab(title, epiTab);
 				epiTab.initialize();
 
+				this.epiRightFrame.addMouseListener(new MouseListener() {
+					@Override
+					public void mouseReleased(MouseEvent e) {
+					}
+
+					@Override
+					public void mousePressed(MouseEvent e) {
+						if (e.isPopupTrigger()) {
+							closeTabPopupMenu.show(e.getComponent(), e.getX(),
+									e.getY());
+						}
+					}
+
+					@Override
+					public void mouseExited(MouseEvent e) {
+					}
+
+					@Override
+					public void mouseEntered(MouseEvent e) {
+					}
+
+					@Override
+					public void mouseClicked(MouseEvent e) {
+					}
+				});
+
 				CloseTabButton tabButton = new CloseTabButton(title,
 						this.epiRightFrame);
 				tabIndex = this.epiRightFrame.getTabCount() - 1;
@@ -590,7 +664,75 @@ public class EpiGUI extends JFrame {
 			}
 		}
 		// Select existing Tab
-		this.epiRightFrame.setSelectedIndex(tabIndex);
+		this.epiTabSelect(tabIndex);
+	}
+
+	public void epiTabSelect(int index) {
+		this.epiRightFrame.setSelectedIndex(index);
+	}
+
+	public List<String> getOpenTabList() {
+		List<String> lTabs = new ArrayList<String>();
+		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
+			lTabs.add(this.epiRightFrame.getTitleAt(i));
+		}
+		return lTabs;
+	}
+
+	public void epiTabCloseTab(int index) {
+		if (index >= 0 && index < this.epiRightFrame.getTabCount()) {
+			this.epiRightFrame.removeTabAt(index);
+		}
+	}
+
+	public void epiTabCloseActiveTab() {
+		EpiTab epi = (EpiTab) this.epiRightFrame.getSelectedComponent();
+		if (epi != null && epi.canClose()) {
+			this.epiRightFrame.removeTabAt(this.epiRightFrame
+					.getSelectedIndex());
+		}
+	}
+
+	public void epiTabCloseOtherTabs() {
+		List<EpiTab> lEpiTab2Rm = new ArrayList<EpiTab>();
+		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
+			if (i != this.epiRightFrame.getSelectedIndex())
+				lEpiTab2Rm.add((EpiTab) this.epiRightFrame.getComponentAt(i));
+		}
+		for (EpiTab tab : lEpiTab2Rm) {
+			if (tab.canClose()) {
+				this.epiRightFrame.remove(tab);
+			}
+		}
+	}
+
+	public void epiTabCloseAllTabs() {
+		for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
+			EpiTab tab = (EpiTab) this.epiRightFrame.getComponentAt(i);
+			if (tab.canClose()) {
+				this.epiRightFrame.remove(i);
+			}
+		}
+	}
+
+	public void epiTabCloseActiveEpi(boolean force) {
+		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
+		for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
+			EpiTab tab = (EpiTab) this.epiRightFrame.getComponentAt(i);
+			if (tab.containsEpithelium(epi) && (force || tab.canClose())) {
+				this.epiRightFrame.remove(i);
+			}
+		}
+	}
+
+	public void epiTabCloseOtherEpis() {
+		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
+		for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
+			EpiTab tab = (EpiTab) this.epiRightFrame.getComponentAt(i);
+			if (!tab.containsEpithelium(epi) && tab.canClose()) {
+				this.epiRightFrame.remove(i);
+			}
+		}
 	}
 
 	public void openSimulationTab() {
@@ -608,9 +750,10 @@ public class EpiGUI extends JFrame {
 		}
 		EpiTab tab;
 		if (tabIndex < 0) {
-			ProjectChangedInTab projChanged = new ProjectChangedInTab();
-			tab = new EpiTabSimulation(epi, this.epiTreePanel.getSelectionPath(),
-					projChanged,
+			ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
+			TreePath path = this.epiTreePanel.getSelectionEpiPath();
+			tab = new EpiTabSimulation(epi,
+					path, projChanged,
 					this.project.getProjectFeatures(), new SimulationEpiClone());
 			String title = epi.getName() + ":Simulation";
 			this.epiRightFrame.addTab(title, tab);
@@ -627,32 +770,31 @@ public class EpiGUI extends JFrame {
 		// Select existing Tab
 		this.epiRightFrame.setSelectedIndex(tabIndex);
 	}
-	
-	public void restartSimulationTab(){
-		
-		//save settings
+
+	public void restartSimulationTab() {
+
+		// save settings
 		int simulationTabIndex = this.epiRightFrame.getSelectedIndex();
 		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
-		TreePath path = this.epiTreePanel.getSelectionPath();
-		
-		//remove tab
+		TreePath path = this.epiTreePanel.getSelectionEpiPath();
+
+		// remove tab
 		this.epiRightFrame.removeTabAt(simulationTabIndex);
-		
-		//restart
-		ProjectChangedInTab projChanged = new ProjectChangedInTab();
+
+		// restart
+		ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
 		EpiTab tab;
 		tab = new EpiTabSimulation(epi, path, projChanged,
 				this.project.getProjectFeatures(), new SimulationEpiClone());
 		String title = epi.getName() + ":Simulation";
 		this.epiRightFrame.addTab(title, tab);
 		tab.initialize();
-		
-		CloseTabButton tabButton = new CloseTabButton(title,
-				this.epiRightFrame);
-		
+
+		CloseTabButton tabButton = new CloseTabButton(title, this.epiRightFrame);
+
 		int tabIndex = this.epiRightFrame.getTabCount() - 1;
 		this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
-		
+
 		this.epiRightFrame.setSelectedIndex(tabIndex);
 	}
 
@@ -672,14 +814,14 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
-	public class EpiTabChanged {
+	public class TabChangeNotifyProj {
 		public void setEpiChanged() {
 			project.setChanged(true);
 			validateGUI();
 		}
 	}
 
-	public class ProjectChangedInTab {
+	public class ProjChangeNotifyTab {
 		public void setChanged(EpiTab changedTab) {
 			project.setChanged(true);
 			for (int i = 0; i < epiRightFrame.getTabCount(); i++) {

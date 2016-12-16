@@ -31,10 +31,10 @@ import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.cellDynamics.CellularEvent;
 import org.epilogtool.core.cellDynamics.ModelHeritableNodes;
-import org.epilogtool.core.cellDynamics.TopologyEventManager;
 import org.epilogtool.core.cellDynamics.ModelPattern;
-import org.epilogtool.gui.EpiGUI.EpiTabChanged;
-import org.epilogtool.gui.EpiGUI.ProjectChangedInTab;
+import org.epilogtool.core.cellDynamics.TopologyEventManager;
+import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
+import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.io.ButtonFactory;
 import org.epilogtool.project.ComponentPair;
@@ -57,7 +57,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 	private Map<String, JCheckBox> mString2CheckBox;
 
 	public EpiTabGridDynamics(Epithelium e, TreePath path,
-			ProjectChangedInTab projChanged, EpiTabChanged tabChanged,
+			ProjChangeNotifyTab projChanged, TabChangeNotifyProj tabChanged,
 			ProjectFeatures projectFeatures) {
 		super(e, path, projChanged, tabChanged, projectFeatures);
 	}

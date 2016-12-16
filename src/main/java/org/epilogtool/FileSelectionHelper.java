@@ -12,33 +12,20 @@ public class FileSelectionHelper {
 			System.getProperty("user.dir"));
 
 	public static String openFilename() {
+		return FileSelectionHelper.openFileDialog("Open file");
+	}
+	
+	public static String saveFilename() {
+		return FileSelectionHelper.openFileDialog("Save file");
+	}
+	
+	private static String openFileDialog(String title) {
 		JFileChooser fc = new JFileChooser();
 		fc.setCurrentDirectory(new File(lastDirectory));
 		fc.setFileFilter(new EpilogFileFilter("peps"));
-		fc.setDialogTitle("Open file");
+		fc.setDialogTitle(title);
 
 		if (fc.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) {
-			return null;
-		}
-		File f = fc.getSelectedFile();
-		if (f == null) {
-			return null;
-		}
-
-		// change the remembered directory
-		lastDirectory = fc.getCurrentDirectory().getAbsolutePath();
-		OptionStore.setOption(DIRKEY, lastDirectory);
-
-		return f.getAbsolutePath();
-	}
-
-	public static String saveFilename() {
-		JFileChooser fc = new JFileChooser();
-		fc.setCurrentDirectory(new File(lastDirectory));
-		fc.setFileFilter(new EpilogFileFilter("peps"));
-		fc.setDialogTitle("Save file");
-
-		if (fc.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) {
 			return null;
 		}
 		File f = fc.getSelectedFile();

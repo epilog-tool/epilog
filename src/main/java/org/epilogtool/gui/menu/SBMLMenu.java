@@ -1,6 +1,7 @@
 package org.epilogtool.gui.menu;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 import javax.swing.AbstractAction;
@@ -10,7 +11,8 @@ import org.epilogtool.gui.EpiGUI;
 
 public class SBMLMenu {
 	public static JMenu getMenu() {
-		JMenu menu = new JMenu("Intra-cellular models");
+		JMenu menu = new JMenu("SBML");
+		menu.setMnemonic(KeyEvent.VK_S);
 
 		menu.add(new LoadSBMLAction());
 		menu.add(new RemoveSBMLAction());

@@ -14,35 +14,40 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.EmptyModel;
-import org.epilogtool.core.EpitheliumCell;
+import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.topology.Topology;
+import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
 
-public class VisualGridPerturbation extends VisualGrid {
+public class VisualGridPerturbation extends VisualGridDefinitions {
 	private static final long serialVersionUID = -8878704517273291774L;
 
-	private EpitheliumCell[][] cellGridClone;
+	private EpitheliumGrid epiGrid;
 	private Map<AbstractPerturbation, Color> colorMapClone;
 	private boolean isRectFill;
 	private Tuple2D<Integer> initialRectPos;
 
 	private LogicalModel selectedModel;
 	private AbstractPerturbation selAbsPerturb;
+	private GridInformation valuePanel;
 
 	public VisualGridPerturbation(int gridX, int gridY, Topology topology,
-			EpitheliumCell[][] cellGridClone,
-			Map<AbstractPerturbation, Color> colorMapClone) {
-		super(gridX, gridY, topology);
-		this.cellGridClone = cellGridClone;
+			EpitheliumGrid epiGrid,
+			Map<AbstractPerturbation, Color> colorMapClone,
+			GridInformation valuePanel, TabProbablyChanged tpc) {
+		super(gridX, gridY, topology, tpc);
+		this.epiGrid = epiGrid;
 		this.colorMapClone = colorMapClone;
 		this.selectedModel = null;
 		this.selAbsPerturb = null;
 		this.isRectFill = false;
 		this.initialRectPos = null;
+		this.valuePanel = valuePanel;
 
 		this.addMouseMotionListener(new MouseMotionListener() {
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				mousePosition2Grid(e);
+				updateComponentValues(mouseGrid);
 			}
 
 			@Override
@@ -86,6 +91,13 @@ public class VisualGridPerturbation extends VisualGrid {
 		});
 	}
 
+	private void updateComponentValues(Tuple2D<Integer> pos) {
+		if (!isInGrid(pos))
+			return;
+
+		this.valuePanel.updateValues(pos.getX(), pos.getY(), this.epiGrid);
+	}
+
 	public void setModel(LogicalModel m) {
 		this.selectedModel = m;
 	}
@@ -108,18 +120,23 @@ public class VisualGridPerturbation extends VisualGrid {
 	}
 
 	protected void applyDataAt(int x, int y) {
-		if (this.cellGridClone[x][y].getModel().equals(this.selectedModel)) {
-			this.cellGridClone[x][y].setPerturbation(this.selAbsPerturb);
+		if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
+			if (!this.tpc.isChanged()
+					&& (this.epiGrid.getPerturbation(x, y) == null || !this.epiGrid
+							.getPerturbation(x, y).equals(this.selAbsPerturb))) {
+				this.tpc.setChanged();
+			}
+			this.epiGrid.setPerturbation(x, y, this.selAbsPerturb);
 		}
 	}
 
 	public void clearDataFromAll() {
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
-				AbstractPerturbation ap = this.cellGridClone[x][y]
-						.getPerturbation();
-				if (ap != null && ap.equals(selAbsPerturb)) {
-					this.cellGridClone[x][y].setPerturbation(null);
+				AbstractPerturbation ap = this.epiGrid.getPerturbation(x, y);
+				if (selAbsPerturb == null || ap != null
+						&& ap.equals(selAbsPerturb)) {
+					this.epiGrid.setPerturbation(x, y, null);
 				}
 			}
 		}
@@ -136,14 +153,14 @@ public class VisualGridPerturbation extends VisualGrid {
 			for (int y = 0; y < this.gridY; y++) {
 				BasicStroke stroke = this.strokeBasic;
 				Color cPerturb = this.getParent().getBackground();
-				if (EmptyModel.getInstance().isEmptyModel(this.cellGridClone[x][y].getModel())){
+				if (EmptyModel.getInstance().isEmptyModel(
+						this.epiGrid.getModel(x, y))) {
 					cPerturb = EmptyModel.getInstance().getColor();
 				}
-				
-				else if (this.cellGridClone[x][y].getModel().equals(
-						this.selectedModel)) {
-					AbstractPerturbation ap = this.cellGridClone[x][y]
-							.getPerturbation();
+
+				else if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
+					AbstractPerturbation ap = this.epiGrid
+							.getPerturbation(x, y);
 					if (ap != null) {
 						cPerturb = this.colorMapClone.get(ap);
 						stroke = this.strokePerturb;

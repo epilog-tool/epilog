@@ -1,6 +1,8 @@
 package org.epilogtool.gui.menu;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
@@ -10,6 +12,7 @@ import org.epilogtool.gui.EpiGUI;
 public class EpitheliumMenu {
 	public static JMenu getMenu() {
 		JMenu menu = new JMenu("Epithelium");
+		menu.setMnemonic(KeyEvent.VK_E);
 
 		menu.add(new NewEpiAction());
 		menu.add(new DeleteEpiAction());
@@ -69,7 +72,12 @@ class RenameEpiAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		EpiGUI.getInstance().renameEpithelium();
+		try {
+			EpiGUI.getInstance().editEpithelium();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 }
 

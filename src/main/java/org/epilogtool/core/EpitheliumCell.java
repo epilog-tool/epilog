@@ -24,6 +24,12 @@ public class EpitheliumCell {
 		return EmptyModel.getInstance().isEmptyModel(this.model);
 	}
 	
+	public void restrictValuesWithPerturbation() {
+		if (perturbation != null) {
+			this.perturbation.restrictValues(state, model.getNodeOrder());
+		}
+	}
+	
 	public void setModel(LogicalModel m) {
 		if (this.model != null && this.model.equals(m)) {
 			return;
@@ -37,21 +43,15 @@ public class EpitheliumCell {
 		this.cellEvent = CellularEvent.DEFAULT;
 		this.id.clear();
 	}
-	
+
 	public void setState(byte[] state) {
 		this.state = state;
-	}
-	
-	public void setInitialStateComponent(String nodeID, byte value) {
-		int index = this.getNodeIndex(nodeID);
-		if (index < 0) return;
-		value = (byte) Math.min(value, this.model.getNodeOrder().get(index).getMax());
 	}
 	
 	public void setPerturbation(AbstractPerturbation ap) {
 		this.perturbation = ap;
 	}
-	
+
 	public void setValue(String nodeID, byte value) {
 		int index = this.getNodeIndex(nodeID);
 		if (index < 0)
@@ -62,6 +62,13 @@ public class EpitheliumCell {
 	
 	public void setCellEvent(CellularEvent event) {
 		this.cellEvent = event;
+	}
+	
+	public byte getValue(String nodeID) {
+		int index = this.getNodeIndex(nodeID);
+		if (index < 0)
+			return 0; // Should not happen!!
+		return state[index];
 	}
 
 	public AbstractPerturbation getPerturbation() {
@@ -91,11 +98,16 @@ public class EpitheliumCell {
 		}
 		return -1;
 	}
+
+	public boolean hasEmptyModel() {
+		return EmptyModel.getInstance().isEmptyModel(this.getModel());
+	}
 	
-	public String hashState() {
-		String hash = "";
-		for (int i = 0; i < this.state.length; i++) {
-			hash += this.state[i];
+	public long hashState() {
+		long hash = 1;
+		for (int i = 0; i < model.getNodeOrder().size(); i++) {
+			int vals = model.getNodeOrder().get(i).getMax() + 1;
+			hash += i * Math.pow(vals, this.state[i]);
 		}
 		return hash;
 	}
@@ -148,7 +160,7 @@ public class EpitheliumCell {
 		}
 		return true;
 	}
-	
+
 	public EpitheliumCell clone() {
 		EpitheliumCell newCell = new EpitheliumCell(this.model);
 		newCell.setState(this.state.clone());
