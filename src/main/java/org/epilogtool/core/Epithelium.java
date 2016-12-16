@@ -47,7 +47,7 @@ public class Epithelium {
 		this.perturbations = new EpitheliumPerturbations();
 		this.projectFeatures = projectFeatures;
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(
-				EpitheliumUpdateSchemeInter.DEFAULT_ALPHA, new HashMap<ComponentPair, Float>(),EpitheliumUpdateSchemeInter.DEFAULT_UPDATEMODE);
+				EpitheliumUpdateSchemeInter.DEFAULT_ALPHA, new HashMap<ComponentPair, Float>(),EpitheliumUpdateSchemeInter.DEFAULT_UPDATEORDER);
 	
 	}
 
@@ -599,9 +599,4 @@ public class Epithelium {
 						byte maxValue = node.getMax();
 						int value = randomGenerator.nextInt(maxValue+1);
 						this.getEpitheliumGrid().setCellComponentValue(x, y, node.getNodeID(), (byte) value);
-					}
-				}
-		}}
-		
-	}
-	}
+					}}}}}}

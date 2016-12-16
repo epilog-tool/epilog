@@ -11,21 +11,21 @@ import org.epilogtool.project.ComponentPair;
 public class EpitheliumUpdateSchemeInter {
 	public static float DEFAULT_ALPHA = (float) 1.0;
 	public static float DEFAULT_SIGMA = (float) 1.0;
-	public static String DEFAULT_UPDATEMODE = "Synchronous";
+	public static String DEFAULT_UPDATEORDER = "Random Independent";
 
 	private float alphaAsyncParam;
 	private Map<ComponentPair, Float> componentPairSigma;
-	private String updateMode;
+	private String updateOrder;
 
-	public EpitheliumUpdateSchemeInter(float alpha, Map<ComponentPair, Float> sigmaAsync, String updateMode) {
+	public EpitheliumUpdateSchemeInter(float alpha, Map<ComponentPair, Float> sigmaAsync, String updateOrder) {
 		this.alphaAsyncParam = alpha;
 		this.componentPairSigma = sigmaAsync;
-		this.updateMode = updateMode;
+		this.updateOrder = updateOrder;
 	}
 
 	public EpitheliumUpdateSchemeInter clone() {
 		return new EpitheliumUpdateSchemeInter(this.alphaAsyncParam, 
-				new HashMap<ComponentPair, Float>(this.componentPairSigma), this.updateMode);
+				new HashMap<ComponentPair, Float>(this.componentPairSigma), this.updateOrder);
 	}
 
 	// Alpha asynchronism methods
@@ -39,11 +39,11 @@ public class EpitheliumUpdateSchemeInter {
 	
 	// Update Mode methods
 	
-	public void setUpdateMode(String uMode) {
-		this.updateMode = uMode;
+	public void setUpdateOrder(String updateOrder) {
+		this.updateOrder = updateOrder;
 	}
-	public String getUpdateMode() {
-		return this.updateMode ;
+	public String getUpdateOrder() {
+		return this.updateOrder ;
 	}
 
 	// Sigma asynchronism methods
@@ -94,7 +94,7 @@ public class EpitheliumUpdateSchemeInter {
 			return false;
 		if (!this.componentPairSigma.equals(otherObj.componentPairSigma))
 			return false;
-		if (!this.updateMode.equals(otherObj.updateMode))
+		if (!this.updateOrder.equals(otherObj.updateOrder))
 			return false;
 		return true;
 	}

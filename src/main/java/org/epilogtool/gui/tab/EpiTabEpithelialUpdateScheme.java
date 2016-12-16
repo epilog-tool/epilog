@@ -65,7 +65,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 	private JPanel jpSigma;
 	private JPanel jpSigmaModelSelection;
 	
-	private JPanel jpUpdateMode;
+	private JPanel jpUpdateOrder;
 
 	private Map<ComponentPair, JSlider> mCP2Sliders;
 	private Map<JSlider, Set<ComponentPair>> mSliders2CP;
@@ -148,41 +148,38 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		
 		//Updating Mode selector
 		
-		this.jpUpdateMode = new JPanel(new BorderLayout());
-		this.jpUpdateMode.setBorder(BorderFactory
-				.createTitledBorder("Select Updating Mode"));
+		this.jpUpdateOrder = new JPanel(new BorderLayout());
+		this.jpUpdateOrder.setBorder(BorderFactory
+				.createTitledBorder("Select Updating Order"));
 		
-		String[] lUpdatemode = new String[5];
+		String[] lUpdateOrder = new String[2];
 		
-		lUpdatemode[0]="Synchronous";
-		lUpdatemode[1]="Asynchronous: Random independent";
-		lUpdatemode[2]="Asynchronous: Random Order";
-		lUpdatemode[3]="Asynchronous: Cyclic Order";
-		lUpdatemode[4]="Asynchronous: Exponential clocked";
+		lUpdateOrder[0]="Random Independent";
+		lUpdateOrder[1]="Random Order";
 		
-		JComboBox<String> jcUpdateMode = new JComboWideBox(lUpdatemode);
+		JComboBox<String> jcUpdateOrder = new JComboWideBox(lUpdateOrder);
 		
-		jcUpdateMode.setSelectedItem(this.updateSchemeInter.getUpdateMode());
+		jcUpdateOrder.setSelectedItem(this.updateSchemeInter.getUpdateOrder());
 		
 //		System.out.println(this.updateSchemeInter.getUpdateMode());
 		
-		jcUpdateMode.addActionListener(new ActionListener() {
+		jcUpdateOrder.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
-				JComboBox<String> jcUpdateMode = (JComboBox<String>) e.getSource();
+				JComboBox<String> jcUpdateOrder = (JComboBox<String>) e.getSource();
 				
-				changeUpdateMode((String) jcUpdateMode.getSelectedItem());
+				changeUpdateOrder((String) jcUpdateOrder.getSelectedItem());
 				tpc.setChanged();
 			}
 		});
 		
-		this.jpUpdateMode.add(jcUpdateMode);
-		this.center.add(jpUpdateMode,BorderLayout.SOUTH);
+		this.jpUpdateOrder.add(jcUpdateOrder);
+		this.center.add(jpUpdateOrder,BorderLayout.SOUTH);
 	}
 
-	private void changeUpdateMode(String updateMode){
-		this.updateSchemeInter.setUpdateMode(updateMode);
+	private void changeUpdateOrder(String updateOrder){
+		this.updateSchemeInter.setUpdateOrder(updateOrder);
 	}
 	
 	private void generateAlphaSlider() {
@@ -491,7 +488,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		this.epithelium.getUpdateSchemeInter().setAlpha(
 				this.updateSchemeInter.getAlpha());
 		
-		this.epithelium.getUpdateSchemeInter().setUpdateMode(this.updateSchemeInter.getUpdateMode());
+		this.epithelium.getUpdateSchemeInter().setUpdateOrder(this.updateSchemeInter.getUpdateOrder());
 		
 		for (ComponentPair cp : this.updateSchemeInter.getCPSigmas().keySet()) {
 			this.epithelium.getUpdateSchemeInter().setCPSigma(cp,
@@ -504,8 +501,8 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		if (this.epithelium.getUpdateSchemeInter().getAlpha() != this.updateSchemeInter
 				.getAlpha())
 			return true;
-		if (this.epithelium.getUpdateSchemeInter().getUpdateMode() != this.updateSchemeInter
-				.getUpdateMode())
+		if (this.epithelium.getUpdateSchemeInter().getUpdateOrder() != this.updateSchemeInter
+				.getUpdateOrder())
 			return true;
 		if (this.mCP2Sliders != null) {
 			for (ComponentPair cp : this.mCP2Sliders.keySet()) {

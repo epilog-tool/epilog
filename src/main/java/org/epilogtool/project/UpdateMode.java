@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import org.epilogtool.common.Tuple2D;
@@ -20,6 +21,19 @@ public abstract class UpdateMode {
 	
 	public abstract String getDescription();
 
+	
+	public static List<Tuple2D> shuffle(Set<Tuple2D<Integer>> cells2update) {
+		
+		List<Tuple2D> listTuples = new ArrayList<Tuple2D>(); //array with numberCellsGrid boxes
+		
+		  for (Tuple2D key: cells2update){
+			  listTuples.add(key);
+		  }
+		  
+		  Collections.shuffle(listTuples);
+
+		  return listTuples;
+	  }
 	
 	public static Map<Tuple2D<Integer>, byte[]> shuffleAndSelect(HashMap<Tuple2D<Integer>, byte[]> cells2update, int numberCellsToUpdate) {
 		

@@ -144,10 +144,10 @@ public class Parser {
 				String[] newArray=new String[n];
 				System.arraycopy(saTmp,1,newArray,0,n);
 				
-				String updateMode = String.join(" ", newArray);
+				String updateOrder = String.join(" ", newArray);
 				
-				currEpi.getUpdateSchemeInter().setUpdateMode(
-						updateMode);
+				currEpi.getUpdateSchemeInter().setUpdateOrder(
+						updateOrder);
 				
 			}
 
@@ -429,7 +429,7 @@ public class Parser {
 		w.println();
 		
 		// UpdateMode asynchronism
-		w.println("UPM " + epi.getUpdateSchemeInter().getUpdateMode());
+		w.println("UPM " + epi.getUpdateSchemeInter().getUpdateOrder());
 		w.println();
 
 		// Sigma asynchronism
