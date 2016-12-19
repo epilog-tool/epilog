@@ -1,5 +1,5 @@
 package org.epilogtool.integration;
 
-public enum IntegrationLogicalOperator {
+public enum LogicalOperator {
 	OR, AND
 }

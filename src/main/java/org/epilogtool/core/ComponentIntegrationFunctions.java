@@ -4,37 +4,36 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.antlr.runtime.RecognitionException;
-import org.epilogtool.integration.IntegrationFunctionSpecification;
-import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationExpression;
+import org.epilogtool.integration.IFSpecification;
+import org.epilogtool.integration.IntegrationFunctionExpression;
 
 public class ComponentIntegrationFunctions {
 	private String[] stringExpr;
-	private IntegrationExpression[] computedExpr;
+	private IntegrationFunctionExpression[] computedExpr;
 
 	public ComponentIntegrationFunctions(int maxValue) {
 		this.stringExpr = new String[maxValue];
 		for (int i = 0; i < maxValue; i++) {
 			this.stringExpr[i] = "";
 		}
-		this.computedExpr = new IntegrationExpression[maxValue];
+		this.computedExpr = new IntegrationFunctionExpression[maxValue];
 	}
 
 	public ComponentIntegrationFunctions clone() {
-		ComponentIntegrationFunctions newcif = new ComponentIntegrationFunctions(
-				this.stringExpr.length);
+		ComponentIntegrationFunctions newcif = new ComponentIntegrationFunctions(this.stringExpr.length);
 		for (byte i = 1; i <= this.stringExpr.length; i++) {
 			newcif.setFunctionAtLevel(i, this.stringExpr[i - 1]);
 		}
 		return newcif;
 	}
 
-	public List<IntegrationExpression> getComputedExpressions() {
+	public List<IntegrationFunctionExpression> getComputedExpressions() {
 		return Arrays.asList(this.computedExpr);
 	}
 
-	private IntegrationExpression string2Expression(String expr) {
-		IntegrationFunctionSpecification spec = new IntegrationFunctionSpecification();
-		IntegrationExpression expression = null;
+	private IntegrationFunctionExpression string2Expression(String expr) {
+		IFSpecification spec = new IFSpecification();
+		IntegrationFunctionExpression expression = null;
 		try {
 			expression = spec.parse(expr);
 		} catch (RecognitionException e) {
