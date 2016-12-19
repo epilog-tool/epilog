@@ -1055,13 +1055,8 @@ public class EpiGUI extends JFrame {
 						|| c instanceof EpiTabInitialConditions || c instanceof EpiTabMonteCarlo) {
 					EpiTab tab = (EpiTab) c;
 					if (!tab.equals(changedTab)) {
-						tab.notifyChange();
-					}
-				}
-			}
-			validateGUI();
-		}
-	}
+						tab.notifyChange();}}}
+			validateGUI();}}
 
 
 }
