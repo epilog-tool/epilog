@@ -17,6 +17,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.tree.TreePath;
@@ -199,6 +200,19 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 	@Override
 	protected void buttonAccept() {
+		boolean isEmptyGrid = true;
+		for (int x = 0; x < this.modelGridClone.length; x ++) {
+			for (int y = 0; y < this.modelGridClone[0].length; y++) {
+				if (!(this.projectFeatures.getModelName(this.modelGridClone[x][y])==null)) {
+					isEmptyGrid = false;
+				}
+			}
+		}
+		if (isEmptyGrid) {
+			this.userMessageEmptyError();
+			return;
+		}
+		
 		// Copy modelClone to modelGrid
 		for (int x = 0; x < this.modelGridClone.length; x++) {
 			for (int y = 0; y < this.modelGridClone[0].length; y++) {
@@ -222,6 +236,17 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		// Make Epithelium structures coherent
 		this.epithelium.update();
 		// TODO Open dependent tabs, should
+	}
+	
+	private void userMessageEmptyError() {
+		JOptionPane.showMessageDialog(this,
+			    "There is no Logical Model associated to this epithelium.\n"
+			    + "An epithelium must have at least one cell associated \n"
+			    + "to a Logical Model.",
+			    "Empty epithelium",
+			    JOptionPane.ERROR_MESSAGE);
+		this.buttonReset();
+		
 	}
 
 	@Override
