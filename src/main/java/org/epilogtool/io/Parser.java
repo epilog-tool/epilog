@@ -568,6 +568,9 @@ public class Parser {
 		//Model- cell events
 		//ME #model event_type pattern
 		for (LogicalModel m: model2Key.keySet()) {
+			if (epi.getTopologyEventManager().getModelManager(m)== null ||  epi.getTopologyEventManager().getModelManager(m).getEvent2PatternMap()==null) {
+				continue;
+			}
 			Map<CellularEvent, List<ModelPattern>> modelEvents = epi.getTopologyEventManager().getModelManager(m).getEvent2PatternMap();
 			for (CellularEvent event : modelEvents.keySet()) {
 				if (!modelEvents.get(event).isEmpty()) {
@@ -582,13 +585,15 @@ public class Parser {
 		//Model heritable components
 		//HN #model node1 node2 ...
 		for (LogicalModel m: model2Key.keySet()) {
-			if (epi.getModelHeritableNodes().hasHeritableNodes(m)) {
-				w.print("HN " + model2Key.get(m));
-				for (String node : epi.getModelHeritableNodes().getModelHeritableNodes(m)) {
-					w.print(" " + node);
+			if (epi.getModelHeritableNodes().hasModel(m)) {
+				if (epi.getModelHeritableNodes().hasHeritableNodes(m)) {
+					w.print("HN " + model2Key.get(m));
+					for (String node : epi.getModelHeritableNodes().getModelHeritableNodes(m)) {
+						w.print(" " + node);
+					}
 				}
+				w.println();
 			}
-			w.println();
 		}
 		
 		//Epithelium Cell Identifiers
