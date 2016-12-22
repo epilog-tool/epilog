@@ -13,7 +13,7 @@ import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.cellDynamics.ModelHeritableNodes;
-import org.epilogtool.core.cellDynamics.TopologyEventManager;
+import org.epilogtool.core.cellDynamics.ModelEventManager;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
@@ -29,7 +29,7 @@ public class Epithelium {
 
 	// TODO: requires refactoring - these are the static properties used for
 	// cell division
-	private TopologyEventManager topologyEventsManager;
+	private ModelEventManager modelEventManager;
 	private ModelHeritableNodes modelHeritableNodes;
 
 	public Epithelium(int x, int y, String topologyID, String name, LogicalModel m, RollOver rollover,
@@ -45,14 +45,14 @@ public class Epithelium {
 		this.projectFeatures = projectFeatures;
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(EpitheliumUpdateSchemeInter.DEFAULT_ALPHA,
 				new HashMap<ComponentPair, Float>());
-		this.topologyEventsManager = new TopologyEventManager(this.grid.getModelSet());
+		this.modelEventManager = new ModelEventManager(this.grid.getModelSet());
 		this.modelHeritableNodes = new ModelHeritableNodes();
 		this.modelHeritableNodes.addModel(m);
 	}
 
 	private Epithelium(String name, EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
 			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap, ProjectFeatures pf,
-			EpitheliumUpdateSchemeInter usi, TopologyEventManager eventsManager,
+			EpitheliumUpdateSchemeInter usi, ModelEventManager eventsManager,
 			ModelHeritableNodes modelHeritableNodes) {
 		this.name = name;
 		this.grid = grid;
@@ -61,7 +61,7 @@ public class Epithelium {
 		this.projectFeatures = pf;
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
-		this.topologyEventsManager = eventsManager;
+		this.modelEventManager = eventsManager;
 		this.modelHeritableNodes = modelHeritableNodes;
 		;
 	}
@@ -69,7 +69,7 @@ public class Epithelium {
 	public Epithelium clone() {
 		return new Epithelium("CopyOf_" + this.name, this.grid.clone(), this.integrationFunctions.clone(),
 				this.priorities.clone(), this.perturbations.clone(), this.projectFeatures,
-				this.updateSchemeInter.clone(), this.topologyEventsManager.clone(), this.modelHeritableNodes.clone());
+				this.updateSchemeInter.clone(), this.modelEventManager.clone(), this.modelHeritableNodes.clone());
 	}
 
 	public String toString() {
@@ -113,8 +113,8 @@ public class Epithelium {
 				this.perturbations.addModel(mSet);
 
 			// Grid dynamics
-			if (!this.topologyEventsManager.hasModel(mSet))
-				this.topologyEventsManager.addModel(mSet);
+			if (!this.modelEventManager.hasModel(mSet))
+				this.modelEventManager.addModel(mSet);
 
 			// Heritable components
 			if (!this.modelHeritableNodes.hasModel(mSet)) {
@@ -272,25 +272,25 @@ public class Epithelium {
 		for (Tuple2D<Integer> tuple : lTuples) {
 			this.setModel(tuple.getX(), tuple.getY(), m);
 		}
-		if (!this.topologyEventsManager.getModelSet().contains(m)) {
-			this.topologyEventsManager.addModel(m);
+		if (!this.modelEventManager.getModelSet().contains(m)) {
+			this.modelEventManager.addModel(m);
 		}
 	}
 
-	public void initTopologyEventManager() {
-		this.topologyEventsManager = new TopologyEventManager();
+	public void initModelEventManager() {
+		this.modelEventManager = new ModelEventManager();
 	}
 
 	public void initModelHeritableNodes() {
 		this.modelHeritableNodes = new ModelHeritableNodes();
 	}
 
-	public TopologyEventManager getTopologyEventManager() {
-		return this.topologyEventsManager;
+	public ModelEventManager getModelEventManager() {
+		return this.modelEventManager;
 	}
 
-	public void setTopologyEventManager(TopologyEventManager tem) {
-		this.topologyEventsManager = tem;
+	public void setModelEventManager(ModelEventManager tem) {
+		this.modelEventManager = tem;
 	}
 
 	public int getX() {

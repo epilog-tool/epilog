@@ -35,7 +35,6 @@ public class CESpecification {
 			CEGrammarParser parser = new CEGrammarParser(tokens);
 			r = parser.eval();
 		}
-		System.out.print("eval: " + r);
 		return r;
 	}
 

@@ -1,79 +1,72 @@
 package org.epilogtool.core.cellDynamics;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.colomoto.logicalmodel.LogicalModel;
+
 public class ModelEventManager {
 	
-	private Map<CellularEvent, List<ModelPattern>> event2patternMap;
-	
-	public ModelEventManager() {
-		this.buildEvent2PatternMap();
-	}
+	private Map<LogicalModel, Map<CellularEvent, ModelEventExpression>> model2EventsMap;
 
-	private void buildEvent2PatternMap() {
-		this.event2patternMap = new HashMap<CellularEvent, List<ModelPattern>>();
-		this.event2patternMap.put(CellularEvent.PROLIFERATION, new ArrayList<ModelPattern>());
-		this.event2patternMap.put(CellularEvent.APOPTOSIS, new ArrayList<ModelPattern>());
+	public ModelEventManager() {
+		this.model2EventsMap = new HashMap<LogicalModel, Map<CellularEvent, ModelEventExpression>>();
 	}
 	
-	private ModelEventManager(Map<CellularEvent, List<ModelPattern>> event2Pattern) {
-		this.event2patternMap = event2Pattern;
+	public ModelEventManager(Set<LogicalModel> modelSet) {
+		this.model2EventsMap = new HashMap<LogicalModel, Map<CellularEvent, ModelEventExpression>>();
+		for (LogicalModel m  : modelSet) {
+			this.addModel(m);
+		}
+	}
+	
+	private ModelEventManager(Map<LogicalModel, Map<CellularEvent, ModelEventExpression>> model2ManagerMap) {
+		this.model2EventsMap = model2ManagerMap;
 	}
 	
 	public ModelEventManager clone() {
-		Map<CellularEvent, List<ModelPattern>> event2Pattern = 
-				new HashMap<CellularEvent, List<ModelPattern>>();
-		for (CellularEvent event : this.event2patternMap.keySet()) {
-			event2Pattern
-			.put(event, new ArrayList<ModelPattern>(this.event2patternMap.get(event)));
+		Map<LogicalModel, Map<CellularEvent, ModelEventExpression>> tmpMap = new HashMap<LogicalModel,Map<CellularEvent, ModelEventExpression>>();
+		for (LogicalModel m : this.model2EventsMap.keySet()) {
+			tmpMap.put(m, new HashMap<CellularEvent, ModelEventExpression>(this.model2EventsMap.get(m)));
 		}
-		return new ModelEventManager(event2Pattern);
+		return new ModelEventManager(tmpMap);
 	}
 	
 	public boolean equals(Object o) {
 		ModelEventManager other = (ModelEventManager) o;
-		return this.event2patternMap.equals(other.event2patternMap);
+		return this.model2EventsMap.equals(other.model2EventsMap);
 	}
 	
-	public Map<CellularEvent, List<ModelPattern>> getEvent2PatternMap() {
-		return this.event2patternMap;
+	public void addModel(LogicalModel m) {
+		this.model2EventsMap.put(m, new HashMap<CellularEvent, ModelEventExpression>());
 	}
 	
-	public Set<CellularEvent> getCellularEventSet() {
-		return this.event2patternMap.keySet();
+	public void removeModel(LogicalModel m) {
+		this.model2EventsMap.remove(m);
 	}
 	
-	public List<ModelPattern> getModelEventPatterns(CellularEvent event) {
-		return this.event2patternMap.get(event);
+	public boolean hasModel(LogicalModel m) {
+		return this.model2EventsMap.keySet().contains(m);
 	}
 	
-	public void addPattern(ModelPattern pattern, CellularEvent event) {
-		if (event.equals(CellularEvent.DEFAULT)) {
-			return;
-		}
-		this.event2patternMap.get(event).add(pattern);
+	public Set<LogicalModel> getModelSet() {
+		return this.model2EventsMap.keySet();
 	}
 	
-	public void removePattern(int patternIndex, CellularEvent event) {
-		this.event2patternMap.get(event).remove(patternIndex);
+	public void addModelEvents(LogicalModel m, Map<CellularEvent, ModelEventExpression> modelEvents) {
+		this.model2EventsMap.put(m, modelEvents);
 	}
 	
-	public void removePattern(ModelPattern pattern, CellularEvent event) {
-		this.event2patternMap.get(event).remove(pattern);
+	public Map<CellularEvent, ModelEventExpression> getModelEvents(LogicalModel m) {
+		return this.model2EventsMap.get(m);
 	}
 	
-	public CellularEvent getModelEvent(byte[] state) {
-		for (CellularEvent event : this.event2patternMap.keySet()) {
-			for (ModelPattern pattern : this.event2patternMap.get(event)) {
-				if (pattern.containsState(state)) {
-					return event;
-				}
-			}
-		}
-		return CellularEvent.DEFAULT;
+	public void setCellularEvent(ModelEventExpression pattern, LogicalModel m, CellularEvent event) {
+		this.model2EventsMap.get(m).put(event, pattern);
+	}
+	
+	public void removeCellularEvent(LogicalModel m, CellularEvent event) {
+		this.model2EventsMap.get(m).remove(event);
 	}
 }

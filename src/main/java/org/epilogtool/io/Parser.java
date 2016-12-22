@@ -36,7 +36,7 @@ import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.ModelPerturbations;
 import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.core.cellDynamics.CellularEvent;
-import org.epilogtool.core.cellDynamics.ModelPattern;
+import org.epilogtool.core.cellDynamics.ModelEventExpression;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.color.ColorUtils;
 
@@ -126,8 +126,8 @@ public class Parser {
 									.instances2Tuples2D(saTmp[2].split(",")));
 					currEpi.initPriorityClasses(m);
 					currEpi.initComponentFeatures(m);
-					currEpi.initTopologyEventManager();
-					currEpi.getTopologyEventManager().addModel(m);
+					currEpi.initModelEventManager();
+					currEpi.getModelEventManager().addModel(m);
 					currEpi.initModelHeritableNodes();
 					currEpi.getModelHeritableNodes().addModel(m);
 				}
@@ -290,15 +290,13 @@ public class Parser {
 				saTmp = line.split("\\s+");
 				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
 				CellularEvent event = CellularEvent.string2Event(saTmp[2]);
-				if (!currEpi.getTopologyEventManager().hasModel(m)) {
-					currEpi.getTopologyEventManager().addModel(m);
+				if (!currEpi.getModelEventManager().hasModel(m)) {
+					currEpi.getModelEventManager().addModel(m);
 				}
 				saTmp = line.split(saTmp[2]);
-				ModelPattern pattern = new ModelPattern();
-				String patternExpression = saTmp[1].trim();
-				pattern.setPatternExpression(patternExpression);
-				pattern.setComputedPattern(m);
-				currEpi.getTopologyEventManager().getModelManager(m).addPattern(pattern, event);
+				String expression = saTmp[1].trim();
+				ModelEventExpression modelExpression = new ModelEventExpression(expression);
+				currEpi.getModelEventManager().getModelEvents(m).put(event, modelExpression);
 			}
 			
 		}
@@ -568,18 +566,14 @@ public class Parser {
 		//Model- cell events
 		//ME #model event_type pattern
 		for (LogicalModel m: model2Key.keySet()) {
-			if (epi.getTopologyEventManager().getModelManager(m)== null ||  epi.getTopologyEventManager().getModelManager(m).getEvent2PatternMap()==null) {
+			if (epi.getModelEventManager().getModelEvents(m)== null) {
 				continue;
 			}
-			Map<CellularEvent, List<ModelPattern>> modelEvents = epi.getTopologyEventManager().getModelManager(m).getEvent2PatternMap();
+			Map<CellularEvent, ModelEventExpression> modelEvents = epi.getModelEventManager().getModelEvents(m);
 			for (CellularEvent event : modelEvents.keySet()) {
-				if (!modelEvents.get(event).isEmpty()) {
-					for (ModelPattern pattern : modelEvents.get(event)) {
-						w.print("ME " + model2Key.get(m) + " " + event.toString() + " " + pattern.getPatternExpression());
-					}
-					w.println();
-				}
+				w.print("ME " + model2Key.get(m) + " " + event.toString() + " " + modelEvents.get(event).getExpression());
 			}
+			w.println();
 		}
 		
 		//Model heritable components

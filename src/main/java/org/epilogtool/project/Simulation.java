@@ -14,6 +14,8 @@ import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.colomoto.logicalmodel.tool.simulation.updater.PriorityClasses;
 import org.colomoto.logicalmodel.tool.simulation.updater.PriorityUpdater;
+import org.epilogtool.cellularevent.CEEvaluation;
+import org.epilogtool.cellularevent.CellularEventExpression;
 import org.epilogtool.common.RandomFactory;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.Epithelium;
@@ -35,6 +37,7 @@ public class Simulation {
 	private List<String> gridHashHistory;
 	private boolean stable;
 	private boolean hasCycle;
+	private CEEvaluation ceEvaluator;
 	// Perturbed models cache - avoids repeatedly computing perturbations at
 	// each step
 	private Map<LogicalModel, Map<AbstractPerturbation, PriorityUpdater>> updaterCache;
@@ -59,6 +62,7 @@ public class Simulation {
 		this.gridHashHistory.add(firstGrid.hashGrid());
 		this.stable = false;
 		this.hasCycle = false;
+		this.ceEvaluator = new CEEvaluation();
 		this.buildPriorityUpdaterCache();
 	}
 
@@ -139,9 +143,7 @@ public class Simulation {
 				cells2update.put(key, (nextState==null ? currState.clone(): nextState));
 				keys.add(key);
 				CellularEvent prevCellEvent = currGrid.getCellEvent(x, y);
-				CellularEvent nextCellEvent = this.epithelium.getTopologyEventManager()
-						.getCellularEvent(currGrid
-								.getModel(key.getX(), key.getY()), cells2update.get(key));
+				CellularEvent nextCellEvent = this.nextCellEvent(x, y, currGrid);
 				cells2event.put(key, nextCellEvent);
 				if (nextState == null || !Arrays.equals(currState, nextState)) {
 					cellUpdates = true;
@@ -234,6 +236,21 @@ public class Simulation {
 		}
 		return this.hasCycle;
 	}
+	
+	private CellularEvent nextCellEvent(int x, int y, EpitheliumGrid currGrid) {
+		LogicalModel m = currGrid.getModel(x, y);
+		byte[] state = currGrid.getCellState(x, y);
+		for (CellularEvent cellEvent : this.epithelium
+				.getModelEventManager().getModelEvents(m).keySet()) {
+			CellularEventExpression exp = this.epithelium
+					.getModelEventManager().getModelEvents(m)
+					.get(cellEvent).getcomputedExpression();
+			if (ceEvaluator.evaluate(m, state, exp)==true) {
+				return cellEvent;
+			}
+		}
+		return CellularEvent.DEFAULT;
+	}
 
 	private byte[] nextCellValue(int x, int y, EpitheliumGrid currGrid,
 			IntegrationFunctionEvaluation evaluator,
@@ -269,6 +286,7 @@ public class Simulation {
 		}
 		return succ.get(0);
 	}
+	
 	
 	private void divideCell(EpitheliumGrid nextGrid, List<Tuple2D<Integer>> cells2Divide) { 
 		Tuple2D<Integer> cell2Divide = cells2Divide.get(0);

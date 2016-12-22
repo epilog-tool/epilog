@@ -423,7 +423,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 	@Override
 	public void applyChange() {
-		System.out.println("EpiTab.applyChange");
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
 				this.epithelium.getEpitheliumGrid().getModelSet());
 		// Update grid
