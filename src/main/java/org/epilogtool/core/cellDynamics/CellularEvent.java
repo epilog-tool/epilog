@@ -3,9 +3,7 @@ package org.epilogtool.core.cellDynamics;
 public enum CellularEvent {
 	DEFAULT("Default"), 
 	PROLIFERATION("Proliferation"), 
-	APOPTOSIS("Apoptosis"), 
-	ONCOSIS("Oncosis"),
-	MIGRATION("Migration");
+	APOPTOSIS("Apoptosis");
 	
 	private String eventType;
 	
@@ -22,12 +20,6 @@ public enum CellularEvent {
 		}
 		if (eventType.equals(APOPTOSIS.toString())) {
 			return APOPTOSIS;
-		}
-		if (eventType.equals(ONCOSIS.toString())) {
-			return ONCOSIS;
-		}
-		if (eventType.equals(MIGRATION.toString())) {
-			return MIGRATION;
 		}
 		return null;
 	}
