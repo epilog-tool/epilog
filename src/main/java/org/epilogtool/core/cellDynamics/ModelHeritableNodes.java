@@ -33,10 +33,9 @@ public class ModelHeritableNodes {
 	}
 	
 	public void addNode(LogicalModel m, String node) {
-		if (this.heritableNodesMap.containsKey(m)) {
-			this.heritableNodesMap.get(m).add(node);
+		if (!this.heritableNodesMap.containsKey(m)) {
+			this.addModel(m);
 		}
-		this.addModel(m);
 		this.heritableNodesMap.get(m).add(node);
 	}
 	
@@ -70,7 +69,11 @@ public class ModelHeritableNodes {
 	}
 	
 	public ModelHeritableNodes clone() {
-		return new ModelHeritableNodes(this.heritableNodesMap);
+		Map<LogicalModel, Set<String>> newModelHeritableNodes = new HashMap<LogicalModel, Set<String>>();
+		for (LogicalModel m : this.heritableNodesMap.keySet()) {
+			newModelHeritableNodes.put(m, new HashSet<String>(this.heritableNodesMap.get(m)));
+		}
+		return new ModelHeritableNodes(newModelHeritableNodes);
 	}
 	
 	public boolean equals(ModelHeritableNodes otherMHN){

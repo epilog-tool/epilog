@@ -18,10 +18,10 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.tree.TreePath;
 
@@ -47,6 +47,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 	private TopologyEventManager eventManager;
 	private ModelHeritableNodes modelHeritableNodes;
 	private CellularEvent eventType;
+	private TabProbablyChanged tpc;
 	
 	private String activeModel;
 	private JPanel jpTopModelSelection;
@@ -96,7 +97,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 		this.activeModel = (String) jcbSBML.getSelectedItem();
 		this.updateModelDynamicsPanel();
 		this.getParent().repaint();
-		
+		this.tpc = new TabProbablyChanged();
 		this.isInitialized = true;
 		
 		
@@ -161,6 +162,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 				public void actionPerformed(ActionEvent e) {
 					eventType = CellularEvent.PROLIFERATION;
 					addPattern();
+					tpc.setChanged();
 				}
 			});
 		JPanel jpAdd = new JPanel(new BorderLayout());
@@ -191,6 +193,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 					eventType = CellularEvent.PROLIFERATION;
 					JButton jbRemove = (JButton) e.getSource();
 					removePattern(Integer.parseInt(jbRemove.getActionCommand()));
+					tpc.setChanged();
 				}
 			});
 			jpCellDivisionPattern.add(jbRemove, gbc);
@@ -210,6 +213,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 					JTextField jtf = (JTextField) e.getSource();
 					setPatternExpression(Integer.parseInt(jtf.getToolTipText()), 
 							jtf.getText());
+					tpc.setChanged();
 				}
 
 				@Override
@@ -237,6 +241,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 				public void actionPerformed(ActionEvent e) {
 					eventType = CellularEvent.APOPTOSIS;
 					addPattern();
+					tpc.setChanged();
 				}
 			});
 		JPanel jpAdd = new JPanel(new BorderLayout());
@@ -267,6 +272,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 					eventType = CellularEvent.APOPTOSIS;
 					JButton jbRemove = (JButton) e.getSource();
 					removePattern(Integer.parseInt(jbRemove.getActionCommand()));
+					tpc.setChanged();
 				}
 			});
 			jpPatternPanel.add(jbRemove, gbc);
@@ -286,6 +292,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 					JTextField jtf = (JTextField) e.getSource();
 					setPatternExpression(Integer.parseInt(jtf.getToolTipText()), 
 							jtf.getText());
+					tpc.setChanged();
 				}
 
 				@Override
@@ -313,6 +320,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 					} else {
 						removeHeritableNode(nodeID);
 					}
+					tpc.setChanged();
 				}
 			});
 			this.mString2CheckBox.put(node.getNodeID(), jcheckb);
@@ -399,48 +407,23 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 	}
 	
 	private void callParsingError() {
-		JPanel jpErrorLog = new JPanel(new BorderLayout());
-		this.jpCenter.add(jpErrorLog, BorderLayout.SOUTH);
-		JTextPane jtpErrorLog = new JTextPane();
-		jtpErrorLog.setContentType("text/html");
-		jtpErrorLog.setText("<html><body style=\"background-color:#ffbebe\">"
-				+ "You have defined invalid patterns.<br/>"
-				+ "It is not possible to save the specified settings."
-				+ "</body></html>");
-		jpErrorLog.add(jtpErrorLog, BorderLayout.CENTER);
-		JButton jbOK = ButtonFactory.getNoMargins("OK");
-		jbOK.setToolTipText("Dismiss this warning");
-		jbOK.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				updateModelDynamicsPanel();
-			}
-		});
-		jpErrorLog.add(jbOK, BorderLayout.EAST);
-		this.getParent().repaint();
+		JOptionPane.showMessageDialog(this,
+			    "You have defined invalid settings.\n"
+			    + "It is not Possible to save current configurations.\n"
+			    + "Definitions in this tab will be reset.",
+			    "Parsing error",
+			    JOptionPane.ERROR_MESSAGE);
+		this.buttonReset();
 	}
 	
 	private void callOverLappingError() {
-		JPanel jpOverlapLog = new JPanel(new BorderLayout());
-		this.jpCenter.add(jpOverlapLog, BorderLayout.SOUTH);
-		JTextPane jtpOverlapLog = new JTextPane();
-		jtpOverlapLog.setContentType("text/html");
-		jtpOverlapLog.setText("<html><body style=\"background-color:#ffbebe\">"
-				+ "You have defined concurrent triggers.<br/>"
-				+ "It is not possible to save the specified settings."
-				+ "</body></html>");
-		jpOverlapLog.add(jtpOverlapLog, BorderLayout.CENTER);
-		JButton jbOK = ButtonFactory.getNoMargins("OK");
-		jbOK.setPreferredSize(new Dimension(40, 40));
-		jbOK.setToolTipText("Dismiss this warning");
-		jbOK.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				updateModelDynamicsPanel();
-			}
-		});
-		jpOverlapLog.add(jbOK, BorderLayout.EAST);
-		this.getParent().repaint();
+		JOptionPane.showMessageDialog(this,
+			    "You have defined concurrent settings.\n"
+			    + "It is not Possible to save current configurations.\n"
+			    + "Definitions in this tab will be reset.",
+			    "Concurrence error",
+			    JOptionPane.ERROR_MESSAGE);
+		this.buttonReset();
 	}
 
 	@Override
