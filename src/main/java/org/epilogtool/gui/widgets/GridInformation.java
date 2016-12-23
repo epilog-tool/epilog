@@ -2,7 +2,6 @@ package org.epilogtool.gui.widgets;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
@@ -10,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -35,8 +33,7 @@ public class GridInformation extends JPanel {
 	private ProjectFeatures projectFeatures;
 	private JPanel jCellPanel;
 
-	public GridInformation(EpitheliumIntegrationFunctions eif,
-			ProjectFeatures projectFeatures) {
+	public GridInformation(EpitheliumIntegrationFunctions eif, ProjectFeatures projectFeatures) {
 		this.integrFunctions = eif;
 		this.projectFeatures = projectFeatures;
 
@@ -47,8 +44,7 @@ public class GridInformation extends JPanel {
 		this.jCellPanel = new JPanel(new GridBagLayout());
 
 		// JScroll
-		JScrollPane jscroll = new JScrollPane(this.jCellPanel,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+		JScrollPane jscroll = new JScrollPane(this.jCellPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		jscroll.setBorder(BorderFactory.createEmptyBorder());
 		jscroll.setMinimumSize(new Dimension(GridInformation.WIDTH, 0));
@@ -72,8 +68,7 @@ public class GridInformation extends JPanel {
 		gbc.gridwidth = width;
 	}
 
-	public void updateValues(int posX, int posY, EpitheliumGrid grid,
-			LogicalModel[][] modelGrid) {
+	public void updateValues(int posX, int posY, EpitheliumGrid grid, LogicalModel[][] modelGrid) {
 		this.jCellPanel.removeAll();
 		JLabel jlTmp;
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -86,8 +81,7 @@ public class GridInformation extends JPanel {
 
 		// Separation
 		if (grid != null || modelGrid != null) {
-			LogicalModel m = (grid != null) ? grid.getModel(posX, posY)
-					: modelGrid[posX][posY];
+			LogicalModel m = (grid != null) ? grid.getModel(posX, posY) : modelGrid[posX][posY];
 
 			// Cell Position
 			jlTmp = new JLabel("Grid position:");
@@ -144,8 +138,7 @@ public class GridInformation extends JPanel {
 					// Separation
 					this.minimalSpace(gbc, ++y);
 
-					List<String> lAllNodeIDs = new ArrayList<String>(
-							this.projectFeatures.getNodeIDs());
+					List<String> lAllNodeIDs = new ArrayList<String>(this.projectFeatures.getNodeIDs());
 					Collections.sort(lAllNodeIDs, ObjectComparator.STRING);
 
 					// Proper values
@@ -156,8 +149,7 @@ public class GridInformation extends JPanel {
 					boolean isEmpty = true;
 					for (String nodeID : lAllNodeIDs) {
 						if (!this.projectFeatures.hasNode(nodeID, m)
-								|| this.projectFeatures.getNodeInfo(nodeID, m)
-										.isInput()) {
+								|| this.projectFeatures.getNodeInfo(nodeID, m).isInput()) {
 							continue;
 						}
 						jlTmp = new JLabel("  " + nodeID + " ");
@@ -168,8 +160,7 @@ public class GridInformation extends JPanel {
 						if (index < 0)
 							continue;
 						this.constraints(gbc, 1, y, 1);
-						jlTmp = new JLabel(": "
-								+ grid.getCellState(posX, posY)[index]);
+						jlTmp = new JLabel(": " + grid.getCellState(posX, posY)[index]);
 						this.jCellPanel.add(jlTmp, gbc);
 					}
 					this.checkEmpty(gbc, ++y, isEmpty);
@@ -178,19 +169,15 @@ public class GridInformation extends JPanel {
 					this.minimalSpace(gbc, ++y);
 
 					// Environmental Input values
-					jlTmp = new JLabel("Environ. inputs:");
+					jlTmp = new JLabel("Model inputs:");
 					this.constraints(gbc, 0, ++y, 1);
 					this.jCellPanel.add(jlTmp, gbc);
 					gbc.gridwidth = 1;
 					isEmpty = true;
 					for (String nodeID : lAllNodeIDs) {
-						NodeInfo node = this.projectFeatures.getNodeInfo(
-								nodeID, m);
+						NodeInfo node = this.projectFeatures.getNodeInfo(nodeID, m);
 						ComponentPair cp = new ComponentPair(m, node);
-						if (node == null
-								|| !node.isInput()
-								|| this.integrFunctions
-										.containsComponentPair(cp)) {
+						if (node == null || !node.isInput() || this.integrFunctions.containsComponentPair(cp)) {
 							continue;
 						}
 						jlTmp = new JLabel("  " + nodeID + " ");
@@ -200,8 +187,7 @@ public class GridInformation extends JPanel {
 						int index = grid.getNodeIndex(posX, posY, nodeID);
 						if (index < 0)
 							continue;
-						jlTmp = new JLabel(": "
-								+ grid.getCellState(posX, posY)[index]);
+						jlTmp = new JLabel(": " + grid.getCellState(posX, posY)[index]);
 						this.constraints(gbc, 1, y, 1);
 						this.jCellPanel.add(jlTmp, gbc);
 					}
@@ -217,12 +203,9 @@ public class GridInformation extends JPanel {
 					gbc.gridwidth = 1;
 					isEmpty = true;
 					for (String nodeID : lAllNodeIDs) {
-						NodeInfo node = this.projectFeatures.getNodeInfo(
-								nodeID, m);
+						NodeInfo node = this.projectFeatures.getNodeInfo(nodeID, m);
 						ComponentPair cp = new ComponentPair(m, node);
-						if (node == null
-								|| !this.integrFunctions
-										.containsComponentPair(cp)) {
+						if (node == null || !this.integrFunctions.containsComponentPair(cp)) {
 							continue;
 						}
 						jlTmp = new JLabel("  " + nodeID + " ");
@@ -232,8 +215,7 @@ public class GridInformation extends JPanel {
 						int index = grid.getNodeIndex(posX, posY, nodeID);
 						if (index < 0)
 							continue;
-						jlTmp = new JLabel(": "
-								+ grid.getCellState(posX, posY)[index]);
+						jlTmp = new JLabel(": " + grid.getCellState(posX, posY)[index]);
 						this.constraints(gbc, 1, y, 1);
 						this.jCellPanel.add(jlTmp, gbc);
 					}

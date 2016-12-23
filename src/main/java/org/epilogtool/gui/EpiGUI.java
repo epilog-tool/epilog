@@ -47,8 +47,9 @@ import org.epilogtool.gui.menu.ToolsMenu;
 import org.epilogtool.gui.menu.WindowMenu;
 import org.epilogtool.gui.tab.EpiTab;
 import org.epilogtool.gui.tab.EpiTabEpithelialUpdateScheme;
+import org.epilogtool.gui.tab.EpiTabGridDynamics;
 import org.epilogtool.gui.tab.EpiTabInitialConditions;
-import org.epilogtool.gui.tab.EpiTabIntegrationFunctions;
+import org.epilogtool.gui.tab.EpiTabInputDefinition;
 import org.epilogtool.gui.tab.EpiTabModelGrid;
 import org.epilogtool.gui.tab.EpiTabModelUpdateScheme;
 import org.epilogtool.gui.tab.EpiTabPerturbations;
@@ -604,7 +605,7 @@ public class EpiGUI extends JFrame {
 				epiTab = new EpiTabInitialConditions(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
 			} else if (tabName.equals(EpiTab.TAB_INTEGRATION)) {
-				epiTab = new EpiTabIntegrationFunctions(epi, selPath,
+				epiTab = new EpiTabInputDefinition(epi, selPath,
 						projChanged, tabChanged,
 						this.project.getProjectFeatures());
 			} else if (tabName.equals(EpiTab.TAB_PERTURBATIONS)) {
@@ -619,6 +620,9 @@ public class EpiGUI extends JFrame {
 						this.project.getProjectFeatures());
 			} else if (tabName.equals(EpiTab.TAB_MODELGRID)) {
 				epiTab = new EpiTabModelGrid(epi, selPath, projChanged,
+						tabChanged, this.project.getProjectFeatures());
+			} else if (tabName.equals(EpiTab.TAB_GRIDDYNAMICS)) {
+				epiTab = new EpiTabGridDynamics(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
 			}
 			if (epiTab != null) {
@@ -801,8 +805,7 @@ public class EpiGUI extends JFrame {
 			Epithelium epiClone = project.cloneEpithelium(epi);
 			for (int x = 0; x < currGrid.getX(); x++) {
 				for (int y = 0; y < currGrid.getY(); y++) {
-					byte[] stateClone = currGrid.getCellState(x, y).clone();
-					epiClone.getEpitheliumGrid().setCellState(x, y, stateClone);
+					epiClone.getEpitheliumGrid().setEpitheliumCell(x, y, currGrid.getEpitheliumCell(x, y).clone());
 				}
 			}
 			addEpithelium2JTree(epiClone);

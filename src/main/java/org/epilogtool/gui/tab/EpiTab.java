@@ -10,11 +10,12 @@ public abstract class EpiTab extends JPanel {
 	private static final long serialVersionUID = 4245892165061439503L;
 
 	public static final String TAB_MODELGRID = "Model Grid";
-	public static final String TAB_INTEGRATION = "Integration Components";
+	public static final String TAB_INTEGRATION = "Input Definition";
 	public static final String TAB_INITCONDITIONS = "Initial Conditions";
 	public static final String TAB_PERTURBATIONS = "Component Perturbations";
 	public static final String TAB_PRIORITIES = "Model Updating";
 	public static final String TAB_EPIUPDATING = "Epithelium Updating";
+	public static final String TAB_GRIDDYNAMICS = "Grid Dynamics";
 	public static final String TOOL_SIMULATION = "Simulation";
 
 	protected Epithelium epithelium;

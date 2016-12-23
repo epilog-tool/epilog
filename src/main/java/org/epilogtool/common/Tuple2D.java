@@ -95,6 +95,11 @@ public class Tuple2D<T extends Number> {
 		return newTuple;
 	}
 	
+	public float euclideanDistance() {
+		double exp = 2;
+		return (float) Math.sqrt(Math.pow(this.x.doubleValue(), exp) + Math.pow(this.y.doubleValue(), exp));
+	}
+	
 	public boolean equals(Object o){
 		@SuppressWarnings("unchecked")
 		Tuple2D<T> otherTuple = (Tuple2D<T>) o;

@@ -40,7 +40,7 @@ import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
 
-public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
+public class EpiTabInputDefinition extends EpiTabDefinitions {
 	private static final long serialVersionUID = -2124909766318378839L;
 
 	private final int JTF_WIDTH = 30;
@@ -56,7 +56,8 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 	private JPanel jpNRBottom;
 	private JPanel jpNLTop;
 
-	public EpiTabIntegrationFunctions(Epithelium e, TreePath path,
+
+	public EpiTabInputDefinition(Epithelium e, TreePath path,
 			ProjChangeNotifyTab projChanged, TabChangeNotifyProj tabChanged,
 			ProjectFeatures projectFeatures) {
 		super(e, path, projChanged, tabChanged, projectFeatures);
@@ -156,43 +157,44 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 
 	private void updateNodeID() {
 		this.jpNRTop.removeAll();
+		this.jpNRBottom.removeAll();
 		ButtonGroup group = new ButtonGroup();
 		this.jpNRTop.add(new JLabel(this.activeNodeID + ": "));
-		JRadioButton jrEnv = new JRadioButton("Environment");
-		jrEnv.addActionListener(new ActionListener() {
+		JRadioButton jrModelInput = new JRadioButton("Model Input");
+		jrModelInput.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				paintEnvironmentPanel();
+				paintModelInputPanel();
 				tpc.setChanged();
 				// Re-Paint
 				getParent().repaint();
 			}
 		});
-		group.add(jrEnv);
-		this.jpNRTop.add(jrEnv);
-		JRadioButton jrInt = new JRadioButton("Integration");
-		jrInt.addActionListener(new ActionListener() {
+		group.add(jrModelInput);
+		this.jpNRTop.add(jrModelInput);
+		JRadioButton jrModelInt = new JRadioButton("Model Integration");
+		jrModelInt.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				paintIntegrationPanel();
+				paintModelIntegrationPanel();
 				tpc.setChanged();
 				// Re-Paint
 				getParent().repaint();
 			}
 		});
-		group.add(jrInt);
-		this.jpNRTop.add(jrInt);
+		group.add(jrModelInt);
+		this.jpNRTop.add(jrModelInt);
 		LogicalModel m = this.epithelium.getProjectFeatures().getModel(
 				this.activeModel);
 		NodeInfo node = this.epithelium.getProjectFeatures().getNodeInfo(
 				this.activeNodeID, m);
 		if (this.userIntegrationFunctions
 				.containsComponentPair(new ComponentPair(m, node))) {
-			jrInt.setSelected(true);
-			paintIntegrationPanel();
-		} else {
-			jrEnv.setSelected(true);
-			paintEnvironmentPanel();
+			jrModelInt.setSelected(true);
+			paintModelIntegrationPanel();
+		}else {
+			jrModelInput.setSelected(true);
+			paintModelInputPanel();
 		}
 	}
 
@@ -225,14 +227,14 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 		}
 	}
 
-	private void paintEnvironmentPanel() {
+	private void paintModelInputPanel() {
 		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
 		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
 		this.userIntegrationFunctions.removeComponent(cp);
 		this.jpNRBottom.removeAll();
 	}
 	
-	private void paintIntegrationPanel() {
+	private void paintModelIntegrationPanel() {
 		// GUI
 		this.jpNRBottom.removeAll();
 
@@ -379,23 +381,10 @@ public class EpiTabIntegrationFunctions extends EpiTabDefinitions {
 
 	@Override
 	public void applyChange() {
+		//FIXME: if a model is no longer in the epi, should we still save its 
+		//input definitions?
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
 				this.epithelium.getEpitheliumGrid().getModelSet());
-		EpitheliumIntegrationFunctions epiFunc = new EpitheliumIntegrationFunctions();
-		for (LogicalModel m : modelList) {
-			for (NodeInfo node : m.getNodeOrder()) {
-				ComponentPair cp = new ComponentPair(m, node);
-				if (this.userIntegrationFunctions.containsComponentPair(cp)) {
-					// Already exists
-					epiFunc.addComponentFunctions(cp,
-							this.userIntegrationFunctions
-									.getComponentIntegrationFunctions(cp));
-				} else {
-					// Adds a new one
-					epiFunc.addComponent(cp);
-				}
-			}
-		}
 		this.jpNLTop.removeAll();
 		this.jpNLTop.add(this.newModelCombobox(modelList));
 		this.activeModel = this.projectFeatures.getModelName(modelList.get(0));

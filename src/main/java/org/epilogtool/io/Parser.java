@@ -35,6 +35,8 @@ import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.ModelPerturbations;
 import org.epilogtool.core.ModelPriorityClasses;
+import org.epilogtool.core.cellDynamics.CellularEvent;
+import org.epilogtool.core.cellDynamics.ModelEventExpression;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.color.ColorUtils;
 
@@ -124,6 +126,10 @@ public class Parser {
 									.instances2Tuples2D(saTmp[2].split(",")));
 					currEpi.initPriorityClasses(m);
 					currEpi.initComponentFeatures(m);
+					currEpi.initModelEventManager();
+					currEpi.getModelEventManager().addModel(m);
+					currEpi.initModelHeritableNodes();
+					currEpi.getModelHeritableNodes().addModel(m);
 				}
 			}
 			// alpha-asynchronous value
@@ -255,7 +261,44 @@ public class Parser {
 					currEpi.applyPerturbation(m, ap, c, lTuple);
 				}
 			}
-			// project add currEpi
+			
+			if (line.startsWith("HN")) {
+				saTmp = line.split("\\s+");
+				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
+				for (int i = 2; i < saTmp.length; i++) {
+					currEpi.getModelHeritableNodes().addNode(m, saTmp[i]);
+				}
+			}
+			
+			if (line.startsWith("ID")) {
+				saTmp = line.split("\\s+");
+				int i = 1;
+				for (int a = 0; a < currEpi.getY(); a ++) {
+					for (int b = 0; b < currEpi.getX(); b++) {
+						if (!EmptyModel.getInstance().isEmptyModel(currEpi.getModel(b, a))) {
+							String[] id = saTmp[i].split("-");
+							currEpi.getEpitheliumGrid().getCellID(b, a).setRoot(Integer.parseInt(id[0]));
+							String idString = (id.length==1)? "": id[1];
+							currEpi.getEpitheliumGrid().getCellID(b, a).setIdentifier(idString);
+							i+=1;
+						}
+					}
+				}
+			}
+			
+			if (line.startsWith("ME")) {
+				saTmp = line.split("\\s+");
+				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
+				CellularEvent event = CellularEvent.string2Event(saTmp[2]);
+				if (!currEpi.getModelEventManager().hasModel(m)) {
+					currEpi.getModelEventManager().addModel(m);
+				}
+				saTmp = line.split(saTmp[2]);
+				String expression = saTmp[1].trim();
+				ModelEventExpression modelExpression = new ModelEventExpression(expression);
+				currEpi.getModelEventManager().getModelEvents(m).put(event, modelExpression);
+			}
+			
 		}
 		// // Ensure coherence of all epithelia
 		for (Epithelium epi : project.getEpitheliumList()) {
@@ -496,6 +539,7 @@ public class Parser {
 				}
 			}
 		}
+		w.println();
 
 		for (LogicalModel m : model2Key.keySet()) {
 			ModelPerturbations mp = epi.getModelPerturbations(m);
@@ -516,6 +560,49 @@ public class Parser {
 				w.println();
 			}
 		}
+		
+		w.println();
+		
+		//Model- cell events
+		//ME #model event_type pattern
+		for (LogicalModel m: model2Key.keySet()) {
+			if (epi.getModelEventManager().getModelEvents(m)== null) {
+				continue;
+			}
+			Map<CellularEvent, ModelEventExpression> modelEvents = epi.getModelEventManager().getModelEvents(m);
+			for (CellularEvent event : modelEvents.keySet()) {
+				w.print("ME " + model2Key.get(m) + " " + event.toString() + " " + modelEvents.get(event).getExpression());
+			}
+			w.println();
+		}
+		
+		//Model heritable components
+		//HN #model node1 node2 ...
+		for (LogicalModel m: model2Key.keySet()) {
+			if (epi.getModelHeritableNodes().hasModel(m)) {
+				if (epi.getModelHeritableNodes().hasHeritableNodes(m)) {
+					w.print("HN " + model2Key.get(m));
+					for (String node : epi.getModelHeritableNodes().getModelHeritableNodes(m)) {
+						w.print(" " + node);
+					}
+				}
+				w.println();
+			}
+		}
+		
+		//Epithelium Cell Identifiers
+		//ID ordered by entry index (for occupied positions only)
+		w.print("ID");
+		for (int y = 0; y < epi.getY(); y ++) {
+			for (int x = 0; x < epi.getX(); x ++) {
+				if (!EmptyModel.getInstance().isEmptyModel(epi.getModel(x, y))) { 
+					w.print(" " + epi.getEpitheliumGrid().getCellID(x, y));
+				}
+			}
+		}
+		
+		w.println("\n\n");
+		//EpitheliumCell Connections
 	}
 
 	private static List<String> compactIntegerSequences(List<Integer> iInsts) {

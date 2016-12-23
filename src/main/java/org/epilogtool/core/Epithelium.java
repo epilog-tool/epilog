@@ -12,6 +12,8 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.core.cellDynamics.ModelHeritableNodes;
+import org.epilogtool.core.cellDynamics.ModelEventManager;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
@@ -25,11 +27,14 @@ public class Epithelium {
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
 	private ProjectFeatures projectFeatures;
 
-	public Epithelium(int x, int y, String topologyID, String name,
-			LogicalModel m, RollOver rollover,
+	// TODO: requires refactoring - these are the static properties used for
+	// cell division
+	private ModelEventManager modelEventManager;
+	private ModelHeritableNodes modelHeritableNodes;
+
+	public Epithelium(int x, int y, String topologyID, String name, LogicalModel m, RollOver rollover,
 			ProjectFeatures projectFeatures)
-			throws InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException,
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		this.name = name;
 		this.grid = new EpitheliumGrid(x, y, topologyID, rollover, m);
@@ -38,14 +43,17 @@ public class Epithelium {
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
 		this.perturbations = new EpitheliumPerturbations();
 		this.projectFeatures = projectFeatures;
-		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(
-				EpitheliumUpdateSchemeInter.DEFAULT_ALPHA, new HashMap<ComponentPair, Float>());
+		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(EpitheliumUpdateSchemeInter.DEFAULT_ALPHA,
+				new HashMap<ComponentPair, Float>());
+		this.modelEventManager = new ModelEventManager(this.grid.getModelSet());
+		this.modelHeritableNodes = new ModelHeritableNodes();
+		this.modelHeritableNodes.addModel(m);
 	}
 
-	private Epithelium(String name,
-			EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
-			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap,
-			ProjectFeatures pf, EpitheliumUpdateSchemeInter usi) {
+	private Epithelium(String name, EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
+			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap, ProjectFeatures pf,
+			EpitheliumUpdateSchemeInter usi, ModelEventManager eventsManager,
+			ModelHeritableNodes modelHeritableNodes) {
 		this.name = name;
 		this.grid = grid;
 		this.priorities = epc;
@@ -53,22 +61,41 @@ public class Epithelium {
 		this.projectFeatures = pf;
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
+		this.modelEventManager = eventsManager;
+		this.modelHeritableNodes = modelHeritableNodes;
+		;
 	}
-	
-	public void updateEpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+
+	public Epithelium clone() {
+		return new Epithelium("CopyOf_" + this.name, this.grid.clone(), this.integrationFunctions.clone(),
+				this.priorities.clone(), this.perturbations.clone(), this.projectFeatures,
+				this.updateSchemeInter.clone(), this.modelEventManager.clone(), this.modelHeritableNodes.clone());
+	}
+
+	public String toString() {
+		return this.getName();
+		// return this.name + " ("
+		// + this.grid.getTopology().getRollOver().toString() + ")";
+	}
+
+	public boolean equals(Object o) {
+		Epithelium otherEpi = (Epithelium) o;
+		return (this.grid.equals(otherEpi.grid) && this.priorities.equals(otherEpi.priorities)
+				&& this.integrationFunctions.equals(otherEpi.integrationFunctions)
+				&& this.perturbations.equals(otherEpi.perturbations)
+				&& this.updateSchemeInter.equals(otherEpi.getUpdateSchemeInter())
+				&& this.modelHeritableNodes.equals(otherEpi.modelHeritableNodes));
+		// TODO: cell division classes are not tested
+	}
+
+	public void updateEpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		this.grid.updateEpitheliumGrid(gridX, gridY, topologyID, rollover);
 	}
 
 	public boolean hasModel(LogicalModel m) {
 		return this.grid.hasModel(m);
-	}
-
-	public Epithelium clone() {
-		return new Epithelium("CopyOf_"
-				+ this.name, this.grid.clone(),
-				this.integrationFunctions.clone(), this.priorities.clone(),
-				this.perturbations.clone(), this.projectFeatures,
-				this.updateSchemeInter.clone());
 	}
 
 	public void update() {
@@ -84,17 +111,24 @@ public class Epithelium {
 			// Perturbations
 			if (!this.perturbations.hasModel(mSet))
 				this.perturbations.addModel(mSet);
+
+			// Grid dynamics
+			if (!this.modelEventManager.hasModel(mSet))
+				this.modelEventManager.addModel(mSet);
+
+			// Heritable components
+			if (!this.modelHeritableNodes.hasModel(mSet)) {
+				this.modelHeritableNodes.addModel(mSet);
+			}
 		}
 
 		// Remove from Epithelium state absent models from modelSet
-		for (LogicalModel mPriorities : new ArrayList<LogicalModel>(
-				this.priorities.getModelSet())) {
+		for (LogicalModel mPriorities : new ArrayList<LogicalModel>(this.priorities.getModelSet())) {
 			if (!modelSet.contains(mPriorities)) {
 				this.priorities.removeModel(mPriorities);
 			}
 		}
-		for (LogicalModel mPerturbation : new ArrayList<LogicalModel>(
-				this.perturbations.getModelSet())) {
+		for (LogicalModel mPerturbation : new ArrayList<LogicalModel>(this.perturbations.getModelSet())) {
 			if (!modelSet.contains(mPerturbation)) {
 				this.perturbations.removeModel(mPerturbation);
 			}
@@ -117,16 +151,6 @@ public class Epithelium {
 		}
 	}
 
-	public EpitheliumUpdateSchemeInter getUpdateSchemeInter() {
-		return this.updateSchemeInter;
-	}
-
-	public String toString() {
-		return this.getName();
-		// return this.name + " ("
-		// + this.grid.getTopology().getRollOver().toString() + ")";
-	}
-
 	public String getName() {
 		return this.name;
 	}
@@ -139,26 +163,65 @@ public class Epithelium {
 		return this.grid.getModel(x, y);
 	}
 
+	public EpitheliumGrid getEpitheliumGrid() {
+		return this.grid;
+	}
+
 	public ProjectFeatures getProjectFeatures() {
 		return this.projectFeatures;
 	}
 
-	public void setGridWithModel(LogicalModel m, List<Tuple2D<Integer>> lTuples) {
+	public EpitheliumUpdateSchemeInter getUpdateSchemeInter() {
+		return this.updateSchemeInter;
+	}
+
+	public ModelPriorityClasses getPriorityClasses(LogicalModel m) {
+		return this.priorities.getModelPriorityClasses(m);
+	}
+
+	public ComponentIntegrationFunctions getIntegrationFunctionsForComponent(ComponentPair cp) {
+		return this.integrationFunctions.getComponentIntegrationFunctions(cp);
+	}
+
+	public Set<ComponentPair> getIntegrationComponentPairs() {
+		return this.integrationFunctions.getComponentPair();
+	}
+
+	public boolean isIntegrationComponent(NodeInfo node) {
+		for (ComponentPair cp : this.integrationFunctions.getComponentPair()) {
+			if (node.equals(cp.getNodeInfo()))
+				return true;
+		}
+		return false;
+	}
+
+	public EpitheliumIntegrationFunctions getIntegrationFunctions() {
+		return this.integrationFunctions;
+	}
+
+	public ModelPerturbations getModelPerturbations(LogicalModel m) {
+		return this.perturbations.getModelPerturbations(m);
+	}
+
+	public EpitheliumPerturbations getEpitheliumPerturbations() {
+		return this.perturbations;
+	}
+
+	public ModelHeritableNodes getModelHeritableNodes() {
+		return this.modelHeritableNodes;
+	}
+
+	public void setModelHeritableNode(ModelHeritableNodes mhn) {
+		this.modelHeritableNodes = mhn;
+	}
+
+	public void setGridWithComponentValue(String nodeID, byte value, List<Tuple2D<Integer>> lTuples) {
 		for (Tuple2D<Integer> tuple : lTuples) {
-			this.grid.setModel(tuple.getX(), tuple.getY(), m);
+			this.grid.setCellComponentValue(tuple.getX(), tuple.getY(), nodeID, value);
 		}
 	}
 
-	public void setGridWithComponentValue(String nodeID, byte value,
-			List<Tuple2D<Integer>> lTuples) {
-		for (Tuple2D<Integer> tuple : lTuples) {
-			this.grid.setCellComponentValue(tuple.getX(), tuple.getY(), nodeID,
-					value);
-		}
-	}
-
-	public void setIntegrationFunction(String nodeID, LogicalModel m, byte value,
-			String function) {
+	public void setIntegrationFunction(String nodeID, LogicalModel m, byte value, String function) {
 		NodeInfo node = this.projectFeatures.getNodeInfo(nodeID, m);
 		ComponentPair cp = new ComponentPair(m, node);
 		if (!this.integrationFunctions.containsComponentPair(cp)) {
@@ -194,53 +257,40 @@ public class Epithelium {
 		this.perturbations.delPerturbation(m, ap);
 	}
 
-	public void applyPerturbation(LogicalModel m, AbstractPerturbation ap,
-			Color c, List<Tuple2D<Integer>> lTuples) {
+	public void applyPerturbation(LogicalModel m, AbstractPerturbation ap, Color c, List<Tuple2D<Integer>> lTuples) {
 		this.perturbations.addPerturbationColor(m, ap, c);
 		if (lTuples != null) {
 			this.grid.setPerturbation(m, lTuples, ap);
 		}
 	}
 
-	public EpitheliumGrid getEpitheliumGrid() {
-		return this.grid;
-	}
-
-	public ModelPriorityClasses getPriorityClasses(LogicalModel m) {
-		return this.priorities.getModelPriorityClasses(m);
-	}
-
-	public ComponentIntegrationFunctions getIntegrationFunctionsForComponent(
-			ComponentPair cp) {
-		return this.integrationFunctions
-				.getComponentIntegrationFunctions(cp);
-	}
-
-	public Set<ComponentPair> getIntegrationComponentPairs() {
-		return this.integrationFunctions.getComponentPair();
-	}
-
-	public boolean isIntegrationComponent(NodeInfo node) {
-		for (ComponentPair cp : this.integrationFunctions.getComponentPair()){
-			if (node.equals(cp.getNodeInfo())) return true;
-		}
-		return false;
-	}
-
-	public EpitheliumIntegrationFunctions getIntegrationFunctions() {
-		return this.integrationFunctions;
-	}
-
-	public ModelPerturbations getModelPerturbations(LogicalModel m) {
-		return this.perturbations.getModelPerturbations(m);
-	}
-
-	public EpitheliumPerturbations getEpitheliumPerturbations() {
-		return this.perturbations;
-	}
-
 	public void setModel(int x, int y, LogicalModel m) {
 		this.grid.setModel(x, y, m);
+	}
+
+	public void setGridWithModel(LogicalModel m, List<Tuple2D<Integer>> lTuples) {
+		for (Tuple2D<Integer> tuple : lTuples) {
+			this.setModel(tuple.getX(), tuple.getY(), m);
+		}
+		if (!this.modelEventManager.getModelSet().contains(m)) {
+			this.modelEventManager.addModel(m);
+		}
+	}
+
+	public void initModelEventManager() {
+		this.modelEventManager = new ModelEventManager();
+	}
+
+	public void initModelHeritableNodes() {
+		this.modelHeritableNodes = new ModelHeritableNodes();
+	}
+
+	public ModelEventManager getModelEventManager() {
+		return this.modelEventManager;
+	}
+
+	public void setModelEventManager(ModelEventManager tem) {
+		this.modelEventManager = tem;
 	}
 
 	public int getX() {
@@ -249,15 +299,5 @@ public class Epithelium {
 
 	public int getY() {
 		return this.grid.getY();
-	}
-
-	public boolean equals(Object o) {
-		Epithelium otherEpi = (Epithelium) o;
-		return (this.grid.equals(otherEpi.grid)
-				&& this.priorities.equals(otherEpi.priorities)
-				&& this.integrationFunctions
-						.equals(otherEpi.integrationFunctions)
-				&& this.perturbations.equals(otherEpi.perturbations) && this.updateSchemeInter
-					.equals(otherEpi.getUpdateSchemeInter()));
 	}
 }

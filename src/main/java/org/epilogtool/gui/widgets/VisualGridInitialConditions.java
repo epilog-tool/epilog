@@ -29,10 +29,8 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 	private LogicalModel selectedModel;
 	private GridInformation valuePanel;
 
-	public VisualGridInitialConditions(EpitheliumGrid gridClone,
-			Map<String, Color> colorMapClone,
-			Map<String, Byte> mNode2ValueSelected, GridInformation valuePanel,
-			TabProbablyChanged tpc) {
+	public VisualGridInitialConditions(EpitheliumGrid gridClone, Map<String, Color> colorMapClone,
+			Map<String, Byte> mNode2ValueSelected, GridInformation valuePanel, TabProbablyChanged tpc) {
 		super(gridClone.getX(), gridClone.getY(), gridClone.getTopology(), tpc);
 		this.epiGrid = gridClone;
 		this.colorMapClone = colorMapClone;
@@ -96,8 +94,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 		if (!this.isInGrid(pos))
 			return;
 
-		if (this.epiGrid.getModel(pos.getX(), pos.getY()).equals(
-				this.selectedModel))
+		if (this.epiGrid.getModel(pos.getX(), pos.getY()).equals(this.selectedModel))
 			super.paintCellAt(pos);
 	}
 
@@ -119,8 +116,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 		Color c = Color.LIGHT_GRAY;
 
 		// Paint the rectangle
-		super.highlightCellsOverRectangle(this.initialRectPos, this.mouseGrid,
-				c);
+		super.highlightCellsOverRectangle(this.initialRectPos, this.mouseGrid, c);
 	}
 
 	public void isRectangleFill(boolean fill) {
@@ -130,12 +126,10 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 	protected void applyDataAt(int x, int y) {
 		for (String nodeID : this.mNode2ValueSelected.keySet()) {
 			if (!this.tpc.isChanged()
-					&& !this.mNode2ValueSelected.get(nodeID).equals(
-							this.epiGrid.getCellValue(x, y, nodeID))) {
+					&& !this.mNode2ValueSelected.get(nodeID).equals(this.epiGrid.getCellValue(x, y, nodeID))) {
 				this.tpc.setChanged();
 			}
-			this.epiGrid.setCellComponentValue(x, y, nodeID,
-					this.mNode2ValueSelected.get(nodeID));
+			this.epiGrid.setCellComponentValue(x, y, nodeID, this.mNode2ValueSelected.get(nodeID));
 		}
 	}
 
@@ -143,17 +137,15 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 
-		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY,
-				this.getSize().width, this.getSize().height);
+		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY, this.getSize().width,
+				this.getSize().height);
 
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
 				Color cCombined;
-				if (EmptyModel.getInstance().isEmptyModel(
-						this.epiGrid.getModel(x, y))) {
+				if (EmptyModel.getInstance().isEmptyModel(this.epiGrid.getModel(x, y))) {
 					cCombined = EmptyModel.getInstance().getColor();
-				} else if (this.epiGrid.getModel(x, y).equals(
-						this.selectedModel)) {
+				} else if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
 					List<Color> lColors = new ArrayList<Color>();
 					for (String nodeID : this.mNode2ValueSelected.keySet()) {
 						int index = this.epiGrid.getNodeIndex(x, y, nodeID);
@@ -161,21 +153,17 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 							Color cBase = this.colorMapClone.get(nodeID);
 							byte value = this.epiGrid.getCellState(x, y)[index];
 							if (value > 0) {
-								byte max = this.epiGrid.getModel(x, y)
-										.getNodeOrder().get(index).getMax();
-								lColors.add(ColorUtils.getColorAtValue(cBase,
-										max, value));
+								byte max = this.epiGrid.getModel(x, y).getNodeOrder().get(index).getMax();
+								lColors.add(ColorUtils.getColorAtValue(cBase, max, value));
 							}
 						}
 					}
 					cCombined = ColorUtils.combine(lColors);
-				} else {
+				} else { // other models
 					cCombined = this.getParent().getBackground();
 				}
-				Tuple2D<Double> center = topology.getPolygonCenter(this.radius,
-						x, y);
-				Polygon polygon = topology
-						.createNewPolygon(this.radius, center);
+				Tuple2D<Double> center = topology.getPolygonCenter(this.radius, x, y);
+				Polygon polygon = topology.createNewPolygon(this.radius, center);
 				this.paintPolygon(this.strokeBasic, cCombined, polygon, g2);
 			}
 		}
