@@ -84,7 +84,8 @@ public class Epithelium {
 				&& this.integrationFunctions.equals(otherEpi.integrationFunctions)
 				&& this.perturbations.equals(otherEpi.perturbations)
 				&& this.updateSchemeInter.equals(otherEpi.getUpdateSchemeInter())
-				&& this.modelHeritableNodes.equals(otherEpi.modelHeritableNodes));
+				&& this.modelHeritableNodes.equals(otherEpi.modelHeritableNodes))
+				&& this.modelEventManager.equals(otherEpi.modelEventManager);
 		// TODO: cell division classes are not tested
 	}
 
