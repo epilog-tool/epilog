@@ -50,20 +50,23 @@ public class ModelEventManager {
 		return this.model2EventsMap.keySet().contains(m);
 	}
 	
-	public Set<LogicalModel> getModelSet() {
-		return this.model2EventsMap.keySet();
+	public boolean containsModel(LogicalModel m) {
+		return this.model2EventsMap.containsKey(m);
 	}
 	
-	public void addModelEvents(LogicalModel m, Map<CellularEvent, ModelEventExpression> modelEvents) {
-		this.model2EventsMap.put(m, modelEvents);
+	public Set<CellularEvent> getModelEvents(LogicalModel m) {
+		return this.model2EventsMap.get(m).keySet();
 	}
 	
-	public Map<CellularEvent, ModelEventExpression> getModelEvents(LogicalModel m) {
-		return this.model2EventsMap.get(m);
-	}
-	
-	public void setCellularEvent(ModelEventExpression pattern, LogicalModel m, CellularEvent event) {
+	public void setModelEventExpression(LogicalModel m, CellularEvent event, ModelEventExpression pattern) {
 		this.model2EventsMap.get(m).put(event, pattern);
+	}
+	
+	public ModelEventExpression getModelEventExpression(LogicalModel m, CellularEvent event) {
+		if (!this.model2EventsMap.get(m).containsKey(event)) {
+			return null;
+		}
+		return this.model2EventsMap.get(m).get(event);
 	}
 	
 	public void removeCellularEvent(LogicalModel m, CellularEvent event) {

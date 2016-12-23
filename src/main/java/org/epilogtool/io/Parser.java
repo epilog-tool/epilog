@@ -296,7 +296,7 @@ public class Parser {
 				saTmp = line.split(saTmp[2]);
 				String expression = saTmp[1].trim();
 				ModelEventExpression modelExpression = new ModelEventExpression(expression);
-				currEpi.getModelEventManager().getModelEvents(m).put(event, modelExpression);
+				currEpi.getModelEventManager().setModelEventExpression(m,event, modelExpression);
 			}
 			
 		}
@@ -569,9 +569,9 @@ public class Parser {
 			if (epi.getModelEventManager().getModelEvents(m)== null) {
 				continue;
 			}
-			Map<CellularEvent, ModelEventExpression> modelEvents = epi.getModelEventManager().getModelEvents(m);
-			for (CellularEvent event : modelEvents.keySet()) {
-				w.print("ME " + model2Key.get(m) + " " + event.toString() + " " + modelEvents.get(event).getExpression());
+			Set<CellularEvent> modelEvents = epi.getModelEventManager().getModelEvents(m);
+			for (CellularEvent event : modelEvents) {
+				w.print("ME " + model2Key.get(m) + " " + event.toString() + " " +  epi.getModelEventManager().getModelEventExpression(m, event).getExpression());
 			}
 			w.println();
 		}

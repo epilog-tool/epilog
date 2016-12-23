@@ -53,7 +53,7 @@ public class CEEvaluation {
 			String nodeID = node.getComponentName();
 			List<NodeInfo> nodeOrder = m.getNodeOrder();
 			for (int i = 0; i < nodeOrder.size(); i++) {
-				if (nodeOrder.get(i).equals(nodeID)) {
+				if (nodeOrder.get(i).getNodeID().equals(nodeID)) {
 					if (state[i] >= node.getValue()) {
 						return true;
 					}

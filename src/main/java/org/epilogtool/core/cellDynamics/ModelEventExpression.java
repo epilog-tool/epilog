@@ -42,7 +42,7 @@ public class ModelEventExpression {
 	
 	public boolean equals(Object o) {
 		ModelEventExpression other = (ModelEventExpression) o;
-		return this.expression.equals(other.expression) && this.computedExpression.equals(other.computedExpression);
+		return this.expression.equals(other.expression);
 	}
 	
 	public ModelEventExpression clone() {
