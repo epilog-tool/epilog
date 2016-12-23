@@ -277,7 +277,6 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 	private void setExpression(String expression) {
 		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
 		if (expression == null || expression.trim().length() == 0) {
-			System.out.println("Here");
 			this.eventManager.removeCellularEvent(m, this.eventType);
 			return;
 		}

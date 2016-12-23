@@ -242,18 +242,12 @@ public class Simulation {
 	private CellularEvent nextCellEvent(LogicalModel m, byte[] nextState) {
 		for (CellularEvent cellEvent : this.epithelium
 				.getModelEventManager().getModelEvents(m)) {
-			System.out.println(cellEvent);
-			System.out.println(Arrays.toString(nextState));
 			CellularEventExpression exp = this.epithelium
 					.getModelEventManager().getModelEventExpression(m, cellEvent).getcomputedExpression();
-			System.out.println(this.epithelium
-					.getModelEventManager().getModelEventExpression(m, cellEvent).getExpression());
 			if (ceEvaluator.evaluate(m, nextState, exp)==true) {
-				System.out.println("accepted");
 				return cellEvent;
 			}
 		}
-		System.out.println("rejected");
 		return CellularEvent.DEFAULT;
 	}
 
