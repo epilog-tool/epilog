@@ -136,16 +136,18 @@ public class Simulation {
 					keys.add(key);
 					continue;
 				}
+				LogicalModel m = currGrid.getModel(x, y);
 				byte[] currState = currGrid.getCellState(x, y);
 				// Default cell next state is same as current
 				nextGrid.setCellState(x, y, currState.clone());
 				// Compute next state
 				byte[] nextState = this.nextCellValue(x, y, currGrid,
 						evaluator, sIntegComponentPairs);
-				cells2update.put(key, (nextState==null ? currState.clone(): nextState));
+				nextState = (nextState == null) ? currState.clone() : nextState;
+				cells2update.put(key, nextState);
 				keys.add(key);
 				CellularEvent prevCellEvent = currGrid.getCellEvent(x, y);
-				CellularEvent nextCellEvent = this.nextCellEvent(x, y, currGrid);
+				CellularEvent nextCellEvent = this.nextCellEvent(m, nextState);
 				cells2event.put(key, nextCellEvent);
 				if (nextState == null || !Arrays.equals(currState, nextState)) {
 					cellUpdates = true;
@@ -239,15 +241,12 @@ public class Simulation {
 		return this.hasCycle;
 	}
 	
-	private CellularEvent nextCellEvent(int x, int y, EpitheliumGrid currGrid) {
-		LogicalModel m = currGrid.getModel(x, y);
-		byte[] state = currGrid.getCellState(x, y);
+	private CellularEvent nextCellEvent(LogicalModel m, byte[] nextState) {
 		for (CellularEvent cellEvent : this.epithelium
-				.getModelEventManager().getModelEvents(m).keySet()) {
+				.getModelEventManager().getModelEvents(m)) {
 			CellularEventExpression exp = this.epithelium
-					.getModelEventManager().getModelEvents(m)
-					.get(cellEvent).getcomputedExpression();
-			if (ceEvaluator.evaluate(m, state, exp)==true) {
+					.getModelEventManager().getModelEventExpression(m, cellEvent).getcomputedExpression();
+			if (ceEvaluator.evaluate(m, nextState, exp)==true) {
 				return cellEvent;
 			}
 		}

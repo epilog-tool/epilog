@@ -84,8 +84,8 @@ public class Epithelium {
 				&& this.integrationFunctions.equals(otherEpi.integrationFunctions)
 				&& this.perturbations.equals(otherEpi.perturbations)
 				&& this.updateSchemeInter.equals(otherEpi.getUpdateSchemeInter())
-				&& this.modelHeritableNodes.equals(otherEpi.modelHeritableNodes));
-		// TODO: cell division classes are not tested
+				&& this.modelHeritableNodes.equals(otherEpi.modelHeritableNodes))
+				&& this.modelEventManager.equals(otherEpi.modelEventManager);
 	}
 
 	public void updateEpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover)
@@ -272,7 +272,7 @@ public class Epithelium {
 		for (Tuple2D<Integer> tuple : lTuples) {
 			this.setModel(tuple.getX(), tuple.getY(), m);
 		}
-		if (!this.modelEventManager.getModelSet().contains(m)) {
+		if (!this.modelEventManager.containsModel(m)) {
 			this.modelEventManager.addModel(m);
 		}
 	}

@@ -164,9 +164,8 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 		gbc.anchor = GridBagConstraints.WEST;
 		jpCellDivisionPattern.add(new JLabel("Trigger "), gbc);
 		gbc.gridx = 1;
-		String text = (this.eventManager.getModelEvents(m).isEmpty()) ? "" 
-				: this.eventManager.getModelEvents(m)
-				.get(CellularEvent.PROLIFERATION).getExpression();
+		String text = (!this.eventManager.getModelEvents(m).contains(CellularEvent.PROLIFERATION)) ? "" 
+				: this.eventManager.getModelEventExpression(m, CellularEvent.PROLIFERATION).getExpression();
 		JTextField jtf = new JTextField(text);
 		jtf.setToolTipText("Cell division trigger");
 			
@@ -278,13 +277,13 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 	private void setExpression(String expression) {
 		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
 		if (expression == null || expression.trim().length() == 0) {
-			System.out.println("Here");
-			this.eventManager.getModelEvents(m).remove(this.eventType);
+			this.eventManager.removeCellularEvent(m, this.eventType);
+			return;
 		}
 		if (!this.eventManager.hasModel(m)) {
 			this.eventManager.addModel(m);
 		}
-		this.eventManager.getModelEvents(m).put(this.eventType, new ModelEventExpression(expression));
+		this.eventManager.setModelEventExpression(m, this.eventType, new ModelEventExpression(expression));
 	}
 
 	@Override
@@ -312,12 +311,10 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
 				this.epithelium.getEpitheliumGrid().getModelSet());
 		for (LogicalModel m : modelList) {
-			if (this.epithelium.getModelEventManager().hasModel(m)
-					&& !this.eventManager.hasModel(m)) {
-				this.eventManager.addModelEvents(m, 
-						new HashMap<CellularEvent, ModelEventExpression>(this.epithelium
-						.getModelEventManager()
-						.getModelEvents(m)));
+			for (CellularEvent event : this.eventManager.getModelEvents(m)) {
+				this.epithelium.getModelEventManager()
+				.setModelEventExpression(m, event, 
+						this.eventManager.getModelEventExpression(m, event));
 			}
 			if (this.epithelium.getModelHeritableNodes().hasModel(m) && !this.modelHeritableNodes.hasModel(m)) {
 				this.modelHeritableNodes.addModel(m);
@@ -328,7 +325,6 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 		this.activeModel = this.projectFeatures.getModelName(modelList.get(0));
 		this.updateModelDynamicsPanel();
 		this.getParent().repaint();
-		
 	}
 
 }
