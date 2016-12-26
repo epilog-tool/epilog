@@ -168,7 +168,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 			}
 			names[i] = lDescs.get(i);
 		}
-		this.jcbLayout = new JComboImageBox(names);
+		this.jcbLayout = new JComboImageBox<String>(names);
 		this.jcbLayout.setSelectedIndex(iSelected);
 		c.gridx = 1;
 		c.gridy = 5;

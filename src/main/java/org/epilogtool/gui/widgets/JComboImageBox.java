@@ -13,7 +13,7 @@ import javax.swing.SwingConstants;
 
 import org.epilogtool.io.FileResource;
 
-public class JComboImageBox extends JComboBox<ImageIcon> {
+public class JComboImageBox<E> extends JComboBox<E> {
 	private static final long serialVersionUID = 5114067663247442502L;
 
 	private ImageIcon[] selectedImages;
