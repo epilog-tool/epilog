@@ -62,6 +62,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private JPanel jpRCenter;
 	private GridInformation lRight;
 	private JPanel rTop;
+	private JRadioButton allNodes;
+	private JRadioButton selectedNodes;
 	
 	private LogicalModel selectedModel;
 	
@@ -212,8 +214,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		RRandomInitialConditions.setBorder(BorderFactory.createTitledBorder("Random Initial Conditions"));
 		ButtonGroup group = new ButtonGroup();
 //		JCheckBox randomInitialConditions = new JCheckBox("Random Initial Conditions");
-		JRadioButton allNodes = new JRadioButton ("All components");
-		JRadioButton selectedNodes = new JRadioButton ("Selected components");
+		this.allNodes = new JRadioButton ("All components");
+		this.selectedNodes = new JRadioButton ("Selected components");
 		
 		allNodes.setSelected(true);
 		group.add(allNodes);
