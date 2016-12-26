@@ -13,7 +13,7 @@ import javax.swing.SwingConstants;
 
 import org.epilogtool.io.FileResource;
 
-public class JComboImageBox extends JComboBox {
+public class JComboImageBox extends JComboBox<ImageIcon> {
 	private static final long serialVersionUID = 5114067663247442502L;
 
 	private ImageIcon[] selectedImages;
@@ -30,7 +30,7 @@ public class JComboImageBox extends JComboBox {
 		setRenderer(new ComboBoxRenderer());
 	}
 
-	class ComboBoxRenderer extends JLabel implements ListCellRenderer {
+	class ComboBoxRenderer extends JLabel implements ListCellRenderer<Object> {
 		private static final long serialVersionUID = 2340379218653860517L;
 		private Font uhOhFont;
 
@@ -41,7 +41,7 @@ public class JComboImageBox extends JComboBox {
 		}
 
 		@Override
-		public Component getListCellRendererComponent(JList list, Object value,
+		public Component getListCellRendererComponent(JList<?> list, Object value,
 				int index, boolean isSelected, boolean cellHasFocus) {
 
 			if (isSelected) {
