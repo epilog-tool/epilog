@@ -202,7 +202,7 @@ public class EpiTreePanel extends JPanel {
 				"Epithelial Updating");
 		epiNode.add(eu);
 		DefaultMutableTreeNode cd = new DefaultMutableTreeNode(
-				"Grid Dynamics");
+				"Cell Division");
 		epiNode.add(cd);
 		
 		this.epiTree.setRootVisible(false);

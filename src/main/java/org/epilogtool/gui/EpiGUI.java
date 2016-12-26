@@ -623,7 +623,7 @@ public class EpiGUI extends JFrame {
 			} else if (tabName.equals("Model Grid")) {
 				epiTab = new EpiTabModelGrid(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
-			} else if (tabName.equals("Grid Dynamics")) {
+			} else if (tabName.equals("Cell Division")) {
 				epiTab = new EpiTabGridDynamics(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
 			}
