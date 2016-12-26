@@ -40,7 +40,6 @@ import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.integration.IFEvaluation;
 import org.epilogtool.integration.IntegrationFunctionExpression;
-import org.epilogtool.integration.IntegrationSignalExpression;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
 
@@ -405,7 +404,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		for (int i = 0; i < modelList.size(); i++) {
 			saSBML[i] = this.projectFeatures.getModelName(modelList.get(i));
 		}
-		JComboBox<String> jcb = new JComboWideBox(saSBML);
+		JComboBox<String> jcb = new JComboWideBox<String>(saSBML);
 		jcb.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
