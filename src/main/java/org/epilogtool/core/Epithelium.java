@@ -3,17 +3,17 @@ package org.epilogtool.core;
 import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.antlr.runtime.RecognitionException;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
-import org.epilogtool.core.cellDynamics.ModelHeritableNodes;
 import org.epilogtool.core.cellDynamics.ModelEventManager;
+import org.epilogtool.core.cellDynamics.ModelHeritableNodes;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
@@ -43,8 +43,7 @@ public class Epithelium {
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
 		this.perturbations = new EpitheliumPerturbations();
 		this.projectFeatures = projectFeatures;
-		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(EpitheliumUpdateSchemeInter.DEFAULT_ALPHA,
-				new HashMap<ComponentPair, Float>());
+		this.updateSchemeInter = new EpitheliumUpdateSchemeInter();
 		this.modelEventManager = new ModelEventManager(this.grid.getModelSet());
 		this.modelHeritableNodes = new ModelHeritableNodes();
 		this.modelHeritableNodes.addModel(m);
@@ -52,8 +51,7 @@ public class Epithelium {
 
 	private Epithelium(String name, EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
 			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap, ProjectFeatures pf,
-			EpitheliumUpdateSchemeInter usi, ModelEventManager eventsManager,
-			ModelHeritableNodes modelHeritableNodes) {
+			EpitheliumUpdateSchemeInter usi, ModelEventManager eventsManager, ModelHeritableNodes modelHeritableNodes) {
 		this.name = name;
 		this.grid = grid;
 		this.priorities = epc;
@@ -221,7 +219,8 @@ public class Epithelium {
 		}
 	}
 
-	public void setIntegrationFunction(String nodeID, LogicalModel m, byte value, String function) {
+	public void setIntegrationFunction(String nodeID, LogicalModel m, byte value, String function)
+			throws RecognitionException, RuntimeException {
 		NodeInfo node = this.projectFeatures.getNodeInfo(nodeID, m);
 		ComponentPair cp = new ComponentPair(m, node);
 		if (!this.integrationFunctions.containsComponentPair(cp)) {

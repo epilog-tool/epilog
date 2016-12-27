@@ -4,24 +4,27 @@ grammar IntegrationGrammar;
 package org.epilogtool.integration;
 }
 
+@parser::members {
+  @Override
+  public void reportError(RecognitionException e) {
+    throw new RuntimeException("I quit!\n" + e.getMessage()); 
+  }
+}
+
+@lexer::members {
+  @Override
+  public void reportError(RecognitionException e) {
+    throw new RuntimeException("I quit!\n" + e.getMessage()); 
+  }
+}
+
 /*****************************************************************************/
 /* Rules */
 
 eval	returns [IntegrationFunctionExpression value]
-	: exp=functionexpror { $value = $exp.value; }
+	: exp=functionexpror EOF { $value = $exp.value; }
 	;
-/*
-functionexpr returns [IntegrationFunctionExpression value]
-	: '(' expr=functionexpr ')'
-		{ $value = $expr.value; }
-	| NOT expr=functionexpr
-		{ $value = IFSpecification.integrationFunctionNOT($expr.value); }
-	| functionexpror
-		{ $value = $expr.value; }
-	| cardconst
-		{ $value = $expr.value; }
-	;
-*/
+
 functionexpror returns [IntegrationFunctionExpression value]
 	: o1=functionexprand (OR o2=functionexprand)*
 		{ $value = IFSpecification.integrationFunctionOperationOR($o1.value,$o2.value); }
@@ -33,18 +36,25 @@ functionexprand returns [IntegrationFunctionExpression value]
 	;
 
 functionexprnot returns [IntegrationFunctionExpression value]
-	: expr=cardconst
+	: expr=functionparen
 		{ $value = $expr.value; }
-	| NOT expr=cardconst
+	| NOT expr=functionparen
 		{ $value = IFSpecification.integrationFunctionNOT($expr.value); }
 	;
 
+functionparen returns [IntegrationFunctionExpression value]
+	: '(' expr=functionexpror ')'
+		{ $value = $expr.value; }
+	| expr=cardconst
+		{ $value = $expr.value; }
+	;
+
 cardconst returns [IntegrationFunctionExpression value ]
-	: '{' expr=signalexpror ',' 'min=' min=NUMBER '}'
+	: '{' expr=signalexpror ',' 'min' '=' min=NUMBER '}'
 		{ $value = IFSpecification.cardinalityConstraint($expr.value, $min.text, "-1"); }
-	| '{' expr=signalexpror ',' 'max=' max=NUMBER '}'
+	| '{' expr=signalexpror ',' 'max' '=' max=NUMBER '}'
 		{ $value = IFSpecification.cardinalityConstraint($expr.value, "-1", $max.text); }
-	| '{' expr=signalexpror ',' 'min=' min=NUMBER ',' 'max=' max=NUMBER '}'
+	| '{' expr=signalexpror ',' 'min' '=' min=NUMBER ',' 'max' '=' max=NUMBER '}'
 		{ $value = IFSpecification.cardinalityConstraint($expr.value, $min.text, $max.text); }
 	;
 
@@ -83,3 +93,5 @@ NUMBER : '0'..'9';
 OR     : '|';
 AND    : '&';
 NOT    : '!';
+WS     : SPACE+ {skip();};
+fragment SPACE : '\t' | ' ' | '\r' | '\n'| '\u000C';

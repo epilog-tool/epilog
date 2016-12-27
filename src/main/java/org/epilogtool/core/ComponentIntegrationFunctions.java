@@ -22,7 +22,13 @@ public class ComponentIntegrationFunctions {
 	public ComponentIntegrationFunctions clone() {
 		ComponentIntegrationFunctions newcif = new ComponentIntegrationFunctions(this.stringExpr.length);
 		for (byte i = 1; i <= this.stringExpr.length; i++) {
-			newcif.setFunctionAtLevel(i, this.stringExpr[i - 1]);
+			try {
+				newcif.setFunctionAtLevel(i, this.stringExpr[i - 1]);
+			} catch (RecognitionException re) {
+				// TODO Auto-generated catch block
+			} catch (RuntimeException re) {
+				// TODO Auto-generated catch block
+			}
 		}
 		return newcif;
 	}
@@ -31,26 +37,16 @@ public class ComponentIntegrationFunctions {
 		return Arrays.asList(this.computedExpr);
 	}
 
-	private IntegrationFunctionExpression string2Expression(String expr) {
+	private IntegrationFunctionExpression string2Expression(String expr) throws RecognitionException, RuntimeException {
 		IFSpecification spec = new IFSpecification();
 		IntegrationFunctionExpression expression = null;
-		try {
-			expression = spec.parse(expr);
-		} catch (RecognitionException e) {
-			e.printStackTrace();
-		}
+		expression = spec.parse(expr);
 		return expression;
 	}
 
-	public void setFunctionAtLevel(byte value, String function) {
+	public void setFunctionAtLevel(byte value, String function) throws RecognitionException, RuntimeException {
 		this.stringExpr[value - 1] = function;
 		this.computedExpr[value - 1] = this.string2Expression(function);
-	}
-
-	public boolean isValidAtLevel(byte level) {
-		// TODO 1: use parser to validate syntax
-		// TODO 2: use nodeID to validate semantics (nodeID, values, ...)
-		return true;
 	}
 
 	public List<String> getFunctions() {

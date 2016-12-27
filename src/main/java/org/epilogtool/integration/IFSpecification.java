@@ -34,8 +34,7 @@ public class IFSpecification {
 		return new IntegrationFunctionOperationOR(expr1, expr2);
 	}
 
-	public IntegrationFunctionExpression parse(String specificationString) throws RecognitionException {
-		System.out.println("String: " + specificationString);
+	public IntegrationFunctionExpression parse(String specificationString) throws RuntimeException, RecognitionException {
 		IntegrationFunctionExpression r = null;
 		if (specificationString != null) {
 			specificationString.replaceAll("\\s", "");
@@ -46,7 +45,6 @@ public class IFSpecification {
 			IntegrationGrammarParser parser = new IntegrationGrammarParser(tokens);
 			r = parser.eval();
 		}
-		System.out.println("eval: " + r);
 		return r;
 	}
 
