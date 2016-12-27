@@ -1,6 +1,7 @@
 package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -284,6 +285,15 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 			this.eventManager.addModel(m);
 		}
 		this.eventManager.setModelEventExpression(m, this.eventType, new ModelEventExpression(expression));
+	}
+	
+	private boolean validateExpression(JTextField jtf) {
+		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
+		if (jtf.getText() == null || jtf.getText().trim().length() == 0) {
+			jtf.setBackground(Color.WHITE);
+			return true;
+		}
+		return true;
 	}
 
 	@Override

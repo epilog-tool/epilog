@@ -198,7 +198,7 @@ public class EpiTreePanel extends JPanel {
 		epiNode.add(mu);
 		DefaultMutableTreeNode eu = new DefaultMutableTreeNode(EpiTab.TAB_EPIUPDATING);
 		epiNode.add(eu);
-		DefaultMutableTreeNode cd = new DefaultMutableTreeNode(EpiTab.TAB_GRIDDYNAMICS);
+		DefaultMutableTreeNode cd = new DefaultMutableTreeNode(EpiTab.TAB_CELLDIVISION);
 		epiNode.add(cd);
 		
 		this.epiTree.setRootVisible(false);

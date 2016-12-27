@@ -16,6 +16,8 @@ import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.core.ModelPerturbations;
 import org.epilogtool.core.ModelPriorityClasses;
+import org.epilogtool.core.cellDynamics.CellularEvent;
+import org.epilogtool.core.cellDynamics.ModelEventManager;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.gui.tab.EpiTab;
 import org.epilogtool.project.ComponentPair;
@@ -63,6 +65,8 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 							tipKey = this.getTooltipEpithelialUpdateScheme(epi);
 						} else if (sLeaf.equals(EpiTab.TOOL_SIMULATION)) {
 							tipKey = this.getTooltipSimulation(epi);
+						} else if (sLeaf.equals(EpiTab.TAB_CELLDIVISION)) {
+							tipKey = this.getToolTipCellDivision(epi);
 						}
 					}
 				}
@@ -177,6 +181,28 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 						epi.getProjectFeatures().getModelName(cp.getModel()) + 
 						" : " + cp.getNodeInfo().getNodeID() + 
 						" - " + cpSigmas.get(cp) + "<br/>";
+			}
+		}
+		tipKey += "</html>";
+		return tipKey;
+	}
+	
+	private String getToolTipCellDivision(Epithelium epi) {
+		String tipKey = "<html>";
+		ModelEventManager events = epi.getModelEventManager();
+		for (LogicalModel m : epi.getEpitheliumGrid().getModelSet()) {
+			tipKey += "<b>" + epi.getProjectFeatures().getModelName(m) + "</b><br/>";
+			if (!events.containsModel(m)) {
+				System.out.println("Error tooltiptreecellrenderer");
+				tipKey += "- " + epi.getProjectFeatures().getModelName(m) +
+						"   - Empty <br/>";
+			} else if (events.getModelEvents(m).isEmpty()) {
+				tipKey += "- " + epi.getProjectFeatures().getModelName(m) +
+						"   - Empty <br/>";
+			} else {
+				tipKey += "   - " + 
+			events.getModelEventExpression(m, CellularEvent.PROLIFERATION)
+				.getExpression() +  "<br/>";
 			}
 		}
 		tipKey += "</html>";

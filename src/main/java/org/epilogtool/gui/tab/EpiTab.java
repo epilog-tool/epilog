@@ -15,7 +15,7 @@ public abstract class EpiTab extends JPanel {
 	public static final String TAB_PERTURBATIONS = "Component Perturbations";
 	public static final String TAB_PRIORITIES = "Model Updating";
 	public static final String TAB_EPIUPDATING = "Epithelium Updating";
-	public static final String TAB_GRIDDYNAMICS = "Grid Dynamics";
+	public static final String TAB_CELLDIVISION = "Cell Division";
 	public static final String TOOL_SIMULATION = "Simulation";
 
 	protected Epithelium epithelium;
