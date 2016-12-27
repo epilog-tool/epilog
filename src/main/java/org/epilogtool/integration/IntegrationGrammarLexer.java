@@ -1,4 +1,4 @@
-// $ANTLR 3.3 Nov 30, 2010 12:46:29 src/main/java/org/epilogtool/integration/IntegrationGrammar.g 2016-12-26 19:11:54
+// $ANTLR 3.3 Nov 30, 2010 12:46:29 src/main/java/org/epilogtool/integration/IntegrationGrammar.g 2016-12-27 21:45:29
 package org.epilogtool.integration;
 
 import org.antlr.runtime.*;
@@ -334,10 +334,39 @@ public class IntegrationGrammarLexer extends Lexer {
         try {
             int _type = NUMBER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:92:8: ( '0' .. '9' )
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:92:10: '0' .. '9'
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:92:8: ( ( '0' .. '9' )+ )
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:92:10: ( '0' .. '9' )+
             {
-            matchRange('0','9'); 
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:92:10: ( '0' .. '9' )+
+            int cnt2=0;
+            loop2:
+            do {
+                int alt2=2;
+                int LA2_0 = input.LA(1);
+
+                if ( ((LA2_0>='0' && LA2_0<='9')) ) {
+                    alt2=1;
+                }
+
+
+                switch (alt2) {
+            	case 1 :
+            	    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:92:11: '0' .. '9'
+            	    {
+            	    matchRange('0','9'); 
+
+            	    }
+            	    break;
+
+            	default :
+            	    if ( cnt2 >= 1 ) break loop2;
+                        EarlyExitException eee =
+                            new EarlyExitException(2, input);
+                        throw eee;
+                }
+                cnt2++;
+            } while (true);
+
 
             }
 
@@ -418,18 +447,18 @@ public class IntegrationGrammarLexer extends Lexer {
             // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:96:10: ( SPACE )+
             {
             // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:96:10: ( SPACE )+
-            int cnt2=0;
-            loop2:
+            int cnt3=0;
+            loop3:
             do {
-                int alt2=2;
-                int LA2_0 = input.LA(1);
+                int alt3=2;
+                int LA3_0 = input.LA(1);
 
-                if ( ((LA2_0>='\t' && LA2_0<='\n')||(LA2_0>='\f' && LA2_0<='\r')||LA2_0==' ') ) {
-                    alt2=1;
+                if ( ((LA3_0>='\t' && LA3_0<='\n')||(LA3_0>='\f' && LA3_0<='\r')||LA3_0==' ') ) {
+                    alt3=1;
                 }
 
 
-                switch (alt2) {
+                switch (alt3) {
             	case 1 :
             	    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:96:10: SPACE
             	    {
@@ -439,12 +468,12 @@ public class IntegrationGrammarLexer extends Lexer {
             	    break;
 
             	default :
-            	    if ( cnt2 >= 1 ) break loop2;
+            	    if ( cnt3 >= 1 ) break loop3;
                         EarlyExitException eee =
-                            new EarlyExitException(2, input);
+                            new EarlyExitException(3, input);
                         throw eee;
                 }
-                cnt2++;
+                cnt3++;
             } while (true);
 
             skip();
@@ -485,9 +514,9 @@ public class IntegrationGrammarLexer extends Lexer {
 
     public void mTokens() throws RecognitionException {
         // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:1:8: ( T__11 | T__12 | T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | ID | NUMBER | OR | AND | NOT | WS )
-        int alt3=17;
-        alt3 = dfa3.predict(input);
-        switch (alt3) {
+        int alt4=17;
+        alt4 = dfa4.predict(input);
+        switch (alt4) {
             case 1 :
                 // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:1:10: T__11
                 {
@@ -613,21 +642,21 @@ public class IntegrationGrammarLexer extends Lexer {
     }
 
 
-    protected DFA3 dfa3 = new DFA3(this);
-    static final String DFA3_eotS =
+    protected DFA4 dfa4 = new DFA4(this);
+    static final String DFA4_eotS =
         "\5\uffff\1\13\13\uffff\2\13\1\25\1\26\2\uffff";
-    static final String DFA3_eofS =
+    static final String DFA4_eofS =
         "\27\uffff";
-    static final String DFA3_minS =
+    static final String DFA4_minS =
         "\1\11\4\uffff\1\141\13\uffff\1\156\1\170\2\60\2\uffff";
-    static final String DFA3_maxS =
+    static final String DFA4_maxS =
         "\1\175\4\uffff\1\151\13\uffff\1\156\1\170\2\172\2\uffff";
-    static final String DFA3_acceptS =
+    static final String DFA4_acceptS =
         "\1\uffff\1\1\1\2\1\3\1\4\1\uffff\1\6\1\7\1\11\1\12\1\13\1\14\1\15"+
         "\1\16\1\17\1\20\1\21\4\uffff\1\5\1\10";
-    static final String DFA3_specialS =
+    static final String DFA4_specialS =
         "\27\uffff}>";
-    static final String[] DFA3_transitionS = {
+    static final String[] DFA4_transitionS = {
             "\2\20\1\uffff\2\20\22\uffff\1\20\1\17\4\uffff\1\16\1\uffff\1"+
             "\1\1\2\2\uffff\1\4\3\uffff\12\14\1\12\2\uffff\1\6\3\uffff\32"+
             "\13\1\10\1\uffff\1\11\1\uffff\1\13\1\uffff\14\13\1\5\15\13\1"+
@@ -656,34 +685,34 @@ public class IntegrationGrammarLexer extends Lexer {
             ""
     };
 
-    static final short[] DFA3_eot = DFA.unpackEncodedString(DFA3_eotS);
-    static final short[] DFA3_eof = DFA.unpackEncodedString(DFA3_eofS);
-    static final char[] DFA3_min = DFA.unpackEncodedStringToUnsignedChars(DFA3_minS);
-    static final char[] DFA3_max = DFA.unpackEncodedStringToUnsignedChars(DFA3_maxS);
-    static final short[] DFA3_accept = DFA.unpackEncodedString(DFA3_acceptS);
-    static final short[] DFA3_special = DFA.unpackEncodedString(DFA3_specialS);
-    static final short[][] DFA3_transition;
+    static final short[] DFA4_eot = DFA.unpackEncodedString(DFA4_eotS);
+    static final short[] DFA4_eof = DFA.unpackEncodedString(DFA4_eofS);
+    static final char[] DFA4_min = DFA.unpackEncodedStringToUnsignedChars(DFA4_minS);
+    static final char[] DFA4_max = DFA.unpackEncodedStringToUnsignedChars(DFA4_maxS);
+    static final short[] DFA4_accept = DFA.unpackEncodedString(DFA4_acceptS);
+    static final short[] DFA4_special = DFA.unpackEncodedString(DFA4_specialS);
+    static final short[][] DFA4_transition;
 
     static {
-        int numStates = DFA3_transitionS.length;
-        DFA3_transition = new short[numStates][];
+        int numStates = DFA4_transitionS.length;
+        DFA4_transition = new short[numStates][];
         for (int i=0; i<numStates; i++) {
-            DFA3_transition[i] = DFA.unpackEncodedString(DFA3_transitionS[i]);
+            DFA4_transition[i] = DFA.unpackEncodedString(DFA4_transitionS[i]);
         }
     }
 
-    class DFA3 extends DFA {
+    class DFA4 extends DFA {
 
-        public DFA3(BaseRecognizer recognizer) {
+        public DFA4(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
-            this.decisionNumber = 3;
-            this.eot = DFA3_eot;
-            this.eof = DFA3_eof;
-            this.min = DFA3_min;
-            this.max = DFA3_max;
-            this.accept = DFA3_accept;
-            this.special = DFA3_special;
-            this.transition = DFA3_transition;
+            this.decisionNumber = 4;
+            this.eot = DFA4_eot;
+            this.eof = DFA4_eof;
+            this.min = DFA4_min;
+            this.max = DFA4_max;
+            this.accept = DFA4_accept;
+            this.special = DFA4_special;
+            this.transition = DFA4_transition;
         }
         public String getDescription() {
             return "1:1: Tokens : ( T__11 | T__12 | T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | ID | NUMBER | OR | AND | NOT | WS );";

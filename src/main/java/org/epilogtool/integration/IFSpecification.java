@@ -7,7 +7,7 @@ import org.antlr.runtime.RecognitionException;
 public class IFSpecification {
 
 	public static CardinalityConstraint cardinalityConstraint(IntegrationSignalExpression expr, String minCells,
-			String maxCells) {
+			String maxCells) throws RecognitionException {
 		return new CardinalityConstraint(expr, minCells, maxCells);
 	}
 
