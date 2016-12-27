@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 
@@ -18,7 +17,6 @@ import org.colomoto.logicalmodel.tool.simulation.updater.PriorityClasses;
 import org.colomoto.logicalmodel.tool.simulation.updater.PriorityUpdater;
 import org.epilogtool.common.RandomFactory;
 import org.epilogtool.common.Tuple2D;
-import org.epilogtool.common.Tuple3D;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
@@ -33,19 +31,14 @@ import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationEx
  */
 public class Simulation {
 	private Epithelium epithelium;
-	private EpitheliumGrid neighbouringEpi;  //Epithelium Grid used to see neighbouring relationship (imp for sigma)
 	private List<EpitheliumGrid> gridHistory;
 	private List<String> gridHashHistory;
-	
-	private boolean allCellsCalledToUpdate;
-	
-	private  List<Tuple2D<Integer>> schuffledInstances;
-	private  List<Tuple2D<Integer>> runningSchuffledInstances;
-	private  Map<Tuple2D<Integer>, Double> exponentialInstances;
-	private boolean flagReshufle;
-	private int indxOrder; 
 
-	
+	private boolean allCellsCalledToUpdate;
+
+	private List<Tuple2D<Integer>> schuffledInstances;
+	private int indexOrder;
+
 	private boolean stable;
 	private boolean hasCycle;
 	// Perturbed models cache - avoids repeatedly computing perturbations at
@@ -65,22 +58,17 @@ public class Simulation {
 	 */
 	public Simulation(Epithelium e) {
 		this.epithelium = e;
-		this.neighbouringEpi = e.getEpitheliumGrid().clone();
 		this.gridHistory = new ArrayList<EpitheliumGrid>();
-		EpitheliumGrid firstGrid = this.epithelium.getEpitheliumGrid().clone();
+		EpitheliumGrid firstGrid = this.epithelium.getEpitheliumGrid();
+		firstGrid.updateNodeValueCounts();
 		this.gridHistory.add(this.restrictGridWithPerturbations(firstGrid));
 		this.gridHashHistory = new ArrayList<String>();
 		this.gridHashHistory.add(firstGrid.hashGrid());
 		this.stable = false;
 		this.hasCycle = false;
 		this.buildPriorityUpdaterCache();
-		
-		this.schuffledInstances = schuffledInstances;
-		this.runningSchuffledInstances = runningSchuffledInstances;
-		this.exponentialInstances = null;
-		
+
 		this.allCellsCalledToUpdate = true;
-		this.flagReshufle = false;
 	}
 
 	private EpitheliumGrid restrictGridWithPerturbations(EpitheliumGrid grid) {
@@ -93,8 +81,7 @@ public class Simulation {
 	}
 
 	private void buildPriorityUpdaterCache() {
-		this.updaterCache = new PriorityUpdater[this.getCurrentGrid().getX()][this
-				.getCurrentGrid().getY()];
+		this.updaterCache = new PriorityUpdater[this.getCurrentGrid().getX()][this.getCurrentGrid().getY()];
 		Map<LogicalModel, Map<AbstractPerturbation, PriorityUpdater>> tmpMap = new HashMap<LogicalModel, Map<AbstractPerturbation, PriorityUpdater>>();
 		for (int y = 0; y < this.getCurrentGrid().getY(); y++) {
 			for (int x = 0; x < this.getCurrentGrid().getX(); x++) {
@@ -102,18 +89,14 @@ public class Simulation {
 					continue;
 				}
 				LogicalModel m = this.getCurrentGrid().getModel(x, y);
-				AbstractPerturbation ap = this.getCurrentGrid()
-						.getPerturbation(x, y);
+				AbstractPerturbation ap = this.getCurrentGrid().getPerturbation(x, y);
 				if (!tmpMap.containsKey(m))
-					tmpMap.put(
-							m,
-							new HashMap<AbstractPerturbation, PriorityUpdater>());
+					tmpMap.put(m, new HashMap<AbstractPerturbation, PriorityUpdater>());
 				if (!tmpMap.get(m).containsKey(ap)) {
 					// Apply model perturbation
 					LogicalModel perturb = (ap == null) ? m : ap.apply(m);
 					// Get Priority classes
-					PriorityClasses pcs = this.epithelium.getPriorityClasses(m)
-							.getPriorities();
+					PriorityClasses pcs = this.epithelium.getPriorityClasses(m).getPriorities();
 					PriorityUpdater updater = new PriorityUpdater(perturb, pcs);
 					tmpMap.get(m).put(ap, updater);
 				}
@@ -132,16 +115,14 @@ public class Simulation {
 			return currGrid;
 		}
 
-		this.generateNeighboursEpithelium(); // updates the neighbouringEpi
-		EpitheliumGrid currNeighboursGrid = this.neighbouringEpi;
+		EpitheliumGrid currNeighboursGrid = this.getNeighboursGrid();
 
 		EpitheliumGrid nextGrid = currGrid.clone();
 
-		Set<ComponentPair> sIntegComponentPairs = this.epithelium
-				.getIntegrationComponentPairs();
+		Set<ComponentPair> sIntegComponentPairs = this.epithelium.getIntegrationComponentPairs();
 
-		IntegrationFunctionEvaluation evaluator = new IntegrationFunctionEvaluation(
-				currNeighboursGrid, this.epithelium.getProjectFeatures());
+		IntegrationFunctionEvaluation evaluator = new IntegrationFunctionEvaluation(currNeighboursGrid,
+				this.epithelium.getProjectFeatures());
 
 		// Gets the set of cells that can be updated
 		// And builds the default next grid (= current grid)
@@ -155,211 +136,165 @@ public class Simulation {
 					continue;
 				}
 				byte[] currState = currGrid.getCellState(x, y);
-				
+
 				// Default cell next state is same as current
-//				nextGrid.setCellState(x, y, currState.clone());
-				
+				// nextGrid.setCellState(x, y, currState.clone());
+
 				// Compute next state
-				byte[] nextState = this.nextCellValue(x, y, currGrid,
-						evaluator, sIntegComponentPairs);
-				
+				byte[] nextState = this.nextCellValue(x, y, currGrid, evaluator, sIntegComponentPairs);
+
 				// If the cell state changed then add it to the pool
 				Tuple2D<Integer> key = new Tuple2D<Integer>(x, y);
 				cells2update.put(key, nextState);
 				keys.add(key);
-				if (nextState == null || (!Arrays.equals(currState, nextState))) 
-				changedKeys.add(key);
+				if (nextState == null || (!Arrays.equals(currState, nextState)))
+					changedKeys.add(key);
 			}
 		}
-		
-		if (changedKeys.size()==0){
+
+		if (changedKeys.size() == 0) {
 			this.stable = true;
 			return currGrid;
 		}
 		if (!allCellsCalledToUpdate)
 			keys = changedKeys;
-		
+
 		if (keys.size() <= 0) {
 			this.stable = true;
 			return currGrid;
+		} else {
+			nextGrid = updateGrid(this.epithelium.getUpdateSchemeInter().getUpdateOrder(), keys, nextGrid,
+					cells2update);
 		}
-		else{
-			nextGrid = updateGrid(this.epithelium.getUpdateSchemeInter().getUpdateOrder(),keys,nextGrid,cells2update);
-		}
-
-		this.gridHistory.add(nextGrid);
 		
+		nextGrid.updateNodeValueCounts();
+		
+		this.gridHistory.add(nextGrid);
 		this.gridHashHistory.add(nextGrid.hashGrid());
 		return nextGrid;
 	}
 
-	private EpitheliumGrid updateGrid(String updateMode, Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid, HashMap<Tuple2D<Integer>, byte[]> cells2update) {
-		// TODO Check
-		
-//		System.out.println(updateMode);
+	private EpitheliumGrid updateGrid(String updateMode, Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid,
+			HashMap<Tuple2D<Integer>, byte[]> cells2update) {
 		if (updateMode.equals("Random Independent"))
-			nextGrid= updateModeRandomIndependent(keys, nextGrid, cells2update);
+			nextGrid = updateModeRandomIndependent(keys, nextGrid, cells2update);
 		else if (updateMode.equals("Random Order"))
 			nextGrid = updateModeRandomOrder(keys, nextGrid, cells2update);
 		else if (updateMode.equals("Cyclic Order"))
 			nextGrid = updateModeCyclicOrder(keys, nextGrid, cells2update);
-
-//		}
 		return nextGrid;
-		
+
 	}
 
-//	private EpitheliumGrid updateModeExponentialClocked(Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid,
-//			HashMap<Tuple2D<Integer>, byte[]> cells2update) {
-//		// TODO Auto-generated method stub
-//		
-//		int lambda = 1;
-//		Random randomno = new Random();
-//
-////		int maxNumberCells = this.getCurrentGrid().getX()*this.getCurrentGrid().getY();
-//		//Initializes the exponential array for all cells of the grid. The array of dimension maxNumberCells,
-//		// has a random exponential value for each cell
-//		if (this.exponentialInstances == null){
-//			this.exponentialInstances = new HashMap<Tuple2D,Double>();
-//			for (int x = 0; x<this.getCurrentGrid().getX();x++){
-//				for (int y=0; y<this.getCurrentGrid().getY();y++){
-//				Tuple2D<Integer> n= new Tuple2D(x,y);
-//				double aux = Math.log(1-randomno.nextDouble())/(-lambda);
-//				this.exponentialInstances.put(n, aux);
-//			}}
-//		}
-//		
-//		
-////		System.out.println("The system is performing an evaluation over an intial number of : "+ keys.size()+ " cells");
-//		//for each cell in keys; how many are we going to call to update?
-//		
-//		float alphaProb = epithelium.getUpdateSchemeInter().getAlpha();
-//				
-//		int numberCellsCalledToUpdate = (int) Math.floor(alphaProb * keys.size());
-//
-//		
-//		if (numberCellsCalledToUpdate ==0)
-//			numberCellsCalledToUpdate =1;
-//		
-////		System.out.println("of which only : "+ numberCellsCalledToUpdate+ " are going to be updated!");
-//
-//		Map<Tuple2D, Double> updatableCellsList = UpdateMode.findMinIdx(this.exponentialInstances, numberCellsCalledToUpdate,keys) ;
-//
-//		for (Tuple2D<Integer> key :updatableCellsList.keySet()) {
-//		
-//			nextGrid.setCellState(key.getX(), key.getY(),
-//					cells2update.get(key));
-//			double aux = Math.log(1-randomno.nextDouble())/(-lambda);
-//			double value = this.exponentialInstances.get(key)+aux;
-//			this.exponentialInstances.put(key, value);
-//		}
-//		return nextGrid;
-//	}
-
 	/**
-	 * @param keys - > cells to update
-	 * @param nextGrid -> current grid clone, that is supposed to be updated
-	 * @param cells2update -> hash with the new state of all cells
+	 * @param keys
+	 *            - > cells to update
+	 * @param nextGrid
+	 *            -> current grid clone, that is supposed to be updated
+	 * @param cells2update
+	 *            -> hash with the new state of all cells
 	 * @return
 	 */
 	private EpitheliumGrid updateModeRandomOrder(Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid,
 			HashMap<Tuple2D<Integer>, byte[]> cells2update) {
-		
+
 		float alphaProb = epithelium.getUpdateSchemeInter().getAlpha();
-		
+
 		int numberCellsCalledToUpdate = (int) Math.floor(alphaProb * keys.size());
 		if (numberCellsCalledToUpdate == 0)
-			numberCellsCalledToUpdate =1;
-		
-		if (this.schuffledInstances == null){//Create the initial shuffled array of cells
+			numberCellsCalledToUpdate = 1;
+
+		if (this.schuffledInstances == null) {
+			// Create the initial shuffled array of cells
 			this.schuffledInstances = UpdateMode.shuffle(cells2update.keySet());
 		}
-		
+
 		List<Tuple2D<Integer>> cellsUpdatedThisStep = new ArrayList<Tuple2D<Integer>>();
-		
-		for (int idx = 0; idx<numberCellsCalledToUpdate; idx++){
-			if (this.schuffledInstances.size()<1)
+
+		for (int idx = 0; idx < numberCellsCalledToUpdate; idx++) {
+			if (this.schuffledInstances.size() < 1)
 				this.schuffledInstances = UpdateMode.shuffle(cells2update.keySet());
-				if (cellsUpdatedThisStep.contains(this.schuffledInstances.get(0))){
-					idx = idx -1;}
-				else{
-				cellsUpdatedThisStep.add(this.schuffledInstances.get(0));}
-				this.schuffledInstances.remove(0);}
-		
-//		System.out.println("Called to update: "+cellsUpdatedThisStep);
-		for (Tuple2D<Integer> key :cellsUpdatedThisStep) {
-			nextGrid.setCellState(key.getX(), key.getY(),
-					cells2update.get(key));}
-		return nextGrid;}
-	
+			if (cellsUpdatedThisStep.contains(this.schuffledInstances.get(0))) {
+				idx = idx - 1;
+			} else {
+				cellsUpdatedThisStep.add(this.schuffledInstances.get(0));
+			}
+			this.schuffledInstances.remove(0);
+		}
+
+		// System.out.println("Called to update: "+cellsUpdatedThisStep);
+		for (Tuple2D<Integer> key : cellsUpdatedThisStep) {
+			nextGrid.setCellState(key.getX(), key.getY(), cells2update.get(key));
+		}
+		return nextGrid;
+	}
+
 	private EpitheliumGrid updateModeCyclicOrder(Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid,
 			HashMap<Tuple2D<Integer>, byte[]> cells2update) {
-		
+
 		float alphaProb = epithelium.getUpdateSchemeInter().getAlpha();
-		
+
 		int numberCellsCalledToUpdate = (int) Math.floor(alphaProb * keys.size());
 		if (numberCellsCalledToUpdate == 0)
-			numberCellsCalledToUpdate =1;
-		
-		if (this.schuffledInstances == null){//Create the initial shuffled array of cells
+			numberCellsCalledToUpdate = 1;
+
+		if (this.schuffledInstances == null) {// Create the initial shuffled
+												// array of cells
 			this.schuffledInstances = UpdateMode.shuffle(cells2update.keySet());
-			this.indxOrder = 0;
+			this.indexOrder = 0;
 		}
 		List<Tuple2D<Integer>> cellsUpdatedThisStep = new ArrayList<Tuple2D<Integer>>();
-		
-		for (int idx = 0; idx<numberCellsCalledToUpdate; idx++){
-			if (indxOrder==this.schuffledInstances.size())
-				indxOrder = 0;
-			
-			cellsUpdatedThisStep.add(this.schuffledInstances.get(indxOrder));
-			indxOrder = indxOrder+1;
-			}	
-//		System.out.println("Called to update: "+cellsUpdatedThisStep);
 
-		for (Tuple2D<Integer> key :cellsUpdatedThisStep) {
-			nextGrid.setCellState(key.getX(), key.getY(),
-					cells2update.get(key));}
-		return nextGrid;}
+		for (int idx = 0; idx < numberCellsCalledToUpdate; idx++) {
+			if (indexOrder == this.schuffledInstances.size())
+				indexOrder = 0;
+
+			cellsUpdatedThisStep.add(this.schuffledInstances.get(indexOrder));
+			indexOrder = indexOrder + 1;
+		}
+		// System.out.println("Called to update: "+cellsUpdatedThisStep);
+
+		for (Tuple2D<Integer> key : cellsUpdatedThisStep) {
+			nextGrid.setCellState(key.getX(), key.getY(), cells2update.get(key));
+		}
+		return nextGrid;
+	}
 
 	private EpitheliumGrid updateModeRandomIndependent(Stack<Tuple2D<Integer>> keys, EpitheliumGrid nextGrid,
 			HashMap<Tuple2D<Integer>, byte[]> cells2update) {
-		
+
 		// Randomize the order of cells to update
-		Collections.shuffle(keys, RandomFactory.getInstance()
-				.getGenerator());
-		
+		Collections.shuffle(keys, RandomFactory.getInstance().getGenerator());
+
 		// Inter-cellular alpha-asynchronism
 		float alphaProb = epithelium.getUpdateSchemeInter().getAlpha();
-		
+
 		boolean atleastone = false;
-		// Creates the set of cells to update. If alpha is zero, then the atleast remains false, and only onde cell is called to update
+		// Creates the set of cells to update. If alpha is zero, then the
+		// atleast remains false, and only onde cell is called to update
 		for (int i = 0; i < Math.floor(alphaProb * keys.size()); i++) {
 			Tuple2D<Integer> key = keys.get(i);
-			nextGrid.setCellState(key.getX(), key.getY(),
-					cells2update.get(key));
-//			System.out.println("" + cells2update.get(key));
+			nextGrid.setCellState(key.getX(), key.getY(), cells2update.get(key));
+			// System.out.println("" + cells2update.get(key));
 			atleastone = true;
 		}
 		if (!atleastone && !keys.isEmpty()) {
 			// Updates at least one (asynchronous case: alpha=0.0)
 			Tuple2D<Integer> key = keys.pop();
-			nextGrid.setCellState(key.getX(), key.getY(),
-					cells2update.get(key));
+			nextGrid.setCellState(key.getX(), key.getY(), cells2update.get(key));
 		}
 		return nextGrid;
 	}
 
 	public boolean hasCycle() {
 		if (!this.hasCycle) {
-			Set<String> sStateHistory = new HashSet<String>(
-					this.gridHashHistory);
+			Set<String> sStateHistory = new HashSet<String>(this.gridHashHistory);
 			this.hasCycle = (sStateHistory.size() < this.gridHashHistory.size());
 		}
 		return this.hasCycle;
 	}
 
-	private byte[] nextCellValue(int x, int y, EpitheliumGrid currGrid,
-			IntegrationFunctionEvaluation evaluator,
+	private byte[] nextCellValue(int x, int y, EpitheliumGrid currGrid, IntegrationFunctionEvaluation evaluator,
 			Set<ComponentPair> sIntegComponentPairs) {
 		byte[] currState = currGrid.getCellState(x, y).clone();
 
@@ -370,8 +305,7 @@ public class Simulation {
 		for (NodeInfo node : m.getNodeOrder()) {
 			ComponentPair nodeCP = new ComponentPair(m, node);
 			if (node.isInput() && sIntegComponentPairs.contains(nodeCP)) {
-				List<IntegrationExpression> lExpressions = this.epithelium
-						.getIntegrationFunctionsForComponent(nodeCP)
+				List<IntegrationExpression> lExpressions = this.epithelium.getIntegrationFunctionsForComponent(nodeCP)
 						.getComputedExpressions();
 				byte target = 0;
 				for (int i = 0; i < lExpressions.size(); i++) {
@@ -402,8 +336,7 @@ public class Simulation {
 		if (!(this.epithelium.getUpdateSchemeInter().getAlpha() == 1)) {
 			return false;
 		}
-		List<String> tmpList = new ArrayList<String>(
-				this.gridHashHistory.subList(0, i));
+		List<String> tmpList = new ArrayList<String>(this.gridHashHistory.subList(0, i));
 		Set<String> tmpSet = new HashSet<String>(tmpList);
 		return !(tmpSet.size() == tmpList.size());
 	}
@@ -423,20 +356,18 @@ public class Simulation {
 		return this.epithelium;
 	}
 
-	private void generateNeighboursEpithelium() {
+	private EpitheliumGrid getNeighboursGrid() {
 		// Creates an epithelium which is only visited to 'see' neighbours and
-		// their states, especially when using the sigma, where the previous grids values are seen.
-
-		EpitheliumGrid tmpNeighbourEpi = this.getGridAt(
-				this.gridHistory.size() - 1).clone();
+		// their states
+		EpitheliumGrid neighbourEpi = this.getCurrentGrid().clone();
 
 		Map<ComponentPair, Float> mSigmaAsync = this.epithelium
 				.getUpdateSchemeInter().getCPSigmas();
 
-		Map<LogicalModel, List<Tuple2D<Integer>>> mapModelPositions = tmpNeighbourEpi
+		Map<LogicalModel, Set<Tuple2D<Integer>>> mapModelPositions = neighbourEpi
 				.getModelPositions();
 		if (mSigmaAsync.size() == 0) {
-			this.neighbouringEpi = tmpNeighbourEpi;
+			return neighbourEpi;
 		} else {
 			EpitheliumGrid delayGrid = this.gridHistory.get(0);
 			if (this.gridHistory.size() >= 2) {
@@ -449,8 +380,8 @@ public class Simulation {
 					String nodeID = cp.getNodeInfo().getNodeID();
 					List<NodeInfo> modelNodes = m.getNodeOrder();
 					int nodePosition = modelNodes.indexOf(cp.getNodeInfo());
-					List<Tuple2D<Integer>> modelPositions = mapModelPositions
-							.get(m);
+					List<Tuple2D<Integer>> modelPositions = new ArrayList<Tuple2D<Integer>>(mapModelPositions
+							.get(m));
 					int selectedCells = (int) Math.ceil((1 - sigma)
 							* modelPositions.size());
 					Collections.shuffle(modelPositions, RandomFactory
@@ -458,36 +389,38 @@ public class Simulation {
 					List<Tuple2D<Integer>> selectedModelPositions = modelPositions
 							.subList(0, selectedCells);
 					for (Tuple2D<Integer> tuple : selectedModelPositions) {
-						byte[] delayState = delayGrid.getCellState(
-								tuple.getX(), tuple.getY());
-						tmpNeighbourEpi.setCellComponentValue(tuple.getX(),
-								tuple.getY(), nodeID,
-								(byte) delayState[nodePosition]);
+						if (!(delayGrid.getModel(tuple.getX(), tuple.getY()).equals(m))) {
+							neighbourEpi.setCellComponentValue(tuple.getX(),
+									tuple.getY(), nodeID, (byte) 0);
+						}
+						else {
+							byte[] delayState = delayGrid.getCellState(
+									tuple.getX(), tuple.getY());
+							neighbourEpi.setCellComponentValue(tuple.getX(),
+									tuple.getY(), nodeID,
+									(byte) delayState[nodePosition]);
+						}
 					}
 				}
 			}
-			this.neighbouringEpi = tmpNeighbourEpi;
+			return neighbourEpi;
 		}
 	}
-	
-	public List<String> getCell2Percentage(){
-		//TODO as csv
-		//If node already in list then do not print
-		Map<String, List<Integer>> cell2Percentage = new HashMap<String, List<Integer>>();
-		
+
+	public List<String> getCell2Percentage() {
 		List<String> mesList = new ArrayList<String>();
-		
+
 		int index = 0;
-		for (EpitheliumGrid grid: this.gridHistory){
-			for (LogicalModel model : grid.getModelSet()){
-				for (NodeInfo node: model.getNodeOrder()){
-					  String  mes = index + ": " +node.getNodeID() + " " + grid.getPercentage(node.getNodeID());
-					  mesList.add(mes);
+		for (EpitheliumGrid grid : this.gridHistory) {
+			for (LogicalModel model : grid.getModelSet()) {
+				for (NodeInfo node : model.getNodeOrder()) {
+					String mes = index + ": " + node.getNodeID() + " " + grid.getPercentage(node.getNodeID());
+					mesList.add(mes);
 				}
 			}
-			index = index +1;
+			index = index + 1;
 		}
-		
+
 		return mesList;
 	}
 }

@@ -81,9 +81,8 @@ public class EpiTabSimulation extends EpiTabTools {
 	private JPanel jpRRCenter;
 	private JComboCheckBox jccb;
 
-	public EpiTabSimulation(Epithelium e, TreePath path,
-			ProjChangeNotifyTab projChanged, ProjectFeatures projectFeatures,
-			SimulationEpiClone simEpiClone) {
+	public EpiTabSimulation(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
+			ProjectFeatures projectFeatures, SimulationEpiClone simEpiClone) {
 		super(e, path, projChanged);
 		this.projectFeatures = projectFeatures;
 		this.simEpiClone = simEpiClone;
@@ -108,33 +107,25 @@ public class EpiTabSimulation extends EpiTabTools {
 				this.mSelCheckboxes.put(node.getNodeID(), false);
 			}
 		}
-		this.lRight = new GridInformation(
-				this.epithelium.getIntegrationFunctions(), this.projectFeatures);
+		this.lRight = new GridInformation(this.epithelium.getIntegrationFunctions(), this.projectFeatures);
 
-		this.visualGridSimulation = new VisualGridSimulation(
-				this.simulation.getGridAt(0),
+		this.visualGridSimulation = new VisualGridSimulation(this.simulation.getGridAt(0),
 				this.epithelium.getProjectFeatures(), this.lCompON, this.lRight);
-		
+
 		this.jpRight.add(this.visualGridSimulation, BorderLayout.CENTER);
 
 		JPanel jpButtons = new JPanel(new BorderLayout());
 		JPanel jpButtonsC = new JPanel();
 		jpButtons.add(jpButtonsC, BorderLayout.CENTER);
 
-		JScrollPane jspButtons = new JScrollPane(jpButtons,
-				JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+		JScrollPane jspButtons = new JScrollPane(jpButtons, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		jspButtons.setPreferredSize(new Dimension(
-				jspButtons.getPreferredSize().width, jspButtons
-						.getPreferredSize().height
-						+ jspButtons.getHorizontalScrollBar()
-								.getVisibleAmount() * 3));
+		jspButtons.setPreferredSize(new Dimension(jspButtons.getPreferredSize().width,
+				jspButtons.getPreferredSize().height + jspButtons.getHorizontalScrollBar().getVisibleAmount() * 3));
 		jspButtons.setBorder(BorderFactory.createEmptyBorder());
 
-		this.jbRewind = ButtonFactory
-				.getImageNoBorder("media_rewind-26x24.png");
-		this.jbRewind
-				.setToolTipText("Go back to the beginning of the simulation");
+		this.jbRewind = ButtonFactory.getImageNoBorder("media_rewind-26x24.png");
+		this.jbRewind.setToolTipText("Go back to the beginning of the simulation");
 		this.jbRewind.setEnabled(false);
 		this.jbRewind.addActionListener(new ActionListener() {
 			@Override
@@ -143,8 +134,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		jpButtonsC.add(this.jbRewind);
-		this.jbBack = ButtonFactory
-				.getImageNoBorder("media_step_back-24x24.png");
+		this.jbBack = ButtonFactory.getImageNoBorder("media_step_back-24x24.png");
 		this.jbBack.setToolTipText("Go back one step");
 		this.jbBack.setEnabled(false);
 		this.jbBack.addActionListener(new ActionListener() {
@@ -154,8 +144,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		jpButtonsC.add(this.jbBack);
-		this.jbForward = ButtonFactory
-				.getImageNoBorder("media_step_forward-24x24.png");
+		this.jbForward = ButtonFactory.getImageNoBorder("media_step_forward-24x24.png");
 		this.jbForward.setToolTipText("Go forward one step");
 		this.jbForward.addActionListener(new ActionListener() {
 			@Override
@@ -188,8 +177,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		jpButtonsC.add(jtSteps);
-		this.jbFastFwr = ButtonFactory
-				.getImageNoBorder("media_fast_forward-26x24.png");
+		this.jbFastFwr = ButtonFactory.getImageNoBorder("media_fast_forward-26x24.png");
 		this.jbFastFwr.setToolTipText("Go forward a burst of 'n' steps");
 		this.jbFastFwr.addActionListener(new ActionListener() {
 			@Override
@@ -209,8 +197,8 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		jpButtonsR.add(jbClone);
-		
-		//Button to create the export of the percentages
+
+		// Button to create the export of the percentages
 		JButton jbExport = ButtonFactory.getNoMargins("Export");
 		jbExport.setToolTipText("Exports the percentages of all component per iteration.");
 		jbExport.addActionListener(new ActionListener() {
@@ -222,8 +210,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		jpButtonsR.add(jbExport);
 
 		// Button to save an image from the simulated grid
-		JButton jbPicture = ButtonFactory
-				.getImageNoBorder("fotography-24x24.png");
+		JButton jbPicture = ButtonFactory.getImageNoBorder("fotography-24x24.png");
 		jbPicture.setToolTipText("Save the image of the current grid to file");
 		jbPicture.addActionListener(new ActionListener() {
 			@Override
@@ -234,10 +221,8 @@ public class EpiTabSimulation extends EpiTabTools {
 		jpButtonsR.add(jbPicture);
 
 		// Button to save all simulated grid images
-		JButton jbSaveAll = ButtonFactory
-				.getImageNoBorder("fotography-mult-24x24.png");
-		jbSaveAll
-				.setToolTipText("Save all the simulation grids into different files");
+		JButton jbSaveAll = ButtonFactory.getImageNoBorder("fotography-mult-24x24.png");
+		jbSaveAll.setToolTipText("Save all the simulation grids into different files");
 		jbSaveAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				saveAllEpiGrid2File();
@@ -265,12 +250,10 @@ public class EpiTabSimulation extends EpiTabTools {
 		rrTop.setLayout(new BoxLayout(rrTop, BoxLayout.Y_AXIS));
 
 		// Model combobox
-		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
-				this.epithelium.getEpitheliumGrid().getModelSet());
+		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		JCheckBox[] items = new JCheckBox[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
-			items[i] = new JCheckBox(
-					this.projectFeatures.getModelName(modelList.get(i)));
+			items[i] = new JCheckBox(this.projectFeatures.getModelName(modelList.get(i)));
 			items[i].setSelected(false);
 		}
 		this.jccb = new JComboCheckBox(items);
@@ -291,8 +274,7 @@ public class EpiTabSimulation extends EpiTabTools {
 					if (!lCompON.contains(nodeID))
 						lCompON.add(nodeID);
 				}
-				visualGridSimulation.paintComponent(visualGridSimulation
-						.getGraphics());
+				visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
 			}
 		});
 		rrTopSel.add(jbSelectAll);
@@ -308,8 +290,7 @@ public class EpiTabSimulation extends EpiTabTools {
 					mSelCheckboxes.put(nodeID, false);
 					lCompON.remove(nodeID);
 				}
-				visualGridSimulation.paintComponent(visualGridSimulation
-						.getGraphics());
+				visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
 			}
 		});
 		rrTopSel.add(jbDeselectAll);
@@ -352,8 +333,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			String file = fc.getSelectedFile().getAbsolutePath();
 			String ext = "PNG";
 			file += (file.endsWith(ext) ? "" : "." + ext);
-			FileIO.writeEpitheliumGrid2File(file, this.visualGridSimulation,
-					ext);
+			FileIO.writeEpitheliumGrid2File(file, this.visualGridSimulation, ext);
 		}
 	}
 
@@ -369,21 +349,21 @@ public class EpiTabSimulation extends EpiTabTools {
 				String file_name = file.replace(".", "_" + i + ".");
 				EpitheliumGrid grid = this.simulation.getGridAt(i);
 				this.visualGridSimulation.setEpitheliumGrid(grid);
-				FileIO.writeEpitheliumGrid2File(file_name,
-						this.visualGridSimulation, ext);
+				FileIO.writeEpitheliumGrid2File(file_name, this.visualGridSimulation, ext);
 			}
 		}
 	}
 
-	
-	/**Calls the method to export the CSV of the simulation so far
+	/**
+	 * Calls the method to export the CSV of the simulation so far
 	 * 
 	 */
 	protected void exportPercentage() {
 
-//		Map<String, List<Integer>> cell2Percentage = this.simulation.getCell2Percentage();
+		// Map<String, List<Integer>> cell2Percentage =
+		// this.simulation.getCell2Percentage();
 		List<String> lPercentage = this.simulation.getCell2Percentage();
-		
+
 		JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(new EpilogFileFilter("csv"));
 		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -391,19 +371,17 @@ public class EpiTabSimulation extends EpiTabTools {
 			String ext = "CSV";
 			file += (file.endsWith(ext) ? "" : "." + ext);
 			try {
-				FileIO.writePercentage2File(file, lPercentage,ext);
+				FileIO.writePercentage2File(file, lPercentage, ext);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		
+
+		}
 	}
-	}
-	
-	
+
 	private void cloneEpiWithCurrGrid() {
-		this.simEpiClone.cloneEpithelium(this.epithelium,
-				this.simulation.getGridAt(this.iCurrSimIter));
+		this.simEpiClone.cloneEpithelium(this.epithelium, this.simulation.getGridAt(this.iCurrSimIter));
 	}
 
 	private void simulationRewind() {
@@ -425,8 +403,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		if (this.iCurrSimIter == 0) {
 			return;
 		}
-		EpitheliumGrid prevGrid = this.simulation
-				.getGridAt(--this.iCurrSimIter);
+		EpitheliumGrid prevGrid = this.simulation.getGridAt(--this.iCurrSimIter);
 		this.jlStep.setText("Iteration: " + this.iCurrSimIter);
 		this.visualGridSimulation.setEpitheliumGrid(prevGrid);
 		setGridGUIStable(false);
@@ -461,8 +438,7 @@ public class EpiTabSimulation extends EpiTabTools {
 	}
 
 	private void simulationStepFwr() {
-		EpitheliumGrid nextGrid = this.simulation
-				.getGridAt(this.iCurrSimIter + 1);
+		EpitheliumGrid nextGrid = this.simulation.getGridAt(this.iCurrSimIter + 1);
 		if (this.simulation.isStableAt(this.iCurrSimIter + 1)) {
 			setGridGUIStable(true);
 		} else {
@@ -501,13 +477,9 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.repaint();
 	}
 
-	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y,
-			String nodeID) {
-		
+	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String nodeID) {
 		EpitheliumGrid nextGrid = this.simulation.getGridAt(this.iCurrSimIter);
-		JLabel percentage = new JLabel(nextGrid.getPercentage(nodeID));
 
-		
 		gbc.gridy = y;
 		gbc.gridx = 0;
 		gbc.anchor = GridBagConstraints.WEST;
@@ -524,8 +496,7 @@ public class EpiTabSimulation extends EpiTabTools {
 					} else {
 						lCompON.remove(jcb.getText());
 					}
-					visualGridSimulation.paintComponent(visualGridSimulation
-							.getGraphics());
+					visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
 				}
 			});
 			this.mNodeID2Checkbox.put(nodeID, jcb);
@@ -533,8 +504,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		jp.add(jcb, gbc);
 		gbc.gridx = 1;
 		JButton jbColor = new JButton();
-		jbColor.setBackground(this.epithelium.getProjectFeatures()
-				.getNodeColor(nodeID));
+		jbColor.setBackground(this.epithelium.getProjectFeatures().getNodeColor(nodeID));
 		jbColor.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -543,21 +513,19 @@ public class EpiTabSimulation extends EpiTabTools {
 		});
 		jp.add(jbColor, gbc);
 		gbc.gridx = 2;
-		jp.add(percentage,gbc);
+		JLabel percentage = new JLabel(nextGrid.getPercentage(nodeID));
+		jp.add(percentage, gbc);
 		this.colorButton2Node.put(jbColor, nodeID);
 	}
 
 	private void setNewColor(JButton jb) {
 		String nodeID = this.colorButton2Node.get(jb);
-		Color newColor = JColorChooser.showDialog(jb, "Color chooser - "
-				+ nodeID, jb.getBackground());
-		if (newColor != null
-				&& !newColor.equals(projectFeatures.getNodeColor(nodeID))) {
+		Color newColor = JColorChooser.showDialog(jb, "Color chooser - " + nodeID, jb.getBackground());
+		if (newColor != null && !newColor.equals(projectFeatures.getNodeColor(nodeID))) {
 			jb.setBackground(newColor);
 			this.epithelium.getProjectFeatures().setNodeColor(nodeID, newColor);
 			this.projChanged.setChanged(this);
-			this.visualGridSimulation.paintComponent(this.visualGridSimulation
-					.getGraphics());
+			this.visualGridSimulation.paintComponent(this.visualGridSimulation.getGraphics());
 		}
 	}
 
@@ -595,14 +563,14 @@ public class EpiTabSimulation extends EpiTabTools {
 		Set<String> sInputNodeIDs = new HashSet<String>();
 		Set<String> sCommonNodeIDs = new HashSet<String>();
 
-		List<NodeInfo> lInternal = new ArrayList<NodeInfo>(this.epithelium
-				.getProjectFeatures().getModelsNodeInfos(lModels, false));
+		List<NodeInfo> lInternal = new ArrayList<NodeInfo>(
+				this.epithelium.getProjectFeatures().getModelsNodeInfos(lModels, false));
 
 		for (NodeInfo node : lInternal)
 			sInternalNodeIDs.add(node.getNodeID());
 
-		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(this.epithelium
-				.getProjectFeatures().getModelsNodeInfos(lModels, true));
+		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
+				this.epithelium.getProjectFeatures().getModelsNodeInfos(lModels, true));
 
 		for (NodeInfo node : lInputs) {
 			if (sInternalNodeIDs.contains(node.getNodeID())) {
@@ -619,8 +587,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			this.setComponentTypeList(sInternalNodeIDs, "Internal Components");
 		if (!sInputNodeIDs.isEmpty())
 			this.setComponentTypeList(sInputNodeIDs, "Input Components");
-		this.visualGridSimulation.paintComponent(this.visualGridSimulation
-				.getGraphics());
+		this.visualGridSimulation.paintComponent(this.visualGridSimulation.getGraphics());
 		this.jpRRCenter.revalidate();
 		this.jpRRCenter.repaint();
 	}
@@ -645,20 +612,16 @@ public class EpiTabSimulation extends EpiTabTools {
 			this.jpRight.add(jpNorth, BorderLayout.NORTH);
 			JTextPane jtp = new JTextPane();
 			jtp.setContentType("text/html");
-			String color = ColorUtils
-					.getColorCode(this.jpRight.getBackground());
-			jtp.setText("<html><body style=\"background-color:" + color + "\">"
-					+ "<font color=\"#ff0000\">"
+			String color = ColorUtils.getColorCode(this.jpRight.getBackground());
+			jtp.setText("<html><body style=\"background-color:" + color + "\">" + "<font color=\"#ff0000\">"
 					+ "New Epithelium definitions detected!!<br/>"
 					+ "Continue current simulation with old definitions, "
-					+ "<br/>or press <b>Restart</b> to apply the new ones."
-					+ "</font></body></html>");
+					+ "<br/>or press <b>Restart</b> to apply the new ones." + "</font></body></html>");
 			jtp.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 			jtp.setHighlighter(null);
 			jpNorth.add(jtp, BorderLayout.PAGE_START);
 			JButton jbRestart = ButtonFactory.getNoMargins("Restart");
-			jbRestart
-					.setToolTipText("Restart the simulation with recently applied definitions");
+			jbRestart.setToolTipText("Restart the simulation with recently applied definitions");
 			jbRestart.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {

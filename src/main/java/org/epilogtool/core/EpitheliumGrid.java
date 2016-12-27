@@ -2,7 +2,6 @@ package org.epilogtool.core;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,33 +21,27 @@ public class EpitheliumGrid {
 	private EpitheliumCell[][] gridEpiCell;
 	private Topology topology;
 	private Set<LogicalModel> modelSet;
-	private Map<LogicalModel, List<Tuple2D<Integer>>> modelPositions;
-	
-	private Map<String, Integer> component2Count ;
+	private Map<LogicalModel, Set<Tuple2D<Integer>>> modelPositions;
+	private Map<String, Map<Byte, Integer>> compCounts;
 
-	private EpitheliumGrid(EpitheliumCell[][] gridEpiCell, Topology topology,
-			Set<LogicalModel> modelSet,
-			Map<LogicalModel, List<Tuple2D<Integer>>> modelPositions) {
+	private EpitheliumGrid(EpitheliumCell[][] gridEpiCell, Topology topology, Set<LogicalModel> modelSet,
+			Map<LogicalModel, Set<Tuple2D<Integer>>> modelPositions, Map<String, Map<Byte, Integer>> compCounts) {
 		this.gridEpiCell = gridEpiCell;
 		this.topology = topology;
 		this.modelSet = modelSet;
 		this.modelPositions = modelPositions;
-		
-		this.component2Count = new HashMap<String, Integer>();
+		this.compCounts = compCounts;
 	}
 
-	public void updateEpitheliumGrid(int gridX, int gridY, String topologyID,
-			RollOver rollover) throws InstantiationException,
-			IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException,
-			SecurityException, ClassNotFoundException {
+	public void updateEpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		// Create new EpiCell[][]
 		EpitheliumCell[][] newGrid = new EpitheliumCell[gridX][gridY];
 		for (int y = 0; y < gridY; y++) {
 			for (int x = 0; x < gridX; x++) {
 				if (x >= this.getX() || y >= this.getY()) {
-					newGrid[x][y] = new EpitheliumCell(EmptyModel.getInstance()
-							.getModel());
+					newGrid[x][y] = new EpitheliumCell(EmptyModel.getInstance().getModel());
 				} else {
 					newGrid[x][y] = this.gridEpiCell[x][y];
 				}
@@ -61,13 +54,11 @@ public class EpitheliumGrid {
 		this.updateModelSet();
 	}
 
-	public EpitheliumGrid(int gridX, int gridY, String topologyID,
-			RollOver rollover, LogicalModel m) throws InstantiationException,
-			IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException,
-			SecurityException, ClassNotFoundException {
+	public EpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover, LogicalModel m)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		this.setTopology(topologyID, gridX, gridY, rollover);
-		this.modelPositions = new HashMap<LogicalModel, List<Tuple2D<Integer>>>();
+		this.modelPositions = new HashMap<LogicalModel, Set<Tuple2D<Integer>>>();
 		this.gridEpiCell = new EpitheliumCell[gridX][gridY];
 		for (int y = 0; y < gridY; y++) {
 			for (int x = 0; x < gridX; x++) {
@@ -75,7 +66,7 @@ public class EpitheliumGrid {
 				if (this.modelPositions.keySet().contains(m)) {
 					this.modelPositions.get(m).add(new Tuple2D<Integer>(x, y));
 				} else {
-					List<Tuple2D<Integer>> tmpList = new ArrayList<Tuple2D<Integer>>();
+					Set<Tuple2D<Integer>> tmpList = new HashSet<Tuple2D<Integer>>();
 					tmpList.add(new Tuple2D<Integer>(x, y));
 					this.modelPositions.put(m, tmpList);
 				}
@@ -83,15 +74,13 @@ public class EpitheliumGrid {
 		}
 		this.modelSet = new HashSet<LogicalModel>();
 		this.modelSet.add(m);
+		this.compCounts = new HashMap<String, Map<Byte, Integer>>();
 	}
 
-	private void setTopology(String topologyID, int gridX, int gridY,
-			RollOver rollover) throws InstantiationException,
-			IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException,
-			SecurityException, ClassNotFoundException {
-		this.topology = TopologyService.getManager().getNewTopology(topologyID,
-				gridX, gridY, rollover);
+	private void setTopology(String topologyID, int gridX, int gridY, RollOver rollover)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
+		this.topology = TopologyService.getManager().getNewTopology(topologyID, gridX, gridY, rollover);
 	}
 
 	public int getX() {
@@ -121,7 +110,7 @@ public class EpitheliumGrid {
 	public byte[] getCellState(int x, int y) {
 		return this.gridEpiCell[x][y].getState();
 	}
-	
+
 	public byte getCellValue(int x, int y, String nodeID) {
 		return this.gridEpiCell[x][y].getValue(nodeID);
 	}
@@ -130,7 +119,7 @@ public class EpitheliumGrid {
 		return this.gridEpiCell[x][y].getPerturbation();
 	}
 
-	public Map<LogicalModel, List<Tuple2D<Integer>>> getModelPositions() {
+	public Map<LogicalModel, Set<Tuple2D<Integer>>> getModelPositions() {
 		return this.modelPositions;
 	}
 
@@ -148,7 +137,7 @@ public class EpitheliumGrid {
 
 	public void updateModelSet() {
 		this.modelSet = new HashSet<LogicalModel>();
-		this.modelPositions = new HashMap<LogicalModel, List<Tuple2D<Integer>>>();
+		this.modelPositions = new HashMap<LogicalModel, Set<Tuple2D<Integer>>>();
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
 				if (this.hasEmptyModel(x, y)) {
@@ -160,7 +149,7 @@ public class EpitheliumGrid {
 				if (this.modelPositions.containsKey(m)) {
 					this.modelPositions.get(m).add(tmpTuple);
 				} else {
-					List<Tuple2D<Integer>> tmpList = new ArrayList<Tuple2D<Integer>>();
+					Set<Tuple2D<Integer>> tmpList = new HashSet<Tuple2D<Integer>>();
 					tmpList.add(tmpTuple);
 					this.modelPositions.put(m, tmpList);
 				}
@@ -172,7 +161,9 @@ public class EpitheliumGrid {
 		this.topology.setRollOver(r);
 	}
 
-	/** Sets a given cell(x,y) with model m
+	/**
+	 * Sets a given cell(x,y) with model m
+	 * 
 	 * @param x
 	 * @param y
 	 * @param m
@@ -180,18 +171,15 @@ public class EpitheliumGrid {
 	public void setModel(int x, int y, LogicalModel m) {
 		Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x, y);
 		if (this.gridEpiCell[x][y].getModel() != m) {
-			if (!EmptyModel.getInstance().isEmptyModel(
-					this.gridEpiCell[x][y].getModel())) {
-				if (this.modelPositions.get(this.gridEpiCell[x][y].getModel())
-						.contains(tmpTuple)) {
-					this.modelPositions.get(this.gridEpiCell[x][y].getModel())
-							.remove(tmpTuple);
+			if (!EmptyModel.getInstance().isEmptyModel(this.gridEpiCell[x][y].getModel())) {
+				if (this.modelPositions.get(this.gridEpiCell[x][y].getModel()).contains(tmpTuple)) {
+					this.modelPositions.get(this.gridEpiCell[x][y].getModel()).remove(tmpTuple);
 				}
 			}
 		}
 		gridEpiCell[x][y].setModel(m);
 		if (!this.modelPositions.containsKey(m)) {
-			List<Tuple2D<Integer>> tmpList = new ArrayList<Tuple2D<Integer>>();
+			Set<Tuple2D<Integer>> tmpList = new HashSet<Tuple2D<Integer>>();
 			tmpList.add(tmpTuple);
 			this.modelPositions.put(m, tmpList);
 		} else {
@@ -199,11 +187,9 @@ public class EpitheliumGrid {
 		}
 	}
 
-	public void setPerturbation(LogicalModel m, List<Tuple2D<Integer>> lTuples,
-			AbstractPerturbation ap) {
+	public void setPerturbation(LogicalModel m, List<Tuple2D<Integer>> lTuples, AbstractPerturbation ap) {
 		for (Tuple2D<Integer> tuple : lTuples) {
-			if (this.gridEpiCell[tuple.getX()][tuple.getY()].getModel().equals(
-					m)) {
+			if (this.gridEpiCell[tuple.getX()][tuple.getY()].getModel().equals(m)) {
 				this.setPerturbation(tuple.getX(), tuple.getY(), ap);
 			}
 		}
@@ -284,8 +270,7 @@ public class EpitheliumGrid {
 	}
 
 	public EpitheliumGrid clone() {
-		EpitheliumCell[][] newGrid = new EpitheliumCell[this.getX()][this
-				.getY()];
+		EpitheliumCell[][] newGrid = new EpitheliumCell[this.getX()][this.getY()];
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
 				newGrid[x][y] = this.gridEpiCell[x][y].clone();
@@ -293,106 +278,47 @@ public class EpitheliumGrid {
 		}
 		Topology newTop = this.topology.clone();
 		Set<LogicalModel> newModelSet = new HashSet<LogicalModel>(this.modelSet);
-		Map<LogicalModel, List<Tuple2D<Integer>>> newModelPositions = new HashMap<LogicalModel, List<Tuple2D<Integer>>>(
+		Map<LogicalModel, Set<Tuple2D<Integer>>> newModelPositions = new HashMap<LogicalModel, Set<Tuple2D<Integer>>>(
 				this.modelPositions);
-		return new EpitheliumGrid(newGrid, newTop, newModelSet,
-				newModelPositions);
+		Map<String, Map<Byte, Integer>> newCompCounts = new HashMap<String, Map<Byte, Integer>>(this.compCounts);
+		return new EpitheliumGrid(newGrid, newTop, newModelSet, newModelPositions, newCompCounts);
 	}
-	
-	private void initializeComponent2Count(){
-		
-		Set<LogicalModel> lModels = this.getModelSet();
-		this.component2Count = new HashMap<String, Integer>();
-		//Initialize the component2Count
-		for (LogicalModel model: lModels){
-			for (NodeInfo node: model.getNodeOrder()){
-				for (Byte val=1;val<=node.getMax();val++){
-				
-					String name = node.getNodeID()+"_"+val;
-						this.component2Count.put(name,0);
-					}
-			}
-		}
 
+	public String getPercentage(String nodeID) {
+		DecimalFormat perc = new DecimalFormat();
+		perc.setMaximumFractionDigits(2);
+
+		String output = "";
+		int nCells = this.getX() * this.getY();
+		for (byte val : this.compCounts.get(nodeID).keySet()) {
+			if (val == 0)
+				continue;
+			float count = this.compCounts.get(nodeID).get(val);
+			float percentage = (count / nCells) * 100;
+			output = output + "(" + val + " : " + perc.format(percentage) + "%)";
+		}
+		return output;
+	}
+
+	public void updateNodeValueCounts() {
+		// Init component counts
+		this.compCounts.clear();
 		for (int x = 0; x < this.getX(); x++) {
 			for (int y = 0; y < this.getY(); y++) {
 				LogicalModel model = this.getModel(x, y);
-				for (NodeInfo node: model.getNodeOrder()){
-					for (Byte val=1;val<=node.getMax();val++){
-						String name = node.getNodeID()+"_"+val;
-						if (this.getCellValue(x, y, node.getNodeID())>0){
-							int count = this.component2Count.get(name)+1;
-							this.component2Count.put(name,count);
-						}
+				for (NodeInfo node : model.getNodeOrder()) {
+					String nodeID = node.getNodeID();
+					byte val = this.getCellValue(x, y, nodeID);
+					if (!this.compCounts.containsKey(nodeID)) {
+						this.compCounts.put(nodeID, new HashMap<Byte, Integer>());
 					}
+					int count = 1;
+					if (this.compCounts.get(nodeID).containsKey(val)) {
+						count += this.compCounts.get(nodeID).get(val);
+					}
+					this.compCounts.get(nodeID).put(val, count);
 				}
 			}
-			
-			}
-		
-		
-	}
-	
-	
-	public String getPercentage(String nodeID) {
-		// TODO Auto-generated method stub
-
-		initializeComponent2Count();
-		byte max = 0;
-		
-		
-		for (LogicalModel model: this.getModelSet()){
-			for (NodeInfo node: model.getNodeOrder()){
-				if (node.getNodeID().equals(nodeID))
-					max = node.getMax();
-			}
 		}
-		
-		
-	
-		DecimalFormat perc = new DecimalFormat();
-		perc.setMaximumFractionDigits(2);
-		
-		String output = "";
-		int nCells = this.getX()*this.getY();
-		for (Byte val=1;val<=max;val++){
-			String name = nodeID+"_"+val;
-			float count = this.component2Count.get(name);
-			float percentage = (count/nCells)*100;
-			output = output +"("+ val+" : "+ perc.format(percentage) +  "%)";
-			}
-		
-		return output;
-		
-
-				
-
-		
-		
-		
-//		Map<String, LogicalModel> model2Node = new HashMap<String, LogicalModel>();
-//		Map<Byte, Integer> value2Count = new HashMap<Byte, Integer>();
-//		Map<Map<String, LogicalModel>,Map<Byte, Integer>> node4count = new HashMap<Map<String, LogicalModel>,Map<Byte, Integer>>();
-//		
-//		
-//		for (int x = 0; x < epitheliumGrid.getX(); x++) {
-//			for (int y = 0; y < epitheliumGrid.getY(); y++) {
-//				List<NodeInfo> lNode= epitheliumGrid.getModel(x, y).getNodeOrder();
-//				for (NodeInfo node: lNode){
-//					if (node.getNodeID().equals(nodeID)){
-////						model2Node.put(epitheliumGrid.getModel(x, y), nodeID);
-//						byte value = epitheliumGrid.getCellValue(x, y, nodeID);
-//						int count = value2Count.get(value);
-//						value2Count.put(value, count);
-//						node4count.put(model2Node, value2Count);
-//					}
-//				}
-//				
-//			}
-//			}
-		
-		
 	}
-	
-	
 }
