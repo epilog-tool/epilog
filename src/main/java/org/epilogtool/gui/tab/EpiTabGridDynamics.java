@@ -36,6 +36,7 @@ import org.epilogtool.core.cellDynamics.ModelEventManager;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.color.ColorUtils;
+import org.epilogtool.gui.dialog.DialogMessage;
 import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
@@ -333,8 +334,8 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 					// TODO Auto-generated catch block
 				} catch (RuntimeException re) {
 					// TODO Auto-generated catch block
-					// DialogMessage.showError(this, "Trigger function error",
-					// "Invalid expression: " + meExpr.getExpression());
+					DialogMessage.showError(this, "Trigger function",
+							"Invalid expression: " + meExpr.getExpression());
 				}
 			}
 			if (this.epithelium.getModelHeritableNodes().hasModel(m) && !this.modelHeritableNodes.hasModel(m)) {

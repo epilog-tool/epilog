@@ -25,7 +25,6 @@ public class CESpecification {
 	}
 
 	public CellularEventExpression parse(String specificationString) throws RecognitionException, RuntimeException {
-		System.out.println("Specification string: " + specificationString);
 		CellularEventExpression r = null;
 		if (specificationString != null) {
 			specificationString.replaceAll("\\s", "");
@@ -36,7 +35,6 @@ public class CESpecification {
 			CEGrammarParser parser = new CEGrammarParser(tokens);
 			r = parser.eval();
 		}
-		System.out.println("Specification eval: " + r);
 		return r;
 	}
 

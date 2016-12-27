@@ -247,14 +247,21 @@ public class Parser {
 			if (line.startsWith("ME")) {
 				saTmp = line.split("\\s+");
 				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
-				CellularEvent event = CellularEvent.string2Event(saTmp[2]);
 				if (!currEpi.getModelEventManager().hasModel(m)) {
 					currEpi.getModelEventManager().addModel(m);
 				}
+				CellularEvent event = CellularEvent.string2Event(saTmp[2]);
 				saTmp = line.split(saTmp[2]);
 				String expression = saTmp[1].trim();
-				ModelEventExpression modelExpression = new ModelEventExpression(expression);
-				currEpi.getModelEventManager().setModelEventExpression(m, event, modelExpression);
+				ModelEventExpression meExpr = new ModelEventExpression(expression);
+				try {
+					currEpi.getModelEventManager().setModelEventExpression(m, event, meExpr);
+				} catch (RecognitionException re) {
+					// TODO Auto-generated catch block
+				} catch (RuntimeException re) {
+					// TODO Auto-generated catch block
+					dialog.addMessage("Cellular event trigger has invalid expression: " + meExpr.getExpression());
+				}
 			}
 
 		}
