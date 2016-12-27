@@ -19,6 +19,7 @@ import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.core.cellDynamics.CellularEvent;
 import org.epilogtool.core.cellDynamics.ModelEventManager;
 import org.epilogtool.core.topology.Topology;
+import org.epilogtool.gui.tab.EpiTab;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
 
@@ -50,22 +51,22 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 						Epithelium epi = (Epithelium) parentNode
 								.getUserObject();
 						String sLeaf = (String) node.getUserObject();
-						if (sLeaf.equals("Model Grid")) {
+						if (sLeaf.equals(EpiTab.TAB_MODELGRID)) {
 							tipKey = this.getTooltipModelGrid(epi);
-						} else if (sLeaf.equals("Integration Components")) {
+						} else if (sLeaf.equals(EpiTab.TAB_INTEGRATION)) {
 							tipKey = this.getTooltipInputDefinition(epi);
-						} else if (sLeaf.equals("Initial Condition")) {
+						} else if (sLeaf.equals(EpiTab.TAB_INITCONDITIONS)) {
 							tipKey = this.getTooltipInitCond(epi);
-						} else if (sLeaf.equals("Component Perturbations")) {
+						} else if (sLeaf.equals(EpiTab.TAB_PERTURBATIONS)) {
 							tipKey = this.getTooltipPerturbations(epi);
-						} else if (sLeaf.equals("Model Updating")) {
+						} else if (sLeaf.equals(EpiTab.TAB_PRIORITIES)) {
 							tipKey = this.getTooltipModelUpdateScheme(epi);
-						} else if (sLeaf.equals("Epithelial Updating")) {
+						} else if (sLeaf.equals(EpiTab.TAB_EPIUPDATING)) {
 							tipKey = this.getTooltipEpithelialUpdateScheme(epi);
-						} else if (sLeaf.equals("Cell Division")) {
-							tipKey = this.getToolTipCellDivision(epi);
-						} else if (sLeaf.equals("Simulation")) {
+						} else if (sLeaf.equals(EpiTab.TOOL_SIMULATION)) {
 							tipKey = this.getTooltipSimulation(epi);
+						} else if (sLeaf.equals(EpiTab.TAB_CELLDIVISION)) {
+							tipKey = this.getToolTipCellDivision(epi);
 						}
 					}
 				}

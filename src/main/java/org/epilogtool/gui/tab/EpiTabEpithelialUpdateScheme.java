@@ -35,11 +35,11 @@ import org.epilogtool.common.Web;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
-import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
+import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.widgets.JComboWideBox;
-import org.epilogtool.integration.IntegrationFunctionEvaluation;
-import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationExpression;
+import org.epilogtool.integration.IFEvaluation;
+import org.epilogtool.integration.IntegrationFunctionExpression;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
 
@@ -221,17 +221,17 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		Set<ComponentPair> sRegulatorComponents = new HashSet<ComponentPair>();
 		Map<ComponentPair, ComponentIntegrationFunctions> mIntegrationFunctions = this.epithelium
 				.getIntegrationFunctions().getAllIntegrationFunctions();
-		IntegrationFunctionEvaluation ifEvaluator = new IntegrationFunctionEvaluation(
+		IFEvaluation ifEvaluator = new IFEvaluation(
 				this.epithelium.getEpitheliumGrid(),
 				this.epithelium.getProjectFeatures());
 		for (ComponentPair cp : mIntegrationFunctions.keySet()) {
 			LogicalModel m = cp.getModel();
-			List<IntegrationExpression> lExpressions = this.epithelium
+			List<IntegrationFunctionExpression> lExpressions = this.epithelium
 					.getIntegrationFunctionsForComponent(cp)
 					.getComputedExpressions();
-			for (IntegrationExpression ie : lExpressions) {
+			for (IntegrationFunctionExpression ie : lExpressions) {
 				Set<String> sRegNodeIDs = ifEvaluator
-						.traverseTreeRegulators(ie);
+						.traverseIFTreeRegulators(ie);
 				for (String nodeID : sRegNodeIDs) {
 					NodeInfo node = this.epithelium.getProjectFeatures()
 							.getNodeInfo(nodeID, m);
@@ -404,7 +404,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		for (int i = 0; i < modelList.size(); i++) {
 			saSBML[i] = this.projectFeatures.getModelName(modelList.get(i));
 		}
-		JComboBox<String> jcb = new JComboWideBox(saSBML);
+		JComboBox<String> jcb = new JComboWideBox<String>(saSBML);
 		jcb.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

@@ -152,7 +152,7 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 		for (int i = 0; i < modelList.size(); i++) {
 			saSBML[i] = this.projectFeatures.getModelName(modelList.get(i));
 		}
-		JComboBox<String> jcb = new JComboWideBox(saSBML);
+		JComboBox<String> jcb = new JComboWideBox<String>(saSBML);
 		jcb.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

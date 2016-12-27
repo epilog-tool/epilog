@@ -78,6 +78,10 @@ public abstract class TopologyHexagon extends Topology {
 
 		Set<Tuple2D<Integer>> setRelativeNeighbours = new HashSet<Tuple2D<Integer>>();
 
+		if (minDist == 0) {
+			setRelativeNeighbours.add(new Tuple2D<Integer>(0, 0));
+			minDist++;
+		}
 		if (even) {
 			for (int i = minDist; i <= maxDist; i++) {
 				setRelativeNeighbours.addAll(this.evenRelativeNeighboursAt(i));

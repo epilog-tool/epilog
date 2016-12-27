@@ -184,7 +184,7 @@ public class FileIO {
 		for (final File fileEntry : tmpFolder.listFiles()) {
 			if (fileEntry.getName().toLowerCase().equals(CONFIG_FILE)) {
 				try {
-				project = Parser.loadConfigurations(fileEntry);
+					project = Parser.loadConfigurations(fileEntry);
 				} catch(Exception e) {
 					e.printStackTrace();
 				}

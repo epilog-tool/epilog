@@ -21,15 +21,16 @@ import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
+import org.epilogtool.integration.IFEvaluation;
+import org.epilogtool.integration.IntegrationFunctionExpression;
 import org.epilogtool.core.cellDynamics.CellularEvent;
-import org.epilogtool.integration.IntegrationFunctionEvaluation;
-import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationExpression;
 
 /**
  * Initializes and implements the simulation on epilog.
  * 
- * @author Pedro Monteiro and Pedro Varela
- * 
+ * @author Pedro T. Monteiro
+ * @author Pedro L. Varela
+ * @author Camila V. Ramos
  */
 public class Simulation {
 	private Epithelium epithelium;
@@ -118,7 +119,8 @@ public class Simulation {
 
 		Set<ComponentPair> sIntegComponentPairs = this.epithelium
 				.getIntegrationComponentPairs();
-		IntegrationFunctionEvaluation evaluator = new IntegrationFunctionEvaluation(
+
+		IFEvaluation evaluator = new IFEvaluation(
 				neighboursGrid, this.epithelium.getProjectFeatures());
 
 		// Gets the set of cells that can be updated
@@ -252,7 +254,7 @@ public class Simulation {
 	}
 
 	private byte[] nextCellValue(int x, int y, EpitheliumGrid currGrid,
-			IntegrationFunctionEvaluation evaluator,
+			IFEvaluation evaluator,
 			Set<ComponentPair> sIntegComponentPairs) {
 		byte[] currState = currGrid.getCellState(x, y).clone();
 		LogicalModel m = currGrid.getModel(x, y);
@@ -263,7 +265,7 @@ public class Simulation {
 		for (NodeInfo node : m.getNodeOrder()) {
 			ComponentPair nodeCP = new ComponentPair(m, node);
 			if (node.isInput() && sIntegComponentPairs.contains(nodeCP)) {
-				List<IntegrationExpression> lExpressions = this.epithelium
+				List<IntegrationFunctionExpression> lExpressions = this.epithelium
 						.getIntegrationFunctionsForComponent(nodeCP)
 						.getComputedExpressions();
 				byte target = 0;

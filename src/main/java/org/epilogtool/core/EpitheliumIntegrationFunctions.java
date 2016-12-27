@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.antlr.runtime.RecognitionException;
 import org.epilogtool.project.ComponentPair;
 
 public class EpitheliumIntegrationFunctions {
@@ -25,7 +26,7 @@ public class EpitheliumIntegrationFunctions {
 		return newEIF;
 	}
 
-	public void setFunctionAtLevel(ComponentPair cf, byte value, String function) {
+	public void setFunctionAtLevel(ComponentPair cf, byte value, String function) throws RecognitionException, RuntimeException {
 		this.functions.get(cf).setFunctionAtLevel(value, function);
 	}
 
