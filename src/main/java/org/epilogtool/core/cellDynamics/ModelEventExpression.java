@@ -12,18 +12,13 @@ public class ModelEventExpression {
 
 	public ModelEventExpression(String expression) {
 		this.expression = expression;
-		this.computedExpression = this.setComputedExpression();
+		this.computedExpression = null;
 	}
 	
-	private CellularEventExpression setComputedExpression() {
+	public CellularEventExpression setComputedExpression() throws RecognitionException, RuntimeException {
 		CESpecification ceSpec = new CESpecification();
-		CellularEventExpression ceExp = null;
-		try {
-			ceExp = ceSpec.parse(this.expression);
-		} catch (RecognitionException e) {
-			e.printStackTrace();
-		}
-		return ceExp;
+		this.computedExpression = ceSpec.parse(this.expression);
+		return this.computedExpression;
 	}
 	
 	public CellularEventExpression getcomputedExpression() {
@@ -33,12 +28,6 @@ public class ModelEventExpression {
 	public String getExpression() {
 		return this.expression;
 	}
-	
-	public void setExpression(String expression) {
-		this.expression = expression;
-		this.setComputedExpression();
-	}
-	
 	
 	public boolean equals(Object o) {
 		ModelEventExpression other = (ModelEventExpression) o;

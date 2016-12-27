@@ -4,12 +4,27 @@ grammar CEGrammar;
 package org.epilogtool.cellularevent;
 }
 
+@parser::members {
+  @Override
+  public void reportError(RecognitionException e) {
+    throw new RuntimeException("I quit!\n" + e.getMessage());
+  }
+}
+
+@lexer::members {
+  @Override
+  public void reportError(RecognitionException e) {
+    throw new RuntimeException("I quit!\n" + e.getMessage());
+  }
+}
+
 /*****************************************************************************/
 /* Rules */
 
 eval	returns [CellularEventExpression value]
-	: exp=expror { $value = $exp.value; }
+	: exp=expror EOF { $value = $exp.value; }
 	;
+
 expror returns [CellularEventExpression value]
 	: o1=exprand (OR o2=exprand)*
 		{ $value = CESpecification.cellularEventOperationOR($o1.value,$o2.value); }
@@ -21,10 +36,17 @@ exprand returns [CellularEventExpression value]
 	;
 
 exprnot returns [CellularEventExpression value]
-	: expr=node
+	: expr=exprparen
 		{ $value = $expr.value; }
-	| NOT expr=node
+	| NOT expr=exprparen
 		{ $value = CESpecification.cellularEventNOT($expr.value); }
+	;
+
+exprparen returns [CellularEventExpression value]
+	: '(' expr=expror ')'
+		{ $value = $expr.value; }
+	| expr=node
+		{ $value = $expr.value; }
 	;
 
 node returns [CellularEventExpression value]
@@ -41,3 +63,5 @@ NUMBER : '0'..'9';
 OR     : '|';
 AND    : '&';
 NOT    : '!';
+WS     : SPACE+ {skip();};
+fragment SPACE : '\t' | ' ' | '\r' | '\n'| '\u000C';
