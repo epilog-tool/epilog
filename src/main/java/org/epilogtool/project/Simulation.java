@@ -169,7 +169,6 @@ public class Simulation {
 		if (!this.allCellsCalledToUpdate) {
 			keys = changedKeys;
 		}
-
 		List<Tuple2D<Integer>> divisionUpdates = new ArrayList<Tuple2D<Integer>>();
 		List<Tuple2D<Integer>> deathUpdates = new ArrayList<Tuple2D<Integer>>();
 
@@ -234,7 +233,7 @@ public class Simulation {
 			popUpdates = false;
 		}
 
-		if (!changedKeys.isEmpty() && !popUpdates) {
+		if (changedKeys.isEmpty() && !popUpdates) {
 			this.stable = true;
 			return currGrid;
 		}
