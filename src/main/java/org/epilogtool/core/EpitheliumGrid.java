@@ -17,7 +17,7 @@ import org.epilogtool.common.RandomFactory;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.cellDynamics.CellularEvent;
 import org.epilogtool.core.cellDynamics.EpitheliumCellConnections;
-import org.epilogtool.core.cellDynamics.GridTopology;
+import org.epilogtool.core.cellDynamics.CompressionGrid;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.services.TopologyService;
@@ -30,18 +30,18 @@ public class EpitheliumGrid {
 	private Map<String, Map<Byte, Integer>> compCounts;
 	// TODO:maybe this should not be here, but we need to store dynamic
 	// properties of the grid
-	private GridTopology gridTopology;
+	private CompressionGrid compressionGrid;
 	private EpitheliumCellConnections epiCellConnections;
 
 	private EpitheliumGrid(EpitheliumCell[][] gridEpiCell, Topology topology, Set<LogicalModel> modelSet,
 			Map<LogicalModel, Set<Tuple2D<Integer>>> modelPositions, Map<String, Map<Byte, Integer>> compCounts,
-			GridTopology gridTopology, EpitheliumCellConnections epiCellConnections) {
+			CompressionGrid gridTopology, EpitheliumCellConnections epiCellConnections) {
 		this.gridEpiCell = gridEpiCell;
 		this.topology = topology;
 		this.modelSet = modelSet;
 		this.modelPositions = modelPositions;
 		this.compCounts = compCounts;
-		this.gridTopology = gridTopology;
+		this.compressionGrid = gridTopology;
 		this.epiCellConnections = epiCellConnections;
 	}
 
@@ -92,7 +92,7 @@ public class EpitheliumGrid {
 		this.modelSet = new HashSet<LogicalModel>();
 		this.modelSet.add(m);
 		this.compCounts = new HashMap<String, Map<Byte, Integer>>();
-		this.gridTopology = new GridTopology(this);
+		this.compressionGrid = new CompressionGrid(this);
 	}
 
 	private void setTopology(String topologyID, int gridX, int gridY, RollOver rollover)
@@ -192,7 +192,7 @@ public class EpitheliumGrid {
 			}
 		}
 		// TODO: this should be dynamically updated
-		this.gridTopology = new GridTopology(this);
+		this.compressionGrid = new CompressionGrid(this);
 	}
 
 	public void setRollOver(RollOver r) {
@@ -333,7 +333,7 @@ public class EpitheliumGrid {
 		Set<LogicalModel> newModelSet = new HashSet<LogicalModel>(this.modelSet);
 		Map<LogicalModel, Set<Tuple2D<Integer>>> newModelPositions = new HashMap<LogicalModel, Set<Tuple2D<Integer>>>(
 				this.modelPositions);
-		GridTopology newEpiTop = this.gridTopology.clone();
+		CompressionGrid newEpiTop = this.compressionGrid.clone();
 		EpitheliumCellConnections newEpiCellConnections = this.epiCellConnections.clone();
 		Map<String, Map<Byte, Integer>> newCompCounts = new HashMap<String, Map<Byte, Integer>>(this.compCounts);
 		return new EpitheliumGrid(newGrid, newTop, newModelSet, newModelPositions, newCompCounts, newEpiTop,
@@ -474,21 +474,21 @@ public class EpitheliumGrid {
 	// TODO: division method should not be here
 	public List<Tuple2D<Integer>> divisionPath(Tuple2D<Integer> initPosition) {
 		List<Tuple2D<Integer>> path = new ArrayList<Tuple2D<Integer>>();
-		Tuple2D<Integer> endPosition = this.gridTopology.getEmptyPosition(initPosition);
+		Tuple2D<Integer> endPosition = this.compressionGrid.getEmptyPosition(initPosition);
 		path.add(initPosition);
 		Tuple2D<Integer> currPosition = initPosition.clone();
 		int distance2end;
 		List<Tuple2D<Integer>> possiblePaths = new ArrayList<Tuple2D<Integer>>();
 
 		while (!this.isEmptyCell(currPosition.getX(), currPosition.getY())) {
-			distance2end = this.gridTopology.distance(currPosition, endPosition);
+			distance2end = this.compressionGrid.distance(currPosition, endPosition);
 			Set<Tuple2D<Integer>> contactSet = this.getTopology().getPositionNeighbours(currPosition.getX(),
 					currPosition.getY(), 1);
 			for (Tuple2D<Integer> contact : contactSet) {
 				if (path.contains(contact)) {
 					continue;
 				}
-				if (this.gridTopology.distance(contact, endPosition) < distance2end) {
+				if (this.compressionGrid.distance(contact, endPosition) < distance2end) {
 					possiblePaths.add(contact);
 				}
 			}
@@ -496,7 +496,7 @@ public class EpitheliumGrid {
 			path.add(currPosition);
 			possiblePaths.clear();
 		}
-		this.gridTopology.addCell(path.get(path.size() - 1));
+		this.compressionGrid.addCell(path.get(path.size() - 1));
 		Collections.reverse(path);
 		possiblePaths.clear();
 		return path;

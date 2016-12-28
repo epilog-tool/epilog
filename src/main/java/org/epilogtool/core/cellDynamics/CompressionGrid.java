@@ -11,19 +11,19 @@ import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.core.EpitheliumGrid;
 
-public class GridTopology {
+public class CompressionGrid {
 	
 	private byte[][][] compressionGrid;
 	private Topology topology;
 	private int maxDist;
 
-	public GridTopology(EpitheliumGrid epi) {
+	public CompressionGrid(EpitheliumGrid epi) {
 		this.topology = epi.getTopology().clone();
 		this.maxDist=3;
 		this.buildGrid(epi);
 	}
 	
-	private GridTopology(Topology topology,  byte[][][] compressionGrid, int maxDist) {
+	private CompressionGrid(Topology topology,  byte[][][] compressionGrid, int maxDist) {
 		this.topology = topology;
 		this.compressionGrid = compressionGrid;
 		this.maxDist = maxDist;
@@ -260,18 +260,18 @@ public class GridTopology {
 		return this.compressionGrid;
 	}
 	
-	public GridTopology clone() {
+	public CompressionGrid clone() {
 		byte[][][] newCompressionGrid = new byte[this.topology.getX()][this.topology.getY()][this.maxDist+1];
 		for (int x = 0; x < this.topology.getX(); x ++) {
 			for (int y = 0; y < this.topology.getY(); y ++) {
 				newCompressionGrid[x][y] = Arrays.copyOf(this.compressionGrid[x][y], this.maxDist+1);
 			}
 		}
-		return new GridTopology(this.topology.clone(), newCompressionGrid, this.maxDist);
+		return new CompressionGrid(this.topology.clone(), newCompressionGrid, this.maxDist);
 	}
 	
 	public boolean equals(Object o) {
-		GridTopology oET = (GridTopology) o;
+		CompressionGrid oET = (CompressionGrid) o;
 		return Arrays.equals(this.compressionGrid, oET.compressionGrid)
 				&& this.maxDist==oET.maxDist 
 				&& this.topology.equals(oET.topology);
