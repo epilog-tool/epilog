@@ -518,6 +518,9 @@ public class Parser {
 		// Model- cell events
 		// ME #model event_type pattern
 		for (LogicalModel m : model2Key.keySet()) {
+			if (!epi.getModelEventManager().containsModel(m)) {
+				continue;
+			}
 			if (epi.getModelEventManager().getModelEvents(m) == null) {
 				continue;
 			}
