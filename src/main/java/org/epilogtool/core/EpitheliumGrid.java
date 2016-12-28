@@ -341,9 +341,11 @@ public class EpitheliumGrid {
 	}
 
 	public String getPercentage(String nodeID) {
+		if (this.compCounts.isEmpty()) {
+			this.updateNodeValueCounts();
+		}
 		DecimalFormat perc = new DecimalFormat();
 		perc.setMaximumFractionDigits(2);
-
 		String output = "";
 		int nCells = this.getX() * this.getY();
 		for (byte val : this.compCounts.get(nodeID).keySet()) {

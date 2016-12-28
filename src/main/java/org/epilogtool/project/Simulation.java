@@ -250,8 +250,8 @@ public class Simulation {
 				this.divideCell(nextGrid, divisionUpdates);
 				emptyModelNumber -= 1;
 			}
+			nextGrid.updateNodeValueCounts();
 		}
-
 		this.gridHistory.add(nextGrid);
 		this.gridHashHistory.add(nextGrid.hashGrid());
 		return nextGrid;
