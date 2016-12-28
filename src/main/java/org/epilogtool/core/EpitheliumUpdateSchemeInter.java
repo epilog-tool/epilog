@@ -3,21 +3,18 @@ package org.epilogtool.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.print.DocFlavor.STRING;
-
 import org.colomoto.logicalmodel.LogicalModel;
 import org.epilogtool.project.ComponentPair;
 
 public class EpitheliumUpdateSchemeInter {
 	public static float DEFAULT_ALPHA = (float) 1.0;
 	public static float DEFAULT_SIGMA = (float) 1.0;
-	public static String DEFAULT_UPDATEORDER = "Random Independent";
 
 	private float alphaAsyncParam;
 	private Map<ComponentPair, Float> componentPairSigma;
-	private String updateOrder;
+	private UpdateOrder updateOrder;
 
-	public EpitheliumUpdateSchemeInter(float alpha, Map<ComponentPair, Float> sigmaAsync, String updateOrder) {
+	public EpitheliumUpdateSchemeInter(float alpha, Map<ComponentPair, Float> sigmaAsync, UpdateOrder updateOrder) {
 		this.alphaAsyncParam = alpha;
 		this.componentPairSigma = sigmaAsync;
 		this.updateOrder = updateOrder;
@@ -39,10 +36,10 @@ public class EpitheliumUpdateSchemeInter {
 	
 	// Update Mode methods
 	
-	public void setUpdateOrder(String updateOrder) {
+	public void setUpdateOrder(UpdateOrder updateOrder) {
 		this.updateOrder = updateOrder;
 	}
-	public String getUpdateOrder() {
+	public UpdateOrder getUpdateOrder() {
 		return this.updateOrder ;
 	}
 

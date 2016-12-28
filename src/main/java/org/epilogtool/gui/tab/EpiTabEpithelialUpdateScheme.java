@@ -35,6 +35,7 @@ import org.epilogtool.common.Web;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
+import org.epilogtool.core.UpdateOrder;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.widgets.JComboWideBox;
@@ -180,7 +181,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 	}
 
 	private void changeUpdateOrder(String updateOrder){
-		this.updateSchemeInter.setUpdateOrder(updateOrder);
+		this.updateSchemeInter.setUpdateOrder(UpdateOrder.string2UpdateOrder(updateOrder));
 	}
 	
 	private void generateAlphaSlider() {

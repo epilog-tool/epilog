@@ -38,15 +38,15 @@ import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.ModelPerturbations;
 import org.epilogtool.core.ModelPriorityClasses;
+import org.epilogtool.core.UpdateOrder;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.color.ColorUtils;
 
 public class Parser {
 
-	public static Project loadConfigurations(File fConfig) throws IOException,
-			InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException, SecurityException, ClassNotFoundException {
+	public static Project loadConfigurations(File fConfig)
+			throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		FileInputStream fstream = new FileInputStream(fConfig);
 		DataInputStream in = new DataInputStream(fstream);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -76,18 +76,14 @@ public class Parser {
 				File fSBML = new File(fConfig.getParent() + "/" + saTmp[2]);
 				project.loadModel(fSBML.getName(), FileIO.loadSBMLModel(fSBML));
 				modelKey2Name.put(saTmp[1], saTmp[2]);
-				Color modelColor = ColorUtils.getColor(saTmp[3], saTmp[4],
-						saTmp[5]);
-				project.getProjectFeatures()
-						.setModelColor(saTmp[2], modelColor);
+				Color modelColor = ColorUtils.getColor(saTmp[3], saTmp[4], saTmp[5]);
+				project.getProjectFeatures().setModelColor(saTmp[2], modelColor);
 			}
 
 			if (line.startsWith("CC")) {
 				saTmp = line.split("\\s+");
-				Color componentColor = ColorUtils.getColor(saTmp[2], saTmp[3],
-						saTmp[4]);
-				project.getComponentFeatures().setNodeColor(saTmp[1],
-						componentColor);
+				Color componentColor = ColorUtils.getColor(saTmp[2], saTmp[3], saTmp[4]);
+				project.getComponentFeatures().setNodeColor(saTmp[1], componentColor);
 			}
 
 			// Epithelium name
@@ -117,14 +113,12 @@ public class Parser {
 				saTmp = line.split("\\s+");
 				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
 				if (currEpi == null) {
-					currEpi = project.newEpithelium(Integer.parseInt(x),
-							Integer.parseInt(y), topologyLayout, epiName,
+					currEpi = project.newEpithelium(Integer.parseInt(x), Integer.parseInt(y), topologyLayout, epiName,
 							EmptyModel.getInstance().getName(), rollover);
 				}
 				if (saTmp.length > 2) {
 					currEpi.setGridWithModel(m,
-							currEpi.getEpitheliumGrid().getTopology()
-									.instances2Tuples2D(saTmp[2].split(",")));
+							currEpi.getEpitheliumGrid().getTopology().instances2Tuples2D(saTmp[2].split(",")));
 					currEpi.initPriorityClasses(m);
 					currEpi.initComponentFeatures(m);
 				}
@@ -132,43 +126,29 @@ public class Parser {
 			// alpha-asynchronous value
 			if (line.startsWith("AS")) {
 				saTmp = line.split("\\s+");
-				currEpi.getUpdateSchemeInter().setAlpha(
-						Float.parseFloat(saTmp[1]));
+				currEpi.getUpdateSchemeInter().setAlpha(Float.parseFloat(saTmp[1]));
 			}
-			
+
 			// updateMode value
 			if (line.startsWith("UPM")) {
-				saTmp = line.split("\\s+");
-			
-				int n=saTmp.length-1;
-				String[] newArray=new String[n];
-				System.arraycopy(saTmp,1,newArray,0,n);
-				
-				String updateOrder = String.join(" ", newArray);
-				
-				currEpi.getUpdateSchemeInter().setUpdateOrder(
-						updateOrder);
-				
+				String updateOrder = line.substring(line.indexOf(" ") + 1);
+				currEpi.getUpdateSchemeInter().setUpdateOrder(UpdateOrder.string2UpdateOrder(updateOrder));
 			}
 
 			// sigma-asynchronism values
 			if (line.startsWith("SS")) {
 				saTmp = line.split("\\s+");
 				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
-				NodeInfo node = project.getProjectFeatures().getNodeInfo(
-						saTmp[2], m);
+				NodeInfo node = project.getProjectFeatures().getNodeInfo(saTmp[2], m);
 				ComponentPair cp = new ComponentPair(m, node);
-				currEpi.getUpdateSchemeInter().setCPSigma(cp,
-						Float.parseFloat(saTmp[3]));
+				currEpi.getUpdateSchemeInter().setCPSigma(cp, Float.parseFloat(saTmp[3]));
 			}
 
 			// Initial Conditions grid
 			if (line.startsWith("IC")) {
 				saTmp = line.split("\\s+");
-				currEpi.setGridWithComponentValue(saTmp[1],
-						Byte.parseByte(saTmp[2]),
-						currEpi.getEpitheliumGrid().getTopology()
-								.instances2Tuples2D(saTmp[3].split(",")));
+				currEpi.setGridWithComponentValue(saTmp[1], Byte.parseByte(saTmp[2]),
+						currEpi.getEpitheliumGrid().getTopology().instances2Tuples2D(saTmp[3].split(",")));
 			}
 			// Component Integration Functions
 			if (line.startsWith("IT")) {
@@ -204,56 +184,47 @@ public class Parser {
 				}
 				if (saTmp.length == 4) {
 					String input = saTmp[1];
-					for (LogicalModel m : project.getProjectFeatures()
-							.getModels()) {
+					for (LogicalModel m : project.getProjectFeatures().getModels()) {
 						if (!project.getProjectFeatures().hasNode(input, m)) {
 							continue;
 						}
 						boolean flag = true;
 						for (String regulator : regulatorsSet) {
-							if (!(project.getProjectFeatures().hasNode(
-									regulator, m))) {
-//								flag = false;
+							if (!(project.getProjectFeatures().hasNode(regulator, m))) {
+								// flag = false;
 								break;
 							}
 						}
 						if (flag) {
-							currEpi.setIntegrationFunction(saTmp[1], m,
-									Byte.parseByte(saTmp[2]), function);
+							currEpi.setIntegrationFunction(saTmp[1], m, Byte.parseByte(saTmp[2]), function);
 							for (String proper : regulatorsSet) {
-								NodeInfo node = project.getProjectFeatures()
-										.getNodeInfo(proper, m);
+								NodeInfo node = project.getProjectFeatures().getNodeInfo(proper, m);
 								ComponentPair cp = new ComponentPair(m, node);
-								if (!currEpi.getUpdateSchemeInter()
-										.containsCPSigma(cp)) {
+								if (!currEpi.getUpdateSchemeInter().containsCPSigma(cp)) {
 									currEpi.getUpdateSchemeInter().addCP(cp);
 								}
 							}
 						}
 					}
 				} else {
-					LogicalModel m = project.getModel(modelKey2Name
-							.get(saTmp[1]));
-					currEpi.setIntegrationFunction(saTmp[2], m,
-							Byte.parseByte(saTmp[3]), function);
+					LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
+					currEpi.setIntegrationFunction(saTmp[2], m, Byte.parseByte(saTmp[3]), function);
 					for (String regulator : regulatorsSet) {
-						NodeInfo node = project.getProjectFeatures()
-								.getNodeInfo(regulator, m);
-						if (node!=null){
-						ComponentPair cp = new ComponentPair(m, node);
-						if (!currEpi.getUpdateSchemeInter().containsCPSigma(cp)) {
-							currEpi.getUpdateSchemeInter().addCP(cp);
+						NodeInfo node = project.getProjectFeatures().getNodeInfo(regulator, m);
+						if (node != null) {
+							ComponentPair cp = new ComponentPair(m, node);
+							if (!currEpi.getUpdateSchemeInter().containsCPSigma(cp)) {
+								currEpi.getUpdateSchemeInter().addCP(cp);
+							}
+						} else {
+							flagWarning = true;
+
 						}
 					}
-						else{flagWarning = true;
-				
-							
-						}
-				}}
-				if (flagWarning){
+				}
+				if (flagWarning) {
 					JPanel jp = new JPanel();
-					JOptionPane.showMessageDialog(jp,
-							"There is a problem with the integration functions", "Warning",
+					JOptionPane.showMessageDialog(jp, "There is a problem with the integration functions", "Warning",
 							JOptionPane.WARNING_MESSAGE);
 					break;
 				}
@@ -263,16 +234,14 @@ public class Parser {
 				saTmp = line.split("\\s+");
 				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
 				currEpi.setPriorityClasses(m, saTmp[2]);
-//				System.out.println(saTmp[2]);
+				// System.out.println(saTmp[2]);
 			}
 			// Model All Perturbations
 			if (line.startsWith("PT")) {
 				saTmp = line.split("\\s+");
 				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
-				String sPerturb = line.substring(line.indexOf("(") + 1,
-						line.indexOf(")"));
-				AbstractPerturbation ap = string2AbstractPerturbation(
-						currEpi.getProjectFeatures(), sPerturb, m);
+				String sPerturb = line.substring(line.indexOf("(") + 1, line.indexOf(")"));
+				AbstractPerturbation ap = string2AbstractPerturbation(currEpi.getProjectFeatures(), sPerturb, m);
 				currEpi.addPerturbation(m, ap);
 
 				String rest = line.substring(line.indexOf(")") + 1).trim();
@@ -281,8 +250,7 @@ public class Parser {
 					Color c = ColorUtils.getColor(saTmp[0], saTmp[1], saTmp[2]);
 					List<Tuple2D<Integer>> lTuple = null;
 					if (saTmp.length > 3) {
-						lTuple = currEpi.getEpitheliumGrid().getTopology()
-								.instances2Tuples2D(saTmp[3].split(","));
+						lTuple = currEpi.getEpitheliumGrid().getTopology().instances2Tuples2D(saTmp[3].split(","));
 					}
 					currEpi.applyPerturbation(m, ap, c, lTuple);
 				}
@@ -301,8 +269,8 @@ public class Parser {
 		return project;
 	}
 
-	private static AbstractPerturbation string2AbstractPerturbation(
-			ProjectFeatures features, String sExpr, LogicalModel m) {
+	private static AbstractPerturbation string2AbstractPerturbation(ProjectFeatures features, String sExpr,
+			LogicalModel m) {
 		String[] saExpr = sExpr.split(", ");
 		List<AbstractPerturbation> lPerturb = new ArrayList<AbstractPerturbation>();
 
@@ -315,13 +283,11 @@ public class Parser {
 			if (perturb.equals("KO")) {
 				ap = new FixedValuePerturbation(node, 0);
 			} else if (perturb.startsWith("E")) {
-				ap = new FixedValuePerturbation(node, Integer.parseInt(perturb
-						.substring(1)));
+				ap = new FixedValuePerturbation(node, Integer.parseInt(perturb.substring(1)));
 			} else {
 				String[] saTmp = perturb.split(",");
-				ap = new RangePerturbation(node, Integer.parseInt(saTmp[0]
-						.replace("[", "")), Integer.parseInt(saTmp[1].replace(
-						"]", "")));
+				ap = new RangePerturbation(node, Integer.parseInt(saTmp[0].replace("[", "")),
+						Integer.parseInt(saTmp[1].replace("]", "")));
 			}
 			lPerturb.add(ap);
 		}
@@ -332,16 +298,14 @@ public class Parser {
 		}
 	}
 
-	public static void saveConfigurations(Project project, PrintWriter w)
-			throws IOException {
+	public static void saveConfigurations(Project project, PrintWriter w) throws IOException {
 		// Grid dimensions
 		// w.println("GD " + project.getX() + " " + project.getY() + " "
 		// + project.getTopologyLayout());
 
 		// SBML numerical identifiers
 
-		OptionStore.setOption("EM",
-				ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
+		OptionStore.setOption("EM", ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
 
 		int i = 0;
 		Map<LogicalModel, Integer> model2Key = new HashMap<LogicalModel, Integer>();
@@ -349,8 +313,7 @@ public class Parser {
 			LogicalModel m = project.getModel(sbml);
 			model2Key.put(m, i);
 			Color c = project.getProjectFeatures().getModelColor(m);
-			w.println("SB " + i + " " + sbml + " " + c.getRed() + " "
-					+ c.getGreen() + " " + c.getBlue());
+			w.println("SB " + i + " " + sbml + " " + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
 			i++;
 		}
 		w.println();
@@ -358,8 +321,7 @@ public class Parser {
 		// Component colors
 		for (String nodeID : project.getComponentFeatures().getNodeIDs()) {
 			Color c = project.getComponentFeatures().getNodeColor(nodeID);
-			w.println("CC " + nodeID + " " + c.getRed() + " " + c.getBlue()
-					+ " " + c.getGreen());
+			w.println("CC " + nodeID + " " + c.getRed() + " " + c.getBlue() + " " + c.getGreen());
 			OptionStore.setOption("CC " + nodeID, ColorUtils.getColorCode(c));
 		}
 
@@ -368,20 +330,14 @@ public class Parser {
 		}
 	}
 
-	private static void writeEpithelium(Epithelium epi,
-			Map<LogicalModel, Integer> model2Key, PrintWriter w)
+	private static void writeEpithelium(Epithelium epi, Map<LogicalModel, Integer> model2Key, PrintWriter w)
 			throws IOException {
 		w.println();
 
 		// Epithelium name
 		w.println("SN " + epi.getName());
-		w.println("GD "
-				+ epi.getX()
-				+ " "
-				+ epi.getY()
-				+ " "
-				+ TopologyService.getManager().getTopologyID(
-						epi.getEpitheliumGrid().getTopology().getDescription()));
+		w.println("GD " + epi.getX() + " " + epi.getY() + " "
+				+ TopologyService.getManager().getTopologyID(epi.getEpitheliumGrid().getTopology().getDescription()));
 
 		// Rollover
 		w.println("RL " + epi.getEpitheliumGrid().getTopology().getRollOver());
@@ -419,26 +375,23 @@ public class Parser {
 		}
 		for (LogicalModel m : modelInst.keySet()) {
 			if (model2Key.containsKey(m)) {
-				w.println("GM " + model2Key.get(m) + " "
-						+ join(modelInst.get(m), ","));
+				w.println("GM " + model2Key.get(m) + " " + join(modelInst.get(m), ","));
 			}
 		}
 
 		// Alpha asynchronism
 		w.println("AS " + epi.getUpdateSchemeInter().getAlpha());
 		w.println();
-		
+
 		// UpdateMode asynchronism
 		w.println("UPM " + epi.getUpdateSchemeInter().getUpdateOrder());
 		w.println();
 
 		// Sigma asynchronism
-		Map<ComponentPair, Float> mSigmaAsync = epi.getUpdateSchemeInter()
-				.getCPSigmas();
+		Map<ComponentPair, Float> mSigmaAsync = epi.getUpdateSchemeInter().getCPSigmas();
 		if (mSigmaAsync.size() > 0) {
 			for (ComponentPair cp : mSigmaAsync.keySet()) {
-				w.println("SS " + model2Key.get(cp.getModel()) + " "
-						+ cp.getNodeInfo().getNodeID() + " "
+				w.println("SS " + model2Key.get(cp.getModel()) + " " + cp.getNodeInfo().getNodeID() + " "
 						+ mSigmaAsync.get(cp));
 			}
 			w.println();
@@ -451,23 +404,19 @@ public class Parser {
 			for (int x = 0; x < grid.getX(); x++, inst++) {
 				LogicalModel currM = grid.getModel(x, y);
 				if (!valueInst.containsKey(currM))
-					valueInst.put(currM,
-							new HashMap<String, Map<Byte, List<Integer>>>());
+					valueInst.put(currM, new HashMap<String, Map<Byte, List<Integer>>>());
 
 				List<NodeInfo> nodeOrder = currM.getNodeOrder();
 				byte[] currState = grid.getCellState(x, y);
 				for (int n = 0; n < nodeOrder.size(); n++) {
 					String nodeID = nodeOrder.get(n).getNodeID();
 					if (!valueInst.get(currM).containsKey(nodeID))
-						valueInst.get(currM).put(nodeID,
-								new HashMap<Byte, List<Integer>>());
+						valueInst.get(currM).put(nodeID, new HashMap<Byte, List<Integer>>());
 					byte value = currState[n];
 					if (!valueInst.get(currM).get(nodeID).containsKey(value))
-						valueInst.get(currM).get(nodeID)
-								.put(value, new ArrayList<Integer>());
+						valueInst.get(currM).get(nodeID).put(value, new ArrayList<Integer>());
 
-					List<Integer> iTmp = valueInst.get(currM).get(nodeID)
-							.get(value);
+					List<Integer> iTmp = valueInst.get(currM).get(nodeID).get(value);
 					iTmp.add(inst);
 					valueInst.get(currM).get(nodeID).put(value, iTmp);
 				}
@@ -476,11 +425,9 @@ public class Parser {
 		for (LogicalModel m : valueInst.keySet()) {
 			for (String nodeID : valueInst.get(m).keySet()) {
 				for (byte value : valueInst.get(m).get(nodeID).keySet()) {
-					List<String> sInsts = compactIntegerSequences(valueInst
-							.get(m).get(nodeID).get(value));
+					List<String> sInsts = compactIntegerSequences(valueInst.get(m).get(nodeID).get(value));
 					if (!sInsts.isEmpty()) {
-						w.println("IC " + nodeID + " " + value + " "
-								+ join(sInsts, ","));
+						w.println("IC " + nodeID + " " + value + " " + join(sInsts, ","));
 					}
 				}
 			}
@@ -489,13 +436,11 @@ public class Parser {
 
 		// Component Integration Functions
 		for (ComponentPair cp : epi.getIntegrationComponentPairs()) {
-			ComponentIntegrationFunctions cif = epi
-					.getIntegrationFunctionsForComponent(cp);
+			ComponentIntegrationFunctions cif = epi.getIntegrationFunctionsForComponent(cp);
 			List<String> lFunctions = cif.getFunctions();
 			for (int i = 0; i < lFunctions.size(); i++) {
 				int modelIndex = model2Key.get(cp.getModel());
-				w.println("IT " + modelIndex + " "
-						+ cp.getNodeInfo().getNodeID() + " " + (i + 1) + " "
+				w.println("IT " + modelIndex + " " + cp.getNodeInfo().getNodeID() + " " + (i + 1) + " "
 						+ lFunctions.get(i));
 			}
 		}
@@ -541,12 +486,9 @@ public class Parser {
 				w.print("PT " + model2Key.get(m) + " (" + ap + ")");
 				Color c = mp.getPerturbationColor(ap);
 				if (c != null) {
-					w.print(" " + c.getRed() + " " + c.getGreen() + " "
-							+ c.getBlue());
+					w.print(" " + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
 					if (apInst.containsKey(ap)) {
-						w.print(" "
-								+ join(compactIntegerSequences(apInst.get(ap)),
-										","));
+						w.print(" " + join(compactIntegerSequences(apInst.get(ap)), ","));
 					}
 				}
 				w.println();

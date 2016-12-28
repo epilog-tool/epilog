@@ -47,7 +47,8 @@ public class Epithelium {
 		this.perturbations = new EpitheliumPerturbations();
 		this.projectFeatures = projectFeatures;
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(
-				EpitheliumUpdateSchemeInter.DEFAULT_ALPHA, new HashMap<ComponentPair, Float>(),EpitheliumUpdateSchemeInter.DEFAULT_UPDATEORDER);
+				EpitheliumUpdateSchemeInter.DEFAULT_ALPHA, new HashMap<ComponentPair, Float>(),
+				UpdateOrder.RANDOM_INDEPENDENT);
 	
 	}
 
