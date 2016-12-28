@@ -1,11 +1,9 @@
 package org.epilogtool.gui.dialog;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -23,17 +21,12 @@ import org.epilogtool.core.Epithelium;
 public class DialogReplaceSBML extends EscapableDialog {
 	private static final long serialVersionUID = 1877338344309723137L;
 
-
-	private JComboBox jcbModelName;
-
-
+	private JComboBox<String> jcbModelName;
 	private List<String> listModelNames;
 	private boolean bIsOK;
 
 	private JButton buttonCancel;
 	private JButton buttonOK;
-	private String model;				        // Model to be replaced
-	private  List<Epithelium> epiList;         // Epithelium list that contain the model to be replaced
 	private  List<String> selectedEpiList; //Epithelium List selected y the user to modify
 
 	
@@ -51,8 +44,6 @@ public class DialogReplaceSBML extends EscapableDialog {
 		this.listModelNames = modelNames;
 		this.listModelNames.remove(model);
 		this.listModelNames.remove("Empty cell");
-		this.model = model;
-		this.epiList = epiList;
 		this.selectedEpiList = new ArrayList<String>();
 
 		this.setLayout(new BorderLayout());
@@ -64,7 +55,7 @@ public class DialogReplaceSBML extends EscapableDialog {
 
 		// Name JComboBox
 		String[] array = this.listModelNames.toArray(new String[this.listModelNames.size()]);
-		this.jcbModelName = new JComboBox(array);
+		this.jcbModelName = new JComboBox<String>(array);
 		
 		northPanel.add(this.jcbModelName);
 		this.add(northPanel,BorderLayout.NORTH);
@@ -102,7 +93,7 @@ public class DialogReplaceSBML extends EscapableDialog {
 
 				});
 				jpCenter.add(jp, c);
-				jpCenter.setAlignmentX(jp.LEFT_ALIGNMENT);
+				jpCenter.setAlignmentX(JPanel.LEFT_ALIGNMENT);
 			}
 		
 		this.add(jpCenter);

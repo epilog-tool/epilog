@@ -10,26 +10,18 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
+import org.antlr.runtime.RecognitionException;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
-import org.epilogtool.project.ComponentPair;
-import org.epilogtool.project.Project;
-import org.epilogtool.project.ProjectFeatures;
-import org.epilogtool.services.TopologyService;
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.ComponentIntegrationFunctions;
@@ -39,14 +31,23 @@ import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.ModelPerturbations;
 import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.core.UpdateOrder;
+import org.epilogtool.core.cellDynamics.CellularEvent;
+import org.epilogtool.core.cellDynamics.ModelEventExpression;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.color.ColorUtils;
+import org.epilogtool.gui.dialog.DialogMessage;
+import org.epilogtool.integration.IFEvaluation;
+import org.epilogtool.integration.IntegrationFunctionExpression;
+import org.epilogtool.project.ComponentPair;
+import org.epilogtool.project.Project;
+import org.epilogtool.project.ProjectFeatures;
+import org.epilogtool.services.TopologyService;
 
 public class Parser {
 
 	public static Project loadConfigurations(File fConfig)
 			throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException, RecognitionException {
 		FileInputStream fstream = new FileInputStream(fConfig);
 		DataInputStream in = new DataInputStream(fstream);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -62,6 +63,7 @@ public class Parser {
 
 		String line, epiName = null;
 		String[] saTmp;
+		DialogMessage dialog = new DialogMessage();
 
 		while ((line = br.readLine()) != null) {
 			line = line.trim();
@@ -121,6 +123,10 @@ public class Parser {
 							currEpi.getEpitheliumGrid().getTopology().instances2Tuples2D(saTmp[2].split(",")));
 					currEpi.initPriorityClasses(m);
 					currEpi.initComponentFeatures(m);
+					currEpi.initModelEventManager();
+					currEpi.getModelEventManager().addModel(m);
+					currEpi.initModelHeritableNodes();
+					currEpi.getModelHeritableNodes().addModel(m);
 				}
 			}
 			// alpha-asynchronous value
@@ -153,80 +159,46 @@ public class Parser {
 			// Component Integration Functions
 			if (line.startsWith("IT")) {
 				saTmp = line.split("\\s+");
-				List<String> tmpList = (List<String>) Arrays.asList(saTmp);
-				int functionIndex = 0;
-				for (String item : tmpList) {
-					if (item.contains("(")) {
-						break;
-					}
-					functionIndex += 1;
-				}
+				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
+				byte value = Byte.parseByte(saTmp[3]);
+				String nodeID = saTmp[2];
 				String function = "";
-				for (int i = functionIndex; i < tmpList.size(); i++) {
-					function += tmpList.get(i);
-				}
-				List<String> tmpList2 = tmpList.subList(0, functionIndex);
-				tmpList = new ArrayList<String>(tmpList2);
-				tmpList.add(function);
-				saTmp = tmpList.toArray(new String[0]);
-
-				String[] regulatorsArray = function.split("\\&|\\!|\\|");
-				Set<String> regulatorsSet = new HashSet<String>();
-				Boolean flagWarning = false;
-				for (String atom : regulatorsArray) {
-					if (atom.length() == 0) {
-						continue;
+				if (saTmp.length > 4) {
+					int pos = line.indexOf(" ");
+					int n = 4;
+					while (--n > 0) {
+						pos = line.indexOf(" ", pos + 1);
 					}
-					String[] atomElems = atom.split("\\(");
-					if (atomElems.length == 0)
-						continue;
-					regulatorsSet.add(atomElems[atomElems.length - 2]);
+					function = line.substring(pos);
 				}
-				if (saTmp.length == 4) {
-					String input = saTmp[1];
-					for (LogicalModel m : project.getProjectFeatures().getModels()) {
-						if (!project.getProjectFeatures().hasNode(input, m)) {
+				try {
+					currEpi.setIntegrationFunction(nodeID, m, value, function);
+					IFEvaluation evaluator = new IFEvaluation(currEpi.getEpitheliumGrid(),
+							project.getProjectFeatures());
+					NodeInfo node = project.getProjectFeatures().getNodeInfo(nodeID, m);
+					ComponentIntegrationFunctions cif = currEpi
+							.getIntegrationFunctionsForComponent(new ComponentPair(m, node));
+					for (IntegrationFunctionExpression expr : cif.getComputedExpressions()) {
+						if (expr == null)
 							continue;
-						}
-						boolean flag = true;
-						for (String regulator : regulatorsSet) {
-							if (!(project.getProjectFeatures().hasNode(regulator, m))) {
-								// flag = false;
-								break;
-							}
-						}
-						if (flag) {
-							currEpi.setIntegrationFunction(saTmp[1], m, Byte.parseByte(saTmp[2]), function);
-							for (String proper : regulatorsSet) {
-								NodeInfo node = project.getProjectFeatures().getNodeInfo(proper, m);
-								ComponentPair cp = new ComponentPair(m, node);
-								if (!currEpi.getUpdateSchemeInter().containsCPSigma(cp)) {
-									currEpi.getUpdateSchemeInter().addCP(cp);
+						for (String regulator : evaluator.traverseIFTreeRegulators(expr)) {
+							for (LogicalModel model : project.getProjectFeatures().getModels()) {
+								if (project.getProjectFeatures().hasNode(regulator, m)) {
+									NodeInfo nodeRegulator = project.getProjectFeatures().getNodeInfo(regulator, model);
+									ComponentPair cp = new ComponentPair(model, nodeRegulator);
+									if (!currEpi.getUpdateSchemeInter().containsCPSigma(cp)) {
+										currEpi.getUpdateSchemeInter().addCP(cp);
+									}
 								}
 							}
 						}
 					}
-				} else {
-					LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
-					currEpi.setIntegrationFunction(saTmp[2], m, Byte.parseByte(saTmp[3]), function);
-					for (String regulator : regulatorsSet) {
-						NodeInfo node = project.getProjectFeatures().getNodeInfo(regulator, m);
-						if (node != null) {
-							ComponentPair cp = new ComponentPair(m, node);
-							if (!currEpi.getUpdateSchemeInter().containsCPSigma(cp)) {
-								currEpi.getUpdateSchemeInter().addCP(cp);
-							}
-						} else {
-							flagWarning = true;
-
-						}
-					}
-				}
-				if (flagWarning) {
-					JPanel jp = new JPanel();
-					JOptionPane.showMessageDialog(jp, "There is a problem with the integration functions", "Warning",
-							JOptionPane.WARNING_MESSAGE);
-					break;
+				} catch (RecognitionException re) {
+					// TODO Auto-generated catch block
+				} catch (RuntimeException re) {
+					// TODO Auto-generated catch block
+					dialog.addMessage(
+							"Integration function: " + saTmp[2] + ":" + value + " has invalid expression: " + function);
 				}
 			}
 			// Model Priority classes
@@ -255,7 +227,51 @@ public class Parser {
 					currEpi.applyPerturbation(m, ap, c, lTuple);
 				}
 			}
-			// project add currEpi
+
+			if (line.startsWith("HN")) {
+				saTmp = line.split("\\s+");
+				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
+				for (int i = 2; i < saTmp.length; i++) {
+					currEpi.getModelHeritableNodes().addNode(m, saTmp[i]);
+				}
+			}
+
+			if (line.startsWith("ID")) {
+				saTmp = line.split("\\s+");
+				int i = 1;
+				for (int a = 0; a < currEpi.getY(); a++) {
+					for (int b = 0; b < currEpi.getX(); b++) {
+						if (!EmptyModel.getInstance().isEmptyModel(currEpi.getModel(b, a))) {
+							String[] id = saTmp[i].split("-");
+							currEpi.getEpitheliumGrid().getCellID(b, a).setRoot(Integer.parseInt(id[0]));
+							String idString = (id.length == 1) ? "" : id[1];
+							currEpi.getEpitheliumGrid().getCellID(b, a).setIdentifier(idString);
+							i += 1;
+						}
+					}
+				}
+			}
+
+			if (line.startsWith("ME")) {
+				saTmp = line.split("\\s+");
+				LogicalModel m = project.getModel(modelKey2Name.get(saTmp[1]));
+				if (!currEpi.getModelEventManager().hasModel(m)) {
+					currEpi.getModelEventManager().addModel(m);
+				}
+				CellularEvent event = CellularEvent.string2Event(saTmp[2]);
+				saTmp = line.split(saTmp[2]);
+				String expression = saTmp[1].trim();
+				ModelEventExpression meExpr = new ModelEventExpression(expression);
+				try {
+					currEpi.getModelEventManager().setModelEventExpression(m, event, meExpr);
+				} catch (RecognitionException re) {
+					// TODO Auto-generated catch block
+				} catch (RuntimeException re) {
+					// TODO Auto-generated catch block
+					dialog.addMessage("Cellular event trigger has invalid expression: " + meExpr.getExpression());
+				}
+			}
+
 		}
 		// // Ensure coherence of all epithelia
 		for (Epithelium epi : project.getEpitheliumList()) {
@@ -266,6 +282,7 @@ public class Parser {
 		br.close();
 		in.close();
 		fstream.close();
+		dialog.show("Loading project configurations");
 		return project;
 	}
 
@@ -477,6 +494,7 @@ public class Parser {
 				}
 			}
 		}
+		w.println();
 
 		for (LogicalModel m : model2Key.keySet()) {
 			ModelPerturbations mp = epi.getModelPerturbations(m);
@@ -494,6 +512,50 @@ public class Parser {
 				w.println();
 			}
 		}
+
+		w.println();
+
+		// Model- cell events
+		// ME #model event_type pattern
+		for (LogicalModel m : model2Key.keySet()) {
+			if (epi.getModelEventManager().getModelEvents(m) == null) {
+				continue;
+			}
+			Set<CellularEvent> modelEvents = epi.getModelEventManager().getModelEvents(m);
+			for (CellularEvent event : modelEvents) {
+				w.print("ME " + model2Key.get(m) + " " + event.toString() + " "
+						+ epi.getModelEventManager().getModelEventExpression(m, event).getExpression());
+			}
+			w.println();
+		}
+
+		// Model heritable components
+		// HN #model node1 node2 ...
+		for (LogicalModel m : model2Key.keySet()) {
+			if (epi.getModelHeritableNodes().hasModel(m)) {
+				if (epi.getModelHeritableNodes().hasHeritableNodes(m)) {
+					w.print("HN " + model2Key.get(m));
+					for (String node : epi.getModelHeritableNodes().getModelHeritableNodes(m)) {
+						w.print(" " + node);
+					}
+				}
+				w.println();
+			}
+		}
+
+		// Epithelium Cell Identifiers
+		// ID ordered by entry index (for occupied positions only)
+		w.print("ID");
+		for (int y = 0; y < epi.getY(); y++) {
+			for (int x = 0; x < epi.getX(); x++) {
+				if (!EmptyModel.getInstance().isEmptyModel(epi.getModel(x, y))) {
+					w.print(" " + epi.getEpitheliumGrid().getCellID(x, y));
+				}
+			}
+		}
+
+		w.println("\n\n");
+		// EpitheliumCell Connections
 	}
 
 	private static List<String> compactIntegerSequences(List<Integer> iInsts) {

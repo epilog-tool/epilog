@@ -9,7 +9,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,19 +28,15 @@ public class VisualGridMonteCarlo extends VisualGrid {
 	private List<String> lCompON;
 	private GridInformation valuePanel;
 	private Tuple2D<Integer> lastPos;
-	private Map<Tuple3D,Float> cellNode2Average;
 
-	public VisualGridMonteCarlo(EpitheliumGrid epiGrid,
-			ProjectFeatures projectFeatures, List<String> lCompON,
-			GridInformation valuePanel,Map<Tuple3D,Float> cellNode2Average) {
+	public VisualGridMonteCarlo(EpitheliumGrid epiGrid, ProjectFeatures projectFeatures, List<String> lCompON,
+			GridInformation valuePanel, Map<Tuple3D<Integer>, Float> cellNode2Average) {
 		super(epiGrid.getX(), epiGrid.getY(), epiGrid.getTopology());
-		
 
 		this.projectFeatures = projectFeatures;
 		this.epiGrid = epiGrid;
 		this.lCompON = lCompON;
 		this.valuePanel = valuePanel;
-		this.cellNode2Average = cellNode2Average;
 
 		this.addMouseMotionListener(new MouseMotionListener() {
 			@Override
@@ -90,7 +85,7 @@ public class VisualGridMonteCarlo extends VisualGrid {
 		if (!isInGrid(pos))
 			return;
 		this.lastPos = pos;
-		this.valuePanel.updateValues(pos.getX(), pos.getY(), this.epiGrid);
+		this.valuePanel.updateValues(pos.getX(), pos.getY(), this.epiGrid, null);
 	}
 
 	public void setEpitheliumGrid(EpitheliumGrid grid) {
@@ -103,8 +98,8 @@ public class VisualGridMonteCarlo extends VisualGrid {
 		Graphics2D g2 = (Graphics2D) g;
 
 		System.out.println(lCompON);
-		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY,
-				this.getSize().width, this.getSize().height);
+		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY, this.getSize().width,
+				this.getSize().height);
 
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
@@ -120,39 +115,33 @@ public class VisualGridMonteCarlo extends VisualGrid {
 					for (String nodeID : this.lCompON) {
 						Color cBase = this.projectFeatures.getNodeColor(nodeID);
 						if (this.projectFeatures.hasNode(nodeID, m)) {
-							byte max = this.projectFeatures.getNodeInfo(nodeID,
-									m).getMax();
+							byte max = this.projectFeatures.getNodeInfo(nodeID, m).getMax();
 
 							int index = this.epiGrid.getNodeIndex(x, y, nodeID);
 							if (index >= 0) { // if cell has nodeID
 								byte value = this.epiGrid.getCellState(x, y)[index];
 								if (value > 0) {
-									lColors.add(ColorUtils.getColorAtValue(
-											cBase, max, value));
+									lColors.add(ColorUtils.getColorAtValue(cBase, max, value));
 								}
 							}
 						}
 					}
 				}
 				Color cCombined = ColorUtils.combine(lColors);
-				Tuple2D<Double> center = topology.getPolygonCenter(this.radius,
-						x, y);
-				Polygon polygon = topology
-						.createNewPolygon(this.radius, center);
+				Tuple2D<Double> center = topology.getPolygonCenter(this.radius, x, y);
+				Polygon polygon = topology.createNewPolygon(this.radius, center);
 				this.paintPolygon(stroke, cCombined, polygon, g2);
 				// Highlights the selected cell
-				if (this.lastPos != null && this.lastPos.getX() == x
-						&& this.lastPos.getY() == y) {
+				if (this.lastPos != null && this.lastPos.getX() == x && this.lastPos.getY() == y) {
 					center = topology.getPolygonCenter(this.radius, x, y);
-					polygon = topology
-							.createNewPolygon(this.radius / 3, center);
+					polygon = topology.createNewPolygon(this.radius / 3, center);
 					this.paintPolygon(stroke, ColorUtils.LIGHT_RED, polygon, g2);
 				}
 			}
 		}
 	}
-	
-	public EpitheliumGrid getEpitheliumGrid(){
+
+	public EpitheliumGrid getEpitheliumGrid() {
 		return epiGrid;
 	}
 

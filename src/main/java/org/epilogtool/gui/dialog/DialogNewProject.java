@@ -95,6 +95,7 @@ public class DialogNewProject extends EscapableDialog {
 //		this.validateDialog();
 	}
 
+	@Deprecated
 	private void validateTextField(KeyEvent e) {
 		JTextField jtf = (JTextField) e.getSource();
 		boolean valid = false;
@@ -113,6 +114,7 @@ public class DialogNewProject extends EscapableDialog {
 //		this.validateDialog();
 	}
 
+	@Deprecated
 	private void validateEvenDimension(FocusEvent e) {
 		JTextField jtf = (JTextField) e.getSource();
 		try {

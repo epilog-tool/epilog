@@ -30,7 +30,7 @@ public class VisualGridSimulation extends VisualGrid {
 	private GridInformation valuePanel;
 	private Tuple2D<Integer> lastPos;
 	
-	private Map<Tuple3D, Float> cellNode2Count;
+	private Map<Tuple3D<Integer>, Float> cellNode2Count;
 
 	public VisualGridSimulation(EpitheliumGrid epiGrid,
 			ProjectFeatures projectFeatures, List<String> lCompON,
@@ -90,7 +90,7 @@ public class VisualGridSimulation extends VisualGrid {
 		if (!isInGrid(pos))
 			return;
 		this.lastPos = pos;
-		this.valuePanel.updateValues(pos.getX(), pos.getY(), this.epiGrid);
+		this.valuePanel.updateValues(pos.getX(), pos.getY(), this.epiGrid, null);
 	}
 
 	public void setEpitheliumGrid(EpitheliumGrid grid) {
@@ -156,7 +156,7 @@ public class VisualGridSimulation extends VisualGrid {
 	}
 
 	
-	public void paintCumulative(Graphics g, Map<Tuple3D,Float> cellNode2Count) {
+	public void paintCumulative(Graphics g, Map<Tuple3D<Integer>,Float> cellNode2Count) {
 		this.cellNode2Count = cellNode2Count;
 		
 		Graphics2D g2 = (Graphics2D) g;
@@ -180,7 +180,7 @@ public class VisualGridSimulation extends VisualGrid {
 						
 						Color cBase = this.projectFeatures.getNodeColor(nodeID);
 		
-								float value = this.cellNode2Count.get(new Tuple3D(x,y,nodeID));
+								float value = this.cellNode2Count.get(new Tuple3D<Integer>(x,y,nodeID));
 								if (value > 0) {
 									lColors.add(ColorUtils.getColorAtValue(cBase, max, value));
 								
@@ -213,7 +213,7 @@ private Float getMaxNodeCellCount(String nodeID){
 	for (int x = 0; x < this.gridX; x++) {
 		for (int y = 0; y < this.gridY; y++) {
 
-			float m = this.cellNode2Count.get(new Tuple3D(x,y,nodeID));
+			float m = this.cellNode2Count.get(new Tuple3D<Integer>(x,y,nodeID));
 			value.add(m);
 		}}
 		

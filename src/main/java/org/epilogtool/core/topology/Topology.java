@@ -69,14 +69,11 @@ public abstract class Topology {
 
 	public abstract Topology clone();
 
-	public abstract Tuple2D<Double> getPolygonCenter(double cellSize,
-			int gridX, int gridY);
+	public abstract Tuple2D<Double> getPolygonCenter(double cellSize, int gridX, int gridY);
 
-	public abstract Polygon createNewPolygon(double radius,
-			Tuple2D<Double> center);
+	public abstract Polygon createNewPolygon(double radius, Tuple2D<Double> center);
 
-	public abstract double computeBestRadius(int gridX, int gridY, double dimX,
-			double dimY);
+	public abstract double computeBestRadius(int gridX, int gridY, double dimX, double dimY);
 
 	protected double dimXFix(double dimX) {
 		return dimX - 3;
@@ -86,20 +83,21 @@ public abstract class Topology {
 		return dimY - 3;
 	}
 
-	public abstract Tuple2D<Integer> getSelectedCell(double radius, int mouseX,
-			int mouseY);
+	public abstract Tuple2D<Integer> getSelectedCell(double radius, int mouseX, int mouseY);
 
 	public boolean equals(Object o) {
 		Topology tOut = (Topology) o;
-		return (this.getDescription().equals(tOut.getDescription())
-				&& this.getX() == tOut.getX() && this.getY() == tOut.getY());
+		return (this.getDescription().equals(tOut.getDescription()) && this.getX() == tOut.getX()
+				&& this.getY() == tOut.getY());
 	}
 
 	public abstract boolean isEven(int x, int y);
 
-	public abstract Set<Tuple2D<Integer>> getPositionNeighbours(int x, int y,
-			int minDist, int maxDist);
+	public abstract Set<Tuple2D<Integer>> getPositionNeighbours(int x, int y, int minDist, int maxDist);
 
-	public abstract Set<Tuple2D<Integer>> getRelativeNeighbours(boolean even,
-			int minDist, int maxDist);
+	public Set<Tuple2D<Integer>> getPositionNeighbours(int x, int y, int exactDist) {
+		return this.getPositionNeighbours(x, y, exactDist, exactDist);
+	}
+
+	public abstract Set<Tuple2D<Integer>> getRelativeNeighbours(boolean even, int minDist, int maxDist);
 }

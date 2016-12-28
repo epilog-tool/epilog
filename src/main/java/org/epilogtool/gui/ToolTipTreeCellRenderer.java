@@ -16,7 +16,10 @@ import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.core.ModelPerturbations;
 import org.epilogtool.core.ModelPriorityClasses;
+import org.epilogtool.core.cellDynamics.CellularEvent;
+import org.epilogtool.core.cellDynamics.ModelEventManager;
 import org.epilogtool.core.topology.Topology;
+import org.epilogtool.gui.tab.EpiTab;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
 
@@ -28,11 +31,9 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 		this.projectFeatures = projectFeatures;
 	}
 
-	public Component getTreeCellRendererComponent(JTree tree, Object value,
-			boolean selected, boolean expanded, boolean leaf, int row,
-			boolean hasFocus) {
-		renderer.getTreeCellRendererComponent(tree, value, selected, expanded,
-				leaf, row, hasFocus);
+	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
+			boolean leaf, int row, boolean hasFocus) {
+		renderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 		if (value != null) {
 			String tipKey = "";
 			if (value instanceof DefaultMutableTreeNode) {
@@ -40,36 +41,34 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 				if (node.getParent() != null) {
 					if (!node.isLeaf()) {
 						// Epithelium
-						tipKey = this.getTooltipEpithelium((Epithelium) node
-								.getUserObject());
+						tipKey = this.getTooltipEpithelium((Epithelium) node.getUserObject());
 					} else {
-						DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) node
-								.getParent();
-						Epithelium epi = (Epithelium) parentNode
-								.getUserObject();
+						DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) node.getParent();
+						Epithelium epi = (Epithelium) parentNode.getUserObject();
 						String sLeaf = (String) node.getUserObject();
-						if (sLeaf.equals("Model Grid")) {
+						if (sLeaf.equals(EpiTab.TAB_MODELGRID)) {
 							tipKey = this.getTooltipModelGrid(epi);
-						} else if (sLeaf.equals("Integration Components")) {
-							tipKey = this.getTooltipIntegration(epi);
-						} else if (sLeaf.equals("Initial Condition")) {
+						} else if (sLeaf.equals(EpiTab.TAB_INTEGRATION)) {
+							tipKey = this.getTooltipInputDefinition(epi);
+						} else if (sLeaf.equals(EpiTab.TAB_INITCONDITIONS)) {
 							tipKey = this.getTooltipInitCond(epi);
-						} else if (sLeaf.equals("Component Perturbations")) {
+						} else if (sLeaf.equals(EpiTab.TAB_PERTURBATIONS)) {
 							tipKey = this.getTooltipPerturbations(epi);
-						} else if (sLeaf.equals("Model Updating")) {
+						} else if (sLeaf.equals(EpiTab.TAB_PRIORITIES)) {
 							tipKey = this.getTooltipModelUpdateScheme(epi);
-						} else if (sLeaf.equals("Epithelial Updating")) {
+						} else if (sLeaf.equals(EpiTab.TAB_EPIUPDATING)) {
 							tipKey = this.getTooltipEpithelialUpdateScheme(epi);
-						} else if (sLeaf.equals("Simulation")) {
+						} else if (sLeaf.equals(EpiTab.TOOL_SIMULATION)) {
 							tipKey = this.getTooltipSimulation(epi);
-						} else if (sLeaf.equals("MonteCarlo")) {
+						} else if (sLeaf.equals(EpiTab.TOOL_MONTECARLO)) {
 							tipKey = this.getTooltipSimulation(epi);
+						} else if (sLeaf.equals(EpiTab.TAB_CELLDIVISION)) {
+							tipKey = this.getToolTipCellDivision(epi);
 						}
 					}
 				}
 			} else {
-				tipKey = tree.convertValueToText(value, selected, expanded,
-						leaf, row, hasFocus);
+				tipKey = tree.convertValueToText(value, selected, expanded, leaf, row, hasFocus);
 			}
 			renderer.setToolTipText(tipKey);
 		}
@@ -79,8 +78,8 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	private String getTooltipEpithelium(Epithelium epi) {
 		String tipKey = "<html><b>Epithelium</b><br/>";
 		tipKey += "Name: " + epi.getName() + "<br/>";
-		tipKey += "Grid: " + epi.getEpitheliumGrid().getX() + " (width) x "
-				+ epi.getEpitheliumGrid().getY() + " (height)<br/>";
+		tipKey += "Grid: " + epi.getEpitheliumGrid().getX() + " (width) x " + epi.getEpitheliumGrid().getY()
+				+ " (height)<br/>";
 		Topology top = epi.getEpitheliumGrid().getTopology();
 		tipKey += "Rollover: " + top.getRollOver() + "<br/>";
 		tipKey += "Topology: " + top.getDescription() + "<br/>";
@@ -97,15 +96,13 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 		return tipKey;
 	}
 
-	private String getTooltipIntegration(Epithelium epi) {
+	private String getTooltipInputDefinition(Epithelium epi) {
 		String tipKey = "<html>";
 		EpitheliumIntegrationFunctions epiIF = epi.getIntegrationFunctions();
 		for (ComponentPair cp : epiIF.getComponentPair()) {
-			tipKey += "<b>" + cp.getNodeInfo().getNodeID() + " - "
-					+ this.projectFeatures.getModelName(cp.getModel())
+			tipKey += "<b>" + cp.getNodeInfo().getNodeID() + " - " + this.projectFeatures.getModelName(cp.getModel())
 					+ "</b><br/>";
-			ComponentIntegrationFunctions cif = epiIF
-					.getComponentIntegrationFunctions(cp);
+			ComponentIntegrationFunctions cif = epiIF.getComponentIntegrationFunctions(cp);
 			List<String> lFunctions = cif.getFunctions();
 			for (int i = 0; i < lFunctions.size(); i++) {
 				tipKey += (i + 1) + ": " + lFunctions.get(i) + "<br/>";
@@ -165,19 +162,34 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	private String getTooltipEpithelialUpdateScheme(Epithelium epi) {
 		String tipKey = "<html>";
 		tipKey += "<b>Parameters</b><br/>";
-		tipKey += "- Alpha = " + epi.getUpdateSchemeInter().getAlpha()
-				+ "<br/>";
+		tipKey += "- Alpha = " + epi.getUpdateSchemeInter().getAlpha() + "<br/>";
 		Map<ComponentPair, Float> cpSigmas = epi.getUpdateSchemeInter().getCPSigmas();
-		if (cpSigmas.size() == 0){
+		if (cpSigmas.size() == 0) {
 			tipKey += "- Sigma = <i>Empty</i>";
-		}
-		else {
+		} else {
 			tipKey += "- Sigma <br/>";
 			for (ComponentPair cp : cpSigmas.keySet()) {
-				tipKey += "&nbsp;&nbsp;. " + 
-						epi.getProjectFeatures().getModelName(cp.getModel()) + 
-						" : " + cp.getNodeInfo().getNodeID() + 
-						" - " + cpSigmas.get(cp) + "<br/>";
+				tipKey += "&nbsp;&nbsp;. " + epi.getProjectFeatures().getModelName(cp.getModel()) + " : "
+						+ cp.getNodeInfo().getNodeID() + " - " + cpSigmas.get(cp) + "<br/>";
+			}
+		}
+		tipKey += "</html>";
+		return tipKey;
+	}
+
+	private String getToolTipCellDivision(Epithelium epi) {
+		String tipKey = "<html>";
+		ModelEventManager events = epi.getModelEventManager();
+		for (LogicalModel m : epi.getEpitheliumGrid().getModelSet()) {
+			tipKey += "<b>" + epi.getProjectFeatures().getModelName(m) + "</b><br/>";
+			if (!events.containsModel(m)) {
+				System.out.println("Error tooltiptreecellrenderer");
+				tipKey += "- " + epi.getProjectFeatures().getModelName(m) + "   - Empty <br/>";
+			} else if (events.getModelEvents(m).isEmpty()) {
+				tipKey += "- " + epi.getProjectFeatures().getModelName(m) + "   - Empty <br/>";
+			} else {
+				tipKey += "   - " + events.getModelEventExpression(m, CellularEvent.PROLIFERATION).getExpression()
+						+ "<br/>";
 			}
 		}
 		tipKey += "</html>";

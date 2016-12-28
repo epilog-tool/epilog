@@ -27,7 +27,7 @@ import org.epilogtool.services.TopologyService;
 public class DialogEditEpithelium extends EscapableDialog {
 	private static final long serialVersionUID = 1877338344309723137L;
 
-//	private final int COL_SIZE = 20;
+	// private final int COL_SIZE = 20;
 	private final String ROLLOVER_WARNING = "This dimension must be even due to rollover selection!";
 
 	private JTextField jtfEpiName;
@@ -137,9 +137,8 @@ public class DialogEditEpithelium extends EscapableDialog {
 		this.add(new JLabel("Rollover:"), c);
 
 		// Rollover JComboBox
-		this.jcbRollover = new JComboBox<RollOver>(new RollOver[] {
-				RollOver.NONE, RollOver.HORIZ, RollOver.VERT,
-				RollOver.HORIZ_VERT });
+		this.jcbRollover = new JComboBox<RollOver>(
+				new RollOver[] { RollOver.NONE, RollOver.HORIZ, RollOver.VERT, RollOver.HORIZ_VERT });
 		this.jcbRollover.setSelectedItem(epi.getEpitheliumGrid().getTopology().getRollOver());
 		this.jcbRollover.addActionListener(new ActionListener() {
 			@Override
@@ -159,8 +158,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 
 		// Topology JComboBox
 		int iSelected = 0;
-		List<String> lDescs = new ArrayList<String>(TopologyService
-				.getManager().getTopologyDescriptions());
+		List<String> lDescs = new ArrayList<String>(TopologyService.getManager().getTopologyDescriptions());
 		String[] names = new String[lDescs.size()];
 		for (int i = 0; i < lDescs.size(); i++) {
 			if (lDescs.get(i).equals(epi.getEpitheliumGrid().getTopology().getDescription())) {
@@ -168,7 +166,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 			}
 			names[i] = lDescs.get(i);
 		}
-//		this.jcbLayout = new JComboImageBox(names);
+		this.jcbLayout = new JComboImageBox<String>(names);
 		this.jcbLayout.setSelectedIndex(iSelected);
 		c.gridx = 1;
 		c.gridy = 5;
@@ -245,32 +243,31 @@ public class DialogEditEpithelium extends EscapableDialog {
 
 	private void validateTextField() {
 		this.bIsNameOK = false;
-		if (!this.listEpiNames.contains(this.jtfEpiName.getText())
-				&& !this.jtfEpiName.getText().isEmpty()
+		if (!this.listEpiNames.contains(this.jtfEpiName.getText()) && !this.jtfEpiName.getText().isEmpty()
 				&& !this.jtfEpiName.getText().matches(".*(\\s).*")) {
 			this.bIsNameOK = true;
 		}
-		this.jtfEpiName.setBackground(this.bIsNameOK ? Color.WHITE
-				: ColorUtils.LIGHT_RED);
+		this.jtfEpiName.setBackground(this.bIsNameOK ? Color.WHITE : ColorUtils.LIGHT_RED);
 		this.validateDialog();
 	}
 
 	public String getEpitheliumName() {
 		return this.jtfEpiName.getText();
 	}
+
 	public RollOver getRollOver() {
 		return (RollOver) this.jcbRollover.getSelectedItem();
 	}
-	
+
 	public String getTopologyID() {
 		String desc = (String) this.jcbLayout.getSelectedItem();
 		return TopologyService.getManager().getTopologyID(desc);
 	}
-	
+
 	public int getGridX() {
 		return this.width;
 	}
-	
+
 	public int getGridY() {
 		return this.height;
 	}

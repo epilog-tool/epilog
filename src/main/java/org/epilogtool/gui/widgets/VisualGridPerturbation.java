@@ -95,7 +95,7 @@ public class VisualGridPerturbation extends VisualGridDefinitions {
 		if (!isInGrid(pos))
 			return;
 
-		this.valuePanel.updateValues(pos.getX(), pos.getY(), this.epiGrid);
+		this.valuePanel.updateValues(pos.getX(), pos.getY(), this.epiGrid, null);
 	}
 
 	public void setModel(LogicalModel m) {

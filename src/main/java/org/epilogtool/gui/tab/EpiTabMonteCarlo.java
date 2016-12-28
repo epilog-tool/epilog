@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -29,7 +28,6 @@ import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -67,7 +65,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	private GridInformation cellInformation;
 	private EpitheliumGrid epiGrid;
 	
-	private Map<Tuple3D, Float> cellNode2Count;
+	private Map<Tuple3D<Integer>, Float> cellNode2Count;
 	
 	private JPanel jpRight;
 	private JPanel jpLeft;
@@ -109,7 +107,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	private List<String> lCompON;
 	private List<String> lPresentComps;
 
-	private List<String> lNodeInPanel;
 	private Map<String, Byte> mNode2ValueSelected;
 	
 	private SimulationEpiClone simEpiClone;
@@ -141,7 +138,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			}
 		}
 		
-		this.monteCarlo = monteCarlo;
 		this.jbRun = new JButton("Run");
 		this.jpRight = new JPanel(new BorderLayout());
 		this.jpLeft = new JPanel(new BorderLayout());
@@ -154,7 +150,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.epiGrid = this.epithelium.getEpitheliumGrid();
 		this.lCompON = new ArrayList<String>();
 		this.mNode2ValueSelected = new HashMap<String, Byte>();
-		this.lNodeInPanel = new ArrayList<String>();
 		// Create everything at the beginning for every nodeID
 		this.mNode2JButton = new HashMap<String, JButton>();
 		this.mNode2Checkbox = new HashMap<String, JCheckBox>();
@@ -600,10 +595,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.rTop = new JPanel();
 		this.rTop.setLayout(new BoxLayout(this.rTop, BoxLayout.Y_AXIS));
 
-		// Model selection list
-		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
-				this.clonedEpi.getEpitheliumGrid().getModelSet());
-				this.newModelCombobox();
+		this.newModelCombobox();
 		
 		this.rTop.add(jccb);
 		this.jccb.addActionListener(new ActionListener() {
@@ -1219,11 +1211,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			jcheckb.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					JCheckBox jcb = (JCheckBox) e.getSource();
-					String nodeID = jcb.getText();
-				
 					// Repaint
-
 					fireVisualChange();
 				}
 			});

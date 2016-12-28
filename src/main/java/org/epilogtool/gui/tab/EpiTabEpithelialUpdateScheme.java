@@ -36,16 +36,15 @@ import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
 import org.epilogtool.core.UpdateOrder;
-import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
+import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.widgets.JComboWideBox;
-import org.epilogtool.integration.IntegrationFunctionEvaluation;
-import org.epilogtool.integration.IntegrationFunctionSpecification.IntegrationExpression;
+import org.epilogtool.integration.IFEvaluation;
+import org.epilogtool.integration.IntegrationFunctionExpression;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
 
-public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
-		HyperlinkListener {
+public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements HyperlinkListener {
 	private static final long serialVersionUID = 1176575422084167530L;
 
 	private final int SLIDER_MIN = 0;
@@ -65,7 +64,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 
 	private JPanel jpSigma;
 	private JPanel jpSigmaModelSelection;
-	
+
 	private JPanel jpUpdateOrder;
 
 	private Map<ComponentPair, JSlider> mCP2Sliders;
@@ -73,14 +72,13 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 	private Map<ComponentPair, JPanel> mCP2Panel;
 	private Map<ComponentPair, JLabel> mCP2InfoLabel;
 
-	public EpiTabEpithelialUpdateScheme(Epithelium e, TreePath path,
-			ProjChangeNotifyTab projChanged, TabChangeNotifyProj tabChanged,
-			ProjectFeatures projectFeatures) {
+	public EpiTabEpithelialUpdateScheme(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
+			TabChangeNotifyProj tabChanged, ProjectFeatures projectFeatures) {
 		super(e, path, projChanged, tabChanged, projectFeatures);
 	}
 
 	public void initialize() {
-		
+
 		this.center.setLayout(new BorderLayout());
 		this.mCP2Sliders = new HashMap<ComponentPair, JSlider>();
 		this.mSliders2CP = new HashMap<JSlider, Set<ComponentPair>>();
@@ -88,14 +86,13 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		this.mCP2Panel = new HashMap<ComponentPair, JPanel>();
 		this.tpc = new TabProbablyChanged();
 
-		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
-				this.epithelium.getEpitheliumGrid().getModelSet());
+		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		this.updateSchemeInter = this.epithelium.getUpdateSchemeInter().clone();
-		
-//		System.out.println("The current updateMode: " + this.updateSchemeInter.getUpdateMode());
+
+		// System.out.println("The current updateMode: " +
+		// this.updateSchemeInter.getUpdateMode());
 		if (this.updateSchemeInter.getCPSigmas().size() > 0) {
-			for (ComponentPair cp : this.updateSchemeInter.getCPSigmas()
-					.keySet()) {
+			for (ComponentPair cp : this.updateSchemeInter.getCPSigmas().keySet()) {
 				this.addRegCP(cp);
 			}
 		}
@@ -108,8 +105,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		this.jspAlpha = new JScrollPane(this.jpAlpha);
 		this.jspAlpha.setBorder(BorderFactory.createEmptyBorder());
 		this.center.add(this.jspAlpha, BorderLayout.NORTH);
-		jpAlpha.setBorder(BorderFactory
-				.createTitledBorder("Alpha - Asynchronism"));
+		jpAlpha.setBorder(BorderFactory.createTitledBorder("Alpha - Asynchronism"));
 
 		// JSlider for alpha-asynchronism
 		this.generateAlphaSlider();
@@ -117,73 +113,65 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		// Sigma asynchronism panel
 		this.jpSigma = new JPanel(new BorderLayout());
 		this.center.add(jpSigma, BorderLayout.CENTER);
-		this.jpSigma.setBorder(BorderFactory
-				.createTitledBorder("Sigma - Asynchronism"));
+		this.jpSigma.setBorder(BorderFactory.createTitledBorder("Sigma - Asynchronism"));
 
 		// Model selection JPanel
 		JPanel jpSigmaNorth = new JPanel(new BorderLayout());
 		this.jpSigma.add(jpSigmaNorth, BorderLayout.NORTH);
 		this.jpSigmaModelSelection = new JPanel(new BorderLayout());
 		jpSigmaNorth.add(this.jpSigmaModelSelection, BorderLayout.WEST);
-		this.jpSigmaModelSelection
-				.add(new JLabel("Model: "), BorderLayout.WEST);
+		this.jpSigmaModelSelection.add(new JLabel("Model: "), BorderLayout.WEST);
 		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
 		this.jpSigmaModelSelection.add(jcbSBML);
 
 		// Sigma sliders JPanels
-		this.selectedModel = this.projectFeatures.getModel((String) jcbSBML
-				.getSelectedItem());
+		this.selectedModel = this.projectFeatures.getModel((String) jcbSBML.getSelectedItem());
 		this.jpSigmaSliderPanel = new JPanel();
-		this.jpSigmaSliderPanel.setLayout(new BoxLayout(
-				this.jpSigmaSliderPanel, BoxLayout.Y_AXIS));
+		this.jpSigmaSliderPanel.setLayout(new BoxLayout(this.jpSigmaSliderPanel, BoxLayout.Y_AXIS));
 		this.jspSigmaSliderScroller = new JScrollPane(this.jpSigmaSliderPanel);
-		this.jspSigmaSliderScroller
-				.setBorder(BorderFactory.createEmptyBorder());
-		this.jspSigmaSliderScroller
-				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		this.jspSigmaSliderScroller.setBorder(BorderFactory.createEmptyBorder());
+		this.jspSigmaSliderScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.jpSigma.add(jspSigmaSliderScroller, BorderLayout.CENTER);
 		// this.jspSigmaSliderScroller.add(this.jpSigmaSliderPanel);
 		this.updateSigmaSlidersScrollPane(this.selectedModel);
 		this.isInitialized = true;
-		
-		
-		//Updating Mode selector
-		
+
+		// Updating Mode selector
+
 		this.jpUpdateOrder = new JPanel(new BorderLayout());
-		this.jpUpdateOrder.setBorder(BorderFactory
-				.createTitledBorder("Select Updating Order"));
-		
+		this.jpUpdateOrder.setBorder(BorderFactory.createTitledBorder("Select Updating Order"));
+
 		String[] lUpdateOrder = new String[3];
-		
-		lUpdateOrder[0]="Random Independent";
-		lUpdateOrder[1]="Random Order";
-		lUpdateOrder[2]="Cyclic Order";
-		
-		JComboBox<String> jcUpdateOrder = new JComboWideBox(lUpdateOrder);
-		
+
+		lUpdateOrder[0] = "Random Independent";
+		lUpdateOrder[1] = "Random Order";
+		lUpdateOrder[2] = "Cyclic Order";
+
+		JComboBox<String> jcUpdateOrder = new JComboWideBox<String>(lUpdateOrder);
+
 		jcUpdateOrder.setSelectedItem(this.updateSchemeInter.getUpdateOrder());
-		
-//		System.out.println(this.updateSchemeInter.getUpdateMode());
-		
+
+		// System.out.println(this.updateSchemeInter.getUpdateMode());
+
 		jcUpdateOrder.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
 				JComboBox<String> jcUpdateOrder = (JComboBox<String>) e.getSource();
-				
+
 				changeUpdateOrder((String) jcUpdateOrder.getSelectedItem());
 				tpc.setChanged();
 			}
 		});
-		
+
 		this.jpUpdateOrder.add(jcUpdateOrder);
-		this.center.add(jpUpdateOrder,BorderLayout.SOUTH);
+		this.center.add(jpUpdateOrder, BorderLayout.SOUTH);
 	}
 
-	private void changeUpdateOrder(String updateOrder){
+	private void changeUpdateOrder(String updateOrder) {
 		this.updateSchemeInter.setUpdateOrder(UpdateOrder.string2UpdateOrder(updateOrder));
 	}
-	
+
 	private void generateAlphaSlider() {
 		JPanel jpAlphaInfo = new JPanel(new BorderLayout());
 		jpAlphaInfo.add(new JLabel("Current alpha: "), BorderLayout.LINE_START);
@@ -193,16 +181,14 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 
 		JPanel jpAlphaSlider = new JPanel(new BorderLayout());
 		jpAlphaSlider.add(new JLabel("Value: "), BorderLayout.LINE_START);
-		this.jAlphaSlide = new JSlider(JSlider.HORIZONTAL, this.SLIDER_MIN,
-				this.SLIDER_MAX, this.SLIDER_MAX);
+		this.jAlphaSlide = new JSlider(JSlider.HORIZONTAL, this.SLIDER_MIN, this.SLIDER_MAX, this.SLIDER_MAX);
 		this.jAlphaSlide.setMajorTickSpacing(this.SLIDER_STEP);
 		this.jAlphaSlide.setMinorTickSpacing(1);
 		this.jAlphaSlide.setPaintTicks(true);
 		this.jAlphaSlide.setPaintLabels(true);
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
 		for (int i = this.SLIDER_MIN; i <= this.SLIDER_MAX; i += this.SLIDER_STEP) {
-			labelTable.put(new Integer(i), new JLabel(""
-					+ ((float) i / this.SLIDER_MAX)));
+			labelTable.put(new Integer(i), new JLabel("" + ((float) i / this.SLIDER_MAX)));
 		}
 		this.jAlphaSlide.setLabelTable(labelTable);
 		this.jAlphaSlide.addChangeListener(new ChangeListener() {
@@ -213,8 +199,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 				tpc.setChanged();
 			}
 		});
-		this.jAlphaSlide
-				.setValue((int) (this.updateSchemeInter.getAlpha() * SLIDER_MAX));
+		this.jAlphaSlide.setValue((int) (this.updateSchemeInter.getAlpha() * SLIDER_MAX));
 		updateAlpha(this.jAlphaSlide.getValue());
 		jpAlphaSlider.add(this.jAlphaSlide, BorderLayout.CENTER);
 		jpAlpha.add(jpAlphaSlider, BorderLayout.SOUTH);
@@ -236,8 +221,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		if (!this.updateSchemeInter.containsCPSigma(cp)) {
 			this.updateSchemeInter.addCP(cp);
 		}
-		JLabel jSigmaLabelValue = new JLabel(""
-				+ this.updateSchemeInter.getCPSigma(cp));
+		JLabel jSigmaLabelValue = new JLabel("" + this.updateSchemeInter.getCPSigma(cp));
 		this.mCP2InfoLabel.put(cp, jSigmaLabelValue);
 		this.generateCPSigmaSlider(cp);
 		this.generateCPSigmaPanel(cp);
@@ -248,8 +232,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		this.mCP2InfoLabel.remove(cp);
 		this.mCP2Panel.remove(cp);
 		this.mCP2Sliders.remove(cp);
-		Map<JSlider, Set<ComponentPair>> sliderCopy = new HashMap<JSlider, Set<ComponentPair>>(
-				this.mSliders2CP);
+		Map<JSlider, Set<ComponentPair>> sliderCopy = new HashMap<JSlider, Set<ComponentPair>>(this.mSliders2CP);
 		for (JSlider jSlider : sliderCopy.keySet()) {
 			if (sliderCopy.get(jSlider).contains(cp)) {
 				this.mSliders2CP.get(jSlider).remove(cp);
@@ -264,20 +247,16 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		Set<ComponentPair> sRegulatorComponents = new HashSet<ComponentPair>();
 		Map<ComponentPair, ComponentIntegrationFunctions> mIntegrationFunctions = this.epithelium
 				.getIntegrationFunctions().getAllIntegrationFunctions();
-		IntegrationFunctionEvaluation ifEvaluator = new IntegrationFunctionEvaluation(
-				this.epithelium.getEpitheliumGrid(),
+		IFEvaluation ifEvaluator = new IFEvaluation(this.epithelium.getEpitheliumGrid(),
 				this.epithelium.getProjectFeatures());
 		for (ComponentPair cp : mIntegrationFunctions.keySet()) {
 			LogicalModel m = cp.getModel();
-			List<IntegrationExpression> lExpressions = this.epithelium
-					.getIntegrationFunctionsForComponent(cp)
+			List<IntegrationFunctionExpression> lExpressions = this.epithelium.getIntegrationFunctionsForComponent(cp)
 					.getComputedExpressions();
-			for (IntegrationExpression ie : lExpressions) {
-				Set<String> sRegNodeIDs = ifEvaluator
-						.traverseTreeRegulators(ie);
+			for (IntegrationFunctionExpression ie : lExpressions) {
+				Set<String> sRegNodeIDs = ifEvaluator.traverseIFTreeRegulators(ie);
 				for (String nodeID : sRegNodeIDs) {
-					NodeInfo node = this.epithelium.getProjectFeatures()
-							.getNodeInfo(nodeID, m);
+					NodeInfo node = this.epithelium.getProjectFeatures().getNodeInfo(nodeID, m);
 					if (node != null) {
 						ComponentPair regCompPair = new ComponentPair(m, node);
 						sRegulatorComponents.add(regCompPair);
@@ -289,8 +268,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 	}
 
 	private void generateCPSigmaSlider(ComponentPair cp) {
-		JSlider sigmaSlider = new JSlider(JSlider.HORIZONTAL, this.SLIDER_MIN,
-				this.SLIDER_MAX, this.SLIDER_MAX);
+		JSlider sigmaSlider = new JSlider(JSlider.HORIZONTAL, this.SLIDER_MIN, this.SLIDER_MAX, this.SLIDER_MAX);
 		sigmaSlider.setMajorTickSpacing(this.SLIDER_STEP);
 		sigmaSlider.setMinorTickSpacing(1);
 		sigmaSlider.setPaintTicks(true);
@@ -308,8 +286,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
 		for (int i = this.SLIDER_MIN; i <= this.SLIDER_MAX; i += this.SLIDER_STEP) {
-			labelTable.put(new Integer(i), new JLabel(""
-					+ ((float) i / this.SLIDER_MAX)));
+			labelTable.put(new Integer(i), new JLabel("" + ((float) i / this.SLIDER_MAX)));
 		}
 		sigmaSlider.setLabelTable(labelTable);
 		sigmaSlider.addChangeListener(new ChangeListener() {
@@ -320,8 +297,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 				tpc.setChanged();
 			}
 		});
-		sigmaSlider
-				.setValue((int) (this.updateSchemeInter.getCPSigma(cp) * SLIDER_MAX));
+		sigmaSlider.setValue((int) (this.updateSchemeInter.getCPSigma(cp) * SLIDER_MAX));
 	}
 
 	private void generateCPSigmaPanel(ComponentPair cp) {
@@ -337,19 +313,17 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 
 		JPanel jpComponentNorthInfo = new JPanel(new BorderLayout());
 		componentPanel.add(jpComponentNorthInfo, BorderLayout.NORTH);
-		jpComponentNorthInfo.add(new JLabel("Integration Function Regulator: "
-				+ cp.getNodeInfo().getNodeID()), BorderLayout.CENTER);
+		jpComponentNorthInfo.add(new JLabel("Integration Function Regulator: " + cp.getNodeInfo().getNodeID()),
+				BorderLayout.CENTER);
 
 		JPanel jpComponentCenterInfo = new JPanel(new BorderLayout());
 		componentPanel.add(jpComponentCenterInfo, BorderLayout.WEST);
-		jpComponentCenterInfo.add(new JLabel("Current sigma: "),
-				BorderLayout.LINE_START);
+		jpComponentCenterInfo.add(new JLabel("Current sigma: "), BorderLayout.LINE_START);
 		jpComponentCenterInfo.add(componentSigmaLabel, BorderLayout.CENTER);
 
 		JPanel jpComponentSliderPanel = new JPanel(new BorderLayout());
 		componentPanel.add(jpComponentSliderPanel, BorderLayout.SOUTH);
-		jpComponentSliderPanel.add(new JLabel("Value: "),
-				BorderLayout.LINE_START);
+		jpComponentSliderPanel.add(new JLabel("Value: "), BorderLayout.LINE_START);
 		jpComponentSliderPanel.add(componentSlider, BorderLayout.CENTER);
 
 	}
@@ -383,15 +357,13 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		} else {
 			Set<ComponentPair> sOldRegComponents = new HashSet<ComponentPair>(
 					this.updateSchemeInter.getCPSigmas().keySet());
-			Set<ComponentPair> sCommonRegComponents = new HashSet<ComponentPair>(
-					sOldRegComponents);
+			Set<ComponentPair> sCommonRegComponents = new HashSet<ComponentPair>(sOldRegComponents);
 			sCommonRegComponents.retainAll(sNewRegComponents);
 			sCommonRegComponents.addAll(sNewRegComponents);
 			for (ComponentPair oldCP : sOldRegComponents) {
 				if (!sCommonRegComponents.contains(oldCP)) {
 					this.removeRegCP(oldCP);
-					this.epithelium.getUpdateSchemeInter().getCPSigmas()
-							.remove(oldCP);
+					this.epithelium.getUpdateSchemeInter().getCPSigmas().remove(oldCP);
 				}
 			}
 			for (ComponentPair newCP : sCommonRegComponents) {
@@ -422,14 +394,10 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 			jSigmaPane.setEnabled(true);
 			jSigmaPane.setBackground(jpSigma.getBackground());
 			jSigmaPane.addHyperlinkListener(this);
-			jSigmaPane
-					.setText("\n\r"
-							+ "There are no Integration Functions defined for this Model "
-							+ "to allow for the setting of &sigma asynchronism."
-							+ "\n\r");
+			jSigmaPane.setText("\n\r" + "There are no Integration Functions defined for this Model "
+					+ "to allow for the setting of &sigma asynchronism." + "\n\r");
 		} else {
-			Collections.sort(sModelRegComponents,
-					ObjectComparator.COMPONENTPAIR);
+			Collections.sort(sModelRegComponents, ObjectComparator.COMPONENTPAIR);
 			this.jpSigmaSliderPanel.removeAll();
 			// this.jpSigmaSliderPanel.setLayout(new
 			// GridLayout(sModelRegComponents.size(), 1));
@@ -447,14 +415,13 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 		for (int i = 0; i < modelList.size(); i++) {
 			saSBML[i] = this.projectFeatures.getModelName(modelList.get(i));
 		}
-		JComboBox<String> jcb = new JComboWideBox(saSBML);
+		JComboBox<String> jcb = new JComboWideBox<String>(saSBML);
 		jcb.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
 				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
-				LogicalModel m = projectFeatures.getModel((String) jcb
-						.getSelectedItem());
+				LogicalModel m = projectFeatures.getModel((String) jcb.getSelectedItem());
 				updateSigmaSlidersScrollPane(m);
 				// Re-Paint
 				getParent().repaint();
@@ -466,10 +433,8 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 	@Override
 	protected void buttonReset() {
 		for (ComponentPair cp : this.mCP2Sliders.keySet()) {
-			float sigmaReset = this.epithelium.getUpdateSchemeInter()
-					.getCPSigma(cp);
-			this.mCP2Sliders.get(cp).setValue(
-					(int) (sigmaReset * this.SLIDER_MAX));
+			float sigmaReset = this.epithelium.getUpdateSchemeInter().getCPSigma(cp);
+			this.mCP2Sliders.get(cp).setValue((int) (sigmaReset * this.SLIDER_MAX));
 			for (JSlider jSlide : this.mSliders2CP.keySet()) {
 				if (this.mSliders2CP.get(jSlide) == cp) {
 					jSlide.setValue((int) (sigmaReset * this.SLIDER_MAX));
@@ -477,8 +442,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 			}
 			this.updateCPSigma(cp, sigmaReset);
 		}
-		this.jAlphaSlide.setValue((int) (this.epithelium.getUpdateSchemeInter()
-				.getAlpha() * SLIDER_MAX));
+		this.jAlphaSlide.setValue((int) (this.epithelium.getUpdateSchemeInter().getAlpha() * SLIDER_MAX));
 		this.updateAlpha(this.jAlphaSlide.getValue());
 		// Repaint
 		this.getParent().repaint();
@@ -486,33 +450,29 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 
 	@Override
 	protected void buttonAccept() {
-//		System.out.println("buttonAccept: " + this.updateSchemeInter.getUpdateMode());
-		this.epithelium.getUpdateSchemeInter().setAlpha(
-				this.updateSchemeInter.getAlpha());
-		
+		// System.out.println("buttonAccept: " +
+		// this.updateSchemeInter.getUpdateMode());
+		this.epithelium.getUpdateSchemeInter().setAlpha(this.updateSchemeInter.getAlpha());
+
 		this.epithelium.getUpdateSchemeInter().setUpdateOrder(this.updateSchemeInter.getUpdateOrder());
-		
+
 		for (ComponentPair cp : this.updateSchemeInter.getCPSigmas().keySet()) {
-			this.epithelium.getUpdateSchemeInter().setCPSigma(cp,
-					this.updateSchemeInter.getCPSigma(cp));
+			this.epithelium.getUpdateSchemeInter().setCPSigma(cp, this.updateSchemeInter.getCPSigma(cp));
 		}
 	}
 
 	@Override
 	protected boolean isChanged() {
-		if (this.epithelium.getUpdateSchemeInter().getAlpha() != this.updateSchemeInter
-				.getAlpha())
+		if (this.epithelium.getUpdateSchemeInter().getAlpha() != this.updateSchemeInter.getAlpha())
 			return true;
-		if (this.epithelium.getUpdateSchemeInter().getUpdateOrder() != this.updateSchemeInter
-				.getUpdateOrder())
+		if (this.epithelium.getUpdateSchemeInter().getUpdateOrder() != this.updateSchemeInter.getUpdateOrder())
 			return true;
 		if (this.mCP2Sliders != null) {
 			for (ComponentPair cp : this.mCP2Sliders.keySet()) {
 				if (!this.epithelium.getUpdateSchemeInter().containsCPSigma(cp)
 						& this.updateSchemeInter.containsCPSigma(cp))
 					return true;
-				if (this.updateSchemeInter.getCPSigma(cp) != this.epithelium
-						.getUpdateSchemeInter().getCPSigma(cp))
+				if (this.updateSchemeInter.getCPSigma(cp) != this.epithelium.getUpdateSchemeInter().getCPSigma(cp))
 					return true;
 			}
 		}
@@ -521,14 +481,12 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements
 
 	@Override
 	public void applyChange() {
-		List<LogicalModel> modelList = new ArrayList<LogicalModel>(
-				this.epithelium.getEpitheliumGrid().getModelSet());
+		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		if (!modelList.contains(this.selectedModel)) {
 			this.selectedModel = modelList.get(0);
 		}
 		this.jpSigmaModelSelection.removeAll();
-		this.jpSigmaModelSelection
-				.add(new JLabel("Model: "), BorderLayout.WEST);
+		this.jpSigmaModelSelection.add(new JLabel("Model: "), BorderLayout.WEST);
 		this.jpSigmaModelSelection.add(this.newModelCombobox(modelList));
 		this.updateAllCPSigma();
 		this.updateSigmaSlidersScrollPane(this.selectedModel);

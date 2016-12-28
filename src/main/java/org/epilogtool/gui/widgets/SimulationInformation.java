@@ -14,14 +14,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
-import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.gui.EpilogGUIFactory;
-import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.ProjectFeatures;
 
 public class SimulationInformation extends JPanel {

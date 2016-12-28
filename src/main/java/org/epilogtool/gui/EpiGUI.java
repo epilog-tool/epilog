@@ -40,6 +40,7 @@ import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.dialog.DialogAbout;
 import org.epilogtool.gui.dialog.DialogEditEpithelium;
+import org.epilogtool.gui.dialog.DialogMessage;
 import org.epilogtool.gui.dialog.DialogNewEpithelium;
 import org.epilogtool.gui.dialog.DialogRenameSBML;
 import org.epilogtool.gui.dialog.DialogReplaceSBML;
@@ -52,8 +53,9 @@ import org.epilogtool.gui.menu.ToolsMenu;
 import org.epilogtool.gui.menu.WindowMenu;
 import org.epilogtool.gui.tab.EpiTab;
 import org.epilogtool.gui.tab.EpiTabEpithelialUpdateScheme;
+import org.epilogtool.gui.tab.EpiTabGridDynamics;
 import org.epilogtool.gui.tab.EpiTabInitialConditions;
-import org.epilogtool.gui.tab.EpiTabIntegrationFunctions;
+import org.epilogtool.gui.tab.EpiTabInputDefinition;
 import org.epilogtool.gui.tab.EpiTabModelGrid;
 import org.epilogtool.gui.tab.EpiTabModelUpdateScheme;
 import org.epilogtool.gui.tab.EpiTabMonteCarlo;
@@ -61,7 +63,6 @@ import org.epilogtool.gui.tab.EpiTabPerturbations;
 import org.epilogtool.gui.tab.EpiTabSimulation;
 import org.epilogtool.gui.widgets.CloseTabButton;
 import org.epilogtool.io.FileIO;
-import org.epilogtool.project.MonteCarlo;
 import org.epilogtool.project.Project;
 
 /**
@@ -685,16 +686,16 @@ public class EpiGUI extends JFrame {
 				dialog.setLocationRelativeTo(null);
 				dialog.setVisible(true);
 
-			boolean bChanged = false;
-				// Update Model name
+			// Update Model name
 			String newModel = dialogPanel.getModelName();
 			List<String> selectedEpiList = dialogPanel.getEpiList();
 	
 			
 			if (dialogPanel.isDefined()){
 				this.project.getProjectFeatures().initializeReplaceMessages();
-				this.project.replaceModel(model, newModel, selectedEpiList);
-				
+				DialogMessage dialogMsg = new DialogMessage();
+				this.project.replaceModel(model, newModel, selectedEpiList, dialogMsg);
+				dialogMsg.show("Replace Model");
 			
 				JPanel jp = new JPanel();
 				String msgs = join(project.getProjectFeatures().getReplaceMessages(),"\n");
@@ -752,27 +753,28 @@ public class EpiGUI extends JFrame {
 			String title = epi.getName() + ":" + tabName;
 			TabChangeNotifyProj tabChanged = new TabChangeNotifyProj();
 			ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
-			if (tabName.equals("Initial Condition")) {
+			if (tabName.equals(EpiTab.TAB_INITCONDITIONS)) {
 				epiTab = new EpiTabInitialConditions(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
-			} else if (tabName.equals("Integration Components")) {
-				epiTab = new EpiTabIntegrationFunctions(epi, selPath,
+			} else if (tabName.equals(EpiTab.TAB_INTEGRATION)) {
+				epiTab = new EpiTabInputDefinition(epi, selPath,
 						projChanged, tabChanged,
 						this.project.getProjectFeatures());
-			} else if (tabName.equals("Component Perturbations")) {
+			} else if (tabName.equals(EpiTab.TAB_PERTURBATIONS)) {
 				epiTab = new EpiTabPerturbations(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
-			} else if (tabName.equals("Epithelial Perturbations")) {
-				// TODO
-			} else if (tabName.equals("Model Updating")) {
+			} else if (tabName.equals(EpiTab.TAB_PRIORITIES)) {
 				epiTab = new EpiTabModelUpdateScheme(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
-			} else if (tabName.equals("Epithelial Updating")) {
+			} else if (tabName.equals(EpiTab.TAB_EPIUPDATING)) {
 				epiTab = new EpiTabEpithelialUpdateScheme(epi, selPath,
 						projChanged, tabChanged,
 						this.project.getProjectFeatures());
-			} else if (tabName.equals("Model Grid")) {
+			} else if (tabName.equals(EpiTab.TAB_MODELGRID)) {
 				epiTab = new EpiTabModelGrid(epi, selPath, projChanged,
+						tabChanged, this.project.getProjectFeatures());
+			} else if (tabName.equals(EpiTab.TAB_CELLDIVISION)) {
+				epiTab = new EpiTabGridDynamics(epi, selPath, projChanged,
 						tabChanged, this.project.getProjectFeatures());
 			}
 			if (epiTab != null) {
@@ -926,7 +928,7 @@ public class EpiGUI extends JFrame {
 		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
 			EpiTab epiInTab = (EpiTab) this.epiRightFrame.getComponentAt(i);
 			if (epiInTab.containsEpithelium(epi)
-					&& epiInTab.getName().endsWith("Simulation")) {
+					&& epiInTab.getName().endsWith(EpiTab.TOOL_SIMULATION)) {
 				tabIndex = i;
 				break;
 			}
@@ -990,8 +992,7 @@ public class EpiGUI extends JFrame {
 			Epithelium epiClone = project.cloneEpithelium(epi);
 			for (int x = 0; x < currGrid.getX(); x++) {
 				for (int y = 0; y < currGrid.getY(); y++) {
-					byte[] stateClone = currGrid.getCellState(x, y).clone();
-					epiClone.getEpitheliumGrid().setCellState(x, y, stateClone);
+					epiClone.getEpitheliumGrid().setEpitheliumCell(x, y, currGrid.getEpitheliumCell(x, y).clone());
 				}
 			}
 			addEpithelium2JTree(epiClone);

@@ -643,6 +643,6 @@ public class EpiTabSimulation extends EpiTabTools {
 
 	@Override
 	public String getName() {
-		return "Simulation";
+		return EpiTab.TOOL_SIMULATION;
 	}
 }

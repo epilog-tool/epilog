@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.antlr.runtime.RecognitionException;
 import org.epilogtool.project.ComponentPair;
 
 public class EpitheliumIntegrationFunctions {
@@ -25,17 +26,16 @@ public class EpitheliumIntegrationFunctions {
 		return newEIF;
 	}
 
-	public void setFunctionAtLevel(ComponentPair cp, byte value, String function) {
-		this.functions.get(cp).setFunctionAtLevel(value, function);
+	public void setFunctionAtLevel(ComponentPair cf, byte value, String function)
+			throws RecognitionException, RuntimeException {
+		this.functions.get(cf).setFunctionAtLevel(value, function);
 	}
 
 	public void addComponent(ComponentPair cp) {
-		this.addComponentFunctions(cp, new ComponentIntegrationFunctions(cp
-				.getNodeInfo().getMax()));
+		this.addComponentFunctions(cp, new ComponentIntegrationFunctions(cp.getNodeInfo().getMax()));
 	}
 
-	public void addComponentFunctions(ComponentPair cp,
-			ComponentIntegrationFunctions funcs) {
+	public void addComponentFunctions(ComponentPair cp, ComponentIntegrationFunctions funcs) {
 		this.functions.put(cp, funcs);
 	}
 
@@ -51,11 +51,10 @@ public class EpitheliumIntegrationFunctions {
 		return Collections.unmodifiableSet(this.functions.keySet());
 	}
 
-	public ComponentIntegrationFunctions getComponentIntegrationFunctions(
-			ComponentPair cp) {
+	public ComponentIntegrationFunctions getComponentIntegrationFunctions(ComponentPair cp) {
 		return this.functions.get(cp);
 	}
-	
+
 	public Map<ComponentPair, ComponentIntegrationFunctions> getAllIntegrationFunctions() {
 		return this.functions;
 	}
@@ -66,8 +65,7 @@ public class EpitheliumIntegrationFunctions {
 		sAllNodes.addAll(this.functions.keySet());
 		sAllNodes.addAll(eifOut.functions.keySet());
 		for (ComponentPair cp : sAllNodes) {
-			if (!this.functions.containsKey(cp)
-					|| !eifOut.functions.containsKey(cp))
+			if (!this.functions.containsKey(cp) || !eifOut.functions.containsKey(cp))
 				return false;
 			if (!this.functions.get(cp).equals(eifOut.functions.get(cp)))
 				return false;

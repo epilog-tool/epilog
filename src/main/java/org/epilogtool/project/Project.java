@@ -8,12 +8,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
-import org.colomoto.logicalmodel.tool.simulation.updater.PriorityClasses;
 import org.epilogtool.core.Epithelium;
-import org.epilogtool.core.EpitheliumGrid;
-import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.core.topology.RollOver;
+import org.epilogtool.gui.dialog.DialogMessage;
 
 public class Project {
 	private List<Epithelium> epitheliumList;
@@ -165,14 +162,14 @@ public class Project {
 		return null;
 	}
 	
-	public void replaceModel(String oldModelString, String newModelString, List<String> epiList){
+	public void replaceModel(String oldModelString, String newModelString, List<String> epiList, DialogMessage dialogMsg){
 		
 		LogicalModel oldModel = this.getModel(oldModelString);
 		LogicalModel newModel = this.getModel(newModelString);
 
 		for (String epi: epiList){
 			Epithelium epithelium = this.getEpitheliumFromName(epi);
-			epithelium.replacemodel(oldModel,newModel);
+			epithelium.replacemodel(oldModel,newModel, dialogMsg);
 			epithelium.update();
 			}
 		}
