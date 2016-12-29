@@ -148,8 +148,9 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		lUpdateOrder[2] = "Cyclic Order";
 
 		JComboBox<String> jcUpdateOrder = new JComboWideBox<String>(lUpdateOrder);
-
-		jcUpdateOrder.setSelectedItem(this.updateSchemeInter.getUpdateOrder());
+		
+		jcUpdateOrder.setSelectedItem(lUpdateOrder[0]);
+		changeUpdateOrder((String) jcUpdateOrder.getSelectedItem());
 
 		// System.out.println(this.updateSchemeInter.getUpdateMode());
 
