@@ -975,9 +975,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	@Override
 	public void applyChange() {
-		System.out.println("The Monte Carlo knows that something has changed");
 		if (this.hasChangedEpithelium()) {
-			System.out.println("The Monte Carlo knows that the epithelium has changed");
 			JPanel jpNorth = new JPanel(new BorderLayout());
 			this.jpRight.add(jpNorth, BorderLayout.NORTH);
 			JTextPane jtp = new JTextPane();
