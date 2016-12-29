@@ -108,6 +108,8 @@ public class Parser {
 				rollover = RollOver.string2RollOver(line.split("\\s+")[1]);
 				if (currEpi != null) {
 					currEpi.getEpitheliumGrid().setRollOver(rollover);
+					currEpi.initModelEventManager();
+					currEpi.initModelHeritableNodes();
 				}
 			}
 			// Model grid
@@ -123,9 +125,7 @@ public class Parser {
 							currEpi.getEpitheliumGrid().getTopology().instances2Tuples2D(saTmp[2].split(",")));
 					currEpi.initPriorityClasses(m);
 					currEpi.initComponentFeatures(m);
-					currEpi.initModelEventManager();
 					currEpi.getModelEventManager().addModel(m);
-					currEpi.initModelHeritableNodes();
 					currEpi.getModelHeritableNodes().addModel(m);
 				}
 			}
