@@ -191,6 +191,7 @@ public class Simulation {
 
 			for (int idx = 0; idx < numberCellsCalledToUpdate; idx++, this.indexOrder++) {
 				if (this.indexOrder == this.schuffledInstances.size()) {
+
 					if (this.epithelium.getUpdateSchemeInter().getUpdateOrder().equals(UpdateOrder.RANDOM_ORDER)) {
 						Collections.shuffle(keys, RandomFactory.getInstance().getGenerator());
 						this.schuffledInstances = keys;
@@ -451,7 +452,6 @@ public class Simulation {
 			}
 			index = index + 1;
 		}
-
 		return mesList;
 	}
 }
