@@ -15,7 +15,7 @@ public class EpitheliumMenu {
 
 		menu.add(new NewEpiAction());
 		menu.add(new DeleteEpiAction());
-		menu.add(new RenameEpiAction());
+		menu.add(new EditEpiAction());
 		menu.add(new CloneEpiAction());
 
 		return menu;
@@ -59,12 +59,12 @@ class DeleteEpiAction extends AbstractAction {
 	}
 }
 
-class RenameEpiAction extends AbstractAction {
+class EditEpiAction extends AbstractAction {
 	private static final long serialVersionUID = 1728730440633848251L;
 
-	public RenameEpiAction() {
-		super("Rename");
-		putValue(SHORT_DESCRIPTION, "Rename");
+	public EditEpiAction() {
+		super("Edit");
+		putValue(SHORT_DESCRIPTION, "Edit");
 		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
 		// FrameActionManager.MASK));
 	}
