@@ -11,6 +11,9 @@ import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.text.Document;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 
 import org.epilogtool.common.Web;
 import org.epilogtool.io.FileResource;
@@ -26,8 +29,19 @@ public class DialogAbout extends EscapableDialog implements HyperlinkListener {
 		jPane.setEditable(false);
 		jPane.setEnabled(true);
 		jPane.setBackground(SystemColor.window);
-		jPane.setText(this.getContent());
 		jPane.addHyperlinkListener(this);
+		
+		// Stylesheet
+		HTMLEditorKit kit = new HTMLEditorKit();
+		jPane.setEditorKit(kit);
+		StyleSheet styleSheet = kit.getStyleSheet();
+		styleSheet.addRule("td {text-align: center;}");
+		Document doc = kit.createDefaultDocument();
+		jPane.setDocument(doc);
+		
+		// Content
+		jPane.setText(this.getContent());
+		
 		// Bottom
 		JPanel bottom = new JPanel(new FlowLayout());
 		JButton buttonClose = new JButton("Close");
@@ -51,17 +65,17 @@ public class DialogAbout extends EscapableDialog implements HyperlinkListener {
 		s += "evolution of the pattern formation.</p>\n";
 		s += "<a href=\"http://epilog-tool.org\">http://epilog-tool.org</a><br/>\n";
 		s += "<h3>Current Team</h3>\n";
-		s += "<table border=1>\n";
-		s += "<tr><td rowspan=\"2\">Project coordination</td><td>Claudine Chaouiya</td></tr>\n";
-		s += "<tr><td>Pedro T. Monteiro</td></tr>\n";
-		s += "<tr><td>Biological applications</td><td>Adrien Faur&eacute;</td></tr>\n";
-		s += "<tr><td rowspan=\"3\">Software development</td><td>Camila Veludo</td></tr>\n";
-		s += "<tr><td>Pedro L. Varela</td></tr>\n";
-		s += "<tr><td>Pedro T. Monteiro</td></tr>\n";
+		s += "<table border=\"1\" >\n";
+		s += "<tr><td></td><td>Project<br/>coordination</td><td>Software<br/>development</td><td>Biological<br/>applications</td></tr>\n";
+		s += "<tr><td>Claudine Chaouiya</td><td>&#10003;</td><td></td><td></td></tr>\n";
+		s += "<tr><td>Pedro T. Monteiro</td><td>&#10003;</td><td>&#10003;</td><td></td></tr>\n";
+		s += "<tr><td>Pedro L. Varela</td><td></td><td>&#10003;</td><td></td></tr>\n";
+		s += "<tr><td>Camila Veludo</td><td></td><td>&#10003;</td><td>&#10003;</td></tr>\n";
+		s += "<tr><td>Adrien Faur&eacute;</td><td></td><td></td><td>&#10003;</td></tr>\n";
 		s += "</table>\n";
 		s += "\n";
 		s += "<h3>Previous Contributors</h3>\n";
-		s += "<table border=0>\n";
+		s += "<table border=\"1\">\n";
 		s += "<tr><td>Nuno D. Mendes</td><td>Software development</td></tr>\n";
 		s += "</table>\n";
 		s += "</center></body>";
