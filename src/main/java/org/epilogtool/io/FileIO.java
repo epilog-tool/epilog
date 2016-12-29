@@ -11,7 +11,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -19,6 +22,7 @@ import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 import org.epilogtool.OptionStore;
 import org.epilogtool.project.Project;
@@ -240,14 +244,23 @@ public class FileIO {
 		}
 	}
 
-	public static void writePercentage2File(String file, List<String> lPercentage, String ext) throws IOException {
+	public static void writePercentage2File(String file, List<Map<String,Float>> lPercentage, String ext) throws IOException {
 		// TODO Auto-generated method stub
-
+		DecimalFormat perc = new DecimalFormat();
+		perc.setMaximumFractionDigits(2);
 		PrintWriter w = new PrintWriter(new FileWriter(file));
-		
-		for (String m : lPercentage){
-			System.out.println(m);
-			w.println(m);
+		//HEADER
+		w.print("Iteration");
+		List<String> nodeList = new ArrayList<String>(lPercentage.get(0).keySet());
+		for (String nodeID : nodeList) {
+			w.print("," + nodeID);
+		}
+		for (int i = 0; i < lPercentage.size(); i++) {
+			w.print(i);
+			for (String nodeID : nodeList) {
+				w.print("," + perc.format(lPercentage.get(i).get(nodeID)));	
+			}
+			w.println();
 		}
 		w.close();
 	}

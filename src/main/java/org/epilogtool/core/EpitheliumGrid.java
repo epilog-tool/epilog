@@ -347,15 +347,23 @@ public class EpitheliumGrid {
 		DecimalFormat perc = new DecimalFormat();
 		perc.setMaximumFractionDigits(2);
 		String output = "";
-		int nCells = this.getX() * this.getY();
 		for (byte val : this.compCounts.get(nodeID).keySet()) {
 			if (val == 0)
 				continue;
-			float count = this.compCounts.get(nodeID).get(val);
-			float percentage = (count / nCells) * 100;
+			float percentage = this.getPercentage(nodeID, val);
 			output = output + "(" + val + " : " + perc.format(percentage) + "%)";
 		}
 		return output;
+	}
+	
+	public float getPercentage(String nodeID, byte value) {
+		float count = 0;
+		if (this.compCounts.get(nodeID).containsKey(value)) {
+			count = this.compCounts.get(nodeID).get(value);
+		}
+		int nCells = this.getX() * this.getY();
+		float percentage = (count / nCells) * 100;
+		return percentage;
 	}
 
 	public void updateNodeValueCounts() {

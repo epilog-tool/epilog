@@ -438,20 +438,22 @@ public class Simulation {
 		System.out.println(result);
 	}
 
-	public List<String> getCell2Percentage() {
-		List<String> mesList = new ArrayList<String>();
-
+	public List<Map<String, Float>> getCell2Percentage() {
+		List<Map<String, Float>> percentageHistory = new ArrayList<Map<String, Float>>();
 		int index = 0;
 		for (EpitheliumGrid grid : this.gridHistory) {
+			percentageHistory.add(new HashMap<String, Float>());
 			for (LogicalModel model : grid.getModelSet()) {
 				for (NodeInfo node : model.getNodeOrder()) {
-					String mes = index + ": " + node.getNodeID() + " " + grid.getPercentage(node.getNodeID());
-					mesList.add(mes);
+					for (byte i = 1; i <= node.getMax(); i++) {
+						String nodeID = node.getNodeID()+ " " + i;
+						percentageHistory.get(index).put(nodeID, grid.getPercentage(node.getNodeID(), i));
+					}
 				}
 			}
 			index = index + 1;
 		}
 
-		return mesList;
+		return percentageHistory;
 	}
 }

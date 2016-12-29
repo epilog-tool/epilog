@@ -362,7 +362,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		// Map<String, List<Integer>> cell2Percentage =
 		// this.simulation.getCell2Percentage();
-		List<String> lPercentage = this.simulation.getCell2Percentage();
+		List<Map<String, Float>> lPercentage = this.simulation.getCell2Percentage();
 
 		JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(new EpilogFileFilter("csv"));
