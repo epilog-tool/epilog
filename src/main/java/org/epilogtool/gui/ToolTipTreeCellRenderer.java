@@ -183,7 +183,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 		for (LogicalModel m : epi.getEpitheliumGrid().getModelSet()) {
 			tipKey += "<b>" + epi.getProjectFeatures().getModelName(m) + "</b><br/>";
 			if (!events.containsModel(m)) {
-				System.out.println("Error tooltiptreecellrenderer");
+//				System.out.println("Error tooltiptreecellrenderer");
 				tipKey += "- " + epi.getProjectFeatures().getModelName(m) + "   - Empty <br/>";
 			} else if (events.getModelEvents(m).isEmpty()) {
 				tipKey += "- " + epi.getProjectFeatures().getModelName(m) + "   - Empty <br/>";
