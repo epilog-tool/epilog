@@ -72,7 +72,6 @@ public class MonteCarlo {
 	public void run(Epithelium epi) {
 
 		this.epithelium = epi;
-
 		this.stablestate2iteration = new HashMap<EpitheliumGrid, Integer>();
 		this.uniqueStableStates2frequency = new HashMap<EpitheliumGrid, List<Integer>>();
 		this.stableStates = new ArrayList<EpitheliumGrid>();
@@ -90,11 +89,6 @@ public class MonteCarlo {
 
 				EpitheliumGrid nextGrid = sim.getGridAt(indexIteration + 1);
 
-				// System.out.println(" ");
-				// System.out.println("Run: " + i);
-				// System.out.println(sim.getGridAt(indexIteration));
-				// System.out.println(nextGrid);
-
 				if (sim.isStableAt(indexIteration + 1)) {
 					stableStates.add(nextGrid);
 					stablestate2iteration.put(nextGrid, indexIteration);
@@ -104,8 +98,6 @@ public class MonteCarlo {
 				}
 			}
 		}
-
-		// System.out.println("MonteCarlo OVER");
 	}
 
 	private boolean stableStateExists(EpitheliumGrid stableState) {
@@ -173,10 +165,6 @@ public class MonteCarlo {
 					cellNode2Average.put(t, res);
 				}
 			}
-			// System.out.println(cellNode2Count);
-			// System.out.println(Collections.min(cellNode2Count.values()));
-			// System.out.println(Collections.max(cellNode2Count.values()));
-
 		}
 		return cellNode2Count;
 	}

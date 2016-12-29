@@ -48,6 +48,7 @@ import org.epilogtool.gui.EpiGUI.SimulationEpiClone;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboCheckBox;
+import org.epilogtool.gui.widgets.VisualGridMonteCarlo;
 import org.epilogtool.gui.widgets.VisualGridSimulation;
 import org.epilogtool.io.ButtonFactory;
 import org.epilogtool.io.EpilogFileFilter;
@@ -61,7 +62,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	private ProjectFeatures projectFeatures;
 	private Epithelium clonedEpi;
 	private MonteCarlo monteCarlo;
-	private VisualGridSimulation vgCellState;
+	private VisualGridMonteCarlo vgCellState;
 	private GridInformation cellInformation;
 	private EpitheliumGrid epiGrid;
 	
@@ -196,7 +197,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		JPanel monteCarloInfo = createMonteCarloInfo();
 		jpLeft.add(monteCarloInfo,BorderLayout.PAGE_END);
 		
-		this.vgCellState = new VisualGridSimulation(this.clonedEpi.getEpitheliumGrid(),this.projectFeatures,this.lCompON,this.cellInformation);
+		this.vgCellState = new VisualGridMonteCarlo(this.clonedEpi.getEpitheliumGrid(),this.projectFeatures,this.lCompON,this.cellInformation);
 
 		JPanel monteCarloVisualDefinitions = createMonteCarloVisualDefinitions();
 		jpLeft.add(monteCarloVisualDefinitions,BorderLayout.CENTER);
@@ -1105,16 +1106,18 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		if (this.vgCellState
 				.getGraphics()!=null & this.cellNode2Count!=null){
 			if (this.isCumulative){
+				this.vgCellState.setIsCumulative(true);
 				if (this.cellNode2Count.size()>0){
 				this.vgCellState.paintCumulative(this.vgCellState
 						.getGraphics(),this.cellNode2Count);
 				}
 			}
 			else{
+				this.vgCellState.setIsCumulative(false);
 		this.vgCellState.paintComponent(this.vgCellState
 				.getGraphics());
 		this.vgCellState.repaint();
-		this.repaint();
+//		this.repaint();
 			}
 		}
 		

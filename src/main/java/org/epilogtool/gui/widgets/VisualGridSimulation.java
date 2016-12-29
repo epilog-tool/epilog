@@ -54,6 +54,7 @@ public class VisualGridSimulation extends VisualGrid {
 				mousePosition2Grid(e);
 				updateComponentValues(mouseGrid);
 				paintComponent(getGraphics());
+
 			}
 		});
 		this.addMouseListener(new MouseListener() {
@@ -65,6 +66,7 @@ public class VisualGridSimulation extends VisualGrid {
 			public void mousePressed(MouseEvent e) {
 				updateComponentValues(mouseGrid);
 				paintComponent(getGraphics());
+
 			}
 
 			@Override
@@ -93,6 +95,8 @@ public class VisualGridSimulation extends VisualGrid {
 		this.valuePanel.updateValues(pos.getX(), pos.getY(), this.epiGrid, null);
 	}
 
+	
+	
 	public void setEpitheliumGrid(EpitheliumGrid grid) {
 		this.epiGrid = grid;
 		this.updateComponentValues(this.lastPos);
