@@ -359,9 +359,6 @@ public class EpiTabSimulation extends EpiTabTools {
 	 * 
 	 */
 	protected void exportPercentage() {
-
-		// Map<String, List<Integer>> cell2Percentage =
-		// this.simulation.getCell2Percentage();
 		List<Map<String, Float>> lPercentage = this.simulation.getCell2Percentage();
 
 		JFileChooser fc = new JFileChooser();
