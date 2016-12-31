@@ -377,6 +377,8 @@ public class EpitheliumGrid {
 					byte val = this.getCellValue(x, y, nodeID);
 					if (!this.compCounts.containsKey(nodeID)) {
 						this.compCounts.put(nodeID, new HashMap<Byte, Integer>());
+						for (byte i = 1; i <= node.getMax(); i++)
+							this.compCounts.get(nodeID).put(i, 0);
 					}
 					int count = 1;
 					if (this.compCounts.get(nodeID).containsKey(val)) {
