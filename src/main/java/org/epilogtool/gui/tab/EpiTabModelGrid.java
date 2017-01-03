@@ -40,7 +40,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	private Map<JRadioComponentButton, JButton> mapSBMLMiniPanels;
 	private LogicalModel[][] modelGridClone;
 	private Map<LogicalModel, Color> colorMapClone;
-	private JPanel lCenter;
+	private JPanel jpModelSelection;
+	private JPanel jpModelsUsed;
 	private GridInformation gridInfo;
 	private TabProbablyChanged tpc;
 	
@@ -60,12 +61,19 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
 		this.modelGridClone = new LogicalModel[grid.getX()][grid.getY()];
 		this.colorMapClone = new HashMap<LogicalModel, Color>();
-
+	
+		//Panel with the model selection
+		this.jpModelSelection = new JPanel(new GridBagLayout());
+		this.jpModelSelection.setBorder(BorderFactory
+				.createTitledBorder("Model selection"));
+		
+		//Panel with the grid Info
 		this.gridInfo = new GridInformation(
 				this.epithelium.getIntegrationFunctions(), this.projectFeatures);
 
-		JPanel lTopButtons = new JPanel(new FlowLayout());
-		lTopButtons.setBorder(BorderFactory
+		//Panel with the cell selection
+		JPanel jpCellSelection = new JPanel(new GridBagLayout());
+		jpCellSelection.setBorder(BorderFactory
 				.createTitledBorder("Apply selection"));
 		this.jbApplyAll = new JButton("Apply All");
 		jbApplyAll.setEnabled(false);
@@ -76,7 +84,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 				visualGridModel.applyDataToAll();
 			}
 		});
-		lTopButtons.add(jbApplyAll);
+		jpCellSelection.add(jbApplyAll);
 		this.jtbRectFill = new JToggleButton("Rectangle Fill", false);
 		jtbRectFill.setEnabled(false);
 		jtbRectFill.setMargin(new Insets(0, 0, 0, 0));
@@ -87,17 +95,27 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 				visualGridModel.isRectangleFill(jtb.isSelected());
 			}
 		});
-		lTopButtons.add(jtbRectFill);
+		jpCellSelection.add(jtbRectFill);
 
-		this.lCenter = new JPanel(new GridBagLayout());
-		this.lCenter.setBorder(BorderFactory
-				.createTitledBorder("Model selection"));
+		//Panel with the models used in this grid
+		this.jpModelsUsed = new JPanel(new GridBagLayout());
 
-		JPanel left = new JPanel(new BorderLayout());
+		
+		this.jpModelsUsed.setBorder(BorderFactory
+				.createTitledBorder("Models Used"));
+		
+		//Panel on the left bottom
+		JPanel jpLeftBottom = new JPanel(new BorderLayout());
+		jpLeftBottom.add(jpCellSelection, BorderLayout.PAGE_START);
+		jpLeftBottom.add(this.jpModelsUsed, BorderLayout.PAGE_END);
+		
+		//Left Panel
 		JPanel lTop = new JPanel(new BorderLayout());
-		lTop.add(this.lCenter, BorderLayout.PAGE_START);
+		lTop.add(this.jpModelSelection, BorderLayout.PAGE_START);
 		lTop.add(this.gridInfo);
-		lTop.add(lTopButtons, BorderLayout.PAGE_END);
+		lTop.add(jpLeftBottom, BorderLayout.PAGE_END);
+		
+		JPanel left = new JPanel(new BorderLayout());
 		left.add(lTop, BorderLayout.CENTER);
 		this.center.add(left, BorderLayout.LINE_START);
 
@@ -107,7 +125,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 				.getEpitheliumGrid().getY(), this.epithelium
 				.getEpitheliumGrid().getTopology(), this.modelGridClone,
 				this.colorMapClone, this.projectFeatures, this.gridInfo,
-				this.tpc);
+				this.tpc,this.jpModelsUsed);
 		this.center.add(this.visualGridModel, BorderLayout.CENTER);
 
 		this.buttonReset();
@@ -115,14 +133,14 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		this.isInitialized = true;
 	}
 
-	
-	private void updateButtons() {
+	private void updateCellSelectionButtons() {
 		this.jtbRectFill.setEnabled(true);
 		this.jbApplyAll.setEnabled(true);
-		
 	}
+	
+	
 	private void updateModelList() {
-		this.lCenter.removeAll();
+		this.jpModelSelection.removeAll();
 		ButtonGroup group = new ButtonGroup();
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(1, 5, 1, 0);
@@ -139,12 +157,11 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 				public void actionPerformed(ActionEvent e) {
 					JRadioComponentButton jrb = (JRadioComponentButton) e
 							.getSource();
-					updateButtons();
+					updateCellSelectionButtons();
 					visualGridModel.setSelModelName(jrb.getComponentText());
 				}
-
 			});
-			this.lCenter.add(jrButton, gbc);
+			this.jpModelSelection.add(jrButton, gbc);
 			group.add(jrButton);
 
 			gbc.gridx = 1;
@@ -159,7 +176,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 					setNewColor((JButton) e.getSource());
 				}
 			});
-			this.lCenter.add(jbColor, gbc);
+			this.jpModelSelection.add(jbColor, gbc);
 			this.mapSBMLMiniPanels.put(jrButton, jbColor);
 		}
 		// Clean grid of models that were deleted before an accept
@@ -173,7 +190,6 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 				}
 			}
 		}
-		
 		visualGridModel.setSelModelName(null);
 		this.revalidate();
 		this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
@@ -267,7 +283,6 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 			    "Empty epithelium",
 			    JOptionPane.ERROR_MESSAGE);
 		this.buttonReset();
-		
 	}
 
 	@Override
