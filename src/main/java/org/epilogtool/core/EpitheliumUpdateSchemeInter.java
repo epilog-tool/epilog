@@ -13,16 +13,18 @@ public class EpitheliumUpdateSchemeInter {
 	private float alphaAsyncParam;
 	private Map<ComponentPair, Float> componentPairSigma;
 	private UpdateOrder updateOrder;
+	private boolean allCellsCalledToUpdate;
 
-	public EpitheliumUpdateSchemeInter(float alpha, Map<ComponentPair, Float> sigmaAsync, UpdateOrder updateOrder) {
+	public EpitheliumUpdateSchemeInter(float alpha, Map<ComponentPair, Float> sigmaAsync, UpdateOrder updateOrder, boolean allCellsCalledToUpdate) {
 		this.alphaAsyncParam = alpha;
 		this.componentPairSigma = sigmaAsync;
 		this.updateOrder = updateOrder;
+		this.allCellsCalledToUpdate = allCellsCalledToUpdate;
 	}
 
 	public EpitheliumUpdateSchemeInter clone() {
 		return new EpitheliumUpdateSchemeInter(this.alphaAsyncParam,
-				new HashMap<ComponentPair, Float>(this.componentPairSigma), this.updateOrder);
+				new HashMap<ComponentPair, Float>(this.componentPairSigma), this.updateOrder, this.allCellsCalledToUpdate);
 	}
 
 	// Alpha asynchronism methods
@@ -34,6 +36,15 @@ public class EpitheliumUpdateSchemeInter {
 		return this.alphaAsyncParam;
 	}
 
+	// Update Mode methods
+	public void setCells2Update(boolean cells2Update) {
+		this.allCellsCalledToUpdate = cells2Update;
+	}
+
+	public boolean getCells2Update() {
+		return this.allCellsCalledToUpdate;
+	}
+	
 	// Update Mode methods
 	public void setUpdateOrder(UpdateOrder updateOrder) {
 		this.updateOrder = updateOrder;
@@ -92,6 +103,9 @@ public class EpitheliumUpdateSchemeInter {
 			return false;
 		if (!this.updateOrder.equals(otherObj.updateOrder))
 			return false;
+		if (this.allCellsCalledToUpdate & (!otherObj.allCellsCalledToUpdate) ||(!this.allCellsCalledToUpdate & (otherObj.allCellsCalledToUpdate)))
+			return false;
 		return true;
 	}
+
 }

@@ -89,8 +89,6 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		this.updateSchemeInter = this.epithelium.getUpdateSchemeInter().clone();
 
-		// System.out.println("The current updateMode: " +
-		// this.updateSchemeInter.getUpdateMode());
 		if (this.updateSchemeInter.getCPSigmas().size() > 0) {
 			for (ComponentPair cp : this.updateSchemeInter.getCPSigmas().keySet()) {
 				this.addRegCP(cp);
@@ -152,8 +150,6 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		jcUpdateOrder.setSelectedItem(lUpdateOrder[0]);
 		changeUpdateOrder((String) jcUpdateOrder.getSelectedItem());
 
-		// System.out.println(this.updateSchemeInter.getUpdateMode());
-
 		jcUpdateOrder.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -166,7 +162,49 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		});
 
 		this.jpUpdateOrder.add(jcUpdateOrder);
-		this.center.add(jpUpdateOrder, BorderLayout.SOUTH);
+
+		
+		// Update all cells, or updatable cells
+		
+		JPanel jpCells2Update = new JPanel(new BorderLayout());
+		jpCells2Update.setBorder(BorderFactory.createTitledBorder("Select Updatable cells"));
+		
+		String[] lCells2Update = new String[2];
+
+		lCells2Update[0] = "All Cells";
+		lCells2Update[1] = "Updatable Cells";
+		
+		JComboBox<String> jcCells2Update = new JComboWideBox<String>(lCells2Update);
+		
+		jcCells2Update.setSelectedItem(lCells2Update[0]);
+		changeCells2Update((String) jcCells2Update.getSelectedItem());
+
+		jcCells2Update.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				@SuppressWarnings("unchecked")
+				JComboBox<String> jcCells2Update = (JComboBox<String>) e.getSource();
+
+				changeCells2Update((String) jcCells2Update.getSelectedItem());
+				tpc.setChanged();
+			}
+		});
+		jpCells2Update.add(jcCells2Update);
+		
+		JPanel southPanel = new JPanel(new BorderLayout());
+		southPanel.add(jpUpdateOrder, BorderLayout.SOUTH);
+		southPanel.add(jpCells2Update, BorderLayout.NORTH);
+		
+		this.center.add(southPanel, BorderLayout.SOUTH);
+	}
+
+	protected void changeCells2Update(String cells2Update) {
+		
+		if (cells2Update=="All Cells")
+			this.updateSchemeInter.setCells2Update(true);
+		else if (cells2Update=="Updatable Cells")
+			this.updateSchemeInter.setCells2Update(false);
+		else{System.out.println("something is wrong with the option of udating all cells");}
 	}
 
 	private void changeUpdateOrder(String updateOrder) {

@@ -48,7 +48,7 @@ public class Epithelium {
 		this.perturbations = new EpitheliumPerturbations();
 		this.projectFeatures = projectFeatures;
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(EpitheliumUpdateSchemeInter.DEFAULT_ALPHA,
-				new HashMap<ComponentPair, Float>(), UpdateOrder.RANDOM_INDEPENDENT);
+				new HashMap<ComponentPair, Float>(), UpdateOrder.RANDOM_INDEPENDENT, true);
 		this.modelEventManager = new ModelEventManager(this.grid.getModelSet());
 		this.modelHeritableNodes = new ModelHeritableNodes();
 		this.modelHeritableNodes.addModel(m);

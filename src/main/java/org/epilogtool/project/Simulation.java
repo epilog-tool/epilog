@@ -74,7 +74,7 @@ public class Simulation {
 		this.ceEvaluator = new CEEvaluation();
 		this.buildPriorityUpdaterCache();
 
-		this.allCellsCalledToUpdate = true;
+		this.allCellsCalledToUpdate = this.epithelium.getUpdateSchemeInter().getCells2Update();
 	}
 
 	private EpitheliumGrid restrictGridWithPerturbations(EpitheliumGrid grid) {
