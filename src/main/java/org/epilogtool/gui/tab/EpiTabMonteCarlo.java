@@ -693,8 +693,8 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.jbFastFwr.setEnabled(false);
 		this.jlStep.setEnabled(false);
 		this.jbClone.setEnabled(false);
-		this.jbPicture.setEnabled(false);
-		this.jbSaveAll.setEnabled(false);
+//		this.jbPicture.setEnabled(false);
+//		this.jbSaveAll.setEnabled(false);
 
 		this.cellNode2Count = this.monteCarlo.createCumulative();
 		fireVisualChange();
@@ -705,17 +705,24 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	protected void fireStableStatesGrid() {
 		
-		//TODO not necessarily all true (do the chekingbuttons function)
 		this.isCumulative = false;
 		
-		this.jbRewind.setEnabled(true);
-		this.jbBack.setEnabled(true);
-		this.jbStep.setEnabled(true);
-		this.jbFastFwr.setEnabled(true);
+		if (this.lastStableStateIndex >1){
+			this.jbBack.setEnabled(true);
+			this.jbRewind.setEnabled(true);}
+		else{   this.jbBack.setEnabled(false);
+				this.jbRewind.setEnabled(false);}
+		if (this.lastStableStateIndex !=this.monteCarlo.getUniqueStableStates().size()){
+			this.jbStep.setEnabled(true);
+			this.jbFastFwr.setEnabled(true);}
+		else{
+			this.jbStep.setEnabled(false);
+			this.jbFastFwr.setEnabled(false);}
 		this.jlStep.setEnabled(true);
 		this.jbClone.setEnabled(true);
-		this.jbPicture.setEnabled(true);
-		this.jbSaveAll.setEnabled(true);
+		
+//		this.jbPicture.setEnabled(true);
+//		this.jbSaveAll.setEnabled(true);
 		
 		fireVisualChange();
 		return;
@@ -1102,6 +1109,10 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	}
 
 	
+	/**
+	 * Method that changes between the cumulative and stable view.
+	 * 
+	 */
 	private void fireVisualChange(){
 
 		if (this.vgCellState
@@ -1118,7 +1129,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.vgCellState.paintComponent(this.vgCellState
 				.getGraphics());
 		this.vgCellState.repaint();
-//		this.repaint();
 			}
 		}
 		
