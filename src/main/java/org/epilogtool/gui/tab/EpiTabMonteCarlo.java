@@ -957,6 +957,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 		this.uniqueSS.setText("Unique SS: " + this.monteCarlo.getUniqueStableStates().size());
 		this.notReachedSS.setText("Not reached SS: " + (this.monteCarlo.getNumberRuns() - this.monteCarlo.getStableStates().size()));
+		this.stableStateRepeated.setText("Repeated SS: "+(this.monteCarlo.getNumberRuns()-(this.monteCarlo.getNumberRuns() - this.monteCarlo.getStableStates().size())-this.monteCarlo.getUniqueStableStates().size()));
 		this.uniqueSS.repaint();
 		this.notReachedSS.repaint();
 		this.informationPanel.repaint();
