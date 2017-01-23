@@ -352,12 +352,13 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		gbc.gridy = 1;
 		gbc.gridx = 0;
 		this.notReachedSS = new JLabel("");
-		this.notReachedSS.setText("Not reached: ");
+		this.notReachedSS.setText("Not reached SS: ");
 		informationPanelMonteCarlo.add(this.notReachedSS,gbc);
 		
 		gbc.gridy = 2;
 		gbc.gridx = 0;
 		this.stableStateRepeated = new JLabel("");
+		this.stableStateRepeated.setText("Repeated SS: " );
 		informationPanelMonteCarlo.add(this.stableStateRepeated,gbc);
 		
 		informationPanel.add(this.cellInformation,BorderLayout.CENTER);
@@ -568,9 +569,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	   
 	        }
 	    });
-	    
-		
-		
+
 		  //add jrbStableStates listener
 		this.jrbCumulative.addActionListener(new ActionListener() {
 	        @Override
@@ -693,8 +692,8 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.jbFastFwr.setEnabled(false);
 		this.jlStep.setEnabled(false);
 		this.jbClone.setEnabled(false);
-//		this.jbPicture.setEnabled(false);
-//		this.jbSaveAll.setEnabled(false);
+
+		this.jbSaveAll.setEnabled(false);
 
 		this.cellNode2Count = this.monteCarlo.createCumulative();
 		fireVisualChange();
@@ -720,9 +719,8 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			this.jbFastFwr.setEnabled(false);}
 		this.jlStep.setEnabled(true);
 		this.jbClone.setEnabled(true);
-		
-//		this.jbPicture.setEnabled(true);
-//		this.jbSaveAll.setEnabled(true);
+
+		this.jbSaveAll.setEnabled(true);
 		
 		fireVisualChange();
 		return;
@@ -924,44 +922,46 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.lastStableStateIndex=0;
 		this.monteCarlo.run(this.epithelium.clone());
 		
-			if (this.lastStableStateIndex >1){
-				this.jbBack.setEnabled(true);
-				this.jbRewind.setEnabled(true);
-				}
-				else{
-					this.jbBack.setEnabled(false);
-					this.jbRewind.setEnabled(false);	
-				}
-			if (this.lastStableStateIndex !=this.monteCarlo.getStableStates().size()){
-				this.jbStep.setEnabled(true);
-				this.jbFastFwr.setEnabled(true);
+//			if (this.lastStableStateIndex >1){
+//				this.jbBack.setEnabled(true);
+//				this.jbRewind.setEnabled(true);
+//				}
+//				else{
+//					this.jbBack.setEnabled(false);
+//					this.jbRewind.setEnabled(false);	
+//				}
+//			if (this.lastStableStateIndex !=this.monteCarlo.getStableStates().size()){
+//				this.jbStep.setEnabled(true);
+//				this.jbFastFwr.setEnabled(true);
+//			}
+//			else{
+//				this.jbStep.setEnabled(false);
+//				this.jbFastFwr.setEnabled(false);
+//			}
+			if (this.monteCarlo.getStableStates().size()>0){
+				
+			EpitheliumGrid stableState= this.monteCarlo.getStableStates().get(0);
+			simulationStepFwr();
+			if (this.isCumulative){
+			fireCumulativeGrid();
 			}
 			else{
-				this.jbStep.setEnabled(false);
-				this.jbFastFwr.setEnabled(false);
+				fireStableStatesGrid();
 			}
-			if (this.monteCarlo.getStableStates().size()>0){
-			EpitheliumGrid stableState= this.monteCarlo.getStableStates().get(0);
-
-			simulationStepFwr();
-
-			this.jbClone.setEnabled(true);
+//			this.jbClone.setEnabled(true);
 			this.jbPicture.setEnabled(true);
-			this.jbSaveAll.setEnabled(true);
+//			this.jbSaveAll.setEnabled(true);
 
 			updatejlIteration(stableState);
 			}
-			
 			updateInformationPanel();
-//			fireVisualChange();
-
+			fireVisualChange();
 		}
 			
 			
 	
 
 	private void updateInformationPanel() {
-
 		this.uniqueSS.setText("Unique SS: " + this.monteCarlo.getUniqueStableStates().size());
 		this.notReachedSS.setText("Not reached SS: " + (this.monteCarlo.getNumberRuns() - this.monteCarlo.getStableStates().size()));
 		this.stableStateRepeated.setText("Repeated SS: "+(this.monteCarlo.getNumberRuns()-(this.monteCarlo.getNumberRuns() - this.monteCarlo.getStableStates().size())-this.monteCarlo.getUniqueStableStates().size()));
@@ -969,7 +969,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.notReachedSS.repaint();
 		this.informationPanel.repaint();
 		this.jpLeft.repaint();
-		
 	}
 
 	@Override
