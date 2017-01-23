@@ -97,7 +97,6 @@ public class ColorUtils {
 		int r = (int) (255 - (255 - color.getRed()) * value / max);
 		int g = (int) (255 - (255 - color.getGreen()) * value / max);
 		int b = (int) (255 - (255 - color.getBlue()) * value / max);
-		System.out.println(r);
 		return new Color(r, g, b);
 	}
 }
