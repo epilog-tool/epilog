@@ -1002,6 +1002,29 @@ public class EpiGUI extends JFrame {
 	public void restartMonteCarloTab() {
 		// TODO Auto-generated method stub
 		
+		// save settings
+		int monteCarloTabIndex = this.epiRightFrame.getSelectedIndex();
+		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
+		TreePath path = this.epiTreePanel.getSelectionEpiPath();
+
+		// remove tab
+		this.epiRightFrame.removeTabAt(monteCarloTabIndex);
+
+		// restart
+		ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
+		EpiTab tab;
+		tab = new EpiTabMonteCarlo(epi, path, projChanged,
+				this.project.getProjectFeatures(), new SimulationEpiClone());
+		String title = epi.getName() + ":Monte Carlo";
+		this.epiRightFrame.addTab(title, tab);
+		tab.initialize();
+
+		CloseTabButton tabButton = new CloseTabButton(title, this.epiRightFrame);
+
+		int tabIndex = this.epiRightFrame.getTabCount() - 1;
+		this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
+
+		this.epiRightFrame.setSelectedIndex(tabIndex);
 	}
 	
 	private static String join(List<String> list, String sep) {
