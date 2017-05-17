@@ -169,7 +169,7 @@ public class Parser {
 					while (--n > 0) {
 						pos = line.indexOf(" ", pos + 1);
 					}
-					function = line.substring(pos);
+					function = line.substring(pos).trim();
 				}
 				try {
 					currEpi.setIntegrationFunction(nodeID, m, value, function);
