@@ -1,12 +1,16 @@
-// $ANTLR 3.3 Nov 30, 2010 12:46:29 src/main/java/org/epilogtool/integration/IntegrationGrammar.g 2016-12-27 21:45:29
+// $ANTLR 3.3 Nov 30, 2010 12:46:29 src/main/java/org/epilogtool/integration/IntegrationGrammar.g 2017-05-24 22:29:09
 
 package org.epilogtool.integration;
 
+
 import org.antlr.runtime.*;
+import java.util.Stack;
+import java.util.List;
+import java.util.ArrayList;
 
 public class IntegrationGrammarParser extends Parser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "OR", "AND", "NOT", "NUMBER", "ID", "SPACE", "WS", "'('", "')'", "'{'", "','", "'min'", "'='", "'}'", "'max'", "'['", "']'", "':'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "OR", "AND", "NOT", "NUMBER", "ID", "SPACE", "WS", "'('", "')'", "'{'", "'}'", "','", "'min'", "'='", "'max'", "'['", "']'", "':'"
     };
     public static final int EOF=-1;
     public static final int T__11=11;
@@ -77,12 +81,10 @@ public class IntegrationGrammarParser extends Parser {
         }
         catch (RecognitionException re) {
             reportError(re);
-//            System.out.println(re);
             recover(input,re);
         }
         finally {
         }
-    
         return value;
     }
     // $ANTLR end "eval"
@@ -350,7 +352,7 @@ public class IntegrationGrammarParser extends Parser {
 
 
     // $ANTLR start "cardconst"
-    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:52:1: cardconst returns [IntegrationFunctionExpression value ] : ( '{' expr= signalexpror ',' 'min' '=' min= NUMBER '}' | '{' expr= signalexpror ',' 'max' '=' max= NUMBER '}' | '{' expr= signalexpror ',' 'min' '=' min= NUMBER ',' 'max' '=' max= NUMBER '}' );
+    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:52:1: cardconst returns [IntegrationFunctionExpression value ] : ( '{' expr= signalexpror '}' | '{' expr= signalexpror ',' 'min' '=' min= NUMBER '}' | '{' expr= signalexpror ',' 'max' '=' max= NUMBER '}' | '{' expr= signalexpror ',' 'min' '=' min= NUMBER ',' 'max' '=' max= NUMBER '}' );
     public final IntegrationFunctionExpression cardconst() throws RecognitionException {
         IntegrationFunctionExpression value = null;
 
@@ -360,12 +362,12 @@ public class IntegrationGrammarParser extends Parser {
 
 
         try {
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:53:2: ( '{' expr= signalexpror ',' 'min' '=' min= NUMBER '}' | '{' expr= signalexpror ',' 'max' '=' max= NUMBER '}' | '{' expr= signalexpror ',' 'min' '=' min= NUMBER ',' 'max' '=' max= NUMBER '}' )
-            int alt5=3;
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:53:2: ( '{' expr= signalexpror '}' | '{' expr= signalexpror ',' 'min' '=' min= NUMBER '}' | '{' expr= signalexpror ',' 'max' '=' max= NUMBER '}' | '{' expr= signalexpror ',' 'min' '=' min= NUMBER ',' 'max' '=' max= NUMBER '}' )
+            int alt5=4;
             alt5 = dfa5.predict(input);
             switch (alt5) {
                 case 1 :
-                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:53:4: '{' expr= signalexpror ',' 'min' '=' min= NUMBER '}'
+                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:53:4: '{' expr= signalexpror '}'
                     {
                     match(input,13,FOLLOW_13_in_cardconst196); 
                     pushFollow(FOLLOW_signalexpror_in_cardconst200);
@@ -374,50 +376,64 @@ public class IntegrationGrammarParser extends Parser {
                     state._fsp--;
 
                     match(input,14,FOLLOW_14_in_cardconst202); 
-                    match(input,15,FOLLOW_15_in_cardconst204); 
-                    match(input,16,FOLLOW_16_in_cardconst206); 
-                    min=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_cardconst210); 
-                    match(input,17,FOLLOW_17_in_cardconst212); 
-                     value = IFSpecification.cardinalityConstraint(expr, (min!=null?min.getText():null), "-1"); 
+                     value = IFSpecification.cardinalityConstraint(expr, "1", "-1"); 
 
                     }
                     break;
                 case 2 :
-                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:55:4: '{' expr= signalexpror ',' 'max' '=' max= NUMBER '}'
+                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:55:4: '{' expr= signalexpror ',' 'min' '=' min= NUMBER '}'
                     {
-                    match(input,13,FOLLOW_13_in_cardconst221); 
-                    pushFollow(FOLLOW_signalexpror_in_cardconst225);
+                    match(input,13,FOLLOW_13_in_cardconst211); 
+                    pushFollow(FOLLOW_signalexpror_in_cardconst215);
                     expr=signalexpror();
 
                     state._fsp--;
 
+                    match(input,15,FOLLOW_15_in_cardconst217); 
+                    match(input,16,FOLLOW_16_in_cardconst219); 
+                    match(input,17,FOLLOW_17_in_cardconst221); 
+                    min=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_cardconst225); 
                     match(input,14,FOLLOW_14_in_cardconst227); 
-                    match(input,18,FOLLOW_18_in_cardconst229); 
-                    match(input,16,FOLLOW_16_in_cardconst231); 
-                    max=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_cardconst235); 
-                    match(input,17,FOLLOW_17_in_cardconst237); 
-                     value = IFSpecification.cardinalityConstraint(expr, "-1", (max!=null?max.getText():null)); 
+                     value = IFSpecification.cardinalityConstraint(expr, (min!=null?min.getText():null), "-1"); 
 
                     }
                     break;
                 case 3 :
-                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:57:4: '{' expr= signalexpror ',' 'min' '=' min= NUMBER ',' 'max' '=' max= NUMBER '}'
+                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:57:4: '{' expr= signalexpror ',' 'max' '=' max= NUMBER '}'
                     {
-                    match(input,13,FOLLOW_13_in_cardconst246); 
-                    pushFollow(FOLLOW_signalexpror_in_cardconst250);
+                    match(input,13,FOLLOW_13_in_cardconst236); 
+                    pushFollow(FOLLOW_signalexpror_in_cardconst240);
                     expr=signalexpror();
 
                     state._fsp--;
 
+                    match(input,15,FOLLOW_15_in_cardconst242); 
+                    match(input,18,FOLLOW_18_in_cardconst244); 
+                    match(input,17,FOLLOW_17_in_cardconst246); 
+                    max=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_cardconst250); 
                     match(input,14,FOLLOW_14_in_cardconst252); 
-                    match(input,15,FOLLOW_15_in_cardconst254); 
-                    match(input,16,FOLLOW_16_in_cardconst256); 
-                    min=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_cardconst260); 
-                    match(input,14,FOLLOW_14_in_cardconst262); 
-                    match(input,18,FOLLOW_18_in_cardconst264); 
-                    match(input,16,FOLLOW_16_in_cardconst266); 
-                    max=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_cardconst270); 
-                    match(input,17,FOLLOW_17_in_cardconst272); 
+                     value = IFSpecification.cardinalityConstraint(expr, "-1", (max!=null?max.getText():null)); 
+
+                    }
+                    break;
+                case 4 :
+                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:59:4: '{' expr= signalexpror ',' 'min' '=' min= NUMBER ',' 'max' '=' max= NUMBER '}'
+                    {
+                    match(input,13,FOLLOW_13_in_cardconst261); 
+                    pushFollow(FOLLOW_signalexpror_in_cardconst265);
+                    expr=signalexpror();
+
+                    state._fsp--;
+
+                    match(input,15,FOLLOW_15_in_cardconst267); 
+                    match(input,16,FOLLOW_16_in_cardconst269); 
+                    match(input,17,FOLLOW_17_in_cardconst271); 
+                    min=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_cardconst275); 
+                    match(input,15,FOLLOW_15_in_cardconst277); 
+                    match(input,18,FOLLOW_18_in_cardconst279); 
+                    match(input,17,FOLLOW_17_in_cardconst281); 
+                    max=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_cardconst285); 
+                    match(input,14,FOLLOW_14_in_cardconst287); 
                      value = IFSpecification.cardinalityConstraint(expr, (min!=null?min.getText():null), (max!=null?max.getText():null)); 
 
                     }
@@ -437,7 +453,7 @@ public class IntegrationGrammarParser extends Parser {
 
 
     // $ANTLR start "signalexpror"
-    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:61:1: signalexpror returns [IntegrationSignalExpression value] : o1= signal ( OR o2= signal )* ;
+    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:63:1: signalexpror returns [IntegrationSignalExpression value] : o1= signal ( OR o2= signal )* ;
     public final IntegrationSignalExpression signalexpror() throws RecognitionException {
         IntegrationSignalExpression value = null;
 
@@ -447,15 +463,15 @@ public class IntegrationGrammarParser extends Parser {
 
 
         try {
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:62:2: (o1= signal ( OR o2= signal )* )
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:62:4: o1= signal ( OR o2= signal )*
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:64:2: (o1= signal ( OR o2= signal )* )
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:64:4: o1= signal ( OR o2= signal )*
             {
-            pushFollow(FOLLOW_signal_in_signalexpror293);
+            pushFollow(FOLLOW_signal_in_signalexpror308);
             o1=signal();
 
             state._fsp--;
 
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:62:14: ( OR o2= signal )*
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:64:14: ( OR o2= signal )*
             loop6:
             do {
                 int alt6=2;
@@ -468,10 +484,10 @@ public class IntegrationGrammarParser extends Parser {
 
                 switch (alt6) {
             	case 1 :
-            	    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:62:15: OR o2= signal
+            	    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:64:15: OR o2= signal
             	    {
-            	    match(input,OR,FOLLOW_OR_in_signalexpror296); 
-            	    pushFollow(FOLLOW_signal_in_signalexpror300);
+            	    match(input,OR,FOLLOW_OR_in_signalexpror311); 
+            	    pushFollow(FOLLOW_signal_in_signalexpror315);
             	    o2=signal();
 
             	    state._fsp--;
@@ -502,7 +518,7 @@ public class IntegrationGrammarParser extends Parser {
 
 
     // $ANTLR start "signal"
-    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:66:1: signal returns [IntegrationSignal value] : (id= ID | id= ID '[' min= NUMBER ']' | id= ID '[' min= NUMBER ':' ']' | id= ID '[' min= NUMBER ':' max= NUMBER ']' | id= ID '[' ':' max= NUMBER ']' | id= ID ':' t= NUMBER | id= ID ':' t= NUMBER '[' min= NUMBER ']' | id= ID ':' t= NUMBER '[' min= NUMBER ':' ']' | id= ID ':' t= NUMBER '[' min= NUMBER ':' max= NUMBER ']' | id= ID ':' t= NUMBER '[' ':' max= NUMBER ']' );
+    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:68:1: signal returns [IntegrationSignal value] : (id= ID | id= ID '[' min= NUMBER ']' | id= ID '[' min= NUMBER ':' ']' | id= ID '[' min= NUMBER ':' max= NUMBER ']' | id= ID '[' ':' max= NUMBER ']' | id= ID ':' t= NUMBER | id= ID ':' t= NUMBER '[' min= NUMBER ']' | id= ID ':' t= NUMBER '[' min= NUMBER ':' ']' | id= ID ':' t= NUMBER '[' min= NUMBER ':' max= NUMBER ']' | id= ID ':' t= NUMBER '[' ':' max= NUMBER ']' );
     public final IntegrationSignal signal() throws RecognitionException {
         IntegrationSignal value = null;
 
@@ -512,128 +528,128 @@ public class IntegrationGrammarParser extends Parser {
         Token t=null;
 
         try {
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:67:2: (id= ID | id= ID '[' min= NUMBER ']' | id= ID '[' min= NUMBER ':' ']' | id= ID '[' min= NUMBER ':' max= NUMBER ']' | id= ID '[' ':' max= NUMBER ']' | id= ID ':' t= NUMBER | id= ID ':' t= NUMBER '[' min= NUMBER ']' | id= ID ':' t= NUMBER '[' min= NUMBER ':' ']' | id= ID ':' t= NUMBER '[' min= NUMBER ':' max= NUMBER ']' | id= ID ':' t= NUMBER '[' ':' max= NUMBER ']' )
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:69:2: (id= ID | id= ID '[' min= NUMBER ']' | id= ID '[' min= NUMBER ':' ']' | id= ID '[' min= NUMBER ':' max= NUMBER ']' | id= ID '[' ':' max= NUMBER ']' | id= ID ':' t= NUMBER | id= ID ':' t= NUMBER '[' min= NUMBER ']' | id= ID ':' t= NUMBER '[' min= NUMBER ':' ']' | id= ID ':' t= NUMBER '[' min= NUMBER ':' max= NUMBER ']' | id= ID ':' t= NUMBER '[' ':' max= NUMBER ']' )
             int alt7=10;
             alt7 = dfa7.predict(input);
             switch (alt7) {
                 case 1 :
-                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:67:4: id= ID
+                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:69:4: id= ID
                     {
-                    id=(Token)match(input,ID,FOLLOW_ID_in_signal324); 
+                    id=(Token)match(input,ID,FOLLOW_ID_in_signal339); 
                      value = IFSpecification.integrationSignal((id!=null?id.getText():null), "1", new IntegrationDistance("1", "1")); 
 
                     }
                     break;
                 case 2 :
-                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:69:4: id= ID '[' min= NUMBER ']'
+                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:71:4: id= ID '[' min= NUMBER ']'
                     {
-                    id=(Token)match(input,ID,FOLLOW_ID_in_signal335); 
-                    match(input,19,FOLLOW_19_in_signal337); 
-                    min=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal341); 
-                    match(input,20,FOLLOW_20_in_signal343); 
+                    id=(Token)match(input,ID,FOLLOW_ID_in_signal350); 
+                    match(input,19,FOLLOW_19_in_signal352); 
+                    min=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal356); 
+                    match(input,20,FOLLOW_20_in_signal358); 
                      value = IFSpecification.integrationSignal((id!=null?id.getText():null), "1", new IntegrationDistance((min!=null?min.getText():null), (min!=null?min.getText():null))); 
 
                     }
                     break;
                 case 3 :
-                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:71:4: id= ID '[' min= NUMBER ':' ']'
+                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:73:4: id= ID '[' min= NUMBER ':' ']'
                     {
-                    id=(Token)match(input,ID,FOLLOW_ID_in_signal354); 
-                    match(input,19,FOLLOW_19_in_signal356); 
-                    min=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal360); 
-                    match(input,21,FOLLOW_21_in_signal362); 
-                    match(input,20,FOLLOW_20_in_signal364); 
+                    id=(Token)match(input,ID,FOLLOW_ID_in_signal369); 
+                    match(input,19,FOLLOW_19_in_signal371); 
+                    min=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal375); 
+                    match(input,21,FOLLOW_21_in_signal377); 
+                    match(input,20,FOLLOW_20_in_signal379); 
                      value = IFSpecification.integrationSignal((id!=null?id.getText():null), "1", new IntegrationDistance((min!=null?min.getText():null), "-1")); 
 
                     }
                     break;
                 case 4 :
-                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:73:4: id= ID '[' min= NUMBER ':' max= NUMBER ']'
+                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:75:4: id= ID '[' min= NUMBER ':' max= NUMBER ']'
                     {
-                    id=(Token)match(input,ID,FOLLOW_ID_in_signal375); 
-                    match(input,19,FOLLOW_19_in_signal377); 
-                    min=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal381); 
-                    match(input,21,FOLLOW_21_in_signal383); 
-                    max=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal387); 
-                    match(input,20,FOLLOW_20_in_signal389); 
+                    id=(Token)match(input,ID,FOLLOW_ID_in_signal390); 
+                    match(input,19,FOLLOW_19_in_signal392); 
+                    min=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal396); 
+                    match(input,21,FOLLOW_21_in_signal398); 
+                    max=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal402); 
+                    match(input,20,FOLLOW_20_in_signal404); 
                      value = IFSpecification.integrationSignal((id!=null?id.getText():null), "1", new IntegrationDistance((min!=null?min.getText():null), (max!=null?max.getText():null))); 
 
                     }
                     break;
                 case 5 :
-                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:75:4: id= ID '[' ':' max= NUMBER ']'
+                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:77:4: id= ID '[' ':' max= NUMBER ']'
                     {
-                    id=(Token)match(input,ID,FOLLOW_ID_in_signal400); 
-                    match(input,19,FOLLOW_19_in_signal402); 
-                    match(input,21,FOLLOW_21_in_signal404); 
-                    max=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal408); 
-                    match(input,20,FOLLOW_20_in_signal410); 
+                    id=(Token)match(input,ID,FOLLOW_ID_in_signal415); 
+                    match(input,19,FOLLOW_19_in_signal417); 
+                    match(input,21,FOLLOW_21_in_signal419); 
+                    max=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal423); 
+                    match(input,20,FOLLOW_20_in_signal425); 
                      value = IFSpecification.integrationSignal((id!=null?id.getText():null), "1", new IntegrationDistance("-1", (max!=null?max.getText():null))); 
 
                     }
                     break;
                 case 6 :
-                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:77:4: id= ID ':' t= NUMBER
+                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:79:4: id= ID ':' t= NUMBER
                     {
-                    id=(Token)match(input,ID,FOLLOW_ID_in_signal421); 
-                    match(input,21,FOLLOW_21_in_signal423); 
-                    t=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal427); 
+                    id=(Token)match(input,ID,FOLLOW_ID_in_signal436); 
+                    match(input,21,FOLLOW_21_in_signal438); 
+                    t=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal442); 
                      value = IFSpecification.integrationSignal((id!=null?id.getText():null), (t!=null?t.getText():null), new IntegrationDistance("1", "1")); 
 
                     }
                     break;
                 case 7 :
-                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:79:4: id= ID ':' t= NUMBER '[' min= NUMBER ']'
+                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:81:4: id= ID ':' t= NUMBER '[' min= NUMBER ']'
                     {
-                    id=(Token)match(input,ID,FOLLOW_ID_in_signal438); 
-                    match(input,21,FOLLOW_21_in_signal440); 
-                    t=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal444); 
-                    match(input,19,FOLLOW_19_in_signal446); 
-                    min=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal450); 
-                    match(input,20,FOLLOW_20_in_signal452); 
+                    id=(Token)match(input,ID,FOLLOW_ID_in_signal453); 
+                    match(input,21,FOLLOW_21_in_signal455); 
+                    t=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal459); 
+                    match(input,19,FOLLOW_19_in_signal461); 
+                    min=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal465); 
+                    match(input,20,FOLLOW_20_in_signal467); 
                      value = IFSpecification.integrationSignal((id!=null?id.getText():null), (t!=null?t.getText():null), new IntegrationDistance((min!=null?min.getText():null), (min!=null?min.getText():null))); 
 
                     }
                     break;
                 case 8 :
-                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:81:4: id= ID ':' t= NUMBER '[' min= NUMBER ':' ']'
+                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:83:4: id= ID ':' t= NUMBER '[' min= NUMBER ':' ']'
                     {
-                    id=(Token)match(input,ID,FOLLOW_ID_in_signal463); 
-                    match(input,21,FOLLOW_21_in_signal465); 
-                    t=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal469); 
-                    match(input,19,FOLLOW_19_in_signal471); 
-                    min=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal475); 
-                    match(input,21,FOLLOW_21_in_signal477); 
-                    match(input,20,FOLLOW_20_in_signal479); 
+                    id=(Token)match(input,ID,FOLLOW_ID_in_signal478); 
+                    match(input,21,FOLLOW_21_in_signal480); 
+                    t=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal484); 
+                    match(input,19,FOLLOW_19_in_signal486); 
+                    min=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal490); 
+                    match(input,21,FOLLOW_21_in_signal492); 
+                    match(input,20,FOLLOW_20_in_signal494); 
                      value = IFSpecification.integrationSignal((id!=null?id.getText():null), (t!=null?t.getText():null), new IntegrationDistance((min!=null?min.getText():null), "-1")); 
 
                     }
                     break;
                 case 9 :
-                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:83:4: id= ID ':' t= NUMBER '[' min= NUMBER ':' max= NUMBER ']'
+                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:85:4: id= ID ':' t= NUMBER '[' min= NUMBER ':' max= NUMBER ']'
                     {
-                    id=(Token)match(input,ID,FOLLOW_ID_in_signal490); 
-                    match(input,21,FOLLOW_21_in_signal492); 
-                    t=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal496); 
-                    match(input,19,FOLLOW_19_in_signal498); 
-                    min=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal502); 
-                    match(input,21,FOLLOW_21_in_signal504); 
-                    max=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal508); 
-                    match(input,20,FOLLOW_20_in_signal510); 
+                    id=(Token)match(input,ID,FOLLOW_ID_in_signal505); 
+                    match(input,21,FOLLOW_21_in_signal507); 
+                    t=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal511); 
+                    match(input,19,FOLLOW_19_in_signal513); 
+                    min=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal517); 
+                    match(input,21,FOLLOW_21_in_signal519); 
+                    max=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal523); 
+                    match(input,20,FOLLOW_20_in_signal525); 
                      value = IFSpecification.integrationSignal((id!=null?id.getText():null), (t!=null?t.getText():null), new IntegrationDistance((min!=null?min.getText():null), (max!=null?max.getText():null))); 
 
                     }
                     break;
                 case 10 :
-                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:85:4: id= ID ':' t= NUMBER '[' ':' max= NUMBER ']'
+                    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:87:4: id= ID ':' t= NUMBER '[' ':' max= NUMBER ']'
                     {
-                    id=(Token)match(input,ID,FOLLOW_ID_in_signal521); 
-                    match(input,21,FOLLOW_21_in_signal523); 
-                    t=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal527); 
-                    match(input,19,FOLLOW_19_in_signal529); 
-                    match(input,21,FOLLOW_21_in_signal531); 
-                    max=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal535); 
-                    match(input,20,FOLLOW_20_in_signal537); 
+                    id=(Token)match(input,ID,FOLLOW_ID_in_signal536); 
+                    match(input,21,FOLLOW_21_in_signal538); 
+                    t=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal542); 
+                    match(input,19,FOLLOW_19_in_signal544); 
+                    match(input,21,FOLLOW_21_in_signal546); 
+                    max=(Token)match(input,NUMBER,FOLLOW_NUMBER_in_signal550); 
+                    match(input,20,FOLLOW_20_in_signal552); 
                      value = IFSpecification.integrationSignal((id!=null?id.getText():null), (t!=null?t.getText():null), new IntegrationDistance("-1", (max!=null?max.getText():null))); 
 
                     }
@@ -657,80 +673,81 @@ public class IntegrationGrammarParser extends Parser {
     protected DFA5 dfa5 = new DFA5(this);
     protected DFA7 dfa7 = new DFA7(this);
     static final String DFA5_eotS =
-        "\70\uffff";
+        "\71\uffff";
     static final String DFA5_eofS =
-        "\70\uffff";
+        "\71\uffff";
     static final String DFA5_minS =
-        "\1\15\1\10\1\4\2\7\1\10\1\17\1\24\1\7\2\4\1\20\1\uffff\1\4\1\7\1"+
-        "\24\4\7\1\4\1\24\1\4\1\24\1\7\1\24\1\7\1\4\1\16\2\4\1\7\1\24\1\4"+
-        "\1\7\1\24\1\7\2\uffff\1\4\1\24\2\4\1\24\1\4\1\24\1\7\3\4\1\7\1\24"+
-        "\1\4\1\24\2\4";
+        "\1\15\1\10\1\4\2\7\1\10\1\uffff\1\20\1\24\1\7\2\4\1\21\1\uffff\1"+
+        "\4\1\7\1\24\4\7\1\4\1\24\1\4\1\24\1\7\1\24\1\7\1\4\1\16\2\4\1\7"+
+        "\1\24\1\4\1\7\1\24\1\7\2\uffff\1\4\1\24\2\4\1\24\1\4\1\24\1\7\3"+
+        "\4\1\7\1\24\1\4\1\24\2\4";
     static final String DFA5_maxS =
-        "\1\15\1\10\2\25\1\7\1\10\1\22\1\25\1\7\1\23\1\25\1\20\1\uffff\1"+
-        "\16\2\24\2\25\2\7\1\16\1\24\1\16\1\25\1\7\1\25\1\7\1\23\1\21\2\16"+
-        "\2\24\1\16\2\24\1\25\2\uffff\1\16\1\24\2\16\1\24\1\16\1\25\1\7\3"+
-        "\16\2\24\1\16\1\24\2\16";
+        "\1\15\1\10\2\25\1\7\1\10\1\uffff\1\22\1\25\1\7\1\23\1\25\1\21\1"+
+        "\uffff\1\17\2\24\2\25\2\7\1\17\1\24\1\17\1\25\1\7\1\25\1\7\1\23"+
+        "\3\17\2\24\1\17\2\24\1\25\2\uffff\1\17\1\24\2\17\1\24\1\17\1\25"+
+        "\1\7\3\17\2\24\1\17\1\24\2\17";
     static final String DFA5_acceptS =
-        "\14\uffff\1\2\30\uffff\1\1\1\3\21\uffff";
+        "\6\uffff\1\1\6\uffff\1\3\30\uffff\1\2\1\4\21\uffff";
     static final String DFA5_specialS =
-        "\70\uffff}>";
+        "\71\uffff}>";
     static final String[] DFA5_transitionS = {
             "\1\1",
             "\1\2",
-            "\1\5\11\uffff\1\6\4\uffff\1\3\1\uffff\1\4",
-            "\1\7\15\uffff\1\10",
-            "\1\11",
+            "\1\5\11\uffff\1\6\1\7\3\uffff\1\3\1\uffff\1\4",
+            "\1\10\15\uffff\1\11",
             "\1\12",
-            "\1\13\2\uffff\1\14",
-            "\1\15\1\16",
-            "\1\17",
-            "\1\5\11\uffff\1\6\4\uffff\1\20",
-            "\1\5\11\uffff\1\6\4\uffff\1\21\1\uffff\1\22",
-            "\1\23",
+            "\1\13",
             "",
-            "\1\5\11\uffff\1\6",
-            "\1\25\14\uffff\1\24",
-            "\1\26",
-            "\1\27\15\uffff\1\30",
-            "\1\31\15\uffff\1\32",
-            "\1\33",
+            "\1\14\1\uffff\1\15",
+            "\1\16\1\17",
+            "\1\20",
+            "\1\5\11\uffff\1\6\1\7\3\uffff\1\21",
+            "\1\5\11\uffff\1\6\1\7\3\uffff\1\22\1\uffff\1\23",
+            "\1\24",
+            "",
+            "\1\5\11\uffff\1\6\1\7",
+            "\1\26\14\uffff\1\25",
+            "\1\27",
+            "\1\30\15\uffff\1\31",
+            "\1\32\15\uffff\1\33",
             "\1\34",
-            "\1\5\11\uffff\1\6",
             "\1\35",
-            "\1\5\11\uffff\1\6",
-            "\1\36\1\37",
-            "\1\40",
-            "\1\41\1\42",
-            "\1\43",
-            "\1\5\11\uffff\1\6\4\uffff\1\44",
-            "\1\46\2\uffff\1\45",
-            "\1\5\11\uffff\1\6",
-            "\1\5\11\uffff\1\6",
-            "\1\50\14\uffff\1\47",
-            "\1\51",
-            "\1\5\11\uffff\1\6",
-            "\1\53\14\uffff\1\52",
-            "\1\54",
-            "\1\55\15\uffff\1\56",
+            "\1\5\11\uffff\1\6\1\7",
+            "\1\36",
+            "\1\5\11\uffff\1\6\1\7",
+            "\1\37\1\40",
+            "\1\41",
+            "\1\42\1\43",
+            "\1\44",
+            "\1\5\11\uffff\1\6\1\7\3\uffff\1\45",
+            "\1\46\1\47",
+            "\1\5\11\uffff\1\6\1\7",
+            "\1\5\11\uffff\1\6\1\7",
+            "\1\51\14\uffff\1\50",
+            "\1\52",
+            "\1\5\11\uffff\1\6\1\7",
+            "\1\54\14\uffff\1\53",
+            "\1\55",
+            "\1\56\15\uffff\1\57",
             "",
             "",
-            "\1\5\11\uffff\1\6",
-            "\1\57",
-            "\1\5\11\uffff\1\6",
-            "\1\5\11\uffff\1\6",
+            "\1\5\11\uffff\1\6\1\7",
             "\1\60",
-            "\1\5\11\uffff\1\6",
-            "\1\61\1\62",
-            "\1\63",
-            "\1\5\11\uffff\1\6",
-            "\1\5\11\uffff\1\6",
-            "\1\5\11\uffff\1\6",
-            "\1\65\14\uffff\1\64",
-            "\1\66",
-            "\1\5\11\uffff\1\6",
+            "\1\5\11\uffff\1\6\1\7",
+            "\1\5\11\uffff\1\6\1\7",
+            "\1\61",
+            "\1\5\11\uffff\1\6\1\7",
+            "\1\62\1\63",
+            "\1\64",
+            "\1\5\11\uffff\1\6\1\7",
+            "\1\5\11\uffff\1\6\1\7",
+            "\1\5\11\uffff\1\6\1\7",
+            "\1\66\14\uffff\1\65",
             "\1\67",
-            "\1\5\11\uffff\1\6",
-            "\1\5\11\uffff\1\6"
+            "\1\5\11\uffff\1\6\1\7",
+            "\1\70",
+            "\1\5\11\uffff\1\6\1\7",
+            "\1\5\11\uffff\1\6\1\7"
     };
 
     static final short[] DFA5_eot = DFA.unpackEncodedString(DFA5_eotS);
@@ -763,7 +780,7 @@ public class IntegrationGrammarParser extends Parser {
             this.transition = DFA5_transition;
         }
         public String getDescription() {
-            return "52:1: cardconst returns [IntegrationFunctionExpression value ] : ( '{' expr= signalexpror ',' 'min' '=' min= NUMBER '}' | '{' expr= signalexpror ',' 'max' '=' max= NUMBER '}' | '{' expr= signalexpror ',' 'min' '=' min= NUMBER ',' 'max' '=' max= NUMBER '}' );";
+            return "52:1: cardconst returns [IntegrationFunctionExpression value ] : ( '{' expr= signalexpror '}' | '{' expr= signalexpror ',' 'min' '=' min= NUMBER '}' | '{' expr= signalexpror ',' 'max' '=' max= NUMBER '}' | '{' expr= signalexpror ',' 'min' '=' min= NUMBER ',' 'max' '=' max= NUMBER '}' );";
         }
     }
     static final String DFA7_eotS =
@@ -783,13 +800,13 @@ public class IntegrationGrammarParser extends Parser {
         "\24\uffff}>";
     static final String[] DFA7_transitionS = {
             "\1\1",
-            "\1\4\11\uffff\1\4\4\uffff\1\2\1\uffff\1\3",
+            "\1\4\11\uffff\2\4\3\uffff\1\2\1\uffff\1\3",
             "\1\5\15\uffff\1\6",
             "\1\7",
             "",
             "\1\10\1\11",
             "",
-            "\1\13\11\uffff\1\13\4\uffff\1\12",
+            "\1\13\11\uffff\2\13\3\uffff\1\12",
             "",
             "\1\15\14\uffff\1\14",
             "\1\16\15\uffff\1\17",
@@ -834,7 +851,7 @@ public class IntegrationGrammarParser extends Parser {
             this.transition = DFA7_transition;
         }
         public String getDescription() {
-            return "66:1: signal returns [IntegrationSignal value] : (id= ID | id= ID '[' min= NUMBER ']' | id= ID '[' min= NUMBER ':' ']' | id= ID '[' min= NUMBER ':' max= NUMBER ']' | id= ID '[' ':' max= NUMBER ']' | id= ID ':' t= NUMBER | id= ID ':' t= NUMBER '[' min= NUMBER ']' | id= ID ':' t= NUMBER '[' min= NUMBER ':' ']' | id= ID ':' t= NUMBER '[' min= NUMBER ':' max= NUMBER ']' | id= ID ':' t= NUMBER '[' ':' max= NUMBER ']' );";
+            return "68:1: signal returns [IntegrationSignal value] : (id= ID | id= ID '[' min= NUMBER ']' | id= ID '[' min= NUMBER ':' ']' | id= ID '[' min= NUMBER ':' max= NUMBER ']' | id= ID '[' ':' max= NUMBER ']' | id= ID ':' t= NUMBER | id= ID ':' t= NUMBER '[' min= NUMBER ']' | id= ID ':' t= NUMBER '[' min= NUMBER ':' ']' | id= ID ':' t= NUMBER '[' min= NUMBER ':' max= NUMBER ']' | id= ID ':' t= NUMBER '[' ':' max= NUMBER ']' );";
         }
     }
  
@@ -856,83 +873,86 @@ public class IntegrationGrammarParser extends Parser {
     public static final BitSet FOLLOW_cardconst_in_functionparen177 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_13_in_cardconst196 = new BitSet(new long[]{0x0000000000000100L});
     public static final BitSet FOLLOW_signalexpror_in_cardconst200 = new BitSet(new long[]{0x0000000000004000L});
-    public static final BitSet FOLLOW_14_in_cardconst202 = new BitSet(new long[]{0x0000000000008000L});
-    public static final BitSet FOLLOW_15_in_cardconst204 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_16_in_cardconst206 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_cardconst210 = new BitSet(new long[]{0x0000000000020000L});
-    public static final BitSet FOLLOW_17_in_cardconst212 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_13_in_cardconst221 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_signalexpror_in_cardconst225 = new BitSet(new long[]{0x0000000000004000L});
-    public static final BitSet FOLLOW_14_in_cardconst227 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_18_in_cardconst229 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_16_in_cardconst231 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_cardconst235 = new BitSet(new long[]{0x0000000000020000L});
-    public static final BitSet FOLLOW_17_in_cardconst237 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_13_in_cardconst246 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_signalexpror_in_cardconst250 = new BitSet(new long[]{0x0000000000004000L});
-    public static final BitSet FOLLOW_14_in_cardconst252 = new BitSet(new long[]{0x0000000000008000L});
-    public static final BitSet FOLLOW_15_in_cardconst254 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_16_in_cardconst256 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_cardconst260 = new BitSet(new long[]{0x0000000000004000L});
-    public static final BitSet FOLLOW_14_in_cardconst262 = new BitSet(new long[]{0x0000000000040000L});
-    public static final BitSet FOLLOW_18_in_cardconst264 = new BitSet(new long[]{0x0000000000010000L});
-    public static final BitSet FOLLOW_16_in_cardconst266 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_cardconst270 = new BitSet(new long[]{0x0000000000020000L});
-    public static final BitSet FOLLOW_17_in_cardconst272 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_signal_in_signalexpror293 = new BitSet(new long[]{0x0000000000000012L});
-    public static final BitSet FOLLOW_OR_in_signalexpror296 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_signal_in_signalexpror300 = new BitSet(new long[]{0x0000000000000012L});
-    public static final BitSet FOLLOW_ID_in_signal324 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_signal335 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_signal337 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_signal341 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_20_in_signal343 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_signal354 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_signal356 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_signal360 = new BitSet(new long[]{0x0000000000200000L});
-    public static final BitSet FOLLOW_21_in_signal362 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_20_in_signal364 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_signal375 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_signal377 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_signal381 = new BitSet(new long[]{0x0000000000200000L});
-    public static final BitSet FOLLOW_21_in_signal383 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_signal387 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_20_in_signal389 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_signal400 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_signal402 = new BitSet(new long[]{0x0000000000200000L});
-    public static final BitSet FOLLOW_21_in_signal404 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_signal408 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_20_in_signal410 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_signal421 = new BitSet(new long[]{0x0000000000200000L});
-    public static final BitSet FOLLOW_21_in_signal423 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_signal427 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_signal438 = new BitSet(new long[]{0x0000000000200000L});
-    public static final BitSet FOLLOW_21_in_signal440 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_signal444 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_signal446 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_signal450 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_20_in_signal452 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_signal463 = new BitSet(new long[]{0x0000000000200000L});
-    public static final BitSet FOLLOW_21_in_signal465 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_signal469 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_signal471 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_signal475 = new BitSet(new long[]{0x0000000000200000L});
-    public static final BitSet FOLLOW_21_in_signal477 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_20_in_signal479 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_signal490 = new BitSet(new long[]{0x0000000000200000L});
-    public static final BitSet FOLLOW_21_in_signal492 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_signal496 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_signal498 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_signal502 = new BitSet(new long[]{0x0000000000200000L});
-    public static final BitSet FOLLOW_21_in_signal504 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_signal508 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_20_in_signal510 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_signal521 = new BitSet(new long[]{0x0000000000200000L});
-    public static final BitSet FOLLOW_21_in_signal523 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_signal527 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_19_in_signal529 = new BitSet(new long[]{0x0000000000200000L});
-    public static final BitSet FOLLOW_21_in_signal531 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_NUMBER_in_signal535 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_20_in_signal537 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_14_in_cardconst202 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_13_in_cardconst211 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_signalexpror_in_cardconst215 = new BitSet(new long[]{0x0000000000008000L});
+    public static final BitSet FOLLOW_15_in_cardconst217 = new BitSet(new long[]{0x0000000000010000L});
+    public static final BitSet FOLLOW_16_in_cardconst219 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_17_in_cardconst221 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_cardconst225 = new BitSet(new long[]{0x0000000000004000L});
+    public static final BitSet FOLLOW_14_in_cardconst227 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_13_in_cardconst236 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_signalexpror_in_cardconst240 = new BitSet(new long[]{0x0000000000008000L});
+    public static final BitSet FOLLOW_15_in_cardconst242 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_18_in_cardconst244 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_17_in_cardconst246 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_cardconst250 = new BitSet(new long[]{0x0000000000004000L});
+    public static final BitSet FOLLOW_14_in_cardconst252 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_13_in_cardconst261 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_signalexpror_in_cardconst265 = new BitSet(new long[]{0x0000000000008000L});
+    public static final BitSet FOLLOW_15_in_cardconst267 = new BitSet(new long[]{0x0000000000010000L});
+    public static final BitSet FOLLOW_16_in_cardconst269 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_17_in_cardconst271 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_cardconst275 = new BitSet(new long[]{0x0000000000008000L});
+    public static final BitSet FOLLOW_15_in_cardconst277 = new BitSet(new long[]{0x0000000000040000L});
+    public static final BitSet FOLLOW_18_in_cardconst279 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_17_in_cardconst281 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_cardconst285 = new BitSet(new long[]{0x0000000000004000L});
+    public static final BitSet FOLLOW_14_in_cardconst287 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_signal_in_signalexpror308 = new BitSet(new long[]{0x0000000000000012L});
+    public static final BitSet FOLLOW_OR_in_signalexpror311 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_signal_in_signalexpror315 = new BitSet(new long[]{0x0000000000000012L});
+    public static final BitSet FOLLOW_ID_in_signal339 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_signal350 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_signal352 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_signal356 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_20_in_signal358 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_signal369 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_signal371 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_signal375 = new BitSet(new long[]{0x0000000000200000L});
+    public static final BitSet FOLLOW_21_in_signal377 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_20_in_signal379 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_signal390 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_signal392 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_signal396 = new BitSet(new long[]{0x0000000000200000L});
+    public static final BitSet FOLLOW_21_in_signal398 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_signal402 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_20_in_signal404 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_signal415 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_signal417 = new BitSet(new long[]{0x0000000000200000L});
+    public static final BitSet FOLLOW_21_in_signal419 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_signal423 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_20_in_signal425 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_signal436 = new BitSet(new long[]{0x0000000000200000L});
+    public static final BitSet FOLLOW_21_in_signal438 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_signal442 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_signal453 = new BitSet(new long[]{0x0000000000200000L});
+    public static final BitSet FOLLOW_21_in_signal455 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_signal459 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_signal461 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_signal465 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_20_in_signal467 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_signal478 = new BitSet(new long[]{0x0000000000200000L});
+    public static final BitSet FOLLOW_21_in_signal480 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_signal484 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_signal486 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_signal490 = new BitSet(new long[]{0x0000000000200000L});
+    public static final BitSet FOLLOW_21_in_signal492 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_20_in_signal494 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_signal505 = new BitSet(new long[]{0x0000000000200000L});
+    public static final BitSet FOLLOW_21_in_signal507 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_signal511 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_signal513 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_signal517 = new BitSet(new long[]{0x0000000000200000L});
+    public static final BitSet FOLLOW_21_in_signal519 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_signal523 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_20_in_signal525 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_signal536 = new BitSet(new long[]{0x0000000000200000L});
+    public static final BitSet FOLLOW_21_in_signal538 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_signal542 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_19_in_signal544 = new BitSet(new long[]{0x0000000000200000L});
+    public static final BitSet FOLLOW_21_in_signal546 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_NUMBER_in_signal550 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_20_in_signal552 = new BitSet(new long[]{0x0000000000000002L});
 
 }

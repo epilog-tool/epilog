@@ -24,7 +24,7 @@ public class ProjectFeatures {
 	private List<String> replaceMessages; 
 
 	// FIXME
-	private Map<String, Set<NodeInfo>> nodeID2Info;
+	private Map<String, NodeInfo> nodeID2Info;
 	private Map<String, Color> nodeColor;
 
 	private Map<String, Set<ComponentPair>> string2ComponentFeature;
@@ -35,7 +35,7 @@ public class ProjectFeatures {
 		this.model2String = new HashMap<LogicalModel, String>();
 		this.modelColor = new HashMap<LogicalModel, Color>();
 		// node info
-		this.nodeID2Info = new HashMap<String, Set<NodeInfo>>();
+		this.nodeID2Info = new HashMap<String, NodeInfo>();
 		this.nodeColor = new HashMap<String, Color>();
 		// model 2 nodes
 		this.string2ComponentFeature = new HashMap<String, Set<ComponentPair>>();
@@ -49,6 +49,12 @@ public class ProjectFeatures {
 		this.addModelComponents(m);
 	}
 	
+	public byte getNodeMax(String nodeID) {
+		NodeInfo node = this.nodeID2Info.get(nodeID);
+		if (node == null)
+			return -1;
+		return node.getMax();
+	}
 	
 	public List<String> getReplaceMessages(){
 		return this.replaceMessages;
@@ -65,13 +71,7 @@ public class ProjectFeatures {
 	public void addModelComponents(LogicalModel m) {
 		for (NodeInfo node : m.getNodeOrder()) {
 			String nodeID = node.getNodeID();
-			if (!nodeID2Info.containsKey(nodeID)) {
-				Set<NodeInfo> tmpSet = new HashSet<NodeInfo>();
-				tmpSet.add(node);
-				this.nodeID2Info.put(nodeID, tmpSet);
-			} else {
-				this.nodeID2Info.get(nodeID).add(node);
-			}
+			this.nodeID2Info.put(nodeID, node);
 			String OS_nodeID = "CC " + nodeID;
 			if (OptionStore.getOption(OS_nodeID) != null) {
 				this.nodeColor

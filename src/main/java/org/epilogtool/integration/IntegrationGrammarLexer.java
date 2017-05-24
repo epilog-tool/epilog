@@ -1,7 +1,10 @@
-// $ANTLR 3.3 Nov 30, 2010 12:46:29 src/main/java/org/epilogtool/integration/IntegrationGrammar.g 2016-12-27 21:45:29
+// $ANTLR 3.3 Nov 30, 2010 12:46:29 src/main/java/org/epilogtool/integration/IntegrationGrammar.g 2017-05-24 22:29:10
 package org.epilogtool.integration;
 
 import org.antlr.runtime.*;
+import java.util.Stack;
+import java.util.List;
+import java.util.ArrayList;
 
 public class IntegrationGrammarLexer extends Lexer {
     public static final int EOF=-1;
@@ -108,10 +111,10 @@ public class IntegrationGrammarLexer extends Lexer {
         try {
             int _type = T__14;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:13:7: ( ',' )
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:13:9: ','
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:13:7: ( '}' )
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:13:9: '}'
             {
-            match(','); 
+            match('}'); 
 
             }
 
@@ -128,11 +131,10 @@ public class IntegrationGrammarLexer extends Lexer {
         try {
             int _type = T__15;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:14:7: ( 'min' )
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:14:9: 'min'
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:14:7: ( ',' )
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:14:9: ','
             {
-            match("min"); 
-
+            match(','); 
 
             }
 
@@ -149,10 +151,11 @@ public class IntegrationGrammarLexer extends Lexer {
         try {
             int _type = T__16;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:15:7: ( '=' )
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:15:9: '='
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:15:7: ( 'min' )
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:15:9: 'min'
             {
-            match('='); 
+            match("min"); 
+
 
             }
 
@@ -169,10 +172,10 @@ public class IntegrationGrammarLexer extends Lexer {
         try {
             int _type = T__17;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:16:7: ( '}' )
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:16:9: '}'
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:16:7: ( '=' )
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:16:9: '='
             {
-            match('}'); 
+            match('='); 
 
             }
 
@@ -270,8 +273,8 @@ public class IntegrationGrammarLexer extends Lexer {
         try {
             int _type = ID;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:91:8: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )* )
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:91:10: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:93:8: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )* )
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:93:10: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
             {
             if ( (input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z') ) {
                 input.consume();
@@ -282,7 +285,7 @@ public class IntegrationGrammarLexer extends Lexer {
                 recover(mse);
                 throw mse;}
 
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:91:33: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:93:33: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
             loop1:
             do {
                 int alt1=2;
@@ -331,10 +334,10 @@ public class IntegrationGrammarLexer extends Lexer {
         try {
             int _type = NUMBER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:92:8: ( ( '0' .. '9' )+ )
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:92:10: ( '0' .. '9' )+
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:94:8: ( ( '0' .. '9' )+ )
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:94:10: ( '0' .. '9' )+
             {
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:92:10: ( '0' .. '9' )+
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:94:10: ( '0' .. '9' )+
             int cnt2=0;
             loop2:
             do {
@@ -348,7 +351,7 @@ public class IntegrationGrammarLexer extends Lexer {
 
                 switch (alt2) {
             	case 1 :
-            	    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:92:11: '0' .. '9'
+            	    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:94:11: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
 
@@ -380,8 +383,8 @@ public class IntegrationGrammarLexer extends Lexer {
         try {
             int _type = OR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:93:8: ( '|' )
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:93:10: '|'
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:95:8: ( '|' )
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:95:10: '|'
             {
             match('|'); 
 
@@ -400,8 +403,8 @@ public class IntegrationGrammarLexer extends Lexer {
         try {
             int _type = AND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:94:8: ( '&' )
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:94:10: '&'
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:96:8: ( '&' )
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:96:10: '&'
             {
             match('&'); 
 
@@ -420,8 +423,8 @@ public class IntegrationGrammarLexer extends Lexer {
         try {
             int _type = NOT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:95:8: ( '!' )
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:95:10: '!'
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:97:8: ( '!' )
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:97:10: '!'
             {
             match('!'); 
 
@@ -440,10 +443,10 @@ public class IntegrationGrammarLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:96:8: ( ( SPACE )+ )
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:96:10: ( SPACE )+
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:98:8: ( ( SPACE )+ )
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:98:10: ( SPACE )+
             {
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:96:10: ( SPACE )+
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:98:10: ( SPACE )+
             int cnt3=0;
             loop3:
             do {
@@ -457,7 +460,7 @@ public class IntegrationGrammarLexer extends Lexer {
 
                 switch (alt3) {
             	case 1 :
-            	    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:96:10: SPACE
+            	    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:98:10: SPACE
             	    {
             	    mSPACE(); 
 
@@ -488,7 +491,7 @@ public class IntegrationGrammarLexer extends Lexer {
     // $ANTLR start "SPACE"
     public final void mSPACE() throws RecognitionException {
         try {
-            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:97:16: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )
+            // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:99:16: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )
             // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:
             {
             if ( (input.LA(1)>='\t' && input.LA(1)<='\n')||(input.LA(1)>='\f' && input.LA(1)<='\r')||input.LA(1)==' ' ) {
@@ -641,29 +644,29 @@ public class IntegrationGrammarLexer extends Lexer {
 
     protected DFA4 dfa4 = new DFA4(this);
     static final String DFA4_eotS =
-        "\5\uffff\1\13\13\uffff\2\13\1\25\1\26\2\uffff";
+        "\6\uffff\1\13\12\uffff\2\13\1\25\1\26\2\uffff";
     static final String DFA4_eofS =
         "\27\uffff";
     static final String DFA4_minS =
-        "\1\11\4\uffff\1\141\13\uffff\1\156\1\170\2\60\2\uffff";
+        "\1\11\5\uffff\1\141\12\uffff\1\156\1\170\2\60\2\uffff";
     static final String DFA4_maxS =
-        "\1\175\4\uffff\1\151\13\uffff\1\156\1\170\2\172\2\uffff";
+        "\1\175\5\uffff\1\151\12\uffff\1\156\1\170\2\172\2\uffff";
     static final String DFA4_acceptS =
-        "\1\uffff\1\1\1\2\1\3\1\4\1\uffff\1\6\1\7\1\11\1\12\1\13\1\14\1\15"+
-        "\1\16\1\17\1\20\1\21\4\uffff\1\5\1\10";
+        "\1\uffff\1\1\1\2\1\3\1\4\1\5\1\uffff\1\7\1\11\1\12\1\13\1\14\1\15"+
+        "\1\16\1\17\1\20\1\21\4\uffff\1\6\1\10";
     static final String DFA4_specialS =
         "\27\uffff}>";
     static final String[] DFA4_transitionS = {
             "\2\20\1\uffff\2\20\22\uffff\1\20\1\17\4\uffff\1\16\1\uffff\1"+
-            "\1\1\2\2\uffff\1\4\3\uffff\12\14\1\12\2\uffff\1\6\3\uffff\32"+
-            "\13\1\10\1\uffff\1\11\1\uffff\1\13\1\uffff\14\13\1\5\15\13\1"+
-            "\3\1\15\1\7",
+            "\1\1\2\2\uffff\1\5\3\uffff\12\14\1\12\2\uffff\1\7\3\uffff\32"+
+            "\13\1\10\1\uffff\1\11\1\uffff\1\13\1\uffff\14\13\1\6\15\13\1"+
+            "\3\1\15\1\4",
+            "",
             "",
             "",
             "",
             "",
             "\1\22\7\uffff\1\21",
-            "",
             "",
             "",
             "",

@@ -102,6 +102,10 @@ public class EpiGUI extends JFrame {
 		}
 		return epigui;
 	}
+	
+	public byte getNodeMax(String nodeID) {
+		return this.project.getProjectFeatures().getNodeMax(nodeID);
+	}
 
 	private EpiGUI() {
 		super(TITLE_APPNAME);

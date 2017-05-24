@@ -3,6 +3,7 @@ package org.epilogtool.integration;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.epilogtool.gui.EpiGUI;
 
 public class IFSpecification {
 
@@ -11,7 +12,12 @@ public class IFSpecification {
 		return new CardinalityConstraint(expr, minCells, maxCells);
 	}
 
-	public static IntegrationSignal integrationSignal(String name, String minThreshold, IntegrationDistance distance) {
+	public static IntegrationSignal integrationSignal(String name, String minThreshold, IntegrationDistance distance) throws RecognitionException {
+		byte min = (byte) Integer.parseInt(minThreshold);
+		byte max = EpiGUI.getInstance().getNodeMax(name);
+		if (min > max) {
+			throw new RecognitionException();
+		}
 		return new IntegrationSignal(name, minThreshold, distance);
 	}
 

@@ -50,7 +50,9 @@ functionparen returns [IntegrationFunctionExpression value]
 	;
 
 cardconst returns [IntegrationFunctionExpression value ]
-	: '{' expr=signalexpror ',' 'min' '=' min=NUMBER '}'
+	: '{' expr=signalexpror '}'
+		{ $value = IFSpecification.cardinalityConstraint($expr.value, "1", "-1"); }
+	| '{' expr=signalexpror ',' 'min' '=' min=NUMBER '}'
 		{ $value = IFSpecification.cardinalityConstraint($expr.value, $min.text, "-1"); }
 	| '{' expr=signalexpror ',' 'max' '=' max=NUMBER '}'
 		{ $value = IFSpecification.cardinalityConstraint($expr.value, "-1", $max.text); }
