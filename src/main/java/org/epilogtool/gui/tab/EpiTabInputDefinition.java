@@ -240,16 +240,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 				@Override
 				public void keyReleased(KeyEvent e) {
 					JTextField jtf = (JTextField) e.getSource();
-					byte value = Byte.parseByte(jtf.getToolTipText());
-					try {
-						setIntegrationFunction(value, jtf.getText());
-						jtf.setBackground(Color.WHITE);
-					} catch (RecognitionException re) {
-						jtf.setBackground(ColorUtils.LIGHT_RED);
-					} catch (RuntimeException re) {
-						jtf.setBackground(ColorUtils.LIGHT_RED);
-					}
-					tpc.setChanged();
+					validateTextField(jtf);
 				}
 
 				@Override
@@ -257,8 +248,22 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 				}
 			});
 			jtf.setColumns(this.JTF_WIDTH);
+			this.validateTextField(jtf);
 			this.jpNRBottom.add(jtf, gbc);
 		}
+	}
+	
+	private void validateTextField(JTextField jtf) {
+		byte value = Byte.parseByte(jtf.getToolTipText());
+		try {
+			setIntegrationFunction(value, jtf.getText());
+			jtf.setBackground(Color.WHITE);
+		} catch (RecognitionException re) {
+			jtf.setBackground(ColorUtils.LIGHT_RED);
+		} catch (RuntimeException re) {
+			jtf.setBackground(ColorUtils.LIGHT_RED);
+		}
+		tpc.setChanged();
 	}
 
 	private void updateComponentList() {
