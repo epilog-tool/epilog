@@ -12,10 +12,14 @@ public class IFSpecification {
 		return new CardinalityConstraint(expr, minCells, maxCells);
 	}
 
-	public static IntegrationSignal integrationSignal(String name, String minThreshold, IntegrationDistance distance) throws RecognitionException {
-		byte min = (byte) Integer.parseInt(minThreshold);
+	public static IntegrationSignal integrationSignal(String name, String minThreshold, IntegrationDistance distance)
+			throws RecognitionException {
 		byte max = EpiGUI.getInstance().getNodeMax(name);
-		if (min > max) {
+		if (max == -1) { // NodeID semantic validation
+			throw new RecognitionException();
+		}
+		byte min = (byte) Integer.parseInt(minThreshold);
+		if (min > max) { // Threshold semantic validation
 			throw new RecognitionException();
 		}
 		return new IntegrationSignal(name, minThreshold, distance);
@@ -40,7 +44,8 @@ public class IFSpecification {
 		return new IntegrationFunctionOperationOR(expr1, expr2);
 	}
 
-	public IntegrationFunctionExpression parse(String specificationString) throws RuntimeException, RecognitionException {
+	public IntegrationFunctionExpression parse(String specificationString)
+			throws RuntimeException, RecognitionException {
 		IntegrationFunctionExpression r = null;
 		if (specificationString != null) {
 			specificationString.replaceAll("\\s", "");
