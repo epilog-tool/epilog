@@ -19,23 +19,22 @@ import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
+import org.epilogtool.project.Project;
 
 public class VisualGridInitialConditions extends VisualGridDefinitions {
 	private static final long serialVersionUID = 7590023855645466271L;
 
 	private EpitheliumGrid epiGrid;
 	private Map<String, Byte> mNode2ValueSelected;
-	private Map<String, Color> colorMapClone;
 	private boolean isRectFill;
 	private Tuple2D<Integer> initialRectPos;
 	private LogicalModel selectedModel;
 	private GridInformation valuePanel;
 
-	public VisualGridInitialConditions(EpitheliumGrid gridClone, Map<String, Color> colorMapClone,
+	public VisualGridInitialConditions(EpitheliumGrid gridClone, 
 			Map<String, Byte> mNode2ValueSelected, GridInformation valuePanel, TabProbablyChanged tpc) {
 		super(gridClone.getX(), gridClone.getY(), gridClone.getTopology(), tpc);
 		this.epiGrid = gridClone;
-		this.colorMapClone = colorMapClone;
 		this.mNode2ValueSelected = mNode2ValueSelected;
 		this.isRectFill = false;
 		this.initialRectPos = null;
@@ -152,7 +151,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 					for (String nodeID : this.mNode2ValueSelected.keySet()) {
 						int index = this.epiGrid.getNodeIndex(x, y, nodeID);
 						if (index >= 0) { // if cell has nodeID
-							Color cBase = this.colorMapClone.get(nodeID);
+							Color cBase = Project.getInstance().getProjectFeatures().getNodeID2ColorMap().get(nodeID);
 							byte value = this.epiGrid.getCellState(x, y)[index];
 							if (value > 0) {
 								byte max = this.epiGrid.getModel(x, y).getNodeOrder().get(index).getMax();

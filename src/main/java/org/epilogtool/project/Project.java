@@ -18,13 +18,24 @@ public class Project {
 	private String filenamePEPS;
 	private boolean isChanged;
 
+	private static Project project;
 
-	public Project(){
+	public static Project getInstance() {
+		if (project == null) {
+			project = new Project();
+		}
+		return project;
+	}
+
+	private Project() {
 		this.epitheliumList = new ArrayList<Epithelium>();
 		this.projectFeatures = new ProjectFeatures();
 		this.filenamePEPS = null;
 		this.isChanged = true;
+	}
 
+	public void reset() {
+		project = null;
 	}
 
 	public boolean hasChanged() {
@@ -71,10 +82,6 @@ public class Project {
 		// this.updateModelMap();
 	}
 
-	public ProjectFeatures getComponentFeatures() {
-		return this.projectFeatures;
-	}
-
 	public String getFilenamePEPS() {
 		return this.filenamePEPS;
 	}
@@ -83,14 +90,10 @@ public class Project {
 		this.filenamePEPS = filename;
 	}
 
-	public Epithelium newEpithelium(int x, int y, String topologyID, 
-			String userName, String modelName, RollOver rollover) 
-					throws InstantiationException,
-			IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException,
-			SecurityException, ClassNotFoundException {
-		Epithelium epi = new Epithelium(x, y, topologyID, userName, 
-				this.projectFeatures.getModel(modelName), rollover, this.projectFeatures);
+	public Epithelium newEpithelium(int x, int y, String topologyID, String userName, String modelName,
+			RollOver rollover) throws InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+		Epithelium epi = new Epithelium(x, y, topologyID, userName, this.projectFeatures.getModel(modelName), rollover);
 		this.epitheliumList.add(epi);
 		return epi;
 	}
@@ -126,55 +129,59 @@ public class Project {
 	public LogicalModel getModel(String name) {
 		return this.projectFeatures.getModel(name);
 	}
-	
+
 	public ProjectFeatures getProjectFeatures() {
 		return this.projectFeatures;
 	}
-	
-	/** Method that returns an Hash with models as keys and a list of epitheliums with each model as value.
+
+	/**
+	 * Method that returns an Hash with models as keys and a list of epitheliums
+	 * with each model as value.
+	 * 
 	 * @return
 	 */
-	public Map<String,List<Epithelium>>  getHashModel2EpitheliumList(){
-		Map<String,List<Epithelium>> model2EpitheliumList = new HashMap<String, List<Epithelium>>();
-		
-		for (String model: this.getModelNames()){
-			List<Epithelium> epiList = new ArrayList<Epithelium>() ;
-			for (Epithelium epi: this.getEpitheliumList()){
-				if (epi.hasModel(this.getModel(model))){
+	public Map<String, List<Epithelium>> getHashModel2EpitheliumList() {
+		Map<String, List<Epithelium>> model2EpitheliumList = new HashMap<String, List<Epithelium>>();
+
+		for (String model : this.getModelNames()) {
+			List<Epithelium> epiList = new ArrayList<Epithelium>();
+			for (Epithelium epi : this.getEpitheliumList()) {
+				if (epi.hasModel(this.getModel(model))) {
 					epiList.add(epi);
 				}
 			}
 			model2EpitheliumList.put(model, epiList);
-			}
+		}
 		return model2EpitheliumList;
 	}
-	
-	/** Given an EpitheliumName (String) return the Epithelium
+
+	/**
+	 * Given an EpitheliumName (String) return the Epithelium
+	 * 
 	 * @param epiName
 	 * @return Epithelium
 	 */
-	private Epithelium getEpitheliumFromName (String epiName){
+	private Epithelium getEpitheliumFromName(String epiName) {
 
-		for (Epithelium epi: this.getEpitheliumList()){
-			if (epi.getName().equals(epiName)){
+		for (Epithelium epi : this.getEpitheliumList()) {
+			if (epi.getName().equals(epiName)) {
 				return epi;
-			}}
+			}
+		}
 		return null;
 	}
-	
-	public void replaceModel(String oldModelString, String newModelString, List<String> epiList, DialogMessage dialogMsg){
-		
+
+	public void replaceModel(String oldModelString, String newModelString, List<String> epiList,
+			DialogMessage dialogMsg) {
+
 		LogicalModel oldModel = this.getModel(oldModelString);
 		LogicalModel newModel = this.getModel(newModelString);
 
-		for (String epi: epiList){
+		for (String epi : epiList) {
 			Epithelium epithelium = this.getEpitheliumFromName(epi);
-			epithelium.replacemodel(oldModel,newModel, dialogMsg);
+			epithelium.replacemodel(oldModel, newModel, dialogMsg);
 			epithelium.update();
-			}
 		}
-	
-	
-
 	}
 
+}

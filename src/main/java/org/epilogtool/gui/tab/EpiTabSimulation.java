@@ -50,7 +50,7 @@ import org.epilogtool.gui.widgets.VisualGridSimulation;
 import org.epilogtool.io.ButtonFactory;
 import org.epilogtool.io.EpilogFileFilter;
 import org.epilogtool.io.FileIO;
-import org.epilogtool.project.ProjectFeatures;
+import org.epilogtool.project.Project;
 import org.epilogtool.project.Simulation;
 
 public class EpiTabSimulation extends EpiTabTools {
@@ -60,7 +60,6 @@ public class EpiTabSimulation extends EpiTabTools {
 	private Simulation simulation;
 	private Map<String, Boolean> mSelCheckboxes;
 	private Map<String, JCheckBox> mNodeID2Checkbox;
-	private ProjectFeatures projectFeatures;
 	private List<String> lPresentComps;
 	private List<String> lCompON;
 	private Map<JButton, String> colorButton2Node;
@@ -82,9 +81,8 @@ public class EpiTabSimulation extends EpiTabTools {
 	private JComboCheckBox jccb;
 
 	public EpiTabSimulation(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
-			ProjectFeatures projectFeatures, SimulationEpiClone simEpiClone) {
+			SimulationEpiClone simEpiClone) {
 		super(e, path, projChanged);
-		this.projectFeatures = projectFeatures;
 		this.simEpiClone = simEpiClone;
 	}
 
@@ -107,10 +105,9 @@ public class EpiTabSimulation extends EpiTabTools {
 				this.mSelCheckboxes.put(node.getNodeID(), false);
 			}
 		}
-		this.lRight = new GridInformation(this.epithelium.getIntegrationFunctions(), this.projectFeatures);
+		this.lRight = new GridInformation(this.epithelium.getIntegrationFunctions());
 
-		this.visualGridSimulation = new VisualGridSimulation(this.simulation.getGridAt(0),
-				this.epithelium.getProjectFeatures(), this.lCompON, this.lRight);
+		this.visualGridSimulation = new VisualGridSimulation(this.simulation.getGridAt(0), this.lCompON, this.lRight);
 
 		this.jpRight.add(this.visualGridSimulation, BorderLayout.CENTER);
 
@@ -253,7 +250,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		JCheckBox[] items = new JCheckBox[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
-			items[i] = new JCheckBox(this.projectFeatures.getModelName(modelList.get(i)));
+			items[i] = new JCheckBox(Project.getInstance().getProjectFeatures().getModelName(modelList.get(i)));
 			items[i].setSelected(false);
 		}
 		this.jccb = new JComboCheckBox(items);
@@ -501,7 +498,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		jp.add(jcb, gbc);
 		gbc.gridx = 1;
 		JButton jbColor = new JButton();
-		jbColor.setBackground(this.epithelium.getProjectFeatures().getNodeColor(nodeID));
+		jbColor.setBackground(Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
 		jbColor.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -518,9 +515,9 @@ public class EpiTabSimulation extends EpiTabTools {
 	private void setNewColor(JButton jb) {
 		String nodeID = this.colorButton2Node.get(jb);
 		Color newColor = JColorChooser.showDialog(jb, "Color chooser - " + nodeID, jb.getBackground());
-		if (newColor != null && !newColor.equals(projectFeatures.getNodeColor(nodeID))) {
+		if (newColor != null && !newColor.equals(Project.getInstance().getProjectFeatures().getNodeColor(nodeID))) {
 			jb.setBackground(newColor);
-			this.epithelium.getProjectFeatures().setNodeColor(nodeID, newColor);
+			Project.getInstance().getProjectFeatures().setNodeColor(nodeID, newColor);
 			this.projChanged.setChanged(this);
 			this.visualGridSimulation.paintComponent(this.visualGridSimulation.getGraphics());
 		}
@@ -552,7 +549,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		List<LogicalModel> lModels = new ArrayList<LogicalModel>();
 		for (String modelName : modelNames) {
-			lModels.add(this.projectFeatures.getModel(modelName));
+			lModels.add(Project.getInstance().getProjectFeatures().getModel(modelName));
 		}
 		this.lPresentComps = new ArrayList<String>();
 
@@ -561,13 +558,13 @@ public class EpiTabSimulation extends EpiTabTools {
 		Set<String> sCommonNodeIDs = new HashSet<String>();
 
 		List<NodeInfo> lInternal = new ArrayList<NodeInfo>(
-				this.epithelium.getProjectFeatures().getModelsNodeInfos(lModels, false));
+				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, false));
 
 		for (NodeInfo node : lInternal)
 			sInternalNodeIDs.add(node.getNodeID());
 
 		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
-				this.epithelium.getProjectFeatures().getModelsNodeInfos(lModels, true));
+				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
 
 		for (NodeInfo node : lInputs) {
 			if (sInternalNodeIDs.contains(node.getNodeID())) {

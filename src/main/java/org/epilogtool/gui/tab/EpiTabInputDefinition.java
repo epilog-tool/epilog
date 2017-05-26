@@ -40,7 +40,7 @@ import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.dialog.DialogMessage;
 import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.project.ComponentPair;
-import org.epilogtool.project.ProjectFeatures;
+import org.epilogtool.project.Project;
 
 public class EpiTabInputDefinition extends EpiTabDefinitions {
 	private static final long serialVersionUID = -2124909766318378839L;
@@ -59,8 +59,8 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	private JPanel jpNLTop;
 
 	public EpiTabInputDefinition(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
-			TabChangeNotifyProj tabChanged, ProjectFeatures projectFeatures) {
-		super(e, path, projChanged, tabChanged, projectFeatures);
+			TabChangeNotifyProj tabChanged) {
+		super(e, path, projChanged, tabChanged);
 		this.mNode2RadioButton = new HashMap<NodeInfo, JRadioButton>();
 	}
 
@@ -107,7 +107,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		// Model selection list
 		String[] saSBML = new String[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
-			saSBML[i] = this.projectFeatures.getModelName(modelList.get(i));
+			saSBML[i] = Project.getInstance().getProjectFeatures().getModelName(modelList.get(i));
 		}
 		JComboBox<String> jcb = new JComboWideBox<String>(saSBML);
 		jcb.addActionListener(new ActionListener() {
@@ -179,8 +179,8 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		});
 		group.add(jrModelInt);
 		this.jpNRTop.add(jrModelInt);
-		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
-		NodeInfo node = this.epithelium.getProjectFeatures().getNodeInfo(this.activeNodeID, m);
+		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
+		NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(this.activeNodeID, m);
 		if (this.userIntegrationFunctions.containsComponentPair(new ComponentPair(m, node))) {
 			jrModelInt.setSelected(true);
 			paintModelIntegrationPanel();
@@ -191,19 +191,19 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	}
 
 	private NodeInfo getActiveNodeInfo() {
-		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
-		return this.epithelium.getProjectFeatures().getNodeInfo(this.activeNodeID, m);
+		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
+		return Project.getInstance().getProjectFeatures().getNodeInfo(this.activeNodeID, m);
 	}
 
 	private void setIntegrationFunction(byte level, String function) throws RecognitionException, RuntimeException {
-		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
+		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
 		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
 		ComponentIntegrationFunctions cif = this.userIntegrationFunctions.getComponentIntegrationFunctions(cp);
 		cif.setFunctionAtLevel(level, function);
 	}
 
 	private void paintModelInputPanel() {
-		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
+		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
 		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
 		this.userIntegrationFunctions.removeComponent(cp);
 		this.jpNRBottom.removeAll();
@@ -213,7 +213,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		// GUI
 		this.jpNRBottom.removeAll();
 
-		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
+		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
 		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
 		if (!this.userIntegrationFunctions.containsComponentPair(cp)) {
 			this.userIntegrationFunctions.addComponent(cp);
@@ -252,7 +252,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 			this.jpNRBottom.add(jtf, gbc);
 		}
 	}
-	
+
 	private void validateTextField(JTextField jtf) {
 		byte value = Byte.parseByte(jtf.getToolTipText());
 		try {
@@ -269,11 +269,11 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	private void updateComponentList() {
 		this.jpNLBottom.removeAll();
 		this.jpNLBottom.setVisible(true);
-		LogicalModel m = this.projectFeatures.getModel(this.activeModel);
+		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(1, 5, 1, 0);
-		Set<NodeInfo> sInputs = this.epithelium.getProjectFeatures().getModelNodeInfos(m, true);
+		Set<NodeInfo> sInputs = Project.getInstance().getProjectFeatures().getModelNodeInfos(m, true);
 
 		if (sInputs.size() == 0) {
 			this.getNoInputTextField();
@@ -320,7 +320,8 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	@Override
 	protected void buttonAccept() {
 		allNodes: for (NodeInfo node : mNode2RadioButton.keySet()) {
-			ComponentPair cp = new ComponentPair(this.projectFeatures.getModel(this.activeModel), node);
+			ComponentPair cp = new ComponentPair(Project.getInstance().getProjectFeatures().getModel(this.activeModel),
+					node);
 			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions.getComponentIntegrationFunctions(cp);
 			EpitheliumIntegrationFunctions eifOrig = this.epithelium.getIntegrationFunctions();
 			if (cifClone == null) {
@@ -347,7 +348,8 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	@Override
 	protected boolean isChanged() {
 		for (NodeInfo node : mNode2RadioButton.keySet()) {
-			ComponentPair cp = new ComponentPair(this.projectFeatures.getModel(this.activeModel), node);
+			ComponentPair cp = new ComponentPair(Project.getInstance().getProjectFeatures().getModel(this.activeModel),
+					node);
 			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions.getComponentIntegrationFunctions(cp);
 			ComponentIntegrationFunctions cifOrig = this.epithelium.getIntegrationFunctions()
 					.getComponentIntegrationFunctions(cp);
@@ -368,7 +370,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		this.jpNLTop.removeAll();
 		this.jpNLTop.add(this.newModelCombobox(modelList));
-		this.activeModel = this.projectFeatures.getModelName(modelList.get(0));
+		this.activeModel = Project.getInstance().getProjectFeatures().getModelName(modelList.get(0));
 		this.updateComponentList();
 	}
 }

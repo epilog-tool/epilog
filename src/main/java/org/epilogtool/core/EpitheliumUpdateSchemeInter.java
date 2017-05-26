@@ -13,18 +13,19 @@ public class EpitheliumUpdateSchemeInter {
 	private float alphaAsyncParam;
 	private Map<ComponentPair, Float> componentPairSigma;
 	private UpdateOrder updateOrder;
-	private boolean allCellsCalledToUpdate;
+	private UpdateCells updateCells;
 
-	public EpitheliumUpdateSchemeInter(float alpha, Map<ComponentPair, Float> sigmaAsync, UpdateOrder updateOrder, boolean allCellsCalledToUpdate) {
+	public EpitheliumUpdateSchemeInter(float alpha, Map<ComponentPair, Float> sigmaAsync, UpdateOrder updateOrder,
+			UpdateCells updateCells) {
 		this.alphaAsyncParam = alpha;
 		this.componentPairSigma = sigmaAsync;
 		this.updateOrder = updateOrder;
-		this.allCellsCalledToUpdate = allCellsCalledToUpdate;
+		this.updateCells = updateCells;
 	}
 
 	public EpitheliumUpdateSchemeInter clone() {
 		return new EpitheliumUpdateSchemeInter(this.alphaAsyncParam,
-				new HashMap<ComponentPair, Float>(this.componentPairSigma), this.updateOrder, this.allCellsCalledToUpdate);
+				new HashMap<ComponentPair, Float>(this.componentPairSigma), this.updateOrder, this.updateCells);
 	}
 
 	// Alpha asynchronism methods
@@ -36,16 +37,16 @@ public class EpitheliumUpdateSchemeInter {
 		return this.alphaAsyncParam;
 	}
 
-	// Update Mode methods
-	public void setCells2Update(boolean cells2Update) {
-		this.allCellsCalledToUpdate = cells2Update;
+	// UpdateCells methods
+	public void setUpdateCells(UpdateCells updateCells) {
+		this.updateCells = updateCells;
 	}
 
-	public boolean getCells2Update() {
-		return this.allCellsCalledToUpdate;
+	public UpdateCells getUpdateCells() {
+		return this.updateCells;
 	}
-	
-	// Update Mode methods
+
+	// UpdateMode methods
 	public void setUpdateOrder(UpdateOrder updateOrder) {
 		this.updateOrder = updateOrder;
 	}
@@ -103,7 +104,7 @@ public class EpitheliumUpdateSchemeInter {
 			return false;
 		if (!this.updateOrder.equals(otherObj.updateOrder))
 			return false;
-		if (this.allCellsCalledToUpdate & (!otherObj.allCellsCalledToUpdate) ||(!this.allCellsCalledToUpdate & (otherObj.allCellsCalledToUpdate)))
+		if (!this.updateCells.equals(otherObj.updateCells))
 			return false;
 		return true;
 	}

@@ -31,11 +31,11 @@ import org.epilogtool.common.Web;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumUpdateSchemeIntra;
 import org.epilogtool.core.ModelPriorityClasses;
-import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
+import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.io.ButtonFactory;
-import org.epilogtool.project.ProjectFeatures;
+import org.epilogtool.project.Project;
 
 public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements HyperlinkListener {
 	private static final long serialVersionUID = 1176575422084167530L;
@@ -54,9 +54,9 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 	private JPanel jpSouth;
 	private JPanel jpIntraCenter;
 
-	public EpiTabModelUpdateScheme(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged, TabChangeNotifyProj tabChanged,
-			ProjectFeatures projectFeatures) {
-		super(e, path, projChanged, tabChanged, projectFeatures);
+	public EpiTabModelUpdateScheme(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
+			TabChangeNotifyProj tabChanged) {
+		super(e, path, projChanged, tabChanged);
 	}
 
 	public void initialize() {
@@ -71,17 +71,17 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 
 		this.jpNorth = new JPanel(new BorderLayout());
 		this.center.add(this.jpNorth, BorderLayout.NORTH);
-		
+
 		// Model selection JPanel
 		this.jpNorthLeft = new JPanel();
 		this.jpNorth.add(this.jpNorthLeft, BorderLayout.WEST);
 		this.jpNorthLeft.add(new JLabel("Model: "));
 		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
 		this.jpNorthLeft.add(jcbSBML);
-		
+
 		this.jpSouth = new JPanel(new BorderLayout());
 		this.center.add(jpSouth, BorderLayout.SOUTH);
-		
+
 		// Button display options
 		JPanel jpSouthCenter = new JPanel(new FlowLayout());
 		this.jpSouth.add(jpSouthCenter, BorderLayout.CENTER);
@@ -136,12 +136,12 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 			}
 		});
 		jpSouthCenter.add(jbSingle);
-		
+
 		// Model Components panel
 		this.jpIntraCenter = new JPanel(new FlowLayout());
 		this.center.add(this.jpIntraCenter, BorderLayout.CENTER);
 
-		LogicalModel m = this.projectFeatures.getModel((String) jcbSBML.getSelectedItem());
+		LogicalModel m = Project.getInstance().getProjectFeatures().getModel((String) jcbSBML.getSelectedItem());
 		this.updatePriorityList(m);
 		this.isInitialized = true;
 	}
@@ -150,7 +150,7 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 		// Model selection list
 		String[] saSBML = new String[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
-			saSBML[i] = this.projectFeatures.getModelName(modelList.get(i));
+			saSBML[i] = Project.getInstance().getProjectFeatures().getModelName(modelList.get(i));
 		}
 		JComboBox<String> jcb = new JComboWideBox<String>(saSBML);
 		jcb.addActionListener(new ActionListener() {
@@ -158,7 +158,7 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
 				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
-				LogicalModel m = projectFeatures.getModel((String) jcb.getSelectedItem());
+				LogicalModel m = Project.getInstance().getProjectFeatures().getModel((String) jcb.getSelectedItem());
 				updatePriorityList(m);
 				// Re-Paint
 				getParent().repaint();
@@ -249,7 +249,7 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 				if (var.contains("+") | var.contains("-")) {
 					tmpVar = var.split("\\[")[0];
 				}
-				if (!this.projectFeatures.getNodeInfo(tmpVar, m).isInput()){
+				if (!Project.getInstance().getProjectFeatures().getNodeInfo(tmpVar, m).isInput()) {
 					lModel.addElement(var);
 				}
 			}
@@ -304,8 +304,8 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 			this.jpIntraCenter.add(Box.createRigidArea(new Dimension(this.JLIST_SPACING, 10)));
 		}
 	}
-	
-	private void mergeInputPriorities(){
+
+	private void mergeInputPriorities() {
 		LogicalModel m = this.selectedModel;
 		ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(m);
 		List<String> vars = mpc.getClassVars(0);
@@ -315,11 +315,11 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 			if (var.contains("+") | var.contains("-")) {
 				tmpVar = var.split("\\[")[0];
 			}
-			if (!this.projectFeatures.getNodeInfo(tmpVar, m).isInput()) {
+			if (!Project.getInstance().getProjectFeatures().getNodeInfo(tmpVar, m).isInput()) {
 				allInputFlag = false;
 			}
 		}
-		if (allInputFlag==true & mpc.size() > 1) {
+		if (allInputFlag == true & mpc.size() > 1) {
 			List<String> class2Merge = mpc.getClassVars(1);
 			this.userPriorityClasses.getModelPriorityClasses(m).incPriorities(1, class2Merge);
 		}

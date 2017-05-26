@@ -20,10 +20,9 @@ public class ProjectFeatures {
 	private Map<String, LogicalModel> string2Model;
 	private Map<LogicalModel, String> model2String;
 	private Map<LogicalModel, Color> modelColor;
-	
-	private List<String> replaceMessages; 
 
-	// FIXME
+	private List<String> replaceMessages;
+
 	private Map<String, NodeInfo> nodeID2Info;
 	private Map<String, Color> nodeColor;
 
@@ -41,42 +40,40 @@ public class ProjectFeatures {
 		this.string2ComponentFeature = new HashMap<String, Set<ComponentPair>>();
 		this.replaceMessages = new ArrayList<String>();
 	}
-	
+
 	public void addModel(String name, LogicalModel m) {
 		this.string2Model.put(name, m);
 		this.model2String.put(m, name);
 		this.modelColor.put(m, ColorUtils.random());
 		this.addModelComponents(m);
 	}
-	
+
 	public byte getNodeMax(String nodeID) {
 		NodeInfo node = this.nodeID2Info.get(nodeID);
 		if (node == null)
 			return -1;
 		return node.getMax();
 	}
-	
-	public List<String> getReplaceMessages(){
+
+	public List<String> getReplaceMessages() {
 		return this.replaceMessages;
 	}
-	
-	public void initializeReplaceMessages(){
+
+	public void initializeReplaceMessages() {
 		this.replaceMessages = new ArrayList<String>();
 	}
-	
-	public void addReplaceMessages(String msg){
+
+	public void addReplaceMessages(String msg) {
 		this.replaceMessages.add(msg);
 	}
-	
+
 	public void addModelComponents(LogicalModel m) {
 		for (NodeInfo node : m.getNodeOrder()) {
 			String nodeID = node.getNodeID();
 			this.nodeID2Info.put(nodeID, node);
 			String OS_nodeID = "CC " + nodeID;
 			if (OptionStore.getOption(OS_nodeID) != null) {
-				this.nodeColor
-						.put(nodeID, Color.decode((String) OptionStore
-								.getOption(OS_nodeID)));
+				this.nodeColor.put(nodeID, Color.decode((String) OptionStore.getOption(OS_nodeID)));
 			} else {
 				this.nodeColor.put(nodeID, ColorUtils.random());
 			}
@@ -90,38 +87,37 @@ public class ProjectFeatures {
 			}
 		}
 	}
-	
+
 	public boolean hasModel(LogicalModel m) {
-		return EmptyModel.getInstance().isEmptyModel(m)
-				|| this.model2String.containsKey(m);
+		return EmptyModel.getInstance().isEmptyModel(m) || this.model2String.containsKey(m);
 	}
-	
+
 	public LogicalModel getModel(String name) {
 		if (EmptyModel.getInstance().isEmptyModel(name)) {
 			return EmptyModel.getInstance().getModel();
 		}
 		return this.string2Model.get(name);
 	}
-	
+
 	public Set<LogicalModel> getModels() {
 		return this.model2String.keySet();
 	}
-	
+
 	public String getModelName(LogicalModel m) {
 		return this.model2String.get(m);
 	}
-	
+
 	public List<String> getGUIModelNames() {
 		List<String> ltmp = new ArrayList<String>();
 		ltmp.add(EmptyModel.getInstance().getName());
 		ltmp.addAll(this.string2Model.keySet());
 		return ltmp;
 	}
-	
+
 	public Set<String> getModelNames() {
 		return Collections.unmodifiableSet(this.string2Model.keySet());
 	}
-	
+
 	public Set<String> getModelNodeIDs(LogicalModel m, boolean input) {
 		Set<String> sComps = new HashSet<String>();
 		for (NodeInfo node : m.getNodeOrder()) {
@@ -131,7 +127,7 @@ public class ProjectFeatures {
 		}
 		return sComps;
 	}
-	
+
 	public Set<NodeInfo> getModelNodeInfos(LogicalModel m, boolean input) {
 		Set<NodeInfo> sComps = new HashSet<NodeInfo>();
 		for (NodeInfo node : m.getNodeOrder()) {
@@ -142,8 +138,7 @@ public class ProjectFeatures {
 		return sComps;
 	}
 
-	public Set<NodeInfo> getModelsNodeInfos(List<LogicalModel> lModels,
-			boolean input) {
+	public Set<NodeInfo> getModelsNodeInfos(List<LogicalModel> lModels, boolean input) {
 		Set<NodeInfo> sComps = new HashSet<NodeInfo>();
 		if (!lModels.isEmpty()) {
 			for (LogicalModel m : lModels) {
@@ -152,18 +147,18 @@ public class ProjectFeatures {
 		}
 		return sComps;
 	}
-	
+
 	public Color getModelColor(String name) {
 		if (EmptyModel.getInstance().isEmptyModel(name)) {
 			return EmptyModel.getInstance().getColor();
 		}
 		return this.getModelColor(this.string2Model.get(name));
 	}
-	
+
 	public Color getModelColor(LogicalModel m) {
 		return this.modelColor.get(m);
 	}
-	
+
 	public NodeInfo getNodeInfo(String nodeID, LogicalModel m) {
 		Set<ComponentPair> sCP = this.string2ComponentFeature.get(nodeID);
 		if (sCP != null) {
@@ -175,22 +170,22 @@ public class ProjectFeatures {
 		}
 		return null;
 	}
-	
+
 	public boolean hasNode(String nodeID, LogicalModel m) {
 		if (this.getNodeInfo(nodeID, m) != null) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	public Color getNodeColor(String nodeID) {
 		return this.nodeColor.get(nodeID);
 	}
-	
+
 	public Set<String> getNodeIDs() {
 		return Collections.unmodifiableSet(this.nodeColor.keySet());
 	}
-	
+
 	public Map<String, Color> getNodeID2ColorMap() {
 		return this.nodeColor;
 	}
@@ -213,7 +208,7 @@ public class ProjectFeatures {
 				emptyNodeIDs.add(nodeID);
 			}
 		}
-		for (String emptyNodeID : emptyNodeIDs){
+		for (String emptyNodeID : emptyNodeIDs) {
 			this.string2ComponentFeature.remove(emptyNodeID);
 			this.nodeID2Info.remove(emptyNodeID);
 			this.nodeColor.remove(emptyNodeID);
@@ -223,23 +218,21 @@ public class ProjectFeatures {
 	public void setModelColor(String name, Color c) {
 		this.modelColor.put(this.getModel(name), c);
 	}
-	
+
 	public void setNodeColor(String nodeID, Color color) {
-		if (!this.nodeColor.containsKey(nodeID)
-				|| !color.equals(this.nodeColor.get(nodeID))) {
+		if (!this.nodeColor.containsKey(nodeID) || !color.equals(this.nodeColor.get(nodeID))) {
 			this.nodeColor.put(nodeID, color);
 		}
 	}
 
-	/** This function renames the model.
+	/**
+	 * This function renames the model.
+	 * 
 	 * @param model
 	 * @param newModel
 	 */
 	public void renameModel(String model, String newModel) {
 		this.model2String.put(this.string2Model.get(model), newModel);
 		this.string2Model.put(newModel, string2Model.remove(model));
-		
-	
-		
 	}
 }

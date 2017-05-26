@@ -49,105 +49,98 @@ import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboCheckBox;
 import org.epilogtool.gui.widgets.VisualGridMonteCarlo;
-import org.epilogtool.gui.widgets.VisualGridSimulation;
 import org.epilogtool.io.ButtonFactory;
 import org.epilogtool.io.EpilogFileFilter;
 import org.epilogtool.io.FileIO;
 import org.epilogtool.project.MonteCarlo;
-import org.epilogtool.project.ProjectFeatures;
+import org.epilogtool.project.Project;
 
 public class EpiTabMonteCarlo extends EpiTabTools {
 	private static final long serialVersionUID = 1394895739386499680L;
-	
-	private ProjectFeatures projectFeatures;
+
 	private Epithelium clonedEpi;
 	private MonteCarlo monteCarlo;
 	private VisualGridMonteCarlo vgCellState;
 	private GridInformation cellInformation;
 	private EpitheliumGrid epiGrid;
-	
+
 	private Map<Tuple3D<Integer>, Float> cellNode2Count;
-	
+
 	private JPanel jpRight;
 	private JPanel jpLeft;
 	private JPanel monteCarloVisualDefinitionsCenter;
 	private JPanel jpRCenter;
 	private JPanel rTop;
 	private JPanel informationPanel;
-	
+
 	private int lastStableStateIndex;
-	
+
 	private JButton jbRewind;
 	private JButton jbRun;
 	private JButton jbBack;
 	private JButton jbStep;
 	private JButton jbFastFwr;
-	
+
 	private JButton jbClone;
 	private JButton jbPicture;
 	private JButton jbSaveAll;
-	
+
 	private JLabel jlStep;
-	
+
 	private JLabel uniqueSS;
 	private JLabel notReachedSS;
 	private JLabel stableStateRepeated;
-	
+
 	private JComboCheckBox jccb;
 	private Color backColor;
-	
-	private JRadioButton jrbCumulative ;
-	private JRadioButton jrbStableStates ;
+
+	private JRadioButton jrbCumulative;
+	private JRadioButton jrbStableStates;
 	private Map<JButton, String> colorButton2Node;
 
 	private Map<String, JButton> mNode2JButton;
 	private Map<String, JCheckBox> mNode2Checkbox;
 	private Map<String, Boolean> mSelCheckboxes;
 	private Map<String, JCheckBox> mNodeID2Checkbox;
-	
+
 	private List<String> lCompON;
 	private List<String> lPresentComps;
 
 	private Map<String, Byte> mNode2ValueSelected;
-	
-	private SimulationEpiClone simEpiClone;
-	
-	private boolean isCumulative;
-	
 
-	public EpiTabMonteCarlo(Epithelium e, TreePath path,
-			ProjChangeNotifyTab projChanged, ProjectFeatures projectFeatures,
+	private SimulationEpiClone simEpiClone;
+
+	private boolean isCumulative;
+
+	public EpiTabMonteCarlo(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
 			SimulationEpiClone simEpiClone) {
 		super(e, path, projChanged);
-		
-		this.projectFeatures = projectFeatures;
-		this.cellInformation = new GridInformation(
-				this.epithelium.getIntegrationFunctions(), this.projectFeatures);
-		
+
+		this.cellInformation = new GridInformation(this.epithelium.getIntegrationFunctions());
+
 		this.clonedEpi = this.epithelium.clone();
 		this.simEpiClone = simEpiClone;
-		
-		this.monteCarlo = new MonteCarlo(this.clonedEpi) ;
-		
+
+		this.monteCarlo = new MonteCarlo(this.clonedEpi);
+
 		this.mSelCheckboxes = new HashMap<String, Boolean>();
 		this.mNodeID2Checkbox = new HashMap<String, JCheckBox>();
 		this.colorButton2Node = new HashMap<JButton, String>();
-		
+
 		for (LogicalModel m : this.epithelium.getEpitheliumGrid().getModelSet()) {
 			for (NodeInfo node : m.getNodeOrder()) {
 				this.mSelCheckboxes.put(node.getNodeID(), false);
 			}
 		}
-		
+
 		this.jbRun = new JButton("Run");
 		this.jpRight = new JPanel(new BorderLayout());
 		this.jpLeft = new JPanel(new BorderLayout());
 		this.informationPanel = new JPanel(new BorderLayout());
-		
+
 		this.jrbCumulative = new JRadioButton("Cumulative");
 		this.jrbStableStates = new JRadioButton("Stable States");
 
-		
 		this.epiGrid = this.epithelium.getEpitheliumGrid();
 		this.lCompON = new ArrayList<String>();
 		this.mNode2ValueSelected = new HashMap<String, Byte>();
@@ -159,23 +152,15 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		}
 
 		this.lastStableStateIndex = 0;
-		
-		
-		this.jbBack = ButtonFactory
-				.getImageNoBorder("media_step_back-24x24.png");
-		this.jbStep = ButtonFactory
-				.getImageNoBorder("media_step_forward-24x24.png");
-		this.jbRewind = ButtonFactory
-				.getImageNoBorder("media_rewind-26x24.png");
-		this.jbFastFwr = ButtonFactory
-				.getImageNoBorder("media_fast_forward-26x24.png");
-		this.jbPicture = ButtonFactory
-				.getImageNoBorder("fotography-24x24.png");
-		this.jbSaveAll = ButtonFactory
-				.getImageNoBorder("fotography-mult-24x24.png");
+
+		this.jbBack = ButtonFactory.getImageNoBorder("media_step_back-24x24.png");
+		this.jbStep = ButtonFactory.getImageNoBorder("media_step_forward-24x24.png");
+		this.jbRewind = ButtonFactory.getImageNoBorder("media_rewind-26x24.png");
+		this.jbFastFwr = ButtonFactory.getImageNoBorder("media_fast_forward-26x24.png");
+		this.jbPicture = ButtonFactory.getImageNoBorder("fotography-24x24.png");
+		this.jbSaveAll = ButtonFactory.getImageNoBorder("fotography-mult-24x24.png");
 		this.jbClone = ButtonFactory.getNoMargins("Clone");
-		
-		
+
 		this.jbRewind.setEnabled(false);
 		this.jbBack.setEnabled(false);
 		this.jbStep.setEnabled(false);
@@ -185,49 +170,46 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.jbSaveAll.setEnabled(false);
 	}
 
-	public void  initialize()  {
+	public void initialize() {
 		this.setLayout(new BorderLayout());
 
-		this.backColor = Color.WHITE;	
-			
-		//MonteCarlo Definitions Panel
+		this.backColor = Color.WHITE;
+
+		// MonteCarlo Definitions Panel
 		JPanel monteCarloDefinitions = createMonteCarloDefinitions();
-		jpLeft.add(monteCarloDefinitions,BorderLayout.PAGE_START);
-		
+		jpLeft.add(monteCarloDefinitions, BorderLayout.PAGE_START);
+
 		JPanel monteCarloInfo = createMonteCarloInfo();
-		jpLeft.add(monteCarloInfo,BorderLayout.PAGE_END);
-		
-		this.vgCellState = new VisualGridMonteCarlo(this.clonedEpi.getEpitheliumGrid(),this.projectFeatures,this.lCompON,this.cellInformation);
+		jpLeft.add(monteCarloInfo, BorderLayout.PAGE_END);
+
+		this.vgCellState = new VisualGridMonteCarlo(this.clonedEpi.getEpitheliumGrid(), this.lCompON,
+				this.cellInformation);
 
 		JPanel monteCarloVisualDefinitions = createMonteCarloVisualDefinitions();
-		jpLeft.add(monteCarloVisualDefinitions,BorderLayout.CENTER);
-		
-		//MonteCarlo GridInformation
+		jpLeft.add(monteCarloVisualDefinitions, BorderLayout.CENTER);
+
+		// MonteCarlo GridInformation
 		createInformationPanel();
 
 		JPanel left = new JPanel(new BorderLayout());
-		left.add(jpLeft,BorderLayout.WEST);
-		left.add(informationPanel,BorderLayout.CENTER);
+		left.add(jpLeft, BorderLayout.WEST);
+		left.add(informationPanel, BorderLayout.CENTER);
 		jpLeft = left;
 
-		
-		//Bottom Right Panel
+		// Bottom Right Panel
 		JPanel jpButtons = new JPanel(new BorderLayout());
 		jpButtons.setBackground(backColor);
 		JPanel jpButtonsC = new JPanel();
 		jpButtonsC.setBackground(backColor);
 		jpButtons.add(jpButtonsC, BorderLayout.CENTER);
 
-		JScrollPane jspButtons = new JScrollPane(jpButtons,
-				JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+		JScrollPane jspButtons = new JScrollPane(jpButtons, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		jspButtons.setBorder(BorderFactory.createEmptyBorder());
 		jspButtons.setBackground(backColor);
-		
-		
-		this.jbRewind
-				.setToolTipText("Go to the first Stable State");
+
+		this.jbRewind.setToolTipText("Go to the first Stable State");
 		this.jbRewind.setEnabled(false);
 		this.jbRewind.addActionListener(new ActionListener() {
 			@Override
@@ -237,7 +219,6 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		});
 		jpButtonsC.add(this.jbRewind);
 
-
 		this.jbBack.setToolTipText("Go to the previous Stable State");
 		this.jbBack.setEnabled(false);
 		this.jbBack.addActionListener(new ActionListener() {
@@ -246,7 +227,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 				simulationStepBack();
 			}
 		});
-		
+
 		jpButtonsC.add(this.jbBack);
 
 		this.jbStep.setToolTipText("Go to the next Stable State");
@@ -258,7 +239,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		});
 
 		jpButtonsC.add(this.jbStep);
-		
+
 		this.jbFastFwr.setToolTipText("Go to the last Stable State");
 		this.jbFastFwr.addActionListener(new ActionListener() {
 			@Override
@@ -290,19 +271,17 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		});
 		this.jbPicture.setEnabled(false);
 		jpButtonsR.add(this.jbPicture);
-		
 
 		// Button to save all simulated grid images
-		this.jbSaveAll
-				.setToolTipText("Save all the simulation grids into different files");
+		this.jbSaveAll.setToolTipText("Save all the simulation grids into different files");
 		this.jbSaveAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				saveAllEpiGrid2File();
 			}
 		});
 		this.jbSaveAll.setEnabled(false);
-		jpButtonsR.add(this.jbSaveAll);	
-		
+		jpButtonsR.add(this.jbSaveAll);
+
 		jpButtons.add(jpButtonsR, BorderLayout.LINE_END);
 
 		JPanel jpButtonsL = new JPanel();
@@ -310,7 +289,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		jpButtonsL.add(this.jlStep);
 
 		jpButtons.add(jpButtonsL, BorderLayout.LINE_START);
-		
+
 		this.jbRewind.setBackground(backColor);
 		this.jbBack.setBackground(backColor);
 		this.jbStep.setBackground(backColor);
@@ -318,52 +297,51 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.jlStep.setBackground(backColor);
 		jpButtonsR.setBackground(backColor);
 		jpButtonsL.setBackground(backColor);
-		
+
 		this.jpRight.add(jspButtons, BorderLayout.PAGE_END);
 
 		this.add(jpRight, BorderLayout.PAGE_END);
-		this.add(jpLeft,BorderLayout.WEST);
-		this.add(this.vgCellState,BorderLayout.CENTER);
+		this.add(jpLeft, BorderLayout.WEST);
+		this.add(this.vgCellState, BorderLayout.CENTER);
 		updateComponentList(this.jccb.getSelectedItems());
 		fireVisualChange();
-//		this.repaint();
-//		this.revalidate();
-//		this.vgCellState.repaint();
-		
+		// this.repaint();
+		// this.revalidate();
+		// this.vgCellState.repaint();
+
 		this.isInitialized = true;
 	}
-	
+
 	private void createInformationPanel() {
 		// TODO
-		
+
 		JPanel informationPanelMonteCarlo = new JPanel(new GridBagLayout());
-		
+
 		informationPanelMonteCarlo.setBorder(BorderFactory.createTitledBorder("Monte Carlo"));
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.WEST;
-		
 
 		gbc.gridy = 0;
 		gbc.gridx = 0;
 		this.uniqueSS = new JLabel("");
-		this.uniqueSS.setText("Unique SS: " );
-		informationPanelMonteCarlo.add(this.uniqueSS,gbc);
-		
+		this.uniqueSS.setText("Unique SS: ");
+		informationPanelMonteCarlo.add(this.uniqueSS, gbc);
+
 		gbc.gridy = 1;
 		gbc.gridx = 0;
 		this.notReachedSS = new JLabel("");
 		this.notReachedSS.setText("Not reached SS: ");
-		informationPanelMonteCarlo.add(this.notReachedSS,gbc);
-		
+		informationPanelMonteCarlo.add(this.notReachedSS, gbc);
+
 		gbc.gridy = 2;
 		gbc.gridx = 0;
 		this.stableStateRepeated = new JLabel("");
-		this.stableStateRepeated.setText("Repeated SS: " );
-		informationPanelMonteCarlo.add(this.stableStateRepeated,gbc);
-		
-		informationPanel.add(this.cellInformation,BorderLayout.CENTER);
-		informationPanel.add(informationPanelMonteCarlo,BorderLayout.PAGE_START);
-		return ;
+		this.stableStateRepeated.setText("Repeated SS: ");
+		informationPanelMonteCarlo.add(this.stableStateRepeated, gbc);
+
+		informationPanel.add(this.cellInformation, BorderLayout.CENTER);
+		informationPanel.add(informationPanelMonteCarlo, BorderLayout.PAGE_START);
+		return;
 	}
 
 	// get current simulation step
@@ -374,11 +352,10 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			String file = fc.getSelectedFile().getAbsolutePath();
 			String ext = "PNG";
 			file += (file.endsWith(ext) ? "" : "." + ext);
-			FileIO.writeEpitheliumGrid2File(file, this.vgCellState,
-					ext);
+			FileIO.writeEpitheliumGrid2File(file, this.vgCellState, ext);
 		}
 	}
-	
+
 	private void saveAllEpiGrid2File() {
 		JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(new EpilogFileFilter("png"));
@@ -387,39 +364,37 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			String ext = "PNG";
 			file += (file.endsWith(ext) ? "" : "." + ext);
 			int i = 1;
-			for (EpitheliumGrid stableState: this.monteCarlo.getUniqueStableStates()) {
-				String file_name = file.replace(".", "_" + i + ".");;
+			for (EpitheliumGrid stableState : this.monteCarlo.getUniqueStableStates()) {
+				String file_name = file.replace(".", "_" + i + ".");
+				;
 				this.vgCellState.setEpitheliumGrid(stableState);
-				i = i+1;
-				FileIO.writeEpitheliumGrid2File(file_name,
-						this.vgCellState, ext);
+				i = i + 1;
+				FileIO.writeEpitheliumGrid2File(file_name, this.vgCellState, ext);
 			}
 		}
 	}
-	
+
 	protected void simulationFastFwr() {
 		this.lastStableStateIndex = this.monteCarlo.getUniqueStableStates().size();
-		EpitheliumGrid stableState = this.monteCarlo.getUniqueStableStates().get(this.lastStableStateIndex-1);
+		EpitheliumGrid stableState = this.monteCarlo.getUniqueStableStates().get(this.lastStableStateIndex - 1);
 		for (int x = 0; x < stableState.getX(); x++) {
 			for (int y = 0; y < stableState.getY(); y++) {
 				this.clonedEpi.getEpitheliumGrid().setCellState(x, y, stableState.getCellState(x, y));
 			}
-			}
-		
+		}
+
 		updatejlIteration(stableState);
-		if (this.lastStableStateIndex >1){
+		if (this.lastStableStateIndex > 1) {
 			this.jbBack.setEnabled(true);
 			this.jbRewind.setEnabled(true);
-			}
-			else{
-				this.jbBack.setEnabled(false);
-				this.jbRewind.setEnabled(false);	
-			}
-		if (this.lastStableStateIndex !=this.monteCarlo.getUniqueStableStates().size()){
+		} else {
+			this.jbBack.setEnabled(false);
+			this.jbRewind.setEnabled(false);
+		}
+		if (this.lastStableStateIndex != this.monteCarlo.getUniqueStableStates().size()) {
 			this.jbStep.setEnabled(true);
 			this.jbFastFwr.setEnabled(true);
-		}
-		else{
+		} else {
 			this.jbStep.setEnabled(false);
 			this.jbFastFwr.setEnabled(false);
 		}
@@ -427,62 +402,57 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		fireVisualChange();
 	}
 
-
 	protected void simulationStepBack() {
-			this.lastStableStateIndex = this.lastStableStateIndex-1;
-			EpitheliumGrid stableState = this.monteCarlo.getUniqueStableStates().get(this.lastStableStateIndex-1);
+		this.lastStableStateIndex = this.lastStableStateIndex - 1;
+		EpitheliumGrid stableState = this.monteCarlo.getUniqueStableStates().get(this.lastStableStateIndex - 1);
 
-			for (int x = 0; x < stableState.getX(); x++) {
-				for (int y = 0; y < stableState.getY(); y++) {
-					this.clonedEpi.getEpitheliumGrid().setCellState(x, y, stableState.getCellState(x, y));
-				}
-				}
-			updatejlIteration(stableState);
-			if (this.lastStableStateIndex >1){
-				this.jbBack.setEnabled(true);
-				this.jbRewind.setEnabled(true);
-				}
-				else{
-					this.jbBack.setEnabled(false);
-					this.jbRewind.setEnabled(false);	
-				}
-			if (this.lastStableStateIndex !=this.monteCarlo.getUniqueStableStates().size()){
-				this.jbStep.setEnabled(true);
-				this.jbFastFwr.setEnabled(true);
-			}
-			else{
-				this.jbStep.setEnabled(false);
-				this.jbFastFwr.setEnabled(false);
-			}
-			updateComponentList(this.jccb.getSelectedItems());
-			fireVisualChange();
-			this.repaint();
-			
-	}
-
-	protected void simulationRewind() {
-		this.lastStableStateIndex = 1;
-		EpitheliumGrid stableState = this.monteCarlo.getUniqueStableStates().get(this.lastStableStateIndex-1);
 		for (int x = 0; x < stableState.getX(); x++) {
 			for (int y = 0; y < stableState.getY(); y++) {
 				this.clonedEpi.getEpitheliumGrid().setCellState(x, y, stableState.getCellState(x, y));
 			}
-			}
-		
+		}
 		updatejlIteration(stableState);
-		if (this.lastStableStateIndex >1){
+		if (this.lastStableStateIndex > 1) {
 			this.jbBack.setEnabled(true);
 			this.jbRewind.setEnabled(true);
-			}
-			else{
-				this.jbBack.setEnabled(false);
-				this.jbRewind.setEnabled(false);	
-			}
-		if (this.lastStableStateIndex !=this.monteCarlo.getUniqueStableStates().size()){
+		} else {
+			this.jbBack.setEnabled(false);
+			this.jbRewind.setEnabled(false);
+		}
+		if (this.lastStableStateIndex != this.monteCarlo.getUniqueStableStates().size()) {
 			this.jbStep.setEnabled(true);
 			this.jbFastFwr.setEnabled(true);
+		} else {
+			this.jbStep.setEnabled(false);
+			this.jbFastFwr.setEnabled(false);
 		}
-		else{
+		updateComponentList(this.jccb.getSelectedItems());
+		fireVisualChange();
+		this.repaint();
+
+	}
+
+	protected void simulationRewind() {
+		this.lastStableStateIndex = 1;
+		EpitheliumGrid stableState = this.monteCarlo.getUniqueStableStates().get(this.lastStableStateIndex - 1);
+		for (int x = 0; x < stableState.getX(); x++) {
+			for (int y = 0; y < stableState.getY(); y++) {
+				this.clonedEpi.getEpitheliumGrid().setCellState(x, y, stableState.getCellState(x, y));
+			}
+		}
+
+		updatejlIteration(stableState);
+		if (this.lastStableStateIndex > 1) {
+			this.jbBack.setEnabled(true);
+			this.jbRewind.setEnabled(true);
+		} else {
+			this.jbBack.setEnabled(false);
+			this.jbRewind.setEnabled(false);
+		}
+		if (this.lastStableStateIndex != this.monteCarlo.getUniqueStableStates().size()) {
+			this.jbStep.setEnabled(true);
+			this.jbFastFwr.setEnabled(true);
+		} else {
 			this.jbStep.setEnabled(false);
 			this.jbFastFwr.setEnabled(false);
 		}
@@ -493,27 +463,25 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 	protected void simulationStepFwr() {
 		this.lastStableStateIndex = this.lastStableStateIndex + 1;
-		EpitheliumGrid stableState = this.monteCarlo.getUniqueStableStates().get(this.lastStableStateIndex-1);
+		EpitheliumGrid stableState = this.monteCarlo.getUniqueStableStates().get(this.lastStableStateIndex - 1);
 		for (int x = 0; x < stableState.getX(); x++) {
 			for (int y = 0; y < stableState.getY(); y++) {
 				this.clonedEpi.getEpitheliumGrid().setCellState(x, y, stableState.getCellState(x, y));
 			}
-			}
-		
+		}
+
 		updatejlIteration(stableState);
-		if (this.lastStableStateIndex >1){
+		if (this.lastStableStateIndex > 1) {
 			this.jbBack.setEnabled(true);
 			this.jbRewind.setEnabled(true);
-			}
-			else{
-				this.jbBack.setEnabled(false);
-				this.jbRewind.setEnabled(false);	
-			}
-		if (this.lastStableStateIndex !=this.monteCarlo.getUniqueStableStates().size()){
+		} else {
+			this.jbBack.setEnabled(false);
+			this.jbRewind.setEnabled(false);
+		}
+		if (this.lastStableStateIndex != this.monteCarlo.getUniqueStableStates().size()) {
 			this.jbStep.setEnabled(true);
 			this.jbFastFwr.setEnabled(true);
-		}
-		else{
+		} else {
 			this.jbStep.setEnabled(false);
 			this.jbFastFwr.setEnabled(false);
 		}
@@ -526,77 +494,73 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 		String iteration;
 		List<Integer> iterationList = this.monteCarlo.getUniqueStableStates2Frequency().get(stableState);
-		if (iterationList.size()>1){
-			this.stableStateRepeated.setText("SS repeated: "+ (iterationList.size()-1));
+		if (iterationList.size() > 1) {
+			this.stableStateRepeated.setText("SS repeated: " + (iterationList.size() - 1));
 			this.stableStateRepeated.repaint();
-		}
-		else{
+		} else {
 			this.stableStateRepeated.setText("");
 			this.stableStateRepeated.repaint();
 		}
-			
-		
-		int minIter  = Collections.min(iterationList);
-		int maxIter =  Collections.max(iterationList);
 
-		if (minIter==maxIter){
+		int minIter = Collections.min(iterationList);
+		int maxIter = Collections.max(iterationList);
+
+		if (minIter == maxIter) {
 			iteration = "" + minIter;
-		}else{
-			iteration = minIter +"-" + maxIter;
+		} else {
+			iteration = minIter + "-" + maxIter;
 		}
-		this.jlStep.setText("Stable State: " +this.lastStableStateIndex + " of "+this.monteCarlo.getUniqueStableStates().size()+ " [Iteration: " +iteration+"]");
+		this.jlStep.setText("Stable State: " + this.lastStableStateIndex + " of "
+				+ this.monteCarlo.getUniqueStableStates().size() + " [Iteration: " + iteration + "]");
 		this.jlStep.repaint();
 		return;
 	}
 
-	
-	
-	private JPanel createMonteCarloVisualDefinitionsTop(){
-		
-		JPanel monteCarloVisualDefinitionsTOP = new JPanel(new BorderLayout());
-		
-		ButtonGroup group = new ButtonGroup();
+	private JPanel createMonteCarloVisualDefinitionsTop() {
 
+		JPanel monteCarloVisualDefinitionsTOP = new JPanel(new BorderLayout());
+
+		ButtonGroup group = new ButtonGroup();
 
 		this.isCumulative = false;
 		this.jrbStableStates.setSelected(true);
-		
-		  //add jrbStableStates listener
+
+		// add jrbStableStates listener
 		this.jrbStableStates.addActionListener(new ActionListener() {
-	        @Override
-	        public void actionPerformed(ActionEvent e) {
-	            fireStableStatesGrid();
-	   
-	        }
-	    });
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				fireStableStatesGrid();
 
-		  //add jrbStableStates listener
+			}
+		});
+
+		// add jrbStableStates listener
 		this.jrbCumulative.addActionListener(new ActionListener() {
-	        @Override
-	        public void actionPerformed(ActionEvent e) {
-	            fireCumulativeGrid();
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				fireCumulativeGrid();
 
-	        }
-	    });
-		
+			}
+		});
+
 		group.add(this.jrbStableStates);
 		group.add(this.jrbCumulative);
-		monteCarloVisualDefinitionsTOP.add(this.jrbCumulative,BorderLayout.EAST);
-		monteCarloVisualDefinitionsTOP.add(this.jrbStableStates,BorderLayout.WEST);
-		
+		monteCarloVisualDefinitionsTOP.add(this.jrbCumulative, BorderLayout.EAST);
+		monteCarloVisualDefinitionsTOP.add(this.jrbStableStates, BorderLayout.WEST);
+
 		return monteCarloVisualDefinitionsTOP;
 	}
-	
-	private void createMonteCarloVisualDefinitionsCenter(){
-		
+
+	private void createMonteCarloVisualDefinitionsCenter() {
+
 		this.monteCarloVisualDefinitionsCenter = new JPanel(new BorderLayout());
 		this.jpRCenter = new JPanel();
-		
+
 		this.rTop = new JPanel();
 		this.rTop.setLayout(new BoxLayout(this.rTop, BoxLayout.Y_AXIS));
 
 		this.newModelCombobox();
-		
+
 		this.rTop.add(jccb);
 		this.jccb.addActionListener(new ActionListener() {
 			@Override
@@ -617,30 +581,30 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				for (String nodeID : lPresentComps) {
-				if (mNodeID2Checkbox.containsKey(nodeID)) {
-					mNodeID2Checkbox.get(nodeID).setSelected(true);
+					if (mNodeID2Checkbox.containsKey(nodeID)) {
+						mNodeID2Checkbox.get(nodeID).setSelected(true);
+					}
+					mSelCheckboxes.put(nodeID, true);
+					if (!lCompON.contains(nodeID))
+						lCompON.add(nodeID);
 				}
-				mSelCheckboxes.put(nodeID, true);
-				if (!lCompON.contains(nodeID))
-					lCompON.add(nodeID);
-			}
 				fireVisualChange();
 			}
 		});
 		rTopSel.add(jbSelectAll);
-		
+
 		JButton jbDeselectAll = new JButton("Deselect All");
 		jbDeselectAll.setMargin(new Insets(0, 0, 0, 0));
 		jbDeselectAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				for (String nodeID : lPresentComps) {
-				if (mNodeID2Checkbox.containsKey(nodeID)) {
-					mNodeID2Checkbox.get(nodeID).setSelected(false);
+					if (mNodeID2Checkbox.containsKey(nodeID)) {
+						mNodeID2Checkbox.get(nodeID).setSelected(false);
+					}
+					mSelCheckboxes.put(nodeID, false);
+					lCompON.remove(nodeID);
 				}
-				mSelCheckboxes.put(nodeID, false);
-				lCompON.remove(nodeID);
-			}
 				fireVisualChange();
 			}
 		});
@@ -648,44 +612,39 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 		this.rTop.add(rTopSel);
 
-		this.rTop
-				.setBorder(BorderFactory.createTitledBorder("Display options"));
-		
-		this.monteCarloVisualDefinitionsCenter.add(this.rTop, BorderLayout.PAGE_START);
-	
+		this.rTop.setBorder(BorderFactory.createTitledBorder("Display options"));
 
-		
+		this.monteCarloVisualDefinitionsCenter.add(this.rTop, BorderLayout.PAGE_START);
+
 		this.jpRCenter.setLayout(new BoxLayout(jpRCenter, BoxLayout.Y_AXIS));
 		JScrollPane jscroll = new JScrollPane(this.jpRCenter);
-		
+
 		jscroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.jpRCenter.setBackground(backColor);
 		this.monteCarloVisualDefinitionsCenter.add(jscroll, BorderLayout.CENTER);
 
 		this.monteCarloVisualDefinitionsCenter.setBackground(backColor);
-		
+
 	}
-	
+
 	private JPanel createMonteCarloVisualDefinitions() {
-		
+
 		JPanel monteCarloVisualDefinitions = new JPanel(new BorderLayout());
-		
+
 		JPanel monteCarloVisualDefinitionsTOP = createMonteCarloVisualDefinitionsTop();
 		createMonteCarloVisualDefinitionsCenter();
-		
+
 		monteCarloVisualDefinitions.setBorder(BorderFactory.createTitledBorder("MonteCarlo Visual Definitions"));
-		monteCarloVisualDefinitions.add(monteCarloVisualDefinitionsTOP,BorderLayout.PAGE_START);
-		monteCarloVisualDefinitions.add(this.monteCarloVisualDefinitionsCenter,BorderLayout.CENTER);
-		
+		monteCarloVisualDefinitions.add(monteCarloVisualDefinitionsTOP, BorderLayout.PAGE_START);
+		monteCarloVisualDefinitions.add(this.monteCarloVisualDefinitionsCenter, BorderLayout.CENTER);
+
 		return monteCarloVisualDefinitions;
 	}
 
-
-
 	protected void fireCumulativeGrid() {
-		//TODO
+		// TODO
 		this.isCumulative = true;
-		
+
 		this.jbRewind.setEnabled(false);
 		this.jbBack.setEnabled(false);
 		this.jbStep.setEnabled(false);
@@ -697,71 +656,74 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 		this.cellNode2Count = this.monteCarlo.createCumulative();
 		fireVisualChange();
-		
+
 		return;
 	}
 
-
 	protected void fireStableStatesGrid() {
-		
+
 		this.isCumulative = false;
-		
-		if (this.lastStableStateIndex >1){
+
+		if (this.lastStableStateIndex > 1) {
 			this.jbBack.setEnabled(true);
-			this.jbRewind.setEnabled(true);}
-		else{   this.jbBack.setEnabled(false);
-				this.jbRewind.setEnabled(false);}
-		if (this.lastStableStateIndex !=this.monteCarlo.getUniqueStableStates().size()){
+			this.jbRewind.setEnabled(true);
+		} else {
+			this.jbBack.setEnabled(false);
+			this.jbRewind.setEnabled(false);
+		}
+		if (this.lastStableStateIndex != this.monteCarlo.getUniqueStableStates().size()) {
 			this.jbStep.setEnabled(true);
-			this.jbFastFwr.setEnabled(true);}
-		else{
+			this.jbFastFwr.setEnabled(true);
+		} else {
 			this.jbStep.setEnabled(false);
-			this.jbFastFwr.setEnabled(false);}
+			this.jbFastFwr.setEnabled(false);
+		}
 		this.jlStep.setEnabled(true);
 		this.jbClone.setEnabled(true);
 
 		this.jbSaveAll.setEnabled(true);
-		
+
 		fireVisualChange();
 		return;
 	}
 
-
 	private JPanel createMonteCarloInfo() {
 		JPanel monteCarloInfo = new JPanel(new BorderLayout());
-		
-		JPanel monteCarloInfoUp= new JPanel(new BorderLayout());
-		JPanel monteCarloInfoCenter= new JPanel(new BorderLayout());
-		
-		monteCarloInfo.setBorder(BorderFactory.createTitledBorder("MonteCarlo Specifications"));
-//		monteCarloInfo.setSize(250,500);
-		
-		monteCarloInfoUp.add(new JLabel("Epithelium: " + this.epithelium.getName()),BorderLayout.PAGE_START);
-		monteCarloInfoUp.add(new JLabel("Models: " + this.epithelium.getUsedModels()),BorderLayout.CENTER);
-		
-		monteCarloInfoCenter.add(new JLabel("Update Mode: " + this.epithelium.getUpdateSchemeInter().getUpdateOrder()),BorderLayout.PAGE_START);
-		monteCarloInfoCenter.add(new JLabel("Alpha: " + this.epithelium.getUpdateSchemeInter().getAlpha()),BorderLayout.CENTER);
-		monteCarloInfoCenter.add(new JLabel("Sigma: " + this.epithelium.getUpdateSchemeInter().getCPSigmas()),BorderLayout.PAGE_END);
 
-		monteCarloInfo.add(monteCarloInfoUp,BorderLayout.PAGE_START);
-		monteCarloInfo.add(monteCarloInfoCenter,BorderLayout.CENTER);
-		
-		
+		JPanel monteCarloInfoUp = new JPanel(new BorderLayout());
+		JPanel monteCarloInfoCenter = new JPanel(new BorderLayout());
+
+		monteCarloInfo.setBorder(BorderFactory.createTitledBorder("MonteCarlo Specifications"));
+		// monteCarloInfo.setSize(250,500);
+
+		monteCarloInfoUp.add(new JLabel("Epithelium: " + this.epithelium.getName()), BorderLayout.PAGE_START);
+		monteCarloInfoUp.add(new JLabel("Models: " + this.epithelium.getUsedModels()), BorderLayout.CENTER);
+
+		monteCarloInfoCenter.add(new JLabel("Update Mode: " + this.epithelium.getUpdateSchemeInter().getUpdateOrder()),
+				BorderLayout.PAGE_START);
+		monteCarloInfoCenter.add(new JLabel("Alpha: " + this.epithelium.getUpdateSchemeInter().getAlpha()),
+				BorderLayout.CENTER);
+		monteCarloInfoCenter.add(new JLabel("Sigma: " + this.epithelium.getUpdateSchemeInter().getCPSigmas()),
+				BorderLayout.PAGE_END);
+
+		monteCarloInfo.add(monteCarloInfoUp, BorderLayout.PAGE_START);
+		monteCarloInfo.add(monteCarloInfoCenter, BorderLayout.CENTER);
+
 		return monteCarloInfo;
 	}
 
 	private JPanel createMonteCarloDefinitions() {
-		
+
 		JPanel monteCarloDefinitions = new JPanel(new BorderLayout());
 		monteCarloDefinitions.setBorder(BorderFactory.createTitledBorder("MonteCarlo Definitions"));
-//		monteCarloDefinitions.setSize(250,500);;
+		// monteCarloDefinitions.setSize(250,500);;
 
-		//Number of Runs
+		// Number of Runs
 		JPanel jpRunNum = new JPanel();
-		
+
 		jpRunNum.add(new JLabel("Number of Simulations "));
-		
-		JTextField jtfNumRuns = new JTextField("100",10);
+
+		JTextField jtfNumRuns = new JTextField("100", 10);
 
 		jtfNumRuns.addKeyListener(new KeyListener() {
 			@Override
@@ -770,18 +732,18 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				
+
 				JTextField jtf = (JTextField) e.getSource();
-		
+
 				try {
 					int nRuns = Integer.parseInt(jtf.getText());
-					if (nRuns>0){
-					jtf.setBackground(Color.WHITE);
-					fireChangeNumRuns(nRuns);
-					fireEnableRun(true);
+					if (nRuns > 0) {
+						jtf.setBackground(Color.WHITE);
+						fireChangeNumRuns(nRuns);
+						fireEnableRun(true);
 					}
-					
-					else{
+
+					else {
 						jtf.setBackground(ColorUtils.LIGHT_RED);
 						fireEnableRun(false);
 					}
@@ -795,17 +757,17 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			public void keyTyped(KeyEvent e) {
 			}
 		});
-		
+
 		this.monteCarlo.setNumberRuns(Integer.parseInt(jtfNumRuns.getText()));
-		
+
 		jtfNumRuns.setToolTipText("Insert number of simulations");
 		jpRunNum.add(jtfNumRuns);
 
 		// Maximum Number of Iterations
 		JPanel jpMaxIte = new JPanel();
-		
+
 		jpMaxIte.add(new JLabel("Maximum Number of Iterations"));
-		
+
 		JTextField jtfMaxIte = new JTextField("100");
 		jtfMaxIte.setToolTipText("Insert maximum iteration number per simulation");
 		jtfMaxIte.addKeyListener(new KeyListener() {
@@ -815,17 +777,16 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				
+
 				JTextField jtf = (JTextField) e.getSource();
 				try {
-			
+
 					int maxIter = Integer.parseInt(jtf.getText());
-					if (maxIter>0){
-					jtf.setBackground(Color.WHITE);
-					fireChangeMaxIter(maxIter);
-					fireEnableRun(true);
-					}
-					else{
+					if (maxIter > 0) {
+						jtf.setBackground(Color.WHITE);
+						fireChangeMaxIter(maxIter);
+						fireEnableRun(true);
+					} else {
 						jtf.setBackground(ColorUtils.LIGHT_RED);
 						fireEnableRun(false);
 					}
@@ -838,35 +799,34 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 			@Override
 			public void keyTyped(KeyEvent e) {
-				
+
 			}
 		});
 
 		monteCarlo.setMaxIter(Integer.parseInt(jtfMaxIte.getText()));
-		
+
 		jpMaxIte.add(jtfMaxIte);
 
-		
-		//Choose Initial Conditions
-		
+		// Choose Initial Conditions
+
 		String[] ListInitialConditions = new String[2];
-	
-		ListInitialConditions[0]="Epithelium Initial Conditions";
-		ListInitialConditions[1]="Random";
-		
+
+		ListInitialConditions[0] = "Epithelium Initial Conditions";
+		ListInitialConditions[1] = "Random";
+
 		JComboBox<String> jcbInitialConditions = new JComboBox<String>(ListInitialConditions);
 		jcbInitialConditions.addActionListener(new ActionListener() {
 			@Override
-			
+
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
 				JComboBox<String> jcbInitialConditions = (JComboBox<String>) e.getSource();
-				
+
 				changeMonteCarloInitialConditions((String) jcbInitialConditions.getSelectedItem());
 			}
 		});
-		
-		//Run Button
+
+		// Run Button
 		jbRun.setToolTipText("Run Monte Carlo ");
 		jbRun.addActionListener(new ActionListener() {
 			@Override
@@ -874,36 +834,40 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 				fireRun();
 			}
 		});
-		
-		//Arrange Panels
+
+		// Arrange Panels
 		JPanel textPanels = new JPanel(new BorderLayout());
-		
-		textPanels.add(jpRunNum,BorderLayout.PAGE_START);
-		textPanels.add(jpMaxIte,BorderLayout.CENTER);
-		
-		monteCarloDefinitions.add(textPanels,BorderLayout.PAGE_START);
-		monteCarloDefinitions.add(jcbInitialConditions,BorderLayout.CENTER);
-		monteCarloDefinitions.add(jbRun,BorderLayout.PAGE_END);
-		
+
+		textPanels.add(jpRunNum, BorderLayout.PAGE_START);
+		textPanels.add(jpMaxIte, BorderLayout.CENTER);
+
+		monteCarloDefinitions.add(textPanels, BorderLayout.PAGE_START);
+		monteCarloDefinitions.add(jcbInitialConditions, BorderLayout.CENTER);
+		monteCarloDefinitions.add(jbRun, BorderLayout.PAGE_END);
+
 		return monteCarloDefinitions;
 	}
 
 	protected void changeMonteCarloInitialConditions(String selectedItem) {
 		boolean flag = false;
-		if (selectedItem.equals("Random")) flag = true;
+		if (selectedItem.equals("Random"))
+			flag = true;
 		if (!flag)
 			setInicialConditions();
-		
+
 		fireVisualChange();
-		this.monteCarlo.setMonteCarloInitialConditions(flag);		
-		
+		this.monteCarlo.setMonteCarloInitialConditions(flag);
+
 	}
 
-	private void setInicialConditions(){
-			for (int x = 0; x < this.clonedEpi.getX(); x++) {
-				for (int y = 0; y < this.clonedEpi.getY(); y++) {
-					this.clonedEpi.getEpitheliumGrid().setCellState(x, y, this.epithelium.getEpitheliumGrid().getCellState(x, y));
-					}}}
+	private void setInicialConditions() {
+		for (int x = 0; x < this.clonedEpi.getX(); x++) {
+			for (int y = 0; y < this.clonedEpi.getY(); y++) {
+				this.clonedEpi.getEpitheliumGrid().setCellState(x, y,
+						this.epithelium.getEpitheliumGrid().getCellState(x, y));
+			}
+		}
+	}
 
 	protected void fireEnableRun(boolean b) {
 		this.jbRun.setEnabled(b);
@@ -911,7 +875,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	}
 
 	protected void fireChangeMaxIter(int text) {
-		this.monteCarlo.setMaxIter(text);	
+		this.monteCarlo.setMaxIter(text);
 	}
 
 	protected void fireChangeNumRuns(int nRuns) {
@@ -919,52 +883,52 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	}
 
 	protected void fireRun() {
-		this.lastStableStateIndex=0;
+		this.lastStableStateIndex = 0;
 		this.monteCarlo.run(this.epithelium.clone());
-		
-//			if (this.lastStableStateIndex >1){
-//				this.jbBack.setEnabled(true);
-//				this.jbRewind.setEnabled(true);
-//				}
-//				else{
-//					this.jbBack.setEnabled(false);
-//					this.jbRewind.setEnabled(false);	
-//				}
-//			if (this.lastStableStateIndex !=this.monteCarlo.getStableStates().size()){
-//				this.jbStep.setEnabled(true);
-//				this.jbFastFwr.setEnabled(true);
-//			}
-//			else{
-//				this.jbStep.setEnabled(false);
-//				this.jbFastFwr.setEnabled(false);
-//			}
-			if (this.monteCarlo.getStableStates().size()>0){
-				
-			EpitheliumGrid stableState= this.monteCarlo.getStableStates().get(0);
+
+		// if (this.lastStableStateIndex >1){
+		// this.jbBack.setEnabled(true);
+		// this.jbRewind.setEnabled(true);
+		// }
+		// else{
+		// this.jbBack.setEnabled(false);
+		// this.jbRewind.setEnabled(false);
+		// }
+		// if (this.lastStableStateIndex
+		// !=this.monteCarlo.getStableStates().size()){
+		// this.jbStep.setEnabled(true);
+		// this.jbFastFwr.setEnabled(true);
+		// }
+		// else{
+		// this.jbStep.setEnabled(false);
+		// this.jbFastFwr.setEnabled(false);
+		// }
+		if (this.monteCarlo.getStableStates().size() > 0) {
+
+			EpitheliumGrid stableState = this.monteCarlo.getStableStates().get(0);
 			simulationStepFwr();
-			if (this.isCumulative){
-			fireCumulativeGrid();
-			}
-			else{
+			if (this.isCumulative) {
+				fireCumulativeGrid();
+			} else {
 				fireStableStatesGrid();
 			}
-//			this.jbClone.setEnabled(true);
+			// this.jbClone.setEnabled(true);
 			this.jbPicture.setEnabled(true);
-//			this.jbSaveAll.setEnabled(true);
+			// this.jbSaveAll.setEnabled(true);
 
 			updatejlIteration(stableState);
-			}
-			updateInformationPanel();
-			fireVisualChange();
 		}
-			
-			
-	
+		updateInformationPanel();
+		fireVisualChange();
+	}
 
 	private void updateInformationPanel() {
 		this.uniqueSS.setText("Unique SS: " + this.monteCarlo.getUniqueStableStates().size());
-		this.notReachedSS.setText("Not reached SS: " + (this.monteCarlo.getNumberRuns() - this.monteCarlo.getStableStates().size()));
-		this.stableStateRepeated.setText("Repeated SS: "+(this.monteCarlo.getNumberRuns()-(this.monteCarlo.getNumberRuns() - this.monteCarlo.getStableStates().size())-this.monteCarlo.getUniqueStableStates().size()));
+		this.notReachedSS.setText(
+				"Not reached SS: " + (this.monteCarlo.getNumberRuns() - this.monteCarlo.getStableStates().size()));
+		this.stableStateRepeated.setText("Repeated SS: " + (this.monteCarlo.getNumberRuns()
+				- (this.monteCarlo.getNumberRuns() - this.monteCarlo.getStableStates().size())
+				- this.monteCarlo.getUniqueStableStates().size()));
 		this.uniqueSS.repaint();
 		this.notReachedSS.repaint();
 		this.informationPanel.repaint();
@@ -988,20 +952,16 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			this.jpRight.add(jpNorth, BorderLayout.NORTH);
 			JTextPane jtp = new JTextPane();
 			jtp.setContentType("text/html");
-			String color = ColorUtils
-					.getColorCode(this.jpRight.getBackground());
-			jtp.setText("<html><body style=\"background-color:" + color + "\">"
-					+ "<font color=\"#ff0000\">"
+			String color = ColorUtils.getColorCode(this.jpRight.getBackground());
+			jtp.setText("<html><body style=\"background-color:" + color + "\">" + "<font color=\"#ff0000\">"
 					+ "New Epithelium definitions detected!!<br/>"
 					+ "Continue current simulation with old definitions, "
-					+ "<br/>or press <b>Restart</b> to apply the new ones."
-					+ "</font></body></html>");
+					+ "<br/>or press <b>Restart</b> to apply the new ones." + "</font></body></html>");
 			jtp.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 			jtp.setHighlighter(null);
 			jpNorth.add(jtp, BorderLayout.PAGE_START);
 			JButton jbRestart = ButtonFactory.getNoMargins("Restart");
-			jbRestart
-					.setToolTipText("Restart the simulation with recently applied definitions");
+			jbRestart.setToolTipText("Restart the simulation with recently applied definitions");
 			jbRestart.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -1020,30 +980,28 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		}
 		this.updateComponentList(this.jccb.getSelectedItems());
 	}
-	
+
 	private boolean hasChangedEpithelium() {
 		return !this.monteCarlo.getEpithelium().equals(this.epithelium);
 	}
-	
+
 	private void restart() {
 		EpiGUI.getInstance().restartMonteCarloTab();
 	}
-	
-	
-	private void newModelCombobox(){
-	// Model combobox
-	List<LogicalModel> modelList = new ArrayList<LogicalModel>(
-			this.clonedEpi.getEpitheliumGrid().getModelSet());
-	JCheckBox[] items = new JCheckBox[modelList.size()];
-	for (int i = 0; i < modelList.size(); i++) {
-		items[i] = new JCheckBox(
-				this.projectFeatures.getModelName(modelList.get(i)));
-		items[i].setSelected(false);
+
+	private void newModelCombobox() {
+		// Model combobox
+		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.clonedEpi.getEpitheliumGrid().getModelSet());
+		JCheckBox[] items = new JCheckBox[modelList.size()];
+		for (int i = 0; i < modelList.size(); i++) {
+			items[i] = new JCheckBox(Project.getInstance().getProjectFeatures().getModelName(modelList.get(i)));
+			items[i].setSelected(false);
+		}
+		this.jccb = new JComboCheckBox(items);
+
 	}
-	this.jccb = new JComboCheckBox(items);
-	
-	}
-	//When a new model is selected, and at the beggining 
+
+	// When a new model is selected, and at the beginning
 	private void updateComponentList(List<String> modelNames) {
 		this.jpRCenter.removeAll();
 		this.mNode2ValueSelected.clear();
@@ -1053,7 +1011,7 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 
 		List<LogicalModel> lModels = new ArrayList<LogicalModel>();
 		for (String modelName : modelNames) {
-			lModels.add(this.projectFeatures.getModel(modelName));
+			lModels.add(Project.getInstance().getProjectFeatures().getModel(modelName));
 		}
 		this.lPresentComps = new ArrayList<String>();
 
@@ -1061,12 +1019,14 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		Set<String> sInputNodeIDs = new HashSet<String>();
 		Set<String> sCommonNodeIDs = new HashSet<String>();
 
-		List<NodeInfo> lInternal = new ArrayList<NodeInfo>(this.projectFeatures.getModelsNodeInfos(lModels, false));
+		List<NodeInfo> lInternal = new ArrayList<NodeInfo>(
+				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, false));
 
 		for (NodeInfo node : lInternal)
 			sInternalNodeIDs.add(node.getNodeID());
 
-		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(this.projectFeatures.getModelsNodeInfos(lModels, true));
+		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
+				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
 
 		for (NodeInfo node : lInputs) {
 			if (sInternalNodeIDs.contains(node.getNodeID())) {
@@ -1083,11 +1043,11 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			this.setComponentTypeList(sInternalNodeIDs, "Internal Components");
 		if (!sInputNodeIDs.isEmpty())
 			this.setComponentTypeList(sInputNodeIDs, "Input Components");
-		
+
 		this.jpRCenter.revalidate();
 		this.jpRCenter.repaint();
 	}
-	
+
 	private void setComponentTypeList(Set<String> sNodeIDs, String titleBorder) {
 		JPanel jpRRC = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -1107,46 +1067,40 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		this.jpRCenter.add(jpRRC);
 	}
 
-	
 	/**
 	 * Method that changes between the cumulative and stable view.
 	 * 
 	 */
-	private void fireVisualChange(){
+	private void fireVisualChange() {
 
-		if (this.vgCellState
-				.getGraphics()!=null & this.cellNode2Count!=null){
-			if (this.isCumulative){
+		if (this.vgCellState.getGraphics() != null & this.cellNode2Count != null) {
+			if (this.isCumulative) {
 				this.vgCellState.setIsCumulative(true);
-				if (this.cellNode2Count.size()>0){
-				this.vgCellState.paintCumulative(this.vgCellState
-						.getGraphics(),this.cellNode2Count);
+				if (this.cellNode2Count.size() > 0) {
+					this.vgCellState.paintCumulative(this.vgCellState.getGraphics(), this.cellNode2Count);
 				}
-			}
-			else{
+			} else {
 				this.vgCellState.setIsCumulative(false);
-		this.vgCellState.paintComponent(this.vgCellState
-				.getGraphics());
-		this.vgCellState.repaint();
+				this.vgCellState.paintComponent(this.vgCellState.getGraphics());
+				this.vgCellState.repaint();
 			}
 		}
-		
-		if (!this.isCumulative){
+
+		if (!this.isCumulative) {
 			this.repaint();
 		}
 	}
-	
-	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y,
-			String nodeID) {
-		
+
+	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String nodeID) {
+
 		JLabel percentage = new JLabel(this.clonedEpi.getEpitheliumGrid().getPercentage(nodeID));
-		
+
 		gbc.gridy = y;
 		gbc.gridx = 0;
 		gbc.anchor = GridBagConstraints.WEST;
 		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
 		JPanel jpanel = new JPanel(new BorderLayout());
-		
+
 		if (jcb == null) {
 			jcb = new JCheckBox(nodeID, mSelCheckboxes.get(nodeID));
 			jcb.addActionListener(new ActionListener() {
@@ -1165,14 +1119,13 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 			});
 			this.mNodeID2Checkbox.put(nodeID, jcb);
 		}
-		
-		jpanel.add(jcb,BorderLayout.CENTER);
 
-		jp.add(jpanel,gbc);
+		jpanel.add(jcb, BorderLayout.CENTER);
+
+		jp.add(jpanel, gbc);
 		gbc.gridx = 1;
 		JButton jbColor = new JButton();
-		jbColor.setBackground(this.projectFeatures
-				.getNodeColor(nodeID));
+		jbColor.setBackground(Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
 		jbColor.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1182,33 +1135,30 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		});
 		jp.add(jbColor, gbc);
 		gbc.gridx = 2;
-		jp.add(percentage,gbc);
+		jp.add(percentage, gbc);
 		this.colorButton2Node.put(jbColor, nodeID);
-		
+
 	}
-	
+
 	private void setNewColor(JButton jb) {
 		String nodeID = this.colorButton2Node.get(jb);
-		Color newColor = JColorChooser.showDialog(jb, "Color chooser - "
-				+ nodeID, jb.getBackground());
-		if (newColor != null
-				&& !newColor.equals(this.projectFeatures.getNodeColor(nodeID))) {
+		Color newColor = JColorChooser.showDialog(jb, "Color chooser - " + nodeID, jb.getBackground());
+		if (newColor != null && !newColor.equals(Project.getInstance().getProjectFeatures().getNodeColor(nodeID))) {
 			jb.setBackground(newColor);
-			this.clonedEpi.getProjectFeatures().setNodeColor(nodeID, newColor);
+			Project.getInstance().getProjectFeatures().setNodeColor(nodeID, newColor);
 			this.projChanged.setChanged(this);
 
 			fireVisualChange();
 		}
 	}
-	
+
 	private void createGUIForModel(LogicalModel m) {
 
 		for (NodeInfo node : m.getNodeOrder()) {
 			String nodeID = node.getNodeID();
 			// Color
 			JButton jButton = new JButton();
-			jButton.setBackground(this.projectFeatures
-					.getNodeColor(nodeID));
+			jButton.setBackground(Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
 			jButton.setToolTipText(nodeID);
 			jButton.addActionListener(new ActionListener() {
 				@Override
@@ -1232,10 +1182,8 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 	}
 
 	private void cloneEpiWithCurrGrid() {
-		this.simEpiClone.cloneEpithelium(this.epithelium,
-				this.vgCellState.getEpitheliumGrid());
-		
+		this.simEpiClone.cloneEpithelium(this.epithelium, this.vgCellState.getEpitheliumGrid());
+
 	}
-	
-	
+
 }

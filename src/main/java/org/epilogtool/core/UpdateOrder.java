@@ -5,6 +5,10 @@ public enum UpdateOrder {
 
 	private String description;
 
+	public static String title() {
+		return "Cells Updating Order";
+	}
+
 	private UpdateOrder(String description) {
 		this.description = description;
 	}
@@ -13,7 +17,7 @@ public enum UpdateOrder {
 		return this.description;
 	}
 
-	public static UpdateOrder string2UpdateOrder(String str) {
+	public static UpdateOrder fromString(String str) {
 		if (str.equals(RANDOM_INDEPENDENT.toString()))
 			return RANDOM_INDEPENDENT;
 		else if (str.equals(RANDOM_ORDER.toString()))

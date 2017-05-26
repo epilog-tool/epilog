@@ -21,14 +21,12 @@ import org.epilogtool.core.cellDynamics.ModelEventManager;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.gui.tab.EpiTab;
 import org.epilogtool.project.ComponentPair;
-import org.epilogtool.project.ProjectFeatures;
+import org.epilogtool.project.Project;
 
 class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
-	private ProjectFeatures projectFeatures;
 
-	public ToolTipTreeCellRenderer(ProjectFeatures projectFeatures) {
-		this.projectFeatures = projectFeatures;
+	public ToolTipTreeCellRenderer() {
 	}
 
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
@@ -90,7 +88,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	private String getTooltipModelGrid(Epithelium epi) {
 		String tipKey = "<html><b>Model(s) in use</b>";
 		for (LogicalModel m : epi.getEpitheliumGrid().getModelSet()) {
-			tipKey += "<br/>- " + this.projectFeatures.getModelName(m);
+			tipKey += "<br/>- " + Project.getInstance().getProjectFeatures().getModelName(m);
 		}
 		tipKey += "</html>";
 		return tipKey;
@@ -100,8 +98,8 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 		String tipKey = "<html>";
 		EpitheliumIntegrationFunctions epiIF = epi.getIntegrationFunctions();
 		for (ComponentPair cp : epiIF.getComponentPair()) {
-			tipKey += "<b>" + cp.getNodeInfo().getNodeID() + " - " + this.projectFeatures.getModelName(cp.getModel())
-					+ "</b><br/>";
+			tipKey += "<b>" + cp.getNodeInfo().getNodeID() + " - "
+					+ Project.getInstance().getProjectFeatures().getModelName(cp.getModel()) + "</b><br/>";
 			ComponentIntegrationFunctions cif = epiIF.getComponentIntegrationFunctions(cp);
 			List<String> lFunctions = cif.getFunctions();
 			for (int i = 0; i < lFunctions.size(); i++) {
@@ -135,7 +133,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 			if (!isEmpty) {
 				tipKey += "<br/>";
 			}
-			tipKey += "<b>" + this.projectFeatures.getModelName(m) + "</b>";
+			tipKey += "<b>" + Project.getInstance().getProjectFeatures().getModelName(m) + "</b>";
 			for (AbstractPerturbation ap : apList) {
 				tipKey += "<br/>&nbsp;. " + ap;
 			}
@@ -152,7 +150,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 		String tipKey = "<html>";
 		for (LogicalModel m : epi.getEpitheliumGrid().getModelSet()) {
 			ModelPriorityClasses mpc = epi.getPriorityClasses(m);
-			tipKey += "- " + this.projectFeatures.getModelName(m) + "</b><br/>";
+			tipKey += "- " + Project.getInstance().getProjectFeatures().getModelName(m) + "</b><br/>";
 			tipKey += "&nbsp;&nbsp;. " + mpc.size() + " class(es)<br/>";
 		}
 		tipKey += "</html>";
@@ -169,8 +167,8 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 		} else {
 			tipKey += "- Sigma <br/>";
 			for (ComponentPair cp : cpSigmas.keySet()) {
-				tipKey += "&nbsp;&nbsp;. " + epi.getProjectFeatures().getModelName(cp.getModel()) + " : "
-						+ cp.getNodeInfo().getNodeID() + " - " + cpSigmas.get(cp) + "<br/>";
+				tipKey += "&nbsp;&nbsp;. " + Project.getInstance().getProjectFeatures().getModelName(cp.getModel())
+						+ " : " + cp.getNodeInfo().getNodeID() + " - " + cpSigmas.get(cp) + "<br/>";
 			}
 		}
 		tipKey += "</html>";
@@ -181,12 +179,12 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 		String tipKey = "<html>";
 		ModelEventManager events = epi.getModelEventManager();
 		for (LogicalModel m : epi.getEpitheliumGrid().getModelSet()) {
-			tipKey += "<b>" + epi.getProjectFeatures().getModelName(m) + "</b><br/>";
+			tipKey += "<b>" + Project.getInstance().getProjectFeatures().getModelName(m) + "</b><br/>";
 			if (!events.containsModel(m)) {
-//				System.out.println("Error tooltiptreecellrenderer");
-				tipKey += "- " + epi.getProjectFeatures().getModelName(m) + "   - Empty <br/>";
+				// System.out.println("Error tooltiptreecellrenderer");
+				tipKey += "- " + Project.getInstance().getProjectFeatures().getModelName(m) + "   - Empty <br/>";
 			} else if (events.getModelEvents(m).isEmpty()) {
-				tipKey += "- " + epi.getProjectFeatures().getModelName(m) + "   - Empty <br/>";
+				tipKey += "- " + Project.getInstance().getProjectFeatures().getModelName(m) + "   - Empty <br/>";
 			} else {
 				tipKey += "   - " + events.getModelEventExpression(m, CellularEvent.PROLIFERATION).getExpression()
 						+ "<br/>";

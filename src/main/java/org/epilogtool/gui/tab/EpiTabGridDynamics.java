@@ -25,23 +25,22 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.tree.TreePath;
 
+import org.antlr.runtime.RecognitionException;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.cellDynamics.CellularEvent;
-import org.epilogtool.core.cellDynamics.ModelHeritableNodes;
 import org.epilogtool.core.cellDynamics.ModelEventExpression;
 import org.epilogtool.core.cellDynamics.ModelEventManager;
+import org.epilogtool.core.cellDynamics.ModelHeritableNodes;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.dialog.DialogMessage;
 import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.project.ComponentPair;
-import org.epilogtool.project.ProjectFeatures;
-
-import org.antlr.runtime.RecognitionException;
+import org.epilogtool.project.Project;
 
 public class EpiTabGridDynamics extends EpiTabDefinitions {
 	private static final long serialVersionUID = 4613661342531014915L;
@@ -60,8 +59,8 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 	private Map<String, JCheckBox> mString2CheckBox;
 
 	public EpiTabGridDynamics(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
-			TabChangeNotifyProj tabChanged, ProjectFeatures projectFeatures) {
-		super(e, path, projChanged, tabChanged, projectFeatures);
+			TabChangeNotifyProj tabChanged) {
+		super(e, path, projChanged, tabChanged);
 	}
 
 	@Override
@@ -105,7 +104,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 	private JComboBox<String> newModelCombobox(List<LogicalModel> modelList) {
 		String[] saSBML = new String[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
-			saSBML[i] = this.projectFeatures.getModelName(modelList.get(i));
+			saSBML[i] = Project.getInstance().getProjectFeatures().getModelName(modelList.get(i));
 		}
 
 		JComboBox<String> jcb = new JComboWideBox<String>(saSBML);
@@ -125,7 +124,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 
 	private void updateCellDivisionPanel() {
 		this.jpCellDivision.removeAll();
-		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
+		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
 
 		JPanel jpHeritableComponents = new JPanel(new GridBagLayout());
 		GridBagConstraints gbcMHN = new GridBagConstraints();
@@ -250,7 +249,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 
 	private void updateHeritableNodes() {
 		this.mString2CheckBox = new HashMap<String, JCheckBox>();
-		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
+		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
 		for (NodeInfo node : m.getNodeOrder()) {
 			if (this.epithelium.getIntegrationComponentPairs().contains(new ComponentPair(m, node)))
 				continue;
@@ -273,12 +272,12 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 	}
 
 	private void selectHeritableNode(String node) {
-		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
+		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
 		this.modelHeritableNodes.addNode(m, node);
 	}
 
 	private void removeHeritableNode(String node) {
-		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
+		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
 		this.modelHeritableNodes.removeNode(m, node);
 	}
 
@@ -291,7 +290,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 
 	private void setExpression(String expression, CellularEvent eventType)
 			throws RecognitionException, RuntimeException {
-		LogicalModel m = this.epithelium.getProjectFeatures().getModel(this.activeModel);
+		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
 		if (expression == null || expression.trim().length() == 0) {
 			this.eventManager.removeCellularEvent(m, eventType);
 			return;
@@ -334,8 +333,7 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 					// TODO Auto-generated catch block
 				} catch (RuntimeException re) {
 					// TODO Auto-generated catch block
-					DialogMessage.showError(this, "Trigger function",
-							"Invalid expression: " + meExpr.getExpression());
+					DialogMessage.showError(this, "Trigger function", "Invalid expression: " + meExpr.getExpression());
 				}
 			}
 			if (this.epithelium.getModelHeritableNodes().hasModel(m) && !this.modelHeritableNodes.hasModel(m)) {
@@ -344,9 +342,8 @@ public class EpiTabGridDynamics extends EpiTabDefinitions {
 		}
 		this.jpModelSelection.removeAll();
 		this.jpModelSelection.add(this.newModelCombobox(modelList));
-		this.activeModel = this.projectFeatures.getModelName(modelList.get(0));
+		this.activeModel = Project.getInstance().getProjectFeatures().getModelName(modelList.get(0));
 		this.updateModelDynamicsPanel();
 		this.getParent().repaint();
 	}
-
 }

@@ -20,7 +20,7 @@ import org.epilogtool.core.cellDynamics.ModelHeritableNodes;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.dialog.DialogMessage;
 import org.epilogtool.project.ComponentPair;
-import org.epilogtool.project.ProjectFeatures;
+import org.epilogtool.project.Project;
 
 public class Epithelium {
 	private String name;
@@ -29,15 +29,13 @@ public class Epithelium {
 	private EpitheliumPerturbations perturbations;
 	private EpitheliumUpdateSchemeIntra priorities;
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
-	private ProjectFeatures projectFeatures;
 
 	// TODO: requires refactoring - these are the static properties used for
 	// cell division
 	private ModelEventManager modelEventManager;
 	private ModelHeritableNodes modelHeritableNodes;
 
-	public Epithelium(int x, int y, String topologyID, String name, LogicalModel m, RollOver rollover,
-			ProjectFeatures projectFeatures)
+	public Epithelium(int x, int y, String topologyID, String name, LogicalModel m, RollOver rollover)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		this.name = name;
@@ -46,22 +44,20 @@ public class Epithelium {
 		this.priorities.addModel(m);
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
 		this.perturbations = new EpitheliumPerturbations();
-		this.projectFeatures = projectFeatures;
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(EpitheliumUpdateSchemeInter.DEFAULT_ALPHA,
-				new HashMap<ComponentPair, Float>(), UpdateOrder.RANDOM_INDEPENDENT, true);
+				new HashMap<ComponentPair, Float>(), UpdateOrder.RANDOM_INDEPENDENT, UpdateCells.UPDATABLECELLS);
 		this.modelEventManager = new ModelEventManager(this.grid.getModelSet());
 		this.modelHeritableNodes = new ModelHeritableNodes();
 		this.modelHeritableNodes.addModel(m);
 	}
 
 	private Epithelium(String name, EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
-			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap, ProjectFeatures pf,
-			EpitheliumUpdateSchemeInter usi, ModelEventManager eventsManager, ModelHeritableNodes modelHeritableNodes) {
+			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap, EpitheliumUpdateSchemeInter usi,
+			ModelEventManager eventsManager, ModelHeritableNodes modelHeritableNodes) {
 		this.name = name;
 		this.grid = grid;
 		this.priorities = epc;
 		this.integrationFunctions = eif;
-		this.projectFeatures = pf;
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
 		this.modelEventManager = eventsManager;
@@ -71,8 +67,8 @@ public class Epithelium {
 
 	public Epithelium clone() {
 		return new Epithelium("CopyOf_" + this.name, this.grid.clone(), this.integrationFunctions.clone(),
-				this.priorities.clone(), this.perturbations.clone(), this.projectFeatures,
-				this.updateSchemeInter.clone(), this.modelEventManager.clone(), this.modelHeritableNodes.clone());
+				this.priorities.clone(), this.perturbations.clone(), this.updateSchemeInter.clone(),
+				this.modelEventManager.clone(), this.modelHeritableNodes.clone());
 	}
 
 	public String toString() {
@@ -170,10 +166,6 @@ public class Epithelium {
 		return this.grid;
 	}
 
-	public ProjectFeatures getProjectFeatures() {
-		return this.projectFeatures;
-	}
-
 	public EpitheliumUpdateSchemeInter getUpdateSchemeInter() {
 		return this.updateSchemeInter;
 	}
@@ -226,7 +218,7 @@ public class Epithelium {
 
 	public void setIntegrationFunction(String nodeID, LogicalModel m, byte value, String function)
 			throws RecognitionException, RuntimeException {
-		NodeInfo node = this.projectFeatures.getNodeInfo(nodeID, m);
+		NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m);
 		ComponentPair cp = new ComponentPair(m, node);
 		if (!this.integrationFunctions.containsComponentPair(cp)) {
 			this.integrationFunctions.addComponent(cp);
@@ -237,10 +229,6 @@ public class Epithelium {
 	public void initPriorityClasses(LogicalModel m) {
 		ModelPriorityClasses mpc = new ModelPriorityClasses(m);
 		this.priorities.addModelPriorityClasses(mpc);
-	}
-
-	public void initComponentFeatures(LogicalModel m) {
-		this.projectFeatures.addModelComponents(m);
 	}
 
 	public void setPriorityClasses(LogicalModel m, String pcs) {
@@ -342,37 +330,37 @@ public class Epithelium {
 
 					if (node.isInput() && !nNode.isInput()) {
 						mes = "Input component " + node.toString() + " is now an internal component.";
-						if (!this.getProjectFeatures().getReplaceMessages().contains(mes)) {
-							this.getProjectFeatures().addReplaceMessages(mes);
+						if (!Project.getInstance().getProjectFeatures().getReplaceMessages().contains(mes)) {
+							Project.getInstance().getProjectFeatures().addReplaceMessages(mes);
 						}
 					}
 					if (!node.isInput() && nNode.isInput()) {
 						mes = "Internal component " + node.toString() + " is now an input component.";
-						if (!this.getProjectFeatures().getReplaceMessages().contains(mes)) {
-							this.getProjectFeatures().addReplaceMessages(mes);
+						if (!Project.getInstance().getProjectFeatures().getReplaceMessages().contains(mes)) {
+							Project.getInstance().getProjectFeatures().addReplaceMessages(mes);
 						}
 					}
 
 					if (node.getMax() > nNode.getMax()) {
 						mes = "Node " + node.toString() + " has now a lower maximum value.";
-						if (!this.getProjectFeatures().getReplaceMessages().contains(mes)) {
-							this.getProjectFeatures().addReplaceMessages(mes);
+						if (!Project.getInstance().getProjectFeatures().getReplaceMessages().contains(mes)) {
+							Project.getInstance().getProjectFeatures().addReplaceMessages(mes);
 						}
 
 					}
 
 					if (node.getMax() < nNode.getMax()) {
 						mes = "Node " + node.toString() + " has now a higher maximum value.";
-						if (!this.getProjectFeatures().getReplaceMessages().contains(mes)) {
-							this.getProjectFeatures().addReplaceMessages(mes);
+						if (!Project.getInstance().getProjectFeatures().getReplaceMessages().contains(mes)) {
+							Project.getInstance().getProjectFeatures().addReplaceMessages(mes);
 						}
 					}
 				}
 			}
 			if (!flag) {
 				mes = "Node " + node.toString() + " does not exist in this new model.";
-				if (!this.getProjectFeatures().getReplaceMessages().contains(mes)) {
-					this.getProjectFeatures().addReplaceMessages(mes);
+				if (!Project.getInstance().getProjectFeatures().getReplaceMessages().contains(mes)) {
+					Project.getInstance().getProjectFeatures().addReplaceMessages(mes);
 				}
 			}
 		}
@@ -445,8 +433,8 @@ public class Epithelium {
 										// TODO Auto-generated catch block
 									} catch (RuntimeException re) {
 										// TODO Auto-generated catch block
-										dialogMsg.addMessage("Integration function: " + node.getNodeID() + ":"
-												+ (i + 1) + " has invalid expression: " + lFunctions.get(i));
+										dialogMsg.addMessage("Integration function: " + node.getNodeID() + ":" + (i + 1)
+												+ " has invalid expression: " + lFunctions.get(i));
 									}
 								}
 							}
@@ -582,8 +570,8 @@ public class Epithelium {
 
 		if (hasChanged) {
 			String msg = "" + this.toString() + ": " + "Priorities were changed.";
-			if (!this.getProjectFeatures().getReplaceMessages().contains(msg)) {
-				this.getProjectFeatures().addReplaceMessages(msg);
+			if (!Project.getInstance().getProjectFeatures().getReplaceMessages().contains(msg)) {
+				Project.getInstance().getProjectFeatures().addReplaceMessages(msg);
 			}
 		}
 	}
@@ -645,8 +633,8 @@ public class Epithelium {
 
 		if (hasChanged) {
 			String msg = "" + this.toString() + ": " + "Perturbations were changed.";
-			if (!this.getProjectFeatures().getReplaceMessages().contains(msg)) {
-				this.getProjectFeatures().addReplaceMessages(msg);
+			if (!Project.getInstance().getProjectFeatures().getReplaceMessages().contains(msg)) {
+				Project.getInstance().getProjectFeatures().addReplaceMessages(msg);
 			}
 		}
 	}
@@ -669,8 +657,8 @@ public class Epithelium {
 			for (int x = 0; x < this.getX(); x++) {
 
 				LogicalModel m = this.getModel(x, y);
-				if (!usedModels.contains(this.getProjectFeatures().getModelName(m))) {
-					usedModels.add(this.getProjectFeatures().getModelName(m));
+				if (!usedModels.contains(Project.getInstance().getProjectFeatures().getModelName(m))) {
+					usedModels.add(Project.getInstance().getProjectFeatures().getModelName(m));
 				}
 			}
 		}

@@ -20,10 +20,9 @@ import org.epilogtool.gui.color.ColorUtils;
 public class DialogRenameSBML extends EscapableDialog {
 	private static final long serialVersionUID = 1877338344309723137L;
 
-
+	private final int JTFCOLS = 25;
+	
 	private JTextField jtfModelName;
-
-
 	private List<String> listModelNames;
 	private boolean bIsOK;
 	private boolean bIsNameOK;
@@ -43,7 +42,7 @@ public class DialogRenameSBML extends EscapableDialog {
 		northPanel.add(text);
 		
 		// Name JTextField
-		this.jtfModelName = new JTextField(model);
+		this.jtfModelName = new JTextField(model, this.JTFCOLS);
 		this.jtfModelName.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {

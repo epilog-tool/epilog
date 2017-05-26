@@ -21,6 +21,7 @@ import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
+import org.epilogtool.core.UpdateCells;
 import org.epilogtool.core.UpdateOrder;
 import org.epilogtool.integration.IFEvaluation;
 import org.epilogtool.integration.IntegrationFunctionExpression;
@@ -38,9 +39,7 @@ public class Simulation {
 	private List<EpitheliumGrid> gridHistory;
 	private List<String> gridHashHistory;
 
-	private boolean allCellsCalledToUpdate;
-
-	private List<Tuple2D<Integer>> schuffledInstances;
+	private List<Tuple2D<Integer>> shuffledInstances;
 	private int indexOrder;
 
 	private boolean stable;
@@ -73,8 +72,6 @@ public class Simulation {
 		this.hasCycle = false;
 		this.ceEvaluator = new CEEvaluation();
 		this.buildPriorityUpdaterCache();
-
-		this.allCellsCalledToUpdate = this.epithelium.getUpdateSchemeInter().getCells2Update();
 	}
 
 	private EpitheliumGrid restrictGridWithPerturbations(EpitheliumGrid grid) {
@@ -128,7 +125,7 @@ public class Simulation {
 
 		Set<ComponentPair> sIntegComponentPairs = this.epithelium.getIntegrationComponentPairs();
 
-		IFEvaluation evaluator = new IFEvaluation(neighboursGrid, this.epithelium.getProjectFeatures());
+		IFEvaluation evaluator = new IFEvaluation(neighboursGrid);
 
 		// Gets the set of cells that can be updated
 		// And builds the default next grid (= current grid)
@@ -166,7 +163,7 @@ public class Simulation {
 			}
 		}
 
-		if (!this.allCellsCalledToUpdate) {
+		if (this.epithelium.getUpdateSchemeInter().getUpdateCells().equals(UpdateCells.UPDATABLECELLS)) {
 			keys = changedKeys;
 		}
 		List<Tuple2D<Integer>> divisionUpdates = new ArrayList<Tuple2D<Integer>>();
@@ -182,29 +179,29 @@ public class Simulation {
 			}
 			List<Tuple2D<Integer>> cellsUpdatedThisStep = new ArrayList<Tuple2D<Integer>>();
 
-			if (this.schuffledInstances == null) {
+			if (this.shuffledInstances == null) {
 				// Create the initial shuffled array of cells
 				Collections.shuffle(keys, RandomFactory.getInstance().getGenerator());
-				this.schuffledInstances = keys;
+				this.shuffledInstances = keys;
 				this.indexOrder = 0;
 			}
 
 			for (int idx = 0; idx < numberCellsCalledToUpdate; idx++, this.indexOrder++) {
-				if (this.indexOrder == this.schuffledInstances.size()) {
+				if (this.indexOrder == this.shuffledInstances.size()) {
 
 					if (this.epithelium.getUpdateSchemeInter().getUpdateOrder().equals(UpdateOrder.RANDOM_ORDER)) {
 						Collections.shuffle(keys, RandomFactory.getInstance().getGenerator());
-						this.schuffledInstances = keys;
+						this.shuffledInstances = keys;
 					}
 					this.indexOrder = 0;
 				}
-				Tuple2D<Integer> cell = this.schuffledInstances.get(indexOrder);
+				Tuple2D<Integer> cell = this.shuffledInstances.get(indexOrder);
 				while (cellsUpdatedThisStep.contains(cell)) {
 					// only valid for RANDOM_ORDER
 					int displace = numberCellsCalledToUpdate - idx + this.indexOrder;
-					int n = RandomFactory.getInstance().nextInt(this.schuffledInstances.size() - displace);
-					Collections.swap(this.schuffledInstances, this.indexOrder, n + displace);
-					cell = this.schuffledInstances.get(this.indexOrder);
+					int n = RandomFactory.getInstance().nextInt(this.shuffledInstances.size() - displace);
+					Collections.swap(this.shuffledInstances, this.indexOrder, n + displace);
+					cell = this.shuffledInstances.get(this.indexOrder);
 				}
 				cellsUpdatedThisStep.add(cell);
 			}
@@ -447,7 +444,7 @@ public class Simulation {
 			for (LogicalModel model : grid.getModelSet()) {
 				for (NodeInfo node : model.getNodeOrder()) {
 					for (byte i = 1; i <= node.getMax(); i++) {
-						String nodeID = node.getNodeID()+ " " + i;
+						String nodeID = node.getNodeID() + " " + i;
 						percentageHistory.get(index).put(nodeID, grid.getPercentage(node.getNodeID(), i));
 					}
 				}

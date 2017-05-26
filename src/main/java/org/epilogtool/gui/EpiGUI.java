@@ -40,6 +40,7 @@ import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.dialog.DialogAbout;
 import org.epilogtool.gui.dialog.DialogEditEpithelium;
+import org.epilogtool.gui.dialog.DialogEditPreferences;
 import org.epilogtool.gui.dialog.DialogMessage;
 import org.epilogtool.gui.dialog.DialogNewEpithelium;
 import org.epilogtool.gui.dialog.DialogRenameSBML;
@@ -66,13 +67,11 @@ import org.epilogtool.io.FileIO;
 import org.epilogtool.project.Project;
 
 /**
- * Class that defines the GUI of EPILOG. This is the main window where the GUI is built.
- * Panels (or more specifically containers) can be added. The containers added are:
- * epiMenu 			-> toolbar (0-File; )
- * epiMainFrame	    ->
- * epiRightFrame	->
- * projDescPanel    -> Where the SBML panel is stored
- * epiTreePanel     -> Where the epithelium is defined
+ * Class that defines the GUI of EPILOG. This is the main window where the GUI
+ * is built. Panels (or more specifically containers) can be added. The
+ * containers added are: epiMenu -> toolbar (0-File; ) epiMainFrame ->
+ * epiRightFrame -> projDescPanel -> Where the SBML panel is stored epiTreePanel
+ * -> Where the epithelium is defined
  *
  */
 
@@ -91,7 +90,6 @@ public class EpiGUI extends JFrame {
 	private JTabbedPane epiRightFrame;
 	private ProjDescPanel projDescPanel;
 	private EpiTreePanel epiTreePanel;
-	private Project project;
 	private CloseTabPopupMenu closeTabPopupMenu;
 
 	private static EpiGUI epigui;
@@ -102,17 +100,12 @@ public class EpiGUI extends JFrame {
 		}
 		return epigui;
 	}
-	
-	public byte getNodeMax(String nodeID) {
-		return this.project.getProjectFeatures().getNodeMax(nodeID);
-	}
 
 	private EpiGUI() {
 		super(TITLE_APPNAME);
 
 		try {
-			UIManager.setLookAndFeel(UIManager
-					.getCrossPlatformLookAndFeelClassName());
+			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 			// UI Alternatives
 			// com.sun.java.swing.plaf.gtk.GTKLookAndFeel <- +/-
 			// com.sun.java.swing.plaf.motif.MotifLookAndFeel <- ok
@@ -166,8 +159,7 @@ public class EpiGUI extends JFrame {
 		// END -- Menu bar
 
 		JPanel topLeftFrame = new JPanel();
-		topLeftFrame
-				.setLayout(new BoxLayout(topLeftFrame, BoxLayout.PAGE_AXIS));
+		topLeftFrame.setLayout(new BoxLayout(topLeftFrame, BoxLayout.PAGE_AXIS));
 		this.projDescPanel = new ProjDescPanel(sbmlMenu);
 		topLeftFrame.add(this.projDescPanel);
 
@@ -189,12 +181,10 @@ public class EpiGUI extends JFrame {
 
 		// Epithelium list
 		this.epiTreePanel = new EpiTreePanel(epiMenu, toolsMenu);
-		JSplitPane epiLeftFrame = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				topLeftFrame, this.epiTreePanel);
+		JSplitPane epiLeftFrame = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topLeftFrame, this.epiTreePanel);
 		epiLeftFrame.setDividerSize(DIVIDER_SIZE);
 
-		this.epiMainFrame = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				epiLeftFrame, this.epiRightFrame);
+		this.epiMainFrame = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, epiLeftFrame, this.epiRightFrame);
 		this.epiMainFrame.setDividerSize(DIVIDER_SIZE);
 		this.epiMainFrame.setDividerLocation(DIVIDER_POS_X);
 
@@ -240,8 +230,7 @@ public class EpiGUI extends JFrame {
 
 	public void aboutDialog() {
 		Window win = SwingUtilities.getWindowAncestor(this);
-		JDialog dialog = new JDialog(win, "About",
-				ModalityType.APPLICATION_MODAL);
+		JDialog dialog = new JDialog(win, "About", ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(new DialogAbout());
 		dialog.pack();
 		dialog.setLocationRelativeTo(null);
@@ -257,26 +246,20 @@ public class EpiGUI extends JFrame {
 		this.userMessage(msg, title, JOptionPane.ERROR_MESSAGE);
 	}
 
-	public void newEpithelium() throws InstantiationException,
-			IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException,
-			SecurityException, ClassNotFoundException {
-		DialogNewEpithelium dialogPanel = new DialogNewEpithelium(
-				this.project.getModelNames(),
-				this.project.getEpitheliumNameList());
+	public void newEpithelium() throws InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+		DialogNewEpithelium dialogPanel = new DialogNewEpithelium(Project.getInstance().getModelNames(),
+				Project.getInstance().getEpitheliumNameList());
 
 		Window win = SwingUtilities.getWindowAncestor(this);
-		JDialog dialog = new JDialog(win, "New Epithelium",
-				ModalityType.APPLICATION_MODAL);
+		JDialog dialog = new JDialog(win, "New Epithelium", ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(dialogPanel);
 		dialog.pack();
 		dialog.setLocationRelativeTo(null);
 		dialog.setVisible(true);
 		if (dialogPanel.isDefined()) {
-			Epithelium newEpi = this.project.newEpithelium(
-					dialogPanel.getEpitheliumWidth(),
-					dialogPanel.getEpitheliumHeight(),
-					dialogPanel.getTopologyID(), dialogPanel.getEpiName(),
+			Epithelium newEpi = Project.getInstance().newEpithelium(dialogPanel.getEpitheliumWidth(),
+					dialogPanel.getEpitheliumHeight(), dialogPanel.getTopologyID(), dialogPanel.getEpiName(),
 					dialogPanel.getSBMLName(), dialogPanel.getRollOver());
 			this.addEpithelium2JTree(newEpi);
 		}
@@ -284,24 +267,23 @@ public class EpiGUI extends JFrame {
 
 	public void cloneEpithelium() {
 		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
-		Epithelium epiClone = this.project.cloneEpithelium(epi);
+		Epithelium epiClone = Project.getInstance().cloneEpithelium(epi);
 		this.addEpithelium2JTree(epiClone);
 	}
 
 	private void addEpithelium2JTree(Epithelium epi) {
 		this.epiTreePanel.addEpi2JTree(epi);
-		this.project.setChanged(true);
+		Project.getInstance().setChanged(true);
 		this.validateGUI();
 	}
 
 	public void deleteEpithelium() {
 		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
-		int result = JOptionPane.showConfirmDialog(this,
-				"Do you really want to delete epithelium:\n" + epi + " ?",
+		int result = JOptionPane.showConfirmDialog(this, "Do you really want to delete epithelium:\n" + epi + " ?",
 				"Question", JOptionPane.YES_NO_OPTION);
 		if (result == JOptionPane.YES_OPTION) {
 			// Remove from core
-			this.project.removeEpithelium(epi);
+			Project.getInstance().removeEpithelium(epi);
 			// Remove from EpiTabs
 			for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
 				EpiTab epitab = (EpiTab) this.epiRightFrame.getComponentAt(i);
@@ -309,23 +291,19 @@ public class EpiGUI extends JFrame {
 					epiRightFrame.removeTabAt(i);
 				}
 			}
-			this.epiTreePanel.remove(this.project.getProjectFeatures());
-			this.project.setChanged(true);
+			this.epiTreePanel.remove();
+			Project.getInstance().setChanged(true);
 			this.validateGUI();
 		}
 	}
 
-	public void editEpithelium() throws InstantiationException,
-			IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException,
-			SecurityException, ClassNotFoundException {
+	public void editEpithelium() throws InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
 
-		DialogEditEpithelium dialogPanel = new DialogEditEpithelium(epi,
-				this.project.getEpitheliumNameList());
+		DialogEditEpithelium dialogPanel = new DialogEditEpithelium(epi, Project.getInstance().getEpitheliumNameList());
 		Window win = SwingUtilities.getWindowAncestor(this);
-		JDialog dialog = new JDialog(win, "Edit Epithelium",
-				ModalityType.APPLICATION_MODAL);
+		JDialog dialog = new JDialog(win, "Edit Epithelium", ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(dialogPanel);
 		dialog.pack();
 		dialog.setLocationRelativeTo(null);
@@ -337,22 +315,16 @@ public class EpiGUI extends JFrame {
 
 			int gridX = dialogPanel.getGridX();
 			int gridY = dialogPanel.getGridY();
-			if (gridX != epi.getX()
-					|| gridY != epi.getY()
-					|| !dialogPanel.getTopologyID().equals(
-							epi.getEpitheliumGrid().getTopology()
-									.getDescription())) {
-				epi.updateEpitheliumGrid(gridX, gridY,
-						dialogPanel.getTopologyID(), dialogPanel.getRollOver());
+			if (gridX != epi.getX() || gridY != epi.getY()
+					|| !dialogPanel.getTopologyID().equals(epi.getEpitheliumGrid().getTopology().getDescription())) {
+				epi.updateEpitheliumGrid(gridX, gridY, dialogPanel.getTopologyID(), dialogPanel.getRollOver());
 				// The Grid characteristics changed... -> close all tabs
 				this.epiTabCloseActiveEpi(true);
 				bChanged = true;
 			}
 
 			// Update just the RollOver, if not together w/ TopologyLayout
-			if (!bChanged
-					&& epi.getEpitheliumGrid().getTopology().getRollOver() != dialogPanel
-							.getRollOver()) {
+			if (!bChanged && epi.getEpitheliumGrid().getTopology().getRollOver() != dialogPanel.getRollOver()) {
 				epi.getEpitheliumGrid().setRollOver(dialogPanel.getRollOver());
 				bChanged = true;
 			}
@@ -362,18 +334,16 @@ public class EpiGUI extends JFrame {
 				epi.setName(dialogPanel.getEpitheliumName());
 				// Update open Tab names
 				for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
-					EpiTab epitab = (EpiTab) this.epiRightFrame
-							.getComponentAt(i);
+					EpiTab epitab = (EpiTab) this.epiRightFrame.getComponentAt(i);
 					if (epitab.containsEpithelium(epi)) {
 						String title = epi.getName() + ":" + epitab.getName();
-						((CloseTabButton) epiRightFrame.getTabComponentAt(i))
-								.changeTitle(title);
+						((CloseTabButton) epiRightFrame.getTabComponentAt(i)).changeTitle(title);
 					}
 				}
 				bChanged = true;
 			}
 
-			this.project.setChanged(bChanged);
+			Project.getInstance().setChanged(bChanged);
 			this.validateGUI();
 		}
 	}
@@ -382,25 +352,22 @@ public class EpiGUI extends JFrame {
 		if (!this.canClose("Do you really want a new project?")) {
 			return;
 		}
-		this.project = new Project();
+		Project.getInstance().reset();
 		this.cleanGUI();
 		this.validateGUI();
 	}
 
 	private void validateGUI() {
-		if (this.project.hasChanged()
-				&& !this.getTitle().endsWith(TITLE_MODIFIED_SYMBOL)) {
+		if (Project.getInstance().hasChanged() && !this.getTitle().endsWith(TITLE_MODIFIED_SYMBOL)) {
 			this.setTitle(this.getTitle() + TITLE_MODIFIED_SYMBOL);
 		}
-		if (!this.project.hasChanged()
-				&& this.getTitle().endsWith(TITLE_MODIFIED_SYMBOL)) {
-			this.setTitle(this.getTitle().substring(0,
-					this.getTitle().length() - 1));
+		if (!Project.getInstance().hasChanged() && this.getTitle().endsWith(TITLE_MODIFIED_SYMBOL)) {
+			this.setTitle(this.getTitle().substring(0, this.getTitle().length() - 1));
 		}
 
 		// File Menu
-		boolean bIsValid = this.project.getFilenamePEPS() != null ? this.project
-				.hasChanged() : this.projDescPanel.countModels() > 0;
+		boolean bIsValid = Project.getInstance().getFilenamePEPS() != null ? Project.getInstance().hasChanged()
+				: this.projDescPanel.countModels() > 0;
 		JMenu file = this.epiMenu.getMenu(0);
 		file.getItem(4).setEnabled(bIsValid); // Save
 		file.getItem(5).setEnabled(this.projDescPanel.countModels() > 0); // SaveAs
@@ -411,15 +378,14 @@ public class EpiGUI extends JFrame {
 		// Epithelium Menu
 		this.epiTreePanel.updateEpiMenuItems();
 		this.epiTreePanel.validateJTreeExpansion();
-		
-		//Tools Menu
-		
+
+		// Tools Menu
+
 	}
 
 	private boolean canClose(String msg) {
-		if (this.projDescPanel.countModels() > 0 && this.project.hasChanged()) {
-			int n = JOptionPane.showConfirmDialog(this,
-					"You have unsaved changes!\n" + msg, "Question",
+		if (this.projDescPanel.countModels() > 0 && Project.getInstance().hasChanged()) {
+			int n = JOptionPane.showConfirmDialog(this, "You have unsaved changes!\n" + msg, "Question",
 					JOptionPane.YES_NO_OPTION);
 			if (n == JOptionPane.YES_OPTION) {
 				return true;
@@ -438,43 +404,52 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
-	public void loadProject() throws InstantiationException,
-			IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException,
-			SecurityException, ClassNotFoundException {
+	public void editPreferences() {
+		DialogEditPreferences dialogPanel = new DialogEditPreferences();
+		Window win = SwingUtilities.getWindowAncestor(this);
+		JDialog dialog = new JDialog(win, "Edit Preferences", ModalityType.APPLICATION_MODAL);
+		dialog.getContentPane().add(dialogPanel);
+		dialog.pack();
+		dialog.setLocationRelativeTo(null);
+		dialog.setVisible(true);
+
+		if (dialogPanel.isDefined()) {
+			OptionStore.setOption("PrefsSimUpdates", dialogPanel.getSimulationUpdate());
+			OptionStore.setOption("PrefsSimHistory", dialogPanel.getSimulationHistory());
+		}
+	}
+
+	public void loadProject() throws InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		if (!this.canClose("Do you really want to load another project?")) {
 			return;
 		}
 		if (this.loadPEPS()) {
 			this.cleanGUI();
-			this.setTitle(TITLE_APPNAME + " - "
-					+ this.project.getFilenamePEPS());
+			this.setTitle(TITLE_APPNAME + " - " + Project.getInstance().getFilenamePEPS());
 			// this.projDescPanel.setDimension(this.project.getX(),
 			// this.project.getY());
-			for (String sbml : this.project.getModelNames()) {
+			for (String sbml : Project.getInstance().getModelNames()) {
 				this.projDescPanel.loadModel(sbml);
 			}
-			this.project.setChanged(false);
-			this.epiTreePanel.initEpitheliumJTree(this.project
-					.getProjectFeatures());
-			for (Epithelium epi : this.project.getEpitheliumList()) {
+			Project.getInstance().setChanged(false);
+			this.epiTreePanel.initEpitheliumJTree();
+			for (Epithelium epi : Project.getInstance().getEpitheliumList()) {
 				this.epiTreePanel.addEpi2JTree(epi);
 			}
 			this.validateGUI();
 		}
 	}
 
-	private boolean loadPEPS() throws InstantiationException,
-			IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException,
-			SecurityException, ClassNotFoundException {
+	private boolean loadPEPS() throws InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		if (!this.canClose("Do you really want load another project?")) {
 			return false;
 		}
 		String filename = FileSelectionHelper.openFilename("peps");
 		if (filename != null) {
 			try {
-				this.project = FileIO.loadPEPS(filename);
+				FileIO.loadPEPS(filename);
 				return true;
 			} catch (IOException e1) {
 				e1.printStackTrace();
@@ -483,27 +458,25 @@ public class EpiGUI extends JFrame {
 		return false;
 	}
 
-	public void loadPEPS(String filename) throws InstantiationException,
-			IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException,
-			SecurityException, ClassNotFoundException {
+	public void loadPEPS(String filename)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		if (!this.canClose("Do you really want load another project?")) {
 			return;
 		}
 		try {
-			this.project = FileIO.loadPEPS(filename);
+			FileIO.loadPEPS(filename);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		this.cleanGUI();
-		this.setTitle(TITLE_APPNAME + " - " + this.project.getFilenamePEPS());
-		for (String sbml : this.project.getModelNames()) {
+		this.setTitle(TITLE_APPNAME + " - " + Project.getInstance().getFilenamePEPS());
+		for (String sbml : Project.getInstance().getModelNames()) {
 			this.projDescPanel.loadModel(sbml);
 		}
 
-		this.epiTreePanel
-				.initEpitheliumJTree(this.project.getProjectFeatures());
-		for (Epithelium epi : this.project.getEpitheliumList()) {
+		this.epiTreePanel.initEpitheliumJTree();
+		for (Epithelium epi : Project.getInstance().getEpitheliumList()) {
 			this.epiTreePanel.addEpi2JTree(epi);
 		}
 		this.validateGUI();
@@ -514,136 +487,130 @@ public class EpiGUI extends JFrame {
 
 		if (filename != null) {
 			filename += (filename.endsWith(".peps") ? "" : ".peps");
-			FileIO.savePEPS(this.project, filename);
-			this.project.setFilenamePEPS(filename);
-			this.project.setChanged(false);
+			FileIO.savePEPS(filename);
+			Project.getInstance().setFilenamePEPS(filename);
+			Project.getInstance().setChanged(false);
 			this.setTitle(TITLE_APPNAME + " - " + filename);
 			this.validateGUI();
 		}
 	}
 
 	public void savePEPS() throws IOException {
-		String fName = this.project.getFilenamePEPS();
+		String fName = Project.getInstance().getFilenamePEPS();
 		if (fName == null) {
 			saveAsPEPS();
 		} else {
-			FileIO.savePEPS(this.project, fName);
-			this.project.setChanged(false);
+			FileIO.savePEPS(fName);
+			Project.getInstance().setChanged(false);
 			this.validateGUI();
 		}
 	}
 
 	public void loadSBML() throws IOException {
-		FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter(
-				"sbml files (*.sbml)", "sbml");
+		FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter("sbml files (*.sbml)", "sbml");
 		JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(xmlfilter);
 		fc.setDialogTitle("Open file");
 		if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			if (this.projDescPanel.hasModel(fc.getSelectedFile().getName())) {
 				JOptionPane.showMessageDialog(this,
-						"A model with the same name '"
-								+ fc.getSelectedFile().getName()
-								+ "' already exists!", "Warning",
-						JOptionPane.WARNING_MESSAGE);
+						"A model with the same name '" + fc.getSelectedFile().getName() + "' already exists!",
+						"Warning", JOptionPane.WARNING_MESSAGE);
 				return;
-				
+
 			}
 			List<NodeInfo> lNodes = FileIO.loadSBMLModel(fc.getSelectedFile()).getNodeOrder();
-			for (NodeInfo node: lNodes) {
-				for (LogicalModel model: this.project.getProjectFeatures().getModels()){
-					for (NodeInfo ExistingNode: model.getNodeOrder()) {
-						if (node.toString().equals(ExistingNode.toString())){
-							if (node.getMax()!=ExistingNode.getMax());
-								JOptionPane.showMessageDialog(this,
-										"A component with the same name and with different maximum value exists in the project!", "Warning",
-										JOptionPane.WARNING_MESSAGE);
-								return;
+			for (NodeInfo node : lNodes) {
+				for (LogicalModel model : Project.getInstance().getProjectFeatures().getModels()) {
+					for (NodeInfo ExistingNode : model.getNodeOrder()) {
+						if (node.toString().equals(ExistingNode.toString())) {
+							if (node.getMax() != ExistingNode.getMax())
+								;
+							JOptionPane.showMessageDialog(this,
+									"A component with the same name and with different maximum value exists in the project!",
+									"Warning", JOptionPane.WARNING_MESSAGE);
+							return;
 						}
 					}
 				}
 
 			}
-			
+
 			this.projDescPanel.loadModel(fc.getSelectedFile().getName());
 			LogicalModel m = FileIO.loadSBMLModel(fc.getSelectedFile());
-			this.project.loadModel(fc.getSelectedFile().getName(), m);
+			Project.getInstance().loadModel(fc.getSelectedFile().getName(), m);
 			this.notifyEpiModelGrids();
 			this.validateGUI();
 		}
 	}
 
-	
 	/**
-	 * To rename an SBML a dialog has to be created, with the new name to be inserted. 
-	 * It does not allow the same name of another model (with or without the extension ".sbml").
-	 * Once the new name is validated
+	 * To rename an SBML a dialog has to be created, with the new name to be
+	 * inserted. It does not allow the same name of another model (with or
+	 * without the extension ".sbml"). Once the new name is validated
 	 */
 	public void renameSBML() {
-		//TODO: Make sure that the model does not change place in list
-		//TODO: If a tab is open, and the name of a model is changed, should it just be refreshed?
+		// TODO: Make sure that the model does not change place in list
+		// TODO: If a tab is open, and the name of a model is changed, should it
+		// just be refreshed?
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
 			DialogRenameSBML dialogPanel = new DialogRenameSBML(model,
-					this.project.getComponentFeatures().getGUIModelNames());
+					Project.getInstance().getProjectFeatures().getGUIModelNames());
 			Window win = SwingUtilities.getWindowAncestor(this);
-			JDialog dialog = new JDialog(win, "Rename SBML",
-					ModalityType.APPLICATION_MODAL);
+			JDialog dialog = new JDialog(win, "Rename SBML", ModalityType.APPLICATION_MODAL);
 			dialog.setSize(300, 50);
 			dialog.getContentPane().add(dialogPanel);
 			dialog.pack();
 			dialog.setLocationRelativeTo(null);
 			dialog.setVisible(true);
-		
-			if (dialogPanel.getButtonAction()){
 
-			boolean bChanged = false;
-			// Update Model name
-			String newModel = dialogPanel.getModelName();
-			if (newModel.endsWith(".SBML")){
-				newModel = newModel.substring(0, newModel.length()-5) + ".sbml";
+			if (dialogPanel.getButtonAction()) {
+
+				boolean bChanged = false;
+				// Update Model name
+				String newModel = dialogPanel.getModelName();
+				if (newModel.endsWith(".SBML")) {
+					newModel = newModel.substring(0, newModel.length() - 5) + ".sbml";
+				}
+				if (!model.equals(dialogPanel.getModelName())) {
+					// If the user did not add the .sbml extension, it is added.
+					newModel += (newModel.endsWith(".sbml") ? "" : ".sbml");
+					Project.getInstance().getProjectFeatures().renameModel(model, newModel);
+					this.projDescPanel.renameModel(model, newModel);
+					this.notifyEpiModelGrids();
+
+					bChanged = true;
+				}
+				Project.getInstance().setChanged(bChanged);
+				this.validateGUI();
 			}
-			if (!model.equals(dialogPanel.getModelName())) {
-				//If the user did not add the .sbml extension, it is added.
-				newModel += (newModel.endsWith(".sbml") ? "" : ".sbml");
-				this.project.getComponentFeatures().renameModel(model,newModel);
-				this.projDescPanel.renameModel(model,newModel);
-				this.notifyEpiModelGrids();
-				
-				bChanged = true;
-			}
-			this.project.setChanged(bChanged);
-			this.validateGUI();
-			}
-//			
-			
+			//
+
+		} else {
+			JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning", JOptionPane.WARNING_MESSAGE);
 		}
-		else {
-				JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning",
-						JOptionPane.WARNING_MESSAGE); 
-			}
 		this.validateGUI();
 		projDescPanel.repaint();
 	}
-	
+
 	/**
 	 * 
 	 */
 	public void removeSBML() {
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
-			if (this.project.removeModel(model)) {
+			if (Project.getInstance().removeModel(model)) {
 				this.projDescPanel.removeModel(model);
 				this.notifyEpiModelGrids();
 			} else {
-				JOptionPane.showMessageDialog(this, "Model '" + model
-						+ "' is being used!", "Warning",
+				JOptionPane.showMessageDialog(this, "Model '" + model + "' is being used!", "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			}
 		}
 		this.validateGUI();
 	}
-	
+
 	/**
 	 * @throws IOException
 	 */
@@ -653,7 +620,7 @@ public class EpiGUI extends JFrame {
 			String filename = FileSelectionHelper.saveFilename("sbml");
 			if (filename != null) {
 				filename += (filename.endsWith(".sbml") ? "" : ".sbml");
-				LogicalModel logicalModel = this.project.getComponentFeatures().getModel(stringModel);
+				LogicalModel logicalModel = Project.getInstance().getProjectFeatures().getModel(stringModel);
 				FileOutputStream outSBML = new FileOutputStream(filename);
 				SBMLFormat sbmlFormat = new SBMLFormat();
 				sbmlFormat.export(logicalModel, outSBML);
@@ -661,13 +628,12 @@ public class EpiGUI extends JFrame {
 				this.validateGUI();
 			}
 		} else {
-			JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning",
-					JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning", JOptionPane.WARNING_MESSAGE);
 		}
 		this.validateGUI();
-		
+
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -675,57 +641,47 @@ public class EpiGUI extends JFrame {
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
 			// TODO:
-			if (this.project.getHashModel2EpitheliumList().get(model).isEmpty()){
+			if (Project.getInstance().getHashModel2EpitheliumList().get(model).isEmpty()) {
 				JOptionPane.showMessageDialog(null, "There are no epitheliums with this model.");
-			}
-			else {
-	
-			DialogReplaceSBML dialogPanel = new DialogReplaceSBML(model,
-						this.project.getComponentFeatures().getGUIModelNames(),this.project.getHashModel2EpitheliumList().get(model));
-			Window win = SwingUtilities.getWindowAncestor(this);
-			JDialog dialog = new JDialog(win, "Replace SBML",
-						ModalityType.APPLICATION_MODAL);
+			} else {
+
+				DialogReplaceSBML dialogPanel = new DialogReplaceSBML(model,
+						Project.getInstance().getProjectFeatures().getGUIModelNames(),
+						Project.getInstance().getHashModel2EpitheliumList().get(model));
+				Window win = SwingUtilities.getWindowAncestor(this);
+				JDialog dialog = new JDialog(win, "Replace SBML", ModalityType.APPLICATION_MODAL);
 				dialog.getContentPane().add(dialogPanel);
 				dialog.pack();
 				dialog.setLocationRelativeTo(null);
 				dialog.setVisible(true);
 
-			// Update Model name
-			String newModel = dialogPanel.getModelName();
-			List<String> selectedEpiList = dialogPanel.getEpiList();
-	
-			
-			if (dialogPanel.isDefined()){
-				this.project.getProjectFeatures().initializeReplaceMessages();
-				DialogMessage dialogMsg = new DialogMessage();
-				this.project.replaceModel(model, newModel, selectedEpiList, dialogMsg);
-				dialogMsg.show("Replace Model");
-			
-				JPanel jp = new JPanel();
-				String msgs = join(project.getProjectFeatures().getReplaceMessages(),"\n");
-				JOptionPane.showMessageDialog(jp,
-						msgs, "Warning",
-						JOptionPane.WARNING_MESSAGE);
+				// Update Model name
+				String newModel = dialogPanel.getModelName();
+				List<String> selectedEpiList = dialogPanel.getEpiList();
+
+				if (dialogPanel.isDefined()) {
+					Project.getInstance().getProjectFeatures().initializeReplaceMessages();
+					DialogMessage dialogMsg = new DialogMessage();
+					Project.getInstance().replaceModel(model, newModel, selectedEpiList, dialogMsg);
+					dialogMsg.show("Replace Model");
+
+					JPanel jp = new JPanel();
+					String msgs = join(Project.getInstance().getProjectFeatures().getReplaceMessages(), "\n");
+					JOptionPane.showMessageDialog(jp, msgs, "Warning", JOptionPane.WARNING_MESSAGE);
+				}
+
 			}
-			
-		} }else {
-			JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning",
-					JOptionPane.WARNING_MESSAGE);
+		} else {
+			JOptionPane.showMessageDialog(this, "You have to select a model!", "Warning", JOptionPane.WARNING_MESSAGE);
 		}
-		
 
 		this.validateGUI();
 	}
-	
-	
-	
-
 
 	private void cleanGUI() {
 		// Close & delete all TABS
 		this.setTitle(TITLE_APPNAME + TITLE_UNTITLED);
-		this.epiTreePanel
-				.initEpitheliumJTree(this.project.getProjectFeatures());
+		this.epiTreePanel.initEpitheliumJTree();
 		while (this.epiRightFrame.getTabCount() > 0) {
 			this.epiRightFrame.removeTabAt(0);
 		}
@@ -758,28 +714,19 @@ public class EpiGUI extends JFrame {
 			TabChangeNotifyProj tabChanged = new TabChangeNotifyProj();
 			ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
 			if (tabName.equals(EpiTab.TAB_INITCONDITIONS)) {
-				epiTab = new EpiTabInitialConditions(epi, selPath, projChanged,
-						tabChanged, this.project.getProjectFeatures());
+				epiTab = new EpiTabInitialConditions(epi, selPath, projChanged, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_INTEGRATION)) {
-				epiTab = new EpiTabInputDefinition(epi, selPath,
-						projChanged, tabChanged,
-						this.project.getProjectFeatures());
+				epiTab = new EpiTabInputDefinition(epi, selPath, projChanged, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_PERTURBATIONS)) {
-				epiTab = new EpiTabPerturbations(epi, selPath, projChanged,
-						tabChanged, this.project.getProjectFeatures());
+				epiTab = new EpiTabPerturbations(epi, selPath, projChanged, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_PRIORITIES)) {
-				epiTab = new EpiTabModelUpdateScheme(epi, selPath, projChanged,
-						tabChanged, this.project.getProjectFeatures());
+				epiTab = new EpiTabModelUpdateScheme(epi, selPath, projChanged, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_EPIUPDATING)) {
-				epiTab = new EpiTabEpithelialUpdateScheme(epi, selPath,
-						projChanged, tabChanged,
-						this.project.getProjectFeatures());
+				epiTab = new EpiTabEpithelialUpdateScheme(epi, selPath, projChanged, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_MODELGRID)) {
-				epiTab = new EpiTabModelGrid(epi, selPath, projChanged,
-						tabChanged, this.project.getProjectFeatures());
+				epiTab = new EpiTabModelGrid(epi, selPath, projChanged, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_CELLDIVISION)) {
-				epiTab = new EpiTabGridDynamics(epi, selPath, projChanged,
-						tabChanged, this.project.getProjectFeatures());
+				epiTab = new EpiTabGridDynamics(epi, selPath, projChanged, tabChanged);
 			}
 			if (epiTab != null) {
 				this.epiRightFrame.addTab(title, epiTab);
@@ -793,8 +740,7 @@ public class EpiGUI extends JFrame {
 					@Override
 					public void mousePressed(MouseEvent e) {
 						if (e.isPopupTrigger()) {
-							closeTabPopupMenu.show(e.getComponent(), e.getX(),
-									e.getY());
+							closeTabPopupMenu.show(e.getComponent(), e.getX(), e.getY());
 						}
 					}
 
@@ -811,8 +757,7 @@ public class EpiGUI extends JFrame {
 					}
 				});
 
-				CloseTabButton tabButton = new CloseTabButton(title,
-						this.epiRightFrame);
+				CloseTabButton tabButton = new CloseTabButton(title, this.epiRightFrame);
 				tabIndex = this.epiRightFrame.getTabCount() - 1;
 				this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
 			}
@@ -842,8 +787,7 @@ public class EpiGUI extends JFrame {
 	public void epiTabCloseActiveTab() {
 		EpiTab epi = (EpiTab) this.epiRightFrame.getSelectedComponent();
 		if (epi != null && epi.canClose()) {
-			this.epiRightFrame.removeTabAt(this.epiRightFrame
-					.getSelectedIndex());
+			this.epiRightFrame.removeTabAt(this.epiRightFrame.getSelectedIndex());
 		}
 	}
 
@@ -888,6 +832,7 @@ public class EpiGUI extends JFrame {
 			}
 		}
 	}
+
 	public void openMonteCarloTab() {
 		// JTree
 		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
@@ -895,8 +840,7 @@ public class EpiGUI extends JFrame {
 		int tabIndex = -1;
 		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
 			EpiTab epiInTab = (EpiTab) this.epiRightFrame.getComponentAt(i);
-			if (epiInTab.containsEpithelium(epi)
-					&& epiInTab.getName().endsWith("MonteCarlo")) {
+			if (epiInTab.containsEpithelium(epi) && epiInTab.getName().endsWith("MonteCarlo")) {
 				tabIndex = i;
 				break;
 			}
@@ -905,15 +849,12 @@ public class EpiGUI extends JFrame {
 		if (tabIndex < 0) {
 			ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
 			TreePath path = this.epiTreePanel.getSelectionEpiPath();
-			tab = new EpiTabMonteCarlo(epi,
-					path, projChanged,
-					this.project.getProjectFeatures(), new SimulationEpiClone());
+			tab = new EpiTabMonteCarlo(epi, path, projChanged, new SimulationEpiClone());
 			String title = epi.getName() + ":MonteCarlo";
 			this.epiRightFrame.addTab(title, tab);
 			tab.initialize();
 
-			CloseTabButton tabButton = new CloseTabButton(title,
-					this.epiRightFrame);
+			CloseTabButton tabButton = new CloseTabButton(title, this.epiRightFrame);
 			tabIndex = this.epiRightFrame.getTabCount() - 1;
 			this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
 
@@ -931,8 +872,7 @@ public class EpiGUI extends JFrame {
 		int tabIndex = -1;
 		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
 			EpiTab epiInTab = (EpiTab) this.epiRightFrame.getComponentAt(i);
-			if (epiInTab.containsEpithelium(epi)
-					&& epiInTab.getName().endsWith(EpiTab.TOOL_SIMULATION)) {
+			if (epiInTab.containsEpithelium(epi) && epiInTab.getName().endsWith(EpiTab.TOOL_SIMULATION)) {
 				tabIndex = i;
 				break;
 			}
@@ -941,15 +881,13 @@ public class EpiGUI extends JFrame {
 		if (tabIndex < 0) {
 			ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
 			TreePath path = this.epiTreePanel.getSelectionEpiPath();
-			tab = new EpiTabSimulation(epi,
-					path, projChanged,
-					this.project.getProjectFeatures(), new SimulationEpiClone());
+			tab = new EpiTabSimulation(epi, path, projChanged,
+					new SimulationEpiClone());
 			String title = epi.getName() + ":Simulation";
 			this.epiRightFrame.addTab(title, tab);
 			tab.initialize();
 
-			CloseTabButton tabButton = new CloseTabButton(title,
-					this.epiRightFrame);
+			CloseTabButton tabButton = new CloseTabButton(title, this.epiRightFrame);
 			tabIndex = this.epiRightFrame.getTabCount() - 1;
 			this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
 
@@ -973,8 +911,7 @@ public class EpiGUI extends JFrame {
 		// restart
 		ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
 		EpiTab tab;
-		tab = new EpiTabSimulation(epi, path, projChanged,
-				this.project.getProjectFeatures(), new SimulationEpiClone());
+		tab = new EpiTabSimulation(epi, path, projChanged, new SimulationEpiClone());
 		String title = epi.getName() + ":Simulation";
 		this.epiRightFrame.addTab(title, tab);
 		tab.initialize();
@@ -993,7 +930,7 @@ public class EpiGUI extends JFrame {
 		}
 
 		public void cloneEpithelium(Epithelium epi, EpitheliumGrid currGrid) {
-			Epithelium epiClone = project.cloneEpithelium(epi);
+			Epithelium epiClone = Project.getInstance().cloneEpithelium(epi);
 			for (int x = 0; x < currGrid.getX(); x++) {
 				for (int y = 0; y < currGrid.getY(); y++) {
 					epiClone.getEpitheliumGrid().setEpitheliumCell(x, y, currGrid.getEpitheliumCell(x, y).clone());
@@ -1002,10 +939,10 @@ public class EpiGUI extends JFrame {
 			addEpithelium2JTree(epiClone);
 		}
 	}
-	
+
 	public void restartMonteCarloTab() {
 		// TODO Auto-generated method stub
-		
+
 		// save settings
 		int monteCarloTabIndex = this.epiRightFrame.getSelectedIndex();
 		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
@@ -1017,8 +954,7 @@ public class EpiGUI extends JFrame {
 		// restart
 		ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
 		EpiTab tab;
-		tab = new EpiTabMonteCarlo(epi, path, projChanged,
-				this.project.getProjectFeatures(), new SimulationEpiClone());
+		tab = new EpiTabMonteCarlo(epi, path, projChanged, new SimulationEpiClone());
 		String title = epi.getName() + ":Monte Carlo";
 		this.epiRightFrame.addTab(title, tab);
 		tab.initialize();
@@ -1030,7 +966,7 @@ public class EpiGUI extends JFrame {
 
 		this.epiRightFrame.setSelectedIndex(tabIndex);
 	}
-	
+
 	private static String join(List<String> list, String sep) {
 		String s = "";
 		for (int i = 0; i < list.size(); i++) {
@@ -1041,12 +977,11 @@ public class EpiGUI extends JFrame {
 		return s;
 	}
 
+	// ***************** NOTIFICATION OF CHANGES ****************************
 
-	
-	//*****************   NOTIFICATION OF CHANGES ****************************
-	
 	/**
-	 * Notify the Model grid, that an sbml model has been loaded, renamed or removed at project level.
+	 * Notify the Model grid, that an sbml model has been loaded, renamed or
+	 * removed at project level.
 	 */
 	private void notifyEpiModelGrids() {
 		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
@@ -1056,35 +991,39 @@ public class EpiGUI extends JFrame {
 			}
 		}
 	}
-	
-	
+
 	/**
-	 * Notifies the project that a tab has changed, by setting a boolean variable as true.
-	 * Forces the validation of the GUI;
+	 * Notifies the project that a tab has changed, by setting a boolean
+	 * variable as true. Forces the validation of the GUI;
 	 *
 	 */
 	public class TabChangeNotifyProj {
 		public void setEpiChanged() {
-			project.setChanged(true);
+			Project.getInstance().setChanged(true);
 			validateGUI();
 		}
 	}
 
 	/**
-	 * Notifies the project that something has changed (so far only color changing have such a global warning)
+	 * Notifies the project that something has changed (so far only color
+	 * changing have such a global warning)
 	 *
 	 */
 	public class ProjChangeNotifyTab {
 		public void setChanged(EpiTab changedTab) {
-			project.setChanged(true);
+			Project.getInstance().setChanged(true);
 			for (int i = 0; i < epiRightFrame.getTabCount(); i++) {
 				Component c = epiRightFrame.getComponentAt(i);
-				if (c instanceof EpiTabSimulation
-						|| c instanceof EpiTabInitialConditions || c instanceof EpiTabMonteCarlo) {
+				if (c instanceof EpiTabSimulation || c instanceof EpiTabInitialConditions
+						|| c instanceof EpiTabMonteCarlo) {
 					EpiTab tab = (EpiTab) c;
 					if (!tab.equals(changedTab)) {
-						tab.notifyChange();}}}
-			validateGUI();}}
-
+						tab.notifyChange();
+					}
+				}
+			}
+			validateGUI();
+		}
+	}
 
 }

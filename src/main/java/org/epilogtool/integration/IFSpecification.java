@@ -3,7 +3,7 @@ package org.epilogtool.integration;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-import org.epilogtool.gui.EpiGUI;
+import org.epilogtool.project.Project;
 
 public class IFSpecification {
 
@@ -14,7 +14,7 @@ public class IFSpecification {
 
 	public static IntegrationSignal integrationSignal(String name, String minThreshold, IntegrationDistance distance)
 			throws RecognitionException {
-		byte max = EpiGUI.getInstance().getNodeMax(name);
+		byte max = Project.getInstance().getProjectFeatures().getNodeMax(name);
 		if (max == -1) { // NodeID semantic validation
 			throw new RecognitionException();
 		}
@@ -58,5 +58,4 @@ public class IFSpecification {
 		}
 		return r;
 	}
-
 }

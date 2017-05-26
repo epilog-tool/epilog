@@ -129,9 +129,9 @@ public class Launcher {
 			throws IOException, InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
-		Project project = FileIO.loadPEPS(pepsFile);
+		FileIO.loadPEPS(pepsFile);
 
-		List<Epithelium> epiList = project.getEpitheliumList();
+		List<Epithelium> epiList = Project.getInstance().getEpitheliumList();
 		Simulation simulator = new Simulation(epiList.get(0));
 
 		EpitheliumGrid currGrid = simulator.getCurrentGrid();

@@ -19,26 +19,21 @@ import org.epilogtool.common.Tuple3D;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.color.ColorUtils;
-import org.epilogtool.project.ProjectFeatures;
+import org.epilogtool.project.Project;
 
 public class VisualGridSimulation extends VisualGrid {
 	private static final long serialVersionUID = -3880244278613986980L;
 
-	private ProjectFeatures projectFeatures;
 	private EpitheliumGrid epiGrid;
 	private List<String> lCompON;
 	private GridInformation valuePanel;
 	private Tuple2D<Integer> lastPos;
-	
+
 	private Map<Tuple3D<Integer>, Float> cellNode2Count;
 
-	public VisualGridSimulation(EpitheliumGrid epiGrid,
-			ProjectFeatures projectFeatures, List<String> lCompON,
-			GridInformation valuePanel) {
+	public VisualGridSimulation(EpitheliumGrid epiGrid, List<String> lCompON, GridInformation valuePanel) {
 		super(epiGrid.getX(), epiGrid.getY(), epiGrid.getTopology());
-		
 
-		this.projectFeatures = projectFeatures;
 		this.epiGrid = epiGrid;
 		this.lCompON = lCompON;
 		this.valuePanel = valuePanel;
@@ -95,8 +90,6 @@ public class VisualGridSimulation extends VisualGrid {
 		this.valuePanel.updateValues(pos.getX(), pos.getY(), this.epiGrid, null);
 	}
 
-	
-	
 	public void setEpitheliumGrid(EpitheliumGrid grid) {
 		this.epiGrid = grid;
 		this.updateComponentValues(this.lastPos);
@@ -105,9 +98,9 @@ public class VisualGridSimulation extends VisualGrid {
 	@Override
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
-		
-		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY,
-				this.getSize().width, this.getSize().height);
+
+		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY, this.getSize().width,
+				this.getSize().height);
 
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
@@ -121,51 +114,44 @@ public class VisualGridSimulation extends VisualGrid {
 					lColors.add(EmptyModel.getInstance().getColor());
 				} else {
 					for (String nodeID : this.lCompON) {
-						Color cBase = this.projectFeatures.getNodeColor(nodeID);
-						if (this.projectFeatures.hasNode(nodeID, m)) {
-							byte max = this.projectFeatures.getNodeInfo(nodeID,
-									m).getMax();
+						Color cBase = Project.getInstance().getProjectFeatures().getNodeColor(nodeID);
+						if (Project.getInstance().getProjectFeatures().hasNode(nodeID, m)) {
+							byte max = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m).getMax();
 
 							int index = this.epiGrid.getNodeIndex(x, y, nodeID);
 							if (index >= 0) { // if cell has nodeID
 								byte value = this.epiGrid.getCellState(x, y)[index];
 								if (value > 0) {
-									lColors.add(ColorUtils.getColorAtValue(
-											cBase, max, value));
+									lColors.add(ColorUtils.getColorAtValue(cBase, max, value));
 								}
 							}
 						}
 					}
 				}
 				Color cCombined = ColorUtils.combine(lColors);
-				Tuple2D<Double> center = topology.getPolygonCenter(this.radius,
-						x, y);
-				Polygon polygon = topology
-						.createNewPolygon(this.radius, center);
+				Tuple2D<Double> center = topology.getPolygonCenter(this.radius, x, y);
+				Polygon polygon = topology.createNewPolygon(this.radius, center);
 				this.paintPolygon(stroke, cCombined, polygon, g2);
 				// Highlights the selected cell
-				if (this.lastPos != null && this.lastPos.getX() == x
-						&& this.lastPos.getY() == y) {
+				if (this.lastPos != null && this.lastPos.getX() == x && this.lastPos.getY() == y) {
 					center = topology.getPolygonCenter(this.radius, x, y);
-					polygon = topology
-							.createNewPolygon(this.radius / 3, center);
+					polygon = topology.createNewPolygon(this.radius / 3, center);
 					this.paintPolygon(stroke, ColorUtils.LIGHT_RED, polygon, g2);
 				}
 			}
 		}
 	}
-	
-	public EpitheliumGrid getEpitheliumGrid(){
+
+	public EpitheliumGrid getEpitheliumGrid() {
 		return epiGrid;
 	}
 
-	
-	public void paintCumulative(Graphics g, Map<Tuple3D<Integer>,Float> cellNode2Count) {
+	public void paintCumulative(Graphics g, Map<Tuple3D<Integer>, Float> cellNode2Count) {
 		this.cellNode2Count = cellNode2Count;
-		
+
 		Graphics2D g2 = (Graphics2D) g;
-		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY,
-				this.getSize().width, this.getSize().height);
+		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY, this.getSize().width,
+				this.getSize().height);
 
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
@@ -179,49 +165,46 @@ public class VisualGridSimulation extends VisualGrid {
 					lColors.add(EmptyModel.getInstance().getColor());
 				} else {
 					for (String nodeID : this.lCompON) {
-		
-						float max= getMaxNodeCellCount(nodeID);
-						
-						Color cBase = this.projectFeatures.getNodeColor(nodeID);
-		
-								float value = this.cellNode2Count.get(new Tuple3D<Integer>(x,y,nodeID));
-								if (value > 0) {
-									lColors.add(ColorUtils.getColorAtValue(cBase, max, value));
-								
-							}
+
+						float max = getMaxNodeCellCount(nodeID);
+
+						Color cBase = Project.getInstance().getProjectFeatures().getNodeColor(nodeID);
+
+						float value = this.cellNode2Count.get(new Tuple3D<Integer>(x, y, nodeID));
+						if (value > 0) {
+							lColors.add(ColorUtils.getColorAtValue(cBase, max, value));
+
 						}
-					
+					}
+
 				}
 				Color cCombined = ColorUtils.combine(lColors);
-				Tuple2D<Double> center = topology.getPolygonCenter(this.radius,
-						x, y);
-				Polygon polygon = topology
-						.createNewPolygon(this.radius, center);
+				Tuple2D<Double> center = topology.getPolygonCenter(this.radius, x, y);
+				Polygon polygon = topology.createNewPolygon(this.radius, center);
 				this.paintPolygon(stroke, cCombined, polygon, g2);
 				// Highlights the selected cell
-				if (this.lastPos != null && this.lastPos.getX() == x
-						&& this.lastPos.getY() == y) {
+				if (this.lastPos != null && this.lastPos.getX() == x && this.lastPos.getY() == y) {
 					center = topology.getPolygonCenter(this.radius, x, y);
-					polygon = topology
-							.createNewPolygon(this.radius / 3, center);
+					polygon = topology.createNewPolygon(this.radius / 3, center);
 					this.paintPolygon(stroke, ColorUtils.LIGHT_RED, polygon, g2);
 				}
 			}
 		}
 	}
 
-private Float getMaxNodeCellCount(String nodeID){
-	
-	List<Float> value= new ArrayList<Float>();
-	
-	for (int x = 0; x < this.gridX; x++) {
-		for (int y = 0; y < this.gridY; y++) {
+	private Float getMaxNodeCellCount(String nodeID) {
 
-			float m = this.cellNode2Count.get(new Tuple3D<Integer>(x,y,nodeID));
-			value.add(m);
-		}}
-		
-	return Collections.max(value);
-}
-	
+		List<Float> value = new ArrayList<Float>();
+
+		for (int x = 0; x < this.gridX; x++) {
+			for (int y = 0; y < this.gridY; y++) {
+
+				float m = this.cellNode2Count.get(new Tuple3D<Integer>(x, y, nodeID));
+				value.add(m);
+			}
+		}
+
+		return Collections.max(value);
+	}
+
 }

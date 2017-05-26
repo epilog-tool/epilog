@@ -22,7 +22,7 @@ import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.gui.EpilogGUIFactory;
 import org.epilogtool.project.ComponentPair;
-import org.epilogtool.project.ProjectFeatures;
+import org.epilogtool.project.Project;
 
 public class GridInformation extends JPanel {
 	private static final long serialVersionUID = -1449994132920814592L;
@@ -30,12 +30,10 @@ public class GridInformation extends JPanel {
 	private static int WIDTH = 145;
 
 	private EpitheliumIntegrationFunctions integrFunctions;
-	private ProjectFeatures projectFeatures;
 	private JPanel jCellPanel;
 
-	public GridInformation(EpitheliumIntegrationFunctions eif, ProjectFeatures projectFeatures) {
+	public GridInformation(EpitheliumIntegrationFunctions eif) {
 		this.integrFunctions = eif;
-		this.projectFeatures = projectFeatures;
 
 		this.setLayout(new BorderLayout());
 		this.setBorder(BorderFactory.createTitledBorder("Cell information"));
@@ -107,7 +105,7 @@ public class GridInformation extends JPanel {
 				jlTmp = new JLabel("Model:");
 				this.jCellPanel.add(jlTmp, gbc);
 				this.constraints(gbc, 0, ++y, 2);
-				jlTmp = new JLabel("  " + projectFeatures.getModelName(m));
+				jlTmp = new JLabel("  " + Project.getInstance().getProjectFeatures().getModelName(m));
 				this.jCellPanel.add(jlTmp, gbc);
 
 				if (grid != null) {
@@ -138,7 +136,8 @@ public class GridInformation extends JPanel {
 					// Separation
 					this.minimalSpace(gbc, ++y);
 
-					List<String> lAllNodeIDs = new ArrayList<String>(this.projectFeatures.getNodeIDs());
+					List<String> lAllNodeIDs = new ArrayList<String>(
+							Project.getInstance().getProjectFeatures().getNodeIDs());
 					Collections.sort(lAllNodeIDs, ObjectComparator.STRING);
 
 					// Proper values
@@ -148,8 +147,8 @@ public class GridInformation extends JPanel {
 					gbc.gridwidth = 1;
 					boolean isEmpty = true;
 					for (String nodeID : lAllNodeIDs) {
-						if (!this.projectFeatures.hasNode(nodeID, m)
-								|| this.projectFeatures.getNodeInfo(nodeID, m).isInput()) {
+						if (!Project.getInstance().getProjectFeatures().hasNode(nodeID, m)
+								|| Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m).isInput()) {
 							continue;
 						}
 						jlTmp = new JLabel("  " + nodeID + " ");
@@ -175,7 +174,7 @@ public class GridInformation extends JPanel {
 					gbc.gridwidth = 1;
 					isEmpty = true;
 					for (String nodeID : lAllNodeIDs) {
-						NodeInfo node = this.projectFeatures.getNodeInfo(nodeID, m);
+						NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m);
 						ComponentPair cp = new ComponentPair(m, node);
 						if (node == null || !node.isInput() || this.integrFunctions.containsComponentPair(cp)) {
 							continue;
@@ -203,7 +202,7 @@ public class GridInformation extends JPanel {
 					gbc.gridwidth = 1;
 					isEmpty = true;
 					for (String nodeID : lAllNodeIDs) {
-						NodeInfo node = this.projectFeatures.getNodeInfo(nodeID, m);
+						NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m);
 						ComponentPair cp = new ComponentPair(m, node);
 						if (node == null || !this.integrFunctions.containsComponentPair(cp)) {
 							continue;

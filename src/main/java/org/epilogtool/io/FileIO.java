@@ -22,7 +22,6 @@ import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
 
 import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 import org.epilogtool.OptionStore;
 import org.epilogtool.project.Project;
@@ -178,18 +177,17 @@ public class FileIO {
 		return sbmlFormat.importFile(file);
 	}
 
-	public static Project loadPEPS(String filename) throws IOException,
+	public static void loadPEPS(String filename) throws IOException,
 			InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		File tmpFolder = FileIO.unzipPEPSTmpDir(filename);
 
-		Project project = null;
 		// Loads all the epithelium from the config.txt configuration file
 		for (final File fileEntry : tmpFolder.listFiles()) {
 			if (fileEntry.getName().toLowerCase().equals(CONFIG_FILE)) {
 				try {
-					project = Parser.loadConfigurations(fileEntry);
+					Parser.loadConfigurations(fileEntry);
 				} catch(Exception e) {
 					e.printStackTrace();
 				}
@@ -199,12 +197,11 @@ public class FileIO {
 
 		// Deletes the unzip temporary folder
 		FileIO.deleteTempDirectory(tmpFolder);
-		project.setFilenamePEPS(filename);
+		Project.getInstance().setFilenamePEPS(filename);
 		OptionStore.addRecentFile(filename);
-		return project;
 	}
 
-	public static void savePEPS(Project project, String newPEPSFile)
+	public static void savePEPS(String newPEPSFile)
 			throws IOException {
 		// Create new PEPS temp directory
 		File newPEPSTmpDir = FileIO.createTempDirectory();
@@ -212,16 +209,16 @@ public class FileIO {
 		// Save config.txt to tmpDir
 		String configFile = newPEPSTmpDir.getAbsolutePath() + "/" + CONFIG_FILE;
 		PrintWriter w = new PrintWriter(new FileWriter(configFile));
-		Parser.saveConfigurations(project, w);
+		Parser.saveConfigurations(w);
 		w.close();
 
 		// Save all SBML files to tmpDir
-		for (String sSBML : project.getModelNames()) {
+		for (String sSBML : Project.getInstance().getModelNames()) {
 			File fNewSBML = new File(newPEPSTmpDir.getAbsolutePath() + "/"
 					+ sSBML);
 			FileOutputStream outSBML = new FileOutputStream(fNewSBML);
 			SBMLFormat sbmlFormat = new SBMLFormat();
-			sbmlFormat.export(project.getModel(sSBML), outSBML);
+			sbmlFormat.export(Project.getInstance().getModel(sSBML), outSBML);
 			outSBML.close();
 		}
 

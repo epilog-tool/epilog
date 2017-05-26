@@ -1,42 +1,39 @@
 package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import org.epilogtool.project.ProjectFeatures;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.gui.EpiGUI;
-import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
+import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 
 public abstract class EpiTabDefinitions extends EpiTab {
 	private static final long serialVersionUID = -2587480492648550086L;
 
-	protected ProjectFeatures projectFeatures;
 	protected JPanel center;
 	private JPanel south;
 	private TabChangeNotifyProj tabChanged;
 
-	protected EpiTabDefinitions(Epithelium e, TreePath path,
-			ProjChangeNotifyTab projChanged, TabChangeNotifyProj tabChanged,
-			ProjectFeatures projectFeatures) {
+	protected EpiTabDefinitions(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
+			TabChangeNotifyProj tabChanged) {
 		super(e, path, projChanged);
 		this.tabChanged = tabChanged;
-		this.projectFeatures = projectFeatures;
 		this.initializeGUI();
 	}
 
 	public String getName() {
-		DefaultMutableTreeNode epiNode = (DefaultMutableTreeNode) this.path
-				.getLastPathComponent();
+		DefaultMutableTreeNode epiNode = (DefaultMutableTreeNode) this.path.getLastPathComponent();
 		return epiNode.toString();
 	}
 
@@ -58,9 +55,8 @@ public abstract class EpiTabDefinitions extends EpiTab {
 		if (!this.isChanged())
 			return true;
 		int n = JOptionPane.showConfirmDialog(this,
-				"Do you really want to close?\n"
-						+ "You'll lose all modifications in this Tab!",
-				"Question", JOptionPane.YES_NO_OPTION);
+				"Do you really want to close?\n" + "You'll lose all modifications in this Tab!", "Question",
+				JOptionPane.YES_NO_OPTION);
 		return (n == JOptionPane.YES_OPTION);
 	}
 
@@ -69,10 +65,13 @@ public abstract class EpiTabDefinitions extends EpiTab {
 
 		private JButton accept;
 		private JButton reset;
-		
+		private JLabel changes;
 
 		public ModificationsPanel() {
 			this.setLayout(new FlowLayout());
+			this.changes = new JLabel("Tab changed!");
+			this.add(changes);
+			this.changes.setForeground(this.getBackground());
 			this.reset = new JButton("Reset");
 			this.reset.addActionListener(new ActionListener() {
 				@Override
@@ -101,6 +100,7 @@ public abstract class EpiTabDefinitions extends EpiTab {
 		public void buttonEnable(boolean enable) {
 			this.accept.setEnabled(enable);
 			this.reset.setEnabled(enable);
+			this.changes.setForeground(enable ? Color.DARK_GRAY : this.getBackground());
 		}
 
 	}

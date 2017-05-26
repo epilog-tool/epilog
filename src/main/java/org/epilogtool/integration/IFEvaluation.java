@@ -10,17 +10,15 @@ import java.util.Set;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.EpitheliumGrid;
-import org.epilogtool.project.ProjectFeatures;
+import org.epilogtool.project.Project;
 
 public class IFEvaluation {
 
 	private EpitheliumGrid neighboursGrid;
-	private ProjectFeatures features;
 	private Map<List<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>> relativeNeighboursCache;
 
-	public IFEvaluation(EpitheliumGrid neighboursGrid, ProjectFeatures features) {
+	public IFEvaluation(EpitheliumGrid neighboursGrid) {
 		this.neighboursGrid = neighboursGrid;
-		this.features = features;
 		this.relativeNeighboursCache = new HashMap<List<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>>();
 	}
 
@@ -125,7 +123,8 @@ public class IFEvaluation {
 			boolean even = this.neighboursGrid.getTopology().isEven(x, y);
 			Set<Tuple2D<Integer>> neighbours = this.neighboursGrid.getTopology().getPositionNeighbours(x, y,
 					this.relativeNeighboursCache.get(rangeList).get(even));
-			NodeInfo node = this.features.getNodeInfo(signal.getComponentName(), this.neighboursGrid.getModel(x, y));
+			NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(signal.getComponentName(),
+					this.neighboursGrid.getModel(x, y));
 
 			if (node == null) {
 				// Invalid node

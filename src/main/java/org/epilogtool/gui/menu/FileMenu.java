@@ -29,6 +29,10 @@ public class FileMenu {
 
 		menu.add(new JSeparator());
 
+		menu.add(new EditPrefsAction());
+
+		menu.add(new JSeparator());
+
 		menu.add(new QuitAction());
 
 		return menu;
@@ -41,8 +45,7 @@ class NewProjAction extends AbstractAction {
 	public NewProjAction() {
 		super("New Project");
 		putValue(SHORT_DESCRIPTION, "New Project");
-		putValue(ACCELERATOR_KEY,
-				KeyStroke.getKeyStroke(KeyEvent.VK_N, GUIInfo.MASK));
+		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, GUIInfo.MASK));
 	}
 
 	@Override
@@ -50,8 +53,7 @@ class NewProjAction extends AbstractAction {
 		try {
 			EpiGUI.getInstance().newProject();
 		} catch (IOException e1) {
-			EpiGUI.getInstance().userMessageError(
-					"You have selected an invalid SBML file!", "New project");
+			EpiGUI.getInstance().userMessageError("You have selected an invalid SBML file!", "New project");
 		}
 	}
 }
@@ -63,8 +65,7 @@ class LoadProjAction extends AbstractAction {
 	public LoadProjAction() {
 		super("Load Project");
 		putValue(SHORT_DESCRIPTION, "Load Project");
-		putValue(ACCELERATOR_KEY,
-				KeyStroke.getKeyStroke(KeyEvent.VK_O, GUIInfo.MASK));
+		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, GUIInfo.MASK));
 		this.filename = null;
 	}
 
@@ -82,8 +83,7 @@ class LoadProjAction extends AbstractAction {
 				EpiGUI.getInstance().loadPEPS(this.filename);
 			}
 		} catch (Exception e1) {
-			EpiGUI.getInstance().userMessageError(
-					"Invalid project (PEPS) file!", "Load project");
+			EpiGUI.getInstance().userMessageError("Invalid project (PEPS) file!", "Load project");
 		}
 	}
 }
@@ -114,8 +114,7 @@ class SaveAction extends AbstractAction {
 	public SaveAction() {
 		super("Save");
 		putValue(SHORT_DESCRIPTION, "Save");
-		putValue(ACCELERATOR_KEY,
-				KeyStroke.getKeyStroke(KeyEvent.VK_S, GUIInfo.MASK));
+		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, GUIInfo.MASK));
 	}
 
 	@Override
@@ -123,8 +122,7 @@ class SaveAction extends AbstractAction {
 		try {
 			EpiGUI.getInstance().savePEPS();
 		} catch (IOException e1) {
-			EpiGUI.getInstance().userMessageError("Could not save PEPS file",
-					"Save");
+			EpiGUI.getInstance().userMessageError("Could not save PEPS file", "Save");
 		}
 	}
 }
@@ -142,9 +140,22 @@ class SaveAsAction extends AbstractAction {
 		try {
 			EpiGUI.getInstance().saveAsPEPS();
 		} catch (IOException e1) {
-			EpiGUI.getInstance().userMessageError("Could not save PEPS file",
-					"Save As");
+			EpiGUI.getInstance().userMessageError("Could not save PEPS file", "Save As");
 		}
+	}
+}
+
+class EditPrefsAction extends AbstractAction {
+	private static final long serialVersionUID = -2767709789639816800L;
+
+	public EditPrefsAction() {
+		super("Edit Preferences");
+		putValue(SHORT_DESCRIPTION, "Edit Preferences");
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		EpiGUI.getInstance().editPreferences();
 	}
 }
 
@@ -154,8 +165,7 @@ class QuitAction extends AbstractAction {
 	public QuitAction() {
 		super("Quit");
 		putValue(SHORT_DESCRIPTION, "Quit");
-		putValue(ACCELERATOR_KEY,
-				KeyStroke.getKeyStroke(KeyEvent.VK_Q, GUIInfo.MASK));
+		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Q, GUIInfo.MASK));
 	}
 
 	@Override

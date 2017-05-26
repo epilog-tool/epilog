@@ -22,7 +22,6 @@ import javax.swing.tree.TreeSelectionModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.gui.menu.EpiTreePopupMenu;
 import org.epilogtool.gui.tab.EpiTab;
-import org.epilogtool.project.ProjectFeatures;
 
 public class EpiTreePanel extends JPanel {
 	private static final long serialVersionUID = -2143708024027520789L;
@@ -48,13 +47,13 @@ public class EpiTreePanel extends JPanel {
 		this.add(this.scrollTree, BorderLayout.CENTER);
 	}
 
-	public void initEpitheliumJTree(ProjectFeatures projectFeatures) {
+	public void initEpitheliumJTree() {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(
 				"Epithelium list:");
 		this.epiTree = new JTree(root);
 
 		ToolTipManager.sharedInstance().registerComponent(this.epiTree);
-		TreeCellRenderer renderer = new ToolTipTreeCellRenderer(projectFeatures);
+		TreeCellRenderer renderer = new ToolTipTreeCellRenderer();
 		this.epiTree.setCellRenderer(renderer);
 
 		this.epiTree.getSelectionModel().setSelectionMode(
@@ -139,7 +138,7 @@ public class EpiTreePanel extends JPanel {
 		return (Epithelium) node.getUserObject();
 	}
 
-	public void remove(ProjectFeatures projectFeatures) {
+	public void remove() {
 		// Remove from JTree
 		DefaultTreeModel model = (DefaultTreeModel) this.epiTree.getModel();
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
@@ -148,7 +147,7 @@ public class EpiTreePanel extends JPanel {
 		root.remove(node);
 		model.reload();
 		if (root.getChildCount() == 0) {
-			this.initEpitheliumJTree(projectFeatures);
+			this.initEpitheliumJTree();
 		}
 	}
 

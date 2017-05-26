@@ -35,6 +35,7 @@ import org.epilogtool.common.Web;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
+import org.epilogtool.core.UpdateCells;
 import org.epilogtool.core.UpdateOrder;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
@@ -42,7 +43,7 @@ import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.integration.IFEvaluation;
 import org.epilogtool.integration.IntegrationFunctionExpression;
 import org.epilogtool.project.ComponentPair;
-import org.epilogtool.project.ProjectFeatures;
+import org.epilogtool.project.Project;
 
 public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements HyperlinkListener {
 	private static final long serialVersionUID = 1176575422084167530L;
@@ -73,8 +74,8 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	private Map<ComponentPair, JLabel> mCP2InfoLabel;
 
 	public EpiTabEpithelialUpdateScheme(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
-			TabChangeNotifyProj tabChanged, ProjectFeatures projectFeatures) {
-		super(e, path, projChanged, tabChanged, projectFeatures);
+			TabChangeNotifyProj tabChanged) {
+		super(e, path, projChanged, tabChanged);
 	}
 
 	public void initialize() {
@@ -123,7 +124,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		this.jpSigmaModelSelection.add(jcbSBML);
 
 		// Sigma sliders JPanels
-		this.selectedModel = this.projectFeatures.getModel((String) jcbSBML.getSelectedItem());
+		this.selectedModel = Project.getInstance().getProjectFeatures().getModel((String) jcbSBML.getSelectedItem());
 		this.jpSigmaSliderPanel = new JPanel();
 		this.jpSigmaSliderPanel.setLayout(new BoxLayout(this.jpSigmaSliderPanel, BoxLayout.Y_AXIS));
 		this.jspSigmaSliderScroller = new JScrollPane(this.jpSigmaSliderPanel);
@@ -134,22 +135,16 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		this.updateSigmaSlidersScrollPane(this.selectedModel);
 		this.isInitialized = true;
 
-		// Updating Mode selector
-
+		// Update order selection
 		this.jpUpdateOrder = new JPanel(new BorderLayout());
-		this.jpUpdateOrder.setBorder(BorderFactory.createTitledBorder("Select Updating Order"));
-
-		String[] lUpdateOrder = new String[3];
-
-		lUpdateOrder[0] = "Random Independent";
-		lUpdateOrder[1] = "Random Order";
-		lUpdateOrder[2] = "Cyclic Order";
-
-		JComboBox<String> jcUpdateOrder = new JComboWideBox<String>(lUpdateOrder);
-		
-		jcUpdateOrder.setSelectedItem(lUpdateOrder[0]);
-		changeUpdateOrder((String) jcUpdateOrder.getSelectedItem());
-
+		this.jpUpdateOrder.setBorder(BorderFactory.createTitledBorder(UpdateOrder.title()));
+		JComboBox<UpdateOrder> jcUpdateOrder = new JComboWideBox<UpdateOrder>(
+				new UpdateOrder[] { UpdateOrder.RANDOM_INDEPENDENT, UpdateOrder.RANDOM_ORDER });
+		UpdateOrder upOrder = this.updateSchemeInter.getUpdateOrder();
+		for (int i = 0; i < jcUpdateOrder.getItemCount(); i++) {
+			if (upOrder != null && upOrder.equals(jcUpdateOrder.getItemAt(i)))
+				jcUpdateOrder.setSelectedIndex(i);
+		}
 		jcUpdateOrder.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -160,55 +155,42 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 				tpc.setChanged();
 			}
 		});
-
 		this.jpUpdateOrder.add(jcUpdateOrder);
 
-		
-		// Update all cells, or updatable cells
-		
-		JPanel jpCells2Update = new JPanel(new BorderLayout());
-		jpCells2Update.setBorder(BorderFactory.createTitledBorder("Select Updatable cells"));
-		
-		String[] lCells2Update = new String[2];
-
-		lCells2Update[0] = "All Cells";
-		lCells2Update[1] = "Updatable Cells";
-		
-		JComboBox<String> jcCells2Update = new JComboWideBox<String>(lCells2Update);
-		
-		jcCells2Update.setSelectedItem(lCells2Update[0]);
-		changeCells2Update((String) jcCells2Update.getSelectedItem());
-
-		jcCells2Update.addActionListener(new ActionListener() {
+		// Update all/updatable cells
+		JPanel jpUpdateCells = new JPanel(new BorderLayout());
+		jpUpdateCells.setBorder(BorderFactory.createTitledBorder(UpdateCells.title()));
+		JComboBox<UpdateCells> jcbUpdateCells = new JComboWideBox<UpdateCells>(
+				new UpdateCells[] { UpdateCells.UPDATABLECELLS, UpdateCells.ALLCELLS });
+		UpdateCells upCells = this.updateSchemeInter.getUpdateCells();
+		for (int i = 0; i < jcbUpdateCells.getItemCount(); i++) {
+			if (upCells != null && upCells.equals(jcbUpdateCells.getItemAt(i)))
+				jcbUpdateCells.setSelectedIndex(i);
+		}
+		jcbUpdateCells.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
-				JComboBox<String> jcCells2Update = (JComboBox<String>) e.getSource();
-
-				changeCells2Update((String) jcCells2Update.getSelectedItem());
+				JComboBox<UpdateCells> jcCells2Update = (JComboBox<UpdateCells>) e.getSource();
+				changeUpdateCells((UpdateCells) jcCells2Update.getSelectedItem());
 				tpc.setChanged();
 			}
 		});
-		jpCells2Update.add(jcCells2Update);
-		
+		jpUpdateCells.add(jcbUpdateCells);
+
 		JPanel southPanel = new JPanel(new BorderLayout());
 		southPanel.add(jpUpdateOrder, BorderLayout.SOUTH);
-		southPanel.add(jpCells2Update, BorderLayout.NORTH);
-		
+		southPanel.add(jpUpdateCells, BorderLayout.NORTH);
+
 		this.center.add(southPanel, BorderLayout.SOUTH);
 	}
 
-	protected void changeCells2Update(String cells2Update) {
-		
-		if (cells2Update=="All Cells")
-			this.updateSchemeInter.setCells2Update(true);
-		else if (cells2Update=="Updatable Cells")
-			this.updateSchemeInter.setCells2Update(false);
-		else{System.out.println("something is wrong with the option of udating all cells");}
+	private void changeUpdateCells(UpdateCells updateCells) {
+		this.updateSchemeInter.setUpdateCells(updateCells);
 	}
 
 	private void changeUpdateOrder(String updateOrder) {
-		this.updateSchemeInter.setUpdateOrder(UpdateOrder.string2UpdateOrder(updateOrder));
+		this.updateSchemeInter.setUpdateOrder(UpdateOrder.fromString(updateOrder));
 	}
 
 	private void generateAlphaSlider() {
@@ -286,8 +268,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		Set<ComponentPair> sRegulatorComponents = new HashSet<ComponentPair>();
 		Map<ComponentPair, ComponentIntegrationFunctions> mIntegrationFunctions = this.epithelium
 				.getIntegrationFunctions().getAllIntegrationFunctions();
-		IFEvaluation ifEvaluator = new IFEvaluation(this.epithelium.getEpitheliumGrid(),
-				this.epithelium.getProjectFeatures());
+		IFEvaluation ifEvaluator = new IFEvaluation(this.epithelium.getEpitheliumGrid());
 		for (ComponentPair cp : mIntegrationFunctions.keySet()) {
 			LogicalModel m = cp.getModel();
 			List<IntegrationFunctionExpression> lExpressions = this.epithelium.getIntegrationFunctionsForComponent(cp)
@@ -295,7 +276,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 			for (IntegrationFunctionExpression ie : lExpressions) {
 				Set<String> sRegNodeIDs = ifEvaluator.traverseIFTreeRegulators(ie);
 				for (String nodeID : sRegNodeIDs) {
-					NodeInfo node = this.epithelium.getProjectFeatures().getNodeInfo(nodeID, m);
+					NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m);
 					if (node != null) {
 						ComponentPair regCompPair = new ComponentPair(m, node);
 						sRegulatorComponents.add(regCompPair);
@@ -452,7 +433,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		// Model selection list
 		String[] saSBML = new String[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
-			saSBML[i] = this.projectFeatures.getModelName(modelList.get(i));
+			saSBML[i] = Project.getInstance().getProjectFeatures().getModelName(modelList.get(i));
 		}
 		JComboBox<String> jcb = new JComboWideBox<String>(saSBML);
 		jcb.addActionListener(new ActionListener() {
@@ -460,7 +441,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
 				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
-				LogicalModel m = projectFeatures.getModel((String) jcb.getSelectedItem());
+				LogicalModel m = Project.getInstance().getProjectFeatures().getModel((String) jcb.getSelectedItem());
 				updateSigmaSlidersScrollPane(m);
 				// Re-Paint
 				getParent().repaint();

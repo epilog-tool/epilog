@@ -43,7 +43,7 @@ import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.gui.widgets.VisualGridInitialConditions;
 import org.epilogtool.io.ButtonFactory;
-import org.epilogtool.project.ProjectFeatures;
+import org.epilogtool.project.Project;
 
 public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private static final long serialVersionUID = -3626371381385041594L;
@@ -70,8 +70,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private JComboBox<String> jcbSBML;
 
 	public EpiTabInitialConditions(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
-			TabChangeNotifyProj tabChanged, ProjectFeatures projectFeatures) {
-		super(e, path, projChanged, tabChanged, projectFeatures);
+			TabChangeNotifyProj tabChanged) {
+		super(e, path, projChanged, tabChanged);
 	}
 
 	public void initialize() {
@@ -90,11 +90,10 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			this.createGUIForModel(m);
 		}
 
-		this.lRight = new GridInformation(this.epithelium.getIntegrationFunctions(), this.projectFeatures);
+		this.lRight = new GridInformation(this.epithelium.getIntegrationFunctions());
 
 		this.tpc = new TabProbablyChanged();
-		this.visualGridICs = new VisualGridInitialConditions(this.epiGridClone,
-				this.epithelium.getProjectFeatures().getNodeID2ColorMap(), this.mNode2ValueSelected, this.lRight,
+		this.visualGridICs = new VisualGridInitialConditions(this.epiGridClone, this.mNode2ValueSelected, this.lRight,
 				this.tpc);
 		this.center.add(this.visualGridICs, BorderLayout.CENTER);
 
@@ -107,7 +106,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		this.jcbSBML = this.newModelCombobox(modelList);
 		this.rTop.add(this.jcbSBML);
-		this.selectedModel = this.epithelium.getProjectFeatures().getModel((String) this.jcbSBML.getSelectedItem());
+		this.selectedModel = Project.getInstance().getProjectFeatures()
+				.getModel((String) this.jcbSBML.getSelectedItem());
 
 		// Select / Deselect buttons
 		JPanel rTopSel = new JPanel(new FlowLayout());
@@ -255,7 +255,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		// TODO Auto-generated method stub
 		List<NodeInfo> lNodes = new ArrayList<NodeInfo>();
 		for (String sNode : nodes) {
-			NodeInfo node = this.epithelium.getProjectFeatures().getNodeInfo(sNode, this.selectedModel);
+			NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(sNode, this.selectedModel);
 			if (!node.isInput())
 				lNodes.add(node);
 		}
@@ -270,7 +270,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			String nodeID = node.getNodeID();
 			// Color
 			JButton jButton = new JButton();
-			jButton.setBackground(this.epithelium.getProjectFeatures().getNodeColor(nodeID));
+			jButton.setBackground(Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
 			jButton.setToolTipText(nodeID);
 			jButton.addActionListener(new ActionListener() {
 				@Override
@@ -297,7 +297,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			});
 			this.mNode2Checkbox.put(nodeID, jcheckb);
 			// Combobox
-			int max = this.epithelium.getProjectFeatures().getNodeInfo(nodeID, m).getMax();
+			int max = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m).getMax();
 			JComboBox<Byte> jcombob = new JComboBox<Byte>();
 			jcombob.setToolTipText(nodeID);
 			for (byte i = 0; i <= max; i++)
@@ -321,7 +321,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		// Model selection list
 		String[] saSBML = new String[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
-			saSBML[i] = this.projectFeatures.getModelName(modelList.get(i));
+			saSBML[i] = Project.getInstance().getProjectFeatures().getModelName(modelList.get(i));
 		}
 		JComboBox<String> jcb = new JComboWideBox<String>(saSBML);
 		jcb.addActionListener(new ActionListener() {
@@ -337,16 +337,16 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	}
 
 	private void setSelectedModel(String model) {
-		this.selectedModel = this.projectFeatures.getModel(model);
+		this.selectedModel = Project.getInstance().getProjectFeatures().getModel(model);
 	}
 
 	// Assign a new color to a component
 	private void setNewColor(JButton jb) {
 		String nodeID = jb.getToolTipText();
 		Color newColor = JColorChooser.showDialog(jb, "Color chooser - " + nodeID, jb.getBackground());
-		if (newColor != null && !newColor.equals(projectFeatures.getNodeColor(nodeID))) {
+		if (newColor != null && !newColor.equals(Project.getInstance().getProjectFeatures().getNodeColor(nodeID))) {
 			jb.setBackground(newColor);
-			this.epithelium.getProjectFeatures().setNodeColor(nodeID, newColor);
+			Project.getInstance().getProjectFeatures().setNodeColor(nodeID, newColor);
 			this.projChanged.setChanged(this);
 			if (this.mNode2ValueSelected.containsKey(nodeID)) {
 				// Paint only if NodeID is selected!!
@@ -355,13 +355,13 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		}
 	}
 
-	// When a new model is selected, and at the beggining
+	// When a new model is selected, and at the beginning
 	private void updateComponentList(String sModel) {
 		this.jpRCenter.removeAll();
 		this.mNode2ValueSelected.clear();
 		this.lNodeInPanel.clear();
 
-		LogicalModel m = this.projectFeatures.getModel(sModel);
+		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(sModel);
 		this.visualGridICs.setModel(m);
 
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -370,7 +370,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		// Internal components
 
-		List<String> lInternal = new ArrayList<String>(this.epithelium.getProjectFeatures().getModelNodeIDs(m, false));
+		List<String> lInternal = new ArrayList<String>(
+				Project.getInstance().getProjectFeatures().getModelNodeIDs(m, false));
 		Collections.sort(lInternal, ObjectComparator.STRING);
 
 		if (lInternal.size() > 0) {
@@ -392,7 +393,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				jpRRCTop.add(this.mNode2Combobox.get(nodeID), gbc);
 				gbc.gridx = 2;
 				JButton jbTmp = this.mNode2JButton.get(nodeID);
-				jbTmp.setBackground(this.epithelium.getProjectFeatures().getNodeColor(nodeID));
+				jbTmp.setBackground(Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
 
 				jpRRCTop.add(jbTmp, gbc);
 
@@ -404,11 +405,13 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		}
 		// Input components
 
-		List<String> lInputs = new ArrayList<String>(this.epithelium.getProjectFeatures().getModelNodeIDs(m, true));
+		List<String> lInputs = new ArrayList<String>(
+				Project.getInstance().getProjectFeatures().getModelNodeIDs(m, true));
 		Collections.sort(lInputs, ObjectComparator.STRING);
 		List<String> lEnvInputCompsFromSelectedModels = new ArrayList<String>();
 		for (String nodeID : lInputs) {
-			if (!this.epithelium.isIntegrationComponent(this.epithelium.getProjectFeatures().getNodeInfo(nodeID, m))) {
+			if (!this.epithelium
+					.isIntegrationComponent(Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m))) {
 				lEnvInputCompsFromSelectedModels.add(nodeID);
 			}
 		}
@@ -435,7 +438,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				jpRRCBottom.add(this.mNode2Combobox.get(nodeID), gbc);
 				gbc.gridx = 2;
 				JButton jbTmp = this.mNode2JButton.get(nodeID);
-				jbTmp.setBackground(this.epithelium.getProjectFeatures().getNodeColor(nodeID));
+				jbTmp.setBackground(Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
 
 				jpRRCBottom.add(jbTmp, gbc);
 

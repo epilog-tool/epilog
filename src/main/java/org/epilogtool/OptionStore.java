@@ -24,9 +24,9 @@ import org.xml.sax.helpers.DefaultHandler;
  * Handle options: remember them during the session, restore them when first
  * called and save them when exiting.
  * 
- * Copied from GINsim by Pedro T. Monteiro
+ * Copied from GINsim (Originally from Aurelien Naldi)
  * 
- * @author Aurelien Naldi
+ * @author Pedro T. Monteiro
  */
 public class OptionStore extends DefaultHandler {
 
