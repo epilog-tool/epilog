@@ -142,7 +142,6 @@ public class Parser {
 			// Cell Update
 			if (line.startsWith("CU")) {
 				String updateCells = line.substring(line.indexOf(" ") + 1);
-				System.out.println("Parser: " + updateCells);
 				currEpi.getUpdateSchemeInter().setUpdateCells(UpdateCells.fromString(updateCells));
 			}
 

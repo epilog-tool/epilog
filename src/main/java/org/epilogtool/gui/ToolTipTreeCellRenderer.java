@@ -171,6 +171,8 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 						+ " : " + cp.getNodeInfo().getNodeID() + " - " + cpSigmas.get(cp) + "<br/>";
 			}
 		}
+		tipKey +="- Cells to Update: " + epi.getUpdateSchemeInter().getUpdateCells() + "<br/>";
+		tipKey +="- Updating Order: " + epi.getUpdateSchemeInter().getUpdateOrder() + "<br/>";
 		tipKey += "</html>";
 		return tipKey;
 	}

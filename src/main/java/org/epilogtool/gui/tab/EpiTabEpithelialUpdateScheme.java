@@ -66,7 +66,8 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	private JPanel jpSigma;
 	private JPanel jpSigmaModelSelection;
 
-	private JPanel jpUpdateOrder;
+	private JComboBox<UpdateOrder> jcbUpdateOrder;
+	private JComboBox<UpdateCells> jcbUpdateCells;
 
 	private Map<ComponentPair, JSlider> mCP2Sliders;
 	private Map<JSlider, Set<ComponentPair>> mSliders2CP;
@@ -136,47 +137,38 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		this.isInitialized = true;
 
 		// Update order selection
-		this.jpUpdateOrder = new JPanel(new BorderLayout());
-		this.jpUpdateOrder.setBorder(BorderFactory.createTitledBorder(UpdateOrder.title()));
-		JComboBox<UpdateOrder> jcUpdateOrder = new JComboWideBox<UpdateOrder>(
+		JPanel jpUpdateOrder = new JPanel(new BorderLayout());
+		jpUpdateOrder.setBorder(BorderFactory.createTitledBorder(UpdateOrder.title()));
+		this.jcbUpdateOrder = new JComboWideBox<UpdateOrder>(
 				new UpdateOrder[] { UpdateOrder.RANDOM_INDEPENDENT, UpdateOrder.RANDOM_ORDER });
-		UpdateOrder upOrder = this.updateSchemeInter.getUpdateOrder();
-		for (int i = 0; i < jcUpdateOrder.getItemCount(); i++) {
-			if (upOrder != null && upOrder.equals(jcUpdateOrder.getItemAt(i)))
-				jcUpdateOrder.setSelectedIndex(i);
-		}
-		jcUpdateOrder.addActionListener(new ActionListener() {
+		this.updateJCBUpdateOrder();
+		this.jcbUpdateOrder.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
-				JComboBox<String> jcUpdateOrder = (JComboBox<String>) e.getSource();
-
-				changeUpdateOrder((String) jcUpdateOrder.getSelectedItem());
+				JComboBox<UpdateOrder> jcUpdateOrder = (JComboBox<UpdateOrder>) e.getSource();
+				updateSchemeInter.setUpdateOrder((UpdateOrder) jcUpdateOrder.getSelectedItem());
 				tpc.setChanged();
 			}
 		});
-		this.jpUpdateOrder.add(jcUpdateOrder);
+		jpUpdateOrder.add(this.jcbUpdateOrder);
 
 		// Update all/updatable cells
 		JPanel jpUpdateCells = new JPanel(new BorderLayout());
 		jpUpdateCells.setBorder(BorderFactory.createTitledBorder(UpdateCells.title()));
-		JComboBox<UpdateCells> jcbUpdateCells = new JComboWideBox<UpdateCells>(
+		this.jcbUpdateCells = new JComboWideBox<UpdateCells>(
 				new UpdateCells[] { UpdateCells.UPDATABLECELLS, UpdateCells.ALLCELLS });
-		UpdateCells upCells = this.updateSchemeInter.getUpdateCells();
-		for (int i = 0; i < jcbUpdateCells.getItemCount(); i++) {
-			if (upCells != null && upCells.equals(jcbUpdateCells.getItemAt(i)))
-				jcbUpdateCells.setSelectedIndex(i);
-		}
-		jcbUpdateCells.addActionListener(new ActionListener() {
+		this.updateJCBUpdateCells();
+		this.jcbUpdateCells.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
 				JComboBox<UpdateCells> jcCells2Update = (JComboBox<UpdateCells>) e.getSource();
-				changeUpdateCells((UpdateCells) jcCells2Update.getSelectedItem());
+				updateSchemeInter.setUpdateCells((UpdateCells) jcCells2Update.getSelectedItem());
 				tpc.setChanged();
 			}
 		});
-		jpUpdateCells.add(jcbUpdateCells);
+		jpUpdateCells.add(this.jcbUpdateCells);
 
 		JPanel southPanel = new JPanel(new BorderLayout());
 		southPanel.add(jpUpdateOrder, BorderLayout.SOUTH);
@@ -185,12 +177,20 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		this.center.add(southPanel, BorderLayout.SOUTH);
 	}
 
-	private void changeUpdateCells(UpdateCells updateCells) {
-		this.updateSchemeInter.setUpdateCells(updateCells);
+	private void updateJCBUpdateCells() {
+		UpdateCells upCells = this.updateSchemeInter.getUpdateCells();
+		for (int i = 0; i < this.jcbUpdateCells.getItemCount(); i++) {
+			if (upCells != null && upCells.equals(this.jcbUpdateCells.getItemAt(i)))
+				this.jcbUpdateCells.setSelectedIndex(i);
+		}
 	}
 
-	private void changeUpdateOrder(String updateOrder) {
-		this.updateSchemeInter.setUpdateOrder(UpdateOrder.fromString(updateOrder));
+	private void updateJCBUpdateOrder() {
+		UpdateOrder upOrder = this.updateSchemeInter.getUpdateOrder();
+		for (int i = 0; i < this.jcbUpdateOrder.getItemCount(); i++) {
+			if (upOrder != null && upOrder.equals(this.jcbUpdateOrder.getItemAt(i)))
+				this.jcbUpdateOrder.setSelectedIndex(i);
+		}
 	}
 
 	private void generateAlphaSlider() {
@@ -212,6 +212,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 			labelTable.put(new Integer(i), new JLabel("" + ((float) i / this.SLIDER_MAX)));
 		}
 		this.jAlphaSlide.setLabelTable(labelTable);
+		this.jAlphaSlide.setValue((int) (this.updateSchemeInter.getAlpha() * SLIDER_MAX));
 		this.jAlphaSlide.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
@@ -220,7 +221,6 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 				tpc.setChanged();
 			}
 		});
-		this.jAlphaSlide.setValue((int) (this.updateSchemeInter.getAlpha() * SLIDER_MAX));
 		updateAlpha(this.jAlphaSlide.getValue());
 		jpAlphaSlider.add(this.jAlphaSlide, BorderLayout.CENTER);
 		jpAlpha.add(jpAlphaSlider, BorderLayout.SOUTH);
@@ -321,7 +321,6 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	}
 
 	private void generateCPSigmaPanel(ComponentPair cp) {
-
 		JPanel componentPanel = new JPanel(new BorderLayout());
 		componentPanel.setPreferredSize(new Dimension(400, 100));
 		componentPanel.setMaximumSize(new Dimension(5000, 100));
@@ -464,17 +463,19 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		}
 		this.jAlphaSlide.setValue((int) (this.epithelium.getUpdateSchemeInter().getAlpha() * SLIDER_MAX));
 		this.updateAlpha(this.jAlphaSlide.getValue());
+		this.updateSchemeInter.setUpdateCells(this.epithelium.getUpdateSchemeInter().getUpdateCells());
+		this.updateJCBUpdateCells();
+		this.updateSchemeInter.setUpdateOrder(this.epithelium.getUpdateSchemeInter().getUpdateOrder());
+		this.updateJCBUpdateOrder();
 		// Repaint
 		this.getParent().repaint();
 	}
 
 	@Override
 	protected void buttonAccept() {
-		// System.out.println("buttonAccept: " +
-		// this.updateSchemeInter.getUpdateMode());
 		this.epithelium.getUpdateSchemeInter().setAlpha(this.updateSchemeInter.getAlpha());
-
 		this.epithelium.getUpdateSchemeInter().setUpdateOrder(this.updateSchemeInter.getUpdateOrder());
+		this.epithelium.getUpdateSchemeInter().setUpdateCells(this.updateSchemeInter.getUpdateCells());
 
 		for (ComponentPair cp : this.updateSchemeInter.getCPSigmas().keySet()) {
 			this.epithelium.getUpdateSchemeInter().setCPSigma(cp, this.updateSchemeInter.getCPSigma(cp));
@@ -485,7 +486,9 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	protected boolean isChanged() {
 		if (this.epithelium.getUpdateSchemeInter().getAlpha() != this.updateSchemeInter.getAlpha())
 			return true;
-		if (this.epithelium.getUpdateSchemeInter().getUpdateOrder() != this.updateSchemeInter.getUpdateOrder())
+		if (!this.epithelium.getUpdateSchemeInter().getUpdateOrder().equals(this.updateSchemeInter.getUpdateOrder()))
+			return true;
+		if (!this.epithelium.getUpdateSchemeInter().getUpdateCells().equals(this.updateSchemeInter.getUpdateCells()))
 			return true;
 		if (this.mCP2Sliders != null) {
 			for (ComponentPair cp : this.mCP2Sliders.keySet()) {
@@ -510,6 +513,8 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		this.jpSigmaModelSelection.add(this.newModelCombobox(modelList));
 		this.updateAllCPSigma();
 		this.updateSigmaSlidersScrollPane(this.selectedModel);
+		this.updateSchemeInter.setUpdateCells(this.epithelium.getUpdateSchemeInter().getUpdateCells());
+		this.updateSchemeInter.setUpdateOrder(this.epithelium.getUpdateSchemeInter().getUpdateOrder());
 		this.getParent().repaint();
 	}
 
