@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import org.epilogtool.common.RandomFactory;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.EpiGUI;
@@ -81,9 +80,10 @@ public class Launcher {
 		checkJavaVersion(bCMD);
 		
 		// Check Number Generator Seed number
-		if (seed != -1) {
-			RandomFactory.getInstance().setSeed(seed);
-		}
+		// FIXME: Command line to be discontinued
+//		if (seed != -1) {
+//			RandCentral.getInstance().setSeed(seed);
+//		}
 		
 		if (bCMD) {
 			// Command line

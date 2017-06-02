@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.epilogtool.common.RandomFactory;
+import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.core.EpitheliumGrid;
@@ -155,13 +155,13 @@ public class CompressionGrid {
 					occupiedNum = tmpOccupiedNum;
 				}
 			}
-			return emptyPositionsList.get(RandomFactory.getInstance().nextInt(emptyPositionsList.size())).clone();
+			return emptyPositionsList.get(RandCentral.getInstance().nextInt(emptyPositionsList.size())).clone();
 		}
 		
 		//second search: there are measurable differences in compression, find path to border
 		while (emptyPositionsList.isEmpty()) {
 			Tuple2D<Integer> nextPosition = nextPositionsList.get(
-					RandomFactory.getInstance().nextInt(nextPositionsList.size())).clone();
+					RandCentral.getInstance().nextInt(nextPositionsList.size())).clone();
 			nextPositionsList.clear();
 			Set<Tuple2D<Integer>> neighbourSet = 
 					this.topology.getPositionNeighbours(nextPosition.getX(), nextPosition.getY(),1);
@@ -207,7 +207,7 @@ public class CompressionGrid {
 			}
 		}
 		
-		Tuple2D<Integer> endPosition = emptyPositionsListClone.get(RandomFactory.getInstance().nextInt(emptyPositionsListClone.size()));
+		Tuple2D<Integer> endPosition = emptyPositionsListClone.get(RandCentral.getInstance().nextInt(emptyPositionsListClone.size()));
 		return endPosition;
 	}
 	

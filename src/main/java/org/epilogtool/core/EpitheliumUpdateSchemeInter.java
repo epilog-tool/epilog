@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.epilogtool.common.RandomSeedType;
 import org.epilogtool.project.ComponentPair;
 
 public class EpitheliumUpdateSchemeInter {
@@ -12,20 +13,23 @@ public class EpitheliumUpdateSchemeInter {
 
 	private float alphaAsyncParam;
 	private Map<ComponentPair, Float> componentPairSigma;
-	private UpdateOrder updateOrder;
 	private UpdateCells updateCells;
+	private RandomSeedType randomSeedType;
+	private int randomSeed;
 
-	public EpitheliumUpdateSchemeInter(float alpha, Map<ComponentPair, Float> sigmaAsync, UpdateOrder updateOrder,
-			UpdateCells updateCells) {
+	public EpitheliumUpdateSchemeInter(float alpha, Map<ComponentPair, Float> sigmaAsync, UpdateCells updateCells,
+			RandomSeedType randomSeedType, int randomSeed) {
 		this.alphaAsyncParam = alpha;
 		this.componentPairSigma = sigmaAsync;
-		this.updateOrder = updateOrder;
 		this.updateCells = updateCells;
+		this.randomSeedType = randomSeedType;
+		this.randomSeed = randomSeed;
 	}
 
 	public EpitheliumUpdateSchemeInter clone() {
 		return new EpitheliumUpdateSchemeInter(this.alphaAsyncParam,
-				new HashMap<ComponentPair, Float>(this.componentPairSigma), this.updateOrder, this.updateCells);
+				new HashMap<ComponentPair, Float>(this.componentPairSigma), this.updateCells, this.randomSeedType,
+				this.randomSeed);
 	}
 
 	// Alpha asynchronism methods
@@ -46,13 +50,22 @@ public class EpitheliumUpdateSchemeInter {
 		return this.updateCells;
 	}
 
-	// UpdateMode methods
-	public void setUpdateOrder(UpdateOrder updateOrder) {
-		this.updateOrder = updateOrder;
+	// RandomSeedType methods
+	public void setRandomSeedType(RandomSeedType seedType) {
+		this.randomSeedType = seedType;
 	}
 
-	public UpdateOrder getUpdateOrder() {
-		return this.updateOrder;
+	public RandomSeedType getRandomSeedType() {
+		return this.randomSeedType;
+	}
+
+	// Random Seed
+	public void setRandomSeed(int seed) {
+		this.randomSeed = seed;
+	}
+
+	public int getRandomSeed() {
+		return this.randomSeed;
 	}
 
 	// Sigma asynchronism methods
@@ -101,8 +114,6 @@ public class EpitheliumUpdateSchemeInter {
 		if (this.alphaAsyncParam != otherObj.getAlpha())
 			return false;
 		if (!this.componentPairSigma.equals(otherObj.componentPairSigma))
-			return false;
-		if (!this.updateOrder.equals(otherObj.updateOrder))
 			return false;
 		if (!this.updateCells.equals(otherObj.updateCells))
 			return false;

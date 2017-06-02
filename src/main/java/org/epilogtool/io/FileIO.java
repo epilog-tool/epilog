@@ -11,10 +11,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -67,13 +63,11 @@ public class FileIO {
 		temp = File.createTempFile("temp", Long.toString(System.nanoTime()));
 
 		if (!(temp.delete())) {
-			throw new IOException("Could not delete temp file: "
-					+ temp.getAbsolutePath());
+			throw new IOException("Could not delete temp file: " + temp.getAbsolutePath());
 		}
 
 		if (!(temp.mkdir())) {
-			throw new IOException("Could not create temp directory: "
-					+ temp.getAbsolutePath());
+			throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
 		}
 
 		return temp;
@@ -118,8 +112,7 @@ public class FileIO {
 
 	public static File getSBMLFileInDir(File fdir) {
 		for (File entry : fdir.listFiles()) {
-			if (entry.getName().endsWith(".sbml")
-					|| entry.getName().endsWith(".SBML")) {
+			if (entry.getName().endsWith(".sbml") || entry.getName().endsWith(".SBML")) {
 				return entry;
 			}
 		}
@@ -138,15 +131,13 @@ public class FileIO {
 			}
 
 			// get the zip file content
-			ZipInputStream zis = new ZipInputStream(new FileInputStream(
-					new File(zipFile)));
+			ZipInputStream zis = new ZipInputStream(new FileInputStream(new File(zipFile)));
 			// get the zipped file list entry
 			ZipEntry ze = zis.getNextEntry();
 
 			while (ze != null) {
 
-				String fileName = ze.getName().split("/")[ze.getName().split(
-						"/").length - 1];
+				String fileName = ze.getName().split("/")[ze.getName().split("/").length - 1];
 				File newFile = new File(folder + File.separator + fileName);
 
 				// create all non exists folders
@@ -177,10 +168,9 @@ public class FileIO {
 		return sbmlFormat.importFile(file);
 	}
 
-	public static void loadPEPS(String filename) throws IOException,
-			InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException, SecurityException, ClassNotFoundException {
+	public static void loadPEPS(String filename)
+			throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		File tmpFolder = FileIO.unzipPEPSTmpDir(filename);
 
 		// Loads all the epithelium from the config.txt configuration file
@@ -188,7 +178,7 @@ public class FileIO {
 			if (fileEntry.getName().toLowerCase().equals(CONFIG_FILE)) {
 				try {
 					Parser.loadConfigurations(fileEntry);
-				} catch(Exception e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				break;
@@ -201,8 +191,7 @@ public class FileIO {
 		OptionStore.addRecentFile(filename);
 	}
 
-	public static void savePEPS(String newPEPSFile)
-			throws IOException {
+	public static void savePEPS(String newPEPSFile) throws IOException {
 		// Create new PEPS temp directory
 		File newPEPSTmpDir = FileIO.createTempDirectory();
 
@@ -214,8 +203,7 @@ public class FileIO {
 
 		// Save all SBML files to tmpDir
 		for (String sSBML : Project.getInstance().getModelNames()) {
-			File fNewSBML = new File(newPEPSTmpDir.getAbsolutePath() + "/"
-					+ sSBML);
+			File fNewSBML = new File(newPEPSTmpDir.getAbsolutePath() + "/" + sSBML);
 			FileOutputStream outSBML = new FileOutputStream(fNewSBML);
 			SBMLFormat sbmlFormat = new SBMLFormat();
 			sbmlFormat.export(Project.getInstance().getModel(sSBML), outSBML);
@@ -227,10 +215,8 @@ public class FileIO {
 		OptionStore.addRecentFile(newPEPSFile);
 	}
 
-	public static void writeEpitheliumGrid2File(String file, Container c,
-			String ext) {
-		BufferedImage dest = new BufferedImage(c.getWidth(), c.getHeight(),
-				BufferedImage.TYPE_INT_ARGB);
+	public static void writeEpitheliumGrid2File(String file, Container c, String ext) {
+		BufferedImage dest = new BufferedImage(c.getWidth(), c.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		c.paint(dest.getGraphics());
 		File fOutput = new File(file);
 		try {
@@ -239,26 +225,5 @@ public class FileIO {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	public static void writePercentage2File(String file, List<Map<String,Float>> lPercentage, String ext) throws IOException {
-		// TODO Auto-generated method stub
-		DecimalFormat perc = new DecimalFormat();
-		perc.setMaximumFractionDigits(2);
-		PrintWriter w = new PrintWriter(new FileWriter(file));
-		//HEADER
-		w.print("Iteration");
-		List<String> nodeList = new ArrayList<String>(lPercentage.get(0).keySet());
-		for (String nodeID : nodeList) {
-			w.print("," + nodeID);
-		}
-		for (int i = 0; i < lPercentage.size(); i++) {
-			w.print(i);
-			for (String nodeID : nodeList) {
-				w.print("," + perc.format(lPercentage.get(i).get(nodeID)));	
-			}
-			w.println();
-		}
-		w.close();
 	}
 }

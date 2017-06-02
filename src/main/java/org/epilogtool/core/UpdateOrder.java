@@ -1,5 +1,7 @@
 package org.epilogtool.core;
 
+// README: The UpdateOrders were removed after git tag v0.4.1
+// To re-enable them: git diff with version v0.4.1
 public enum UpdateOrder {
 	RANDOM_INDEPENDENT("Random Independent"), RANDOM_ORDER("Random Order"), CYCLIC_ORDER("Cyclic Order");
 

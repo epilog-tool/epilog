@@ -31,12 +31,13 @@ import javax.swing.tree.TreePath;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.epilogtool.common.ObjectComparator;
+import org.epilogtool.common.RandCentral;
+import org.epilogtool.common.RandomSeedType;
 import org.epilogtool.common.Web;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
 import org.epilogtool.core.UpdateCells;
-import org.epilogtool.core.UpdateOrder;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.widgets.JComboWideBox;
@@ -66,8 +67,8 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	private JPanel jpSigma;
 	private JPanel jpSigmaModelSelection;
 
-	private JComboBox<UpdateOrder> jcbUpdateOrder;
 	private JComboBox<UpdateCells> jcbUpdateCells;
+	private JComboBox<RandomSeedType> jcbRandomSeedType;
 
 	private Map<ComponentPair, JSlider> mCP2Sliders;
 	private Map<JSlider, Set<ComponentPair>> mSliders2CP;
@@ -136,23 +137,6 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		this.updateSigmaSlidersScrollPane(this.selectedModel);
 		this.isInitialized = true;
 
-		// Update order selection
-		JPanel jpUpdateOrder = new JPanel(new BorderLayout());
-		jpUpdateOrder.setBorder(BorderFactory.createTitledBorder(UpdateOrder.title()));
-		this.jcbUpdateOrder = new JComboWideBox<UpdateOrder>(
-				new UpdateOrder[] { UpdateOrder.RANDOM_INDEPENDENT, UpdateOrder.RANDOM_ORDER });
-		this.updateJCBUpdateOrder();
-		this.jcbUpdateOrder.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				@SuppressWarnings("unchecked")
-				JComboBox<UpdateOrder> jcUpdateOrder = (JComboBox<UpdateOrder>) e.getSource();
-				updateSchemeInter.setUpdateOrder((UpdateOrder) jcUpdateOrder.getSelectedItem());
-				tpc.setChanged();
-			}
-		});
-		jpUpdateOrder.add(this.jcbUpdateOrder);
-
 		// Update all/updatable cells
 		JPanel jpUpdateCells = new JPanel(new BorderLayout());
 		jpUpdateCells.setBorder(BorderFactory.createTitledBorder(UpdateCells.title()));
@@ -170,9 +154,28 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		});
 		jpUpdateCells.add(this.jcbUpdateCells);
 
+		// Random seed
+		JPanel jpRandomSeedType = new JPanel(new BorderLayout());
+		jpRandomSeedType.setBorder(BorderFactory.createTitledBorder(RandomSeedType.title()));
+		this.jcbRandomSeedType = new JComboWideBox<RandomSeedType>(
+				new RandomSeedType[] { RandomSeedType.FIXED, RandomSeedType.RANDOM });
+		this.updateJCBRandomSeedType();
+		this.jcbRandomSeedType.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				@SuppressWarnings("unchecked")
+				JComboBox<RandomSeedType> jcRandomSeedType = (JComboBox<RandomSeedType>) e.getSource();
+				updateSchemeInter.setRandomSeedType((RandomSeedType) jcRandomSeedType.getSelectedItem());
+				int seed = RandCentral.getInstance().nextInt();
+				updateSchemeInter.setRandomSeed(seed >> 1 + seed);
+				tpc.setChanged();
+			}
+		});
+		jpRandomSeedType.add(this.jcbRandomSeedType);
+
 		JPanel southPanel = new JPanel(new BorderLayout());
-		southPanel.add(jpUpdateOrder, BorderLayout.SOUTH);
 		southPanel.add(jpUpdateCells, BorderLayout.NORTH);
+		southPanel.add(jpRandomSeedType, BorderLayout.SOUTH);
 
 		this.center.add(southPanel, BorderLayout.SOUTH);
 	}
@@ -185,11 +188,11 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		}
 	}
 
-	private void updateJCBUpdateOrder() {
-		UpdateOrder upOrder = this.updateSchemeInter.getUpdateOrder();
-		for (int i = 0; i < this.jcbUpdateOrder.getItemCount(); i++) {
-			if (upOrder != null && upOrder.equals(this.jcbUpdateOrder.getItemAt(i)))
-				this.jcbUpdateOrder.setSelectedIndex(i);
+	private void updateJCBRandomSeedType() {
+		RandomSeedType seedType = this.updateSchemeInter.getRandomSeedType();
+		for (int i = 0; i < this.jcbRandomSeedType.getItemCount(); i++) {
+			if (seedType != null && seedType.equals(this.jcbRandomSeedType.getItemAt(i)))
+				this.jcbRandomSeedType.setSelectedIndex(i);
 		}
 	}
 
@@ -465,8 +468,6 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		this.updateAlpha(this.jAlphaSlide.getValue());
 		this.updateSchemeInter.setUpdateCells(this.epithelium.getUpdateSchemeInter().getUpdateCells());
 		this.updateJCBUpdateCells();
-		this.updateSchemeInter.setUpdateOrder(this.epithelium.getUpdateSchemeInter().getUpdateOrder());
-		this.updateJCBUpdateOrder();
 		// Repaint
 		this.getParent().repaint();
 	}
@@ -474,8 +475,9 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	@Override
 	protected void buttonAccept() {
 		this.epithelium.getUpdateSchemeInter().setAlpha(this.updateSchemeInter.getAlpha());
-		this.epithelium.getUpdateSchemeInter().setUpdateOrder(this.updateSchemeInter.getUpdateOrder());
 		this.epithelium.getUpdateSchemeInter().setUpdateCells(this.updateSchemeInter.getUpdateCells());
+		this.epithelium.getUpdateSchemeInter().setRandomSeedType(this.updateSchemeInter.getRandomSeedType());
+		this.epithelium.getUpdateSchemeInter().setRandomSeed(this.updateSchemeInter.getRandomSeed());
 
 		for (ComponentPair cp : this.updateSchemeInter.getCPSigmas().keySet()) {
 			this.epithelium.getUpdateSchemeInter().setCPSigma(cp, this.updateSchemeInter.getCPSigma(cp));
@@ -486,9 +488,10 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	protected boolean isChanged() {
 		if (this.epithelium.getUpdateSchemeInter().getAlpha() != this.updateSchemeInter.getAlpha())
 			return true;
-		if (!this.epithelium.getUpdateSchemeInter().getUpdateOrder().equals(this.updateSchemeInter.getUpdateOrder()))
-			return true;
 		if (!this.epithelium.getUpdateSchemeInter().getUpdateCells().equals(this.updateSchemeInter.getUpdateCells()))
+			return true;
+		if (!this.epithelium.getUpdateSchemeInter().getRandomSeedType()
+				.equals(this.updateSchemeInter.getRandomSeedType()))
 			return true;
 		if (this.mCP2Sliders != null) {
 			for (ComponentPair cp : this.mCP2Sliders.keySet()) {
@@ -514,7 +517,8 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		this.updateAllCPSigma();
 		this.updateSigmaSlidersScrollPane(this.selectedModel);
 		this.updateSchemeInter.setUpdateCells(this.epithelium.getUpdateSchemeInter().getUpdateCells());
-		this.updateSchemeInter.setUpdateOrder(this.epithelium.getUpdateSchemeInter().getUpdateOrder());
+		this.updateSchemeInter.setRandomSeedType(this.epithelium.getUpdateSchemeInter().getRandomSeedType());
+		this.updateSchemeInter.setRandomSeed(this.epithelium.getUpdateSchemeInter().getRandomSeed());
 		this.getParent().repaint();
 	}
 

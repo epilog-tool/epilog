@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
@@ -14,18 +15,20 @@ import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.colomoto.logicalmodel.tool.simulation.updater.PriorityClasses;
 import org.colomoto.logicalmodel.tool.simulation.updater.PriorityUpdater;
+import org.epilogtool.OptionStore;
 import org.epilogtool.cellularevent.CEEvaluation;
 import org.epilogtool.cellularevent.CellularEventExpression;
-import org.epilogtool.common.RandomFactory;
+import org.epilogtool.common.RandCentral;
+import org.epilogtool.common.RandomSeedType;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
 import org.epilogtool.core.UpdateCells;
-import org.epilogtool.core.UpdateOrder;
+import org.epilogtool.core.cellDynamics.CellularEvent;
+import org.epilogtool.gui.dialog.GridNodePercent;
 import org.epilogtool.integration.IFEvaluation;
 import org.epilogtool.integration.IntegrationFunctionExpression;
-import org.epilogtool.core.cellDynamics.CellularEvent;
 
 /**
  * Initializes and implements the simulation on epilog.
@@ -38,9 +41,7 @@ public class Simulation {
 	private Epithelium epithelium;
 	private List<EpitheliumGrid> gridHistory;
 	private List<String> gridHashHistory;
-
-	private List<Tuple2D<Integer>> shuffledInstances;
-	private int indexOrder;
+	private Random random;
 
 	private boolean stable;
 	private boolean hasCycle;
@@ -62,12 +63,23 @@ public class Simulation {
 	 */
 	public Simulation(Epithelium e) {
 		this.epithelium = e;
+		if (this.epithelium.getUpdateSchemeInter().getRandomSeedType().equals(RandomSeedType.RANDOM)) {
+			this.random = RandCentral.getInstance().getNewGenerator();
+		} else {
+			this.random = RandCentral.getInstance()
+					.getNewGenerator(this.epithelium.getUpdateSchemeInter().getRandomSeed());
+		}
 		this.gridHistory = new ArrayList<EpitheliumGrid>();
 		EpitheliumGrid firstGrid = this.epithelium.getEpitheliumGrid();
 		firstGrid.updateNodeValueCounts();
 		this.gridHistory.add(this.restrictGridWithPerturbations(firstGrid));
-		this.gridHashHistory = new ArrayList<String>();
-		this.gridHashHistory.add(firstGrid.hashGrid());
+		Object hist = OptionStore.getOption("KeepHistory");
+		if (hist != null && hist.equals("Yes")) {
+			this.gridHashHistory = new ArrayList<String>();
+			this.gridHashHistory.add(firstGrid.hashGrid());
+		} else {
+			this.gridHashHistory = null;
+		}
 		this.stable = false;
 		this.hasCycle = false;
 		this.ceEvaluator = new CEEvaluation();
@@ -173,64 +185,33 @@ public class Simulation {
 		if (changedKeys.size() > 0) {
 			// Inter-cellular alpha-asynchronism
 			float alphaProb = this.epithelium.getUpdateSchemeInter().getAlpha();
-			int numberCellsCalledToUpdate = (int) Math.floor(alphaProb * keys.size());
-			if (numberCellsCalledToUpdate == 0) {
-				numberCellsCalledToUpdate = 1;
+			int nToChange = (int) Math.floor(alphaProb * keys.size());
+			if (nToChange == 0) {
+				nToChange = 1;
 			}
-			List<Tuple2D<Integer>> cellsUpdatedThisStep = new ArrayList<Tuple2D<Integer>>();
+			// Create the initial shuffled array of cells
+			Collections.shuffle(keys, this.random);
 
-			if (this.shuffledInstances == null) {
-				// Create the initial shuffled array of cells
-				Collections.shuffle(keys, RandomFactory.getInstance().getGenerator());
-				this.shuffledInstances = keys;
-				this.indexOrder = 0;
-			}
-
-			for (int idx = 0; idx < numberCellsCalledToUpdate; idx++, this.indexOrder++) {
-				if (this.indexOrder == this.shuffledInstances.size()) {
-
-					if (this.epithelium.getUpdateSchemeInter().getUpdateOrder().equals(UpdateOrder.RANDOM_ORDER)) {
-						Collections.shuffle(keys, RandomFactory.getInstance().getGenerator());
-						this.shuffledInstances = keys;
-					}
-					this.indexOrder = 0;
-				}
-				Tuple2D<Integer> cell = this.shuffledInstances.get(indexOrder);
-				while (cellsUpdatedThisStep.contains(cell)) {
-					// only valid for RANDOM_ORDER
-					int displace = numberCellsCalledToUpdate - idx + this.indexOrder;
-					int n = RandomFactory.getInstance().nextInt(this.shuffledInstances.size() - displace);
-					Collections.swap(this.shuffledInstances, this.indexOrder, n + displace);
-					cell = this.shuffledInstances.get(this.indexOrder);
-				}
-				cellsUpdatedThisStep.add(cell);
-			}
-
-			for (Tuple2D<Integer> key : cellsUpdatedThisStep) {
+			for (int i = 0; i < nToChange; i++) {
 				// Update cell state
-				nextGrid.setCellState(key.getX(), key.getY(), cells2update.get(key));
+				nextGrid.setCellState(keys.get(i).getX(), keys.get(i).getY(), cells2update.get(keys.get(i)));
 				// Update cell event
-				nextGrid.setCellEvent(key.getX(), key.getY(), cells2event.get(key));
-				CellularEvent currCellEvent = currGrid.getCellEvent(key.getX(), key.getY());
-				CellularEvent nextCellEvent = cells2event.get(key);
+				nextGrid.setCellEvent(keys.get(i).getX(), keys.get(i).getY(), cells2event.get(keys.get(i)));
+				CellularEvent currCellEvent = currGrid.getCellEvent(keys.get(i).getX(), keys.get(i).getY());
+				CellularEvent nextCellEvent = cells2event.get(keys.get(i));
 				if (!currCellEvent.equals(CellularEvent.DEFAULT) && currCellEvent.equals(nextCellEvent)) {
 					if (currCellEvent.equals(CellularEvent.PROLIFERATION)) {
-						divisionUpdates.add(key);
+						divisionUpdates.add(keys.get(i));
 					} else {
-						deathUpdates.add(key);
+						deathUpdates.add(keys.get(i));
 					}
-
 				}
 			}
-			nextGrid.updateNodeValueCounts();
 		}
 
 		// There is no more space & no one is dying today :(
-		int emptyModelNumber = nextGrid.emptyModelNumber();
-		if (deathUpdates.size() == 0 && emptyModelNumber == 0) {
-			popUpdates = false;
-		}
-
+		int emptyModelNumber = nextGrid.countEmptyCells();
+		popUpdates = deathUpdates.size() > 0 && emptyModelNumber > 0;
 		if (changedKeys.isEmpty() && !popUpdates) {
 			this.stable = true;
 			return currGrid;
@@ -238,8 +219,8 @@ public class Simulation {
 
 		// Proliferation and Death updates
 		if (popUpdates) {
-			Collections.shuffle(divisionUpdates, RandomFactory.getInstance().getGenerator());
-			Collections.shuffle(deathUpdates, RandomFactory.getInstance().getGenerator());
+			Collections.shuffle(divisionUpdates, this.random);
+			Collections.shuffle(deathUpdates, this.random);
 			for (Tuple2D<Integer> cell : deathUpdates) {
 				nextGrid.removeCell(cell.getX(), cell.getY());
 				emptyModelNumber += 1;
@@ -251,7 +232,9 @@ public class Simulation {
 			nextGrid.updateNodeValueCounts();
 		}
 		this.gridHistory.add(nextGrid);
-		this.gridHashHistory.add(nextGrid.hashGrid());
+		if (this.gridHashHistory != null) {
+			this.gridHashHistory.add(nextGrid.hashGrid());
+		}
 		return nextGrid;
 	}
 
@@ -312,7 +295,7 @@ public class Simulation {
 		cells2Divide.remove(0);
 		LogicalModel m = nextGrid.getModel(cell2Divide.getX(), cell2Divide.getY());
 		byte[] motherState = nextGrid.getCellState(cell2Divide.getX(), cell2Divide.getY()).clone();
-		List<Tuple2D<Integer>> path = nextGrid.divisionPath(cell2Divide);
+		List<Tuple2D<Integer>> path = nextGrid.divisionPath(this.random, cell2Divide);
 		for (int index = 1; index < path.size(); index++) {
 			if (cells2Divide.contains(path.get(index))) {
 				cells2Divide.remove(path.get(index).clone());
@@ -345,13 +328,26 @@ public class Simulation {
 		return (i >= this.gridHistory.size() && this.stable);
 	}
 
-	public boolean hasCycleAt(int i) {
-		if (!(this.epithelium.getUpdateSchemeInter().getAlpha() == 1)) {
+	private boolean isSynchronous() {
+		if (this.epithelium.getUpdateSchemeInter().getAlpha() < 1)
 			return false;
+		Map<ComponentPair, Float> mSigmas = this.epithelium.getUpdateSchemeInter().getCPSigmas();
+		for (ComponentPair cp : mSigmas.keySet()) {
+			if (mSigmas.get(cp) < 1)
+				return false;
 		}
-		List<String> tmpList = new ArrayList<String>(this.gridHashHistory.subList(0, i));
-		Set<String> tmpSet = new HashSet<String>(tmpList);
-		return !(tmpSet.size() == tmpList.size());
+		return true;
+	}
+
+	public int getTerminalCycleLen() {
+		if (this.isSynchronous()) {
+			String sGrid = this.gridHashHistory.get(this.gridHashHistory.size()-1);
+			int pos = this.gridHashHistory.indexOf(sGrid);
+			if (pos < this.gridHashHistory.size()-1) {
+				return (this.gridHashHistory.size()-1) - pos;
+			}
+		}
+		return -1;
 	}
 
 	public EpitheliumGrid getGridAt(int i) {
@@ -391,7 +387,7 @@ public class Simulation {
 					int nodePosition = modelNodes.indexOf(cp.getNodeInfo());
 					List<Tuple2D<Integer>> modelPositions = new ArrayList<Tuple2D<Integer>>(mapModelPositions.get(m));
 					int selectedCells = (int) Math.ceil((1 - sigma) * modelPositions.size());
-					Collections.shuffle(modelPositions, RandomFactory.getInstance().getGenerator());
+					Collections.shuffle(modelPositions, this.random);
 					List<Tuple2D<Integer>> selectedModelPositions = modelPositions.subList(0, selectedCells);
 					for (Tuple2D<Integer> tuple : selectedModelPositions) {
 						if (!(delayGrid.getModel(tuple.getX(), tuple.getY()).equals(m))) {

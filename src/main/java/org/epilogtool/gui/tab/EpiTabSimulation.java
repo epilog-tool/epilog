@@ -12,7 +12,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,6 +36,7 @@ import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
+import org.epilogtool.OptionStore;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
@@ -44,6 +44,7 @@ import org.epilogtool.gui.EpiGUI;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.SimulationEpiClone;
 import org.epilogtool.gui.color.ColorUtils;
+import org.epilogtool.gui.dialog.GridNodePercent;
 import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboCheckBox;
 import org.epilogtool.gui.widgets.VisualGridSimulation;
@@ -195,17 +196,6 @@ public class EpiTabSimulation extends EpiTabTools {
 		});
 		jpButtonsR.add(jbClone);
 
-		// Button to create the export of the percentages
-		JButton jbExport = ButtonFactory.getNoMargins("Export");
-		jbExport.setToolTipText("Exports the percentages of all component per iteration.");
-		jbExport.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				exportPercentage();
-			}
-		});
-		jpButtonsR.add(jbExport);
-
 		// Button to save an image from the simulated grid
 		JButton jbPicture = ButtonFactory.getImageNoBorder("fotography-24x24.png");
 		jbPicture.setToolTipText("Save the image of the current grid to file");
@@ -351,29 +341,6 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 	}
 
-	/**
-	 * Calls the method to export the CSV of the simulation so far
-	 * 
-	 */
-	protected void exportPercentage() {
-		List<Map<String, Float>> lPercentage = this.simulation.getCell2Percentage();
-
-		JFileChooser fc = new JFileChooser();
-		fc.setFileFilter(new EpilogFileFilter("csv"));
-		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-			String file = fc.getSelectedFile().getAbsolutePath();
-			String ext = "CSV";
-			file += (file.endsWith(ext) ? "" : "." + ext);
-			try {
-				FileIO.writePercentage2File(file, lPercentage, ext);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
-	}
-
 	private void cloneEpiWithCurrGrid() {
 		this.simEpiClone.cloneEpithelium(this.epithelium, this.simulation.getGridAt(this.iCurrSimIter));
 	}
@@ -388,6 +355,10 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jbBack.setEnabled(false);
 		this.jbForward.setEnabled(true);
 		this.jbFastFwr.setEnabled(true);
+		String nodePercent = (String)OptionStore.getOption("PrefsNodePercent");
+		if (nodePercent != null && nodePercent.equals(GridNodePercent.YES.toString())) {
+			firstGrid.updateNodeValueCounts();
+		}
 		this.updateComponentList(this.jccb.getSelectedItems());
 		// Re-Paint
 		this.repaint();
@@ -401,13 +372,17 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jlStep.setText("Iteration: " + this.iCurrSimIter);
 		this.visualGridSimulation.setEpitheliumGrid(prevGrid);
 		setGridGUIStable(false);
-		setGridGUICycle(this.simulation.hasCycleAt(this.iCurrSimIter));
+		this.setGUITerminalCycle(this.simulation.getTerminalCycleLen());
 		if (this.iCurrSimIter == 0) {
 			this.jbRewind.setEnabled(false);
 			this.jbBack.setEnabled(false);
 		}
 		this.jbForward.setEnabled(true);
 		this.jbFastFwr.setEnabled(true);
+		String nodePercent = (String)OptionStore.getOption("PrefsNodePercent");
+		if (nodePercent != null && nodePercent.equals(GridNodePercent.YES.toString())) {
+			prevGrid.updateNodeValueCounts();
+		}
 		this.updateComponentList(this.jccb.getSelectedItems());
 		// Re-Paint
 		this.repaint();
@@ -415,7 +390,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 	private void setGridGUIStable(boolean stable) {
 		if (stable) {
-			this.jlAttractor.setText("Stable!");
+			this.jlAttractor.setText("Stable pattern!");
 			this.jbForward.setEnabled(false);
 			this.jbFastFwr.setEnabled(false);
 		} else {
@@ -423,9 +398,9 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 	}
 
-	private void setGridGUICycle(boolean cycle) {
-		if (cycle) {
-			this.jlAttractor.setText("Cycle!");
+	private void setGUITerminalCycle(int len) {
+		if (len > 0) {
+			this.jlAttractor.setText("Terminal cyclic attractor (len=" + len + ")");
 		} else {
 			this.jlAttractor.setText("           ");
 		}
@@ -439,12 +414,14 @@ public class EpiTabSimulation extends EpiTabTools {
 			this.iCurrSimIter++;
 			this.visualGridSimulation.setEpitheliumGrid(nextGrid);
 			this.jlStep.setText("Iteration: " + this.iCurrSimIter);
-			if (this.simulation.hasCycleAt(this.iCurrSimIter + 1)) {
-				setGridGUICycle(true);
-			}
+			this.setGUITerminalCycle(this.simulation.getTerminalCycleLen());
 		}
 		this.jbRewind.setEnabled(true);
 		this.jbBack.setEnabled(true);
+		String nodePercent = (String)OptionStore.getOption("PrefsNodePercent");
+		if (nodePercent != null && nodePercent.equals(GridNodePercent.YES.toString())) {
+			nextGrid.updateNodeValueCounts();
+		}
 		this.updateComponentList(this.jccb.getSelectedItems());
 		// Re-Paint
 		this.repaint();
@@ -457,8 +434,12 @@ public class EpiTabSimulation extends EpiTabTools {
 			if (this.simulation.isStableAt(this.iCurrSimIter + 1)) {
 				setGridGUIStable(true);
 				break;
-			} else if (this.simulation.hasCycleAt(this.iCurrSimIter + 1)) {
-				setGridGUICycle(true);
+			} else {
+				int len = this.simulation.getTerminalCycleLen();
+				if (len > 0) {
+					this.setGUITerminalCycle(len);
+					break;
+				}
 			}
 			this.iCurrSimIter++;
 		}
@@ -466,6 +447,10 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jlStep.setText("Iteration: " + this.iCurrSimIter);
 		this.jbRewind.setEnabled(true);
 		this.jbBack.setEnabled(true);
+		String nodePercent = (String)OptionStore.getOption("PrefsNodePercent");
+		if (nodePercent != null && nodePercent.equals(GridNodePercent.YES.toString())) {
+			nextGrid.updateNodeValueCounts();
+		}
 		this.updateComponentList(this.jccb.getSelectedItems());
 		// Re-Paint
 		this.repaint();
@@ -506,9 +491,13 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		jp.add(jbColor, gbc);
-		gbc.gridx = 2;
-		JLabel percentage = new JLabel(nextGrid.getPercentage(nodeID));
-		jp.add(percentage, gbc);
+		
+		String nodePercent = (String)OptionStore.getOption("PrefsNodePercent");
+		if (nodePercent != null && nodePercent.equals(GridNodePercent.YES.toString())) {
+			gbc.gridx = 2;
+			JLabel percentage = new JLabel(nextGrid.getPercentage(nodeID));
+			jp.add(percentage, gbc);
+		}
 		this.colorButton2Node.put(jbColor, nodeID);
 	}
 

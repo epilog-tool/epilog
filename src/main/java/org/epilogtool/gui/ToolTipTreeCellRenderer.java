@@ -168,11 +168,11 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 			tipKey += "- Sigma <br/>";
 			for (ComponentPair cp : cpSigmas.keySet()) {
 				tipKey += "&nbsp;&nbsp;. " + Project.getInstance().getProjectFeatures().getModelName(cp.getModel())
-						+ " : " + cp.getNodeInfo().getNodeID() + " - " + cpSigmas.get(cp) + "<br/>";
+						+ " : " + cp.getNodeInfo().getNodeID() + " = " + cpSigmas.get(cp) + "<br/>";
 			}
 		}
 		tipKey +="- Cells to Update: " + epi.getUpdateSchemeInter().getUpdateCells() + "<br/>";
-		tipKey +="- Updating Order: " + epi.getUpdateSchemeInter().getUpdateOrder() + "<br/>";
+		tipKey +="- Number generator seed: " + epi.getUpdateSchemeInter().getRandomSeedType() + "<br/>";
 		tipKey += "</html>";
 		return tipKey;
 	}

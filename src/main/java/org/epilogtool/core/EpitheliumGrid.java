@@ -8,16 +8,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
-import org.epilogtool.common.RandomFactory;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.cellDynamics.CellularEvent;
-import org.epilogtool.core.cellDynamics.EpitheliumCellConnections;
 import org.epilogtool.core.cellDynamics.CompressionGrid;
+import org.epilogtool.core.cellDynamics.EpitheliumCellConnections;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.services.TopologyService;
@@ -28,6 +28,7 @@ public class EpitheliumGrid {
 	private Set<LogicalModel> modelSet;
 	private Map<LogicalModel, Set<Tuple2D<Integer>>> modelPositions;
 	private Map<String, Map<Byte, Integer>> compCounts;
+	private Map<String, Map<Byte, Float>> compPercents;
 	// TODO:maybe this should not be here, but we need to store dynamic
 	// properties of the grid
 	private CompressionGrid compressionGrid;
@@ -35,12 +36,14 @@ public class EpitheliumGrid {
 
 	private EpitheliumGrid(EpitheliumCell[][] gridEpiCell, Topology topology, Set<LogicalModel> modelSet,
 			Map<LogicalModel, Set<Tuple2D<Integer>>> modelPositions, Map<String, Map<Byte, Integer>> compCounts,
-			CompressionGrid gridTopology, EpitheliumCellConnections epiCellConnections) {
+			Map<String, Map<Byte, Float>> compPercents, CompressionGrid gridTopology,
+			EpitheliumCellConnections epiCellConnections) {
 		this.gridEpiCell = gridEpiCell;
 		this.topology = topology;
 		this.modelSet = modelSet;
 		this.modelPositions = modelPositions;
 		this.compCounts = compCounts;
+		this.compPercents = compPercents;
 		this.compressionGrid = gridTopology;
 		this.epiCellConnections = epiCellConnections;
 	}
@@ -92,6 +95,7 @@ public class EpitheliumGrid {
 		this.modelSet = new HashSet<LogicalModel>();
 		this.modelSet.add(m);
 		this.compCounts = new HashMap<String, Map<Byte, Integer>>();
+		this.compPercents = new HashMap<String, Map<Byte, Float>>();
 		this.compressionGrid = new CompressionGrid(this);
 	}
 
@@ -266,7 +270,7 @@ public class EpitheliumGrid {
 		this.gridEpiCell[x2][y2] = epiCell;
 	}
 
-	public int emptyModelNumber() {
+	public int countEmptyCells() {
 		int gridSize = this.getX() * this.getY();
 		int cellNumber = 0;
 		for (LogicalModel m : this.modelPositions.keySet()) {
@@ -336,14 +340,12 @@ public class EpitheliumGrid {
 		CompressionGrid newEpiTop = this.compressionGrid.clone();
 		EpitheliumCellConnections newEpiCellConnections = this.epiCellConnections.clone();
 		Map<String, Map<Byte, Integer>> newCompCounts = new HashMap<String, Map<Byte, Integer>>(this.compCounts);
-		return new EpitheliumGrid(newGrid, newTop, newModelSet, newModelPositions, newCompCounts, newEpiTop,
-				newEpiCellConnections);
+		Map<String, Map<Byte, Float>> newCompPercents = new HashMap<String, Map<Byte, Float>>(this.compPercents);
+		return new EpitheliumGrid(newGrid, newTop, newModelSet, newModelPositions, newCompCounts, newCompPercents,
+				newEpiTop, newEpiCellConnections);
 	}
 
 	public String getPercentage(String nodeID) {
-		if (this.compCounts.isEmpty()) {
-			this.updateNodeValueCounts();
-		}
 		DecimalFormat perc = new DecimalFormat();
 		perc.setMaximumFractionDigits(2);
 		String output = "";
@@ -355,7 +357,7 @@ public class EpitheliumGrid {
 		}
 		return output;
 	}
-	
+
 	public float getPercentage(String nodeID, byte value) {
 		float count = 0;
 		if (this.compCounts.get(nodeID).containsKey(value)) {
@@ -367,7 +369,8 @@ public class EpitheliumGrid {
 	}
 
 	public void updateNodeValueCounts() {
-		// Init component counts
+		System.out.println("updateNodeValueCounts()");
+		// Compute component/value counts
 		this.compCounts.clear();
 		for (int x = 0; x < this.getX(); x++) {
 			for (int y = 0; y < this.getY(); y++) {
@@ -377,15 +380,24 @@ public class EpitheliumGrid {
 					byte val = this.getCellValue(x, y, nodeID);
 					if (!this.compCounts.containsKey(nodeID)) {
 						this.compCounts.put(nodeID, new HashMap<Byte, Integer>());
-						for (byte i = 1; i <= node.getMax(); i++)
+						for (byte i = 0; i <= node.getMax(); i++) {
 							this.compCounts.get(nodeID).put(i, 0);
+						}
 					}
-					int count = 1;
-					if (this.compCounts.get(nodeID).containsKey(val)) {
-						count += this.compCounts.get(nodeID).get(val);
-					}
+					int count = this.compCounts.get(nodeID).get(val) + 1;
 					this.compCounts.get(nodeID).put(val, count);
 				}
+			}
+		}
+		// Compute corresponding percentages
+		this.compPercents.clear();
+		int nCells = this.getX() * this.getY();
+		for (String nodeID : this.compCounts.keySet()) {
+			this.compPercents.put(nodeID, new HashMap<Byte, Float>());
+			for (Byte value : this.compCounts.get(nodeID).keySet()) {
+				float count = this.compCounts.get(nodeID).get(value);
+				float percent = (count / nCells) * 100;
+				this.compPercents.get(nodeID).put(value, percent);
 			}
 		}
 	}
@@ -484,7 +496,7 @@ public class EpitheliumGrid {
 	}
 
 	// TODO: division method should not be here
-	public List<Tuple2D<Integer>> divisionPath(Tuple2D<Integer> initPosition) {
+	public List<Tuple2D<Integer>> divisionPath(Random random, Tuple2D<Integer> initPosition) {
 		List<Tuple2D<Integer>> path = new ArrayList<Tuple2D<Integer>>();
 		Tuple2D<Integer> endPosition = this.compressionGrid.getEmptyPosition(initPosition);
 		path.add(initPosition);
@@ -504,7 +516,7 @@ public class EpitheliumGrid {
 					possiblePaths.add(contact);
 				}
 			}
-			currPosition = possiblePaths.get(RandomFactory.getInstance().nextInt(possiblePaths.size()));
+			currPosition = possiblePaths.get(random.nextInt(possiblePaths.size()));
 			path.add(currPosition);
 			possiblePaths.clear();
 		}

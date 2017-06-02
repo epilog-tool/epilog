@@ -24,7 +24,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -222,7 +221,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 					if (allNodes.isSelected()
 							| (selectedNodes.isSelected() & mNode2Checkbox.get(nodeID).isSelected())) {
 						nodes.add(nodeID);
-
 					}
 				}
 				randomMarkCells(nodes);
@@ -260,9 +258,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				lNodes.add(node);
 		}
 		this.visualGridICs.setRandomValue(lNodes);
-
 		updateComponentList((String) this.jcbSBML.getSelectedItem());
-
 	}
 
 	private void createGUIForModel(LogicalModel m) {
@@ -396,10 +392,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				jbTmp.setBackground(Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
 
 				jpRRCTop.add(jbTmp, gbc);
-
-				JLabel percentage = new JLabel(this.visualGridICs.getEpitheliumGrid().getPercentage(nodeID));
-				gbc.gridx = 3;
-				jpRRCTop.add(percentage, gbc);
 			}
 			this.jpRCenter.add(jpRRCTop);
 		}
@@ -441,13 +433,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				jbTmp.setBackground(Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
 
 				jpRRCBottom.add(jbTmp, gbc);
-
-				JLabel percentage = new JLabel(this.visualGridICs.getEpitheliumGrid().getPercentage(nodeID));
-				gbc.gridx = 3;
-				jpRRCBottom.add(percentage, gbc);
 			}
 			this.jpRCenter.add(jpRRCBottom);
-
 		}
 		// Re-Paint
 		this.getParent().repaint();

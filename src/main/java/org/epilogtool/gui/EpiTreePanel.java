@@ -53,6 +53,7 @@ public class EpiTreePanel extends JPanel {
 		this.epiTree = new JTree(root);
 
 		ToolTipManager.sharedInstance().registerComponent(this.epiTree);
+		ToolTipManager.sharedInstance().setDismissDelay(60000); // 1 min tooltip
 		TreeCellRenderer renderer = new ToolTipTreeCellRenderer();
 		this.epiTree.setCellRenderer(renderer);
 

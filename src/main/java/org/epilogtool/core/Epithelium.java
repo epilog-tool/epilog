@@ -14,6 +14,7 @@ import org.antlr.runtime.RecognitionException;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
+import org.epilogtool.common.RandomSeedType;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.cellDynamics.ModelEventManager;
 import org.epilogtool.core.cellDynamics.ModelHeritableNodes;
@@ -35,7 +36,8 @@ public class Epithelium {
 	private ModelEventManager modelEventManager;
 	private ModelHeritableNodes modelHeritableNodes;
 
-	public Epithelium(int x, int y, String topologyID, String name, LogicalModel m, RollOver rollover)
+	public Epithelium(int x, int y, String topologyID, String name, LogicalModel m, RollOver rollover,
+			RandomSeedType randomSeedType, int randomSeed)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		this.name = name;
@@ -45,7 +47,7 @@ public class Epithelium {
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
 		this.perturbations = new EpitheliumPerturbations();
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(EpitheliumUpdateSchemeInter.DEFAULT_ALPHA,
-				new HashMap<ComponentPair, Float>(), UpdateOrder.RANDOM_INDEPENDENT, UpdateCells.UPDATABLECELLS);
+				new HashMap<ComponentPair, Float>(), UpdateCells.UPDATABLECELLS, randomSeedType, randomSeed);
 		this.modelEventManager = new ModelEventManager(this.grid.getModelSet());
 		this.modelHeritableNodes = new ModelHeritableNodes();
 		this.modelHeritableNodes.addModel(m);

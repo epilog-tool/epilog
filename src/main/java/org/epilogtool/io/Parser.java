@@ -23,6 +23,7 @@ import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
 import org.epilogtool.OptionStore;
+import org.epilogtool.common.RandomSeedType;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.EmptyModel;
@@ -31,7 +32,6 @@ import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.ModelPerturbations;
 import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.core.UpdateCells;
-import org.epilogtool.core.UpdateOrder;
 import org.epilogtool.core.cellDynamics.CellularEvent;
 import org.epilogtool.core.cellDynamics.ModelEventExpression;
 import org.epilogtool.core.topology.RollOver;
@@ -56,6 +56,8 @@ public class Parser {
 		Map<String, String> modelKey2Name = new HashMap<String, String>();
 		Epithelium currEpi = null;
 		RollOver rollover = null;
+		RandomSeedType randomSeedType = null;
+		int randomSeed = 0;
 
 		String x = null;
 		String y = null;
@@ -92,6 +94,8 @@ public class Parser {
 				epiName = line.split("\\s+")[1];
 				currEpi = null;
 				rollover = RollOver.NONE;
+				randomSeed = 0;
+				randomSeedType = RandomSeedType.RANDOM;
 			}
 
 			if (line.startsWith("GD")) {
@@ -110,13 +114,28 @@ public class Parser {
 					currEpi.initModelHeritableNodes();
 				}
 			}
+
+			// Random Seed
+			if (line.startsWith("SD")) {
+				saTmp = line.split("\\s+");
+				RandomSeedType rsType = RandomSeedType.string2RandomSeed(saTmp[1]);
+				if (rsType != null && rsType.equals(RandomSeedType.FIXED)) {
+					if (saTmp.length == 3) {
+						randomSeedType = rsType;
+						randomSeed = Integer.parseInt(saTmp[2]);
+					} else
+						dialog.addMessage("File with undefined Fixed Random Seed");
+				}
+			}
+
 			// Model grid
 			if (line.startsWith("GM")) {
 				saTmp = line.split("\\s+");
 				LogicalModel m = Project.getInstance().getModel(modelKey2Name.get(saTmp[1]));
 				if (currEpi == null) {
 					currEpi = Project.getInstance().newEpithelium(Integer.parseInt(x), Integer.parseInt(y),
-							topologyLayout, epiName, EmptyModel.getInstance().getName(), rollover);
+							topologyLayout, epiName, EmptyModel.getInstance().getName(), rollover, randomSeedType,
+							randomSeed);
 				}
 				if (saTmp.length > 2) {
 					currEpi.setGridWithModel(m,
@@ -131,12 +150,6 @@ public class Parser {
 			if (line.startsWith("AS")) {
 				saTmp = line.split("\\s+");
 				currEpi.getUpdateSchemeInter().setAlpha(Float.parseFloat(saTmp[1]));
-			}
-
-			// updateMode value
-			if (line.startsWith("UPM")) {
-				String updateOrder = line.substring(line.indexOf(" ") + 1);
-				currEpi.getUpdateSchemeInter().setUpdateOrder(UpdateOrder.fromString(updateOrder));
 			}
 
 			// Cell Update
@@ -373,6 +386,14 @@ public class Parser {
 		// Rollover
 		w.println("RL " + epi.getEpitheliumGrid().getTopology().getRollOver());
 
+		// Random Seed
+		RandomSeedType rsType = epi.getUpdateSchemeInter().getRandomSeedType();
+		w.print("SD " + rsType.toString());
+		if (rsType.equals(RandomSeedType.FIXED)) {
+			w.print(" " + epi.getUpdateSchemeInter().getRandomSeed());
+		}
+		w.println();
+
 		// Models in the grid
 		EpitheliumGrid grid = epi.getEpitheliumGrid();
 		Map<LogicalModel, List<String>> modelInst = new HashMap<LogicalModel, List<String>>();
@@ -412,10 +433,6 @@ public class Parser {
 
 		// Alpha asynchronism
 		w.println("AS " + epi.getUpdateSchemeInter().getAlpha());
-		w.println();
-
-		// UpdateMode asynchronism
-		w.println("UPM " + epi.getUpdateSchemeInter().getUpdateOrder());
 		w.println();
 
 		// Cell Update

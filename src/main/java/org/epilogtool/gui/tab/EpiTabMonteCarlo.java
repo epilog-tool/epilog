@@ -699,10 +699,8 @@ public class EpiTabMonteCarlo extends EpiTabTools {
 		monteCarloInfoUp.add(new JLabel("Epithelium: " + this.epithelium.getName()), BorderLayout.PAGE_START);
 		monteCarloInfoUp.add(new JLabel("Models: " + this.epithelium.getUsedModels()), BorderLayout.CENTER);
 
-		monteCarloInfoCenter.add(new JLabel("Update Mode: " + this.epithelium.getUpdateSchemeInter().getUpdateOrder()),
-				BorderLayout.PAGE_START);
 		monteCarloInfoCenter.add(new JLabel("Alpha: " + this.epithelium.getUpdateSchemeInter().getAlpha()),
-				BorderLayout.CENTER);
+				BorderLayout.PAGE_START);
 		monteCarloInfoCenter.add(new JLabel("Sigma: " + this.epithelium.getUpdateSchemeInter().getCPSigmas()),
 				BorderLayout.PAGE_END);
 

@@ -36,6 +36,7 @@ import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 import org.epilogtool.FileSelectionHelper;
 import org.epilogtool.OptionStore;
+import org.epilogtool.common.RandomSeedType;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.dialog.DialogAbout;
@@ -260,7 +261,7 @@ public class EpiGUI extends JFrame {
 		if (dialogPanel.isDefined()) {
 			Epithelium newEpi = Project.getInstance().newEpithelium(dialogPanel.getEpitheliumWidth(),
 					dialogPanel.getEpitheliumHeight(), dialogPanel.getTopologyID(), dialogPanel.getEpiName(),
-					dialogPanel.getSBMLName(), dialogPanel.getRollOver());
+					dialogPanel.getSBMLName(), dialogPanel.getRollOver(), RandomSeedType.RANDOM, 0);
 			this.addEpithelium2JTree(newEpi);
 		}
 	}
@@ -414,8 +415,9 @@ public class EpiGUI extends JFrame {
 		dialog.setVisible(true);
 
 		if (dialogPanel.isDefined()) {
-			OptionStore.setOption("PrefsSimUpdates", dialogPanel.getSimulationUpdate());
 			OptionStore.setOption("PrefsSimHistory", dialogPanel.getSimulationHistory());
+			OptionStore.setOption("PrefsCycleIdent", dialogPanel.getCycleIdentification());
+			OptionStore.setOption("PrefsNodePercent", dialogPanel.getNodePercent());
 		}
 	}
 
@@ -881,8 +883,7 @@ public class EpiGUI extends JFrame {
 		if (tabIndex < 0) {
 			ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
 			TreePath path = this.epiTreePanel.getSelectionEpiPath();
-			tab = new EpiTabSimulation(epi, path, projChanged,
-					new SimulationEpiClone());
+			tab = new EpiTabSimulation(epi, path, projChanged, new SimulationEpiClone());
 			String title = epi.getName() + ":Simulation";
 			this.epiRightFrame.addTab(title, tab);
 			tab.initialize();

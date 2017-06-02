@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.colomoto.logicalmodel.LogicalModel;
+import org.epilogtool.common.RandomSeedType;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.dialog.DialogMessage;
@@ -91,9 +92,11 @@ public class Project {
 	}
 
 	public Epithelium newEpithelium(int x, int y, String topologyID, String userName, String modelName,
-			RollOver rollover) throws InstantiationException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
-		Epithelium epi = new Epithelium(x, y, topologyID, userName, this.projectFeatures.getModel(modelName), rollover);
+			RollOver rollover, RandomSeedType randomSeedType, int randomSeed)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException, ClassNotFoundException {
+		Epithelium epi = new Epithelium(x, y, topologyID, userName, this.projectFeatures.getModel(modelName), rollover,
+				randomSeedType, randomSeed);
 		this.epitheliumList.add(epi);
 		return epi;
 	}
