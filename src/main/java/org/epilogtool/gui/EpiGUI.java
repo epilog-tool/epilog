@@ -362,7 +362,9 @@ public class EpiGUI extends JFrame {
 		if (!this.canClose("Do you really want a new project?")) {
 			return;
 		}
-		this.epiTabCloseAllTabs();
+		if (!this.epiTabCloseAllTabs()) {
+			return;
+		}
 		Project.getInstance().reset();
 		this.cleanGUI();
 		this.validateGUI();
@@ -814,13 +816,15 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
-	public void epiTabCloseAllTabs() {
+	public boolean epiTabCloseAllTabs() {
+		boolean canClose = true;
 		for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
 			EpiTab tab = (EpiTab) this.epiRightFrame.getComponentAt(i);
 			if (tab.canClose()) {
 				this.epiRightFrame.remove(i);
-			}
+			} else canClose = false;
 		}
+		return canClose;
 	}
 
 	public void epiTabCloseActiveEpi(boolean force) {
