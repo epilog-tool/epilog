@@ -94,6 +94,7 @@ public class EpiGUI extends JFrame {
 	private CloseTabPopupMenu closeTabPopupMenu;
 
 	private static EpiGUI epigui;
+	private boolean devMode;
 
 	public static EpiGUI getInstance() {
 		if (epigui == null) {
@@ -126,6 +127,7 @@ public class EpiGUI extends JFrame {
 		} catch (UnsupportedLookAndFeelException e2) {
 			e2.printStackTrace();
 		}
+		this.devMode = false;
 
 		this.closeTabPopupMenu = new CloseTabPopupMenu();
 
@@ -229,6 +231,14 @@ public class EpiGUI extends JFrame {
 		this.setVisible(true);
 	}
 
+	public void setDeveloperMode(boolean flag) {
+		this.devMode = flag;
+	}
+	
+	public boolean getDeveloperMode() {
+		return this.devMode;
+	}
+	
 	public void aboutDialog() {
 		Window win = SwingUtilities.getWindowAncestor(this);
 		JDialog dialog = new JDialog(win, "About", ModalityType.APPLICATION_MODAL);
@@ -240,7 +250,6 @@ public class EpiGUI extends JFrame {
 
 	private void userMessage(String msg, String title, int type) {
 		JOptionPane.showMessageDialog(this, msg, title, type);
-
 	}
 
 	public void userMessageError(String msg, String title) {
@@ -353,6 +362,7 @@ public class EpiGUI extends JFrame {
 		if (!this.canClose("Do you really want a new project?")) {
 			return;
 		}
+		this.epiTabCloseAllTabs();
 		Project.getInstance().reset();
 		this.cleanGUI();
 		this.validateGUI();
@@ -725,7 +735,7 @@ public class EpiGUI extends JFrame {
 				epiTab = new EpiTabEpithelialUpdateScheme(epi, selPath, projChanged, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_MODELGRID)) {
 				epiTab = new EpiTabModelGrid(epi, selPath, projChanged, tabChanged);
-			} else if (tabName.equals(EpiTab.TAB_CELLDIVISION)) {
+			} else if (this.getDeveloperMode() && tabName.equals(EpiTab.TAB_CELLDIVISION)) {
 				epiTab = new EpiTabGridDynamics(epi, selPath, projChanged, tabChanged);
 			}
 			if (epiTab != null) {

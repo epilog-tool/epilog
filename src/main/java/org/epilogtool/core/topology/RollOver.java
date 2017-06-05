@@ -1,9 +1,8 @@
 package org.epilogtool.core.topology;
 
 public enum RollOver {
-	NONE("NoRollover", false, false), HORIZ("Horizontal", true, false), VERT(
-			"Vertical", false, true), HORIZ_VERT("Horizontal&Vertical", true,
-			true);
+	NONE("Rectangular", false, false), HORIZ("Cylinder (horizontal wrap)", true,
+			false), VERT("Cylinder (vertical wrap)", false, true), HORIZ_VERT("Torus", true, true);
 
 	private String description;
 	private boolean isHorizontal;
@@ -28,13 +27,13 @@ public enum RollOver {
 	}
 
 	public static RollOver string2RollOver(String str) {
-		if (str.equals(HORIZ.toString()))
+		if (str.equals(HORIZ.toString()) || str.equals("Horizontal"))
 			return HORIZ;
-		else if (str.equals(VERT.toString()))
+		else if (str.equals(VERT.toString()) || str.equals("Vertical"))
 			return VERT;
-		else if (str.equals(NONE.toString()))
+		else if (str.equals(NONE.toString()) || str.equals("NoRollover"))
 			return NONE;
-		else if (str.equals(HORIZ_VERT.toString()))
+		else if (str.equals(HORIZ_VERT.toString()) || str.equals("Horizontal&Vertical"))
 			return HORIZ_VERT;
 		return null;
 	}

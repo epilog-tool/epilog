@@ -12,7 +12,7 @@ public abstract class EpiTab extends JPanel {
 	public static final String TAB_MODELGRID = "Model Grid";
 	public static final String TAB_INTEGRATION = "Input Definition";
 	public static final String TAB_INITCONDITIONS = "Initial Conditions";
-	public static final String TAB_PERTURBATIONS = "Component Perturbations";
+	public static final String TAB_PERTURBATIONS = "Perturbations";
 	public static final String TAB_PRIORITIES = "Model Updating";
 	public static final String TAB_EPIUPDATING = "Epithelium Updating";
 	public static final String TAB_CELLDIVISION = "Cell Division";

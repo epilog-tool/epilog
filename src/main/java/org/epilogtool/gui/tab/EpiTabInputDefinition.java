@@ -155,7 +155,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		this.jpNRBottom.removeAll();
 		ButtonGroup group = new ButtonGroup();
 		this.jpNRTop.add(new JLabel(this.activeNodeID + ": "));
-		JRadioButton jrModelInput = new JRadioButton("Model Input");
+		JRadioButton jrModelInput = new JRadioButton("Positional input");
 		jrModelInput.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -167,7 +167,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		});
 		group.add(jrModelInput);
 		this.jpNRTop.add(jrModelInput);
-		JRadioButton jrModelInt = new JRadioButton("Model Integration");
+		JRadioButton jrModelInt = new JRadioButton("Integration input");
 		jrModelInt.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

@@ -3,6 +3,7 @@ package org.epilogtool.gui;
 import java.awt.Component;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -60,7 +61,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 							tipKey = this.getTooltipSimulation(epi);
 						} else if (sLeaf.equals(EpiTab.TOOL_MONTECARLO)) {
 							tipKey = this.getTooltipSimulation(epi);
-						} else if (sLeaf.equals(EpiTab.TAB_CELLDIVISION)) {
+						} else if (EpiGUI.getInstance().getDeveloperMode() && sLeaf.equals(EpiTab.TAB_CELLDIVISION)) {
 							tipKey = this.getToolTipCellDivision(epi);
 						}
 					}
@@ -79,7 +80,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 		tipKey += "Grid: " + epi.getEpitheliumGrid().getX() + " (width) x " + epi.getEpitheliumGrid().getY()
 				+ " (height)<br/>";
 		Topology top = epi.getEpitheliumGrid().getTopology();
-		tipKey += "Rollover: " + top.getRollOver() + "<br/>";
+		tipKey += "Borders: " + top.getRollOver() + "<br/>";
 		tipKey += "Topology: " + top.getDescription() + "<br/>";
 		tipKey += "</html>";
 		return tipKey;
@@ -121,20 +122,12 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	private String getTooltipPerturbations(Epithelium epi) {
 		String tipKey = "<html>";
 		boolean isEmpty = true;
-		for (LogicalModel m : epi.getEpitheliumGrid().getModelSet()) {
-			ModelPerturbations mp = epi.getModelPerturbations(m);
-			if (mp == null) {
+		Map<LogicalModel, Set<AbstractPerturbation>> map = epi.getEpitheliumGrid().getAppliedPerturb();
+		for (LogicalModel m : map.keySet()) {
+			if (map.get(m).isEmpty())
 				continue;
-			}
-			List<AbstractPerturbation> apList = mp.getAllPerturbations();
-			if (apList.size() == 0) {
-				continue;
-			}
-			if (!isEmpty) {
-				tipKey += "<br/>";
-			}
 			tipKey += "<b>" + Project.getInstance().getProjectFeatures().getModelName(m) + "</b>";
-			for (AbstractPerturbation ap : apList) {
+			for (AbstractPerturbation ap : map.get(m)) {
 				tipKey += "<br/>&nbsp;. " + ap;
 			}
 			isEmpty = false;
@@ -171,8 +164,8 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 						+ " : " + cp.getNodeInfo().getNodeID() + " = " + cpSigmas.get(cp) + "<br/>";
 			}
 		}
-		tipKey +="- Cells to Update: " + epi.getUpdateSchemeInter().getUpdateCells() + "<br/>";
-		tipKey +="- Number generator seed: " + epi.getUpdateSchemeInter().getRandomSeedType() + "<br/>";
+		tipKey += "- Cells to Update: " + epi.getUpdateSchemeInter().getUpdateCells() + "<br/>";
+		tipKey += "- Number generator seed: " + epi.getUpdateSchemeInter().getRandomSeedType() + "<br/>";
 		tipKey += "</html>";
 		return tipKey;
 	}

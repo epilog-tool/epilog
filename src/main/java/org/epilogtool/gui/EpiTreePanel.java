@@ -39,17 +39,14 @@ public class EpiTreePanel extends JPanel {
 		this.popupmenu = new EpiTreePopupMenu();
 
 		this.setLayout(new BorderLayout());
-		this.add(EpilogGUIFactory.getJLabelBold("Epithelia:"),
-				BorderLayout.PAGE_START);
-		this.scrollTree = new JScrollPane(
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+		this.add(EpilogGUIFactory.getJLabelBold("Epithelia:"), BorderLayout.PAGE_START);
+		this.scrollTree = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		this.add(this.scrollTree, BorderLayout.CENTER);
 	}
 
 	public void initEpitheliumJTree() {
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode(
-				"Epithelium list:");
+		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Epithelium list:");
 		this.epiTree = new JTree(root);
 
 		ToolTipManager.sharedInstance().registerComponent(this.epiTree);
@@ -57,8 +54,7 @@ public class EpiTreePanel extends JPanel {
 		TreeCellRenderer renderer = new ToolTipTreeCellRenderer();
 		this.epiTree.setCellRenderer(renderer);
 
-		this.epiTree.getSelectionModel().setSelectionMode(
-				TreeSelectionModel.SINGLE_TREE_SELECTION);
+		this.epiTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		this.scrollTree.setViewportView(this.epiTree);
 		this.epiTree.addMouseListener(new MouseListener() {
 			@Override
@@ -118,8 +114,7 @@ public class EpiTreePanel extends JPanel {
 	}
 
 	public TreePath getSelectionEpiPath() {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
-				.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree.getLastSelectedPathComponent();
 		TreePath path = this.getSelectionPath();
 		if (node.isLeaf()) {
 			path = path.getParentPath();
@@ -128,8 +123,7 @@ public class EpiTreePanel extends JPanel {
 	}
 
 	public Epithelium getSelectedEpithelium() {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
-				.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree.getLastSelectedPathComponent();
 		if (node == null)
 			return null;
 		if (node.isLeaf()) {
@@ -143,8 +137,7 @@ public class EpiTreePanel extends JPanel {
 		// Remove from JTree
 		DefaultTreeModel model = (DefaultTreeModel) this.epiTree.getModel();
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
-				.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree.getLastSelectedPathComponent();
 		root.remove(node);
 		model.reload();
 		if (root.getChildCount() == 0) {
@@ -170,22 +163,20 @@ public class EpiTreePanel extends JPanel {
 	}
 
 	private void validateTreeNodeSelection() {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree
-				.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree.getLastSelectedPathComponent();
 		boolean bActive = node != null && !node.isLeaf() && !node.isRoot();
 		this.epiMenu.getItem(1).setEnabled(bActive);
 		this.epiMenu.getItem(2).setEnabled(bActive);
 		this.epiMenu.getItem(3).setEnabled(bActive);
 		this.popupmenu.notifySelection(this.epiMenu.isEnabled(), bActive);
 		bActive = node != null && !node.isRoot();
-		this.toolsMenu.getItem(0).setEnabled(bActive); //Simulation
-		this.toolsMenu.getItem(1).setEnabled(bActive); //Tools
+		this.toolsMenu.getItem(0).setEnabled(bActive); // Simulation
+		this.toolsMenu.getItem(1).setEnabled(bActive); // Tools
 	}
 
 	public void addEpi2JTree(Epithelium epi) {
 		DefaultMutableTreeNode epiNode = new DefaultMutableTreeNode(epi);
-		((DefaultMutableTreeNode) this.epiTree.getModel().getRoot())
-				.add(epiNode);
+		((DefaultMutableTreeNode) this.epiTree.getModel().getRoot()).add(epiNode);
 
 		DefaultMutableTreeNode gm = new DefaultMutableTreeNode(EpiTab.TAB_MODELGRID);
 		epiNode.add(gm);
@@ -199,8 +190,10 @@ public class EpiTreePanel extends JPanel {
 		epiNode.add(mu);
 		DefaultMutableTreeNode eu = new DefaultMutableTreeNode(EpiTab.TAB_EPIUPDATING);
 		epiNode.add(eu);
-		DefaultMutableTreeNode cd = new DefaultMutableTreeNode(EpiTab.TAB_CELLDIVISION);
-		epiNode.add(cd);
+		if (EpiGUI.getInstance().getDeveloperMode()) {
+			DefaultMutableTreeNode cd = new DefaultMutableTreeNode(EpiTab.TAB_CELLDIVISION);
+			epiNode.add(cd);
+		}
 		
 		this.epiTree.setRootVisible(false);
 		DefaultTreeModel model = (DefaultTreeModel) this.epiTree.getModel();
@@ -215,19 +208,15 @@ public class EpiTreePanel extends JPanel {
 			return;
 
 		TreePath selPath = this.epiTree.getPathForLocation(e.getX(), e.getY());
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selPath
-				.getLastPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) selPath.getLastPathComponent();
 		// Only opens tabs for leafs
 		if (!node.isLeaf()) {
 			return;
 		}
-		DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node
-				.getParent();
+		DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
 
 		if (parent != null) {
-			EpiGUI.getInstance().openEpiTab(
-					(Epithelium) parent.getUserObject(), selPath,
-					node.toString());
+			EpiGUI.getInstance().openEpiTab((Epithelium) parent.getUserObject(), selPath, node.toString());
 		}
 	}
 }

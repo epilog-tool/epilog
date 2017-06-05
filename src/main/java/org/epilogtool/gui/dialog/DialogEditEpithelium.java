@@ -60,7 +60,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 		// Width JLabel
 		c.gridx = 0;
 		c.gridy = 0;
-		this.add(new JLabel("Width:"), c);
+		this.add(new JLabel("Width"), c);
 		// Width JTextField
 		this.jtfWidth = new JTextField("" + epi.getX());
 		this.jtfWidth.addKeyListener(new KeyListener() {
@@ -84,7 +84,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 		// Height JLabel
 		c.gridx = 0;
 		c.gridy = 1;
-		this.add(new JLabel("Height:"), c);
+		this.add(new JLabel("Height"), c);
 
 		// Height JTextField
 		this.jtfHeight = new JTextField("" + epi.getY());
@@ -109,7 +109,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 		// Name JLabel
 		c.gridx = 0;
 		c.gridy = 2;
-		this.add(new JLabel("Name:"), c);
+		this.add(new JLabel("Name"), c);
 
 		// Name JTextField
 		this.jtfEpiName = new JTextField(epi.getName());
@@ -134,7 +134,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 		// Rollover JLabel
 		c.gridx = 0;
 		c.gridy = 4;
-		this.add(new JLabel("Rollover:"), c);
+		this.add(new JLabel("Borders"), c);
 
 		// Rollover JComboBox
 		this.jcbRollover = new JComboBox<RollOver>(
@@ -154,7 +154,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 		// Topology JLabel
 		c.gridx = 0;
 		c.gridy = 5;
-		this.add(new JLabel("Topology:"), c);
+		this.add(new JLabel("Topology"), c);
 
 		// Topology JComboBox
 		int iSelected = 0;

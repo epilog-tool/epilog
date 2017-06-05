@@ -43,6 +43,7 @@ public class Launcher {
 		boolean bCMD = false;
 		String pepsFile = null;
 		long seed = -1;
+		boolean dev = false;
 
 		try {
 			jsap = new SimpleJSAP(
@@ -55,6 +56,7 @@ public class Launcher {
 									"" + maxiter, JSAP.NOT_REQUIRED, 'i',
 									"max-iter", "Maximum number of iterations."),
 							new Switch("cmd", JSAP.NO_SHORTFLAG, "cmd"),
+							new Switch("dev", JSAP.NO_SHORTFLAG, "dev"),
 							new FlaggedOption("seed", JSAP.LONG_PARSER,
 									"" + seed, JSAP.NOT_REQUIRED,
 									JSAP.NO_SHORTFLAG, "seed",
@@ -70,6 +72,7 @@ public class Launcher {
 			bCMD = jsapResult.getBoolean("cmd");
 			pepsFile = jsapResult.getString("peps");
 			seed = jsapResult.getLong("seed");
+			dev = jsapResult.getBoolean("dev");
 
 		} catch (JSAPException e) {
 			System.err.println(e.getMessage());
@@ -102,6 +105,7 @@ public class Launcher {
 				e.printStackTrace();
 			}
 			EpiGUI gui = EpiGUI.getInstance();
+			gui.setDeveloperMode(dev);
 
 			if (pepsFile != null && (new File(pepsFile).exists())) {
 				gui.loadPEPS(pepsFile);

@@ -370,7 +370,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		this.repaintAPColorsPanel();
 
 		JPanel jpColorApplyClear = new JPanel(new FlowLayout());
-		JButton jbApplyAll = ButtonFactory.getNoMargins("Apply All");
+		JButton jbApplyAll = ButtonFactory.getNoMargins("Apply to All  ");
 		jbApplyAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -378,14 +378,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 			}
 		});
 		jpColorApplyClear.add(jbApplyAll);
-		JButton jbClearAll = ButtonFactory.getNoMargins("Clear All");
-		jbClearAll.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				visualGridPerturb.clearDataFromAll();
-			}
-		});
-		jpColorApplyClear.add(jbClearAll);
 		JPanel jpColorRect = new JPanel(new FlowLayout());
 		JToggleButton jtbRectFill = new JToggleButton("Rectangle Fill", false);
 		jtbRectFill.setMargin(new Insets(0, 0, 0, 0));

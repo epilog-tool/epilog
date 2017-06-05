@@ -130,19 +130,6 @@ public class VisualGridPerturbation extends VisualGridDefinitions {
 		}
 	}
 
-	public void clearDataFromAll() {
-		for (int x = 0; x < this.gridX; x++) {
-			for (int y = 0; y < this.gridY; y++) {
-				AbstractPerturbation ap = this.epiGrid.getPerturbation(x, y);
-				if (selAbsPerturb == null || ap != null
-						&& ap.equals(selAbsPerturb)) {
-					this.epiGrid.setPerturbation(x, y, null);
-				}
-			}
-		}
-		this.paintComponent(this.getGraphics());
-	}
-
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 

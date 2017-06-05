@@ -29,7 +29,7 @@ public class EpilogFileFilter extends FileFilter {
 		}
 		extension = extension.substring(pos + 1);
 
-		if (this.ext.equals(extension))
+		if (this.ext.equalsIgnoreCase(extension))
 			return true;
 
 		return false;

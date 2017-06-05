@@ -141,6 +141,22 @@ public class EpitheliumGrid {
 		return this.gridEpiCell[x][y].getPerturbation();
 	}
 
+	public Map<LogicalModel, Set<AbstractPerturbation>> getAppliedPerturb() {
+		Map<LogicalModel, Set<AbstractPerturbation>> map = new HashMap<LogicalModel, Set<AbstractPerturbation>>();
+		for (int y = 0; y < this.getY(); y++) {
+			for (int x = 0; x < this.getX(); x++) {
+				AbstractPerturbation ap = this.getPerturbation(x, y);
+				if (ap != null) {
+					LogicalModel m = this.getModel(x, y);
+					if (!map.containsKey(m))
+						map.put(m, new HashSet<AbstractPerturbation>());
+					map.get(m).add(ap);
+				}
+			}
+		}
+		return map;
+	}
+
 	public Map<LogicalModel, Set<Tuple2D<Integer>>> getModelPositions() {
 		return this.modelPositions;
 	}

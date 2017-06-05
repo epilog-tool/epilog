@@ -36,6 +36,7 @@ import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
+import org.epilogtool.FileSelectionHelper;
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.Epithelium;
@@ -314,13 +315,11 @@ public class EpiTabSimulation extends EpiTabTools {
 	 */
 	// get current simulation step
 	private void saveEpiGrid2File() {
-		JFileChooser fc = new JFileChooser();
-		fc.setFileFilter(new EpilogFileFilter("png"));
-		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-			String file = fc.getSelectedFile().getAbsolutePath();
-			String ext = "PNG";
-			file += (file.endsWith(ext) ? "" : "." + ext);
-			FileIO.writeEpitheliumGrid2File(file, this.visualGridSimulation, ext);
+		String ext = "png";
+		String filename = FileSelectionHelper.saveFilename(ext);
+		if (filename != null) {
+			filename += (filename.endsWith("." + ext) ? "" : "." + ext);
+			FileIO.writeEpitheliumGrid2File(filename, this.visualGridSimulation, ext);
 		}
 	}
 
@@ -330,7 +329,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		fc.setFileFilter(new EpilogFileFilter("png"));
 		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 			String file = fc.getSelectedFile().getAbsolutePath();
-			String ext = "PNG";
+			String ext = "png";
 			file += (file.endsWith(ext) ? "" : "." + ext);
 			for (int i = 0; i <= this.iCurrSimIter; i++) {
 				String file_name = file.replace(".", "_" + i + ".");
