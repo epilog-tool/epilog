@@ -369,7 +369,6 @@ public class EpitheliumGrid {
 	}
 
 	public void updateNodeValueCounts() {
-		System.out.println("updateNodeValueCounts()");
 		// Compute component/value counts
 		this.compCounts.clear();
 		for (int x = 0; x < this.getX(); x++) {

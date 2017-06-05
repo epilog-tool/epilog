@@ -415,8 +415,6 @@ public class EpiGUI extends JFrame {
 		dialog.setVisible(true);
 
 		if (dialogPanel.isDefined()) {
-			OptionStore.setOption("PrefsSimHistory", dialogPanel.getSimulationHistory());
-			OptionStore.setOption("PrefsCycleIdent", dialogPanel.getCycleIdentification());
 			OptionStore.setOption("PrefsNodePercent", dialogPanel.getNodePercent());
 		}
 	}

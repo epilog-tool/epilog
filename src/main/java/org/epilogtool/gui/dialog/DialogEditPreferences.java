@@ -20,9 +20,7 @@ public class DialogEditPreferences extends EscapableDialog {
 	private static final long serialVersionUID = 1877338344309723137L;
 
 	private JPanel panelSimulation;
-	private JComboBox<KeepHistory> jcbHistory;
 	private JComboBox<GridNodePercent> jcbGridNodePercent;
-	private JComboBox<CycleIdent> jcbCycle;
 
 	private boolean bIsOK;
 
@@ -57,34 +55,6 @@ public class DialogEditPreferences extends EscapableDialog {
 		c.gridy = 0;
 		this.panelSimulation.add(this.jcbGridNodePercent, c);
 
-		// Simulation History
-		c.gridx = 0;
-		c.gridy = 1;
-		this.panelSimulation.add(new JLabel(KeepHistory.title()), c);
-		this.jcbHistory = new JComboBox<KeepHistory>(new KeepHistory[] { KeepHistory.YES, KeepHistory.NO });
-		String history = (String) OptionStore.getOption("PrefsSimHistory");
-		for (int i = 0; i < this.jcbHistory.getItemCount(); i++) {
-			if (history != null && history.equals(this.jcbHistory.getItemAt(i).toString()))
-				this.jcbHistory.setSelectedIndex(i);
-		}
-		c.gridx = 1;
-		c.gridy = 1;
-		this.panelSimulation.add(this.jcbHistory, c);
-
-		// Cycle Identification
-		c.gridx = 0;
-		c.gridy = 2;
-		this.panelSimulation.add(new JLabel(CycleIdent.title()), c);
-		this.jcbCycle = new JComboBox<CycleIdent>(new CycleIdent[] { CycleIdent.YES, CycleIdent.NO });
-		String cycle = (String) OptionStore.getOption("PrefsCycleIdent");
-		for (int i = 0; i < this.jcbCycle.getItemCount(); i++) {
-			if (cycle != null && cycle.equals(this.jcbCycle.getItemAt(i).toString()))
-				this.jcbCycle.setSelectedIndex(i);
-		}
-		c.gridx = 1;
-		c.gridy = 2;
-		this.panelSimulation.add(this.jcbCycle, c);
-
 		// Bottom Panel
 		JPanel bottom = new JPanel(new FlowLayout());
 		this.buttonCancel = new JButton("Cancel");
@@ -114,14 +84,6 @@ public class DialogEditPreferences extends EscapableDialog {
 
 	public boolean isDefined() {
 		return this.bIsOK;
-	}
-
-	public String getSimulationHistory() {
-		return ((KeepHistory) this.jcbHistory.getSelectedItem()).toString();
-	}
-
-	public String getCycleIdentification() {
-		return ((CycleIdent) this.jcbCycle.getSelectedItem()).toString();
 	}
 
 	public String getNodePercent() {

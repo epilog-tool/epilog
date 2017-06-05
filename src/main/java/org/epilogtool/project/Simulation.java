@@ -73,13 +73,8 @@ public class Simulation {
 		EpitheliumGrid firstGrid = this.epithelium.getEpitheliumGrid();
 		firstGrid.updateNodeValueCounts();
 		this.gridHistory.add(this.restrictGridWithPerturbations(firstGrid));
-		Object hist = OptionStore.getOption("KeepHistory");
-		if (hist != null && hist.equals("Yes")) {
-			this.gridHashHistory = new ArrayList<String>();
-			this.gridHashHistory.add(firstGrid.hashGrid());
-		} else {
-			this.gridHashHistory = null;
-		}
+		this.gridHashHistory = new ArrayList<String>();
+		this.gridHashHistory.add(firstGrid.hashGrid());
 		this.stable = false;
 		this.hasCycle = false;
 		this.ceEvaluator = new CEEvaluation();
