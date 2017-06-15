@@ -25,13 +25,17 @@ import org.epilogtool.gui.EpiGUI;
 public class SBMLPopupMenu extends JPopupMenu {
 	private static final long serialVersionUID = 7968226829964184722L;
 
+	JMenuItem load;
+	JMenuItem rename;
 	JMenuItem remove;
+	JMenuItem save;
+	JMenuItem replace;
 
 	public SBMLPopupMenu() {
 		
 		// LOAD SBML
-		JMenuItem load = new JMenuItem("Load model (SBML)");
-		load.addActionListener(new ActionListener() {
+		this.load = new JMenuItem("Load model (SBML)");
+		this.load.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -42,21 +46,21 @@ public class SBMLPopupMenu extends JPopupMenu {
 				}
 			}
 		});
-		this.add(load);
+		this.add(this.load);
 
-		// RENAME SBML
-		JMenuItem rename = new JMenuItem("Rename model (SBML)");
-		rename.addActionListener(new ActionListener() {
+		// Rename SBML
+		this.rename = new JMenuItem("Rename model (SBML)");
+		this.rename.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				EpiGUI.getInstance().renameSBML();
 			}
 		});
-		this.add(rename);
+		this.add(this.rename);
 		
-		// REMOVE SBML
+		// Remove SBML
 		this.remove = new JMenuItem("Remove model (SBML)");
-		remove.addActionListener(new ActionListener() {
+		this.remove.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				EpiGUI.getInstance().removeSBML();
@@ -65,9 +69,9 @@ public class SBMLPopupMenu extends JPopupMenu {
 		this.add(this.remove);
 		
 		
-		// Export SBML
-		JMenuItem export = new JMenuItem("Save model (SBML)");
-		export.addActionListener(new ActionListener() {
+		// Save SBML
+		this.save = new JMenuItem("Save model (SBML)");
+		this.save.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -78,21 +82,25 @@ public class SBMLPopupMenu extends JPopupMenu {
 				}
 			}
 		});
-		this.add(export);	
+		this.add(this.save);	
 		
 		// Replace SBML
-		JMenuItem replace = new JMenuItem("Replace model (SBML)");
-		replace.addActionListener(new ActionListener() {
+		this.replace = new JMenuItem("Replace model (SBML)");
+		this.replace.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				EpiGUI.getInstance().replaceSBML();
 			}
 		});
-		this.add(replace);	
+		this.add(this.replace);	
 		
 	}
 
-	public void updateMenuItems(boolean enable) {
-		this.remove.setEnabled(enable);
+	public void updateMenuItems(boolean hasModel) {
+		this.load.setEnabled(true);
+		this.rename.setEnabled(hasModel);
+		this.remove.setEnabled(hasModel);
+		this.save.setEnabled(hasModel);
+		this.replace.setEnabled(hasModel);
 	}
 }

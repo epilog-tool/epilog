@@ -104,15 +104,15 @@ public class ProjDescPanel extends JPanel {
 	 * The user can one replace a model if there are at-least 2 SBML models loaded.
 	 */
 	public void updateSBMLMenuItems() {
-		menu.getItem(0).setEnabled(true);
-		menu.getItem(1).setEnabled(
-				this.listSBMLs.getSelectionModel().getMinSelectionIndex() >= 0);
-		menu.getItem(2).setEnabled(
-				this.listSBMLs.getSelectionModel().getMinSelectionIndex() >= 0);
-		menu.getItem(3).setEnabled(
-				this.listSBMLs.getSelectionModel().getMinSelectionIndex() >= 0);
-		menu.getItem(4).setEnabled(
-				this.listSBMLs.getSelectionModel().getMinSelectionIndex() >= 1);
+		boolean hasModel = this.listSBMLs.getSelectionModel().getMinSelectionIndex() >= 0;
+		// Menu
+		this.menu.getItem(0).setEnabled(true);
+		this.menu.getItem(1).setEnabled(hasModel);
+		this.menu.getItem(2).setEnabled(hasModel);
+		this.menu.getItem(3).setEnabled(hasModel);
+		this.menu.getItem(4).setEnabled(hasModel);
+		// Popup menu
+		this.popupmenu.updateMenuItems(hasModel);
 	}
 
 	public void loadModel(String model) {

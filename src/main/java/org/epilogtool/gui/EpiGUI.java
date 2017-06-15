@@ -55,12 +55,10 @@ import org.epilogtool.gui.menu.ToolsMenu;
 import org.epilogtool.gui.menu.WindowMenu;
 import org.epilogtool.gui.tab.EpiTab;
 import org.epilogtool.gui.tab.EpiTabEpithelialUpdateScheme;
-import org.epilogtool.gui.tab.EpiTabGridDynamics;
 import org.epilogtool.gui.tab.EpiTabInitialConditions;
 import org.epilogtool.gui.tab.EpiTabInputDefinition;
 import org.epilogtool.gui.tab.EpiTabModelGrid;
 import org.epilogtool.gui.tab.EpiTabModelUpdateScheme;
-import org.epilogtool.gui.tab.EpiTabMonteCarlo;
 import org.epilogtool.gui.tab.EpiTabPerturbations;
 import org.epilogtool.gui.tab.EpiTabSimulation;
 import org.epilogtool.gui.widgets.CloseTabButton;
@@ -234,11 +232,11 @@ public class EpiGUI extends JFrame {
 	public void setDeveloperMode(boolean flag) {
 		this.devMode = flag;
 	}
-	
+
 	public boolean getDeveloperMode() {
 		return this.devMode;
 	}
-	
+
 	public void aboutDialog() {
 		Window win = SwingUtilities.getWindowAncestor(this);
 		JDialog dialog = new JDialog(win, "About", ModalityType.APPLICATION_MODAL);
@@ -607,7 +605,7 @@ public class EpiGUI extends JFrame {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void removeSBML() {
 		String model = this.projDescPanel.getSelected();
@@ -647,7 +645,7 @@ public class EpiGUI extends JFrame {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void replaceSBML() {
 		String model = this.projDescPanel.getSelected();
@@ -737,8 +735,6 @@ public class EpiGUI extends JFrame {
 				epiTab = new EpiTabEpithelialUpdateScheme(epi, selPath, projChanged, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_MODELGRID)) {
 				epiTab = new EpiTabModelGrid(epi, selPath, projChanged, tabChanged);
-			} else if (this.getDeveloperMode() && tabName.equals(EpiTab.TAB_CELLDIVISION)) {
-				epiTab = new EpiTabGridDynamics(epi, selPath, projChanged, tabChanged);
 			}
 			if (epiTab != null) {
 				this.epiRightFrame.addTab(title, epiTab);
@@ -847,38 +843,6 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
-	public void openMonteCarloTab() {
-		// JTree
-		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
-		// TabbedPane
-		int tabIndex = -1;
-		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
-			EpiTab epiInTab = (EpiTab) this.epiRightFrame.getComponentAt(i);
-			if (epiInTab.containsEpithelium(epi) && epiInTab.getName().endsWith("MonteCarlo")) {
-				tabIndex = i;
-				break;
-			}
-		}
-		EpiTab tab;
-		if (tabIndex < 0) {
-			ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
-			TreePath path = this.epiTreePanel.getSelectionEpiPath();
-			tab = new EpiTabMonteCarlo(epi, path, projChanged, new SimulationEpiClone());
-			String title = epi.getName() + ":MonteCarlo";
-			this.epiRightFrame.addTab(title, tab);
-			tab.initialize();
-
-			CloseTabButton tabButton = new CloseTabButton(title, this.epiRightFrame);
-			tabIndex = this.epiRightFrame.getTabCount() - 1;
-			this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
-
-		} else {
-			tab = (EpiTab) this.epiRightFrame.getComponentAt(tabIndex);
-		}
-		// Select existing Tab
-		this.epiRightFrame.setSelectedIndex(tabIndex);
-	}
-
 	public void openSimulationTab() {
 		// JTree
 		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
@@ -953,33 +917,6 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
-	public void restartMonteCarloTab() {
-		// TODO Auto-generated method stub
-
-		// save settings
-		int monteCarloTabIndex = this.epiRightFrame.getSelectedIndex();
-		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
-		TreePath path = this.epiTreePanel.getSelectionEpiPath();
-
-		// remove tab
-		this.epiRightFrame.removeTabAt(monteCarloTabIndex);
-
-		// restart
-		ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
-		EpiTab tab;
-		tab = new EpiTabMonteCarlo(epi, path, projChanged, new SimulationEpiClone());
-		String title = epi.getName() + ":Monte Carlo";
-		this.epiRightFrame.addTab(title, tab);
-		tab.initialize();
-
-		CloseTabButton tabButton = new CloseTabButton(title, this.epiRightFrame);
-
-		int tabIndex = this.epiRightFrame.getTabCount() - 1;
-		this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
-
-		this.epiRightFrame.setSelectedIndex(tabIndex);
-	}
-
 	private static String join(List<String> list, String sep) {
 		String s = "";
 		for (int i = 0; i < list.size(); i++) {
@@ -1027,8 +964,7 @@ public class EpiGUI extends JFrame {
 			Project.getInstance().setChanged(true);
 			for (int i = 0; i < epiRightFrame.getTabCount(); i++) {
 				Component c = epiRightFrame.getComponentAt(i);
-				if (c instanceof EpiTabSimulation || c instanceof EpiTabInitialConditions
-						|| c instanceof EpiTabMonteCarlo) {
+				if (c instanceof EpiTabSimulation || c instanceof EpiTabInitialConditions) {
 					EpiTab tab = (EpiTab) c;
 					if (!tab.equals(changedTab)) {
 						tab.notifyChange();

@@ -3,7 +3,6 @@ package org.epilogtool.core;
 import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +15,6 @@ import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.RandomSeedType;
 import org.epilogtool.common.Tuple2D;
-import org.epilogtool.core.cellDynamics.ModelEventManager;
-import org.epilogtool.core.cellDynamics.ModelHeritableNodes;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.dialog.DialogMessage;
 import org.epilogtool.project.ComponentPair;
@@ -31,11 +28,6 @@ public class Epithelium {
 	private EpitheliumUpdateSchemeIntra priorities;
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
 
-	// TODO: requires refactoring - these are the static properties used for
-	// cell division
-	private ModelEventManager modelEventManager;
-	private ModelHeritableNodes modelHeritableNodes;
-
 	public Epithelium(int x, int y, String topologyID, String name, LogicalModel m, RollOver rollover,
 			RandomSeedType randomSeedType, int randomSeed)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
@@ -47,30 +39,22 @@ public class Epithelium {
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
 		this.perturbations = new EpitheliumPerturbations();
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(EpitheliumUpdateSchemeInter.DEFAULT_ALPHA,
-				new HashMap<ComponentPair, Float>(), UpdateCells.UPDATABLECELLS, randomSeedType, randomSeed);
-		this.modelEventManager = new ModelEventManager(this.grid.getModelSet());
-		this.modelHeritableNodes = new ModelHeritableNodes();
-		this.modelHeritableNodes.addModel(m);
+				UpdateCells.UPDATABLECELLS, randomSeedType, randomSeed);
 	}
 
 	private Epithelium(String name, EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
-			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap, EpitheliumUpdateSchemeInter usi,
-			ModelEventManager eventsManager, ModelHeritableNodes modelHeritableNodes) {
+			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap, EpitheliumUpdateSchemeInter usi) {
 		this.name = name;
 		this.grid = grid;
 		this.priorities = epc;
 		this.integrationFunctions = eif;
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
-		this.modelEventManager = eventsManager;
-		this.modelHeritableNodes = modelHeritableNodes;
-		;
 	}
 
 	public Epithelium clone() {
 		return new Epithelium("CopyOf_" + this.name, this.grid.clone(), this.integrationFunctions.clone(),
-				this.priorities.clone(), this.perturbations.clone(), this.updateSchemeInter.clone(),
-				this.modelEventManager.clone(), this.modelHeritableNodes.clone());
+				this.priorities.clone(), this.perturbations.clone(), this.updateSchemeInter.clone());
 	}
 
 	public String toString() {
@@ -84,9 +68,7 @@ public class Epithelium {
 		return (this.grid.equals(otherEpi.grid) && this.priorities.equals(otherEpi.priorities)
 				&& this.integrationFunctions.equals(otherEpi.integrationFunctions)
 				&& this.perturbations.equals(otherEpi.perturbations)
-				&& this.updateSchemeInter.equals(otherEpi.getUpdateSchemeInter())
-				&& this.modelHeritableNodes.equals(otherEpi.modelHeritableNodes))
-				&& this.modelEventManager.equals(otherEpi.modelEventManager);
+				&& this.updateSchemeInter.equals(otherEpi.getUpdateSchemeInter()));
 	}
 
 	public void updateEpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover)
@@ -112,15 +94,6 @@ public class Epithelium {
 			// Perturbations
 			if (!this.perturbations.hasModel(mSet))
 				this.perturbations.addModel(mSet);
-
-			// Grid dynamics
-			if (!this.modelEventManager.hasModel(mSet))
-				this.modelEventManager.addModel(mSet);
-
-			// Heritable components
-			if (!this.modelHeritableNodes.hasModel(mSet)) {
-				this.modelHeritableNodes.addModel(mSet);
-			}
 		}
 
 		// Remove from Epithelium state absent models from modelSet
@@ -204,14 +177,6 @@ public class Epithelium {
 		return this.perturbations;
 	}
 
-	public ModelHeritableNodes getModelHeritableNodes() {
-		return this.modelHeritableNodes;
-	}
-
-	public void setModelHeritableNode(ModelHeritableNodes mhn) {
-		this.modelHeritableNodes = mhn;
-	}
-
 	public void setGridWithComponentValue(String nodeID, byte value, List<Tuple2D<Integer>> lTuples) {
 		for (Tuple2D<Integer> tuple : lTuples) {
 			this.grid.setCellComponentValue(tuple.getX(), tuple.getY(), nodeID, value);
@@ -266,25 +231,6 @@ public class Epithelium {
 		for (Tuple2D<Integer> tuple : lTuples) {
 			this.setModel(tuple.getX(), tuple.getY(), m);
 		}
-		if (!this.modelEventManager.containsModel(m)) {
-			this.modelEventManager.addModel(m);
-		}
-	}
-
-	public void initModelEventManager() {
-		this.modelEventManager = new ModelEventManager();
-	}
-
-	public void initModelHeritableNodes() {
-		this.modelHeritableNodes = new ModelHeritableNodes();
-	}
-
-	public ModelEventManager getModelEventManager() {
-		return this.modelEventManager;
-	}
-
-	public void setModelEventManager(ModelEventManager tem) {
-		this.modelEventManager = tem;
 	}
 
 	public int getX() {

@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.antlr.runtime.RecognitionException;
 import org.colomoto.logicalmodel.LogicalModel;
@@ -32,13 +31,9 @@ import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.ModelPerturbations;
 import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.core.UpdateCells;
-import org.epilogtool.core.cellDynamics.CellularEvent;
-import org.epilogtool.core.cellDynamics.ModelEventExpression;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.dialog.DialogMessage;
-import org.epilogtool.integration.IFEvaluation;
-import org.epilogtool.integration.IntegrationFunctionExpression;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.Project;
 import org.epilogtool.project.ProjectFeatures;
@@ -110,8 +105,6 @@ public class Parser {
 				rollover = RollOver.string2RollOver(line.split("\\s+")[1]);
 				if (currEpi != null) {
 					currEpi.getEpitheliumGrid().setRollOver(rollover);
-					currEpi.initModelEventManager();
-					currEpi.initModelHeritableNodes();
 				}
 			}
 
@@ -142,8 +135,6 @@ public class Parser {
 							currEpi.getEpitheliumGrid().getTopology().instances2Tuples2D(saTmp[2].split(",")));
 					currEpi.initPriorityClasses(m);
 					Project.getInstance().getProjectFeatures().addModelComponents(m);
-					currEpi.getModelEventManager().addModel(m);
-					currEpi.getModelHeritableNodes().addModel(m);
 				}
 			}
 			// alpha-asynchronous value
@@ -156,15 +147,6 @@ public class Parser {
 			if (line.startsWith("CU")) {
 				String updateCells = line.substring(line.indexOf(" ") + 1);
 				currEpi.getUpdateSchemeInter().setUpdateCells(UpdateCells.fromString(updateCells));
-			}
-
-			// sigma-asynchronism values
-			if (line.startsWith("SS")) {
-				saTmp = line.split("\\s+");
-				LogicalModel m = Project.getInstance().getModel(modelKey2Name.get(saTmp[1]));
-				NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(saTmp[2], m);
-				ComponentPair cp = new ComponentPair(m, node);
-				currEpi.getUpdateSchemeInter().setCPSigma(cp, Float.parseFloat(saTmp[3]));
 			}
 
 			// Initial Conditions grid
@@ -192,30 +174,7 @@ public class Parser {
 				}
 				try {
 					currEpi.setIntegrationFunction(nodeID, m, value, function);
-					IFEvaluation evaluator = new IFEvaluation(currEpi.getEpitheliumGrid());
-					NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m);
-					ComponentIntegrationFunctions cif = currEpi
-							.getIntegrationFunctionsForComponent(new ComponentPair(m, node));
-					for (IntegrationFunctionExpression expr : cif.getComputedExpressions()) {
-						if (expr == null)
-							continue;
-						for (String regulator : evaluator.traverseIFTreeRegulators(expr)) {
-							for (LogicalModel model : Project.getInstance().getProjectFeatures().getModels()) {
-								if (Project.getInstance().getProjectFeatures().hasNode(regulator, m)) {
-									NodeInfo nodeRegulator = Project.getInstance().getProjectFeatures()
-											.getNodeInfo(regulator, model);
-									ComponentPair cp = new ComponentPair(model, nodeRegulator);
-									if (!currEpi.getUpdateSchemeInter().containsCPSigma(cp)) {
-										currEpi.getUpdateSchemeInter().addCP(cp);
-									}
-								}
-							}
-						}
-					}
-				} catch (RecognitionException re) {
-					// TODO Auto-generated catch block
 				} catch (RuntimeException re) {
-					// TODO Auto-generated catch block
 					dialog.addMessage(
 							"Integration function: " + saTmp[2] + ":" + value + " has invalid expression: " + function);
 				}
@@ -250,56 +209,6 @@ public class Parser {
 					currEpi.applyPerturbation(m, ap, c, lTuple);
 				}
 			}
-
-			// Model heritable components
-			// HN #model node1 node2 ...
-			if (line.startsWith("HN")) {
-				saTmp = line.split("\\s+");
-				LogicalModel m = Project.getInstance().getModel(modelKey2Name.get(saTmp[1]));
-				for (int i = 2; i < saTmp.length; i++) {
-					currEpi.getModelHeritableNodes().addNode(m, saTmp[i]);
-				}
-			}
-
-			// ptgm
-			if (line.startsWith("ID")) {
-				saTmp = line.split("\\s+");
-				int i = 1;
-				for (int a = 0; a < currEpi.getY(); a++) {
-					for (int b = 0; b < currEpi.getX(); b++) {
-						if (!EmptyModel.getInstance().isEmptyModel(currEpi.getModel(b, a))) {
-							String[] id = saTmp[i].split("-");
-							currEpi.getEpitheliumGrid().getCellID(b, a).setRoot(Integer.parseInt(id[0]));
-							String idString = (id.length == 1) ? "" : id[1];
-							currEpi.getEpitheliumGrid().getCellID(b, a).setIdentifier(idString);
-							i += 1;
-						}
-					}
-				}
-			}
-
-			// Model- cell events
-			// ME #model event_type pattern
-			if (line.startsWith("ME")) {
-				saTmp = line.split("\\s+");
-				LogicalModel m = Project.getInstance().getModel(modelKey2Name.get(saTmp[1]));
-				if (!currEpi.getModelEventManager().hasModel(m)) {
-					currEpi.getModelEventManager().addModel(m);
-				}
-				CellularEvent event = CellularEvent.string2Event(saTmp[2]);
-				saTmp = line.split(saTmp[2]);
-				String expression = saTmp[1].trim();
-				ModelEventExpression meExpr = new ModelEventExpression(expression);
-				try {
-					currEpi.getModelEventManager().setModelEventExpression(m, event, meExpr);
-				} catch (RecognitionException re) {
-					// TODO Auto-generated catch block
-				} catch (RuntimeException re) {
-					// TODO Auto-generated catch block
-					dialog.addMessage("Cellular event trigger has invalid expression: " + meExpr.getExpression());
-				}
-			}
-
 		}
 		// // Ensure coherence of all epithelia
 		for (Epithelium epi : Project.getInstance().getEpitheliumList()) {
@@ -439,16 +348,6 @@ public class Parser {
 		w.println("CU " + epi.getUpdateSchemeInter().getUpdateCells());
 		w.println();
 
-		// Sigma asynchronism
-		Map<ComponentPair, Float> mSigmaAsync = epi.getUpdateSchemeInter().getCPSigmas();
-		if (mSigmaAsync.size() > 0) {
-			for (ComponentPair cp : mSigmaAsync.keySet()) {
-				w.println("SS " + model2Key.get(cp.getModel()) + " " + cp.getNodeInfo().getNodeID() + " "
-						+ mSigmaAsync.get(cp));
-			}
-			w.println();
-		}
-
 		// Initial Conditions
 		// varA value 1-2,3,4-6
 		Map<LogicalModel, Map<String, Map<Byte, List<Integer>>>> valueInst = new HashMap<LogicalModel, Map<String, Map<Byte, List<Integer>>>>();
@@ -547,50 +446,6 @@ public class Parser {
 					}
 				}
 				w.println();
-			}
-		}
-
-		w.println();
-
-		// Model- cell events
-		// ME #model event_type pattern
-		for (LogicalModel m : model2Key.keySet()) {
-			if (!epi.getModelEventManager().containsModel(m)) {
-				continue;
-			}
-			if (epi.getModelEventManager().getModelEvents(m) == null) {
-				continue;
-			}
-			Set<CellularEvent> modelEvents = epi.getModelEventManager().getModelEvents(m);
-			for (CellularEvent event : modelEvents) {
-				w.print("ME " + model2Key.get(m) + " " + event.toString() + " "
-						+ epi.getModelEventManager().getModelEventExpression(m, event).getExpression());
-			}
-			w.println();
-		}
-
-		// Model heritable components
-		// HN #model node1 node2 ...
-		for (LogicalModel m : model2Key.keySet()) {
-			if (epi.getModelHeritableNodes().hasModel(m)) {
-				if (epi.getModelHeritableNodes().hasHeritableNodes(m)) {
-					w.print("HN " + model2Key.get(m));
-					for (String node : epi.getModelHeritableNodes().getModelHeritableNodes(m)) {
-						w.print(" " + node);
-					}
-				}
-				w.println();
-			}
-		}
-
-		// Epithelium Cell Identifiers
-		// ID ordered by entry index (for occupied positions only)
-		w.print("ID");
-		for (int y = 0; y < epi.getY(); y++) {
-			for (int x = 0; x < epi.getX(); x++) {
-				if (!EmptyModel.getInstance().isEmptyModel(epi.getModel(x, y))) {
-					w.print(" " + epi.getEpitheliumGrid().getCellID(x, y));
-				}
 			}
 		}
 

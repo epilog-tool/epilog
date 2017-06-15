@@ -1,22 +1,15 @@
 package org.epilogtool.core;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
-import org.epilogtool.core.cellDynamics.CellularEvent;
 
 public class EpitheliumCell {
 
 	private LogicalModel model;
 	private byte[] state;
 	private AbstractPerturbation perturbation;
-	private CellularEvent cellEvent;
-	private EpitheliumCellIdentifier id;
 
 	public EpitheliumCell(LogicalModel m) {
-		this.id = new EpitheliumCellIdentifier();
 		this.setModel(m);
 	}
 	
@@ -40,8 +33,6 @@ public class EpitheliumCell {
 			this.state[i] = 0;
 		}
 		this.perturbation = null;
-		this.cellEvent = CellularEvent.DEFAULT;
-		this.id.clear();
 	}
 
 	public void setState(byte[] state) {
@@ -58,10 +49,6 @@ public class EpitheliumCell {
 			return;
 		value = (byte) Math.min(value, this.model.getNodeOrder().get(index).getMax());
 		state[index] = value;
-	}
-	
-	public void setCellEvent(CellularEvent event) {
-		this.cellEvent = event;
 	}
 	
 	public byte getValue(String nodeID) {
@@ -81,10 +68,6 @@ public class EpitheliumCell {
 	
 	public byte getNodeValue(String nodeID){
 		return this.getState()[this.getNodeIndex(nodeID)];
-	}
-	
-	public CellularEvent getCellEvent() {
-		return this.cellEvent;
 	}
 
 	public LogicalModel getModel() {
@@ -112,34 +95,6 @@ public class EpitheliumCell {
 		return hash;
 	}
 	
-	public boolean isSame(Object o) {
-		EpitheliumCell ecOut = (EpitheliumCell) o;
-		return this.id.equals(ecOut.id);
-	}
-	
-	public EpitheliumCellIdentifier getID() {
-		return this.id;
-	}
-	
-	public EpitheliumCell daughterCell() {
-		EpitheliumCell daughterCell = new EpitheliumCell(this.model);
-		daughterCell.setPerturbation(this.perturbation);
-		daughterCell.setCellEvent(CellularEvent.DEFAULT);
-		daughterCell.id = this.id.clone();
-		return daughterCell;
-	}
-	
-	public List<EpitheliumCell> daughterCells() {
-		EpitheliumCell daughterCell1 = this.daughterCell();
-		daughterCell1.id.addDepth(true);
-		EpitheliumCell daughterCell2 = this.daughterCell();
-		daughterCell2.id.addDepth(false);
-		List<EpitheliumCell> daughterCellSet = new ArrayList<EpitheliumCell>();
-		daughterCellSet.add(daughterCell1);
-		daughterCellSet.add(daughterCell2);
-		return daughterCellSet;
-	}
-
 	public boolean equals(Object o) {
 		EpitheliumCell ecOut = (EpitheliumCell) o;
 		if (!this.model.equals(ecOut.model))
@@ -165,8 +120,6 @@ public class EpitheliumCell {
 		EpitheliumCell newCell = new EpitheliumCell(this.model);
 		newCell.setState(this.state.clone());
 		newCell.setPerturbation(this.perturbation);
-		newCell.setCellEvent(this.cellEvent);
-		newCell.id = this.id.clone();
 		return newCell;
 	}
 

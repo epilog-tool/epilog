@@ -16,8 +16,6 @@ import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.core.ModelPriorityClasses;
-import org.epilogtool.core.cellDynamics.CellularEvent;
-import org.epilogtool.core.cellDynamics.ModelEventManager;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.gui.tab.EpiTab;
 import org.epilogtool.project.ComponentPair;
@@ -60,8 +58,6 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 							tipKey = this.getTooltipSimulation(epi);
 						} else if (sLeaf.equals(EpiTab.TOOL_MONTECARLO)) {
 							tipKey = this.getTooltipSimulation(epi);
-						} else if (EpiGUI.getInstance().getDeveloperMode() && sLeaf.equals(EpiTab.TAB_CELLDIVISION)) {
-							tipKey = this.getToolTipCellDivision(epi);
 						}
 					}
 				}
@@ -153,37 +149,8 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 		String tipKey = "<html>";
 		tipKey += "<b>Parameters</b><br/>";
 		tipKey += "- Alpha = " + epi.getUpdateSchemeInter().getAlpha() + "<br/>";
-		Map<ComponentPair, Float> cpSigmas = epi.getUpdateSchemeInter().getCPSigmas();
-		if (cpSigmas.size() == 0) {
-			tipKey += "- Sigma = <i>Empty</i>";
-		} else {
-			tipKey += "- Sigma <br/>";
-			for (ComponentPair cp : cpSigmas.keySet()) {
-				tipKey += "&nbsp;&nbsp;. " + Project.getInstance().getProjectFeatures().getModelName(cp.getModel())
-						+ " : " + cp.getNodeInfo().getNodeID() + " = " + cpSigmas.get(cp) + "<br/>";
-			}
-		}
 		tipKey += "- Cells to Update: " + epi.getUpdateSchemeInter().getUpdateCells() + "<br/>";
 		tipKey += "- Number generator seed: " + epi.getUpdateSchemeInter().getRandomSeedType() + "<br/>";
-		tipKey += "</html>";
-		return tipKey;
-	}
-
-	private String getToolTipCellDivision(Epithelium epi) {
-		String tipKey = "<html>";
-		ModelEventManager events = epi.getModelEventManager();
-		for (LogicalModel m : epi.getEpitheliumGrid().getModelSet()) {
-			tipKey += "<b>" + Project.getInstance().getProjectFeatures().getModelName(m) + "</b><br/>";
-			if (!events.containsModel(m)) {
-				// System.out.println("Error tooltiptreecellrenderer");
-				tipKey += "- " + Project.getInstance().getProjectFeatures().getModelName(m) + "   - Empty <br/>";
-			} else if (events.getModelEvents(m).isEmpty()) {
-				tipKey += "- " + Project.getInstance().getProjectFeatures().getModelName(m) + "   - Empty <br/>";
-			} else {
-				tipKey += "   - " + events.getModelEventExpression(m, CellularEvent.PROLIFERATION).getExpression()
-						+ "<br/>";
-			}
-		}
 		tipKey += "</html>";
 		return tipKey;
 	}

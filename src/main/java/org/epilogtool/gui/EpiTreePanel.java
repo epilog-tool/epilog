@@ -171,7 +171,6 @@ public class EpiTreePanel extends JPanel {
 		this.popupmenu.notifySelection(this.epiMenu.isEnabled(), bActive);
 		bActive = node != null && !node.isRoot();
 		this.toolsMenu.getItem(0).setEnabled(bActive); // Simulation
-		this.toolsMenu.getItem(1).setEnabled(bActive); // Tools
 	}
 
 	public void addEpi2JTree(Epithelium epi) {
