@@ -86,7 +86,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 
 		// Component selection list
 		this.jpNLBottom = new JPanel(new GridBagLayout());
-		this.jpNLBottom.setBorder(BorderFactory.createTitledBorder("Input components"));
+		this.jpNLBottom.setBorder(BorderFactory.createTitledBorder("Integration Input"));
 		jpNLeft.add(this.jpNLBottom, BorderLayout.CENTER);
 
 		JPanel jpNRight = new JPanel(new BorderLayout());
