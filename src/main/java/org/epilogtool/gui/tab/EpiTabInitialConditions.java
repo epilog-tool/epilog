@@ -143,7 +143,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		left.add(rTop, BorderLayout.NORTH);
 
-		// INternal and Proper compontes JScrollPanel
+		// Internal and Proper components JScrollPanel
 		this.jpRCenter = new JPanel();
 		this.jpRCenter.setLayout(new BoxLayout(jpRCenter, BoxLayout.Y_AXIS));
 		JScrollPane jscroll = new JScrollPane(this.jpRCenter);
@@ -412,7 +412,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			JPanel jpRRCBottom = new JPanel(new GridBagLayout());
 			gbc = new GridBagConstraints();
 			gbc.insets = new Insets(1, 5, 1, 0);
-			jpRRCBottom.setBorder(BorderFactory.createTitledBorder("Input components"));
+			jpRRCBottom.setBorder(BorderFactory.createTitledBorder("Integration Inputs"));
 
 			y = 0;
 			for (String nodeID : lEnvInputCompsFromSelectedModels) {

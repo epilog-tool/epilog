@@ -564,11 +564,11 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 
 		if (!sCommonNodeIDs.isEmpty())
-			this.setComponentTypeList(sCommonNodeIDs, "Input/Internal Components");
+			this.setComponentTypeList(sCommonNodeIDs, "Positional/Integration Inputs");
 		if (!sInternalNodeIDs.isEmpty())
-			this.setComponentTypeList(sInternalNodeIDs, "Internal Components");
+			this.setComponentTypeList(sInternalNodeIDs, "Positional Inputs");
 		if (!sInputNodeIDs.isEmpty())
-			this.setComponentTypeList(sInputNodeIDs, "Input Components");
+			this.setComponentTypeList(sInputNodeIDs, "Integration Inputs");
 		this.visualGridSimulation.paintComponent(this.visualGridSimulation.getGraphics());
 		this.jpRRCenter.revalidate();
 		this.jpRRCenter.repaint();
