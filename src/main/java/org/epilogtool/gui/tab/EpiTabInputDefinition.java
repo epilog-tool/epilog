@@ -80,13 +80,13 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
 		this.jpNLTop = new JPanel();
-		this.jpNLTop.setBorder(BorderFactory.createTitledBorder("Model selection"));
+		this.jpNLTop.setBorder(BorderFactory.createTitledBorder("Model Selection"));
 		this.jpNLTop.add(jcbSBML);
 		jpNLeft.add(this.jpNLTop, BorderLayout.NORTH);
 
 		// Component selection list
 		this.jpNLBottom = new JPanel(new GridBagLayout());
-		this.jpNLBottom.setBorder(BorderFactory.createTitledBorder("Integration Input"));
+		this.jpNLBottom.setBorder(BorderFactory.createTitledBorder("Input Component"));
 		jpNLeft.add(this.jpNLBottom, BorderLayout.CENTER);
 
 		JPanel jpNRight = new JPanel(new BorderLayout());
@@ -155,7 +155,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		this.jpNRBottom.removeAll();
 		ButtonGroup group = new ButtonGroup();
 		this.jpNRTop.add(new JLabel(this.activeNodeID + ": "));
-		JRadioButton jrModelInput = new JRadioButton("Positional input");
+		JRadioButton jrModelInput = new JRadioButton("Positional Input");
 		jrModelInput.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -167,7 +167,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		});
 		group.add(jrModelInput);
 		this.jpNRTop.add(jrModelInput);
-		JRadioButton jrModelInt = new JRadioButton("Integration input");
+		JRadioButton jrModelInt = new JRadioButton("Integration Input");
 		jrModelInt.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

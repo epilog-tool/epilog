@@ -364,7 +364,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		gbc.insets = new Insets(1, 5, 1, 0);
 		int y = 0;
 
-		// Internal components (Positional Inputs)
+		// Internal components 
 
 		List<String> lInternal = new ArrayList<String>(
 				Project.getInstance().getProjectFeatures().getModelNodeIDs(m, false));
@@ -373,7 +373,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		if (lInternal.size() > 0) {
 
 			JPanel jpRRCTop = new JPanel(new GridBagLayout());
-			jpRRCTop.setBorder(BorderFactory.createTitledBorder("Positional Inputs"));
+			jpRRCTop.setBorder(BorderFactory.createTitledBorder("Internal components"));
 			for (String nodeID : lInternal) {
 
 				gbc.gridy = y;
@@ -412,7 +412,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			JPanel jpRRCBottom = new JPanel(new GridBagLayout());
 			gbc = new GridBagConstraints();
 			gbc.insets = new Insets(1, 5, 1, 0);
-			jpRRCBottom.setBorder(BorderFactory.createTitledBorder("Integration Inputs"));
+			jpRRCBottom.setBorder(BorderFactory.createTitledBorder("Input Components"));
 
 			y = 0;
 			for (String nodeID : lEnvInputCompsFromSelectedModels) {
