@@ -130,7 +130,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	}
 
 	/**
-	 * updates the model selection list. Whenever an SBML is added/removed from the project, the model selection list is automatically updated.
+	 * Updates the model selection list. 
+	 * Whenever an SBML is added/removed from the project, the model selection list is automatically updated.
 	 */
 	private void updateModelList() {
 		this.jpModelSelection.removeAll();

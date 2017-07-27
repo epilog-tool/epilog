@@ -555,9 +555,9 @@ public class EpiGUI extends JFrame {
 	}
 
 	/**
-	 * To rename an SBML a dialog has to be created, with the new name to be
+	 * To rename an SBML a dialog has to be created, for the new name to be
 	 * inserted. It does not allow the same name of another model (with or
-	 * without the extension ".sbml"). Once the new name is validated
+	 * without the extension ".sbml"). 
 	 */
 	public void renameSBML() {
 		// TODO: Make sure that the model does not change place in list

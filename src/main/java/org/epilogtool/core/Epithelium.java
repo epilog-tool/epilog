@@ -410,12 +410,20 @@ public class Epithelium {
 		return flag;
 	}
 
-	// This make sense for all the other integration systems
+	/**
+	 *
+	 * Validates all the Integration Functions (IF) of a given epithelium. 
+	 * 
+	 * @param oldEpi
+	 * @param oldModel
+	 * @param newModel
+	 */
 	private void validateAllIntegrationFunctions(Epithelium oldEpi, LogicalModel oldModel, LogicalModel newModel) {
-		// // TODO MESSAGE
+		// // TODO MESSAGE When is this called?
 
 		List<String> properComponentsAllModels = new ArrayList<String>();
-		for (LogicalModel model : this.getEpitheliumGrid().getModelSet()) {
+		for (LogicalModel model : this.getEpitheliumGrid().getModelSet())
+		{	
 			for (NodeInfo node : model.getNodeOrder()) {
 				if (!node.isInput()) {
 					properComponentsAllModels.add(node.toString());
@@ -438,8 +446,16 @@ public class Epithelium {
 		}
 	}
 
+	/**
+	 * Retrieve the regulators of an Integration Function (IF). 
+	 * This is used on the replace, but should be verified as needed?
+	 * 
+	 * @param integrationString
+	 * @return
+	 */
 	private Set<String> getRegulators(String integrationString) {
 		// TODO Auto-generated method stub
+		
 		String[] regulatorsArray = integrationString.split("\\&|\\!|\\|");
 		Set<String> regulatorsSet = new HashSet<String>();
 		for (String atom : regulatorsArray) {
@@ -481,9 +497,7 @@ public class Epithelium {
 	public void replacePriorities(Epithelium oldEpi, LogicalModel oldModel, LogicalModel newModel,
 			List<String> commonNodeNames) {
 		ModelPriorityClasses oldMpc = oldEpi.getPriorityClasses(oldModel);
-
-		// System.out.println(commonNodeNames);
-
+		
 		Boolean hasChanged = false;
 
 		String sPCs = "";

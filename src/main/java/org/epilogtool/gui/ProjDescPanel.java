@@ -19,10 +19,9 @@ import javax.swing.event.ListSelectionListener;
 import org.epilogtool.gui.menu.SBMLPopupMenu;
 
 /**
- * Container with all the SBML. It is here that it is defined if the options in the menu bar are enabled,
+ * Container with the list of SBMLs. In this class  it is defined if the options in the menu bar are enabled,
  * the dimensions of the panel with the list of SBML, visual operations of loading, deleting and renaming SBML.
  * 
- *
  */
 public class ProjDescPanel extends JPanel {
 	private static final long serialVersionUID = -8691538114476162311L;
@@ -100,8 +99,8 @@ public class ProjDescPanel extends JPanel {
 
 	/**Updates the SBML Menu in the tool bar. 
 	 * At any time a new SBML can be loaded (always enabled); 
-	 * Operations remove, rename or export are only enabled there is at least a SBML model loaded
-	 * The user can one replace a model if there are at-least 2 SBML models loaded.
+	 * the options remove, rename or export are only enabled if there is at least one SBML model loaded
+	 * The user can replace a model if there are at-least 2 SBML models loaded.
 	 */
 	public void updateSBMLMenuItems() {
 		boolean hasModel = this.listSBMLs.getSelectionModel().getMinSelectionIndex() >= 0;
