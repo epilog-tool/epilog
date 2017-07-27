@@ -197,6 +197,10 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	}
 
 	
+	/**
+	 * Returns the input selected in the radio button, given the selected model
+	 * @return
+	 */
 	private NodeInfo getActiveNodeInfo() {
 		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
 		return Project.getInstance().getProjectFeatures().getNodeInfo(this.activeNodeID, m);
@@ -218,56 +222,6 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		cif.setFunctionAtLevel(level, function);
 	}
 
-	private void paintModelInputPanel() {
-		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
-		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
-		this.userIntegrationFunctions.removeComponent(cp);
-		this.jpNRBottom.removeAll();
-	}
-
-	private void paintModelIntegrationPanel() {
-		// GUI
-		this.jpNRBottom.removeAll();
-
-		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
-		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
-		if (!this.userIntegrationFunctions.containsComponentPair(cp)) {
-			this.userIntegrationFunctions.addComponent(cp);
-		}
-		ComponentIntegrationFunctions cfi = this.userIntegrationFunctions.getComponentIntegrationFunctions(cp);
-
-		List<String> functions = cfi.getFunctions();
-		GridBagConstraints gbc = new GridBagConstraints();
-		for (int i = 0; i < functions.size(); i++) {
-			gbc.gridy = i;
-			gbc.ipady = 5;
-			gbc.insets.bottom = 5;
-			gbc.gridx = 0;
-			gbc.anchor = GridBagConstraints.WEST;
-			this.jpNRBottom.add(new JLabel("Level " + (i + 1) + " "), gbc);
-			gbc.gridx = 1;
-			JTextField jtf = new JTextField(functions.get(i));
-			jtf.setToolTipText("" + (i + 1));
-			jtf.addKeyListener(new KeyListener() {
-				@Override
-				public void keyTyped(KeyEvent e) {
-				}
-
-				@Override
-				public void keyReleased(KeyEvent e) {
-					JTextField jtf = (JTextField) e.getSource();
-					validateTextField(jtf);
-				}
-
-				@Override
-				public void keyPressed(KeyEvent e) {
-				}
-			});
-			jtf.setColumns(this.JTF_WIDTH);
-			this.validateTextField(jtf);
-			this.jpNRBottom.add(jtf, gbc);
-		}
-	}
 
 	/**
 	 * Integration Function (IF) validation function. If the IF is well written, the text box is white, otherwise Red.
@@ -327,8 +281,59 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		jEmptyInputPane.setEditable(false);
 		jEmptyInputPane.setEnabled(true);
 		jEmptyInputPane.setBackground(this.jpNRBottom.getBackground());
-		jEmptyInputPane.setText("There are no Input nodes in this Model");
+		jEmptyInputPane.setText("There are no Input Components in this Model");
 		this.jpNRBottom.add(jEmptyInputPane);
+	}
+	
+	private void paintModelInputPanel() {
+		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
+		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
+		this.userIntegrationFunctions.removeComponent(cp);
+		this.jpNRBottom.removeAll();
+	}
+
+	private void paintModelIntegrationPanel() {
+		// GUI
+		this.jpNRBottom.removeAll();
+
+		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
+		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
+		if (!this.userIntegrationFunctions.containsComponentPair(cp)) {
+			this.userIntegrationFunctions.addComponent(cp);
+		}
+		ComponentIntegrationFunctions cfi = this.userIntegrationFunctions.getComponentIntegrationFunctions(cp);
+
+		List<String> functions = cfi.getFunctions();
+		GridBagConstraints gbc = new GridBagConstraints();
+		for (int i = 0; i < functions.size(); i++) {
+			gbc.gridy = i;
+			gbc.ipady = 5;
+			gbc.insets.bottom = 5;
+			gbc.gridx = 0;
+			gbc.anchor = GridBagConstraints.WEST;
+			this.jpNRBottom.add(new JLabel("Level " + (i + 1) + " "), gbc);
+			gbc.gridx = 1;
+			JTextField jtf = new JTextField(functions.get(i));
+			jtf.setToolTipText("" + (i + 1));
+			jtf.addKeyListener(new KeyListener() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+				}
+
+				@Override
+				public void keyReleased(KeyEvent e) {
+					JTextField jtf = (JTextField) e.getSource();
+					validateTextField(jtf);
+				}
+
+				@Override
+				public void keyPressed(KeyEvent e) {
+				}
+			});
+			jtf.setColumns(this.JTF_WIDTH);
+			this.validateTextField(jtf);
+			this.jpNRBottom.add(jtf, gbc);
+		}
 	}
 
 	@Override

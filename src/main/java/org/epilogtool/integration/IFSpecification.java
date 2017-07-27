@@ -45,6 +45,8 @@ public class IFSpecification {
 	}
 
 	/**
+	 * Function that translates the Integration Function (IF) from string to IntegrationFunctionExpression.
+	 * 
 	 * @param specificationString
 	 * @return
 	 * @throws RuntimeException
