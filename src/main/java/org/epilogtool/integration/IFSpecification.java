@@ -44,6 +44,12 @@ public class IFSpecification {
 		return new IntegrationFunctionOperationOR(expr1, expr2);
 	}
 
+	/**
+	 * @param specificationString
+	 * @return
+	 * @throws RuntimeException
+	 * @throws RecognitionException
+	 */
 	public IntegrationFunctionExpression parse(String specificationString)
 			throws RuntimeException, RecognitionException {
 		IntegrationFunctionExpression r = null;

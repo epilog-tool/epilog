@@ -37,6 +37,15 @@ public class ComponentIntegrationFunctions {
 		return Arrays.asList(this.computedExpr);
 	}
 
+	/**
+	 * Translates an Integration Function (IF) from string to IntegrationFunctionExpression. Calls the parse to check if the IF is well written.
+	 * 
+	 * 
+	 * @param expr
+	 * @return
+	 * @throws RecognitionException
+	 * @throws RuntimeException
+	 */
 	private IntegrationFunctionExpression string2Expression(String expr) throws RecognitionException, RuntimeException {
 		IFSpecification spec = new IFSpecification();
 		IntegrationFunctionExpression expression = null;
@@ -44,6 +53,14 @@ public class ComponentIntegrationFunctions {
 		return expression;
 	}
 
+	/**
+	 * Sets a integration function to a level, both at string level and IntegrationFunctionExpression level.
+	 * 
+	 * @param value
+	 * @param function
+	 * @throws RecognitionException
+	 * @throws RuntimeException
+	 */
 	public void setFunctionAtLevel(byte value, String function) throws RecognitionException, RuntimeException {
 		this.stringExpr[value - 1] = function;
 		this.computedExpr[value - 1] = this.string2Expression(function);
