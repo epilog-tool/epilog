@@ -150,6 +150,12 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		return jcb;
 	}
 
+	/**
+	 * Reaction function to the change of the selected input to defined as either Positional or Integration.
+	 * 1) By default an input is positional, if it is already defined as an integration, the integration functions immediately appear.
+	 * 2) Inputs are defined locally, i.e. if more than one model has an input with the same name, functions must be definied for each. 
+	 * 3) Same name inputs (from different models) may be positional in one and integration in another
+	 */
 	private void updateNodeID() {
 		this.jpNRTop.removeAll();
 		this.jpNRBottom.removeAll();
@@ -190,11 +196,21 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		}
 	}
 
+	
 	private NodeInfo getActiveNodeInfo() {
 		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
 		return Project.getInstance().getProjectFeatures().getNodeInfo(this.activeNodeID, m);
 	}
 
+	/**
+	 * Sets the integration function (IF) defined in the integration function box assigned to a component pair (model, node). 
+	 * Only IF well written are assigned.
+	 * 
+	 * @param level
+	 * @param function
+	 * @throws RecognitionException
+	 * @throws RuntimeException
+	 */
 	private void setIntegrationFunction(byte level, String function) throws RecognitionException, RuntimeException {
 		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
 		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
@@ -253,6 +269,12 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		}
 	}
 
+	/**
+	 * Integration Function (IF) validation function. If the IF is well written, the text box is white, otherwise Red.
+	 * Badly written IF are accepted, but the system just erases it.
+	 * 
+	 * @param jtf
+	 */
 	private void validateTextField(JTextField jtf) {
 		byte value = Byte.parseByte(jtf.getToolTipText());
 		try {
