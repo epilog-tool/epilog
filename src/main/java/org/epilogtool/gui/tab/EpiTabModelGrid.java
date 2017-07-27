@@ -62,14 +62,14 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 		// Panel with the model selection
 		this.jpModelSelection = new JPanel(new GridBagLayout());
-		this.jpModelSelection.setBorder(BorderFactory.createTitledBorder("Model selection"));
+		this.jpModelSelection.setBorder(BorderFactory.createTitledBorder("Model Selection"));
 
 		// Panel with the grid Info
 		this.gridInfo = new GridInformation(this.epithelium.getIntegrationFunctions());
 
 		// Panel with the cell selection
 		JPanel jpCellSelection = new JPanel(new GridBagLayout());
-		jpCellSelection.setBorder(BorderFactory.createTitledBorder("Apply selection"));
+		jpCellSelection.setBorder(BorderFactory.createTitledBorder("Apply Selection"));
 		this.jbApplyAll = new JButton("Apply All");
 		jbApplyAll.setEnabled(false);
 		jbApplyAll.setMargin(new Insets(0, 0, 0, 0));
@@ -184,7 +184,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		for (JRadioComponentButton jrb : this.mapSBMLMiniPanels.keySet()) {
 			if (this.mapSBMLMiniPanels.get(jrb).equals(jb)) {
 				String name = jrb.getComponentText();
-				Color newColor = JColorChooser.showDialog(jb, "Color chooser - " + name, jb.getBackground());
+				Color newColor = JColorChooser.showDialog(jb, "Color Chooser - " + name, jb.getBackground());
 				if (newColor != null) {
 					jb.setBackground(newColor);
 					this.colorMapClone.put(Project.getInstance().getProjectFeatures().getModel(name), newColor);
