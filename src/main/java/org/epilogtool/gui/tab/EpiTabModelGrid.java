@@ -92,10 +92,10 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		});
 		jpCellSelection.add(jtbRectFill);
 
-		// Panel with the models used in this grid
+		// Panel with the models assigned to the grid
 		this.jpModelsUsed = new JPanel(new GridBagLayout());
 
-		this.jpModelsUsed.setBorder(BorderFactory.createTitledBorder("Models Used"));
+		this.jpModelsUsed.setBorder(BorderFactory.createTitledBorder("Models Assigned"));
 
 		// Panel on the left bottom
 		JPanel jpLeftBottom = new JPanel(new BorderLayout());
@@ -120,6 +120,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 		this.buttonReset();
 		this.updateModelList();
+		this.visualGridModel.updateModelUsed();
 		this.isInitialized = true;
 	}
 
@@ -128,6 +129,9 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		this.jbApplyAll.setEnabled(true);
 	}
 
+	/**
+	 * updates the model selection list. Whenever an SBML is added/removed from the project, the model selection list is automatically updated.
+	 */
 	private void updateModelList() {
 		this.jpModelSelection.removeAll();
 		ButtonGroup group = new ButtonGroup();
@@ -215,6 +219,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 			this.colorMapClone.put(Project.getInstance().getProjectFeatures().getModel(modelName), c);
 		}
 		this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
+		this.visualGridModel.updateModelUsed();
 	}
 
 	@Override

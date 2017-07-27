@@ -97,7 +97,10 @@ public class VisualGridModel extends VisualGridDefinitions {
 		});
 	}
 
-	private void updateModelUsed() {
+	/**
+	 * Updates the list of assigned models in the grid.
+	 */
+	public void updateModelUsed() {
 		this.jpModelsUsed.removeAll();
 
 		GridBagConstraints gbc = new GridBagConstraints();
