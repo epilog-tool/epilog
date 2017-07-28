@@ -89,7 +89,6 @@ class RemoveSBMLAction extends AbstractAction {
 	public void actionPerformed(ActionEvent e) {
 		EpiGUI.getInstance().removeSBML();
 	}
-
 }
 
 class ExportSBMLAction extends AbstractAction {
@@ -127,5 +126,4 @@ class ReplaceSBMLAction extends AbstractAction {
 	public void actionPerformed(ActionEvent e) {
 		EpiGUI.getInstance().replaceSBML();
 	}
-
 }

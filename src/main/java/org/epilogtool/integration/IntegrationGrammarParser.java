@@ -60,9 +60,7 @@ public class IntegrationGrammarParser extends Parser {
     // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:21:1: eval returns [IntegrationFunctionExpression value] : exp= functionexpror EOF ;
     public final IntegrationFunctionExpression eval() throws RecognitionException {
         IntegrationFunctionExpression value = null;
-
         IntegrationFunctionExpression exp = null;
-
 
         try {
             // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:25:2: (exp= functionexpror EOF )
@@ -75,10 +73,9 @@ public class IntegrationGrammarParser extends Parser {
 
             match(input,EOF,FOLLOW_EOF_in_eval48); 
              value = exp; 
-
             }
-
         }
+        
         catch (RecognitionException re) {
             reportError(re);
             recover(input,re);
@@ -119,7 +116,6 @@ public class IntegrationGrammarParser extends Parser {
                     alt1=1;
                 }
 
-
                 switch (alt1) {
             	case 1 :
             	    // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:29:24: OR o2= functionexprand
@@ -130,7 +126,6 @@ public class IntegrationGrammarParser extends Parser {
 
             	    state._fsp--;
 
-
             	    }
             	    break;
 
@@ -140,7 +135,6 @@ public class IntegrationGrammarParser extends Parser {
             } while (true);
 
              value = IFSpecification.integrationFunctionOperationOR(o1,o2); 
-
             }
 
         }
@@ -153,7 +147,6 @@ public class IntegrationGrammarParser extends Parser {
         return value;
     }
     // $ANTLR end "functionexpror"
-
 
     // $ANTLR start "functionexprand"
     // src/main/java/org/epilogtool/integration/IntegrationGrammar.g:33:1: functionexprand returns [IntegrationFunctionExpression value] : a1= functionexprnot ( AND a2= functionexprnot )* ;

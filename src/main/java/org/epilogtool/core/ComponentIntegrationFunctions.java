@@ -38,7 +38,8 @@ public class ComponentIntegrationFunctions {
 	}
 
 	/**
-	 * Translates an Integration Function (IF) from string to IntegrationFunctionExpression. Calls the parse to check if the IF is well written.
+	 * Translates an Integration Function (IF) from string to IntegrationFunctionExpression. 
+	 * Calls the parse to check if the IF is correctly written.
 	 * 
 	 * @param expr
 	 * @return

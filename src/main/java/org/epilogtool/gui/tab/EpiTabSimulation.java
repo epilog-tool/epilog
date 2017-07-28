@@ -511,6 +511,12 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 	}
 
+	/**
+	 * Creates the panel with the selection of the components to display.
+	 * 
+	 * @param sNodeIDs : List with the nodes names to be written
+	 * @param titleBorder : String with the title of the panel
+	 */
 	private void setComponentTypeList(Set<String> sNodeIDs, String titleBorder) {
 		JPanel jpRRC = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -530,6 +536,11 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jpRRCenter.add(jpRRC);
 	}
 
+	/**
+	 * Updates components check selection list, once the selected model to display is changed.
+	 * 
+	 * @param modelNames
+	 */
 	private void updateComponentList(List<String> modelNames) {
 		this.jpRRCenter.removeAll();
 		this.lCompON.clear();
@@ -539,36 +550,38 @@ public class EpiTabSimulation extends EpiTabTools {
 		for (String modelName : modelNames) {
 			lModels.add(Project.getInstance().getProjectFeatures().getModel(modelName));
 		}
+		
+		List<NodeInfo> lInternal = new ArrayList<NodeInfo>(
+				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, false));
+		
+		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
+				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
+		
 		this.lPresentComps = new ArrayList<String>();
-
+		
 		Set<String> sInternalNodeIDs = new HashSet<String>();
 		Set<String> sInputNodeIDs = new HashSet<String>();
 		Set<String> sCommonNodeIDs = new HashSet<String>();
 
-		List<NodeInfo> lInternal = new ArrayList<NodeInfo>(
-				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, false));
-
 		for (NodeInfo node : lInternal)
 			sInternalNodeIDs.add(node.getNodeID());
-
-		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
-				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
 
 		for (NodeInfo node : lInputs) {
 			if (sInternalNodeIDs.contains(node.getNodeID())) {
 				sCommonNodeIDs.add(node.getNodeID());
 				sInternalNodeIDs.remove(node.getNodeID());
-			} else {
+			} else if (!sCommonNodeIDs.contains(node.getNodeID())) {
 				sInputNodeIDs.add(node.getNodeID());
 			}
 		}
-
+		
 		if (!sCommonNodeIDs.isEmpty())
 			this.setComponentTypeList(sCommonNodeIDs, "Internal/Input Components");
 		if (!sInternalNodeIDs.isEmpty())
 			this.setComponentTypeList(sInternalNodeIDs, "Internal Components");
 		if (!sInputNodeIDs.isEmpty())
 			this.setComponentTypeList(sInputNodeIDs, "Input Components");
+		
 		this.visualGridSimulation.paintComponent(this.visualGridSimulation.getGraphics());
 		this.jpRRCenter.revalidate();
 		this.jpRRCenter.repaint();

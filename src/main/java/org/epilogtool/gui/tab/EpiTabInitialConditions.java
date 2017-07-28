@@ -249,8 +249,13 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.isInitialized = true;
 	}
 
+	/**
+	 * Randomly assign a state to the cells. Note that only the list of nodes provided are randomly changed.
+	 * 
+	 * @param nodes
+	 */
 	private void randomMarkCells(List<String> nodes) {
-		// TODO Auto-generated method stub
+
 		List<NodeInfo> lNodes = new ArrayList<NodeInfo>();
 		for (String sNode : nodes) {
 			NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(sNode, this.selectedModel);
@@ -451,7 +456,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				}
 			}
 		}
-
 		// Repaint
 		this.visualGridICs.paintComponent(this.visualGridICs.getGraphics());
 	}

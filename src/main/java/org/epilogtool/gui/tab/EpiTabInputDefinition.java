@@ -227,10 +227,14 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	 * Integration Function (IF) validation function. If the IF is well written, the text box is white, otherwise Red.
 	 * Badly written IF are accepted, but the system just erases it.
 	 * 
+	 * The value is the level of the function. The toolTip is used as a "shortcut" to identify the level of the function
+	 * 
 	 * @param jtf
 	 */
 	private void validateTextField(JTextField jtf) {
 		byte value = Byte.parseByte(jtf.getToolTipText());
+		//TODO Find another way to identify the level of the function, that is not the tooltiptext
+
 		try {
 			setIntegrationFunction(value, jtf.getText());
 			jtf.setBackground(Color.WHITE);
