@@ -123,4 +123,9 @@ public abstract class EpiTabDefinitions extends EpiTab {
 		EpiGUI.getInstance().selectTabJTreePath(this.path);
 	}
 
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

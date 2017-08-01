@@ -76,11 +76,12 @@ public class EpiTabSimulation extends EpiTabTools {
 	private JButton jbForward;
 	private JButton jbFastFwr;
 
-	private JPanel jpRight;
+	private JPanel jpVisualGrid; //Panel with the visual grid. Panel on the Right
 	private GridInformation lRight;
-	private JPanel lLeft;
-	private JPanel jpRRCenter;
-	private JComboCheckBox jccb;
+	private JPanel jpLeft;
+	private JPanel jpLeftTop;
+	private JPanel jpLCCenter;
+	private JComboCheckBox jccbSBML;
 
 	public EpiTabSimulation(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
 			SimulationEpiClone simEpiClone) {
@@ -95,8 +96,8 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.iCurrSimIter = 0;
 		Epithelium clonedEpi = this.epithelium.clone();
 		this.simulation = new Simulation(clonedEpi);
-		this.jpRight = new JPanel(new BorderLayout());
-		this.add(this.jpRight, BorderLayout.CENTER);
+		this.jpVisualGrid = new JPanel(new BorderLayout());
+		this.add(this.jpVisualGrid, BorderLayout.CENTER);
 
 		this.lCompON = new ArrayList<String>();
 		this.mSelCheckboxes = new HashMap<String, Boolean>();
@@ -111,7 +112,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		this.visualGridSimulation = new VisualGridSimulation(this.simulation.getGridAt(0), this.lCompON, this.lRight);
 
-		this.jpRight.add(this.visualGridSimulation, BorderLayout.CENTER);
+		this.jpVisualGrid.add(this.visualGridSimulation, BorderLayout.CENTER);
 
 		JPanel jpButtons = new JPanel(new BorderLayout());
 		JPanel jpButtonsC = new JPanel();
@@ -230,12 +231,12 @@ public class EpiTabSimulation extends EpiTabTools {
 		jpButtonsL.add(this.jlAttractor);
 
 		jpButtons.add(jpButtonsL, BorderLayout.LINE_START);
-		this.jpRight.add(jspButtons, BorderLayout.SOUTH);
+		this.jpVisualGrid.add(jspButtons, BorderLayout.SOUTH);
 
-		this.lLeft = new JPanel(new BorderLayout());
+		this.jpLeft = new JPanel(new BorderLayout());
 
-		JPanel rrTop = new JPanel();
-		rrTop.setLayout(new BoxLayout(rrTop, BoxLayout.Y_AXIS));
+		this.jpLeftTop = new JPanel();
+		this.jpLeftTop.setLayout(new BoxLayout(this.jpLeftTop, BoxLayout.Y_AXIS));
 
 		// Model combobox
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
@@ -244,8 +245,8 @@ public class EpiTabSimulation extends EpiTabTools {
 			items[i] = new JCheckBox(Project.getInstance().getProjectFeatures().getModelName(modelList.get(i)));
 			items[i].setSelected(false);
 		}
-		this.jccb = new JComboCheckBox(items);
-		rrTop.add(this.jccb);
+		this.jccbSBML = new JComboCheckBox(items);
+		this.jpLeftTop.add(this.jccbSBML);
 
 		// Select/Deselect buttons
 		JPanel rrTopSel = new JPanel(new FlowLayout());
@@ -282,17 +283,17 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		rrTopSel.add(jbDeselectAll);
-		rrTop.add(rrTopSel);
+		this.jpLeftTop.add(rrTopSel);
 
-		rrTop.setBorder(BorderFactory.createTitledBorder("Display options"));
-		this.lLeft.add(rrTop, BorderLayout.NORTH);
+		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder("Display options"));
+		this.jpLeft.add(this.jpLeftTop, BorderLayout.NORTH);
 
-		this.jpRRCenter = new JPanel();
-		this.jpRRCenter.setLayout(new BoxLayout(jpRRCenter, BoxLayout.Y_AXIS));
-		JScrollPane jscroll = new JScrollPane(this.jpRRCenter);
-		jscroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		this.lLeft.add(jscroll, BorderLayout.CENTER);
-		this.jccb.addActionListener(new ActionListener() {
+		this.jpLCCenter = new JPanel();
+		this.jpLCCenter.setLayout(new BoxLayout(jpLCCenter, BoxLayout.Y_AXIS));
+		JScrollPane jsLeftCenter = new JScrollPane(this.jpLCCenter);
+		jsLeftCenter.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		this.jpLeft.add(jsLeftCenter, BorderLayout.CENTER);
+		this.jccbSBML.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JComboCheckBox jccb = (JComboCheckBox) e.getSource();
@@ -302,11 +303,11 @@ public class EpiTabSimulation extends EpiTabTools {
 		});
 
 		JPanel jpLeftAggreg = new JPanel(new BorderLayout());
-		jpLeftAggreg.add(this.lLeft, BorderLayout.LINE_START);
+		jpLeftAggreg.add(this.jpLeft, BorderLayout.LINE_START);
 		jpLeftAggreg.add(this.lRight, BorderLayout.LINE_END);
 
 		this.add(jpLeftAggreg, BorderLayout.LINE_START);
-		updateComponentList(this.jccb.getSelectedItems());
+		updateComponentList(this.jccbSBML.getSelectedItems());
 		this.isInitialized = true;
 	}
 
@@ -358,7 +359,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		if (nodePercent != null && nodePercent.equals(GridNodePercent.YES.toString())) {
 			firstGrid.updateNodeValueCounts();
 		}
-		this.updateComponentList(this.jccb.getSelectedItems());
+		this.updateComponentList(this.jccbSBML.getSelectedItems());
 		// Re-Paint
 		this.repaint();
 	}
@@ -382,7 +383,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		if (nodePercent != null && nodePercent.equals(GridNodePercent.YES.toString())) {
 			prevGrid.updateNodeValueCounts();
 		}
-		this.updateComponentList(this.jccb.getSelectedItems());
+		this.updateComponentList(this.jccbSBML.getSelectedItems());
 		// Re-Paint
 		this.repaint();
 	}
@@ -421,7 +422,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		if (nodePercent != null && nodePercent.equals(GridNodePercent.YES.toString())) {
 			nextGrid.updateNodeValueCounts();
 		}
-		this.updateComponentList(this.jccb.getSelectedItems());
+		this.updateComponentList(this.jccbSBML.getSelectedItems());
 		// Re-Paint
 		this.repaint();
 	}
@@ -450,12 +451,13 @@ public class EpiTabSimulation extends EpiTabTools {
 		if (nodePercent != null && nodePercent.equals(GridNodePercent.YES.toString())) {
 			nextGrid.updateNodeValueCounts();
 		}
-		this.updateComponentList(this.jccb.getSelectedItems());
+		this.updateComponentList(this.jccbSBML.getSelectedItems());
 		// Re-Paint
 		this.repaint();
 	}
 
 	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String nodeID) {
+		
 		EpitheliumGrid nextGrid = this.simulation.getGridAt(this.iCurrSimIter);
 
 		gbc.gridy = y;
@@ -533,7 +535,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			this.getCompMiniPanel(jpRRC, gbc, y, nodeID);
 			y++;
 		}
-		this.jpRRCenter.add(jpRRC);
+		this.jpLCCenter.add(jpRRC);
 	}
 
 	/**
@@ -542,7 +544,7 @@ public class EpiTabSimulation extends EpiTabTools {
 	 * @param modelNames
 	 */
 	private void updateComponentList(List<String> modelNames) {
-		this.jpRRCenter.removeAll();
+		this.jpLCCenter.removeAll();
 		this.lCompON.clear();
 		this.colorButton2Node.clear();
 
@@ -583,8 +585,8 @@ public class EpiTabSimulation extends EpiTabTools {
 			this.setComponentTypeList(sInputNodeIDs, "Input Components");
 		
 		this.visualGridSimulation.paintComponent(this.visualGridSimulation.getGraphics());
-		this.jpRRCenter.revalidate();
-		this.jpRRCenter.repaint();
+		this.jpLCCenter.revalidate();
+		this.jpLCCenter.repaint();
 	}
 
 	@Override
@@ -604,10 +606,10 @@ public class EpiTabSimulation extends EpiTabTools {
 	public void applyChange() {
 		if (this.hasChangedEpithelium()) {
 			JPanel jpNorth = new JPanel(new BorderLayout());
-			this.jpRight.add(jpNorth, BorderLayout.NORTH);
+			this.jpVisualGrid.add(jpNorth, BorderLayout.NORTH);
 			JTextPane jtp = new JTextPane();
 			jtp.setContentType("text/html");
-			String color = ColorUtils.getColorCode(this.jpRight.getBackground());
+			String color = ColorUtils.getColorCode(this.jpVisualGrid.getBackground());
 			jtp.setText("<html><body style=\"background-color:" + color + "\">" + "<font color=\"#ff0000\">"
 					+ "New Epithelium definitions detected!!<br/>"
 					+ "Continue current simulation with old definitions, "
@@ -625,15 +627,15 @@ public class EpiTabSimulation extends EpiTabTools {
 			});
 			jpNorth.add(jbRestart, BorderLayout.PAGE_END);
 		} else {
-			for (int i = 0; i < this.jpRight.getComponentCount(); i++) {
-				Component c = this.jpRight.getComponent(i);
+			for (int i = 0; i < this.jpVisualGrid.getComponentCount(); i++) {
+				Component c = this.jpVisualGrid.getComponent(i);
 				if (c instanceof JTextPane) {
-					this.jpRight.remove(i);
+					this.jpVisualGrid.remove(i);
 					break;
 				}
 			}
 		}
-		this.updateComponentList(this.jccb.getSelectedItems());
+		this.updateComponentList(this.jccbSBML.getSelectedItems());
 	}
 
 	@Override

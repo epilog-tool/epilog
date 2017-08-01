@@ -28,7 +28,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 	private Map<String, Byte> mNode2ValueSelected;
 	private boolean isRectFill;
 	private Tuple2D<Integer> initialRectPos;
-	private LogicalModel selectedModel;
+	private List<LogicalModel> selectedModels;
 	private GridInformation valuePanel;
 
 	public VisualGridInitialConditions(EpitheliumGrid gridClone, 
@@ -38,7 +38,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 		this.mNode2ValueSelected = mNode2ValueSelected;
 		this.isRectFill = false;
 		this.initialRectPos = null;
-		this.selectedModel = null;
+		this.selectedModels = new ArrayList<LogicalModel>();
 		this.valuePanel = valuePanel;
 
 		this.addMouseMotionListener(new MouseMotionListener() {
@@ -95,7 +95,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 		if (!this.isInGrid(pos))
 			return;
 
-		if (this.epiGrid.getModel(pos.getX(), pos.getY()).equals(this.selectedModel))
+		if (this.selectedModels.contains(this.epiGrid.getModel(pos.getX(), pos.getY())))
 			super.paintCellAt(pos);
 	}
 
@@ -106,8 +106,8 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 		this.valuePanel.updateValues(pos.getX(), pos.getY(), this.epiGrid, null);
 	}
 
-	public void setModel(LogicalModel m) {
-		this.selectedModel = m;
+	public void setModels(List<LogicalModel> mds) {
+		this.selectedModels = mds;
 	}
 
 	private void drawRectangleOverSelectedCells() {
@@ -138,6 +138,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 
+		
 		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY, this.getSize().width,
 				this.getSize().height);
 
@@ -146,7 +147,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 				Color cCombined;
 				if (EmptyModel.getInstance().isEmptyModel(this.epiGrid.getModel(x, y))) {
 					cCombined = EmptyModel.getInstance().getColor();
-				} else if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
+				} else if (this.selectedModels.contains(this.epiGrid.getModel(x, y))) {
 					List<Color> lColors = new ArrayList<Color>();
 					for (String nodeID : this.mNode2ValueSelected.keySet()) {
 						int index = this.epiGrid.getNodeIndex(x, y, nodeID);
