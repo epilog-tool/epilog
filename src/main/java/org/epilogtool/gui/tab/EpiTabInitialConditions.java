@@ -59,13 +59,11 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private Map<String, Byte> mNode2ValueSelected;
 
 	// Reference for all Nodes
-	private Map<String, JButton> mNode2JButton;
 	private Map<String, JCheckBox> mNode2Checkbox;
 
 	private TabProbablyChanged tpc;
 
 	private JPanel jpRCenter;
-//	private JPanel jpLCCenter;
 	private JPanel jpLeftTop;
 	private JPanel jpLeft;
 	
@@ -74,8 +72,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private JRadioButton selectedNodes;
 
 	private LogicalModel selectedModel;
-
-//	private JComboBox<String> jcbSBML;
 	private JComboCheckBox jccbSBML;
 	
 	private List<String> lPresentComps;
@@ -90,6 +86,10 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		super(e, path, projChanged, tabChanged);
 	}
 
+	/**
+	 * Creates the InitialConditionsPanel, the first time the tab is created.
+	 * 
+	 */
 	public void initialize() {
 
 		this.center.setLayout(new BorderLayout());
@@ -119,9 +119,9 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.jpLeftTop = new JPanel();
 		this.jpLeftTop.setLayout(new BoxLayout(this.jpLeftTop, BoxLayout.Y_AXIS));
 		
-//------------------------------
-// Model selection list
-// Model combobox
+//---------------------------------------------------------------------------
+// Model selection jcomboCheckBox
+
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		JCheckBox[] items = new JCheckBox[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
@@ -131,8 +131,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.jccbSBML = new JComboCheckBox(items);
 		this.jpLeftTop.add(this.jccbSBML);
 		
-
-// Select/Deselect buttons Nodes
+//---------------------------------------------------------------------------
+// Select/Deselect active nodes Buttons
 		
 		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder("Display options"));
 		this.jpLeft.add(this.jpLeftTop, BorderLayout.NORTH);
@@ -190,13 +190,9 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		});
 	
 		this.jpLeft.add(jsLeftCenter, BorderLayout.CENTER);
-		// Internal and Proper components JScrollPanel
-		
-//		this.jpRCenter = new JPanel();
-//		this.jpRCenter.setLayout(new BoxLayout(jpRCenter, BoxLayout.Y_AXIS));
 		
 //---------------------------------------------------------------------------
-		// Apply/Clear/Rectangle buttons
+// Apply/Clear/Rectangle buttons
 		JPanel rBottom = new JPanel();
 		rBottom.setLayout(new BoxLayout(rBottom, BoxLayout.Y_AXIS));
 		JPanel rBottomApplyClear = new JPanel(new FlowLayout());
@@ -242,7 +238,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		rBottom.add(rBottomApplyClear);
 		rBottom.add(rBottomRect);
 
-//-------------------------------------------------------------
+//---------------------------------------------------------------------------
 // Create Panel for the random initial conditions
 
 		JPanel RRandomInitialConditions = new JPanel(new BorderLayout());
@@ -275,7 +271,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		});
 
-		// RBottomRandomInitialConditions.add(randomInitialConditions);
 		RRandomInitialConditions.add(allNodes, BorderLayout.NORTH);
 		RRandomInitialConditions.add(selectedNodes, BorderLayout.CENTER);
 		RRandomInitialConditions.add(jbApplyRandom, BorderLayout.SOUTH);
@@ -295,7 +290,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		updateComponentList(this.jccbSBML.getSelectedItems());
 		this.isInitialized = true;
 	}
-
+//---------------------------------------------------------------------------
+//End initialize
 
 /**
  * Creates the panel with the selection of the components to display.
@@ -386,6 +382,15 @@ private void updateComponentList(List<String> modelNames) {
 	this.jpRCenter.repaint();
 }
 
+/**
+ * Creates the inner panel of each component (checkbox, value and color)
+ * 
+ * @param jp
+ * @param gbc
+ * @param y
+ * @param nodeID
+ * @param max
+ */
 private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String nodeID, int max) {
 
 	EpitheliumGrid  grid = this.epiGridClone;
@@ -422,6 +427,10 @@ private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String n
 	jcombob.setToolTipText(nodeID);
 	for (byte i = 0; i <= max; i++)
 		jcombob.addItem(i);
+	
+	if (mNode2ValueSelected.get(nodeID)!=null)
+		jcombob.setSelectedItem(mNode2ValueSelected.get(nodeID));
+	
 	jcombob.addActionListener(new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -476,59 +485,6 @@ private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String n
 		this.updateComponentList(this.jccbSBML.getSelectedItems());
 	}
 
-
-//	private void createGUIForModel(LogicalModel m) {
-//		for (NodeInfo node : m.getNodeOrder()) {
-//			String nodeID = node.getNodeID();
-//			// Color
-//			JButton jButton = new JButton();
-//			jButton.setBackground(Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
-//			jButton.setToolTipText(nodeID);
-//			jButton.addActionListener(new ActionListener() {
-//				@Override
-//				public void actionPerformed(ActionEvent e) {
-//					setNewColor((JButton) e.getSource());
-//				}
-//			});
-//			this.mNode2JButton.put(nodeID, jButton);
-//			// Checkbox
-//			JCheckBox jcheckb = new JCheckBox(nodeID, false);
-//			jcheckb.addActionListener(new ActionListener() {
-//				@Override
-//				public void actionPerformed(ActionEvent e) {
-//					JCheckBox jcb = (JCheckBox) e.getSource();
-//					String nodeID = jcb.getText();
-//					if (jcb.isSelected()) {
-//						mNode2ValueSelected.put(nodeID, (Byte) mNodeID2Combobox.get(nodeID).getSelectedItem());
-//					} else {
-//						mNode2ValueSelected.remove(nodeID);
-//					}
-//					// Repaint
-//					visualGridICs.paintComponent(visualGridICs.getGraphics());
-//				}
-//			});
-//			this.mNode2Checkbox.put(nodeID, jcheckb);
-//			// Combobox
-//			int max = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m).getMax();
-//			JComboBox<Byte> jcombob = new JComboBox<Byte>();
-//			jcombob.setToolTipText(nodeID);
-//			for (byte i = 0; i <= max; i++)
-//				jcombob.addItem(i);
-//			jcombob.addActionListener(new ActionListener() {
-//				@Override
-//				public void actionPerformed(ActionEvent e) {
-//					@SuppressWarnings("unchecked")
-//					JComboBox<Byte> jcb = (JComboBox<Byte>) e.getSource();
-//					String nodeID = jcb.getToolTipText();
-//					if (mNode2ValueSelected.containsKey(nodeID)) {
-//						mNode2ValueSelected.put(nodeID, (Byte) jcb.getSelectedItem());
-//					}
-//				}
-//			});
-//			this.mNodeID2Combobox.put(nodeID, jcombob);
-//		}
-//	}
-
 	private JComboBox<String> newModelCombobox(List<LogicalModel> modelList) {
 		// Model selection list
 		String[] saSBML = new String[modelList.size()];
@@ -539,7 +495,7 @@ private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String n
 		jcb.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				@SuppressWarnings("unchecked")
+//				@SuppressWarnings("unchecked")
 				JComboCheckBox jccb = (JComboCheckBox) e.getSource();
 				jccb.updateSelected();
 				updateComponentList(jccb.getSelectedItems());
