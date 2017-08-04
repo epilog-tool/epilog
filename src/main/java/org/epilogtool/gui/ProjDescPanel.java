@@ -127,10 +127,25 @@ public class ProjDescPanel extends JPanel {
 	}
 	
 	public void renameModel(String model, String newModel) {
-		((DefaultListModel<String>) this.listSBMLs.getModel())
-		.removeElement(model);
-		((DefaultListModel<String>) this.listSBMLs.getModel())
-		.addElement(newModel);
+		
+		System.out.println("old Name " + model );
+		System.out.println("new Name " + newModel );
+		
+		
+		for (int index = 0; index<((DefaultListModel<String>) this.listSBMLs.getModel()).size(); index++) {
+			if (this.listSBMLs.getModel().getElementAt(index).equals(model)) {
+				((DefaultListModel<String>) this.listSBMLs.getModel()).removeElement(model);
+				((DefaultListModel<String>) this.listSBMLs.getModel()).add(index, newModel);
+				break;
+			}
+		}
+		
+//		((DefaultListModel<String>) this.listSBMLs.getModel())
+//		.removeElement(model);
+//		((DefaultListModel<String>) this.listSBMLs.getModel())
+//		.addElement(newModel);
+		
+		System.out.println(this.listSBMLs.getModel());
 	}
 
 	public boolean hasModel(String model) {
