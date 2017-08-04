@@ -45,7 +45,7 @@ import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.dialog.GridNodePercent;
 import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboCheckBox;
-import org.epilogtool.gui.widgets.JComboWideBox;
+
 import org.epilogtool.gui.widgets.VisualGridInitialConditions;
 import org.epilogtool.io.ButtonFactory;
 import org.epilogtool.project.Project;
@@ -55,11 +55,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 	private VisualGridInitialConditions visualGridICs;
 	private EpitheliumGrid epiGridClone;
-	private List<String> lNodeInPanel;
-	private Map<String, Byte> mNode2ValueSelected;
-
-	// Reference for all Nodes
-	private Map<String, JCheckBox> mNode2Checkbox;
 
 	private TabProbablyChanged tpc;
 
@@ -71,15 +66,17 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private JRadioButton allNodes;
 	private JRadioButton selectedNodes;
 
-	private LogicalModel selectedModel;
 	private JComboCheckBox jccbSBML;
 	
-	private List<String> lPresentComps;
-	private List<String> lCompON;
+	private Set<String> lPresentComps;
 	private Map<String, Boolean> mSelCheckboxes;
+	
 	private Map<String, JCheckBox> mNodeID2Checkbox;
 	private Map<String, JComboBox<Byte>> mNodeID2Combobox;
+	
+	private Map<String, Byte> mNode2ValueSelected;
 	private Map<JButton, String> colorButton2Node;
+	
 
 	public EpiTabInitialConditions(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
 			TabChangeNotifyProj tabChanged) {
@@ -95,8 +92,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.center.setLayout(new BorderLayout());
 
 		this.epiGridClone = this.epithelium.getEpitheliumGrid().clone();
-
-		this.lCompON = new ArrayList<String>();
 		this.mSelCheckboxes = new HashMap<String, Boolean>();
 		this.mNode2ValueSelected = new HashMap<String, Byte>();
 		this.mNodeID2Checkbox = new HashMap<String, JCheckBox>();
@@ -148,9 +143,9 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 					if (mNodeID2Checkbox.containsKey(nodeID)) {
 						mNodeID2Checkbox.get(nodeID).setSelected(true);
 					}
-					mSelCheckboxes.put(nodeID, true);
-					if (!lCompON.contains(nodeID))
-						lCompON.add(nodeID);
+//					mSelCheckboxes.put(nodeID, true);
+					mNode2ValueSelected.put(nodeID, (Byte) mNodeID2Combobox.get(nodeID).getSelectedItem());
+
 				}
 				visualGridICs.paintComponent(visualGridICs.getGraphics());
 			}
@@ -165,8 +160,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 					if (mNodeID2Checkbox.containsKey(nodeID)) {
 						mNodeID2Checkbox.get(nodeID).setSelected(false);
 					}
-					mSelCheckboxes.put(nodeID, false);
-					lCompON.remove(nodeID);
+//					mSelCheckboxes.put(nodeID, false);
+					mNode2ValueSelected.remove(nodeID);
 				}
 				visualGridICs.paintComponent(visualGridICs.getGraphics());
 			}
@@ -192,16 +187,16 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.jpLeft.add(jsLeftCenter, BorderLayout.CENTER);
 		
 //---------------------------------------------------------------------------
-// Apply/Clear/Rectangle buttons
+// Apply
 		JPanel rBottom = new JPanel();
 		rBottom.setLayout(new BoxLayout(rBottom, BoxLayout.Y_AXIS));
 		JPanel rBottomApplyClear = new JPanel(new FlowLayout());
-		JButton jbApplyAll = ButtonFactory.getNoMargins("Apply All");
+		JButton jbApplyAll = ButtonFactory.getNoMargins("Apply Grid");
 		jbApplyAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				for (String nodeID : lNodeInPanel) {
-					if (mNode2Checkbox.get(nodeID).isSelected()) {
+				for (String nodeID : lPresentComps) {
+					if (mNodeID2Checkbox.get(nodeID).isSelected()) {
 						mNode2ValueSelected.put(nodeID, (Byte) mNodeID2Combobox.get(nodeID).getSelectedItem());
 					}
 				}
@@ -209,12 +204,14 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			}
 		});
 		rBottomApplyClear.add(jbApplyAll);
-		JButton jbClearAll = ButtonFactory.getNoMargins("Clear All");
+
+// Clear
+		JButton jbClearAll = ButtonFactory.getNoMargins("Clear Grid");
 		jbClearAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				for (String nodeID : lNodeInPanel) {
-					if (mNode2Checkbox.get(nodeID).isSelected()) {
+				for (String nodeID : lPresentComps) {
+					if (mNodeID2Checkbox.get(nodeID).isSelected()) {
 						mNode2ValueSelected.put(nodeID, (byte) 0);
 						mNodeID2Combobox.get(nodeID).setSelectedIndex(0);
 					}
@@ -223,6 +220,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			}
 		});
 		rBottomApplyClear.add(jbClearAll);
+		
+//Rectangle fill
 		JPanel rBottomRect = new JPanel(new FlowLayout());
 		JToggleButton jtbRectFill = new JToggleButton("Rectangle Fill", false);
 		jtbRectFill.setMargin(new Insets(0, 0, 0, 0));
@@ -259,14 +258,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				List<String> nodes = new ArrayList<String>();
-				for (String nodeID : lNodeInPanel) {
-					if (allNodes.isSelected()
-							| (selectedNodes.isSelected() & mNode2Checkbox.get(nodeID).isSelected())) {
-						nodes.add(nodeID);
-					}
-				}
-				randomMarkCells(nodes);
+				randomMarkCells();
+
 			}
 
 		});
@@ -312,14 +305,16 @@ private void setComponentTypeList(Set<String> sNodeIDs, String titleBorder,List<
 		for (LogicalModel m: listModels) {
 			for (NodeInfo n: m.getNodeOrder()) {
 				if (n.getNodeID().equals(nodeID)) {
-				max = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m).getMax();
+//					System.out.println(n + " "+this.epithelium.isIntegrationComponent(n));
+					if (!this.epithelium.isIntegrationComponent(n)) {
+						max = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m).getMax();
+						this.lPresentComps.add(nodeID);
+					}
 				break;
 			}}
 		}
-		this.lPresentComps.add(nodeID);
-		if (mSelCheckboxes.get(nodeID)) {
-			this.lCompON.add(nodeID);
-		}
+		
+
 		this.getCompMiniPanel(jpRRC, gbc, y, nodeID, max);
 		y++;
 	}
@@ -334,7 +329,7 @@ private void setComponentTypeList(Set<String> sNodeIDs, String titleBorder,List<
 private void updateComponentList(List<String> modelNames) {
 
 	this.jpRCenter.removeAll();
-	this.lCompON.clear();
+//	mNode2ValueSelected.put(jcb.getText(), (Byte) mNodeID2Combobox.get(jcb.getText()).getSelectedItem());
 	this.colorButton2Node.clear();
 
 	List<LogicalModel> lModels = new ArrayList<LogicalModel>();
@@ -351,7 +346,7 @@ private void updateComponentList(List<String> modelNames) {
 	List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
 			Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
 
-	this.lPresentComps = new ArrayList<String>();
+	this.lPresentComps = new HashSet<String>();
 	
 	Set<String> sInternalNodeIDs = new HashSet<String>();
 	Set<String> sInputNodeIDs = new HashSet<String>();
@@ -399,6 +394,8 @@ private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String n
 	gbc.gridx = 0;
 	gbc.anchor = GridBagConstraints.WEST;
 
+	
+//----------------------------------------------------------------------------
 	JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
 	
 	if (jcb == null) {
@@ -409,10 +406,11 @@ private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String n
 				JCheckBox jcb = (JCheckBox) e.getSource();
 				mSelCheckboxes.put(jcb.getText(), jcb.isSelected());
 				if (jcb.isSelected()) {
-					lCompON.add(jcb.getText());
+					mNode2ValueSelected.put(jcb.getText(), (Byte) mNodeID2Combobox.get(jcb.getText()).getSelectedItem());
 				} else {
-					lCompON.remove(jcb.getText());
+					mNode2ValueSelected.remove(jcb.getText());
 				}
+	
 				visualGridICs.paintComponent(visualGridICs.getGraphics());
 			}
 		});
@@ -421,16 +419,16 @@ private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String n
 	jp.add(jcb, gbc);
 	gbc.gridx = 1;
 	
-	// Combobox
+//----------------------------------------------------------------------------
 	
 	JComboBox<Byte> jcombob = new JComboBox<Byte>();
 	jcombob.setToolTipText(nodeID);
 	for (byte i = 0; i <= max; i++)
 		jcombob.addItem(i);
-	
-	if (mNode2ValueSelected.get(nodeID)!=null)
-		jcombob.setSelectedItem(mNode2ValueSelected.get(nodeID));
-	
+//	
+//	if (mNode2ValueSelected.get(nodeID)!=null)
+//		jcombob.setSelectedItem(mNode2ValueSelected.get(nodeID));
+//	
 	jcombob.addActionListener(new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -438,14 +436,15 @@ private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String n
 			@SuppressWarnings("unchecked")
 			JComboBox<Byte> jcb = (JComboBox<Byte>) e.getSource();
 			String nodeID = jcb.getToolTipText();
-				
-			mNode2ValueSelected.put(nodeID, (Byte) jcb.getSelectedItem());
+			if (mNodeID2Checkbox.get(nodeID).isSelected())
+				mNode2ValueSelected.put(nodeID, (Byte) jcb.getSelectedItem());
 			
 		}
 	});
 	
 	this.mNodeID2Combobox.put(nodeID, jcombob);
-	
+
+//----------------------------------------------------------------------------
 	jp.add(jcombob, gbc);
 	gbc.gridx = 2;
 	
@@ -468,43 +467,50 @@ private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String n
 	}
 	this.colorButton2Node.put(jbColor, nodeID);
 }
+
 	/**
 	 * Randomly assign a state to the cells. Note that only the list of nodes provided are randomly changed.
 	 * 
 	 * @param nodes
 	 */
-	private void randomMarkCells(List<String> nodes) {
-
-		List<NodeInfo> lNodes = new ArrayList<NodeInfo>();
-		for (String sNode : nodes) {
-			NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(sNode, this.selectedModel);
-			if (!node.isInput())
-				lNodes.add(node);
+	private void randomMarkCells() {
+		
+		List<String> nodesToMark = new ArrayList<String>();
+		for (String nodeID : this.lPresentComps) {
+			if (this.allNodes.isSelected()
+					| (this.selectedNodes.isSelected() & this.mNodeID2Checkbox.get(nodeID).isSelected())) {
+				nodesToMark.add(nodeID);
+			}
 		}
+
+		List<String> models =jccbSBML.getSelectedItems();
+		List<NodeInfo> lNodes = new ArrayList<NodeInfo>();
+		
+		
+		for (String sNode : nodesToMark) {
+			for (String sModel:models) {
+				LogicalModel lmModel = Project.getInstance().getProjectFeatures().getModel(sModel);
+				for (NodeInfo node: lmModel.getNodeOrder()) {
+					if (node.getNodeID().equals(sNode)) {
+						if (!this.epithelium.isIntegrationComponent(node)) {
+						lNodes.add(node);
+						break;
+						}
+					}
+				}
+			}
+				
+		}
+		System.out.println(lNodes);
 		this.visualGridICs.setRandomValue(lNodes);
 		this.updateComponentList(this.jccbSBML.getSelectedItems());
 	}
 
-	private JComboBox<String> newModelCombobox(List<LogicalModel> modelList) {
-		// Model selection list
-		String[] saSBML = new String[modelList.size()];
-		for (int i = 0; i < modelList.size(); i++) {
-			saSBML[i] = Project.getInstance().getProjectFeatures().getModelName(modelList.get(i));
-		}
-		JComboBox<String> jcb = new JComboWideBox<String>(saSBML);
-		jcb.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-//				@SuppressWarnings("unchecked")
-				JComboCheckBox jccb = (JComboCheckBox) e.getSource();
-				jccb.updateSelected();
-				updateComponentList(jccb.getSelectedItems());
-			}
-		});
-		return jcb;
-	}
 
-	// Assign a new color to a component
+	/**
+	 * Changes the color assigned to a node.
+	 * @param jb
+	 */
 	private void setNewColor(JButton jb) {
 		String nodeID = jb.getToolTipText();
 		Color newColor = JColorChooser.showDialog(jb, "Color chooser - " + nodeID, jb.getBackground());
@@ -519,6 +525,22 @@ private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String n
 		}
 	}
 
+
+
+	/**
+	 * Updates the list of components to present.
+	 * If a positional input is now an integration input then it is no longer set to show in the components panel. On the other hand if an integration input is change to a positional input it 
+	 * will appear in the components list.
+	 * @param node node to the removed/added in String format.
+	 * @param b if b is true, then it should be added to the list, otherwise removed.
+	 */
+	public void updatelPresentComps(String node, boolean b) {
+		if (b) 
+			this.lPresentComps.add(node);
+		else
+			this.lPresentComps.remove(node);
+	}
+	
 	
 	@Override
 	protected void buttonReset() {
@@ -537,7 +559,7 @@ private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String n
 
 	@Override
 	protected void buttonAccept() {
-		// Copy cellGridClone to EpitheliumGrid
+		
 		EpitheliumGrid gridOrig = this.epithelium.getEpitheliumGrid();
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {
 			for (int y = 0; y < this.epiGridClone.getY(); y++) {
@@ -568,7 +590,6 @@ private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String n
 
 	@Override
 	public void applyChange() {
-		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		
 		// Update grid
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
@@ -583,10 +604,7 @@ private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String n
 				}
 			}
 		}
+		
 
-		this.jpLeftTop.remove(0);
-		this.jpLeftTop.add(this.newModelCombobox(modelList), 0);
-		// this.updateComponentList(this.projectFeatures.getModelName(modelList
-		// .get(0)));
 	}
 }
