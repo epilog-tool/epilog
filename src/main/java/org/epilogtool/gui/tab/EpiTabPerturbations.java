@@ -39,6 +39,7 @@ import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
+import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumPerturbations;
@@ -48,6 +49,7 @@ import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboWideBox;
+import org.epilogtool.gui.widgets.JRadioComponentButton;
 import org.epilogtool.gui.widgets.VisualGridPerturbation;
 import org.epilogtool.io.ButtonFactory;
 import org.epilogtool.project.Project;
@@ -475,15 +477,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JButton jb = (JButton) e.getSource();
-				String apID = jb.getToolTipText();
-				Color newColor = JColorChooser.showDialog(jb, "Color chooser - " + apID, jb.getBackground());
-				if (newColor != null) {
-					jb.setBackground(newColor);
-					AbstractPerturbation ap = mID2AP.get(apID);
-					colorMapClone.put(ap, newColor);
-					epiPerturbClone.getModelPerturbations(selModel).addPerturbationColor(ap, newColor);
-					visualGridPerturb.paintComponent(visualGridPerturb.getGraphics());
-				}
+				setNewColor(jb);
 			}
 		});
 		this.mAP2JButton.put(ap, jbColor);
@@ -491,6 +485,26 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		this.epiPerturbClone.getModelPerturbations(this.selModel).addPerturbationColor(ap, c);
 	}
 
+	/**
+	 * Changes the color associated with a perturbation.
+	 * PV: Tab knows that it changed if the new color exists and it is different from the previous color.
+	 * 
+	 * @param jb
+	 */
+	private void setNewColor(JButton jb) {
+		String apID = jb.getToolTipText();
+		Color newColor = JColorChooser.showDialog(jb, "Color chooser - " + apID, jb.getBackground());
+		if (newColor != null && newColor !=jb.getBackground()) {
+			jb.setBackground(newColor);
+			this.tpc.setChanged();
+			AbstractPerturbation ap = mID2AP.get(apID);
+			colorMapClone.put(ap, newColor);
+			epiPerturbClone.getModelPerturbations(selModel).addPerturbationColor(ap, newColor);
+			visualGridPerturb.paintComponent(visualGridPerturb.getGraphics());
+		}
+	}
+	
+	
 	private void updateMinMaxValues(String nodeID) {
 		jcbMinVal.removeAllItems();
 		jcbMaxVal.removeAllItems();
