@@ -730,8 +730,7 @@ public class EpiGUI extends JFrame {
 	 * 1) Close and delete all tabs. 
 	 * 2) Remove all epithelia from JTree.
 	 */
-	private void cleanGUI() {
-		System.out.println(Project.getInstance().getEpitheliumList());
+	private void cleanGUI() { 
 		this.setTitle(TITLE_APPNAME + TITLE_UNTITLED);
 		this.epiTreePanel.initEpitheliumJTree();
 		while (this.epiRightFrame.getTabCount() > 0) {
