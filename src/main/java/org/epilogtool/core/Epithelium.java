@@ -442,8 +442,7 @@ public class Epithelium {
 				Set<String> regulators = getRegulators(integrationString);
 				for (String reg : regulators) {
 					if (!properComponentsAllModels.contains(reg)) {
-						// System.out.println("There is a problem with an intFu
-						// " + reg + properComponentsAllModels);
+						 System.out.println("There is a problem with an intFu" + reg + properComponentsAllModels);
 					}
 				}
 			}
@@ -466,9 +465,11 @@ public class Epithelium {
 			if (atom.length() == 0) {
 				continue;
 			}
+
 			String[] atomElems = atom.split("\\(");
 			if (atomElems.length == 0)
 				continue;
+
 			regulatorsSet.add(atomElems[atomElems.length - 2]);
 		}
 		return regulatorsSet;
