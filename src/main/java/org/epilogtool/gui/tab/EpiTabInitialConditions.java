@@ -298,14 +298,13 @@ private void setComponentTypeList(Set<String> sNodeIDs, String titleBorder,List<
 	gbc.insets = new Insets(5, 5, 4, 0);
 	jpRRC.setBorder(BorderFactory.createTitledBorder(titleBorder));
 	List<String> nodeList = new ArrayList<String>(sNodeIDs);
-	Collections.sort(nodeList, ObjectComparator.STRING);
+//	Collections.sort(nodeList, ObjectComparator.STRING); // orders the numbers
 	int y = 0;
 	int max = 0;
 	for (String nodeID : nodeList) {
 		for (LogicalModel m: listModels) {
 			for (NodeInfo n: m.getNodeOrder()) {
 				if (n.getNodeID().equals(nodeID)) {
-//					System.out.println(n + " "+this.epithelium.isIntegrationComponent(n));
 					if (!this.epithelium.isIntegrationComponent(n)) {
 						max = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m).getMax();
 						this.lPresentComps.add(nodeID);

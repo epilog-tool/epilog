@@ -544,7 +544,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		gbc.insets = new Insets(5, 5, 4, 0);
 		jpRRC.setBorder(BorderFactory.createTitledBorder(titleBorder));
 		List<String> nodeList = new ArrayList<String>(sNodeIDs);
-		Collections.sort(nodeList, ObjectComparator.STRING);
+//		Collections.sort(nodeList, ObjectComparator.STRING);
 		int y = 0;
 		for (String nodeID : nodeList) {
 			this.lPresentComps.add(nodeID);
