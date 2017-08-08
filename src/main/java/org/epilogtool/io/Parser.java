@@ -33,7 +33,7 @@ import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.core.UpdateCells;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.color.ColorUtils;
-import org.epilogtool.gui.dialog.DialogMessage;
+import org.epilogtool.notification.NotificationManager;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.Project;
 import org.epilogtool.project.ProjectFeatures;
@@ -41,7 +41,7 @@ import org.epilogtool.services.TopologyService;
 
 public class Parser {
 
-	public static Project loadConfigurations(File fConfig) throws IOException, InstantiationException,
+	public static void loadConfigurations(File fConfig) throws IOException, InstantiationException,
 			IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException, RecognitionException {
 		FileInputStream fstream = new FileInputStream(fConfig);
@@ -60,7 +60,6 @@ public class Parser {
 
 		String line, epiName = null;
 		String[] saTmp;
-		DialogMessage dialog = new DialogMessage();
 
 		while ((line = br.readLine()) != null) {
 			line = line.trim();
@@ -117,7 +116,7 @@ public class Parser {
 						randomSeedType = rsType;
 						randomSeed = Integer.parseInt(saTmp[2]);
 					} else
-						dialog.addMessage("File with undefined Fixed Random Seed");
+						NotificationManager.warning("Parser", "File with undefined Fixed Random Seed");
 				}
 			}
 
@@ -175,7 +174,7 @@ public class Parser {
 				try {
 					currEpi.setIntegrationFunction(nodeID, m, value, function);
 				} catch (RuntimeException re) {
-					dialog.addMessage(
+					NotificationManager.warning("Parser", 
 							"Integration function: " + saTmp[2] + ":" + value + " has invalid expression: " + function);
 				}
 			}
@@ -219,8 +218,7 @@ public class Parser {
 		br.close();
 		in.close();
 		fstream.close();
-		dialog.show("Loading project configurations");
-		return null;
+		NotificationManager.dispatchDialogWarning(true, false);
 	}
 
 	private static AbstractPerturbation string2AbstractPerturbation(ProjectFeatures features, String sExpr,

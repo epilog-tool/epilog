@@ -20,6 +20,7 @@ import javax.imageio.ImageIO;
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
 import org.epilogtool.OptionStore;
+import org.epilogtool.notification.NotificationManager;
 import org.epilogtool.project.Project;
 
 public class FileIO {
@@ -181,7 +182,7 @@ public class FileIO {
 					Project.getInstance().reset();
 					Parser.loadConfigurations(fileEntry);
 				} catch (Exception e) {
-					e.printStackTrace();
+					NotificationManager.error("Loading PEPS file", e.getStackTrace().toString());
 				}
 				break;
 			}
