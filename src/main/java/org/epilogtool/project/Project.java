@@ -138,7 +138,7 @@ public class Project {
 	}
 
 	/**
-	 * Method that returns an Hash with models as keys and a list of epitheliums
+	 * Method that returns an Hash with models as keys and a list of epithelia
 	 * with each model as value.
 	 * 
 	 * @return

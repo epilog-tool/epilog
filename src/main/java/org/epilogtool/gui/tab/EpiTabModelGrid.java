@@ -45,7 +45,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	private JPanel jpModelsUsed;
 	private GridInformation gridInfo;
 	private TabProbablyChanged tpc;
-	private List<LogicalModel> modelsAssigned;
+//	private List<LogicalModel> modelsAssigned;
 
 	JToggleButton jtbRectFill;
 	JButton jbApplyAll;
