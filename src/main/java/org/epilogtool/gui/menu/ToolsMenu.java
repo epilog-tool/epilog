@@ -8,6 +8,11 @@ import javax.swing.JMenu;
 
 import org.epilogtool.gui.EpiGUI;
 
+/**
+ * Definition of the Tools menu, where the user can select the simulation or the monte carlo simulation.
+ * It is only available if one of the epitheliums is selected.
+ *
+ */
 public class ToolsMenu {
 	public static JMenu getMenu() {
 		JMenu menu = new JMenu("Tools");

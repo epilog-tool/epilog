@@ -430,13 +430,24 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
+	/**
+	 * Loads a new project, by asking the user for the peps file. If there are unsaved changes, a dialog appears.
+	 * 
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws ClassNotFoundException
+	 */
 	public void loadProject() throws InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		if (!this.canClose("Do you really want to load another project?")) {
 			return;
 		}
 		if (this.loadPEPS()) {
-			Project.getInstance().reset();
+			
 			this.cleanGUI();
 			
 			this.epiTreePanel.initEpitheliumJTree();
@@ -454,12 +465,24 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
+	/**
+	 * Checks if the peps file is correct.
+	 * 
+	 * @return
+	 * 
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws ClassNotFoundException
+	 */
 	private boolean loadPEPS() throws InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		if (!this.canClose("Do you really want to load another project?")) {
 			return false;
 		}
-		
 		String filename = FileSelectionHelper.openFilename("peps");
 		if (filename != null) {
 			try {
@@ -472,10 +495,21 @@ public class EpiGUI extends JFrame {
 		return false;
 	}
 
+	/** Loads a new project, from the list of the recent projects. No need to select the name of the project.
+	 * 
+	 * @param filename
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws ClassNotFoundException
+	 */
 	public void loadPEPS(String filename)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
-		if (!this.canClose("Do you really want load another project?")) {
+		if (!this.canClose("Do you really want to load another project?")) {
 			return;
 		}
 		try {

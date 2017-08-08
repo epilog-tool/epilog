@@ -41,7 +41,7 @@ import org.epilogtool.services.TopologyService;
 
 public class Parser {
 
-	public static void loadConfigurations(File fConfig) throws IOException, InstantiationException,
+	public static Project loadConfigurations(File fConfig) throws IOException, InstantiationException,
 			IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException, RecognitionException {
 		FileInputStream fstream = new FileInputStream(fConfig);
@@ -220,6 +220,7 @@ public class Parser {
 		in.close();
 		fstream.close();
 		dialog.show("Loading project configurations");
+		return null;
 	}
 
 	private static AbstractPerturbation string2AbstractPerturbation(ProjectFeatures features, String sExpr,
