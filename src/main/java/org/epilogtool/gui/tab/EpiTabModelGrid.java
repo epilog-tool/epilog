@@ -10,7 +10,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -43,6 +45,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	private JPanel jpModelsUsed;
 	private GridInformation gridInfo;
 	private TabProbablyChanged tpc;
+	private List<LogicalModel> modelsAssigned;
 
 	JToggleButton jtbRectFill;
 	JButton jbApplyAll;
@@ -96,7 +99,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		this.jpModelsUsed = new JPanel(new GridBagLayout());
 
 		this.jpModelsUsed.setBorder(BorderFactory.createTitledBorder("Models Assigned"));
-
+		
 		// Panel on the left bottom
 		JPanel jpLeftBottom = new JPanel(new BorderLayout());
 		jpLeftBottom.add(jpCellSelection, BorderLayout.PAGE_START);
@@ -123,6 +126,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		this.visualGridModel.updateModelUsed();
 		this.isInitialized = true;
 	}
+
+
 
 	private void updateCellSelectionButtons() {
 		this.jtbRectFill.setEnabled(true);

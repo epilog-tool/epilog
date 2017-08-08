@@ -98,21 +98,24 @@ public class VisualGridModel extends VisualGridDefinitions {
 	}
 
 	/**
-	 * Updates the list of assigned models in the grid.
+	 * Updates the list of assigned models in the grid. 
+	 * These changes reflect on the models assigned panel.
 	 */
 	public void updateModelUsed() {
 		this.jpModelsUsed.removeAll();
 
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(1, 5, 1, 0);
+		
+		gbc.insets = new Insets(0, 0, 0, 0);
 
 		int i = 0;
+		gbc.gridx = 0;
+		gbc.anchor = GridBagConstraints.WEST;
 		List<String> models = new ArrayList<String>();
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
 				gbc.gridy = i;
 				i++;
-				gbc.gridx = 0;
 				// gbc.anchor = GridBagConstraints.WEST;
 				LogicalModel model = this.modelGridClone[x][y];
 				String modelString = Project.getInstance().getProjectFeatures().getModelName(model);
