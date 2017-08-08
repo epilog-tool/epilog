@@ -551,8 +551,9 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 
 	@Override
 	protected boolean isChanged() {
+		//TODO: Isn't it enough to use this.tpc.isChanged() as return?
+		
 		// Check modifications on perturbation grid clone
-		System.out.println("cheking");
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
 		for (int x = 0; x < grid.getX(); x++) {
 			for (int y = 0; y < grid.getY(); y++) {
@@ -566,9 +567,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		}
 
 		// Check modifications on ModelPerturbations
-		System.out.println(this.epithelium.getEpitheliumPerturbations());
-		System.out.println(this.epiPerturbClone);
-		return !this.epithelium.getEpitheliumPerturbations().equals(this.epiPerturbClone);
+//		return !this.epithelium.getEpitheliumPerturbations().equals(this.epiPerturbClone);
+		return this.tpc.isChanged();
 	}
 
 	@Override
