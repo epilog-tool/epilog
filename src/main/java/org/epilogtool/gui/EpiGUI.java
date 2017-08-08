@@ -357,12 +357,13 @@ public class EpiGUI extends JFrame {
 	}
 
 	public void newProject() throws IOException {
-		if (!this.canClose("Do you really want a new project?")) {
+		if (!this.canClose("Do you really want to create a new project?")) {
 			return;
 		}
 		if (!this.epiTabCloseAllTabs()) {
 			return;
 		}
+		
 		Project.getInstance().reset();
 		this.cleanGUI();
 		this.validateGUI();
@@ -435,27 +436,30 @@ public class EpiGUI extends JFrame {
 			return;
 		}
 		if (this.loadPEPS()) {
+			Project.getInstance().reset();
 			this.cleanGUI();
-			this.setTitle(TITLE_APPNAME + " - " + Project.getInstance().getFilenamePEPS());
-			// this.projDescPanel.setDimension(this.project.getX(),
-			// this.project.getY());
-			for (String sbml : Project.getInstance().getModelNames()) {
-				this.projDescPanel.loadModel(sbml);
-			}
-			Project.getInstance().setChanged(false);
+			
 			this.epiTreePanel.initEpitheliumJTree();
 			for (Epithelium epi : Project.getInstance().getEpitheliumList()) {
 				this.epiTreePanel.addEpi2JTree(epi);
 			}
+			this.setTitle(TITLE_APPNAME + " - " + Project.getInstance().getFilenamePEPS());
+
+			for (String sbml : Project.getInstance().getModelNames()) {
+				this.projDescPanel.loadModel(sbml);
+			}
+			Project.getInstance().setChanged(false);
+
 			this.validateGUI();
 		}
 	}
 
 	private boolean loadPEPS() throws InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
-		if (!this.canClose("Do you really want load another project?")) {
+		if (!this.canClose("Do you really want to load another project?")) {
 			return false;
 		}
+		
 		String filename = FileSelectionHelper.openFilename("peps");
 		if (filename != null) {
 			try {
@@ -688,8 +692,12 @@ public class EpiGUI extends JFrame {
 		this.validateGUI();
 	}
 
+	/**
+	 * 1) Close and delete all tabs. 
+	 * 2) Remove all epithelia from JTree.
+	 */
 	private void cleanGUI() {
-		// Close & delete all TABS
+		System.out.println(Project.getInstance().getEpitheliumList());
 		this.setTitle(TITLE_APPNAME + TITLE_UNTITLED);
 		this.epiTreePanel.initEpitheliumJTree();
 		while (this.epiRightFrame.getTabCount() > 0) {
