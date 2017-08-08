@@ -120,7 +120,7 @@ public class Simulation {
 
 		EpitheliumGrid nextGrid = currGrid.clone();
 		Set<ComponentPair> sIntegComponentPairs = this.epithelium.getIntegrationComponentPairs();
-		IFEvaluation evaluator = new IFEvaluation(nextGrid);
+		IFEvaluation evaluator = new IFEvaluation(nextGrid,this.epithelium);
 
 		// Gets the set of cells that can be updated
 		// And builds the default next grid (= current grid)

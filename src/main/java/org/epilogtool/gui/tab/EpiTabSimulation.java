@@ -77,11 +77,13 @@ public class EpiTabSimulation extends EpiTabTools {
 	private JButton jbFastFwr;
 
 	private JPanel jpVisualGrid; //Panel with the visual grid. Panel on the Right
-	private GridInformation lRight;
+	private GridInformation jpGridInformation;
 	private JPanel jpLeft;
 	private JPanel jpLeftTop;
 	private JPanel jpLCCenter;
+	private JPanel jpLeftRight;
 	private JComboCheckBox jccbSBML;
+	private JButton jbRestart;
 
 	public EpiTabSimulation(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
 			SimulationEpiClone simEpiClone) {
@@ -108,9 +110,26 @@ public class EpiTabSimulation extends EpiTabTools {
 				this.mSelCheckboxes.put(node.getNodeID(), false);
 			}
 		}
-		this.lRight = new GridInformation(this.epithelium.getIntegrationFunctions());
-
-		this.visualGridSimulation = new VisualGridSimulation(this.simulation.getGridAt(0), this.lCompON, this.lRight);
+		
+		this.jpLeftRight = new JPanel(new BorderLayout());
+		
+		this.jpGridInformation = new GridInformation(this.epithelium.getIntegrationFunctions());
+		this.jpLeftRight.add(this.jpGridInformation,BorderLayout.CENTER);
+		
+		JPanel jpRestart = new JPanel();
+		jpRestart.setBorder(BorderFactory.createTitledBorder("Restart"));
+		this.jbRestart = ButtonFactory.getNoMargins("Restart");
+		this.jbRestart.setToolTipText("Restart the simulation with recently applied definitions");
+		this.jbRestart.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				restart();
+			}
+		});
+		jpRestart.add(jbRestart);
+		this.jpLeftRight.add(jpRestart,BorderLayout.PAGE_END);
+		
+		this.visualGridSimulation = new VisualGridSimulation(this.simulation.getGridAt(0), this.lCompON, this.jpGridInformation);
 
 		this.jpVisualGrid.add(this.visualGridSimulation, BorderLayout.CENTER);
 
@@ -304,7 +323,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		JPanel jpLeftAggreg = new JPanel(new BorderLayout());
 		jpLeftAggreg.add(this.jpLeft, BorderLayout.LINE_START);
-		jpLeftAggreg.add(this.lRight, BorderLayout.LINE_END);
+		jpLeftAggreg.add(this.jpLeftRight, BorderLayout.LINE_END);
 
 		this.add(jpLeftAggreg, BorderLayout.LINE_START);
 		updateComponentList(this.jccbSBML.getSelectedItems());
@@ -600,6 +619,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 	private void restart() {
 		EpiGUI.getInstance().restartSimulationTab();
+		this.jbRestart.setBackground(this.jbBack.getBackground());
 	}
 
 	@Override
@@ -617,15 +637,16 @@ public class EpiTabSimulation extends EpiTabTools {
 			jtp.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 			jtp.setHighlighter(null);
 			jpNorth.add(jtp, BorderLayout.PAGE_START);
-			JButton jbRestart = ButtonFactory.getNoMargins("Restart");
-			jbRestart.setToolTipText("Restart the simulation with recently applied definitions");
-			jbRestart.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					restart();
-				}
-			});
-			jpNorth.add(jbRestart, BorderLayout.PAGE_END);
+			this.jbRestart.setBackground(Color.RED);
+//			JButton jbRestart = ButtonFactory.getNoMargins("Restart");
+//			jbRestart.setToolTipText("Restart the simulation with recently applied definitions");
+//			jbRestart.addActionListener(new ActionListener() {
+//				@Override
+//				public void actionPerformed(ActionEvent e) {
+//					restart();
+//				}
+//			});
+//			jpNorth.add(jbRestart, BorderLayout.PAGE_END);
 		} else {
 			for (int i = 0; i < this.jpVisualGrid.getComponentCount(); i++) {
 				Component c = this.jpVisualGrid.getComponent(i);

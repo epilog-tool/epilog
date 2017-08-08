@@ -9,16 +9,18 @@ import java.util.Set;
 
 import org.colomoto.logicalmodel.NodeInfo;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
-import org.epilogtool.project.Project;
 
 public class IFEvaluation {
 
 	private EpitheliumGrid neighboursGrid;
 	private Map<List<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>> relativeNeighboursCache;
+	private Epithelium epithelium;
 
-	public IFEvaluation(EpitheliumGrid neighboursGrid) {
+	public IFEvaluation(EpitheliumGrid neighboursGrid, Epithelium epithelium) {
 		this.neighboursGrid = neighboursGrid;
+		this.epithelium = epithelium;
 		this.relativeNeighboursCache = new HashMap<List<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>>();
 	}
 
@@ -123,8 +125,10 @@ public class IFEvaluation {
 			boolean even = this.neighboursGrid.getTopology().isEven(x, y);
 			Set<Tuple2D<Integer>> neighbours = this.neighboursGrid.getTopology().getPositionNeighbours(x, y,
 					this.relativeNeighboursCache.get(rangeList).get(even));
-			NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(signal.getComponentName(),
-					this.neighboursGrid.getModel(x, y));
+
+//			NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(signal.getComponentName(),
+//					this.neighboursGrid.getModel(x, y));
+			NodeInfo node = this.epithelium.getComponentUsed(signal.getComponentName());
 
 			if (node == null) {
 				// Invalid node

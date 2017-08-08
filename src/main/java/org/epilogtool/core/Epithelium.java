@@ -3,6 +3,7 @@ package org.epilogtool.core;
 import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class Epithelium {
 	private EpitheliumPerturbations perturbations;
 	private EpitheliumUpdateSchemeIntra priorities;
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
+//	private HashMap<String, NodeInfo> sComponentsUsed2Node;
 
 	public Epithelium(int x, int y, String topologyID, String name, LogicalModel m, RollOver rollover,
 			RandomSeedType randomSeedType, int randomSeed)
@@ -40,6 +42,7 @@ public class Epithelium {
 		this.perturbations = new EpitheliumPerturbations();
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(EpitheliumUpdateSchemeInter.DEFAULT_ALPHA,
 				UpdateCells.UPDATABLECELLS, randomSeedType, randomSeed);
+//		this.sComponentsUsed2Node = new HashMap<String, NodeInfo>();
 	}
 
 	private Epithelium(String name, EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
@@ -50,6 +53,7 @@ public class Epithelium {
 		this.integrationFunctions = eif;
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
+//		this.sComponentsUsed2Node = new HashMap<String, NodeInfo>();
 	}
 
 	public Epithelium clone() {
@@ -646,5 +650,24 @@ public class Epithelium {
 				}
 			}
 		}
+	}
+
+	/**
+	 * From the list of models used in the list, an hashset creted, translating the node from string format to NodeInfo
+	 * @param componentName
+	 * @return
+	 */
+	//TODO: This is a test
+	public NodeInfo getComponentUsed(String componentName) {
+		this.getEpitheliumGrid().updateModelSet();
+		for (LogicalModel model : this.getEpitheliumGrid().getModelSet()) {
+			for (NodeInfo node: model.getNodeOrder()) {
+				if (node.getNodeID().equals(componentName))
+					return node;
+
+			}
+		}
+		
+		return null;
 	}
 }
