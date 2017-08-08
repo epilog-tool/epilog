@@ -39,7 +39,6 @@ import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
-import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumPerturbations;
@@ -49,7 +48,6 @@ import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboWideBox;
-import org.epilogtool.gui.widgets.JRadioComponentButton;
 import org.epilogtool.gui.widgets.VisualGridPerturbation;
 import org.epilogtool.io.ButtonFactory;
 import org.epilogtool.project.Project;
@@ -554,6 +552,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	@Override
 	protected boolean isChanged() {
 		// Check modifications on perturbation grid clone
+		System.out.println("cheking");
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
 		for (int x = 0; x < grid.getX(); x++) {
 			for (int y = 0; y < grid.getY(); y++) {
@@ -567,6 +566,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		}
 
 		// Check modifications on ModelPerturbations
+		System.out.println(this.epithelium.getEpitheliumPerturbations());
+		System.out.println(this.epiPerturbClone);
 		return !this.epithelium.getEpitheliumPerturbations().equals(this.epiPerturbClone);
 	}
 
