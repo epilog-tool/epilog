@@ -127,15 +127,15 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		jpRestart.add(jbRestart);
-		this.jpLeftRight.add(jpRestart,BorderLayout.PAGE_END);
 		
+		this.jpLeftRight.add(jpRestart,BorderLayout.PAGE_END);
 		this.visualGridSimulation = new VisualGridSimulation(this.simulation.getGridAt(0), this.lCompON, this.jpGridInformation);
-
 		this.jpVisualGrid.add(this.visualGridSimulation, BorderLayout.CENTER);
 
 		JPanel jpButtons = new JPanel(new BorderLayout());
 		JPanel jpButtonsC = new JPanel();
-		jpButtons.add(jpButtonsC, BorderLayout.CENTER);
+//		jpButtonsC.setPreferredSize(new Dimension(120, 10));
+		jpButtons.add(jpButtonsC, BorderLayout.LINE_START);
 
 		JScrollPane jspButtons = new JScrollPane(jpButtons, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -249,7 +249,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.setGridGUIStable(false);
 		jpButtonsL.add(this.jlAttractor);
 
-		jpButtons.add(jpButtonsL, BorderLayout.LINE_START);
+		jpButtons.add(jpButtonsL, BorderLayout.CENTER);
 		this.jpVisualGrid.add(jspButtons, BorderLayout.SOUTH);
 
 		this.jpLeft = new JPanel(new BorderLayout());
