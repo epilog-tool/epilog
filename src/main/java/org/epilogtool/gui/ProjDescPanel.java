@@ -16,6 +16,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.epilogtool.common.Txt;
 import org.epilogtool.gui.menu.SBMLPopupMenu;
 
 /**
@@ -27,7 +28,6 @@ import org.epilogtool.gui.menu.SBMLPopupMenu;
 public class ProjDescPanel extends JPanel {
 	private static final long serialVersionUID = -8691538114476162311L;
 
-	private static final String LABEL = "Intra-cellular models: ";
 	private JList<String> listSBMLs;
 	private JMenu menu;
 	private SBMLPopupMenu popupmenu;
@@ -38,7 +38,7 @@ public class ProjDescPanel extends JPanel {
 		this.setLayout(new BorderLayout());
 
 		// PAGE_START
-		this.add(EpilogGUIFactory.getJLabelBold(LABEL), BorderLayout.PAGE_START);
+		this.add(EpiLogGUIFactory.getJLabelBold(Txt.get("s_PROJ_PANEL_TITLE")), BorderLayout.PAGE_START);
 
 		// CENTER
 		ListModel<String> listModel = new DefaultListModel<String>();
@@ -126,10 +126,6 @@ public class ProjDescPanel extends JPanel {
 	}
 
 	public void renameModel(String model, String newModel) {
-
-		System.out.println("old Name " + model);
-		System.out.println("new Name " + newModel);
-
 		for (int index = 0; index < ((DefaultListModel<String>) this.listSBMLs.getModel()).size(); index++) {
 			if (this.listSBMLs.getModel().getElementAt(index).equals(model)) {
 				((DefaultListModel<String>) this.listSBMLs.getModel()).removeElement(model);
@@ -137,13 +133,6 @@ public class ProjDescPanel extends JPanel {
 				break;
 			}
 		}
-
-		// ((DefaultListModel<String>) this.listSBMLs.getModel())
-		// .removeElement(model);
-		// ((DefaultListModel<String>) this.listSBMLs.getModel())
-		// .addElement(newModel);
-
-		System.out.println(this.listSBMLs.getModel());
 	}
 
 	public boolean hasModel(String model) {

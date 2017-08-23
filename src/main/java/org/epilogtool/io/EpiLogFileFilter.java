@@ -4,11 +4,11 @@ import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
-public class EpilogFileFilter extends FileFilter {
+public class EpiLogFileFilter extends FileFilter {
 
 	private String ext;
 
-	public EpilogFileFilter(String extension) {
+	public EpiLogFileFilter(String extension) {
 		this.ext = extension;
 	}
 

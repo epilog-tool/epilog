@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.gui.EpiGUI;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
@@ -54,8 +55,7 @@ public abstract class EpiTabDefinitions extends EpiTab {
 	public boolean canClose() {
 		if (!this.isChanged())
 			return true;
-		int n = JOptionPane.showConfirmDialog(this,
-				"Do you really want to close?\n" + "You'll lose all modifications in this Tab!", "Question",
+		int n = JOptionPane.showConfirmDialog(this, Txt.get("s_TAB_CLOSE"), Txt.get("s_QUESTION"),
 				JOptionPane.YES_NO_OPTION);
 		return (n == JOptionPane.YES_OPTION);
 	}
@@ -69,10 +69,10 @@ public abstract class EpiTabDefinitions extends EpiTab {
 
 		public ModificationsPanel() {
 			this.setLayout(new FlowLayout());
-			this.changes = new JLabel("Tab changed!");
+			this.changes = new JLabel(Txt.get("s_TAB_CHANGED"));
 			this.add(changes);
 			this.changes.setForeground(this.getBackground());
-			this.reset = new JButton("Reset");
+			this.reset = new JButton(Txt.get("s_RESET"));
 			this.reset.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -81,7 +81,7 @@ public abstract class EpiTabDefinitions extends EpiTab {
 				}
 			});
 			this.add(reset);
-			this.accept = new JButton("Accept");
+			this.accept = new JButton(Txt.get("s_ACCEPT"));
 			this.accept.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -125,7 +125,6 @@ public abstract class EpiTabDefinitions extends EpiTab {
 
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 }

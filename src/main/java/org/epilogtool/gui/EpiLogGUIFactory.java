@@ -4,7 +4,7 @@ import java.awt.Font;
 
 import javax.swing.JLabel;
 
-public class EpilogGUIFactory {
+public class EpiLogGUIFactory {
 	public static JLabel getJLabelBold(String text) {
 		JLabel jLabel = new JLabel(text);
 		Font font = jLabel.getFont();

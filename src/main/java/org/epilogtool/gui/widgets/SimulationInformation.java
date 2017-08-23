@@ -18,7 +18,7 @@ import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
-import org.epilogtool.gui.EpilogGUIFactory;
+import org.epilogtool.gui.EpiLogGUIFactory;
 import org.epilogtool.project.Project;
 
 public class SimulationInformation extends JPanel {
@@ -113,7 +113,7 @@ public class SimulationInformation extends JPanel {
 				this.jCellPanel.add(jlTmp, gbc);
 				AbstractPerturbation ap = grid.getPerturbation(posX, posY);
 				if (ap == null) {
-					jlTmp = EpilogGUIFactory.getJLabelItalic("  None");
+					jlTmp = EpiLogGUIFactory.getJLabelItalic("  None");
 				} else {
 					jlTmp = new JLabel("  " + ap.toString());
 				}
@@ -205,7 +205,7 @@ public class SimulationInformation extends JPanel {
 
 	private void checkEmpty(GridBagConstraints gbc, int y, boolean isEmpty) {
 		if (isEmpty) {
-			JLabel jlTmp = EpilogGUIFactory.getJLabelItalic("  None");
+			JLabel jlTmp = EpiLogGUIFactory.getJLabelItalic("  None");
 			this.constraints(gbc, 0, y, 2);
 			this.jCellPanel.add(jlTmp, gbc);
 		}

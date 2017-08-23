@@ -175,7 +175,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 
 		// Bottom Panel
 		JPanel bottom = new JPanel(new FlowLayout());
-		this.buttonCancel = new JButton(Txt.get("s_Cancel"));
+		this.buttonCancel = new JButton(Txt.get("s_CANCEL"));
 		this.buttonCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

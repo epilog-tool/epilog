@@ -13,7 +13,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,7 +37,6 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.epilogtool.FileSelectionHelper;
 import org.epilogtool.OptionStore;
-import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.EpiGUI;
@@ -50,7 +48,7 @@ import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboCheckBox;
 import org.epilogtool.gui.widgets.VisualGridSimulation;
 import org.epilogtool.io.ButtonFactory;
-import org.epilogtool.io.EpilogFileFilter;
+import org.epilogtool.io.EpiLogFileFilter;
 import org.epilogtool.io.FileIO;
 import org.epilogtool.project.Project;
 import org.epilogtool.project.Simulation;
@@ -76,7 +74,7 @@ public class EpiTabSimulation extends EpiTabTools {
 	private JButton jbForward;
 	private JButton jbFastFwr;
 
-	private JPanel jpVisualGrid; //Panel with the visual grid. Panel on the Right
+	private JPanel jpVisualGrid; // Panel with the visual grid. Panel on the Right
 	private GridInformation jpGridInformation;
 	private JPanel jpLeft;
 	private JPanel jpLeftTop;
@@ -110,12 +108,12 @@ public class EpiTabSimulation extends EpiTabTools {
 				this.mSelCheckboxes.put(node.getNodeID(), false);
 			}
 		}
-		
+
 		this.jpLeftRight = new JPanel(new BorderLayout());
-		
+
 		this.jpGridInformation = new GridInformation(this.epithelium.getIntegrationFunctions());
-		this.jpLeftRight.add(this.jpGridInformation,BorderLayout.CENTER);
-		
+		this.jpLeftRight.add(this.jpGridInformation, BorderLayout.CENTER);
+
 		JPanel jpRestart = new JPanel();
 		jpRestart.setBorder(BorderFactory.createTitledBorder("Restart"));
 		this.jbRestart = ButtonFactory.getNoMargins("Restart");
@@ -127,14 +125,15 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		jpRestart.add(jbRestart);
-		
-		this.jpLeftRight.add(jpRestart,BorderLayout.PAGE_END);
-		this.visualGridSimulation = new VisualGridSimulation(this.simulation.getGridAt(0), this.lCompON, this.jpGridInformation);
+
+		this.jpLeftRight.add(jpRestart, BorderLayout.PAGE_END);
+		this.visualGridSimulation = new VisualGridSimulation(this.simulation.getGridAt(0), this.lCompON,
+				this.jpGridInformation);
 		this.jpVisualGrid.add(this.visualGridSimulation, BorderLayout.CENTER);
 
 		JPanel jpButtons = new JPanel(new BorderLayout());
 		JPanel jpButtonsC = new JPanel();
-//		jpButtonsC.setPreferredSize(new Dimension(120, 10));
+		// jpButtonsC.setPreferredSize(new Dimension(120, 10));
 		jpButtons.add(jpButtonsC, BorderLayout.LINE_START);
 
 		JScrollPane jspButtons = new JScrollPane(jpButtons, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
@@ -346,7 +345,7 @@ public class EpiTabSimulation extends EpiTabTools {
 	// get all the simulation steps
 	private void saveAllEpiGrid2File() {
 		JFileChooser fc = new JFileChooser();
-		fc.setFileFilter(new EpilogFileFilter("png"));
+		fc.setFileFilter(new EpiLogFileFilter("png"));
 		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 			String file = fc.getSelectedFile().getAbsolutePath();
 			String ext = "png";
@@ -374,7 +373,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jbBack.setEnabled(false);
 		this.jbForward.setEnabled(true);
 		this.jbFastFwr.setEnabled(true);
-		String nodePercent = (String)OptionStore.getOption("PrefsNodePercent");
+		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
 		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			firstGrid.updateNodeValueCounts();
 		}
@@ -398,7 +397,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 		this.jbForward.setEnabled(true);
 		this.jbFastFwr.setEnabled(true);
-		String nodePercent = (String)OptionStore.getOption("PrefsNodePercent");
+		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
 		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			prevGrid.updateNodeValueCounts();
 		}
@@ -437,7 +436,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 		this.jbRewind.setEnabled(true);
 		this.jbBack.setEnabled(true);
-		String nodePercent = (String)OptionStore.getOption("PrefsNodePercent");
+		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
 		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			nextGrid.updateNodeValueCounts();
 		}
@@ -466,7 +465,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jlStep.setText("Iteration: " + this.iCurrSimIter);
 		this.jbRewind.setEnabled(true);
 		this.jbBack.setEnabled(true);
-		String nodePercent = (String)OptionStore.getOption("PrefsNodePercent");
+		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
 		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			nextGrid.updateNodeValueCounts();
 		}
@@ -476,7 +475,7 @@ public class EpiTabSimulation extends EpiTabTools {
 	}
 
 	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String nodeID) {
-		
+
 		EpitheliumGrid nextGrid = this.simulation.getGridAt(this.iCurrSimIter);
 
 		gbc.gridy = y;
@@ -511,8 +510,8 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		jp.add(jbColor, gbc);
-		
-		String nodePercent = (String)OptionStore.getOption("PrefsNodePercent");
+
+		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
 		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			gbc.gridx = 2;
 			JLabel percentage = new JLabel(nextGrid.getPercentage(nodeID));
@@ -535,8 +534,10 @@ public class EpiTabSimulation extends EpiTabTools {
 	/**
 	 * Creates the panel with the selection of the components to display.
 	 * 
-	 * @param sNodeIDs : List with the nodes names to be written
-	 * @param titleBorder : String with the title of the panel
+	 * @param sNodeIDs
+	 *            : List with the nodes names to be written
+	 * @param titleBorder
+	 *            : String with the title of the panel
 	 */
 	private void setComponentTypeList(Set<String> sNodeIDs, String titleBorder) {
 		JPanel jpRRC = new JPanel(new GridBagLayout());
@@ -544,7 +545,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		gbc.insets = new Insets(5, 5, 4, 0);
 		jpRRC.setBorder(BorderFactory.createTitledBorder(titleBorder));
 		List<String> nodeList = new ArrayList<String>(sNodeIDs);
-//		Collections.sort(nodeList, ObjectComparator.STRING);
+		// Collections.sort(nodeList, ObjectComparator.STRING);
 		int y = 0;
 		for (String nodeID : nodeList) {
 			this.lPresentComps.add(nodeID);
@@ -558,7 +559,8 @@ public class EpiTabSimulation extends EpiTabTools {
 	}
 
 	/**
-	 * Updates components check selection list, once the selected model to display is changed.
+	 * Updates components check selection list, once the selected model to display
+	 * is changed.
 	 * 
 	 * @param modelNames
 	 */
@@ -571,15 +573,15 @@ public class EpiTabSimulation extends EpiTabTools {
 		for (String modelName : modelNames) {
 			lModels.add(Project.getInstance().getProjectFeatures().getModel(modelName));
 		}
-		
+
 		List<NodeInfo> lInternal = new ArrayList<NodeInfo>(
 				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, false));
-		
+
 		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
 				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
-		
+
 		this.lPresentComps = new ArrayList<String>();
-		
+
 		Set<String> sInternalNodeIDs = new HashSet<String>();
 		Set<String> sInputNodeIDs = new HashSet<String>();
 		Set<String> sCommonNodeIDs = new HashSet<String>();
@@ -595,14 +597,14 @@ public class EpiTabSimulation extends EpiTabTools {
 				sInputNodeIDs.add(node.getNodeID());
 			}
 		}
-		
+
 		if (!sCommonNodeIDs.isEmpty())
 			this.setComponentTypeList(sCommonNodeIDs, "Internal/Input Components");
 		if (!sInternalNodeIDs.isEmpty())
 			this.setComponentTypeList(sInternalNodeIDs, "Internal Components");
 		if (!sInputNodeIDs.isEmpty())
 			this.setComponentTypeList(sInputNodeIDs, "Input Components");
-		
+
 		this.visualGridSimulation.paintComponent(this.visualGridSimulation.getGraphics());
 		this.jpLCCenter.revalidate();
 		this.jpLCCenter.repaint();
@@ -638,15 +640,16 @@ public class EpiTabSimulation extends EpiTabTools {
 			jtp.setHighlighter(null);
 			jpNorth.add(jtp, BorderLayout.PAGE_START);
 			this.jbRestart.setBackground(Color.RED);
-//			JButton jbRestart = ButtonFactory.getNoMargins("Restart");
-//			jbRestart.setToolTipText("Restart the simulation with recently applied definitions");
-//			jbRestart.addActionListener(new ActionListener() {
-//				@Override
-//				public void actionPerformed(ActionEvent e) {
-//					restart();
-//				}
-//			});
-//			jpNorth.add(jbRestart, BorderLayout.PAGE_END);
+			// JButton jbRestart = ButtonFactory.getNoMargins("Restart");
+			// jbRestart.setToolTipText("Restart the simulation with recently applied
+			// definitions");
+			// jbRestart.addActionListener(new ActionListener() {
+			// @Override
+			// public void actionPerformed(ActionEvent e) {
+			// restart();
+			// }
+			// });
+			// jpNorth.add(jbRestart, BorderLayout.PAGE_END);
 		} else {
 			for (int i = 0; i < this.jpVisualGrid.getComponentCount(); i++) {
 				Component c = this.jpVisualGrid.getComponent(i);

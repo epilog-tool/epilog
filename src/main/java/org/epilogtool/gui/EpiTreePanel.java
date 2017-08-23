@@ -19,6 +19,7 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.gui.menu.EpiTreePopupMenu;
 import org.epilogtool.gui.tab.EpiTab;
@@ -39,7 +40,7 @@ public class EpiTreePanel extends JPanel {
 		this.popupmenu = new EpiTreePopupMenu();
 
 		this.setLayout(new BorderLayout());
-		this.add(EpilogGUIFactory.getJLabelBold("Epithelia:"), BorderLayout.PAGE_START);
+		this.add(EpiLogGUIFactory.getJLabelBold(Txt.get("s_EPITREE_PANEL_TITLE")), BorderLayout.PAGE_START);
 		this.scrollTree = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		this.add(this.scrollTree, BorderLayout.CENTER);
@@ -193,7 +194,7 @@ public class EpiTreePanel extends JPanel {
 			DefaultMutableTreeNode cd = new DefaultMutableTreeNode(EpiTab.TAB_CELLDIVISION);
 			epiNode.add(cd);
 		}
-		
+
 		this.epiTree.setRootVisible(false);
 		DefaultTreeModel model = (DefaultTreeModel) this.epiTree.getModel();
 		model.reload();
