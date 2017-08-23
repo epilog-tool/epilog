@@ -10,12 +10,13 @@ import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
 import org.epilogtool.OptionStore;
+import org.epilogtool.common.Txt;
 import org.epilogtool.gui.EpiGUI;
 import org.epilogtool.gui.GUIInfo;
 
 public class FileMenu {
 	public static JMenu getMenu() {
-		JMenu menu = new JMenu("File");
+		JMenu menu = new JMenu(Txt.get("s_MENU_FILE"));
 		menu.setMnemonic(KeyEvent.VK_F);
 
 		menu.add(new NewProjAction());
@@ -43,8 +44,8 @@ class NewProjAction extends AbstractAction {
 	private static final long serialVersionUID = 1728730440633848251L;
 
 	public NewProjAction() {
-		super("New Project");
-		putValue(SHORT_DESCRIPTION, "New Project");
+		super(Txt.get("s_MENU_NEW_PROJ"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_NEW_PROJ"));
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, GUIInfo.MASK));
 	}
 
@@ -53,7 +54,7 @@ class NewProjAction extends AbstractAction {
 		try {
 			EpiGUI.getInstance().newProject();
 		} catch (IOException e1) {
-			EpiGUI.getInstance().userMessageError("You have selected an invalid SBML file!", "New project");
+			EpiGUI.getInstance().userMessageError("You have selected an invalid SBML file!", Txt.get("s_MENU_NEW_PROJ"));
 		}
 	}
 }
@@ -63,8 +64,8 @@ class LoadProjAction extends AbstractAction {
 	private final String filename;
 
 	public LoadProjAction() {
-		super("Load Project");
-		putValue(SHORT_DESCRIPTION, "Load Project");
+		super(Txt.get("s_MENU_LOAD_PROJ"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_LOAD_PROJ"));
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, GUIInfo.MASK));
 		this.filename = null;
 	}
@@ -83,7 +84,7 @@ class LoadProjAction extends AbstractAction {
 				EpiGUI.getInstance().loadPEPS(this.filename);
 			}
 		} catch (Exception e1) {
-			EpiGUI.getInstance().userMessageError("Invalid project (PEPS) file!", "Load project");
+			EpiGUI.getInstance().userMessageError("Invalid project (PEPS) file!", Txt.get("s_MENU_LOAD_PROJ"));
 		}
 	}
 }
@@ -112,8 +113,8 @@ class SaveAction extends AbstractAction {
 	private static final long serialVersionUID = -2274417985854368549L;
 
 	public SaveAction() {
-		super("Save");
-		putValue(SHORT_DESCRIPTION, "Save");
+		super(Txt.get("s_MENU_SAVE"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_SAVE"));
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, GUIInfo.MASK));
 	}
 
@@ -122,7 +123,7 @@ class SaveAction extends AbstractAction {
 		try {
 			EpiGUI.getInstance().savePEPS();
 		} catch (IOException e1) {
-			EpiGUI.getInstance().userMessageError("Could not save PEPS file", "Save");
+			EpiGUI.getInstance().userMessageError(Txt.get("s_MENU_CANNOT_SAVE"), Txt.get("s_MENU_SAVE"));
 		}
 	}
 }
@@ -131,8 +132,8 @@ class SaveAsAction extends AbstractAction {
 	private static final long serialVersionUID = -2274417985854368549L;
 
 	public SaveAsAction() {
-		super("Save As");
-		putValue(SHORT_DESCRIPTION, "Save As");
+		super(Txt.get("s_MENU_SAVE_AS"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_SAVE_AS"));
 	}
 
 	@Override
@@ -140,7 +141,7 @@ class SaveAsAction extends AbstractAction {
 		try {
 			EpiGUI.getInstance().saveAsPEPS();
 		} catch (IOException e1) {
-			EpiGUI.getInstance().userMessageError("Could not save PEPS file", "Save As");
+			EpiGUI.getInstance().userMessageError(Txt.get("s_MENU_CANNOT_SAVE"), Txt.get("s_MENU_SAVE_AS"));
 		}
 	}
 }
@@ -149,8 +150,8 @@ class EditPrefsAction extends AbstractAction {
 	private static final long serialVersionUID = -2767709789639816800L;
 
 	public EditPrefsAction() {
-		super("Edit Preferences");
-		putValue(SHORT_DESCRIPTION, "Edit Preferences");
+		super(Txt.get("s_EDIT_PREFS"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_EDIT_PREFS"));
 	}
 
 	@Override
@@ -163,8 +164,8 @@ class QuitAction extends AbstractAction {
 	private static final long serialVersionUID = 1728730440633848251L;
 
 	public QuitAction() {
-		super("Quit");
-		putValue(SHORT_DESCRIPTION, "Quit");
+		super(Txt.get("s_MENU_QUIT"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_QUIT"));
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Q, GUIInfo.MASK));
 	}
 

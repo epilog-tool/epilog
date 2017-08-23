@@ -16,7 +16,7 @@ import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.colomoto.logicalmodel.tool.simulation.updater.PriorityClasses;
 import org.colomoto.logicalmodel.tool.simulation.updater.PriorityUpdater;
 import org.epilogtool.common.RandCentral;
-import org.epilogtool.common.RandomSeedType;
+import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
@@ -56,7 +56,7 @@ public class Simulation {
 	 */
 	public Simulation(Epithelium e) {
 		this.epithelium = e;
-		if (this.epithelium.getUpdateSchemeInter().getRandomSeedType().equals(RandomSeedType.RANDOM)) {
+		if (this.epithelium.getUpdateSchemeInter().getRandomSeedType().equals(EnumRandomSeed.RANDOM)) {
 			this.random = RandCentral.getInstance().getNewGenerator();
 		} else {
 			this.random = RandCentral.getInstance()

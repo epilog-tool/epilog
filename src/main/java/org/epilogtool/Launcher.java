@@ -13,6 +13,7 @@ import org.epilogtool.gui.EpiGUI;
 import org.epilogtool.io.FileIO;
 import org.epilogtool.project.Project;
 import org.epilogtool.project.Simulation;
+import org.epilogtool.common.Txt;
 
 import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
@@ -23,20 +24,18 @@ import com.martiansoftware.jsap.SimpleJSAP;
 import com.martiansoftware.jsap.Switch;
 
 public class Launcher {
-	
+
 	private static double MIN_JAVA_VERSION = 1.7;
 
 	/**
 	 * @param args
 	 * @throws Exception
 	 */
-	public static void main(String[] args) throws IOException,
-			InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException, SecurityException, ClassNotFoundException {
+	public static void main(String[] args)
+			throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		SimpleJSAP jsap = null;
 		JSAPResult jsapResult = null;
-	
 
 		// Default values
 		int maxiter = 10;
@@ -46,23 +45,17 @@ public class Launcher {
 		boolean dev = false;
 
 		try {
-			jsap = new SimpleJSAP(
-					Launcher.class.getName(),
+			jsap = new SimpleJSAP(Launcher.class.getName(),
 					"EpiLog is a tool which makes use of LogicalModel to implement "
 							+ "a cellular automata, defining a convenient framework for the "
 							+ "qualitative modelling of epithelium pattern formation.",
 					new Parameter[] {
-							new FlaggedOption("max-iter", JSAP.INTEGER_PARSER,
-									"" + maxiter, JSAP.NOT_REQUIRED, 'i',
+							new FlaggedOption("max-iter", JSAP.INTEGER_PARSER, "" + maxiter, JSAP.NOT_REQUIRED, 'i',
 									"max-iter", "Maximum number of iterations."),
-							new Switch("cmd", JSAP.NO_SHORTFLAG, "cmd"),
-							new Switch("dev", JSAP.NO_SHORTFLAG, "dev"),
-							new FlaggedOption("seed", JSAP.LONG_PARSER,
-									"" + seed, JSAP.NOT_REQUIRED,
-									JSAP.NO_SHORTFLAG, "seed",
-									"Random generator seed number."),
-							new FlaggedOption("peps", JSAP.STRING_PARSER,
-									pepsFile, JSAP.NOT_REQUIRED,
+							new Switch("cmd", JSAP.NO_SHORTFLAG, "cmd"), new Switch("dev", JSAP.NO_SHORTFLAG, "dev"),
+							new FlaggedOption("seed", JSAP.LONG_PARSER, "" + seed, JSAP.NOT_REQUIRED, JSAP.NO_SHORTFLAG,
+									"seed", "Random generator seed number."),
+							new FlaggedOption("peps", JSAP.STRING_PARSER, pepsFile, JSAP.NOT_REQUIRED,
 									JSAP.NO_SHORTFLAG, "peps",
 									"PEPS (Project of Epithelium Patterning Simulation) file location."), });
 			jsapResult = jsap.parse(args);
@@ -81,24 +74,24 @@ public class Launcher {
 
 		// Check Java version
 		checkJavaVersion(bCMD);
-		
+
 		// Check Number Generator Seed number
 		// FIXME: Command line to be discontinued
-//		if (seed != -1) {
-//			RandCentral.getInstance().setSeed(seed);
-//		}
-		
+		// if (seed != -1) {
+		// RandCentral.getInstance().setSeed(seed);
+		// }
+
 		if (bCMD) {
 			// Command line
 			if (pepsFile != null) {
 				Launcher.commandLine(pepsFile, maxiter);
 			} else {
-				System.err
-						.println("Epilog needs a PEPS file when called non-gui mode.");
+				System.err.println("EpiLog needs a PEPS file when called non-gui mode.");
 			}
 		} else {
 			// GUI
 			try {
+				Txt.push("org.epilogtool.txt");
 				OptionStore.init(Launcher.class.getPackage().getName());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -114,11 +107,11 @@ public class Launcher {
 			}
 		}
 	}
-	
+
 	private static void checkJavaVersion(boolean cmd) {
 		Double version = Double.parseDouble(Runtime.class.getPackage().getSpecificationVersion());
 		if (version < MIN_JAVA_VERSION) {
-			String msg = "You're using Java version " + version + ". Epilog needs Java version >= 1.7";
+			String msg = "You're using Java version " + version + ". EpiLog needs Java version >= 1.7";
 			if (cmd) {
 				System.err.println(msg);
 			} else {
@@ -130,9 +123,8 @@ public class Launcher {
 	}
 
 	private static void commandLine(String pepsFile, int maxiter)
-			throws IOException, InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException, SecurityException, ClassNotFoundException {
+			throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		FileIO.loadPEPS(pepsFile);
 
 		List<Epithelium> epiList = Project.getInstance().getEpitheliumList();
@@ -148,8 +140,7 @@ public class Launcher {
 			nextGrid = simulator.nextStepGrid();
 			System.out.println("Grid step " + i + "\n" + nextGrid);
 			if (i > maxiter) {
-				System.out
-						.println("Reached maximum number of iterations! Exiting...");
+				System.out.println("Reached maximum number of iterations! Exiting...");
 				System.exit(0);
 			}
 		} while (!simulator.isStableAt(i));

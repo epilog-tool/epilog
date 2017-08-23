@@ -1,6 +1,6 @@
 package org.epilogtool.core;
 
-import org.epilogtool.common.RandomSeedType;
+import org.epilogtool.common.EnumRandomSeed;
 
 public class EpitheliumUpdateSchemeInter {
 	public static float DEFAULT_ALPHA = (float) 1.0;
@@ -8,10 +8,10 @@ public class EpitheliumUpdateSchemeInter {
 
 	private float alphaAsyncParam;
 	private UpdateCells updateCells;
-	private RandomSeedType randomSeedType;
+	private EnumRandomSeed randomSeedType;
 	private int randomSeed;
 
-	public EpitheliumUpdateSchemeInter(float alpha, UpdateCells updateCells, RandomSeedType randomSeedType,
+	public EpitheliumUpdateSchemeInter(float alpha, UpdateCells updateCells, EnumRandomSeed randomSeedType,
 			int randomSeed) {
 		this.alphaAsyncParam = alpha;
 		this.updateCells = updateCells;
@@ -43,11 +43,11 @@ public class EpitheliumUpdateSchemeInter {
 	}
 
 	// RandomSeedType methods
-	public void setRandomSeedType(RandomSeedType seedType) {
+	public void setRandomSeedType(EnumRandomSeed seedType) {
 		this.randomSeedType = seedType;
 	}
 
-	public RandomSeedType getRandomSeedType() {
+	public EnumRandomSeed getRandomSeedType() {
 		return this.randomSeedType;
 	}
 

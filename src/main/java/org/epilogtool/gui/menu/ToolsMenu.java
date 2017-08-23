@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 
+import org.epilogtool.common.Txt;
 import org.epilogtool.gui.EpiGUI;
 
 /**
@@ -15,7 +16,7 @@ import org.epilogtool.gui.EpiGUI;
  */
 public class ToolsMenu {
 	public static JMenu getMenu() {
-		JMenu menu = new JMenu("Tools");
+		JMenu menu = new JMenu(Txt.get("s_MENU_TOOLS"));
 		menu.setMnemonic(KeyEvent.VK_T);
 
 		menu.add(new SimulationAction());
@@ -28,8 +29,8 @@ class SimulationAction extends AbstractAction {
 	private static final long serialVersionUID = 1728730440633848251L;
 
 	public SimulationAction() {
-		super("Simulation");
-		putValue(SHORT_DESCRIPTION, "Simulation");
+		super(Txt.get("s_MENU_TOOLS_SIMUL"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_TOOLS_SIMUL"));
 		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
 		// FrameActionManager.MASK));
 	}

@@ -22,7 +22,7 @@ import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.epilogtool.common.RandCentral;
-import org.epilogtool.common.RandomSeedType;
+import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.Web;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
@@ -48,7 +48,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	private JLabel jAlphaLabelValue;
 
 	private JComboBox<UpdateCells> jcbUpdateCells;
-	private JComboBox<RandomSeedType> jcbRandomSeedType;
+	private JComboBox<EnumRandomSeed> jcbRandomSeedType;
 
 	public EpiTabEpithelialUpdateScheme(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
 			TabChangeNotifyProj tabChanged) {
@@ -94,16 +94,16 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 
 		// Random seed
 		JPanel jpRandomSeedType = new JPanel(new BorderLayout());
-		jpRandomSeedType.setBorder(BorderFactory.createTitledBorder(RandomSeedType.title()));
-		this.jcbRandomSeedType = new JComboWideBox<RandomSeedType>(
-				new RandomSeedType[] { RandomSeedType.FIXED, RandomSeedType.RANDOM });
+		jpRandomSeedType.setBorder(BorderFactory.createTitledBorder(EnumRandomSeed.title()));
+		this.jcbRandomSeedType = new JComboWideBox<EnumRandomSeed>(
+				new EnumRandomSeed[] { EnumRandomSeed.FIXED, EnumRandomSeed.RANDOM });
 		this.updateJCBRandomSeedType();
 		this.jcbRandomSeedType.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
-				JComboBox<RandomSeedType> jcRandomSeedType = (JComboBox<RandomSeedType>) e.getSource();
-				updateSchemeInter.setRandomSeedType((RandomSeedType) jcRandomSeedType.getSelectedItem());
+				JComboBox<EnumRandomSeed> jcRandomSeedType = (JComboBox<EnumRandomSeed>) e.getSource();
+				updateSchemeInter.setRandomSeedType((EnumRandomSeed) jcRandomSeedType.getSelectedItem());
 				int seed = RandCentral.getInstance().nextInt();
 				updateSchemeInter.setRandomSeed(seed >> 1 + seed);
 				tpc.setChanged();
@@ -128,7 +128,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	}
 
 	private void updateJCBRandomSeedType() {
-		RandomSeedType seedType = this.updateSchemeInter.getRandomSeedType();
+		EnumRandomSeed seedType = this.updateSchemeInter.getRandomSeedType();
 		for (int i = 0; i < this.jcbRandomSeedType.getItemCount(); i++) {
 			if (seedType != null && seedType.equals(this.jcbRandomSeedType.getItemAt(i)))
 				this.jcbRandomSeedType.setSelectedIndex(i);

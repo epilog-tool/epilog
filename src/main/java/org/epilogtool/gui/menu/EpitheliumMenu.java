@@ -6,11 +6,12 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 
+import org.epilogtool.common.Txt;
 import org.epilogtool.gui.EpiGUI;
 
 public class EpitheliumMenu {
 	public static JMenu getMenu() {
-		JMenu menu = new JMenu("Epithelium");
+		JMenu menu = new JMenu(Txt.get("s_MENU_EPI"));
 		menu.setMnemonic(KeyEvent.VK_E);
 
 		menu.add(new NewEpiAction());
@@ -26,8 +27,8 @@ class NewEpiAction extends AbstractAction {
 	private static final long serialVersionUID = 1728730440633848251L;
 
 	public NewEpiAction() {
-		super("New");
-		putValue(SHORT_DESCRIPTION, "New");
+		super(Txt.get("s_MENU_EPI_NEW"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_EPI_NEW"));
 		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
 		// FrameActionManager.MASK));
 	}
@@ -47,8 +48,8 @@ class DeleteEpiAction extends AbstractAction {
 	private static final long serialVersionUID = 1728730440633848251L;
 
 	public DeleteEpiAction() {
-		super("Delete");
-		putValue(SHORT_DESCRIPTION, "Delete");
+		super(Txt.get("s_MENU_EPI_DEL"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_EPI_DEL"));
 		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
 		// FrameActionManager.MASK));
 	}
@@ -63,8 +64,8 @@ class EditEpiAction extends AbstractAction {
 	private static final long serialVersionUID = 1728730440633848251L;
 
 	public EditEpiAction() {
-		super("Edit");
-		putValue(SHORT_DESCRIPTION, "Edit");
+		super(Txt.get("s_MENU_EPI_EDIT"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_EPI_EDIT"));
 		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
 		// FrameActionManager.MASK));
 	}
@@ -84,8 +85,8 @@ class CloneEpiAction extends AbstractAction {
 	private static final long serialVersionUID = 1728730440633848251L;
 
 	public CloneEpiAction() {
-		super("Clone");
-		putValue(SHORT_DESCRIPTION, "Clone");
+		super(Txt.get("s_MENU_EPI_CLONE"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_EPI_CLONE"));
 		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
 		// FrameActionManager.MASK));
 	}

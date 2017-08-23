@@ -22,7 +22,7 @@ import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
 import org.epilogtool.OptionStore;
-import org.epilogtool.common.RandomSeedType;
+import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.EmptyModel;
@@ -51,7 +51,7 @@ public class Parser {
 		Map<String, String> modelKey2Name = new HashMap<String, String>();
 		Epithelium currEpi = null;
 		RollOver rollover = null;
-		RandomSeedType randomSeedType = null;
+		EnumRandomSeed randomSeedType = null;
 		int randomSeed = 0;
 
 		String x = null;
@@ -89,7 +89,7 @@ public class Parser {
 				currEpi = null;
 				rollover = RollOver.NONE;
 				randomSeed = 0;
-				randomSeedType = RandomSeedType.RANDOM;
+				randomSeedType = EnumRandomSeed.RANDOM;
 			}
 
 			if (line.startsWith("GD")) {
@@ -110,8 +110,8 @@ public class Parser {
 			// Random Seed
 			if (line.startsWith("SD")) {
 				saTmp = line.split("\\s+");
-				RandomSeedType rsType = RandomSeedType.string2RandomSeed(saTmp[1]);
-				if (rsType != null && rsType.equals(RandomSeedType.FIXED)) {
+				EnumRandomSeed rsType = EnumRandomSeed.string2RandomSeed(saTmp[1]);
+				if (rsType != null && rsType.equals(EnumRandomSeed.FIXED)) {
 					if (saTmp.length == 3) {
 						randomSeedType = rsType;
 						randomSeed = Integer.parseInt(saTmp[2]);
@@ -295,9 +295,9 @@ public class Parser {
 		w.println("RL " + epi.getEpitheliumGrid().getTopology().getRollOver());
 
 		// Random Seed
-		RandomSeedType rsType = epi.getUpdateSchemeInter().getRandomSeedType();
+		EnumRandomSeed rsType = epi.getUpdateSchemeInter().getRandomSeedType();
 		w.print("SD " + rsType.toString());
-		if (rsType.equals(RandomSeedType.FIXED)) {
+		if (rsType.equals(EnumRandomSeed.FIXED)) {
 			w.print(" " + epi.getUpdateSchemeInter().getRandomSeed());
 		}
 		w.println();

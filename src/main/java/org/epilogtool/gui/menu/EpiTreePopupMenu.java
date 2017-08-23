@@ -6,13 +6,14 @@ import java.awt.event.ActionListener;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import org.epilogtool.common.Txt;
 import org.epilogtool.gui.EpiGUI;
 
 public class EpiTreePopupMenu extends JPopupMenu {
 	private static final long serialVersionUID = 1483544836367897496L;
 
 	public EpiTreePopupMenu() {
-		JMenuItem newepi = new JMenuItem("New");
+		JMenuItem newepi = new JMenuItem(Txt.get("s_MENU_EPI_NEW"));
 		newepi.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -26,7 +27,7 @@ public class EpiTreePopupMenu extends JPopupMenu {
 		});
 		this.add(newepi);
 
-		JMenuItem delete = new JMenuItem("Delete");
+		JMenuItem delete = new JMenuItem(Txt.get("s_MENU_EPI_DEL"));
 		delete.addActionListener(new ActionListener() {
 
 			@Override
@@ -36,8 +37,8 @@ public class EpiTreePopupMenu extends JPopupMenu {
 		});
 		this.add(delete);
 
-		JMenuItem rename = new JMenuItem("Edit");
-		rename.addActionListener(new ActionListener() {
+		JMenuItem edit = new JMenuItem(Txt.get("s_MENU_EPI_EDIT"));
+		edit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -48,9 +49,9 @@ public class EpiTreePopupMenu extends JPopupMenu {
 				}
 			}
 		});
-		this.add(rename);
+		this.add(edit);
 
-		JMenuItem clone = new JMenuItem("Clone");
+		JMenuItem clone = new JMenuItem(Txt.get("s_MENU_EPI_CLONE"));
 		clone.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

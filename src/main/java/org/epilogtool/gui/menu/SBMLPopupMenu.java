@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import org.epilogtool.common.Txt;
 import org.epilogtool.gui.EpiGUI;
 
 /**
@@ -34,7 +35,7 @@ public class SBMLPopupMenu extends JPopupMenu {
 	public SBMLPopupMenu() {
 		
 		// LOAD SBML
-		this.load = new JMenuItem("Load model (SBML)");
+		this.load = new JMenuItem(Txt.get("s_MENU_SBML_LOAD"));
 		this.load.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -49,7 +50,7 @@ public class SBMLPopupMenu extends JPopupMenu {
 		this.add(this.load);
 
 		// Rename SBML
-		this.rename = new JMenuItem("Rename model (SBML)");
+		this.rename = new JMenuItem(Txt.get("s_MENU_SBML_RENAME"));
 		this.rename.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -59,7 +60,7 @@ public class SBMLPopupMenu extends JPopupMenu {
 		this.add(this.rename);
 		
 		// Remove SBML
-		this.remove = new JMenuItem("Remove model (SBML)");
+		this.remove = new JMenuItem(Txt.get("s_MENU_SBML_REMOVE"));
 		this.remove.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -70,7 +71,7 @@ public class SBMLPopupMenu extends JPopupMenu {
 		
 		
 		// Save SBML
-		this.save = new JMenuItem("Save model (SBML)");
+		this.save = new JMenuItem(Txt.get("s_MENU_SBML_SAVE"));
 		this.save.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -85,7 +86,7 @@ public class SBMLPopupMenu extends JPopupMenu {
 		this.add(this.save);	
 		
 		// Replace SBML
-		this.replace = new JMenuItem("Replace model (SBML)");
+		this.replace = new JMenuItem(Txt.get("s_MENU_SBML_REPLACE"));
 		this.replace.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

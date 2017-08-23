@@ -11,15 +11,16 @@ import javax.swing.KeyStroke;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
+import org.epilogtool.common.Txt;
 import org.epilogtool.gui.EpiGUI;
 import org.epilogtool.gui.GUIInfo;
 
 public class WindowMenu {
 	public static JMenu getMenu() {
-		JMenu menu = new JMenu("Window");
+		JMenu menu = new JMenu(Txt.get("s_MENU_WINDOW"));
 		menu.setMnemonic(KeyEvent.VK_W);
 
-		JMenu closeSubMenu = new JMenu("Close Tabs");
+		JMenu closeSubMenu = new JMenu(Txt.get("s_MENU_WINDOW_CLOSE"));
 		closeSubMenu.add(new AllTabsAction());
 
 		closeSubMenu.add(new JSeparator());
@@ -97,8 +98,8 @@ class ActiveTabAction extends AbstractAction {
 	private static final long serialVersionUID = 7296937929263564402L;
 
 	public ActiveTabAction() {
-		super("Active");
-		putValue(SHORT_DESCRIPTION, "Active");
+		super(Txt.get("s_MENU_WINDOW_ACTIVE"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_WINDOW_ACTIVE"));
 		putValue(ACCELERATOR_KEY,
 				KeyStroke.getKeyStroke(KeyEvent.VK_W, GUIInfo.MASK));
 	}
@@ -113,8 +114,8 @@ class OtherTabsAction extends AbstractAction {
 	private static final long serialVersionUID = 8709816950791190172L;
 
 	public OtherTabsAction() {
-		super("Other than active");
-		putValue(SHORT_DESCRIPTION, "Other than active");
+		super(Txt.get("s_MENU_WINDOW_O_ACTIVE"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_WINDOW_O_ACTIVE"));
 		putValue(
 				ACCELERATOR_KEY,
 				KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.SHIFT_MASK
@@ -131,8 +132,8 @@ class EpiTabsAction extends AbstractAction {
 	private static final long serialVersionUID = -7168470080632696018L;
 
 	public EpiTabsAction() {
-		super("Selected Epithelium tabs");
-		putValue(SHORT_DESCRIPTION, "Selected Epithelium");
+		super(Txt.get("s_MENU_WINDOW_SEL_EPI"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_WINDOW_SEL_EPI"));
 	}
 
 	@Override
@@ -145,8 +146,8 @@ class OtherEpisAction extends AbstractAction {
 	private static final long serialVersionUID = -509170329753215350L;
 
 	public OtherEpisAction() {
-		super("Other Epithelia tabs");
-		putValue(SHORT_DESCRIPTION, "Other Epithelia tabs");
+		super(Txt.get("s_MENU_WINDOW_O_SEL_EPI"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_WINDOW_O_SEL_EPI"));
 	}
 
 	@Override

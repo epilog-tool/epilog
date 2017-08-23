@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.color.ColorUtils;
@@ -28,7 +29,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 	private static final long serialVersionUID = 1877338344309723137L;
 
 	// private final int COL_SIZE = 20;
-	private final String ROLLOVER_WARNING = "This dimension must be even due to rollover selection!";
+	private final String ROLLOVER_WARNING = Txt.get("s_ROLLOVER_WARNING");
 
 	private JTextField jtfEpiName;
 	private JTextField jtfWidth;
@@ -60,7 +61,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 		// Width JLabel
 		c.gridx = 0;
 		c.gridy = 0;
-		this.add(new JLabel("Width"), c);
+		this.add(new JLabel(Txt.get("s_Width")), c);
 		// Width JTextField
 		this.jtfWidth = new JTextField("" + epi.getX());
 		this.jtfWidth.addKeyListener(new KeyListener() {
@@ -84,7 +85,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 		// Height JLabel
 		c.gridx = 0;
 		c.gridy = 1;
-		this.add(new JLabel("Height"), c);
+		this.add(new JLabel(Txt.get("s_Height")), c);
 
 		// Height JTextField
 		this.jtfHeight = new JTextField("" + epi.getY());
@@ -109,7 +110,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 		// Name JLabel
 		c.gridx = 0;
 		c.gridy = 2;
-		this.add(new JLabel("Name"), c);
+		this.add(new JLabel(Txt.get("s_Name")), c);
 
 		// Name JTextField
 		this.jtfEpiName = new JTextField(epi.getName());
@@ -134,7 +135,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 		// Rollover JLabel
 		c.gridx = 0;
 		c.gridy = 4;
-		this.add(new JLabel("Borders"), c);
+		this.add(new JLabel(Txt.get("s_Borders")), c);
 
 		// Rollover JComboBox
 		this.jcbRollover = new JComboBox<RollOver>(
@@ -154,7 +155,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 		// Topology JLabel
 		c.gridx = 0;
 		c.gridy = 5;
-		this.add(new JLabel("Topology"), c);
+		this.add(new JLabel(Txt.get("s_Topology")), c);
 
 		// Topology JComboBox
 		int iSelected = 0;
@@ -174,7 +175,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 
 		// Bottom Panel
 		JPanel bottom = new JPanel(new FlowLayout());
-		this.buttonCancel = new JButton("Cancel");
+		this.buttonCancel = new JButton(Txt.get("s_Cancel"));
 		this.buttonCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -183,7 +184,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 		});
 		bottom.add(this.buttonCancel);
 
-		this.buttonOK = new JButton("OK");
+		this.buttonOK = new JButton(Txt.get("s_OK"));
 		this.buttonOK.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

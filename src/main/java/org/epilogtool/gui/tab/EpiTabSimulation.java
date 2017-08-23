@@ -45,7 +45,7 @@ import org.epilogtool.gui.EpiGUI;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.SimulationEpiClone;
 import org.epilogtool.gui.color.ColorUtils;
-import org.epilogtool.gui.dialog.GridNodePercent;
+import org.epilogtool.gui.dialog.EnumNodePercent;
 import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboCheckBox;
 import org.epilogtool.gui.widgets.VisualGridSimulation;
@@ -375,7 +375,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jbForward.setEnabled(true);
 		this.jbFastFwr.setEnabled(true);
 		String nodePercent = (String)OptionStore.getOption("PrefsNodePercent");
-		if (nodePercent != null && nodePercent.equals(GridNodePercent.YES.toString())) {
+		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			firstGrid.updateNodeValueCounts();
 		}
 		this.updateComponentList(this.jccbSBML.getSelectedItems());
@@ -399,7 +399,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jbForward.setEnabled(true);
 		this.jbFastFwr.setEnabled(true);
 		String nodePercent = (String)OptionStore.getOption("PrefsNodePercent");
-		if (nodePercent != null && nodePercent.equals(GridNodePercent.YES.toString())) {
+		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			prevGrid.updateNodeValueCounts();
 		}
 		this.updateComponentList(this.jccbSBML.getSelectedItems());
@@ -438,7 +438,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jbRewind.setEnabled(true);
 		this.jbBack.setEnabled(true);
 		String nodePercent = (String)OptionStore.getOption("PrefsNodePercent");
-		if (nodePercent != null && nodePercent.equals(GridNodePercent.YES.toString())) {
+		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			nextGrid.updateNodeValueCounts();
 		}
 		this.updateComponentList(this.jccbSBML.getSelectedItems());
@@ -467,7 +467,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jbRewind.setEnabled(true);
 		this.jbBack.setEnabled(true);
 		String nodePercent = (String)OptionStore.getOption("PrefsNodePercent");
-		if (nodePercent != null && nodePercent.equals(GridNodePercent.YES.toString())) {
+		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			nextGrid.updateNodeValueCounts();
 		}
 		this.updateComponentList(this.jccbSBML.getSelectedItems());
@@ -513,7 +513,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		jp.add(jbColor, gbc);
 		
 		String nodePercent = (String)OptionStore.getOption("PrefsNodePercent");
-		if (nodePercent != null && nodePercent.equals(GridNodePercent.YES.toString())) {
+		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			gbc.gridx = 2;
 			JLabel percentage = new JLabel(nextGrid.getPercentage(nodeID));
 			jp.add(percentage, gbc);

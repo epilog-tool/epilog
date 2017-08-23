@@ -42,7 +42,7 @@ import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
-import org.epilogtool.gui.dialog.GridNodePercent;
+import org.epilogtool.gui.dialog.EnumNodePercent;
 import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboCheckBox;
 
@@ -459,7 +459,7 @@ private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String n
 	jp.add(jbColor, gbc);
 	
 	String nodePercent = (String)OptionStore.getOption("PrefsNodePercent");
-	if (nodePercent != null && nodePercent.equals(GridNodePercent.YES.toString())) {
+	if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 		gbc.gridx = 2;
 		JLabel percentage = new JLabel(grid.getPercentage(nodeID));
 		jp.add(percentage, gbc);

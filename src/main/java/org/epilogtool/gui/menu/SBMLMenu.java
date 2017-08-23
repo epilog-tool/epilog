@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 
+import org.epilogtool.common.Txt;
 import org.epilogtool.gui.EpiGUI;
 
 /**
@@ -22,7 +23,7 @@ import org.epilogtool.gui.EpiGUI;
 
 public class SBMLMenu {
 	public static JMenu getMenu() {
-		JMenu menu = new JMenu("SBML");
+		JMenu menu = new JMenu(Txt.get("s_MENU_SBML"));
 		menu.setMnemonic(KeyEvent.VK_S);
 
 		menu.add(new LoadSBMLAction());
@@ -39,8 +40,8 @@ class LoadSBMLAction extends AbstractAction {
 	private static final long serialVersionUID = 8657096239401658327L;
 
 	public LoadSBMLAction() {
-		super("Load model (SBML)");
-		putValue(SHORT_DESCRIPTION, "Load SBML model from file");
+		super(Txt.get("s_MENU_SBML_LOAD"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_SBML_LOAD_LONG"));
 		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
 		// FrameActionManager.MASK));
 	}
@@ -61,8 +62,8 @@ class RenameSBMLAction extends AbstractAction {
 	private static final long serialVersionUID = -7400365619490423300L;
 
 	public RenameSBMLAction() {
-		super("Rename model (SBML)");
-		putValue(SHORT_DESCRIPTION, "Rename selected SBML model");
+		super(Txt.get("s_MENU_SBML_RENAME"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_SBML_RENAME_LONG"));
 		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
 		// FrameActionManager.MASK));
 	}
@@ -79,8 +80,8 @@ class RemoveSBMLAction extends AbstractAction {
 	private static final long serialVersionUID = -7400365619490423300L;
 
 	public RemoveSBMLAction() {
-		super("Remove model (SBML)");
-		putValue(SHORT_DESCRIPTION, "Remove selected SBML model");
+		super(Txt.get("s_MENU_SBML_REMOVE"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_SBML_REMOVE_LONG"));
 		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
 		// FrameActionManager.MASK));
 	}
@@ -95,8 +96,8 @@ class ExportSBMLAction extends AbstractAction {
 	private static final long serialVersionUID = -7400365619490423300L;
 
 	public ExportSBMLAction() {
-		super("Save model (SBML)");
-		putValue(SHORT_DESCRIPTION, "Save selected SBML model");
+		super(Txt.get("s_MENU_SBML_SAVE"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_SBML_SAVE_LONG"));
 		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
 		// FrameActionManager.MASK));
 	}
@@ -116,8 +117,8 @@ class ReplaceSBMLAction extends AbstractAction {
 	private static final long serialVersionUID = -7400365619490423300L;
 
 	public ReplaceSBMLAction() {
-		super("Replace model (SBML)");
-		putValue(SHORT_DESCRIPTION, "Replace selected SBML model");
+		super(Txt.get("s_MENU_SBML_REPLACE"));
+		putValue(SHORT_DESCRIPTION, Txt.get("s_MENU_SBML_REPLACE_LONG"));
 		// putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N,
 		// FrameActionManager.MASK));
 	}

@@ -19,8 +19,9 @@ import javax.swing.event.ListSelectionListener;
 import org.epilogtool.gui.menu.SBMLPopupMenu;
 
 /**
- * Container with the list of SBMLs. In this class  it is defined if the options in the menu bar are enabled,
- * the dimensions of the panel with the list of SBML, visual operations of loading, deleting and renaming SBML.
+ * Container with the list of SBMLs. In this class it is defined if the options
+ * in the menu bar are enabled, the dimensions of the panel with the list of
+ * SBML, visual operations of loading, deleting and renaming SBML.
  * 
  */
 public class ProjDescPanel extends JPanel {
@@ -49,8 +50,7 @@ public class ProjDescPanel extends JPanel {
 				JList l = (JList) e.getSource();
 				int index = l.locationToIndex(e.getPoint());
 				if (index > -1) {
-					l.setToolTipText(l.getModel().getElementAt(index)
-							.toString());
+					l.setToolTipText(l.getModel().getElementAt(index).toString());
 				}
 			}
 
@@ -97,10 +97,11 @@ public class ProjDescPanel extends JPanel {
 		this.add(scroll, BorderLayout.CENTER);
 	}
 
-	/**Updates the SBML Menu in the tool bar. 
-	 * At any time a new SBML can be loaded (always enabled); 
-	 * the options remove, rename or export are only enabled if there is at least one SBML model loaded
-	 * The user can replace a model if there are at-least 2 SBML models loaded.
+	/**
+	 * Updates the SBML Menu in the tool bar. At any time a new SBML can be loaded
+	 * (always enabled); the options remove, rename or export are only enabled if
+	 * there is at least one SBML model loaded The user can replace a model if there
+	 * are at-least 2 SBML models loaded.
 	 */
 	public void updateSBMLMenuItems() {
 		boolean hasModel = this.listSBMLs.getSelectionModel().getMinSelectionIndex() >= 0;
@@ -114,43 +115,39 @@ public class ProjDescPanel extends JPanel {
 		this.popupmenu.updateMenuItems(hasModel);
 	}
 
-	public void loadModel(String model) {
+	public void addModel(String model) {
 		if (model.isEmpty() || this.hasModel(model))
 			return;
-		((DefaultListModel<String>) this.listSBMLs.getModel())
-				.addElement(model);
+		((DefaultListModel<String>) this.listSBMLs.getModel()).addElement(model);
 	}
 
 	public void removeModel(String model) {
-		((DefaultListModel<String>) this.listSBMLs.getModel())
-				.removeElement(model);
+		((DefaultListModel<String>) this.listSBMLs.getModel()).removeElement(model);
 	}
-	
+
 	public void renameModel(String model, String newModel) {
-		
-		System.out.println("old Name " + model );
-		System.out.println("new Name " + newModel );
-		
-		
-		for (int index = 0; index<((DefaultListModel<String>) this.listSBMLs.getModel()).size(); index++) {
+
+		System.out.println("old Name " + model);
+		System.out.println("new Name " + newModel);
+
+		for (int index = 0; index < ((DefaultListModel<String>) this.listSBMLs.getModel()).size(); index++) {
 			if (this.listSBMLs.getModel().getElementAt(index).equals(model)) {
 				((DefaultListModel<String>) this.listSBMLs.getModel()).removeElement(model);
 				((DefaultListModel<String>) this.listSBMLs.getModel()).add(index, newModel);
 				break;
 			}
 		}
-		
-//		((DefaultListModel<String>) this.listSBMLs.getModel())
-//		.removeElement(model);
-//		((DefaultListModel<String>) this.listSBMLs.getModel())
-//		.addElement(newModel);
-		
+
+		// ((DefaultListModel<String>) this.listSBMLs.getModel())
+		// .removeElement(model);
+		// ((DefaultListModel<String>) this.listSBMLs.getModel())
+		// .addElement(newModel);
+
 		System.out.println(this.listSBMLs.getModel());
 	}
 
 	public boolean hasModel(String model) {
-		return ((DefaultListModel<String>) this.listSBMLs.getModel())
-				.contains(model);
+		return ((DefaultListModel<String>) this.listSBMLs.getModel()).contains(model);
 	}
 
 	public int countModels() {

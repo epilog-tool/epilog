@@ -15,12 +15,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.epilogtool.OptionStore;
+import org.epilogtool.common.Txt;
 
 public class DialogEditPreferences extends EscapableDialog {
 	private static final long serialVersionUID = 1877338344309723137L;
 
 	private JPanel panelSimulation;
-	private JComboBox<GridNodePercent> jcbGridNodePercent;
+	private JComboBox<EnumNodePercent> jcbGridNodePercent;
+	private JComboBox<EnumOrderNodes> jcbOrderedComponents;
 
 	private boolean bIsOK;
 
@@ -31,7 +33,7 @@ public class DialogEditPreferences extends EscapableDialog {
 		this.setLayout(new BorderLayout());
 
 		this.panelSimulation = new JPanel();
-		this.panelSimulation.setBorder(BorderFactory.createTitledBorder("Simulation Performance"));
+		this.panelSimulation.setBorder(BorderFactory.createTitledBorder(Txt.get("s_SIMUL_PERFORM")));
 		this.panelSimulation.setLayout(new GridBagLayout());
 		this.add(this.panelSimulation, BorderLayout.CENTER);
 
@@ -43,9 +45,9 @@ public class DialogEditPreferences extends EscapableDialog {
 		// Node percentage in grid
 		c.gridx = 0;
 		c.gridy = 0;
-		this.panelSimulation.add(new JLabel(GridNodePercent.title()), c);
-		this.jcbGridNodePercent = new JComboBox<GridNodePercent>(
-				new GridNodePercent[] { GridNodePercent.YES, GridNodePercent.NO });
+		this.panelSimulation.add(new JLabel(EnumNodePercent.title()), c);
+		this.jcbGridNodePercent = new JComboBox<EnumNodePercent>(
+				new EnumNodePercent[] { EnumNodePercent.YES, EnumNodePercent.NO });
 		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
 		for (int i = 0; i < this.jcbGridNodePercent.getItemCount(); i++) {
 			if (nodePercent != null && nodePercent.equals(this.jcbGridNodePercent.getItemAt(i).toString()))
@@ -54,6 +56,21 @@ public class DialogEditPreferences extends EscapableDialog {
 		c.gridx = 1;
 		c.gridy = 0;
 		this.panelSimulation.add(this.jcbGridNodePercent, c);
+
+		// Alphabetical Ordered Nodes
+		c.gridx = 0;
+		c.gridy = 1;
+		this.panelSimulation.add(new JLabel(EnumOrderNodes.title()), c);
+		this.jcbOrderedComponents = new JComboBox<EnumOrderNodes>(
+				new EnumOrderNodes[] { EnumOrderNodes.ORIGINAL, EnumOrderNodes.ALPHA });
+		String alphaOrder = (String) OptionStore.getOption("PrefsAlphaOrderNodes");
+		for (int i = 0; i < this.jcbOrderedComponents.getItemCount(); i++) {
+			if (alphaOrder != null && alphaOrder.equals(this.jcbOrderedComponents.getItemAt(i).toString()))
+				this.jcbOrderedComponents.setSelectedIndex(i);
+		}
+		c.gridx = 1;
+		c.gridy = 1;
+		this.panelSimulation.add(this.jcbOrderedComponents, c);
 
 		// Bottom Panel
 		JPanel bottom = new JPanel(new FlowLayout());
@@ -86,8 +103,12 @@ public class DialogEditPreferences extends EscapableDialog {
 		return this.bIsOK;
 	}
 
-	public String getNodePercent() {
-		return ((GridNodePercent) this.jcbGridNodePercent.getSelectedItem()).toString();
+	public String getOptionNodePercent() {
+		return ((EnumNodePercent) this.jcbGridNodePercent.getSelectedItem()).toString();
+	}
+
+	public String getOptionOrderedNodes() {
+		return ((EnumOrderNodes) this.jcbOrderedComponents.getSelectedItem()).toString();
 	}
 
 	@Override

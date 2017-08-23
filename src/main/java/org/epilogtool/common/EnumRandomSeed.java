@@ -1,11 +1,11 @@
 package org.epilogtool.common;
 
-public enum RandomSeedType {
+public enum EnumRandomSeed {
 	FIXED("Fixed"), RANDOM("Random");
 
 	private String description;
 
-	private RandomSeedType(String desc) {
+	private EnumRandomSeed(String desc) {
 		this.description = desc;
 	}
 
@@ -17,7 +17,7 @@ public enum RandomSeedType {
 		return "Simulation number generator seed";
 	}
 
-	public static RandomSeedType string2RandomSeed(String str) {
+	public static EnumRandomSeed string2RandomSeed(String str) {
 		if (str.equals(FIXED.toString()))
 			return FIXED;
 		else if (str.equals(RANDOM.toString()))

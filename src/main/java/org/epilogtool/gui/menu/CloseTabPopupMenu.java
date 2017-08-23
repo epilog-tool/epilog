@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import org.epilogtool.common.Txt;
 import org.epilogtool.gui.EpiGUI;
 
 public class CloseTabPopupMenu extends JPopupMenu {
@@ -20,7 +21,7 @@ public class CloseTabPopupMenu extends JPopupMenu {
 		
 		this.addSeparator();
 		
-		JMenuItem activeTab = new JMenuItem("Active tab");
+		JMenuItem activeTab = new JMenuItem(Txt.get("s_MENU_WINDOW_ACTIVE"));
 		activeTab.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -33,7 +34,7 @@ public class CloseTabPopupMenu extends JPopupMenu {
 		});
 		this.add(activeTab);
 
-		JMenuItem otherTabs = new JMenuItem("Other tabs");
+		JMenuItem otherTabs = new JMenuItem(Txt.get("s_MENU_WINDOW_O_ACTIVE"));
 		otherTabs.addActionListener(new ActionListener() {
 
 			@Override
@@ -43,7 +44,7 @@ public class CloseTabPopupMenu extends JPopupMenu {
 		});
 		this.add(otherTabs);
 
-		JMenuItem closeAll = new JMenuItem("All tabs");
+		JMenuItem closeAll = new JMenuItem(Txt.get("s_MENU_WINDOW_ALL"));
 		closeAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -54,7 +55,7 @@ public class CloseTabPopupMenu extends JPopupMenu {
 
 		this.addSeparator();
 		
-		JMenuItem closeEpiTabs = new JMenuItem("Epithelia tabs");
+		JMenuItem closeEpiTabs = new JMenuItem(Txt.get("s_MENU_WINDOW_SEL_EPI"));
 		closeEpiTabs.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -63,8 +64,7 @@ public class CloseTabPopupMenu extends JPopupMenu {
 		});
 		this.add(closeEpiTabs);
 
-		JMenuItem closeOtherEpiTabs = new JMenuItem(
-				"Other epithelia tabs");
+		JMenuItem closeOtherEpiTabs = new JMenuItem(Txt.get("s_MENU_WINDOW_O_SEL_EPI"));
 		closeOtherEpiTabs.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

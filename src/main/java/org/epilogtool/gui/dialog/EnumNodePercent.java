@@ -1,10 +1,10 @@
 package org.epilogtool.gui.dialog;
 
-public enum GridNodePercent {
+public enum EnumNodePercent {
 	YES("Yes"), NO("No");
 	private String desc;
 
-	private GridNodePercent(String desc) {
+	private EnumNodePercent(String desc) {
 		this.desc = desc;
 	}
 
@@ -16,7 +16,7 @@ public enum GridNodePercent {
 		return this.desc;
 	}
 
-	public static GridNodePercent fromString(String str) {
+	public static EnumNodePercent fromString(String str) {
 		if (str.equals(YES.toString()))
 			return YES;
 		else if (str.equals(NO.toString()))
