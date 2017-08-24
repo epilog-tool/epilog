@@ -555,6 +555,11 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
+	/** Adds a new SBML to to Project.
+	 * 1) If an SBML file with the same name already exists in the project, do nothing.
+	 * 
+	 * @throws IOException
+	 */
 	public void loadSBML() throws IOException {
 		FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter("sbml files (*.sbml)", "sbml");
 		JFileChooser fc = new JFileChooser();
@@ -575,11 +580,12 @@ public class EpiGUI extends JFrame {
 				for (LogicalModel model : Project.getInstance().getProjectFeatures().getModels()) {
 					for (NodeInfo existingNode : model.getNodeOrder()) {
 						if (node.toString().equals(existingNode.toString())) {
-							if (node.getMax() != existingNode.getMax())
+							if (node.getMax() != existingNode.getMax()) {
 								JOptionPane.showMessageDialog(this,
 										"A component with the same name and with different maximum value exists in the project!",
 										"Warning", JOptionPane.WARNING_MESSAGE);
 							return;
+					}
 						}
 					}
 				}
