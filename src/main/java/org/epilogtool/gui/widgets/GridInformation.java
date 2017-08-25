@@ -17,6 +17,7 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.common.ObjectComparator;
+import org.epilogtool.common.Txt;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
@@ -36,7 +37,7 @@ public class GridInformation extends JPanel {
 		this.integrFunctions = eif;
 
 		this.setLayout(new BorderLayout());
-		this.setBorder(BorderFactory.createTitledBorder("Cell information"));
+		this.setBorder(BorderFactory.createTitledBorder(Txt.get("s_GRIDINFO_TITLE")));
 
 		// JPanel
 		this.jCellPanel = new JPanel(new GridBagLayout());

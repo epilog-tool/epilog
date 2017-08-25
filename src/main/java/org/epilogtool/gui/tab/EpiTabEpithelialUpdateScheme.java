@@ -22,6 +22,7 @@ import javax.swing.tree.TreePath;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.epilogtool.common.RandCentral;
+import org.epilogtool.common.Txt;
 import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.Web;
 import org.epilogtool.core.Epithelium;
@@ -70,7 +71,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		this.jspAlpha = new JScrollPane(this.jpAlpha);
 		this.jspAlpha.setBorder(BorderFactory.createEmptyBorder());
 		this.center.add(this.jspAlpha, BorderLayout.NORTH);
-		this.jpAlpha.setBorder(BorderFactory.createTitledBorder("Alpha - Asynchronism"));
+		this.jpAlpha.setBorder(BorderFactory.createTitledBorder(Txt.get("s_TAB_ALPHA_TITLE")));
 
 		// JSlider for alpha-asynchronism
 		this.generateAlphaSlider();
@@ -137,7 +138,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 
 	private void generateAlphaSlider() {
 		JPanel jpAlphaInfo = new JPanel(new BorderLayout());
-		jpAlphaInfo.add(new JLabel("Current alpha: "), BorderLayout.LINE_START);
+		jpAlphaInfo.add(new JLabel(Txt.get("s_TAB_ALPHA_CURR")), BorderLayout.LINE_START);
 		this.jAlphaLabelValue = new JLabel("--");
 		jpAlphaInfo.add(this.jAlphaLabelValue, BorderLayout.CENTER);
 		jpAlpha.add(jpAlphaInfo, BorderLayout.CENTER);
@@ -173,9 +174,9 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		this.updateSchemeInter.setAlpha(value);
 		String sTmp = "" + value;
 		if (sliderValue == SLIDER_MIN) {
-			sTmp += " (asynchronous)";
+			sTmp += " " + Txt.get("s_TAB_ALPHA_ASYNC");
 		} else if (sliderValue == SLIDER_MAX) {
-			sTmp += " (synchronous)";
+			sTmp += " " + Txt.get("s_TAB_ALPHA_SYNC");
 		}
 		jAlphaLabelValue.setText(sTmp);
 	}

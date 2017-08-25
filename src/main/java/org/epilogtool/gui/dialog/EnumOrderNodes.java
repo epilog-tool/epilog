@@ -1,7 +1,9 @@
 package org.epilogtool.gui.dialog;
 
+import org.epilogtool.common.Txt;
+
 public enum EnumOrderNodes {
-	ORIGINAL("Model original"), ALPHA("Alphabetical");
+	ORIGINAL(Txt.get("s_ENUM_ORDERNODES_ORIG")), ALPHA(Txt.get("s_ENUM_ORDERNODES_ALPHA"));
 	private String desc;
 
 	private EnumOrderNodes(String desc) {
@@ -9,7 +11,7 @@ public enum EnumOrderNodes {
 	}
 
 	public static String title() {
-		return "Components list order";
+		return Txt.get("s_ENUM_ORDERNODES_TITLE");
 	}
 
 	public String toString() {

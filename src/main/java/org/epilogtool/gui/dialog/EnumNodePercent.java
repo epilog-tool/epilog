@@ -1,7 +1,9 @@
 package org.epilogtool.gui.dialog;
 
+import org.epilogtool.common.Txt;
+
 public enum EnumNodePercent {
-	YES("Yes"), NO("No");
+	YES(Txt.get("s_ENUM_NODEPERCENT_Y")), NO(Txt.get("s_ENUM_NODEPERCENT_N"));
 	private String desc;
 
 	private EnumNodePercent(String desc) {
@@ -9,7 +11,7 @@ public enum EnumNodePercent {
 	}
 
 	public static String title() {
-		return "Show grid node percentage";
+		return Txt.get("s_ENUM_NODEPERCENT_TITLE");
 	}
 
 	public String toString() {

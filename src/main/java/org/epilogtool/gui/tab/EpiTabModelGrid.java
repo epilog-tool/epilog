@@ -10,9 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -99,7 +97,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		this.jpModelsUsed = new JPanel(new GridBagLayout());
 
 		this.jpModelsUsed.setBorder(BorderFactory.createTitledBorder("Models Assigned"));
-		
+
 		// Panel on the left bottom
 		JPanel jpLeftBottom = new JPanel(new BorderLayout());
 		jpLeftBottom.add(jpCellSelection, BorderLayout.PAGE_START);
@@ -135,7 +133,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	}
 
 	/**
-	 * Updates the model selection list. 
+	 * Updates the model selection list.
 	 * Whenever an SBML is added/removed from the project, the model selection list is automatically updated.
 	 */
 	private void updateModelList() {
@@ -193,14 +191,14 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	/**
 	 * Changes the color associated with a model.
 	 * PV: Tab knows that it changed if the new color exists and it is different from the previous color.
-	 * 
+	 *
 	 * @param jb
 	 */
 	private void setNewColor(JButton jb) {
 		for (JRadioComponentButton jrb : this.mapSBMLMiniPanels.keySet()) {
 			if (this.mapSBMLMiniPanels.get(jrb).equals(jb)) {
 				String name = jrb.getComponentText();
-				
+
 				Color newColor = JColorChooser.showDialog(jb, "Color Chooser - " + name, jb.getBackground());
 				if (newColor != null && newColor !=jb.getBackground()) {
 					jb.setBackground(newColor);
@@ -285,9 +283,9 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 	@Override
 	protected boolean isChanged() {
-		
+
 //------------------ Models were added/removed to the model list
-		
+
 		if (this.modelGridClone.length != this.epithelium.getX()
 				|| this.modelGridClone[0].length != this.epithelium.getY()) {
 			return true;
@@ -317,4 +315,3 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		this.updateModelList();
 	}
 }
-
