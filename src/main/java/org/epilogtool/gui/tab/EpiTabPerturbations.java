@@ -39,6 +39,7 @@ import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
+import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumPerturbations;
@@ -50,6 +51,7 @@ import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.gui.widgets.VisualGridPerturbation;
 import org.epilogtool.io.ButtonFactory;
+import org.epilogtool.notification.NotificationManager;
 import org.epilogtool.project.Project;
 
 public class EpiTabPerturbations extends EpiTabDefinitions {
@@ -115,7 +117,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
 		this.lTop.add(jcbSBML);
-		this.lTop.setBorder(BorderFactory.createTitledBorder("Model selection"));
+		this.lTop.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
 		left.add(this.lTop, BorderLayout.NORTH);
 
 		this.jpCenter = new JPanel(new BorderLayout());
@@ -163,13 +165,13 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 
 		// Perturbation list Panel
 		JPanel jpPerturbList = new JPanel(new BorderLayout());
-		jpPerturbList.setBorder(BorderFactory.createTitledBorder("Perturbation list"));
+		jpPerturbList.setBorder(BorderFactory.createTitledBorder(Txt.get("s_TAB_PERTURB_LIST")));
 		JPanel jpPerturbTop = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridy = 0;
 		gbc.gridx = 0;
 		gbc.anchor = GridBagConstraints.WEST;
-		jpPerturbTop.add(new JLabel("Component:"), gbc);
+		jpPerturbTop.add(new JLabel(Txt.get("s_TAB_PERTURB_NODE")), gbc);
 
 		Set<String> sProper = Project.getInstance().getProjectFeatures().getModelNodeIDs(this.selModel, false);
 
@@ -192,20 +194,20 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		gbc.gridy = 1;
 		gbc.gridx = 0;
 		gbc.anchor = GridBagConstraints.WEST;
-		jpPerturbTop.add(new JLabel("Min value:"), gbc);
+		jpPerturbTop.add(new JLabel(Txt.get("s_TAB_PERTURB_MIN_V")), gbc);
 		jcbMinVal = new JComboBox<Byte>();
 		gbc.gridx = 1;
 		jpPerturbTop.add(jcbMinVal, gbc);
 		gbc.gridy = 2;
 		gbc.gridx = 0;
 		gbc.anchor = GridBagConstraints.WEST;
-		jpPerturbTop.add(new JLabel("Max value:"), gbc);
+		jpPerturbTop.add(new JLabel(Txt.get("s_TAB_PERTURB_MAX_V")), gbc);
 		jcbMaxVal = new JComboBox<Byte>();
 		gbc.gridx = 1;
 		jpPerturbTop.add(jcbMaxVal, gbc);
 		updateMinMaxValues(saProper[0]);
 		JPanel jpTmp = new JPanel(new FlowLayout());
-		JButton jbCreate = ButtonFactory.getNoMargins("Create");
+		JButton jbCreate = ButtonFactory.getNoMargins(Txt.get("s_TAB_PERTURB_CREATE"));
 		jbCreate.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -214,9 +216,11 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 				byte min = (Byte) jcbMinVal.getSelectedItem();
 				byte max = (Byte) jcbMaxVal.getSelectedItem();
 				AbstractPerturbation ap;
-				if (max < min)
+				if (max < min) {
+					NotificationManager.warning("EpiTabPerturbations", Txt.get("s_TAB_PERTURB_INVALID"));
+					NotificationManager.dispatchDialogWarning(false, false);
 					return;
-				else if (min == max)
+				} else if (min == max)
 					ap = new FixedValuePerturbation(node, min);
 				else
 					ap = new RangePerturbation(node, min, max);
@@ -231,7 +235,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 			}
 		});
 		jpTmp.add(jbCreate);
-		JButton jbDelete = ButtonFactory.getNoMargins("Delete");
+		JButton jbDelete = ButtonFactory.getNoMargins(Txt.get("s_TAB_PERTURB_DELETE"));
 		jbDelete.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -282,7 +286,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		jpPerturbList.add(this.jlPerturb, BorderLayout.CENTER);
 
 		jpTmp = new JPanel(new FlowLayout());
-		JButton jbMultiple = ButtonFactory.getNoMargins("Create Multiple");
+		JButton jbMultiple = ButtonFactory.getNoMargins(Txt.get("s_TAB_PERTURB_MULT_BU"));
+		jbMultiple.setToolTipText(Txt.get("s_TAB_PERTURB_MULT_BU_DESC"));
 		jbMultiple.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -308,7 +313,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		// Add / Del buttons Panel
 		Box jpAddDel = Box.createVerticalBox();
 		jpAddDel.add(Box.createVerticalGlue());
-		JButton jbAdd = ButtonFactory.getNoMargins("->");
+		JButton jbAdd = ButtonFactory.getNoMargins(Txt.get("s_TAB_PERTURB_ADD"));
 		jbAdd.setAlignmentY(CENTER_ALIGNMENT);
 		jbAdd.addActionListener(new ActionListener() {
 			@Override
@@ -332,7 +337,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 			}
 		});
 		jpAddDel.add(jbAdd);
-		JButton jbDel = ButtonFactory.getNoMargins("<-");
+		JButton jbDel = ButtonFactory.getNoMargins(Txt.get("s_TAB_PERTURB_DEL"));
 		jbDel.setAlignmentY(CENTER_ALIGNMENT);
 		jbDel.addActionListener(new ActionListener() {
 			@Override

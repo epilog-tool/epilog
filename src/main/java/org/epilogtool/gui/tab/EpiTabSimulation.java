@@ -37,6 +37,7 @@ import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
 import org.epilogtool.FileSelectionHelper;
 import org.epilogtool.OptionStore;
+import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.EpiGUI;
@@ -115,9 +116,9 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jpLeftRight.add(this.jpGridInformation, BorderLayout.CENTER);
 
 		JPanel jpRestart = new JPanel();
-		jpRestart.setBorder(BorderFactory.createTitledBorder("Restart"));
-		this.jbRestart = ButtonFactory.getNoMargins("Restart");
-		this.jbRestart.setToolTipText("Restart the simulation with recently applied definitions");
+		jpRestart.setBorder(BorderFactory.createTitledBorder(Txt.get("s_TAB_SIM_RESTART")));
+		this.jbRestart = ButtonFactory.getNoMargins(Txt.get("s_TAB_SIM_RESTART"));
+		this.jbRestart.setToolTipText(Txt.get("s_TAB_SIM_RESTART_DESC"));
 		this.jbRestart.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -143,7 +144,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		jspButtons.setBorder(BorderFactory.createEmptyBorder());
 
 		this.jbRewind = ButtonFactory.getImageNoBorder("media_rewind-26x24.png");
-		this.jbRewind.setToolTipText("Go back to the beginning of the simulation");
+		this.jbRewind.setToolTipText(Txt.get("s_TAB_SIM_BACK_DESC"));
 		this.jbRewind.setEnabled(false);
 		this.jbRewind.addActionListener(new ActionListener() {
 			@Override
@@ -153,7 +154,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		});
 		jpButtonsC.add(this.jbRewind);
 		this.jbBack = ButtonFactory.getImageNoBorder("media_step_back-24x24.png");
-		this.jbBack.setToolTipText("Go back one step");
+		this.jbBack.setToolTipText(Txt.get("s_TAB_SIM_BACK1_DESC"));
 		this.jbBack.setEnabled(false);
 		this.jbBack.addActionListener(new ActionListener() {
 			@Override
@@ -163,7 +164,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		});
 		jpButtonsC.add(this.jbBack);
 		this.jbForward = ButtonFactory.getImageNoBorder("media_step_forward-24x24.png");
-		this.jbForward.setToolTipText("Go forward one step");
+		this.jbForward.setToolTipText(Txt.get("s_TAB_SIM_FWR1_DESC"));
 		this.jbForward.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -172,7 +173,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		});
 		jpButtonsC.add(this.jbForward);
 		JTextField jtSteps = new JTextField("" + this.iUserBurst);
-		jtSteps.setToolTipText("Define the number of steps of a burst");
+		jtSteps.setToolTipText(Txt.get("s_TAB_SIM_BURST_DESC"));
 		jtSteps.setColumns(3);
 		jtSteps.addKeyListener(new KeyListener() {
 			@Override
@@ -196,7 +197,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		});
 		jpButtonsC.add(jtSteps);
 		this.jbFastFwr = ButtonFactory.getImageNoBorder("media_fast_forward-26x24.png");
-		this.jbFastFwr.setToolTipText("Go forward a burst of 'n' steps");
+		this.jbFastFwr.setToolTipText(Txt.get("s_TAB_SIM_FWR_DESC"));
 		this.jbFastFwr.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -206,8 +207,8 @@ public class EpiTabSimulation extends EpiTabTools {
 		jpButtonsC.add(this.jbFastFwr);
 
 		JPanel jpButtonsR = new JPanel();
-		JButton jbClone = ButtonFactory.getNoMargins("Clone");
-		jbClone.setToolTipText("Create a new Epithelium with initial conditions as the current grid");
+		JButton jbClone = ButtonFactory.getNoMargins(Txt.get("s_TAB_SIM_CLONE"));
+		jbClone.setToolTipText(Txt.get("s_TAB_SIM_CLONE_DESC"));
 		jbClone.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -218,7 +219,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		// Button to save an image from the simulated grid
 		JButton jbPicture = ButtonFactory.getImageNoBorder("fotography-24x24.png");
-		jbPicture.setToolTipText("Save the image of the current grid to file");
+		jbPicture.setToolTipText(Txt.get("s_TAB_SIM_SAVE"));
 		jbPicture.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -229,7 +230,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		// Button to save all simulated grid images
 		JButton jbSaveAll = ButtonFactory.getImageNoBorder("fotography-mult-24x24.png");
-		jbSaveAll.setToolTipText("Save all the simulation grids into different files");
+		jbSaveAll.setToolTipText(Txt.get("s_TAB_SIM_SAVE_ALL"));
 		jbSaveAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				saveAllEpiGrid2File();
@@ -303,7 +304,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		rrTopSel.add(jbDeselectAll);
 		this.jpLeftTop.add(rrTopSel);
 
-		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder("Display options"));
+		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder(Txt.get("s_TAB_SIM_OPTIONS")));
 		this.jpLeft.add(this.jpLeftTop, BorderLayout.NORTH);
 
 		this.jpLCCenter = new JPanel();
@@ -418,7 +419,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 	private void setGUITerminalCycle(int len) {
 		if (len > 0) {
-			this.jlAttractor.setText("Terminal cyclic attractor (len=" + len + ")");
+			this.jlAttractor.setText(Txt.get("s_TAB_SIM_CYCLE") + " (len=" + len + ")");
 		} else {
 			this.jlAttractor.setText("           ");
 		}
@@ -599,11 +600,11 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 
 		if (!sCommonNodeIDs.isEmpty())
-			this.setComponentTypeList(sCommonNodeIDs, "Internal/Input Components");
+			this.setComponentTypeList(sCommonNodeIDs, Txt.get("s_TAB_SIM_COMP_BOTH"));
 		if (!sInternalNodeIDs.isEmpty())
-			this.setComponentTypeList(sInternalNodeIDs, "Internal Components");
+			this.setComponentTypeList(sInternalNodeIDs, Txt.get("s_TAB_SIM_COMP_INTERNAL"));
 		if (!sInputNodeIDs.isEmpty())
-			this.setComponentTypeList(sInputNodeIDs, "Input Components");
+			this.setComponentTypeList(sInputNodeIDs, Txt.get("s_TAB_SIM_COMP_INPUT"));
 
 		this.visualGridSimulation.paintComponent(this.visualGridSimulation.getGraphics());
 		this.jpLCCenter.revalidate();
