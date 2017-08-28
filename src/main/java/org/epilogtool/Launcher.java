@@ -86,7 +86,7 @@ public class Launcher {
 			if (pepsFile != null) {
 				Launcher.commandLine(pepsFile, maxiter);
 			} else {
-				System.err.println("EpiLog needs a PEPS file when called non-gui mode.");
+				System.err.println(Txt.get("s_LAUNCHER_NOGUI"));
 			}
 		} else {
 			// GUI
@@ -140,12 +140,11 @@ public class Launcher {
 			nextGrid = simulator.nextStepGrid();
 			System.out.println("Grid step " + i + "\n" + nextGrid);
 			if (i > maxiter) {
-				System.out.println("Reached maximum number of iterations! Exiting...");
+				System.out.println(Txt.get("s_CMD_MAXITER"));
 				System.exit(0);
 			}
 		} while (!simulator.isStableAt(i));
 
-		System.out.println("Reached a stable grid!");
-
+		System.out.println(Txt.get("s_CMD_STABLE"));
 	}
 }

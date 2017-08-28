@@ -19,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.epilogtool.common.Txt;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.widgets.JComboImageBox;
@@ -61,7 +62,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 		// Width JLabel
 		c.gridx = 0;
 		c.gridy = 0;
-		this.add(new JLabel("Width:"), c);
+		this.add(new JLabel(Txt.get("s_NEWEPI_WIDTH")), c);
 
 		// Width JTextField
 		this.jtfWidth = new JTextField(DEFAULT_WIDTH_STRING);
@@ -86,7 +87,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 		// Height JLabel
 		c.gridx = 0;
 		c.gridy = 1;
-		this.add(new JLabel("Height:"), c);
+		this.add(new JLabel(Txt.get("s_NEWEPI_HEIGHT")), c);
 
 		// Height JTextField
 		this.jtfHeight = new JTextField(DEFAULT_HEIGHT_STRING);
@@ -111,7 +112,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 		// Name JLabel
 		c.gridx = 0;
 		c.gridy = 2;
-		this.add(new JLabel("Name:"), c);
+		this.add(new JLabel(Txt.get("s_NEWEPI_NAME")), c);
 
 		// Name JTextField
 		this.jtfEpiName = new JTextField();
@@ -136,7 +137,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 		// SBML JLabel
 		c.gridx = 0;
 		c.gridy = 3;
-		this.add(new JLabel("SBML:"), c);
+		this.add(new JLabel(Txt.get("s_NEWEPI_SBML")), c);
 
 		// SBML JComboBox
 		this.jcbSBMLs = new JComboBox<String>(
@@ -154,7 +155,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 		// Rollover JLabel
 		c.gridx = 0;
 		c.gridy = 4;
-		this.add(new JLabel("Rollover:"), c);
+		this.add(new JLabel(Txt.get("s_NEWEPI_ROLLOVER")), c);
 
 		// Rollover JComboBox
 		this.jcbRollover = new JComboBox<RollOver>(new RollOver[] {
@@ -174,7 +175,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 		// Topology JLabel
 		c.gridx = 0;
 		c.gridy = 5;
-		this.add(new JLabel("Topology:"), c);
+		this.add(new JLabel(Txt.get("s_NEWEPI_TOPOLOGY")), c);
 
 		// Topology JComboBox
 		List<String> lDescs = new ArrayList<String>(TopologyService
@@ -190,7 +191,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 
 		// Bottom Panel
 		JPanel bottom = new JPanel(new FlowLayout());
-		this.buttonCancel = new JButton("Cancel");
+		this.buttonCancel = new JButton(Txt.get("s_CANCEL"));
 		this.buttonCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -199,7 +200,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 		});
 		bottom.add(this.buttonCancel);
 
-		this.buttonOK = new JButton("OK");
+		this.buttonOK = new JButton(Txt.get("s_OK"));
 		this.buttonOK.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

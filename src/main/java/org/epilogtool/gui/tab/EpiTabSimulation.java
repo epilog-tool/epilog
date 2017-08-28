@@ -244,7 +244,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		JPanel jpButtonsL = new JPanel();
 		this.jlStep = new JLabel("Iteration: " + this.iCurrSimIter);
 		jpButtonsL.add(this.jlStep);
-		this.jlAttractor = new JLabel("Stable!");
+		this.jlAttractor = new JLabel("");
 		this.jlAttractor.setForeground(Color.RED);
 		this.setGridGUIStable(false);
 		jpButtonsL.add(this.jlAttractor);
@@ -409,7 +409,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 	private void setGridGUIStable(boolean stable) {
 		if (stable) {
-			this.jlAttractor.setText("Stable pattern!");
+			this.jlAttractor.setText(Txt.get("s_TAB_SIM_STABLE"));
 			this.jbForward.setEnabled(false);
 			this.jbFastFwr.setEnabled(false);
 		} else {
