@@ -144,7 +144,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		jpAlpha.add(jpAlphaInfo, BorderLayout.CENTER);
 
 		JPanel jpAlphaSlider = new JPanel(new BorderLayout());
-		jpAlphaSlider.add(new JLabel("Value: "), BorderLayout.LINE_START);
+//		jpAlphaSlider.add(new JLabel("Value: "), BorderLayout.LINE_START);
 		this.jAlphaSlide = new JSlider(JSlider.HORIZONTAL, this.SLIDER_MIN, this.SLIDER_MAX, this.SLIDER_MAX);
 		this.jAlphaSlide.setMajorTickSpacing(this.SLIDER_STEP);
 		this.jAlphaSlide.setMinorTickSpacing(1);

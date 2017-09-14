@@ -30,7 +30,6 @@ public class DialogNewEpithelium extends EscapableDialog {
 
 	private final String DEFAULT_WIDTH_STRING = "15";
 	private final String DEFAULT_HEIGHT_STRING = "15";
-	private final String ROLLOVER_WARNING = "This dimension must be even due to rollover selection!";
 
 	private JTextField jtfWidth;
 	private JTextField jtfHeight;
@@ -271,7 +270,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 			this.jtfWidth.setToolTipText(null);
 		} else {
 			this.jtfWidth.setBackground(ColorUtils.LIGHT_RED);
-			this.jtfWidth.setToolTipText(ROLLOVER_WARNING);
+			this.jtfWidth.setToolTipText(Txt.get("s_ROLLOVER_WARNING"));
 		}
 		this.validateDialog();
 	}
@@ -292,7 +291,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 			this.jtfHeight.setToolTipText(null);
 		} else {
 			this.jtfHeight.setBackground(ColorUtils.LIGHT_RED);
-			this.jtfHeight.setToolTipText(ROLLOVER_WARNING);
+			this.jtfHeight.setToolTipText(Txt.get("s_ROLLOVER_WARNING"));
 		}
 
 		this.validateDialog();
