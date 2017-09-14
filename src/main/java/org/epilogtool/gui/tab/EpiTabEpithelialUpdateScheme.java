@@ -143,8 +143,6 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 		jpAlphaInfo.add(this.jAlphaLabelValue, BorderLayout.CENTER);
 		jpAlpha.add(jpAlphaInfo, BorderLayout.CENTER);
 
-		JPanel jpAlphaSlider = new JPanel(new BorderLayout());
-//		jpAlphaSlider.add(new JLabel("Value: "), BorderLayout.LINE_START);
 		this.jAlphaSlide = new JSlider(JSlider.HORIZONTAL, this.SLIDER_MIN, this.SLIDER_MAX, this.SLIDER_MAX);
 		this.jAlphaSlide.setMajorTickSpacing(this.SLIDER_STEP);
 		this.jAlphaSlide.setMinorTickSpacing(1);
@@ -165,8 +163,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 			}
 		});
 		updateAlpha(this.jAlphaSlide.getValue());
-		jpAlphaSlider.add(this.jAlphaSlide, BorderLayout.CENTER);
-		jpAlpha.add(jpAlphaSlider, BorderLayout.SOUTH);
+		jpAlpha.add(this.jAlphaSlide, BorderLayout.SOUTH);
 	}
 
 	private void updateAlpha(int sliderValue) {
