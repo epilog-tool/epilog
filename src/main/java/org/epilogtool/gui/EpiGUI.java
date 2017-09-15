@@ -442,9 +442,6 @@ public class EpiGUI extends JFrame {
 	 */
 	public void loadProject() throws InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
-		if (!this.canClose(Txt.get("s_APP_LOAD"))) {
-			return;
-		}
 		if (this.loadPEPS()) {
 
 			this.cleanGUI();
@@ -659,7 +656,7 @@ public class EpiGUI extends JFrame {
 				this.projDescPanel.removeModel(model);
 				this.notifyEpiModelGrids();
 			} else {
-				JOptionPane.showMessageDialog(this, "Model '" + model + "' is being used!", "Warning",
+				JOptionPane.showMessageDialog(this, Txt.get("s_SBML_IN_USE") + model, "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			}
 		}
@@ -1016,6 +1013,7 @@ public class EpiGUI extends JFrame {
 				if (c instanceof EpiTabSimulation || c instanceof EpiTabInitialConditions) {
 					EpiTab tab = (EpiTab) c;
 					if (!tab.equals(changedTab)) {
+//						System.out.println("ProjChangeNotifyTab -> " + tab.getName());
 						tab.notifyChange();
 					}
 				}
