@@ -14,8 +14,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 
+import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 
 public class DialogReplaceSBML extends EscapableDialog {
@@ -27,78 +27,77 @@ public class DialogReplaceSBML extends EscapableDialog {
 
 	private JButton buttonCancel;
 	private JButton buttonOK;
-	private  List<String> selectedEpiList; //Epithelium List selected y the user to modify
+	private List<String> selectedEpiList; // Epithelium List selected y the user to modify
 
-	
 	/**
-	 * This method creates the Dialog that appears when replacing an SBML. Once the replacing model is defined, the user
-	 * must choose in which epitheliums this change is to be made.
+	 * This method creates the Dialog that appears when replacing an SBML. Once the
+	 * replacing model is defined, the user must choose in which epitheliums this
+	 * change is to be made.
 	 * 
-	 * @param model -> Model to be replaced
-	 * @param modelNames -> Models existing in the project (STRING)
-	 * @param mapModel2Epithelium -> Map that receives as key a model and as value a list of epitheliums that contain the model
+	 * @param model
+	 *            -> Model to be replaced
+	 * @param modelNames
+	 *            -> Models existing in the project (STRING)
+	 * @param mapModel2Epithelium
+	 *            -> Map that receives as key a model and as value a list of
+	 *            epitheliums that contain the model
 	 */
 	public DialogReplaceSBML(String model, List<String> modelNames, List<Epithelium> epiList) {
-		//TODO: Replace receiving list in Dialog
-		
+		// TODO: Replace receiving list in Dialog
+
 		this.listModelNames = modelNames;
 		this.listModelNames.remove(model);
 		this.listModelNames.remove("Empty cell");
 		this.selectedEpiList = new ArrayList<String>();
 
 		this.setLayout(new BorderLayout());
-		
+
 		// North Panel
 		JPanel northPanel = new JPanel(new FlowLayout());
 
-		northPanel.add(new JLabel("Replace: " + model + " with: "));
+		northPanel.add(new JLabel("Replace Cellular Model " + model + " by "));
 
 		// Name JComboBox
 		String[] array = this.listModelNames.toArray(new String[this.listModelNames.size()]);
 		this.jcbModelName = new JComboBox<String>(array);
-		
+
 		northPanel.add(this.jcbModelName);
-		this.add(northPanel,BorderLayout.NORTH);
-		
-		//Center Panel
-		
+		this.add(northPanel, BorderLayout.NORTH);
+
+		// Center Panel
 		JPanel jpCenter = new JPanel();
 		jpCenter.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
-		c.gridwidth = 1;
-		c.gridheight = 1;
 		c.anchor = GridBagConstraints.WEST;
 
-		jpCenter.add(new JLabel("Epithelium(s) to replace:"), c);
-		
-			for (Epithelium epi: epiList ){
-				c.gridy = c.gridy+1;
-				final String name = epi.getName();
-				JPanel jp = new JPanel();
-				JCheckBox jcheckb = new JCheckBox(name, false);
-				jcheckb.setHorizontalAlignment(SwingConstants.LEFT);
-				jp.add(jcheckb);
-				jcheckb.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						JCheckBox jcb = (JCheckBox) e.getSource();
-						if (jcb.isSelected()) {
-							addEpithelium2SelectedList(name);
-						} else {
-							removeEpithelium2SelectedList(name);
-						}
-					}
+		jpCenter.add(new JLabel(Txt.get("s_REPLACE_SBML")), c);
 
-				});
-				jpCenter.add(jp, c);
-				jpCenter.setAlignmentX(JPanel.LEFT_ALIGNMENT);
-			}
-		
-		this.add(jpCenter);
-	
-		
+		for (Epithelium epi : epiList) {
+			c.gridy += 1;
+			final String name = epi.getName();
+			JPanel jp = new JPanel();
+			JCheckBox jcheckb = new JCheckBox(name, false);
+			jp.add(jcheckb);
+			jcheckb.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JCheckBox jcb = (JCheckBox) e.getSource();
+					if (jcb.isSelected()) {
+						addEpithelium2SelectedList(name);
+					} else {
+						removeEpithelium2SelectedList(name);
+					}
+				}
+
+			});
+			jpCenter.add(jp, c);
+			jpCenter.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+		}
+
+		this.add(jpCenter, BorderLayout.CENTER);
+
 		// Bottom Panel
 		JPanel bottom = new JPanel(new FlowLayout());
 		this.buttonCancel = new JButton("Cancel");
@@ -132,18 +131,16 @@ public class DialogReplaceSBML extends EscapableDialog {
 		return this.bIsOK;
 	}
 
-
 	public String getModelName() {
 		return (String) jcbModelName.getSelectedItem();
 	}
-	
+
 	public List<String> getEpiList() {
 		return this.selectedEpiList;
 	}
-	
-	
+
 	private void addEpithelium2SelectedList(String name) {
-		if (!this.selectedEpiList.contains(name)){
+		if (!this.selectedEpiList.contains(name)) {
 			this.selectedEpiList.add(name);
 		}
 		this.buttonOK.setEnabled(true);
@@ -155,14 +152,11 @@ public class DialogReplaceSBML extends EscapableDialog {
 		if (selectedEpiList.isEmpty())
 			this.buttonOK.setEnabled(false);
 	}
-	
 
 	@Override
 	public void focusComponentOnLoad() {
 		// TODO Auto-generated method stub
-		
+
 	}
-
-
 
 }

@@ -21,10 +21,10 @@ import org.epilogtool.gui.EpiGUI;
  *
  */
 
-public class SBMLMenu {
+public class CellularModelMenu {
 	public static JMenu getMenu() {
 		JMenu menu = new JMenu(Txt.get("s_MENU_SBML"));
-		menu.setMnemonic(KeyEvent.VK_S);
+		menu.setMnemonic(KeyEvent.VK_C);
 
 		menu.add(new LoadSBMLAction());
 		menu.add(new RenameSBMLAction());

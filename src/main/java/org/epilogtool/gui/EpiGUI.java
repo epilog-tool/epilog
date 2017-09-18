@@ -51,7 +51,7 @@ import org.epilogtool.gui.menu.CloseTabPopupMenu;
 import org.epilogtool.gui.menu.EpitheliumMenu;
 import org.epilogtool.gui.menu.FileMenu;
 import org.epilogtool.gui.menu.HelpMenu;
-import org.epilogtool.gui.menu.SBMLMenu;
+import org.epilogtool.gui.menu.CellularModelMenu;
 import org.epilogtool.gui.menu.ToolsMenu;
 import org.epilogtool.gui.menu.WindowMenu;
 import org.epilogtool.gui.tab.EpiTab;
@@ -134,7 +134,7 @@ public class EpiGUI extends JFrame {
 		this.epiMenu.add(fileMenu);
 
 		// SBML menu
-		JMenu sbmlMenu = SBMLMenu.getMenu();
+		JMenu sbmlMenu = CellularModelMenu.getMenu();
 		this.epiMenu.add(sbmlMenu);
 
 		// Epithelium menu
@@ -381,10 +381,10 @@ public class EpiGUI extends JFrame {
 		file.getItem(4).setEnabled(bIsValid); // Save
 		file.getItem(5).setEnabled(this.projDescPanel.countModels() > 0); // SaveAs
 
-		// SBML Menu
+		// Cellular Model Menu
 		this.projDescPanel.updateSBMLMenuItems();
 
-		// Epithelium Menu
+		// Epithelium Model Menu
 		this.epiTreePanel.updateEpiMenuItems();
 		this.epiTreePanel.validateJTreeExpansion();
 
@@ -694,7 +694,7 @@ public class EpiGUI extends JFrame {
 		if (model != null) {
 			// TODO:
 			if (Project.getInstance().getHashModel2EpitheliumList().get(model).isEmpty()) {
-				JOptionPane.showMessageDialog(null, Txt.get("s_NOEPI_MODEL"));
+				JOptionPane.showMessageDialog(null, Txt.get("s_NOEPI_MODEL") + model);
 			} else {
 
 				DialogReplaceSBML dialogPanel = new DialogReplaceSBML(model,

@@ -31,8 +31,8 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 	private List<LogicalModel> selectedModels;
 	private GridInformation valuePanel;
 
-	public VisualGridInitialConditions(EpitheliumGrid gridClone, 
-			Map<String, Byte> mNode2ValueSelected, GridInformation valuePanel, TabProbablyChanged tpc) {
+	public VisualGridInitialConditions(EpitheliumGrid gridClone, Map<String, Byte> mNode2ValueSelected,
+			GridInformation valuePanel, TabProbablyChanged tpc) {
 		super(gridClone.getX(), gridClone.getY(), gridClone.getTopology(), tpc);
 		this.epiGrid = gridClone;
 		this.mNode2ValueSelected = mNode2ValueSelected;
@@ -134,11 +134,24 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 		}
 	}
 
+	public void clearGrid() {
+		for (int x = 0; x < this.gridX; x++) {
+			for (int y = 0; y < this.gridY; y++) {
+				for (String nodeID : this.mNode2ValueSelected.keySet()) {
+					if (!this.tpc.isChanged() && this.epiGrid.getCellValue(x, y, nodeID) > 0) {
+						this.tpc.setChanged();
+					}
+					this.epiGrid.setCellComponentValue(x, y, nodeID, (byte) 0);
+				}
+			}
+		}
+		this.paintComponent(this.getGraphics());
+	}
+
 	@Override
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 
-		
 		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY, this.getSize().width,
 				this.getSize().height);
 
@@ -173,24 +186,24 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 
 	public void setRandomValue(List<NodeInfo> lNodes) {
 		// TODO Auto-generated method stub
-		
-		for (NodeInfo node: lNodes){
-		byte maxValue = node.getMax();
-	    Random randomGenerator = new Random();
-		
-		this.tpc.setChanged();
-		for (int x = 0; x < this.gridX; x++) {
-			for (int y = 0; y < this.gridY; y++) {
-				 int value = randomGenerator.nextInt(maxValue+1);
-			this.epiGrid.setCellComponentValue(x, y, node.getNodeID(), (byte) value);
-		}}}
+
+		for (NodeInfo node : lNodes) {
+			byte maxValue = node.getMax();
+			Random randomGenerator = new Random();
+
+			this.tpc.setChanged();
+			for (int x = 0; x < this.gridX; x++) {
+				for (int y = 0; y < this.gridY; y++) {
+					int value = randomGenerator.nextInt(maxValue + 1);
+					this.epiGrid.setCellComponentValue(x, y, node.getNodeID(), (byte) value);
+				}
+			}
+		}
 		this.paint(getGraphics());
 	}
-	
-	public EpitheliumGrid getEpitheliumGrid(){
+
+	public EpitheliumGrid getEpitheliumGrid() {
 		return epiGrid;
 	}
-		
-	}
 
-
+}

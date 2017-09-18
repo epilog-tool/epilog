@@ -17,7 +17,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.epilogtool.common.Txt;
-import org.epilogtool.gui.menu.SBMLPopupMenu;
+import org.epilogtool.gui.menu.CellularModelPopupMenu;
 
 /**
  * Container with the list of SBMLs. In this class it is defined if the options
@@ -30,11 +30,11 @@ public class ProjDescPanel extends JPanel {
 
 	private JList<String> listSBMLs;
 	private JMenu menu;
-	private SBMLPopupMenu popupmenu;
+	private CellularModelPopupMenu popupmenu;
 
 	public ProjDescPanel(JMenu sbmlMenu) {
 		this.menu = sbmlMenu;
-		this.popupmenu = new SBMLPopupMenu();
+		this.popupmenu = new CellularModelPopupMenu();
 		this.setLayout(new BorderLayout());
 
 		// PAGE_START
@@ -66,9 +66,9 @@ public class ProjDescPanel extends JPanel {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				if (e.isPopupTrigger()) {
-					boolean hasModel = listSBMLs.getSelectedValue() != null &&
-							listSBMLs.getSelectionModel().getMinSelectionIndex() >= 0;
-					popupmenu.updateMenuItems(hasModel);
+					boolean hasModel = listSBMLs.getSelectionModel().getMinSelectionIndex() >= 0;
+					boolean hasMore1 = listSBMLs.getModel().getSize() > 1;
+					popupmenu.updateMenuItems(hasModel, hasMore1);
 					popupmenu.show(e.getComponent(), e.getX(), e.getY());
 				}
 			}
@@ -107,14 +107,15 @@ public class ProjDescPanel extends JPanel {
 	 */
 	public void updateSBMLMenuItems() {
 		boolean hasModel = this.listSBMLs.getSelectionModel().getMinSelectionIndex() >= 0;
+		boolean hasMore1 = this.listSBMLs.getModel().getSize() > 1;
 		// Menu
 		this.menu.getItem(0).setEnabled(true);
 		this.menu.getItem(1).setEnabled(hasModel);
 		this.menu.getItem(2).setEnabled(hasModel);
 		this.menu.getItem(3).setEnabled(hasModel);
-		this.menu.getItem(4).setEnabled(hasModel);
+		this.menu.getItem(4).setEnabled(hasModel && hasMore1);
 		// Popup menu
-		this.popupmenu.updateMenuItems(hasModel);
+		this.popupmenu.updateMenuItems(hasModel, hasMore1);
 	}
 
 	public void addModel(String model) {

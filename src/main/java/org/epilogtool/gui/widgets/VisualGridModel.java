@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
 import org.epilogtool.project.Project;
@@ -175,9 +176,14 @@ public class VisualGridModel extends VisualGridDefinitions {
 
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
+				Color c;
+				if (EmptyModel.getInstance().isEmptyModel(this.modelGridClone[x][y])) {
+					c = EmptyModel.getInstance().getColor();
+				} else {
+					c = this.colorMapClone.get(this.modelGridClone[x][y]);
+				}
 				Tuple2D<Double> center = topology.getPolygonCenter(this.radius, x, y);
 				Polygon polygon = topology.createNewPolygon(this.radius, center);
-				Color c = this.colorMapClone.get(this.modelGridClone[x][y]);
 				this.paintPolygon(this.strokeBasic, c, polygon, g2);
 			}
 		}

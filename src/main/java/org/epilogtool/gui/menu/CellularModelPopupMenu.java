@@ -23,7 +23,7 @@ import org.epilogtool.gui.EpiGUI;
  *
  *
  */
-public class SBMLPopupMenu extends JPopupMenu {
+public class CellularModelPopupMenu extends JPopupMenu {
 	private static final long serialVersionUID = 7968226829964184722L;
 
 	JMenuItem load;
@@ -32,7 +32,7 @@ public class SBMLPopupMenu extends JPopupMenu {
 	JMenuItem save;
 	JMenuItem replace;
 
-	public SBMLPopupMenu() {
+	public CellularModelPopupMenu() {
 		
 		// LOAD SBML
 		this.load = new JMenuItem(Txt.get("s_MENU_SBML_LOAD"));
@@ -97,11 +97,11 @@ public class SBMLPopupMenu extends JPopupMenu {
 		
 	}
 
-	public void updateMenuItems(boolean hasModel) {
+	public void updateMenuItems(boolean hasModel, boolean hasMore1) {
 		this.load.setEnabled(true);
 		this.rename.setEnabled(hasModel);
 		this.remove.setEnabled(hasModel);
 		this.save.setEnabled(hasModel);
-		this.replace.setEnabled(hasModel);
+		this.replace.setEnabled(hasModel && hasMore1);
 	}
 }
