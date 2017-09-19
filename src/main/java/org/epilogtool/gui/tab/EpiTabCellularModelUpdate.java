@@ -37,7 +37,7 @@ import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.io.ButtonFactory;
 import org.epilogtool.project.Project;
 
-public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements HyperlinkListener {
+public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements HyperlinkListener {
 	private static final long serialVersionUID = 1176575422084167530L;
 
 	private final int JLIST_LINES = 15;
@@ -54,7 +54,7 @@ public class EpiTabModelUpdateScheme extends EpiTabDefinitions implements Hyperl
 	private JPanel jpSouth;
 	private JPanel jpIntraCenter;
 
-	public EpiTabModelUpdateScheme(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
+	public EpiTabCellularModelUpdate(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
 			TabChangeNotifyProj tabChanged) {
 		super(e, path, projChanged, tabChanged);
 	}

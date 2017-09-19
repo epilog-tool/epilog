@@ -3,7 +3,6 @@ package org.epilogtool.core;
 import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +17,6 @@ import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.dialog.DialogMessage;
-import org.epilogtool.integration.IntegrationFunctionExpression;
-import org.epilogtool.notification.NotificationManager;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.Project;
 
@@ -30,7 +27,7 @@ public class Epithelium {
 	private EpitheliumPerturbations perturbations;
 	private EpitheliumUpdateSchemeIntra priorities;
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
-//	private HashMap<String, NodeInfo> sComponentsUsed2Node;
+	// private HashMap<String, NodeInfo> sComponentsUsed2Node;
 
 	public Epithelium(int x, int y, String topologyID, String name, LogicalModel m, RollOver rollover,
 			EnumRandomSeed randomSeedType, int randomSeed)
@@ -44,7 +41,7 @@ public class Epithelium {
 		this.perturbations = new EpitheliumPerturbations();
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(EpitheliumUpdateSchemeInter.DEFAULT_ALPHA,
 				UpdateCells.UPDATABLECELLS, randomSeedType, randomSeed);
-//		this.sComponentsUsed2Node = new HashMap<String, NodeInfo>();
+		// this.sComponentsUsed2Node = new HashMap<String, NodeInfo>();
 	}
 
 	private Epithelium(String name, EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
@@ -55,7 +52,7 @@ public class Epithelium {
 		this.integrationFunctions = eif;
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
-//		this.sComponentsUsed2Node = new HashMap<String, NodeInfo>();
+		// this.sComponentsUsed2Node = new HashMap<String, NodeInfo>();
 	}
 
 	public Epithelium clone() {
@@ -249,15 +246,17 @@ public class Epithelium {
 
 	/**
 	 * 
-	 * Replace model in the grid.
-	 * 1) Every cell with the oldModel is replaced with the newModel
-	 * 2) Nodes of both models are compared (if types are changed)
-	 * 2.1) If a node is an input and changes to proper then all nodes are at level zero
-	 * 2.1.1) If a node is an integration input, and it still is an input in the new model, it remains as an integration input.
-	 * 2.2) If a node is a proper component, then it changes to an positional input and the values remain the same
-	 * 2.3) Perturbations are only applied to proper components, so perturbations applied to new inputs are removed
-	 * 2.4) Priorities are only applied to proper components, so input components are removed from priorities
-	 * 3) Integration Functions are validated. If a regulator no longer exists, the function is invalid and it is ignored
+	 * Replace model in the grid. 1) Every cell with the oldModel is replaced with
+	 * the newModel 2) Nodes of both models are compared (if types are changed) 2.1)
+	 * If a node is an input and changes to proper then all nodes are at level zero
+	 * 2.1.1) If a node is an integration input, and it still is an input in the new
+	 * model, it remains as an integration input. 2.2) If a node is a proper
+	 * component, then it changes to an positional input and the values remain the
+	 * same 2.3) Perturbations are only applied to proper components, so
+	 * perturbations applied to new inputs are removed 2.4) Priorities are only
+	 * applied to proper components, so input components are removed from priorities
+	 * 3) Integration Functions are validated. If a regulator no longer exists, the
+	 * function is invalid and it is ignored
 	 * 
 	 * 
 	 * @param oldModel
@@ -269,8 +268,8 @@ public class Epithelium {
 		EpitheliumGrid gridCopy = this.getEpitheliumGrid().clone();
 
 		List<String> commonNodeNames = new ArrayList<String>();
-		
-		//1) Every cell with the oldModel is replaced with the newModel
+
+		// 1) Every cell with the oldModel is replaced with the newModel
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
 				LogicalModel cellModel = grid.getModel(x, y);
@@ -292,28 +291,27 @@ public class Epithelium {
 					commonNodeNames.add(node.toString());
 
 					if (oldEpi.isIntegrationComponent(node) && nNode.isInput()) {
-						
+
 						// TODO validate IntegrationFunction
 						ComponentPair cp = new ComponentPair(oldModel, node);
 						EpitheliumIntegrationFunctions eif = this.getIntegrationFunctions();
 						ComponentIntegrationFunctions cif = eif.getComponentIntegrationFunctions(cp);
 						List<String> lFunctions = cif.getFunctions();
 
-							for (int i = 0; i < lFunctions.size(); i++) {
-								String function = lFunctions.get(i);
-								if (validateIntegrationFunction(function)) {
-									try {
-										this.setIntegrationFunction(nNode.getNodeID(), newModel, (byte) (i + 1),
-												function);
-									} catch (RecognitionException re) {
-										// TODO Auto-generated catch block
-									} catch (RuntimeException re) {
-										// TODO Auto-generated catch block
-										dialogMsg.addMessage("Integration function: " + nNode.getNodeID() + ":"
-												+ (i + 1) + " has invalid expression: " + function);
-									}
+						for (int i = 0; i < lFunctions.size(); i++) {
+							String function = lFunctions.get(i);
+							if (validateIntegrationFunction(function)) {
+								try {
+									this.setIntegrationFunction(nNode.getNodeID(), newModel, (byte) (i + 1), function);
+								} catch (RecognitionException re) {
+									// TODO Auto-generated catch block
+								} catch (RuntimeException re) {
+									// TODO Auto-generated catch block
+									dialogMsg.addMessage("Integration function: " + nNode.getNodeID() + ":" + (i + 1)
+											+ " has invalid expression: " + function);
 								}
 							}
+						}
 					}
 
 					if (node.isInput() && !nNode.isInput()) {
@@ -331,8 +329,8 @@ public class Epithelium {
 				}
 			}
 			if (!flag) {
-				//this is only relevant if this node is a regulator of any IF
-				
+				// this is only relevant if this node is a regulator of any IF
+
 				mes = "Node " + node.toString() + " does not exist in this new model.";
 				if (!Project.getInstance().getProjectFeatures().getReplaceMessages().contains(mes)) {
 					Project.getInstance().getProjectFeatures().addReplaceMessages(mes);
@@ -340,8 +338,8 @@ public class Epithelium {
 			}
 		}
 		this.initPriorityClasses(newModel);
-//		this.validateAllIntegrationFunctions(oldEpi, oldModel, newModel);
-//		this.replacePriorities(oldEpi, oldModel, newModel, commonNodeNames);
+		// this.validateAllIntegrationFunctions(oldEpi, oldModel, newModel);
+		// this.replacePriorities(oldEpi, oldModel, newModel, commonNodeNames);
 
 		if (this.getModelPerturbations(oldModel) != null) {
 			ModelPerturbations mpClone = this.getModelPerturbations(oldModel).clone();
@@ -359,45 +357,45 @@ public class Epithelium {
 
 	/**
 	 *
-	 * Validates all the Integration Functions (IF) of a given epithelium. 
+	 * Validates all the Integration Functions (IF) of a given epithelium.
 	 * 
 	 * @param oldEpi
 	 * @param oldModel
 	 * @param newModel
 	 */
 	private void validateAllIntegrationFunctions(Epithelium oldEpi, LogicalModel oldModel, LogicalModel newModel) {
-		
-		
+
 		EpitheliumIntegrationFunctions intFunctions = this.getIntegrationFunctions();
 		System.out.println(intFunctions);
-		
+
 		Map<ComponentPair, ComponentIntegrationFunctions> funcs = intFunctions.getAllIntegrationFunctions();
-		
-//		try {
-//			this.setIntegrationFunction(nodeID, m, value, function);
-//		} catch (RuntimeException re) {
-//			NotificationManager.warning("Parser", 
-//					"Integration function: " + saTmp[2] + ":" + value + " has invalid expression: " + function);
-//		}
+
+		// try {
+		// this.setIntegrationFunction(nodeID, m, value, function);
+		// } catch (RuntimeException re) {
+		// NotificationManager.warning("Parser",
+		// "Integration function: " + saTmp[2] + ":" + value + " has invalid expression:
+		// " + function);
+		// }
 
 	}
 
-//	/**
-//	 * Retrieve the regulators of an Integration Function (IF). 
-//	 * This is used on the replace, but should be verified as needed?
-//	 * 
-//	 * @param integrationString
-//	 * @return
-//	 */
-//	private Set<String> getRegulators(String integrationString) {
-//		// TODO Auto-generated method stub
-//
-//		IntegrationFunctionExpression expr = string2Expression(integrationString)
-//		
-//		System.out.println(integrationString);
-//		
-//		return traverseIFTreeRegulators(expr);
-//	}
+	// /**
+	// * Retrieve the regulators of an Integration Function (IF).
+	// * This is used on the replace, but should be verified as needed?
+	// *
+	// * @param integrationString
+	// * @return
+	// */
+	// private Set<String> getRegulators(String integrationString) {
+	// // TODO Auto-generated method stub
+	//
+	// IntegrationFunctionExpression expr = string2Expression(integrationString)
+	//
+	// System.out.println(integrationString);
+	//
+	// return traverseIFTreeRegulators(expr);
+	// }
 
 	private void replaceInitialConditions(NodeInfo oldNode, NodeInfo newNode, EpitheliumGrid oldGrid) {
 
@@ -426,7 +424,7 @@ public class Epithelium {
 	public void replacePriorities(Epithelium oldEpi, LogicalModel oldModel, LogicalModel newModel,
 			List<String> commonNodeNames) {
 		ModelPriorityClasses oldMpc = oldEpi.getPriorityClasses(oldModel);
-		
+
 		Boolean hasChanged = false;
 
 		String sPCs = "";
@@ -578,21 +576,23 @@ public class Epithelium {
 	}
 
 	/**
-	 * From the list of models used in the list, an hashset created, translating the node from string format to NodeInfo
+	 * From the list of models used in the list, an hashset created, translating the
+	 * node from string format to NodeInfo
+	 * 
 	 * @param componentName
 	 * @return
 	 */
-	//TODO: This is a test
+	// TODO: This is a test
 	public NodeInfo getComponentUsed(String componentName) {
 		this.getEpitheliumGrid().updateModelSet();
 		for (LogicalModel model : this.getEpitheliumGrid().getModelSet()) {
-			for (NodeInfo node: model.getNodeOrder()) {
+			for (NodeInfo node : model.getNodeOrder()) {
 				if (node.getNodeID().equals(componentName))
 					return node;
 
 			}
 		}
-		
+
 		return null;
 	}
 }

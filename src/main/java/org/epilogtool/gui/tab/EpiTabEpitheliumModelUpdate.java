@@ -32,7 +32,7 @@ import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.widgets.JComboWideBox;
 
-public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements HyperlinkListener {
+public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements HyperlinkListener {
 	private static final long serialVersionUID = 1176575422084167530L;
 
 	private final int SLIDER_MIN = 0;
@@ -51,7 +51,7 @@ public class EpiTabEpithelialUpdateScheme extends EpiTabDefinitions implements H
 	private JComboBox<UpdateCells> jcbUpdateCells;
 	private JComboBox<EnumRandomSeed> jcbRandomSeedType;
 
-	public EpiTabEpithelialUpdateScheme(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
+	public EpiTabEpitheliumModelUpdate(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
 			TabChangeNotifyProj tabChanged) {
 		super(e, path, projChanged, tabChanged);
 	}

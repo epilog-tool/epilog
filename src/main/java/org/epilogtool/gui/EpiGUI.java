@@ -55,11 +55,11 @@ import org.epilogtool.gui.menu.CellularModelMenu;
 import org.epilogtool.gui.menu.ToolsMenu;
 import org.epilogtool.gui.menu.WindowMenu;
 import org.epilogtool.gui.tab.EpiTab;
-import org.epilogtool.gui.tab.EpiTabEpithelialUpdateScheme;
+import org.epilogtool.gui.tab.EpiTabEpitheliumModelUpdate;
 import org.epilogtool.gui.tab.EpiTabInitialConditions;
 import org.epilogtool.gui.tab.EpiTabInputDefinition;
 import org.epilogtool.gui.tab.EpiTabModelGrid;
-import org.epilogtool.gui.tab.EpiTabModelUpdateScheme;
+import org.epilogtool.gui.tab.EpiTabCellularModelUpdate;
 import org.epilogtool.gui.tab.EpiTabPerturbations;
 import org.epilogtool.gui.tab.EpiTabSimulation;
 import org.epilogtool.gui.widgets.CloseTabButton;
@@ -775,9 +775,9 @@ public class EpiGUI extends JFrame {
 			} else if (tabName.equals(EpiTab.TAB_PERTURBATIONS)) {
 				epiTab = new EpiTabPerturbations(epi, selPath, projChanged, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_PRIORITIES)) {
-				epiTab = new EpiTabModelUpdateScheme(epi, selPath, projChanged, tabChanged);
+				epiTab = new EpiTabCellularModelUpdate(epi, selPath, projChanged, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_EPIUPDATING)) {
-				epiTab = new EpiTabEpithelialUpdateScheme(epi, selPath, projChanged, tabChanged);
+				epiTab = new EpiTabEpitheliumModelUpdate(epi, selPath, projChanged, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_MODELGRID)) {
 				epiTab = new EpiTabModelGrid(epi, selPath, projChanged, tabChanged);
 			}
