@@ -10,10 +10,10 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.colomoto.logicalmodel.LogicalModel;
 import org.colomoto.logicalmodel.NodeInfo;
+import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
@@ -185,16 +185,13 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 	}
 
 	public void setRandomValue(List<NodeInfo> lNodes) {
-		// TODO Auto-generated method stub
-
 		for (NodeInfo node : lNodes) {
 			byte maxValue = node.getMax();
-			Random randomGenerator = new Random();
 
 			this.tpc.setChanged();
 			for (int x = 0; x < this.gridX; x++) {
 				for (int y = 0; y < this.gridY; y++) {
-					int value = randomGenerator.nextInt(maxValue + 1);
+					int value = RandCentral.getInstance().nextInt(maxValue+1);
 					this.epiGrid.setCellComponentValue(x, y, node.getNodeID(), (byte) value);
 				}
 			}

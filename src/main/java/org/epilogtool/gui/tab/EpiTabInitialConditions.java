@@ -439,7 +439,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	 * @param nodes
 	 */
 	private void randomMarkCells() {
-
 		List<String> nodesToMark = new ArrayList<String>();
 		for (String nodeID : this.lModelVisibleComps) {
 			if (this.randomNodesAll.isSelected()
@@ -465,9 +464,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			}
 
 		}
-		System.out.println(lNodes);
 		this.visualGridICs.setRandomValue(lNodes);
-		this.updateComponentList(this.jccbSBML.getSelectedItems());
 	}
 
 	/**
