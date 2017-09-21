@@ -133,7 +133,6 @@ public class Parser {
 					currEpi.setGridWithModel(m,
 							currEpi.getEpitheliumGrid().getTopology().instances2Tuples2D(saTmp[2].split(",")));
 					currEpi.initPriorityClasses(m);
-					Project.getInstance().getProjectFeatures().addModelComponents(m);
 				}
 			}
 			// alpha-asynchronous value

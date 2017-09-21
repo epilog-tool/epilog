@@ -43,7 +43,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	private JPanel jpModelsUsed;
 	private GridInformation gridInfo;
 	private TabProbablyChanged tpc;
-//	private List<LogicalModel> modelsAssigned;
+	// private List<LogicalModel> modelsAssigned;
 
 	JToggleButton jtbRectFill;
 	JButton jbApplyAll;
@@ -125,16 +125,14 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		this.isInitialized = true;
 	}
 
-
-
 	private void updateCellSelectionButtons() {
 		this.jtbRectFill.setEnabled(true);
 		this.jbApplyAll.setEnabled(true);
 	}
 
 	/**
-	 * Updates the model selection list.
-	 * Whenever an SBML is added/removed from the project, the model selection list is automatically updated.
+	 * Updates the model selection list. Whenever an SBML is added/removed from the
+	 * project, the model selection list is automatically updated.
 	 */
 	private void updateModelList() {
 		this.jpModelSelection.removeAll();
@@ -143,7 +141,6 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		gbc.insets = new Insets(1, 5, 1, 0);
 		int i = 0;
 		for (String name : Project.getInstance().getProjectFeatures().getGUIModelNames()) {
-			System.out.println("TabMG.m: " + name);
 			gbc.gridy = i;
 			i++;
 			gbc.gridx = 0;
@@ -190,8 +187,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	}
 
 	/**
-	 * Changes the color associated with a model.
-	 * PV: Tab knows that it changed if the new color exists and it is different from the previous color.
+	 * Changes the color associated with a model. PV: Tab knows that it changed if
+	 * the new color exists and it is different from the previous color.
 	 *
 	 * @param jb
 	 */
@@ -201,7 +198,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 				String name = jrb.getComponentText();
 
 				Color newColor = JColorChooser.showDialog(jb, "Color Chooser - " + name, jb.getBackground());
-				if (newColor != null && newColor !=jb.getBackground()) {
+				if (newColor != null && newColor != jb.getBackground()) {
 					jb.setBackground(newColor);
 					this.tpc.setChanged();
 					this.colorMapClone.put(Project.getInstance().getProjectFeatures().getModel(name), newColor);
@@ -285,13 +282,13 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	@Override
 	protected boolean isChanged() {
 
-//------------------ Models were added/removed to the model list
+		// ------------------ Models were added/removed to the model list
 
 		if (this.modelGridClone.length != this.epithelium.getX()
 				|| this.modelGridClone[0].length != this.epithelium.getY()) {
 			return true;
 		}
-//------------------ Models were added/removed to the grid
+		// ------------------ Models were added/removed to the grid
 		for (int x = 0; x < this.modelGridClone.length; x++) {
 			for (int y = 0; y < this.modelGridClone[0].length; y++) {
 				if (!this.modelGridClone[x][y].equals(this.epithelium.getModel(x, y))) {
@@ -299,7 +296,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 				}
 			}
 		}
-//------------------ Models colors were changed
+		// ------------------ Models colors were changed
 		for (JRadioComponentButton jrb : this.mapSBMLMiniPanels.keySet()) {
 			String modelName = jrb.getComponentText();
 			LogicalModel model = Project.getInstance().getProjectFeatures().getModel(modelName);
@@ -314,5 +311,6 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	@Override
 	public void applyChange() {
 		this.updateModelList();
+		// TODO: update models assigned ?
 	}
 }

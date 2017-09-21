@@ -552,8 +552,9 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
-	/** Adds a new SBML to to Project.
-	 * 1) If an SBML file with the same name already exists in the project, do nothing.
+	/**
+	 * Adds a new SBML to to Project. 1) If an SBML file with the same name already
+	 * exists in the project, do nothing.
 	 * 
 	 * @throws IOException
 	 */
@@ -570,19 +571,24 @@ public class EpiGUI extends JFrame {
 				return;
 
 			}
-			
+
 			LogicalModel newModel = FileIO.loadSBMLModel(fc.getSelectedFile());
-			List<NodeInfo> lNodes = newModel.getNodeOrder();
-			for (NodeInfo node : lNodes) {
+			for (NodeInfo node : newModel.getNodeOrder()) {
 				for (LogicalModel model : Project.getInstance().getProjectFeatures().getModels()) {
 					for (NodeInfo existingNode : model.getNodeOrder()) {
 						if (node.toString().equals(existingNode.toString())) {
 							if (node.getMax() != existingNode.getMax()) {
 								JOptionPane.showMessageDialog(this,
-										"A component with the same name and with different maximum value exists in the project!",
-										"Warning", JOptionPane.WARNING_MESSAGE);
-							return;
-					}
+										"A component with the same name and with different maximum value exists in the project",
+										"Error", JOptionPane.ERROR_MESSAGE);
+								return;
+							}
+							if (node.isInput() != existingNode.isInput()) {
+								JOptionPane.showMessageDialog(this,
+										"Node " + node.getNodeID() + " already exists in Project with a different type",
+										"Error", JOptionPane.ERROR_MESSAGE);
+								return;
+							}
 						}
 					}
 				}
@@ -680,7 +686,8 @@ public class EpiGUI extends JFrame {
 				this.validateGUI();
 			}
 		} else {
-			JOptionPane.showMessageDialog(this, Txt.get("s_SEL_MODEL"), Txt.get("s_WARNING"), JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, Txt.get("s_SEL_MODEL"), Txt.get("s_WARNING"),
+					JOptionPane.WARNING_MESSAGE);
 		}
 		this.validateGUI();
 
@@ -1013,7 +1020,7 @@ public class EpiGUI extends JFrame {
 				if (c instanceof EpiTabSimulation || c instanceof EpiTabInitialConditions) {
 					EpiTab tab = (EpiTab) c;
 					if (!tab.equals(changedTab)) {
-//						System.out.println("ProjChangeNotifyTab -> " + tab.getName());
+						// System.out.println("ProjChangeNotifyTab -> " + tab.getName());
 						tab.notifyChange();
 					}
 				}

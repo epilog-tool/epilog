@@ -70,7 +70,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 	private Map<String, JCheckBox> mNodeID2Checkbox;
 	private Map<String, JComboBox<Byte>> mNodeID2Combobox;
-	private Map<String, JButton> mNodeID2Color;
+	private Map<String, JButton> mNodeID2JBColor;
 
 	private Map<String, Byte> mNode2ValueSelected;
 
@@ -92,7 +92,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.mNode2ValueSelected = new HashMap<String, Byte>();
 		this.mNodeID2Checkbox = new HashMap<String, JCheckBox>();
 		this.mNodeID2Combobox = new HashMap<String, JComboBox<Byte>>();
-		this.mNodeID2Color = new HashMap<String, JButton>();
+		this.mNodeID2JBColor = new HashMap<String, JButton>();
 
 		this.lRight = new GridInformation(this.epithelium.getIntegrationFunctions());
 
@@ -132,7 +132,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				for (String nodeID : lModelVisibleComps) {
-					System.out.println("All.Node: " + nodeID);
 					if (mNodeID2Checkbox.containsKey(nodeID)) {
 						mNodeID2Checkbox.get(nodeID).setSelected(true);
 					}
@@ -308,7 +307,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private void updateComponentList(List<String> modelNames) {
 		List<LogicalModel> lModels = new ArrayList<LogicalModel>();
 		for (String modelName : modelNames) {
-			System.out.println("updateComponentList: " + modelName);
 			lModels.add(Project.getInstance().getProjectFeatures().getModel(modelName));
 		}
 		this.visualGridICs.setModels(lModels);
@@ -351,7 +349,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		gbc.gridx = 0;
 
 		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
-		System.out.println(" . miniPanel: " +nodeID + " " + jcb);
 		if (jcb == null) {
 			this.mSelCheckboxes.put(nodeID, false);
 			jcb = new JCheckBox(nodeID, this.mSelCheckboxes.get(nodeID));
@@ -401,18 +398,21 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		// ----------------------------------------------------------------------------
 		gbc.gridx = 2;
 
-		JButton jbColor = this.mNodeID2Color.get(nodeID);
+		JButton jbColor = this.mNodeID2JBColor.get(nodeID);
 		if (jbColor == null) {
 			jbColor = new JButton();
-			jbColor.setBackground(Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
+			jbColor.setToolTipText(nodeID);
 			jbColor.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					setNewColor((JButton) e.getSource());
 				}
 			});
-			this.mNodeID2Color.put(nodeID, jbColor);
+			this.mNodeID2JBColor.put(nodeID, jbColor);
 		}
+		jbColor.setBackground(Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
+		System.out.println(" . setColor: " + jbColor.getBackground() + " "
+				+ Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
 		jp.add(jbColor, gbc);
 
 		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
@@ -465,10 +465,13 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	 */
 	private void setNewColor(JButton jb) {
 		String nodeID = jb.getToolTipText();
+		System.out.println("setNewColor: " + nodeID + " " + jb.getBackground());
 		Color newColor = JColorChooser.showDialog(jb, "Color chooser - " + nodeID, jb.getBackground());
+		System.out.println("setNewColor.newcolor: " + newColor);
 		if (newColor != null && !newColor.equals(Project.getInstance().getProjectFeatures().getNodeColor(nodeID))) {
 			jb.setBackground(newColor);
 			Project.getInstance().getProjectFeatures().setNodeColor(nodeID, newColor);
+			System.out.println("  . Project color: " + Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
 			this.projChanged.setChanged(this);
 			if (this.mNode2ValueSelected.containsKey(nodeID)) {
 				// Paint only if NodeID is selected!!
@@ -546,17 +549,14 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	public void applyChange() {
 		System.out.println("EpiTabIC.applyChange()");
 		// Update grid
-		boolean changed = false;
 		EpitheliumGrid projEpiGrid = this.epithelium.getEpitheliumGrid();
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {
 			for (int y = 0; y < this.epiGridClone.getY(); y++) {
 				if (!this.epiGridClone.getModel(x, y).equals(projEpiGrid.getModel(x, y))) {
 					this.epiGridClone.setModel(x, y, projEpiGrid.getModel(x, y));
-					changed = true;
-				}
-				if (!Arrays.equals(projEpiGrid.getCellState(x, y), this.epiGridClone.getCellState(x, y))) {
-					this.epiGridClone.setCellState(x, y, projEpiGrid.getCellState(x, y));
-					changed = true;
+					if (!Arrays.equals(projEpiGrid.getCellState(x, y), this.epiGridClone.getCellState(x, y))) {
+						this.epiGridClone.setCellState(x, y, projEpiGrid.getCellState(x, y));
+					}
 				}
 			}
 		}
@@ -567,9 +567,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			newModelList.add(Project.getInstance().getProjectFeatures().getModelName(m));
 		}
 		this.jccbSBML.updateItemList(newModelList);
-		
-		if (changed) {
-			updateComponentList(this.jccbSBML.getSelectedItems());
-		}
+
+		updateComponentList(this.jccbSBML.getSelectedItems());
 	}
 }
