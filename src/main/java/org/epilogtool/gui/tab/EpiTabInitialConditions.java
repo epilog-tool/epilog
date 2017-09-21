@@ -94,11 +94,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.mNodeID2Combobox = new HashMap<String, JComboBox<Byte>>();
 		this.mNodeID2Color = new HashMap<String, JButton>();
 
-		for (LogicalModel m : this.epithelium.getEpitheliumGrid().getModelSet()) {
-			for (NodeInfo node : m.getNodeOrder()) {
-				this.mSelCheckboxes.put(node.getNodeID(), false);
-			}
-		}
 		this.lRight = new GridInformation(this.epithelium.getIntegrationFunctions());
 
 		this.tpc = new TabProbablyChanged();
@@ -207,13 +202,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		jbClearAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// for (String nodeID : lPresentComps) {
-				// if (mNodeID2Checkbox.get(nodeID).isSelected()) {
-				// mNode2ValueSelected.put(nodeID, (byte) 0);
-				// mNodeID2Combobox.get(nodeID).setSelectedIndex(0);
-				// }
-				// }
-				// visualGridICs.applyDataToAll();
 				visualGridICs.clearGrid();
 			}
 		});
@@ -320,6 +308,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private void updateComponentList(List<String> modelNames) {
 		List<LogicalModel> lModels = new ArrayList<LogicalModel>();
 		for (String modelName : modelNames) {
+			System.out.println("updateComponentList: " + modelName);
 			lModels.add(Project.getInstance().getProjectFeatures().getModel(modelName));
 		}
 		this.visualGridICs.setModels(lModels);
@@ -362,8 +351,10 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		gbc.gridx = 0;
 
 		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
+		System.out.println(" . miniPanel: " +nodeID + " " + jcb);
 		if (jcb == null) {
-			jcb = new JCheckBox(nodeID, mSelCheckboxes.get(nodeID));
+			this.mSelCheckboxes.put(nodeID, false);
+			jcb = new JCheckBox(nodeID, this.mSelCheckboxes.get(nodeID));
 			jcb.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -569,6 +560,14 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				}
 			}
 		}
+		// New (potential) model list -> Update JComboCheckBox
+		this.epithelium.getEpitheliumGrid().updateModelSet();
+		List<String> newModelList = new ArrayList<String>();
+		for (LogicalModel m : this.epithelium.getEpitheliumGrid().getModelSet()) {
+			newModelList.add(Project.getInstance().getProjectFeatures().getModelName(m));
+		}
+		this.jccbSBML.updateItemList(newModelList);
+		
 		if (changed) {
 			updateComponentList(this.jccbSBML.getSelectedItems());
 		}

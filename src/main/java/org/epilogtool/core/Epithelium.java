@@ -538,24 +538,6 @@ public class Epithelium {
 		return s;
 	}
 
-	public String getUsedModels() {
-
-		List<String> usedModels = new ArrayList<String>();
-
-		for (int y = 0; y < this.getY(); y++) {
-			for (int x = 0; x < this.getX(); x++) {
-
-				LogicalModel m = this.getModel(x, y);
-				if (!usedModels.contains(Project.getInstance().getProjectFeatures().getModelName(m))) {
-					usedModels.add(Project.getInstance().getProjectFeatures().getModelName(m));
-				}
-			}
-		}
-
-		String models = join(usedModels, ", ");
-		return models;
-	}
-
 	public void setRandomInitialConditions() {
 		// TODO Auto-generated method stub
 

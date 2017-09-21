@@ -93,7 +93,7 @@ class RecentMenu extends JMenu {
 	private static final long serialVersionUID = -7991362512417289070L;
 
 	public RecentMenu() {
-		super("Recent files");
+		super(Txt.get("s_MENU_RECENT"));
 	}
 
 	@Override

@@ -21,17 +21,14 @@ public class EpitheliumGrid {
 	private EpitheliumCell[][] gridEpiCell;
 	private Topology topology;
 	private Set<LogicalModel> modelSet;
-	private Map<LogicalModel, Set<Tuple2D<Integer>>> modelPositions;
 	private Map<String, Map<Byte, Integer>> compCounts;
 	private Map<String, Map<Byte, Float>> compPercents;
 
 	private EpitheliumGrid(EpitheliumCell[][] gridEpiCell, Topology topology, Set<LogicalModel> modelSet,
-			Map<LogicalModel, Set<Tuple2D<Integer>>> modelPositions, Map<String, Map<Byte, Integer>> compCounts,
-			Map<String, Map<Byte, Float>> compPercents) {
+			Map<String, Map<Byte, Integer>> compCounts, Map<String, Map<Byte, Float>> compPercents) {
 		this.gridEpiCell = gridEpiCell;
 		this.topology = topology;
 		this.modelSet = modelSet;
-		this.modelPositions = modelPositions;
 		this.compCounts = compCounts;
 		this.compPercents = compPercents;
 	}
@@ -61,20 +58,10 @@ public class EpitheliumGrid {
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		this.setTopology(topologyID, gridX, gridY, rollover);
-		this.modelPositions = new HashMap<LogicalModel, Set<Tuple2D<Integer>>>();
 		this.gridEpiCell = new EpitheliumCell[gridX][gridY];
 		for (int y = 0; y < gridY; y++) {
 			for (int x = 0; x < gridX; x++) {
 				this.gridEpiCell[x][y] = new EpitheliumCell(m);
-				// root id is number of columns times row index plus (column
-				// index + one)
-				if (this.modelPositions.keySet().contains(m)) {
-					this.modelPositions.get(m).add(new Tuple2D<Integer>(x, y));
-				} else {
-					Set<Tuple2D<Integer>> tmpSet = new HashSet<Tuple2D<Integer>>();
-					tmpSet.add(new Tuple2D<Integer>(x, y));
-					this.modelPositions.put(m, tmpSet);
-				}
 			}
 		}
 		this.modelSet = new HashSet<LogicalModel>();
@@ -141,10 +128,6 @@ public class EpitheliumGrid {
 		return map;
 	}
 
-	public Map<LogicalModel, Set<Tuple2D<Integer>>> getModelPositions() {
-		return this.modelPositions;
-	}
-
 	public int getNodeIndex(int x, int y, String nodeID) {
 		return this.gridEpiCell[x][y].getNodeIndex(nodeID);
 	}
@@ -167,19 +150,12 @@ public class EpitheliumGrid {
 
 	public void updateModelSet() {
 		this.modelSet.clear();
-		this.modelPositions.clear();
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
 				if (this.isEmptyCell(x, y)) {
 					continue;
 				}
-				LogicalModel m = this.gridEpiCell[x][y].getModel();
-				this.modelSet.add(m);
-				Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x, y);
-				if (!this.modelPositions.containsKey(m)) {
-					this.modelPositions.put(m, new HashSet<Tuple2D<Integer>>());
-				}
-				this.modelPositions.get(m).add(tmpTuple);
+				this.modelSet.add(this.gridEpiCell[x][y].getModel());
 			}
 		}
 	}
@@ -196,21 +172,7 @@ public class EpitheliumGrid {
 	 * @param m
 	 */
 	public void setModel(int x, int y, LogicalModel m) {
-		Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x, y);
-		if (this.gridEpiCell[x][y].getModel() != m) {
-			if (!EmptyModel.getInstance().isEmptyModel(this.gridEpiCell[x][y].getModel())) {
-				if (this.modelPositions.get(this.gridEpiCell[x][y].getModel()).contains(tmpTuple)) {
-					this.modelPositions.get(this.gridEpiCell[x][y].getModel()).remove(tmpTuple);
-				}
-			}
-		}
 		gridEpiCell[x][y].setModel(m);
-		if (!EmptyModel.getInstance().isEmptyModel(m)) {
-			if (!this.modelPositions.containsKey(m)) {
-				this.modelPositions.put(m, new HashSet<Tuple2D<Integer>>());
-			}
-			this.modelPositions.get(m).add(tmpTuple);
-		}
 	}
 
 	public void setPerturbation(LogicalModel m, List<Tuple2D<Integer>> lTuples, AbstractPerturbation ap) {
@@ -248,15 +210,6 @@ public class EpitheliumGrid {
 	protected void cloneEpitheliumCellTo(int x1, int y1, int x2, int y2) {
 		EpitheliumCell epiCell = this.cloneEpitheliumCellAt(x1, y1);
 		this.gridEpiCell[x2][y2] = epiCell;
-	}
-
-	public int countEmptyCells() {
-		int gridSize = this.getX() * this.getY();
-		int cellNumber = 0;
-		for (LogicalModel m : this.modelPositions.keySet()) {
-			cellNumber += this.modelPositions.get(m).size();
-		}
-		return gridSize - cellNumber;
 	}
 
 	public String hashGrid() {
@@ -312,11 +265,9 @@ public class EpitheliumGrid {
 		}
 		Topology newTop = this.topology.clone();
 		Set<LogicalModel> newModelSet = new HashSet<LogicalModel>(this.modelSet);
-		Map<LogicalModel, Set<Tuple2D<Integer>>> newModelPositions = new HashMap<LogicalModel, Set<Tuple2D<Integer>>>(
-				this.modelPositions);
 		Map<String, Map<Byte, Integer>> newCompCounts = new HashMap<String, Map<Byte, Integer>>(this.compCounts);
 		Map<String, Map<Byte, Float>> newCompPercents = new HashMap<String, Map<Byte, Float>>(this.compPercents);
-		return new EpitheliumGrid(newGrid, newTop, newModelSet, newModelPositions, newCompCounts, newCompPercents);
+		return new EpitheliumGrid(newGrid, newTop, newModelSet, newCompCounts, newCompPercents);
 	}
 
 	public String getPercentage(String nodeID) {

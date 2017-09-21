@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -51,7 +52,7 @@ public class JComboCheckBox extends JComboWideBox<JCheckBox> {
 		this.itemSelected();
 	}
 
-	public List<JCheckBox> getItems() {
+	private List<JCheckBox> getCheckBoxes() {
 		List<JCheckBox> lItems = new ArrayList<JCheckBox>();
 		for (int i = 0; i < this.getModel().getSize(); i++) {
 			lItems.add((JCheckBox) this.getModel().getElementAt(i));
@@ -59,9 +60,38 @@ public class JComboCheckBox extends JComboWideBox<JCheckBox> {
 		return lItems;
 	}
 
+	public void updateItemList(List<String> lItems) {
+		List<JCheckBox> lCurrJCB = this.getCheckBoxes();
+		int sz = lCurrJCB.size();
+		// 1. adicionar no final
+		for (String sName : lItems) {
+			boolean exists = false;
+			for (int i = 0; i < sz; i++) {
+				if (lCurrJCB.get(i).getText().equals(sName)) {
+					exists = true;
+					break;
+				}
+			}
+			if (!exists) {
+				lCurrJCB.add(new JCheckBox(sName, false));
+				System.out.println(" . JCB.add: " + sName);
+			}
+		}
+
+		// 2. remover os que já não existem
+		for (int i = sz - 1; i >= 0; i--) {
+			if (!lItems.contains(lCurrJCB.get(i).getText())) {
+				System.out.println(" . JCB.remove: " + lCurrJCB.get(i).getText());
+				lCurrJCB.remove(i);
+			}
+		}
+		// put it inside
+		setModel(new DefaultComboBoxModel(lCurrJCB.toArray()));
+	}
+
 	public List<String> getSelectedItems() {
 		List<String> lItemStrings = new ArrayList<String>();
-		List<JCheckBox> lItemJCBs = this.getItems();
+		List<JCheckBox> lItemJCBs = this.getCheckBoxes();
 		for (JCheckBox jcb : lItemJCBs) {
 			if (jcb.isSelected()) {
 				lItemStrings.add(jcb.getText());
@@ -72,7 +102,7 @@ public class JComboCheckBox extends JComboWideBox<JCheckBox> {
 
 	@Override
 	public void setPreferredWidth() {
-		List<JCheckBox> lItemJCBs = this.getItems();
+		List<JCheckBox> lItemJCBs = this.getCheckBoxes();
 		String longestModelName = "";
 		for (JCheckBox jcb : lItemJCBs) {
 			if (jcb.getText().length() > longestModelName.length()) {

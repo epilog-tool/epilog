@@ -30,7 +30,7 @@ public class DialogAbout extends EscapableDialog implements HyperlinkListener {
 		jPane.setEnabled(true);
 		jPane.setBackground(SystemColor.window);
 		jPane.addHyperlinkListener(this);
-		
+
 		// Stylesheet
 		HTMLEditorKit kit = new HTMLEditorKit();
 		jPane.setEditorKit(kit);
@@ -38,10 +38,10 @@ public class DialogAbout extends EscapableDialog implements HyperlinkListener {
 		styleSheet.addRule("td {text-align: center;}");
 		Document doc = kit.createDefaultDocument();
 		jPane.setDocument(doc);
-		
+
 		// Content
 		jPane.setText(this.getContent());
-		
+
 		// Bottom
 		JPanel bottom = new JPanel(new FlowLayout());
 		JButton buttonClose = new JButton("Close");
@@ -58,26 +58,26 @@ public class DialogAbout extends EscapableDialog implements HyperlinkListener {
 
 	private String getContent() {
 		String s = "<body><center>\n";
-		s+= "<img src='" + FileResource.getResource("logo_epilog.png") + "'/>";
+		s += "<img src='" + FileResource.getResource("logo_epilog.png") + "'/>";
 		s += "<p>EpiLog is a tool used for qualitative simulations ";
 		s += "of <b>Epi</b>thelium <b>Log</b>ical models.<br/>\n";
 		s += "It makes use of Cellular Automata to visualize the ";
 		s += "evolution of the pattern formation.</p>\n";
 		s += "<a href=\"http://epilog-tool.org\">http://epilog-tool.org</a><br/>\n";
-		s += "<h3>Current Team</h3>\n";
+		s += "<br/>\n";
 		s += "<table border=\"1\" >\n";
+		s += "<tr><td colspan=\"4\"><b>Current Team</h2></b></tr>";
 		s += "<tr><td></td><td>Project<br/>coordination</td><td>Software<br/>development</td><td>Biological<br/>applications</td></tr>\n";
 		s += "<tr><td>Claudine Chaouiya</td><td>&#10003;</td><td></td><td></td></tr>\n";
 		s += "<tr><td>Pedro T. Monteiro</td><td>&#10003;</td><td>&#10003;</td><td></td></tr>\n";
 		s += "<tr><td>Pedro L. Varela</td><td></td><td>&#10003;</td><td></td></tr>\n";
 		s += "<tr><td>Camila Veludo</td><td></td><td>&#10003;</td><td>&#10003;</td></tr>\n";
 		s += "<tr><td>Adrien Faur&eacute;</td><td></td><td></td><td>&#10003;</td></tr>\n";
+
+		s += "<tr><td colspan=\"4\"><b>Past Contributors</b></td></tr>";
+		s += "<tr><td>Nuno D. Mendes</td><td></td><td>&#10003;</td><td></td></tr>\n";
 		s += "</table>\n";
 		s += "\n";
-		s += "<h3>Previous Contributors</h3>\n";
-		s += "<table border=\"1\">\n";
-		s += "<tr><td>Nuno D. Mendes</td><td>Software development</td></tr>\n";
-		s += "</table>\n";
 		s += "</center></body>";
 		return s;
 	}
