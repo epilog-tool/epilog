@@ -11,7 +11,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,7 +26,6 @@ public class VisualGridModel extends VisualGridDefinitions {
 	private static final long serialVersionUID = -8878704517273291774L;
 
 	private LogicalModel[][] modelGridClone;
-	private Map<LogicalModel, Color> colorMapClone;
 	private String selModelName;
 	private boolean isRectFill;
 	private Tuple2D<Integer> initialRectPos;
@@ -35,11 +33,9 @@ public class VisualGridModel extends VisualGridDefinitions {
 	private JPanel jpModelsUsed;
 
 	public VisualGridModel(int gridX, int gridY, Topology topology, LogicalModel[][] modelGridClone,
-			Map<LogicalModel, Color> colorMapClone, GridInformation valuePanel, TabProbablyChanged tpc,
-			JPanel jpModelsUsed) {
+			GridInformation valuePanel, TabProbablyChanged tpc, JPanel jpModelsUsed) {
 		super(gridX, gridY, topology, tpc);
 		this.modelGridClone = modelGridClone;
-		this.colorMapClone = colorMapClone;
 		this.selModelName = null;
 		this.isRectFill = false;
 		this.initialRectPos = null;
@@ -99,14 +95,14 @@ public class VisualGridModel extends VisualGridDefinitions {
 	}
 
 	/**
-	 * Updates the list of assigned models in the grid. 
-	 * These changes reflect on the models assigned panel.
+	 * Updates the list of assigned models in the grid. These changes reflect on the
+	 * models assigned panel.
 	 */
 	public void updateModelUsed() {
 		this.jpModelsUsed.removeAll();
 
 		GridBagConstraints gbc = new GridBagConstraints();
-		
+
 		gbc.insets = new Insets(0, 0, 0, 0);
 
 		int i = 0;
@@ -135,7 +131,7 @@ public class VisualGridModel extends VisualGridDefinitions {
 	private void drawRectangleOverSelectedCells() {
 		// Get selected model color
 		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.selModelName);
-		Color c = this.colorMapClone.get(m);
+		Color c = Project.getInstance().getProjectFeatures().getModelColor(m);
 
 		// Paint the rectangle
 		super.highlightCellsOverRectangle(this.initialRectPos, this.mouseGrid, c);
@@ -180,7 +176,7 @@ public class VisualGridModel extends VisualGridDefinitions {
 				if (EmptyModel.getInstance().isEmptyModel(this.modelGridClone[x][y])) {
 					c = EmptyModel.getInstance().getColor();
 				} else {
-					c = this.colorMapClone.get(this.modelGridClone[x][y]);
+					c = Project.getInstance().getProjectFeatures().getModelColor(this.modelGridClone[x][y]);
 				}
 				Tuple2D<Double> center = topology.getPolygonCenter(this.radius, x, y);
 				Polygon polygon = topology.createNewPolygon(this.radius, center);

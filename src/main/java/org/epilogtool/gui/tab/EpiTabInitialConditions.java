@@ -465,13 +465,10 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	 */
 	private void setNewColor(JButton jb) {
 		String nodeID = jb.getToolTipText();
-		System.out.println("setNewColor: " + nodeID + " " + jb.getBackground());
 		Color newColor = JColorChooser.showDialog(jb, "Color chooser - " + nodeID, jb.getBackground());
-		System.out.println("setNewColor.newcolor: " + newColor);
 		if (newColor != null && !newColor.equals(Project.getInstance().getProjectFeatures().getNodeColor(nodeID))) {
 			jb.setBackground(newColor);
 			Project.getInstance().getProjectFeatures().setNodeColor(nodeID, newColor);
-			System.out.println("  . Project color: " + Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
 			this.projChanged.setChanged(this);
 			if (this.mNode2ValueSelected.containsKey(nodeID)) {
 				// Paint only if NodeID is selected!!

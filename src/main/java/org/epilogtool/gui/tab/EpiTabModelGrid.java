@@ -38,7 +38,6 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	private VisualGridModel visualGridModel;
 	private Map<JRadioComponentButton, JButton> mapSBMLMiniPanels;
 	private LogicalModel[][] modelGridClone;
-	private Map<LogicalModel, Color> colorMapClone;
 	private JPanel jpModelSelection;
 	private JPanel jpModelsUsed;
 	private GridInformation gridInfo;
@@ -59,7 +58,6 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		this.mapSBMLMiniPanels = new HashMap<JRadioComponentButton, JButton>();
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
 		this.modelGridClone = new LogicalModel[grid.getX()][grid.getY()];
-		this.colorMapClone = new HashMap<LogicalModel, Color>();
 
 		// Panel with the model selection
 		this.jpModelSelection = new JPanel(new GridBagLayout());
@@ -116,7 +114,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		this.tpc = new TabProbablyChanged();
 		this.visualGridModel = new VisualGridModel(this.epithelium.getEpitheliumGrid().getX(),
 				this.epithelium.getEpitheliumGrid().getY(), this.epithelium.getEpitheliumGrid().getTopology(),
-				this.modelGridClone, this.colorMapClone, this.gridInfo, this.tpc, this.jpModelsUsed);
+				this.modelGridClone, this.gridInfo, this.tpc, this.jpModelsUsed);
 		this.center.add(this.visualGridModel, BorderLayout.CENTER);
 
 		this.buttonReset();
@@ -160,7 +158,6 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 			gbc.gridx = 1;
 			Color newColor = Project.getInstance().getProjectFeatures().getModelColor(name);
-			this.colorMapClone.put(Project.getInstance().getProjectFeatures().getModel(name), newColor);
 			JButton jbColor = new JButton();
 			jbColor.setBackground(newColor);
 			jbColor.addActionListener(new ActionListener() {
@@ -200,12 +197,13 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 				Color newColor = JColorChooser.showDialog(jb, "Color Chooser - " + name, jb.getBackground());
 				if (newColor != null && newColor != jb.getBackground()) {
 					jb.setBackground(newColor);
-					this.tpc.setChanged();
-					this.colorMapClone.put(Project.getInstance().getProjectFeatures().getModel(name), newColor);
+					this.projChanged.setChanged(this);
+					Project.getInstance().getProjectFeatures().setModelColor(name, newColor);
 					this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
 					if (EmptyModel.getInstance().isEmptyModel(name)) {
 						EmptyModel.getInstance().setColor(newColor);
 					}
+					jrb.setSelected(true);
 				}
 				break;
 			}
@@ -219,14 +217,6 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 			for (int y = 0; y < this.modelGridClone[0].length; y++) {
 				this.modelGridClone[x][y] = this.epithelium.getModel(x, y);
 			}
-		}
-		// Cancel Colors
-		this.colorMapClone.clear();
-		for (JRadioComponentButton jrb : this.mapSBMLMiniPanels.keySet()) {
-			String modelName = jrb.getComponentText();
-			Color c = Project.getInstance().getProjectFeatures().getModelColor(modelName);
-			this.mapSBMLMiniPanels.get(jrb).setBackground(c);
-			this.colorMapClone.put(Project.getInstance().getProjectFeatures().getModel(modelName), c);
 		}
 		this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
 		this.visualGridModel.updateModelUsed();
@@ -281,9 +271,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 	@Override
 	protected boolean isChanged() {
-
 		// ------------------ Models were added/removed to the model list
-
 		if (this.modelGridClone.length != this.epithelium.getX()
 				|| this.modelGridClone[0].length != this.epithelium.getY()) {
 			return true;
@@ -294,15 +282,6 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 				if (!this.modelGridClone[x][y].equals(this.epithelium.getModel(x, y))) {
 					return true;
 				}
-			}
-		}
-		// ------------------ Models colors were changed
-		for (JRadioComponentButton jrb : this.mapSBMLMiniPanels.keySet()) {
-			String modelName = jrb.getComponentText();
-			LogicalModel model = Project.getInstance().getProjectFeatures().getModel(modelName);
-			Color cOrig = Project.getInstance().getProjectFeatures().getModelColor(modelName);
-			if (!this.colorMapClone.get(model).equals(cOrig)) {
-				return true;
 			}
 		}
 		return false;

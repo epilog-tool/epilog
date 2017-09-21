@@ -77,7 +77,6 @@ public class ProjectFeatures {
 			} else {
 				this.nodeColor.put(nodeID, ColorUtils.random());
 			}
-			System.out.println("PF.addModelComps."+ nodeID + " " + this.nodeColor.get(nodeID));
 			ComponentPair cp = new ComponentPair(m, node);
 			if (!this.string2ComponentFeature.containsKey(nodeID)) {
 				Set<ComponentPair> tmpSet = new HashSet<ComponentPair>();
@@ -180,7 +179,6 @@ public class ProjectFeatures {
 	}
 
 	public Color getNodeColor(String nodeID) {
-		System.out.println("PF.getNodeColor: " + nodeID + " " + this.nodeColor.get(nodeID));
 		return this.nodeColor.get(nodeID);
 	}
 
@@ -189,12 +187,10 @@ public class ProjectFeatures {
 	}
 
 	public Map<String, Color> getNodeID2ColorMap() {
-		System.out.println("PF.getNodeID2ColorMap");
 		return this.nodeColor;
 	}
 
 	public void removeModel(String name) {
-		System.out.println("PF.removeModel: " + name);
 		LogicalModel m = this.getModel(name);
 		this.modelColor.remove(m);
 		this.model2String.remove(m);
@@ -224,7 +220,6 @@ public class ProjectFeatures {
 	}
 
 	public void setNodeColor(String nodeID, Color color) {
-		System.out.println("PF.setNodeColor: " + nodeID + " -> " + color);
 		if (!this.nodeColor.containsKey(nodeID) || !color.equals(this.nodeColor.get(nodeID))) {
 			this.nodeColor.put(nodeID, color);
 		}
