@@ -227,17 +227,19 @@ public class Simulation {
 	}
 
 	private boolean isSynchronous() {
-		if (this.epithelium.getUpdateSchemeInter().getAlpha() < 1)
-			return false;
-		return true;
+		return this.epithelium.getUpdateSchemeInter().getAlpha() == 1.0;
 	}
 
 	public int getTerminalCycleLen() {
 		if (this.isSynchronous()) {
 			String sGrid = this.gridHashHistory.get(this.gridHashHistory.size() - 1);
-			int pos = this.gridHashHistory.indexOf(sGrid);
-			if (pos < this.gridHashHistory.size() - 1) {
-				return (this.gridHashHistory.size() - 1) - pos;
+			// Tmp
+			List<String> lTmp = new ArrayList<String>(this.gridHashHistory);
+			lTmp.remove(this.gridHashHistory.size()-1);
+			int posBeforeLast = lTmp.lastIndexOf(sGrid);
+			
+			if (posBeforeLast > 0) {
+				return (this.gridHashHistory.size() - 1) - posBeforeLast;
 			}
 		}
 		return -1;

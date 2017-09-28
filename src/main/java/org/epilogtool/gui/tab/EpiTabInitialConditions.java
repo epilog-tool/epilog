@@ -121,11 +121,10 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		// ---------------------------------------------------------------------------
 		// Select/Deselect active nodes Buttons
 
-		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder("Display options"));
+		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder("Model selection"));
 		this.jpLeft.add(this.jpLeftTop, BorderLayout.NORTH);
 
 		JPanel rrTopSel = new JPanel(new FlowLayout());
-
 		JButton jbSelectAll = new JButton("Select All");
 		jbSelectAll.setMargin(new Insets(0, 0, 0, 0));
 		jbSelectAll.addActionListener(new ActionListener() {
@@ -159,13 +158,16 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			}
 		});
 		rrTopSel.add(jbDeselectAll);
-		this.jpLeftTop.add(rrTopSel);
+		JPanel jpLeftCenter = new JPanel(new BorderLayout());
+		jpLeftCenter.setBorder(BorderFactory.createTitledBorder("Components"));
+
+		jpLeftCenter.add(rrTopSel, BorderLayout.NORTH);
 
 		this.jpRCenter = new JPanel();
 		this.jpRCenter.setLayout(new BoxLayout(jpRCenter, BoxLayout.Y_AXIS));
 		JScrollPane jsLeftCenter = new JScrollPane(this.jpRCenter);
+		jsLeftCenter.setBorder(BorderFactory.createEmptyBorder());
 		jsLeftCenter.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		this.jpLeft.add(jsLeftCenter, BorderLayout.CENTER);
 		this.jccbSBML.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -175,7 +177,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			}
 		});
 
-		this.jpLeft.add(jsLeftCenter, BorderLayout.CENTER);
+		jpLeftCenter.add(jsLeftCenter, BorderLayout.CENTER);
+		this.jpLeft.add(jpLeftCenter, BorderLayout.CENTER);
 
 		// ---------------------------------------------------------------------------
 		// Apply
@@ -242,11 +245,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		jbApplyRandom.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
 				randomMarkCells();
-
 			}
-
 		});
 
 		RRandomInitialConditions.add(randomNodesAll, BorderLayout.NORTH);
@@ -318,11 +318,16 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, false));
 		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
 				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
+		for (int i = lInputs.size() - 1; i >= 0; i--) {
+			if (this.epithelium.isIntegrationComponent(lInputs.get(i))) {
+				lInputs.remove(i);
+			}
+		}
 
 		if (!lInternal.isEmpty())
-			this.setComponentTypeList(lInternal, "Internal Components", lModels);
+			this.setComponentTypeList(lInternal, "Internal", lModels);
 		if (!lInputs.isEmpty())
-			this.setComponentTypeList(lInputs, "Input Components", lModels);
+			this.setComponentTypeList(lInputs, "Positional Inputs", lModels);
 
 		this.visualGridICs.paintComponent(this.visualGridICs.getGraphics());
 		this.jpRCenter.revalidate();

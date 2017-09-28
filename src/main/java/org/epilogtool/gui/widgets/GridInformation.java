@@ -57,7 +57,7 @@ public class GridInformation extends JPanel {
 		gbc.gridy = y;
 		gbc.gridx = 0;
 		gbc.gridwidth = 2;
-		JLabel jlTmp = new JLabel("                              ");
+		JLabel jlTmp = new JLabel("                                ");
 		this.jCellPanel.add(jlTmp, gbc);
 	}
 
@@ -142,7 +142,7 @@ public class GridInformation extends JPanel {
 					Collections.sort(lAllNodeIDs, ObjectComparator.STRING);
 
 					// Proper values
-					jlTmp = new JLabel("Proper:");
+					jlTmp = new JLabel("Internal:");
 					this.constraints(gbc, 0, ++y, 1);
 					this.jCellPanel.add(jlTmp, gbc);
 					gbc.gridwidth = 1;
@@ -169,7 +169,7 @@ public class GridInformation extends JPanel {
 					this.minimalSpace(gbc, ++y);
 
 					// Environmental Input values
-					jlTmp = new JLabel("Model inputs:");
+					jlTmp = new JLabel("Positional inputs:");
 					this.constraints(gbc, 0, ++y, 1);
 					this.jCellPanel.add(jlTmp, gbc);
 					gbc.gridwidth = 1;
@@ -197,7 +197,7 @@ public class GridInformation extends JPanel {
 					this.minimalSpace(gbc, ++y);
 
 					// Integration Input values
-					jlTmp = new JLabel("Integration:");
+					jlTmp = new JLabel("Integration inputs:");
 					this.constraints(gbc, 0, ++y, 1);
 					this.jCellPanel.add(jlTmp, gbc);
 					gbc.gridwidth = 1;

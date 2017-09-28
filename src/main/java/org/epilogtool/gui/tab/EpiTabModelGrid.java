@@ -61,7 +61,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 		// Panel with the model selection
 		this.jpModelSelection = new JPanel(new GridBagLayout());
-		this.jpModelSelection.setBorder(BorderFactory.createTitledBorder("Model Selection"));
+		this.jpModelSelection.setBorder(BorderFactory.createTitledBorder("Model selection"));
 
 		// Panel with the grid Info
 		this.gridInfo = new GridInformation(this.epithelium.getIntegrationFunctions());
