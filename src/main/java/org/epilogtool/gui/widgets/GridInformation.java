@@ -170,7 +170,7 @@ public class GridInformation extends JPanel {
 
 					// Environmental Input values
 					jlTmp = new JLabel("Positional inputs:");
-					this.constraints(gbc, 0, ++y, 1);
+					this.constraints(gbc, 0, ++y, 2);
 					this.jCellPanel.add(jlTmp, gbc);
 					gbc.gridwidth = 1;
 					isEmpty = true;
@@ -198,7 +198,7 @@ public class GridInformation extends JPanel {
 
 					// Integration Input values
 					jlTmp = new JLabel("Integration inputs:");
-					this.constraints(gbc, 0, ++y, 1);
+					this.constraints(gbc, 0, ++y, 2);
 					this.jCellPanel.add(jlTmp, gbc);
 					gbc.gridwidth = 1;
 					isEmpty = true;

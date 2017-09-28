@@ -68,6 +68,12 @@ public class Epithelium {
 
 	public boolean equals(Object o) {
 		Epithelium otherEpi = (Epithelium) o;
+		System.out.println("Epithelium = ");
+		System.out.println("  . grid? " + this.grid.equals(otherEpi.grid));
+		System.out.println("  . prio? " + this.priorities.equals(otherEpi.priorities));
+		System.out.println("  . intF? " + this.integrationFunctions.equals(otherEpi.integrationFunctions));
+		System.out.println("  . prtb? " + this.perturbations.equals(otherEpi.perturbations));
+		System.out.println("  . UpSc? " + this.updateSchemeInter.equals(otherEpi.getUpdateSchemeInter()));
 		return (this.grid.equals(otherEpi.grid) && this.priorities.equals(otherEpi.priorities)
 				&& this.integrationFunctions.equals(otherEpi.integrationFunctions)
 				&& this.perturbations.equals(otherEpi.perturbations)

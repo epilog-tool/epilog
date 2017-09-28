@@ -482,25 +482,8 @@ public class EpiTabSimulation extends EpiTabTools {
 		gbc.gridy = y;
 		gbc.gridx = 0;
 		gbc.anchor = GridBagConstraints.WEST;
-		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
-		if (jcb == null) {
-			jcb = new JCheckBox(nodeID, mSelCheckboxes.get(nodeID));
-			jcb.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					JCheckBox jcb = (JCheckBox) e.getSource();
-					mSelCheckboxes.put(jcb.getText(), jcb.isSelected());
-					if (jcb.isSelected()) {
-						lCompON.add(jcb.getText());
-					} else {
-						lCompON.remove(jcb.getText());
-					}
-					visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
-				}
-			});
-			this.mNodeID2Checkbox.put(nodeID, jcb);
-		}
-		jp.add(jcb, gbc);
+		jp.add(new JLabel(nodeID), gbc);
+
 		gbc.gridx = 1;
 		JButton jbColor = new JButton();
 		jbColor.setBackground(Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
@@ -512,9 +495,33 @@ public class EpiTabSimulation extends EpiTabTools {
 		});
 		jp.add(jbColor, gbc);
 
+		gbc.gridx = 2;
+		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
+		if (jcb == null) {
+			jcb = new JCheckBox();
+			jcb.setToolTipText(nodeID);
+			jcb.setSelected(mSelCheckboxes.get(nodeID));
+			jcb.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JCheckBox jcb = (JCheckBox) e.getSource();
+					String nodeID = jcb.getToolTipText();
+					mSelCheckboxes.put(nodeID, jcb.isSelected());
+					if (jcb.isSelected()) {
+						lCompON.add(nodeID);
+					} else {
+						lCompON.remove(nodeID);
+					}
+					visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
+				}
+			});
+			this.mNodeID2Checkbox.put(nodeID, jcb);
+		}
+		jp.add(jcb, gbc);
+
 		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
 		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
-			gbc.gridx = 2;
+			gbc.gridx = 3;
 			JLabel percentage = new JLabel(nextGrid.getPercentage(nodeID));
 			jp.add(percentage, gbc);
 		}
@@ -627,7 +634,9 @@ public class EpiTabSimulation extends EpiTabTools {
 
 	@Override
 	public void applyChange() {
+		System.out.println("EpiTabSimulation.applyChange()");
 		if (this.hasChangedEpithelium()) {
+			System.out.println("applyChange().changedEpi");
 			JPanel jpNorth = new JPanel(new BorderLayout());
 			this.jpVisualGrid.add(jpNorth, BorderLayout.NORTH);
 			JTextPane jtp = new JTextPane();

@@ -229,15 +229,13 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		// Create Panel for the random initial conditions
 
 		JPanel RRandomInitialConditions = new JPanel(new BorderLayout());
-
 		RRandomInitialConditions.setBorder(BorderFactory.createTitledBorder("Random Initial Conditions"));
-		ButtonGroup group = new ButtonGroup();
-		// JCheckBox randomInitialConditions = new JCheckBox("Random Initial
-		// Conditions");
+
 		this.randomNodesAll = new JRadioButton("All components");
 		this.randomNodesSelected = new JRadioButton("Selected components");
-
 		randomNodesAll.setSelected(true);
+		
+		ButtonGroup group = new ButtonGroup();
 		group.add(randomNodesAll);
 		group.add(randomNodesSelected);
 
@@ -352,30 +350,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		// ----------------------------------------------------------------------------
 		gbc.gridx = 0;
-
-		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
-		if (jcb == null) {
-			this.mSelCheckboxes.put(nodeID, false);
-			jcb = new JCheckBox(nodeID, this.mSelCheckboxes.get(nodeID));
-			jcb.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					JCheckBox jcb = (JCheckBox) e.getSource();
-					mSelCheckboxes.put(jcb.getText(), jcb.isSelected());
-					if (jcb.isSelected()) {
-						mNode2ValueSelected.put(jcb.getText(),
-								(Byte) mNodeID2Combobox.get(jcb.getText()).getSelectedItem());
-					} else {
-						mNode2ValueSelected.remove(jcb.getText());
-					}
-
-					visualGridICs.paintComponent(visualGridICs.getGraphics());
-				}
-			});
-			this.mNodeID2Checkbox.put(nodeID, jcb);
-		}
-		jp.add(jcb, gbc);
-
+		jp.add(new JLabel(nodeID), gbc);
+		
 		// ----------------------------------------------------------------------------
 		gbc.gridx = 1;
 
@@ -416,8 +392,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			this.mNodeID2JBColor.put(nodeID, jbColor);
 		}
 		jbColor.setBackground(Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
-		System.out.println(" . setColor: " + jbColor.getBackground() + " "
-				+ Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
 		jp.add(jbColor, gbc);
 
 		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
@@ -426,6 +400,35 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			JLabel percentage = new JLabel(grid.getPercentage(nodeID));
 			jp.add(percentage, gbc);
 		}
+		
+		// ----------------------------------------------------------------------------
+		gbc.gridx = 3;
+
+		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
+		if (jcb == null) {
+			this.mSelCheckboxes.put(nodeID, false);
+			jcb = new JCheckBox();
+			jcb.setToolTipText(nodeID);
+			jcb.setSelected(this.mSelCheckboxes.get(nodeID));
+			jcb.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JCheckBox jcb = (JCheckBox) e.getSource();
+					String nodeID = jcb.getToolTipText();
+					mSelCheckboxes.put(nodeID, jcb.isSelected());
+					if (jcb.isSelected()) {
+						mNode2ValueSelected.put(nodeID,
+								(Byte) mNodeID2Combobox.get(nodeID).getSelectedItem());
+					} else {
+						mNode2ValueSelected.remove(nodeID);
+					}
+
+					visualGridICs.paintComponent(visualGridICs.getGraphics());
+				}
+			});
+			this.mNodeID2Checkbox.put(nodeID, jcb);
+		}
+		jp.add(jcb, gbc);
 	}
 
 	/**
