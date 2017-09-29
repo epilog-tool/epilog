@@ -10,11 +10,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
-import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
-import org.colomoto.logicalmodel.tool.simulation.updater.PriorityClasses;
-import org.colomoto.logicalmodel.tool.simulation.updater.PriorityUpdater;
+import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.NodeInfo;
+import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.tool.simulation.updater.PriorityClasses;
+import org.colomoto.biolqm.tool.simulation.updater.PriorityUpdater;
 import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.Tuple2D;

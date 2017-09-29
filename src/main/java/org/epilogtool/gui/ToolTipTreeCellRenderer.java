@@ -10,8 +10,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
-import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;

@@ -33,8 +33,8 @@ import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.tree.TreePath;
 
-import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
+import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.NodeInfo;
 import org.epilogtool.OptionStore;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
@@ -234,7 +234,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.randomNodesAll = new JRadioButton("All components");
 		this.randomNodesSelected = new JRadioButton("Selected components");
 		randomNodesAll.setSelected(true);
-		
+
 		ButtonGroup group = new ButtonGroup();
 		group.add(randomNodesAll);
 		group.add(randomNodesSelected);
@@ -351,7 +351,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		// ----------------------------------------------------------------------------
 		gbc.gridx = 0;
 		jp.add(new JLabel(nodeID), gbc);
-		
+
 		// ----------------------------------------------------------------------------
 		gbc.gridx = 1;
 
@@ -400,7 +400,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			JLabel percentage = new JLabel(grid.getPercentage(nodeID));
 			jp.add(percentage, gbc);
 		}
-		
+
 		// ----------------------------------------------------------------------------
 		gbc.gridx = 3;
 
@@ -417,8 +417,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 					String nodeID = jcb.getToolTipText();
 					mSelCheckboxes.put(nodeID, jcb.isSelected());
 					if (jcb.isSelected()) {
-						mNode2ValueSelected.put(nodeID,
-								(Byte) mNodeID2Combobox.get(nodeID).getSelectedItem());
+						mNode2ValueSelected.put(nodeID, (Byte) mNodeID2Combobox.get(nodeID).getSelectedItem());
 					} else {
 						mNode2ValueSelected.remove(nodeID);
 					}

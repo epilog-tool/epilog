@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.colomoto.logicalmodel.LogicalModel;
+import org.colomoto.biolqm.LogicalModel;
 
 public class EpitheliumUpdateSchemeIntra {
 	private Map<LogicalModel, ModelPriorityClasses> priorityClassSet;

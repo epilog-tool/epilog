@@ -7,9 +7,9 @@ import static org.junit.Assert.assertNull;
 import java.io.File;
 import java.io.IOException;
 
-import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
-import org.colomoto.logicalmodel.perturbation.RangePerturbation;
+import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.modifier.perturbation.RangePerturbation;
 import org.epilogtool.TestHelper;
 import org.epilogtool.io.FileIO;
 import org.junit.Before;
@@ -46,8 +46,7 @@ public class EpitheliumCellTest {
 
 	@Test
 	public void perturbationTest() {
-		AbstractPerturbation rp = new RangePerturbation(
-				m.getNodeOrder().get(0), 0, 1);
+		AbstractPerturbation rp = new RangePerturbation(m.getNodeOrder().get(0), 0, 1);
 		epicell.setPerturbation(rp);
 		assertEquals(rp, epicell.getPerturbation());
 	}

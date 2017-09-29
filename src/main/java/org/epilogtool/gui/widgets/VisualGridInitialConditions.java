@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
+import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.NodeInfo;
 import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.EmptyModel;
@@ -191,7 +191,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 			this.tpc.setChanged();
 			for (int x = 0; x < this.gridX; x++) {
 				for (int y = 0; y < this.gridY; y++) {
-					int value = RandCentral.getInstance().nextInt(maxValue+1);
+					int value = RandCentral.getInstance().nextInt(maxValue + 1);
 					this.epiGrid.setCellComponentValue(x, y, node.getNodeID(), (byte) value);
 				}
 			}

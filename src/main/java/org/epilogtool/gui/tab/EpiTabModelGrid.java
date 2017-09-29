@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.tree.TreePath;
 
-import org.colomoto.logicalmodel.LogicalModel;
+import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;

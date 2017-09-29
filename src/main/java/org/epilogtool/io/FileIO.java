@@ -17,8 +17,8 @@ import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
-import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.io.sbml.SBMLFormat;
+import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.io.sbml.SBMLFormat;
 import org.epilogtool.OptionStore;
 import org.epilogtool.notification.NotificationManager;
 import org.epilogtool.project.Project;

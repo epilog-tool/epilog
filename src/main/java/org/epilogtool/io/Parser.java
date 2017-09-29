@@ -15,12 +15,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.antlr.runtime.RecognitionException;
-import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
-import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
-import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
-import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
-import org.colomoto.logicalmodel.perturbation.RangePerturbation;
+import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.NodeInfo;
+import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.modifier.perturbation.FixedValuePerturbation;
+import org.colomoto.biolqm.modifier.perturbation.MultiplePerturbation;
+import org.colomoto.biolqm.modifier.perturbation.RangePerturbation;
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.Tuple2D;

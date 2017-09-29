@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.colomoto.logicalmodel.LogicalModel;
+import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.common.Tuple3D;
 import org.epilogtool.core.EmptyModel;

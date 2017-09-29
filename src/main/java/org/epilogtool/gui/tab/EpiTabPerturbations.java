@@ -33,12 +33,12 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.tree.TreePath;
 
-import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
-import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
-import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
-import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
-import org.colomoto.logicalmodel.perturbation.RangePerturbation;
+import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.NodeInfo;
+import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.modifier.perturbation.FixedValuePerturbation;
+import org.colomoto.biolqm.modifier.perturbation.MultiplePerturbation;
+import org.colomoto.biolqm.modifier.perturbation.RangePerturbation;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
@@ -299,7 +299,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 					List<AbstractPerturbation> lAPsClean = new ArrayList<AbstractPerturbation>();
 					for (int i = 0; i < lAPs.size(); i++) {
 						boolean sub = false;
-						for (int j = i+1; j < lAPs.size(); j++) {
+						for (int j = i + 1; j < lAPs.size(); j++) {
 							if (lAPs.get(j).toString().contains(lAPs.get(i).toString())) {
 								sub = true;
 								break;

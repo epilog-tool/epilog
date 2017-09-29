@@ -13,8 +13,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;

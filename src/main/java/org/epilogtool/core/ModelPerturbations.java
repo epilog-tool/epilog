@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 
 public class ModelPerturbations {
 	private List<AbstractPerturbation> allPerturbations;

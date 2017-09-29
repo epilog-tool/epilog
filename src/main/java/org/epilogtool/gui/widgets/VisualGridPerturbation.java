@@ -10,8 +10,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.Map;
 
-import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
@@ -30,10 +30,8 @@ public class VisualGridPerturbation extends VisualGridDefinitions {
 	private AbstractPerturbation selAbsPerturb;
 	private GridInformation valuePanel;
 
-	public VisualGridPerturbation(int gridX, int gridY, Topology topology,
-			EpitheliumGrid epiGrid,
-			Map<AbstractPerturbation, Color> colorMapClone,
-			GridInformation valuePanel, TabProbablyChanged tpc) {
+	public VisualGridPerturbation(int gridX, int gridY, Topology topology, EpitheliumGrid epiGrid,
+			Map<AbstractPerturbation, Color> colorMapClone, GridInformation valuePanel, TabProbablyChanged tpc) {
 		super(gridX, gridY, topology, tpc);
 		this.epiGrid = epiGrid;
 		this.colorMapClone = colorMapClone;
@@ -107,8 +105,7 @@ public class VisualGridPerturbation extends VisualGridDefinitions {
 		Color c = this.colorMapClone.get(this.selAbsPerturb);
 
 		// Paint the rectangle
-		super.highlightCellsOverRectangle(this.initialRectPos, this.mouseGrid,
-				c);
+		super.highlightCellsOverRectangle(this.initialRectPos, this.mouseGrid, c);
 	}
 
 	public void setSelAbsPerturb(AbstractPerturbation ap) {
@@ -120,48 +117,45 @@ public class VisualGridPerturbation extends VisualGridDefinitions {
 	}
 
 	protected void applyDataAt(int x, int y) {
-		//TODO: Probably a better way, but the old method was not working
+		// TODO: Probably a better way, but the old method was not working
 		if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
-			if (!this.tpc.isChanged()){
+			if (!this.tpc.isChanged()) {
 				if ((this.epiGrid.getPerturbation(x, y) == null && this.selAbsPerturb != null)
-				|| (this.epiGrid.getPerturbation(x, y) != null && this.selAbsPerturb == null)
-				|| (this.epiGrid.getPerturbation(x, y)!= null && this.selAbsPerturb != null && !this.epiGrid.getPerturbation(x, y).equals(this.selAbsPerturb))) {
-				this.tpc.setChanged();
+						|| (this.epiGrid.getPerturbation(x, y) != null && this.selAbsPerturb == null)
+						|| (this.epiGrid.getPerturbation(x, y) != null && this.selAbsPerturb != null
+								&& !this.epiGrid.getPerturbation(x, y).equals(this.selAbsPerturb))) {
+					this.tpc.setChanged();
 				}
 			}
 			this.epiGrid.setPerturbation(x, y, this.selAbsPerturb);
-			
+
 		}
 	}
 
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 
-		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY,
-				this.getSize().width, this.getSize().height);
+		this.radius = this.topology.computeBestRadius(this.gridX, this.gridY, this.getSize().width,
+				this.getSize().height);
 
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
 				BasicStroke stroke = this.strokeBasic;
 				Color cPerturb = this.getParent().getBackground();
-				if (EmptyModel.getInstance().isEmptyModel(
-						this.epiGrid.getModel(x, y))) {
+				if (EmptyModel.getInstance().isEmptyModel(this.epiGrid.getModel(x, y))) {
 					cPerturb = EmptyModel.getInstance().getColor();
 				}
 
 				else if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
-					AbstractPerturbation ap = this.epiGrid
-							.getPerturbation(x, y);
+					AbstractPerturbation ap = this.epiGrid.getPerturbation(x, y);
 					if (ap != null) {
 						cPerturb = this.colorMapClone.get(ap);
 						stroke = this.strokePerturb;
 					} else
 						cPerturb = Color.WHITE;
 				}
-				Tuple2D<Double> center = topology.getPolygonCenter(this.radius,
-						x, y);
-				Polygon polygon = topology
-						.createNewPolygon(this.radius, center);
+				Tuple2D<Double> center = topology.getPolygonCenter(this.radius, x, y);
+				Polygon polygon = topology.createNewPolygon(this.radius, center);
 				this.paintPolygon(stroke, cPerturb, polygon, g2);
 			}
 		}

@@ -3,9 +3,9 @@ package org.epilogtool.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
-import org.colomoto.logicalmodel.tool.simulation.updater.PriorityClasses;
+import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.NodeInfo;
+import org.colomoto.biolqm.tool.simulation.updater.PriorityClasses;
 
 public class ModelPriorityClasses {
 

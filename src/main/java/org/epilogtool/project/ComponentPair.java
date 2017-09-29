@@ -1,7 +1,7 @@
 package org.epilogtool.project;
 
-import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
+import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.NodeInfo;
 
 public class ComponentPair {
 	private LogicalModel m;

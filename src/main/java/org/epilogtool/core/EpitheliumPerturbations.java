@@ -7,8 +7,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 
 public class EpitheliumPerturbations {
 	private Map<LogicalModel, ModelPerturbations> perturbations;

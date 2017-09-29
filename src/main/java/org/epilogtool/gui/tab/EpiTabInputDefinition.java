@@ -28,8 +28,8 @@ import javax.swing.JTextField;
 import javax.swing.tree.TreePath;
 
 import org.antlr.runtime.RecognitionException;
-import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
+import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.NodeInfo;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
@@ -151,10 +151,13 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	}
 
 	/**
-	 * Reaction function to the change of the selected input to defined as either Positional or Integration.
-	 * 1) By default an input is positional, if it is already defined as an integration, the integration functions immediately appear.
-	 * 2) Inputs are defined locally, i.e. if more than one model has an input with the same name, functions must be definied for each. 
-	 * 3) Same name inputs (from different models) may be positional in one and integration in another
+	 * Reaction function to the change of the selected input to defined as either
+	 * Positional or Integration. 1) By default an input is positional, if it is
+	 * already defined as an integration, the integration functions immediately
+	 * appear. 2) Inputs are defined locally, i.e. if more than one model has an
+	 * input with the same name, functions must be definied for each. 3) Same name
+	 * inputs (from different models) may be positional in one and integration in
+	 * another
 	 */
 	private void updateNodeID() {
 		this.jpNRTop.removeAll();
@@ -196,9 +199,9 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		}
 	}
 
-	
 	/**
 	 * Returns the input selected in the radio button, given the selected model
+	 * 
 	 * @return
 	 */
 	private NodeInfo getActiveNodeInfo() {
@@ -207,8 +210,9 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	}
 
 	/**
-	 * Sets the integration function (IF) defined in the integration function box assigned to a component pair (model, node). 
-	 * Only IF well written are assigned.
+	 * Sets the integration function (IF) defined in the integration function box
+	 * assigned to a component pair (model, node). Only IF well written are
+	 * assigned.
 	 * 
 	 * @param level
 	 * @param function
@@ -222,18 +226,20 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		cif.setFunctionAtLevel(level, function);
 	}
 
-
 	/**
-	 * Integration Function (IF) validation function. If the IF is well written, the text box is white, otherwise Red.
-	 * Badly written IF are accepted, but the system just erases it.
+	 * Integration Function (IF) validation function. If the IF is well written, the
+	 * text box is white, otherwise Red. Badly written IF are accepted, but the
+	 * system just erases it.
 	 * 
-	 * The value is the level of the function. The toolTip is used as a "shortcut" to identify the level of the function
+	 * The value is the level of the function. The toolTip is used as a "shortcut"
+	 * to identify the level of the function
 	 * 
 	 * @param jtf
 	 */
 	private void validateTextField(JTextField jtf) {
 		byte value = Byte.parseByte(jtf.getToolTipText());
-		//TODO Find another way to identify the level of the function, that is not the tooltiptext
+		// TODO Find another way to identify the level of the function, that is not the
+		// tooltiptext
 
 		try {
 			setIntegrationFunction(value, jtf.getText());
@@ -288,7 +294,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		jEmptyInputPane.setText("There are no Input Components in this Model");
 		this.jpNRBottom.add(jEmptyInputPane);
 	}
-	
+
 	private void paintModelInputPanel() {
 		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
 		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());

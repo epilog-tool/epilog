@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.colomoto.logicalmodel.LogicalModel;
+import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.topology.RollOver;

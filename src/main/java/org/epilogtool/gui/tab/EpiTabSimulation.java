@@ -33,8 +33,8 @@ import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.tree.TreePath;
 
-import org.colomoto.logicalmodel.LogicalModel;
-import org.colomoto.logicalmodel.NodeInfo;
+import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.NodeInfo;
 import org.epilogtool.FileSelectionHelper;
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.Txt;
@@ -115,7 +115,8 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jpLeftRight.add(this.jpGridInformation, BorderLayout.CENTER);
 
 		JPanel jpGridInfo = new JPanel(new GridBagLayout());
-//		jpGridInfo.setBorder(BorderFactory.createTitledBorder(Txt.get("Simulation information")));
+		// jpGridInfo.setBorder(BorderFactory.createTitledBorder(Txt.get("Simulation
+		// information")));
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridy = 0;

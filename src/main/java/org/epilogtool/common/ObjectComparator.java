@@ -2,8 +2,8 @@ package org.epilogtool.common;
 
 import java.util.Comparator;
 
-import org.colomoto.logicalmodel.NodeInfo;
-import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.NodeInfo;
+import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.epilogtool.project.ComponentPair;
 
 public class ObjectComparator {
