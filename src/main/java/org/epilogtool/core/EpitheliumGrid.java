@@ -96,7 +96,15 @@ public class EpitheliumGrid {
 		return this.modelSet.contains(m);
 	}
 
-	public void restrictCellWithPerturbation(int x, int y) {
+	public void restrictGridWithPerturbations() {
+		for (int y = 0; y < this.getY(); y++) {
+			for (int x = 0; x < this.getX(); x++) {
+				this.restrictCellWithPerturbation(x, y);
+			}
+		}
+	}
+
+	private void restrictCellWithPerturbation(int x, int y) {
 		this.gridEpiCell[x][y].restrictValuesWithPerturbation();
 	}
 

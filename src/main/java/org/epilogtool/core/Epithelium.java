@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -62,18 +61,10 @@ public class Epithelium {
 
 	public String toString() {
 		return this.getName();
-		// return this.name + " ("
-		// + this.grid.getTopology().getRollOver().toString() + ")";
 	}
 
 	public boolean equals(Object o) {
 		Epithelium otherEpi = (Epithelium) o;
-		System.out.println(this + " vs " + otherEpi);
-		System.out.println("  . grid? " + this.grid.equals(otherEpi.grid));
-		System.out.println("  . prio? " + this.priorities.equals(otherEpi.priorities));
-		System.out.println("  . intF? " + this.integrationFunctions.equals(otherEpi.integrationFunctions));
-		System.out.println("  . prtb? " + this.perturbations.equals(otherEpi.perturbations));
-		System.out.println("  . UpSc? " + this.updateSchemeInter.equals(otherEpi.getUpdateSchemeInter()));
 		return (this.grid.equals(otherEpi.grid) && this.priorities.equals(otherEpi.priorities)
 				&& this.integrationFunctions.equals(otherEpi.integrationFunctions)
 				&& this.perturbations.equals(otherEpi.perturbations)
@@ -361,60 +352,12 @@ public class Epithelium {
 		return flag;
 	}
 
-	/**
-	 *
-	 * Validates all the Integration Functions (IF) of a given epithelium.
-	 * 
-	 * @param oldEpi
-	 * @param oldModel
-	 * @param newModel
-	 */
-	private void validateAllIntegrationFunctions(Epithelium oldEpi, LogicalModel oldModel, LogicalModel newModel) {
-
-		EpitheliumIntegrationFunctions intFunctions = this.getIntegrationFunctions();
-		System.out.println(intFunctions);
-
-		Map<ComponentPair, ComponentIntegrationFunctions> funcs = intFunctions.getAllIntegrationFunctions();
-
-		// try {
-		// this.setIntegrationFunction(nodeID, m, value, function);
-		// } catch (RuntimeException re) {
-		// NotificationManager.warning("Parser",
-		// "Integration function: " + saTmp[2] + ":" + value + " has invalid expression:
-		// " + function);
-		// }
-
-	}
-
-	// /**
-	// * Retrieve the regulators of an Integration Function (IF).
-	// * This is used on the replace, but should be verified as needed?
-	// *
-	// * @param integrationString
-	// * @return
-	// */
-	// private Set<String> getRegulators(String integrationString) {
-	// // TODO Auto-generated method stub
-	//
-	// IntegrationFunctionExpression expr = string2Expression(integrationString)
-	//
-	// System.out.println(integrationString);
-	//
-	// return traverseIFTreeRegulators(expr);
-	// }
-
 	private void replaceInitialConditions(NodeInfo oldNode, NodeInfo newNode, EpitheliumGrid oldGrid) {
-
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
 				byte value = oldGrid.getCellValue(x, y, oldNode.toString());
-				if (value > 0) {
-
-					if (value <= newNode.getMax()) {
-
-						this.getEpitheliumGrid().setCellComponentValue(x, y, newNode.toString(), value);
-
-					}
+				if (0 < value && value <= newNode.getMax()) {
+					this.getEpitheliumGrid().setCellComponentValue(x, y, newNode.toString(), value);
 				}
 			}
 		}

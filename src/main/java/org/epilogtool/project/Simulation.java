@@ -62,30 +62,18 @@ public class Simulation {
 			this.random = RandCentral.getInstance()
 					.getNewGenerator(this.epithelium.getUpdateSchemeInter().getRandomSeed());
 		}
+		// Grid History
 		this.gridHistory = new ArrayList<EpitheliumGrid>();
-		EpitheliumGrid firstGrid = this.epithelium.getEpitheliumGrid();
+		EpitheliumGrid firstGrid = this.epithelium.getEpitheliumGrid().clone();
 		firstGrid.updateNodeValueCounts();
-		this.gridHistory.add(this.restrictGridWithPerturbations(firstGrid));
+		firstGrid.restrictGridWithPerturbations();
+		this.gridHistory.add(firstGrid);
+		// Grid Hash History
 		this.gridHashHistory = new ArrayList<String>();
 		this.gridHashHistory.add(firstGrid.hashGrid());
 		this.stable = false;
 		this.hasCycle = false;
 		this.buildPriorityUpdaterCache();
-		
-		System.out.println("-----------Bla----------");
-		System.out.println(this.epithelium.getEpitheliumGrid().equals(e.getEpitheliumGrid()));
-		System.out.println("-----------Bla first grid----------");
-		System.out.println(firstGrid.equals(e.getEpitheliumGrid()));
-
-	}
-
-	private EpitheliumGrid restrictGridWithPerturbations(EpitheliumGrid grid) {
-		for (int y = 0; y < grid.getY(); y++) {
-			for (int x = 0; x < grid.getX(); x++) {
-				grid.restrictCellWithPerturbation(x, y);
-			}
-		}
-		return grid;
 	}
 
 	private void buildPriorityUpdaterCache() {

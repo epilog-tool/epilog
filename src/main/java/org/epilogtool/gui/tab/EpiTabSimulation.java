@@ -96,11 +96,6 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.iUserBurst = 30;
 		this.iCurrSimIter = 0;
 		this.simulation = new Simulation(this.epithelium.clone());
-		System.out.println("-----------out Bla----------");
-		System.out.println(this.simulation.getEpithelium().getEpitheliumGrid().equals(this.epithelium.getEpitheliumGrid()));
-		System.out.println("-----------out Bla first grid----------");
-		System.out.println(this.simulation.getCurrentGrid().equals(this.epithelium.getEpitheliumGrid()));
-		this.hasChangedEpithelium();
 		this.jpVisualGrid = new JPanel(new BorderLayout());
 		this.add(this.jpVisualGrid, BorderLayout.CENTER);
 
@@ -119,26 +114,33 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jpGridInformation = new GridInformation(this.epithelium.getIntegrationFunctions());
 		this.jpLeftRight.add(this.jpGridInformation, BorderLayout.CENTER);
 
-		JPanel jpRestart = new JPanel();
-		jpRestart.setBorder(BorderFactory.createTitledBorder(Txt.get("s_TAB_SIM_RESTART")));
-		this.jbRestart = ButtonFactory.getNoMargins(Txt.get("s_TAB_SIM_RESTART"));
-		this.jbRestart.setToolTipText(Txt.get("s_TAB_SIM_RESTART_DESC"));
-		this.jbRestart.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				restart();
-			}
-		});
-		jpRestart.add(jbRestart);
+		JPanel jpGridInfo = new JPanel(new GridBagLayout());
+//		jpGridInfo.setBorder(BorderFactory.createTitledBorder(Txt.get("Simulation information")));
 
-		this.jpLeftRight.add(jpRestart, BorderLayout.PAGE_END);
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridy = 0;
+		gbc.gridx = 0;
+		gbc.ipadx = gbc.ipady = 10;
+		gbc.anchor = GridBagConstraints.WEST;
+		jpGridInfo.add(new JLabel("Iteration:"), gbc);
+		gbc.gridx = 1;
+		this.jlStep = new JLabel("" + this.iCurrSimIter);
+		jpGridInfo.add(this.jlStep, gbc);
+		gbc.gridy = 1;
+		gbc.gridx = 0;
+		gbc.gridwidth = 2;
+		this.jlAttractor = new JLabel("");
+		this.jlAttractor.setForeground(Color.RED);
+		this.setGridGUIStable(false);
+		jpGridInfo.add(this.jlAttractor, gbc);
+
+		this.jpLeftRight.add(jpGridInfo, BorderLayout.PAGE_END);
 		this.visualGridSimulation = new VisualGridSimulation(this.simulation.getGridAt(0), this.lCompON,
 				this.jpGridInformation);
 		this.jpVisualGrid.add(this.visualGridSimulation, BorderLayout.CENTER);
 
 		JPanel jpButtons = new JPanel(new BorderLayout());
 		JPanel jpButtonsC = new JPanel();
-		// jpButtonsC.setPreferredSize(new Dimension(120, 10));
 		jpButtons.add(jpButtonsC, BorderLayout.LINE_START);
 
 		JScrollPane jspButtons = new JScrollPane(jpButtons, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
@@ -146,6 +148,17 @@ public class EpiTabSimulation extends EpiTabTools {
 		jspButtons.setPreferredSize(new Dimension(jspButtons.getPreferredSize().width,
 				jspButtons.getPreferredSize().height + jspButtons.getHorizontalScrollBar().getVisibleAmount() * 3));
 		jspButtons.setBorder(BorderFactory.createEmptyBorder());
+
+		this.jbRestart = ButtonFactory.getNoMargins(Txt.get("s_TAB_SIM_RESTART"));
+		this.jbRestart.setToolTipText(Txt.get("s_TAB_SIM_RESTART_DESC"));
+		this.jbRestart.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				EpiGUI.getInstance().restartSimulationTab();
+				jbRestart.setBackground(jbBack.getBackground());
+			}
+		});
+		jpButtonsC.add(this.jbRestart);
 
 		this.jbRewind = ButtonFactory.getImageNoBorder("media_rewind-26x24.png");
 		this.jbRewind.setToolTipText(Txt.get("s_TAB_SIM_BACK_DESC"));
@@ -157,6 +170,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		jpButtonsC.add(this.jbRewind);
+
 		this.jbBack = ButtonFactory.getImageNoBorder("media_step_back-24x24.png");
 		this.jbBack.setToolTipText(Txt.get("s_TAB_SIM_BACK1_DESC"));
 		this.jbBack.setEnabled(false);
@@ -167,6 +181,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		jpButtonsC.add(this.jbBack);
+
 		this.jbForward = ButtonFactory.getImageNoBorder("media_step_forward-24x24.png");
 		this.jbForward.setToolTipText(Txt.get("s_TAB_SIM_FWR1_DESC"));
 		this.jbForward.addActionListener(new ActionListener() {
@@ -176,6 +191,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		jpButtonsC.add(this.jbForward);
+
 		JTextField jtSteps = new JTextField("" + this.iUserBurst);
 		jtSteps.setToolTipText(Txt.get("s_TAB_SIM_BURST_DESC"));
 		jtSteps.setColumns(3);
@@ -200,6 +216,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		jpButtonsC.add(jtSteps);
+
 		this.jbFastFwr = ButtonFactory.getImageNoBorder("media_fast_forward-26x24.png");
 		this.jbFastFwr.setToolTipText(Txt.get("s_TAB_SIM_FWR_DESC"));
 		this.jbFastFwr.addActionListener(new ActionListener() {
@@ -245,15 +262,6 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		jpButtons.add(jpButtonsR, BorderLayout.LINE_END);
 
-		JPanel jpButtonsL = new JPanel();
-		this.jlStep = new JLabel("Iteration: " + this.iCurrSimIter);
-		jpButtonsL.add(this.jlStep);
-		this.jlAttractor = new JLabel("");
-		this.jlAttractor.setForeground(Color.RED);
-		this.setGridGUIStable(false);
-		jpButtonsL.add(this.jlAttractor);
-
-		jpButtons.add(jpButtonsL, BorderLayout.CENTER);
 		this.jpVisualGrid.add(jspButtons, BorderLayout.SOUTH);
 
 		this.jpLeft = new JPanel(new BorderLayout());
@@ -370,7 +378,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 	private void simulationRewind() {
 		this.iCurrSimIter = 0;
-		this.jlStep.setText("Iteration: " + this.iCurrSimIter);
+		this.jlStep.setText("" + this.iCurrSimIter);
 		EpitheliumGrid firstGrid = this.simulation.getGridAt(this.iCurrSimIter);
 		this.visualGridSimulation.setEpitheliumGrid(firstGrid);
 		setGridGUIStable(false);
@@ -392,7 +400,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			return;
 		}
 		EpitheliumGrid prevGrid = this.simulation.getGridAt(--this.iCurrSimIter);
-		this.jlStep.setText("Iteration: " + this.iCurrSimIter);
+		this.jlStep.setText("" + this.iCurrSimIter);
 		this.visualGridSimulation.setEpitheliumGrid(prevGrid);
 		setGridGUIStable(false);
 		this.setGUITerminalCycle(this.simulation.getTerminalCycleLen());
@@ -436,7 +444,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		} else {
 			this.iCurrSimIter++;
 			this.visualGridSimulation.setEpitheliumGrid(nextGrid);
-			this.jlStep.setText("Iteration: " + this.iCurrSimIter);
+			this.jlStep.setText("" + this.iCurrSimIter);
 			this.setGUITerminalCycle(this.simulation.getTerminalCycleLen());
 		}
 		this.jbRewind.setEnabled(true);
@@ -467,7 +475,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			this.iCurrSimIter++;
 		}
 		this.visualGridSimulation.setEpitheliumGrid(nextGrid);
-		this.jlStep.setText("Iteration: " + this.iCurrSimIter);
+		this.jlStep.setText("" + this.iCurrSimIter);
 		this.jbRewind.setEnabled(true);
 		this.jbBack.setEnabled(true);
 		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
@@ -627,15 +635,15 @@ public class EpiTabSimulation extends EpiTabTools {
 		return true;
 	}
 
-	private boolean hasChangedEpithelium() {
-		System.out.println("Sim.this.epi: " + this.epithelium);
-		System.out.println("");
-		return !this.simulation.getEpithelium().equals(this.epithelium);
+	public String state2str(byte[] state) {
+		String str = "";
+		for (int i = 0; i < state.length; i++)
+			str += state[i];
+		return str;
 	}
 
-	private void restart() {
-		EpiGUI.getInstance().restartSimulationTab();
-		this.jbRestart.setBackground(this.jbBack.getBackground());
+	private boolean hasChangedEpithelium() {
+		return !this.simulation.getEpithelium().equals(this.epithelium);
 	}
 
 	@Override

@@ -119,7 +119,7 @@ public class EpitheliumCell {
 		}
 		for (int i = 0; i < state.length; i++) {
 			if (state[i] != ecOut.state[i]) {
-				System.out.println("  EpiCell.equals: state " + this.state2str(state) + " =/= " + this.state2str(ecOut.state));
+//				System.out.println("  EpiCell.equals: state " + this.state2str(state) + " =/= " + this.state2str(ecOut.state));
 				return false;
 			}
 		}
