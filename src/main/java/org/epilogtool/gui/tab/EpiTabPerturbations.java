@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.colomoto.logicalmodel.perturbation.FixedValuePerturbation;
 import org.colomoto.logicalmodel.perturbation.MultiplePerturbation;
 import org.colomoto.logicalmodel.perturbation.RangePerturbation;
+import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
@@ -88,6 +90,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 
 		this.jspRBColor = new JScrollPane();
 		this.jspRBColor.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		this.jspRBColor.setBorder(BorderFactory.createEmptyBorder());
+
 		this.jpRBColor = new JPanel(new GridBagLayout());
 		this.jspRBColor.setViewportView(this.jpRBColor);
 		this.colorMapClone = new HashMap<AbstractPerturbation, Color>();
@@ -246,10 +250,10 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		jbDelete.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				List<AbstractPerturbation> lTmp = new ArrayList<AbstractPerturbation>(mAP2RadioButton.keySet());
+				List<AbstractPerturbation> lTmp = new ArrayList<AbstractPerturbation>(mAP2Checkbox.keySet());
 				for (AbstractPerturbation ap : lTmp) {
-					JRadioButton jrb = mAP2RadioButton.get(ap);
-					if (jrb.isSelected()) {
+					JCheckBox jcb = mAP2Checkbox.get(ap);
+					if (jcb.isSelected()) {
 						if (hasCellGridClone(ap)) {
 							NotificationManager.warning("EpiTabPerturbations",
 									"Some cells are still assigned with the selected perturbation");
@@ -258,6 +262,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 							mAP2RadioButton.remove(ap);
 							jrbGroup.remove(mAP2JButton.get(ap));
 							mAP2JButton.remove(ap);
+							mAP2Checkbox.remove(ap);
+							mID2AP.remove(ap.toString());
 							colorMapClone.remove(ap);
 							epiPerturbClone.getModelPerturbations(selModel).delPerturbationColor(ap);
 							tpc.setChanged();
@@ -274,7 +280,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		gbc.gridwidth = 2;
 		gbc.anchor = GridBagConstraints.CENTER;
 		jpPerturbTop.add(jpTmp, gbc);
-		
+
 		JButton jbMultiple = ButtonFactory.getNoMargins(Txt.get("s_TAB_PERTURB_MULT_BU"));
 		jbMultiple.setToolTipText(Txt.get("s_TAB_PERTURB_MULT_BU_DESC"));
 		jbMultiple.addActionListener(new ActionListener() {
@@ -285,20 +291,44 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 					if (mAP2Checkbox.get(ap).isSelected()) {
 						lAPs.add(ap);
 					}
+					mAP2Checkbox.get(ap).setSelected(false);
 				}
 				if (lAPs.size() > 1) {
-					MultiplePerturbation<AbstractPerturbation> mulap = new MultiplePerturbation<AbstractPerturbation>(
-							lAPs);
-					epiPerturbClone.addPerturbation(selModel, mulap);
-					mID2AP.put(mulap.toString(), mulap);
-					ModelPerturbations mp = epiPerturbClone.getModelPerturbations(selModel);
-					Color c = mp.getPerturbationColor(mulap);
-					if (c == null) {
-						c = ColorUtils.random();
+					// Need to check the unicity of the existing perturbations
+					Collections.sort(lAPs, ObjectComparator.ABSTRACT_PERTURB);
+					List<AbstractPerturbation> lAPsClean = new ArrayList<AbstractPerturbation>();
+					for (int i = 0; i < lAPs.size(); i++) {
+						boolean sub = false;
+						for (int j = i+1; j < lAPs.size(); j++) {
+							if (lAPs.get(j).toString().contains(lAPs.get(i).toString())) {
+								sub = true;
+								break;
+							}
+						}
+						if (!sub) {
+							lAPsClean.add(lAPs.get(i));
+						}
 					}
-					addColor2MarkPanel(mulap, c);
-					tpc.setChanged();
-					repaintAPColorsPanel();
+					MultiplePerturbation<AbstractPerturbation> mulap = new MultiplePerturbation<AbstractPerturbation>(
+							lAPsClean);
+					if (lAPsClean.size() != lAPs.size()) {
+						NotificationManager.warning("EpiTabPerturbations", Txt.get("s_TAB_PERTURB_COMB"));
+						NotificationManager.dispatchDialogWarning(false, false);
+					} else if (mID2AP.containsKey(mulap.toString())) {
+						NotificationManager.warning("EpiTabPerturbations", Txt.get("s_TAB_PERTURB_REPEAT"));
+						NotificationManager.dispatchDialogWarning(false, false);
+					} else {
+						epiPerturbClone.addPerturbation(selModel, mulap);
+						mID2AP.put(mulap.toString(), mulap);
+						ModelPerturbations mp = epiPerturbClone.getModelPerturbations(selModel);
+						Color c = mp.getPerturbationColor(mulap);
+						if (c == null) {
+							c = ColorUtils.random();
+						}
+						addColor2MarkPanel(mulap, c);
+						tpc.setChanged();
+						repaintAPColorsPanel();
+					}
 				}
 			}
 		});
@@ -316,7 +346,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 			}
 		}
 		this.jpCenter.add(this.jspRBColor, BorderLayout.CENTER);
-
 
 		JPanel jpColorApplyClear = new JPanel(new FlowLayout());
 		JButton jbApplyAll = ButtonFactory.getNoMargins("Apply to All");
@@ -343,9 +372,9 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		jpColorTop.setBorder(BorderFactory.createTitledBorder("Apply selection"));
 		jpColorTop.add(jpColorApplyClear, BorderLayout.PAGE_START);
 		jpColorTop.add(jpColorRect, BorderLayout.PAGE_END);
-		
+
 		this.jpCenter.add(jpColorTop, BorderLayout.PAGE_END);
-		
+
 		if (mp != null) {
 			for (AbstractPerturbation ap : mp.getAllPerturbations()) {
 				Color c = mp.getPerturbationColor(ap);

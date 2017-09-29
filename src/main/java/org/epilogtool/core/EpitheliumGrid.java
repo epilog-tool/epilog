@@ -239,20 +239,28 @@ public class EpitheliumGrid {
 	}
 
 	public boolean equals(Object a) {
-		if (a == null || !(a instanceof EpitheliumGrid))
+		if (a == null || !(a instanceof EpitheliumGrid)) {
+			System.out.println("EpiGrid.equals: Not a grid");
 			return false;
-		if (a == this)
+		}
+		if (a == this) {
+			System.out.println("EpiGrid.equals: Same ref");
 			return true;
+		}
 		EpitheliumGrid o = (EpitheliumGrid) a;
-
-		if (!this.topology.equals(o.topology))
+		if (!this.topology.equals(o.topology)) {
+			System.out.println("EpiGrid.equals: =/= topology");
 			return false;
+		}
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
-				if (!this.gridEpiCell[x][y].equals(o.gridEpiCell[x][y]))
+				if (!this.gridEpiCell[x][y].equals(o.gridEpiCell[x][y])) {
+					System.out.println("EpiGrid.equals: =/= epicell (" +x+","+ y+")");
 					return false;
+				}
 			}
 		}
+		System.out.println("EpiGrid.equals: same grid");
 		return true;
 	}
 

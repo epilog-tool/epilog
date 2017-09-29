@@ -71,6 +71,12 @@ public class Simulation {
 		this.stable = false;
 		this.hasCycle = false;
 		this.buildPriorityUpdaterCache();
+		
+		System.out.println("-----------Bla----------");
+		System.out.println(this.epithelium.getEpitheliumGrid().equals(e.getEpitheliumGrid()));
+		System.out.println("-----------Bla first grid----------");
+		System.out.println(firstGrid.equals(e.getEpitheliumGrid()));
+
 	}
 
 	private EpitheliumGrid restrictGridWithPerturbations(EpitheliumGrid grid) {

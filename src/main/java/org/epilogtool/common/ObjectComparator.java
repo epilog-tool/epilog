@@ -3,6 +3,7 @@ package org.epilogtool.common;
 import java.util.Comparator;
 
 import org.colomoto.logicalmodel.NodeInfo;
+import org.colomoto.logicalmodel.perturbation.AbstractPerturbation;
 import org.epilogtool.project.ComponentPair;
 
 public class ObjectComparator {
@@ -16,9 +17,14 @@ public class ObjectComparator {
 			return s1.compareToIgnoreCase(s2);
 		}
 	};
-	public static Comparator<ComponentPair> COMPONENTPAIR = new Comparator<ComponentPair>(){
+	public static Comparator<ComponentPair> COMPONENTPAIR = new Comparator<ComponentPair>() {
 		public int compare(ComponentPair cp1, ComponentPair cp2) {
 			return cp1.getNodeInfo().getNodeID().compareToIgnoreCase(cp2.getNodeInfo().getNodeID());
+		}
+	};
+	public static Comparator<AbstractPerturbation> ABSTRACT_PERTURB = new Comparator<AbstractPerturbation>() {
+		public int compare(AbstractPerturbation ap1, AbstractPerturbation ap2) {
+			return ap1.toString().compareTo(ap2.toString());
 		}
 	};
 }

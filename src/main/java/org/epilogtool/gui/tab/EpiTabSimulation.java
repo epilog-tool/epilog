@@ -95,8 +95,12 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		this.iUserBurst = 30;
 		this.iCurrSimIter = 0;
-		Epithelium clonedEpi = this.epithelium.clone();
-		this.simulation = new Simulation(clonedEpi);
+		this.simulation = new Simulation(this.epithelium.clone());
+		System.out.println("-----------out Bla----------");
+		System.out.println(this.simulation.getEpithelium().getEpitheliumGrid().equals(this.epithelium.getEpitheliumGrid()));
+		System.out.println("-----------out Bla first grid----------");
+		System.out.println(this.simulation.getCurrentGrid().equals(this.epithelium.getEpitheliumGrid()));
+		this.hasChangedEpithelium();
 		this.jpVisualGrid = new JPanel(new BorderLayout());
 		this.add(this.jpVisualGrid, BorderLayout.CENTER);
 
@@ -624,6 +628,8 @@ public class EpiTabSimulation extends EpiTabTools {
 	}
 
 	private boolean hasChangedEpithelium() {
+		System.out.println("Sim.this.epi: " + this.epithelium);
+		System.out.println("");
 		return !this.simulation.getEpithelium().equals(this.epithelium);
 	}
 
