@@ -573,9 +573,9 @@ public class EpiGUI extends JFrame {
 			}
 
 			LogicalModel newModel = FileIO.loadSBMLModel(fc.getSelectedFile());
-			for (NodeInfo node : newModel.getNodeOrder()) {
+			for (NodeInfo node : newModel.getComponents()) {
 				for (LogicalModel model : Project.getInstance().getProjectFeatures().getModels()) {
-					for (NodeInfo existingNode : model.getNodeOrder()) {
+					for (NodeInfo existingNode : model.getComponents()) {
 						if (node.toString().equals(existingNode.toString())) {
 							if (node.getMax() != existingNode.getMax()) {
 								JOptionPane.showMessageDialog(this,

@@ -123,7 +123,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		});
 		ButtonGroup group = new ButtonGroup();
 		for (LogicalModel m : modelList) {
-			for (NodeInfo node : m.getNodeOrder()) {
+			for (NodeInfo node : m.getComponents()) {
 				if (!node.isInput())
 					continue;
 				String nodeID = node.getNodeID();

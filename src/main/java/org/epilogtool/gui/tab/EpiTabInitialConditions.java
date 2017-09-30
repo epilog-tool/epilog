@@ -286,7 +286,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		int y = 0;
 		for (NodeInfo node : lNodes) {
 			for (LogicalModel m : listModels) {
-				if (m.getNodeOrder().contains(node) && !this.epithelium.isIntegrationComponent(node)) {
+				if (m.getComponents().contains(node) && !this.epithelium.isIntegrationComponent(node)) {
 					this.lModelVisibleComps.add(node.getNodeID());
 					this.getCompMiniPanel(jpRRC, gbc, y++, node);
 					break;
@@ -451,7 +451,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		for (String sNode : nodesToMark) {
 			for (String sModel : models) {
 				LogicalModel lmModel = Project.getInstance().getProjectFeatures().getModel(sModel);
-				for (NodeInfo node : lmModel.getNodeOrder()) {
+				for (NodeInfo node : lmModel.getComponents()) {
 					if (node.getNodeID().equals(sNode)) {
 						if (!this.epithelium.isIntegrationComponent(node)) {
 							lNodes.add(node);

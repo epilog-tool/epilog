@@ -19,7 +19,7 @@ public class EpitheliumCell {
 	
 	public void restrictValuesWithPerturbation() {
 		if (perturbation != null) {
-			this.perturbation.restrictValues(state, model.getNodeOrder());
+			this.perturbation.restrictValues(state, model.getComponents());
 		}
 	}
 	
@@ -28,7 +28,7 @@ public class EpitheliumCell {
 			return;
 		}
 		this.model = m;
-		this.state = new byte[m.getNodeOrder().size()];
+		this.state = new byte[m.getComponents().size()];
 		for (int i = 0; i < this.state.length; i++) {
 			this.state[i] = 0;
 		}
@@ -47,7 +47,7 @@ public class EpitheliumCell {
 		int index = this.getNodeIndex(nodeID);
 		if (index < 0)
 			return;
-		value = (byte) Math.min(value, this.model.getNodeOrder().get(index).getMax());
+		value = (byte) Math.min(value, this.model.getComponents().get(index).getMax());
 		state[index] = value;
 	}
 	
@@ -75,8 +75,8 @@ public class EpitheliumCell {
 	}
 
 	public int getNodeIndex(String nodeID) {
-		for (int i = 0; i < this.model.getNodeOrder().size(); i++) {
-			if (this.model.getNodeOrder().get(i).getNodeID().equals(nodeID))
+		for (int i = 0; i < this.model.getComponents().size(); i++) {
+			if (this.model.getComponents().get(i).getNodeID().equals(nodeID))
 				return i;
 		}
 		return -1;
@@ -88,8 +88,8 @@ public class EpitheliumCell {
 	
 	public long hashState() {
 		long hash = 1;
-		for (int i = 0; i < model.getNodeOrder().size(); i++) {
-			int vals = model.getNodeOrder().get(i).getMax() + 1;
+		for (int i = 0; i < model.getComponents().size(); i++) {
+			int vals = model.getComponents().get(i).getMax() + 1;
 			hash += i * Math.pow(vals, this.state[i]);
 		}
 		return hash;

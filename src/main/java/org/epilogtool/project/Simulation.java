@@ -15,8 +15,8 @@ import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.colomoto.biolqm.tool.simulation.updater.PriorityClasses;
 import org.colomoto.biolqm.tool.simulation.updater.PriorityUpdater;
-import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.EnumRandomSeed;
+import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
@@ -191,7 +191,7 @@ public class Simulation {
 		PriorityUpdater updater = this.updaterCache.get(m).get(ap);
 
 		// 2. Update integration components
-		for (NodeInfo node : m.getNodeOrder()) {
+		for (NodeInfo node : m.getComponents()) {
 			ComponentPair nodeCP = new ComponentPair(m, node);
 			if (node.isInput() && sIntegComponentPairs.contains(nodeCP)) {
 				List<IntegrationFunctionExpression> lExpressions = this.epithelium
@@ -203,7 +203,7 @@ public class Simulation {
 						break; // The lowest value being satisfied
 					}
 				}
-				currState[m.getNodeOrder().indexOf(node)] = target;
+				currState[m.getComponents().indexOf(node)] = target;
 			}
 		}
 		List<byte[]> succ = updater.getSuccessors(currState);
@@ -260,7 +260,7 @@ public class Simulation {
 		for (EpitheliumGrid grid : this.gridHistory) {
 			percentageHistory.add(new HashMap<String, Float>());
 			for (LogicalModel model : grid.getModelSet()) {
-				for (NodeInfo node : model.getNodeOrder()) {
+				for (NodeInfo node : model.getComponents()) {
 					for (byte i = 1; i <= node.getMax(); i++) {
 						String nodeID = node.getNodeID() + " " + i;
 						percentageHistory.get(index).put(nodeID, grid.getPercentage(node.getNodeID(), i));

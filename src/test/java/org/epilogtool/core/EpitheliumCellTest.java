@@ -37,7 +37,7 @@ public class EpitheliumCellTest {
 		assertNull(epicell.getPerturbation());
 		byte[] state = epicell.getState();
 		assertNotNull(state);
-		for (int i = 0; i < m.getNodeOrder().size(); i++) {
+		for (int i = 0; i < m.getComponents().size(); i++) {
 			assertEquals(0, state[i]);
 		}
 		assertNotNull(epicell.getModel());
@@ -46,7 +46,7 @@ public class EpitheliumCellTest {
 
 	@Test
 	public void perturbationTest() {
-		AbstractPerturbation rp = new RangePerturbation(m.getNodeOrder().get(0), 0, 1);
+		AbstractPerturbation rp = new RangePerturbation(m.getComponents().get(0), 0, 1);
 		epicell.setPerturbation(rp);
 		assertEquals(rp, epicell.getPerturbation());
 	}
@@ -63,7 +63,7 @@ public class EpitheliumCellTest {
 		assertEquals(clone.getModel(), epicell.getModel());
 		assertEquals(clone.getPerturbation(), epicell.getPerturbation());
 		assertNotNull(clone.getState());
-		for (int i = 0; i < m.getNodeOrder().size(); i++) {
+		for (int i = 0; i < m.getComponents().size(); i++) {
 			assertEquals(clone.getState()[i], epicell.getState()[i]);
 		}
 	}

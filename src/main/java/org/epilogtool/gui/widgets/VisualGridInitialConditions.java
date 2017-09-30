@@ -168,7 +168,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 							Color cBase = Project.getInstance().getProjectFeatures().getNodeID2ColorMap().get(nodeID);
 							byte value = this.epiGrid.getCellState(x, y)[index];
 							if (value > 0) {
-								byte max = this.epiGrid.getModel(x, y).getNodeOrder().get(index).getMax();
+								byte max = this.epiGrid.getModel(x, y).getComponents().get(index).getMax();
 								lColors.add(ColorUtils.getColorAtValue(cBase, max, value));
 							}
 						}

@@ -68,7 +68,7 @@ public class ProjectFeatures {
 	}
 
 	public void addModelComponents(LogicalModel m) {
-		for (NodeInfo node : m.getNodeOrder()) {
+		for (NodeInfo node : m.getComponents()) {
 			String nodeID = node.getNodeID();
 			this.nodeID2Info.put(nodeID, node);
 			String OS_nodeID = "CC " + nodeID;
@@ -120,7 +120,7 @@ public class ProjectFeatures {
 
 	public Set<String> getModelNodeIDs(LogicalModel m, boolean input) {
 		Set<String> sComps = new HashSet<String>();
-		for (NodeInfo node : m.getNodeOrder()) {
+		for (NodeInfo node : m.getComponents()) {
 			if (!input && !node.isInput() || input && node.isInput()) {
 				sComps.add(node.getNodeID());
 			}
@@ -130,7 +130,7 @@ public class ProjectFeatures {
 
 	public Set<NodeInfo> getModelNodeInfos(LogicalModel m, boolean input) {
 		Set<NodeInfo> sComps = new HashSet<NodeInfo>();
-		for (NodeInfo node : m.getNodeOrder()) {
+		for (NodeInfo node : m.getComponents()) {
 			if (!input && !node.isInput() || input && node.isInput()) {
 				sComps.add(node);
 			}

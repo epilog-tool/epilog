@@ -355,7 +355,7 @@ public class Parser {
 				if (!valueInst.containsKey(currM))
 					valueInst.put(currM, new HashMap<String, Map<Byte, List<Integer>>>());
 
-				List<NodeInfo> nodeOrder = currM.getNodeOrder();
+				List<NodeInfo> nodeOrder = currM.getComponents();
 				byte[] currState = grid.getCellState(x, y);
 				for (int n = 0; n < nodeOrder.size(); n++) {
 					String nodeID = nodeOrder.get(n).getNodeID();

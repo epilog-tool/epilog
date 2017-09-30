@@ -140,7 +140,7 @@ public class IFEvaluation {
 			}
 
 			for (Tuple2D<Integer> tuple : neighbours) {
-				List<NodeInfo> lNodes = this.neighboursGrid.getModel(tuple.getX(), tuple.getY()).getNodeOrder();
+				List<NodeInfo> lNodes = this.neighboursGrid.getModel(tuple.getX(), tuple.getY()).getComponents();
 				for (int n = 0; n < lNodes.size(); n++) {
 					if (node.getNodeID().equals(lNodes.get(n).getNodeID())) {
 						byte state = this.neighboursGrid.getCellState(tuple.getX(), tuple.getY())[n];

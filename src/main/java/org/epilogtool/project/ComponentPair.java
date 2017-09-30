@@ -28,7 +28,7 @@ public class ComponentPair {
 	
 	@Override
 	public int hashCode() {
-		return this.m.getNodeOrder().size() + 1000*this.m.getExtraComponents().size() + 100000*this.node.getMax()
+		return this.m.getComponents().size() + 1000*this.m.getExtraComponents().size() + 100000*this.node.getMax()
 		+ 1000000*this.node.getNodeID().length();
 	}
 	

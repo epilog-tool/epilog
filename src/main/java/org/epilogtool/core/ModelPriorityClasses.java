@@ -23,8 +23,8 @@ public class ModelPriorityClasses {
 	public ModelPriorityClasses(LogicalModel m) {
 		this.model = m;
 		this.priorities = new PriorityClasses();
-		int[] tmp = new int[m.getNodeOrder().size() * 2];
-		for (int n = 0; n < m.getNodeOrder().size(); n++) {
+		int[] tmp = new int[m.getComponents().size() * 2];
+		for (int n = 0; n < m.getComponents().size(); n++) {
 			tmp[n * 2] = n;
 			tmp[n * 2 + 1] = 0;
 		}
@@ -47,7 +47,7 @@ public class ModelPriorityClasses {
 		List<String> lVars = new ArrayList<String>();
 		int[] iaPCidx = this.priorities.getClass(idxPC);
 		for (int i = 0; i < this.priorities.getClass(idxPC).length; i += 2) {
-			String var = model.getNodeOrder().get(iaPCidx[i]).getNodeID();
+			String var = model.getComponents().get(iaPCidx[i]).getNodeID();
 			if (iaPCidx[i + 1] == 1) {
 				var += INC;
 			} else if (iaPCidx[i + 1] == -1) {
@@ -75,8 +75,8 @@ public class ModelPriorityClasses {
 					split = 1;
 					var = sVars[i].substring(0, var.length() - INC.length());
 				}
-				for (int idx = 0; idx < this.model.getNodeOrder().size(); idx++) {
-					NodeInfo node = this.model.getNodeOrder().get(idx);
+				for (int idx = 0; idx < this.model.getComponents().size(); idx++) {
+					NodeInfo node = this.model.getComponents().get(idx);
 					if (node.getNodeID().equals(var)) {
 						newTmp[i * 2] = idx;
 						newTmp[i * 2 + 1] = split;
@@ -104,8 +104,8 @@ public class ModelPriorityClasses {
 				split = 0;
 				var = varMm;
 			}
-			for (int idx = 0; idx < this.model.getNodeOrder().size(); idx++) {
-				NodeInfo node = this.model.getNodeOrder().get(idx);
+			for (int idx = 0; idx < this.model.getComponents().size(); idx++) {
+				NodeInfo node = this.model.getComponents().get(idx);
 				if (node.getNodeID().equals(var)) {
 					this.priorities.decPriority(idxPC, idx, split);
 					break;
@@ -130,8 +130,8 @@ public class ModelPriorityClasses {
 				split = 0;
 				var = varMm;
 			}
-			for (int idx = 0; idx < this.model.getNodeOrder().size(); idx++) {
-				NodeInfo node = this.model.getNodeOrder().get(idx);
+			for (int idx = 0; idx < this.model.getComponents().size(); idx++) {
+				NodeInfo node = this.model.getComponents().get(idx);
 				if (node.getNodeID().equals(var)) {
 					this.priorities.incPriority(idxPC, idx, split);
 					break;
@@ -171,8 +171,8 @@ public class ModelPriorityClasses {
 	// }
 
 	public void split(int idxPC, String var) {
-		for (int idx = 0; idx < this.model.getNodeOrder().size(); idx++) {
-			NodeInfo node = this.model.getNodeOrder().get(idx);
+		for (int idx = 0; idx < this.model.getComponents().size(); idx++) {
+			NodeInfo node = this.model.getComponents().get(idx);
 			if (node.getNodeID().equals(var)) {
 				this.priorities.split(idxPC, idx);
 				return;
@@ -185,8 +185,8 @@ public class ModelPriorityClasses {
 			return;
 		String var = varMm.substring(0, varMm.length() - INC.length());
 		int split = varMm.endsWith(INC) ? 1 : -1;
-		for (int idx = 0; idx < this.model.getNodeOrder().size(); idx++) {
-			NodeInfo node = this.model.getNodeOrder().get(idx);
+		for (int idx = 0; idx < this.model.getComponents().size(); idx++) {
+			NodeInfo node = this.model.getComponents().get(idx);
 			if (node.getNodeID().equals(var)) {
 				this.priorities.unsplit(idxPC, idx, split);
 			}

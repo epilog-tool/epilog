@@ -111,7 +111,7 @@ public class Epithelium {
 		// Create list with all existing Components
 		Set<String> sNodeIDs = new HashSet<String>();
 		for (LogicalModel m : modelSet) {
-			for (NodeInfo node : m.getNodeOrder()) {
+			for (NodeInfo node : m.getComponents()) {
 				sNodeIDs.add(node.getNodeID());
 			}
 		}
@@ -277,10 +277,10 @@ public class Epithelium {
 		}
 
 		// 2) Types of nodes with the same name are compared
-		for (NodeInfo node : oldModel.getNodeOrder()) {
+		for (NodeInfo node : oldModel.getComponents()) {
 			Boolean flag = false;
 			String mes = "";
-			for (NodeInfo nNode : newModel.getNodeOrder()) {
+			for (NodeInfo nNode : newModel.getComponents()) {
 
 				if (node.toString().equals(nNode.toString())) {
 					flag = true;
@@ -391,7 +391,7 @@ public class Epithelium {
 					newPCVars.add(component);
 				}
 				if (pcVarIndex == 0 && idxPC == 0) {
-					for (NodeInfo node : newModel.getNodeOrder()) {
+					for (NodeInfo node : newModel.getComponents()) {
 						if (!commonNodeNames.contains(node.toString()) && !node.isInput()) {
 							// System.out.println(node);
 							newPCVars.add(node.toString());
@@ -494,7 +494,7 @@ public class Epithelium {
 
 		for (int x = 0; x < this.getX(); x++) {
 			for (int y = 0; y < this.getY(); y++) {
-				List<NodeInfo> listNodes = this.getModel(x, y).getNodeOrder();
+				List<NodeInfo> listNodes = this.getModel(x, y).getComponents();
 				for (NodeInfo node : listNodes) {
 					if (!node.isInput()) {
 						byte maxValue = node.getMax();
@@ -517,7 +517,7 @@ public class Epithelium {
 	public NodeInfo getComponentUsed(String componentName) {
 		this.getEpitheliumGrid().updateModelSet();
 		for (LogicalModel model : this.getEpitheliumGrid().getModelSet()) {
-			for (NodeInfo node : model.getNodeOrder()) {
+			for (NodeInfo node : model.getComponents()) {
 				if (node.getNodeID().equals(componentName))
 					return node;
 

@@ -315,7 +315,7 @@ public class EpitheliumGrid {
 		for (int x = 0; x < this.getX(); x++) {
 			for (int y = 0; y < this.getY(); y++) {
 				LogicalModel model = this.getModel(x, y);
-				for (NodeInfo node : model.getNodeOrder()) {
+				for (NodeInfo node : model.getComponents()) {
 					String nodeID = node.getNodeID();
 					byte val = this.getCellValue(x, y, nodeID);
 					if (!this.compCounts.containsKey(nodeID)) {

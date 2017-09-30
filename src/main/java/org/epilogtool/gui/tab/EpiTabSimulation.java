@@ -104,7 +104,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.mNodeID2Checkbox = new HashMap<String, JCheckBox>();
 		this.colorButton2Node = new HashMap<JButton, String>();
 		for (LogicalModel m : this.epithelium.getEpitheliumGrid().getModelSet()) {
-			for (NodeInfo node : m.getNodeOrder()) {
+			for (NodeInfo node : m.getComponents()) {
 				this.mSelCheckboxes.put(node.getNodeID(), false);
 			}
 		}
@@ -115,6 +115,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jpLeftRight.add(this.jpGridInformation, BorderLayout.CENTER);
 
 		JPanel jpGridInfo = new JPanel(new GridBagLayout());
+		jpGridInfo.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 		// jpGridInfo.setBorder(BorderFactory.createTitledBorder(Txt.get("Simulation
 		// information")));
 
@@ -161,7 +162,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		});
 		jpButtonsC.add(this.jbRestart);
 
-		this.jbRewind = ButtonFactory.getImageNoBorder("media_rewind-26x24.png");
+		this.jbRewind = ButtonFactory.getImageNoBorder("media_step_0.png");//media_rewind-26x24.png");
 		this.jbRewind.setToolTipText(Txt.get("s_TAB_SIM_BACK_DESC"));
 		this.jbRewind.setEnabled(false);
 		this.jbRewind.addActionListener(new ActionListener() {
