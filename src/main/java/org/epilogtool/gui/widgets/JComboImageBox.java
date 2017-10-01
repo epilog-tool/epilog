@@ -19,6 +19,7 @@ public class JComboImageBox<E> extends JComboBox<E> {
 	private ImageIcon[] selectedImages;
 	private String[] selectedDescr;
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public JComboImageBox(String[] names) {
 		super();
 		selectedImages = new ImageIcon[names.length];

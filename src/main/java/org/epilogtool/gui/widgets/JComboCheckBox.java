@@ -60,6 +60,7 @@ public class JComboCheckBox extends JComboWideBox<JCheckBox> {
 		return lItems;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void updateItemList(List<String> lItems) {
 		List<JCheckBox> lCurrJCB = this.getCheckBoxes();
 		int sz = lCurrJCB.size();
@@ -74,14 +75,12 @@ public class JComboCheckBox extends JComboWideBox<JCheckBox> {
 			}
 			if (!exists) {
 				lCurrJCB.add(new JCheckBox(sName, false));
-				System.out.println(" . JCB.add: " + sName);
 			}
 		}
 
 		// 2. remover os que já não existem
 		for (int i = sz - 1; i >= 0; i--) {
 			if (!lItems.contains(lCurrJCB.get(i).getText())) {
-				System.out.println(" . JCB.remove: " + lCurrJCB.get(i).getText());
 				lCurrJCB.remove(i);
 			}
 		}
