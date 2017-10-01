@@ -77,8 +77,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		jpNorth.add(jpNLeft, BorderLayout.LINE_START);
 
 		// Model selection list
-		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
-		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
+		JComboBox<String> jcbSBML = this.newModelCombobox(this.epithelium.getEpitheliumGrid().getModelSet());
 		this.jpNLTop = new JPanel();
 		this.jpNLTop.setBorder(BorderFactory.createTitledBorder("Model Selection"));
 		this.jpNLTop.add(jcbSBML);
@@ -103,11 +102,12 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		this.isInitialized = true;
 	}
 
-	private JComboBox<String> newModelCombobox(List<LogicalModel> modelList) {
+	private JComboBox<String> newModelCombobox(Set<LogicalModel> sModels) {
 		// Model selection list
-		String[] saSBML = new String[modelList.size()];
-		for (int i = 0; i < modelList.size(); i++) {
-			saSBML[i] = Project.getInstance().getProjectFeatures().getModelName(modelList.get(i));
+		String[] saSBML = new String[sModels.size()];
+		int i = 0;
+		for (LogicalModel m : sModels) {
+			saSBML[i++] = Project.getInstance().getProjectFeatures().getModelName(m);
 		}
 		JComboBox<String> jcb = new JComboWideBox<String>(saSBML);
 		jcb.addActionListener(new ActionListener() {
@@ -122,16 +122,15 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 			}
 		});
 		ButtonGroup group = new ButtonGroup();
-		for (LogicalModel m : modelList) {
+		for (LogicalModel m : sModels) {
 			for (NodeInfo node : m.getComponents()) {
 				if (!node.isInput())
 					continue;
-				String nodeID = node.getNodeID();
 				JRadioButton jrb;
-				if (this.mNode2RadioButton.containsKey(nodeID)) {
-					jrb = this.mNode2RadioButton.get(nodeID);
+				if (this.mNode2RadioButton.containsKey(node)) {
+					jrb = this.mNode2RadioButton.get(node);
 				} else {
-					jrb = new JRadioButton(nodeID);
+					jrb = new JRadioButton(node.getNodeID());
 					jrb.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
@@ -155,7 +154,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	 * Positional or Integration. 1) By default an input is positional, if it is
 	 * already defined as an integration, the integration functions immediately
 	 * appear. 2) Inputs are defined locally, i.e. if more than one model has an
-	 * input with the same name, functions must be definied for each. 3) Same name
+	 * input with the same name, functions must be defined for each. 3) Same name
 	 * inputs (from different models) may be positional in one and integration in
 	 * another
 	 */
@@ -238,9 +237,6 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	 */
 	private void validateTextField(JTextField jtf) {
 		byte value = Byte.parseByte(jtf.getToolTipText());
-		// TODO Find another way to identify the level of the function, that is not the
-		// tooltiptext
-
 		try {
 			setIntegrationFunction(value, jtf.getText());
 			jtf.setBackground(Color.WHITE);
@@ -248,6 +244,18 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 			jtf.setBackground(ColorUtils.LIGHT_RED);
 		} catch (RuntimeException re) {
 			jtf.setBackground(ColorUtils.LIGHT_RED);
+		}
+
+		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.activeModel);
+		ComponentPair cp = new ComponentPair(m, this.getActiveNodeInfo());
+		ComponentIntegrationFunctions cfi = this.epithelium.getIntegrationFunctionsForComponent(cp);
+		if (cfi != null) {
+			List<String> lFunctions = cfi.getFunctions();
+			if (lFunctions.size() >= value) {
+				if (jtf.getText().equals(lFunctions.get(value - 1))) {
+					return;
+				}
+			}
 		}
 		tpc.setChanged();
 	}
@@ -370,9 +378,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 						eifOrig.getComponentIntegrationFunctions(cp).setFunctionAtLevel(i,
 								cifClone.getFunctions().get(i - 1));
 					} catch (RecognitionException re) {
-						// TODO Auto-generated catch block
 					} catch (RuntimeException re) {
-						// TODO Auto-generated catch block
 						DialogMessage.showError(this, "Integration function error", node.getNodeID() + ":" + i
 								+ " has invalid expression: " + cifClone.getFunctions().get(i - 1));
 						break allNodes;
@@ -384,12 +390,15 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 
 	@Override
 	protected boolean isChanged() {
+		System.out.println("EpiTabInputDefinition.isChanged()");
 		for (NodeInfo node : mNode2RadioButton.keySet()) {
 			ComponentPair cp = new ComponentPair(Project.getInstance().getProjectFeatures().getModel(this.activeModel),
 					node);
 			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions.getComponentIntegrationFunctions(cp);
 			ComponentIntegrationFunctions cifOrig = this.epithelium.getIntegrationFunctions()
 					.getComponentIntegrationFunctions(cp);
+			System.out.println("isChanged.cifClone: " + cifClone);
+			System.out.println("isChanged.cifOrig: " + cifOrig);
 			if (cifClone == null && cifOrig == null)
 				continue;
 			if (cifClone == null && cifOrig != null || cifClone != null && cifOrig == null)
@@ -404,10 +413,10 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	public void applyChange() {
 		// FIXME: if a model is no longer in the epi, should we still save its
 		// input definitions?
-		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		this.jpNLTop.removeAll();
-		this.jpNLTop.add(this.newModelCombobox(modelList));
-		this.activeModel = Project.getInstance().getProjectFeatures().getModelName(modelList.get(0));
+		JComboBox<String> jcbSBML = this.newModelCombobox(this.epithelium.getEpitheliumGrid().getModelSet());
+		this.jpNLTop.add(jcbSBML);
+		this.activeModel = (String) jcbSBML.getSelectedItem();
 		this.updateComponentList();
 	}
 }
