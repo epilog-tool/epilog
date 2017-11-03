@@ -210,7 +210,7 @@ public class Parser {
 		}
 		// // Ensure coherence of all epithelia
 		for (Epithelium epi : Project.getInstance().getEpitheliumList()) {
-			epi.getEpitheliumGrid().updateModelSet();
+			epi.getEpitheliumGrid().updateGrid();
 		}
 		// System.out.println("Final: " + project);
 		Project.getInstance().setChanged(false);

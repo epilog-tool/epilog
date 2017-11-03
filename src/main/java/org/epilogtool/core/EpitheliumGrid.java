@@ -33,7 +33,7 @@ public class EpitheliumGrid {
 		this.compPercents = compPercents;
 	}
 
-	public void updateEpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover)
+	public void editEpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		// Create new EpiCell[][]
@@ -50,8 +50,8 @@ public class EpitheliumGrid {
 		this.gridEpiCell = newGrid;
 		// Create new Topology
 		this.setTopology(topologyID, gridX, gridY, rollover);
-		// Update model Set
-		this.updateModelSet();
+		// Update grid
+		this.updateGrid();
 	}
 
 	public EpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover, LogicalModel m)
@@ -67,7 +67,7 @@ public class EpitheliumGrid {
 		this.modelSet = new HashSet<LogicalModel>();
 		this.modelSet.add(m);
 		this.compCounts = new HashMap<String, Map<Byte, Integer>>();
-		this.compPercents = new HashMap<String, Map<Byte, Float>>();
+		this.compPercents = new HashMap<String, Map<Byte, Float>>();//ptgm
 	}
 
 	private void setTopology(String topologyID, int gridX, int gridY, RollOver rollover)
@@ -156,6 +156,11 @@ public class EpitheliumGrid {
 		return this.gridEpiCell[x][y].hasEmptyModel();
 	}
 
+	public void updateGrid() {
+		this.updateModelSet();
+		this.updateNodeValueCounts();
+	}
+	
 	public void updateModelSet() {
 		this.modelSet.clear();
 		for (int y = 0; y < this.getY(); y++) {

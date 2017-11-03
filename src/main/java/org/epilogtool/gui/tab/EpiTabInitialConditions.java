@@ -565,7 +565,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			}
 		}
 		// New (potential) model list -> Update JComboCheckBox
-		this.epithelium.getEpitheliumGrid().updateModelSet();
+		// and (potential) new node value counts
+		this.epithelium.getEpitheliumGrid().updateGrid();
 		List<String> newModelList = new ArrayList<String>();
 		for (LogicalModel m : this.epithelium.getEpitheliumGrid().getModelSet()) {
 			newModelList.add(Project.getInstance().getProjectFeatures().getModelName(m));

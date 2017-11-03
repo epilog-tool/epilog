@@ -111,7 +111,8 @@ public class VisualGridSimulation extends VisualGrid {
 				LogicalModel m = this.epiGrid.getModel(x, y);
 				List<Color> lColors = new ArrayList<Color>();
 				if (EmptyModel.getInstance().isEmptyModel(m)) {
-					lColors.add(EmptyModel.getInstance().getColor());
+//					lColors.add(EmptyModel.getInstance().getColor());
+					lColors.add(this.getParent().getBackground());
 				} else {
 					for (String nodeID : this.lCompON) {
 						Color cBase = Project.getInstance().getProjectFeatures().getNodeColor(nodeID);

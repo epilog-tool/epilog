@@ -74,7 +74,7 @@ public class Epithelium {
 	public void updateEpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
-		this.grid.updateEpitheliumGrid(gridX, gridY, topologyID, rollover);
+		this.grid.editEpitheliumGrid(gridX, gridY, topologyID, rollover);
 	}
 
 	public boolean hasModel(LogicalModel m) {
