@@ -199,10 +199,10 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 					jb.setBackground(newColor);
 					this.projChanged.setChanged(this);
 					Project.getInstance().getProjectFeatures().setModelColor(name, newColor);
-					this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
 					if (EmptyModel.getInstance().isEmptyModel(name)) {
 						EmptyModel.getInstance().setColor(newColor);
 					}
+					this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
 					jrb.setSelected(true);
 				}
 				break;
