@@ -97,8 +97,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.lRight = new GridInformation(this.epithelium.getIntegrationFunctions());
 
 		this.tpc = new TabProbablyChanged();
-		this.visualGridICs = new VisualGridInitialConditions(this.epiGridClone, this.mNode2ValueSelected, this.lRight,
-				this.tpc);
+		this.visualGridICs = new VisualGridInitialConditions(this.epiGridClone, this.mNode2ValueSelected,
+				this.mNodeID2Checkbox, this.lRight, this.tpc);
 		this.center.add(this.visualGridICs, BorderLayout.CENTER);
 
 		this.jpLeft = new JPanel(new BorderLayout());
@@ -394,20 +394,19 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		jbColor.setBackground(Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
 		jp.add(jbColor, gbc);
 
-		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
-		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
-			gbc.gridx = 2;
-			JLabel percentage = new JLabel(grid.getPercentage(nodeID));
-			jp.add(percentage, gbc);
-		}
-
 		// ----------------------------------------------------------------------------
 		gbc.gridx = 3;
 
 		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
 		if (jcb == null) {
 			this.mSelCheckboxes.put(nodeID, false);
-			jcb = new JCheckBox();
+			// node percentage is the checkbox text
+			String nodePercent = "";
+			String percPref = (String) OptionStore.getOption("PrefsNodePercent");
+			if (percPref != null && percPref.equals(EnumNodePercent.YES.toString())) {
+				nodePercent = grid.getPercentage(nodeID);
+			}
+			jcb = new JCheckBox(nodePercent);
 			jcb.setToolTipText(nodeID);
 			jcb.setSelected(this.mSelCheckboxes.get(nodeID));
 			jcb.addActionListener(new ActionListener() {

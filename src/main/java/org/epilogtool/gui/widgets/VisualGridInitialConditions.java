@@ -11,11 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JCheckBox;
+
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Tuple2D;
-import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
@@ -26,16 +27,18 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 
 	private EpitheliumGrid epiGrid;
 	private Map<String, Byte> mNode2ValueSelected;
+	private Map<String, JCheckBox> mNodeID2Checkbox;
 	private boolean isRectFill;
 	private Tuple2D<Integer> initialRectPos;
 	private List<LogicalModel> selectedModels;
 	private GridInformation valuePanel;
 
 	public VisualGridInitialConditions(EpitheliumGrid gridClone, Map<String, Byte> mNode2ValueSelected,
-			GridInformation valuePanel, TabProbablyChanged tpc) {
+			Map<String, JCheckBox> mNodeID2Checkbox, GridInformation valuePanel, TabProbablyChanged tpc) {
 		super(gridClone.getX(), gridClone.getY(), gridClone.getTopology(), tpc);
 		this.epiGrid = gridClone;
 		this.mNode2ValueSelected = mNode2ValueSelected;
+		this.mNodeID2Checkbox = mNodeID2Checkbox;
 		this.isRectFill = false;
 		this.initialRectPos = null;
 		this.selectedModels = new ArrayList<LogicalModel>();
@@ -56,6 +59,8 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 				} else {
 					paintCellAt(mouseGrid);
 				}
+				epiGrid.updateNodeValueCounts();
+				updateNodePercentages();
 			}
 		});
 		this.addMouseListener(new MouseListener() {
@@ -64,6 +69,8 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 				if (isRectFill) {
 					applyRectangleOnCells(initialRectPos, mouseGrid);
 				}
+				epiGrid.updateNodeValueCounts();
+				updateNodePercentages();
 			}
 
 			@Override
@@ -73,6 +80,8 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 				} else {
 					paintCellAt(mouseGrid);
 				}
+				epiGrid.updateNodeValueCounts();
+				updateNodePercentages();
 			}
 
 			@Override
@@ -87,6 +96,14 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 			public void mouseClicked(MouseEvent e) {
 			}
 		});
+	}
+	
+	private void updateNodePercentages() {
+		for (String nodeID : this.mNodeID2Checkbox.keySet()) {
+			JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
+			jcb.setText(this.epiGrid.getPercentage(nodeID));
+			jcb.paintComponents(this.getGraphics());
+		}
 	}
 
 	@Override
@@ -158,9 +175,9 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
 				Color cCombined;
-//				if (EmptyModel.getInstance().isEmptyModel(this.epiGrid.getModel(x, y))) {
-//					cCombined = EmptyModel.getInstance().getColor();
-//				} else
+				// if (EmptyModel.getInstance().isEmptyModel(this.epiGrid.getModel(x, y))) {
+				// cCombined = EmptyModel.getInstance().getColor();
+				// } else
 				if (this.selectedModels.contains(this.epiGrid.getModel(x, y))) {
 					List<Color> lColors = new ArrayList<Color>();
 					for (String nodeID : this.mNode2ValueSelected.keySet()) {
@@ -197,6 +214,8 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 				}
 			}
 		}
+		this.epiGrid.updateNodeValueCounts();
+		this.updateNodePercentages();
 		this.paint(getGraphics());
 	}
 
