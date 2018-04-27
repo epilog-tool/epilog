@@ -43,6 +43,14 @@ public class IFSpecification {
 			IntegrationFunctionExpression expr2) {
 		return new IntegrationFunctionOperationOR(expr1, expr2);
 	}
+	
+	public static IntegrationFunctionTRUE integrationFunctionTRUE() {
+		return new IntegrationFunctionTRUE();
+	}
+
+	public static IntegrationFunctionFALSE integrationFunctionFALSE() {
+		return new IntegrationFunctionFALSE();
+	}
 
 	/**
 	 * Function that translates the Integration Function (IF) from string to IntegrationFunctionExpression.

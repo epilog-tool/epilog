@@ -47,6 +47,10 @@ functionparen returns [IntegrationFunctionExpression value]
 		{ $value = $expr.value; }
 	| expr=cardconst
 		{ $value = $expr.value; }
+	| 'TRUE'
+		{ $value = IFSpecification.integrationFunctionTRUE(); }
+	| 'FALSE'
+		{ $value = IFSpecification.integrationFunctionFALSE(); }
 	;
 
 cardconst returns [IntegrationFunctionExpression value ]

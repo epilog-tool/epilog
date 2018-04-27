@@ -77,6 +77,10 @@ public class IFEvaluation {
 				return false;
 			}
 			return true;
+		} else if (expression instanceof IntegrationFunctionFALSE) {
+			return false;
+		} else if (expression instanceof IntegrationFunctionTRUE) {
+			return true;
 		}
 		// TODO: this last return should not be here.
 		return false;
