@@ -52,6 +52,7 @@ public class TopologyHexagonEvenQ extends TopologyHexagon {
 				ceYCoordinate = ceYCoordinate - 1;
 			}
 		}
+//		System.out.println("TopologyHexagonEvenQ: " + neighbours);
 		return neighbours;
 	}
 	

@@ -17,7 +17,10 @@ public abstract class TopologyHexagon extends Topology {
 		Set<Tuple2D<Integer>> setNeighbours = new HashSet<Tuple2D<Integer>>();
 
 		for (Tuple2D<Integer> tuple : setRelativeNeighbours) {
+//			System.out.println("TopologyHexagon: " + setRelativeNeighbours);
 			Tuple2D<Integer> posTuple = this.relativeToAbsolutePosition(tuple,x, y);
+//			System.out.println("topologyHexagon: getPositionNeighbours " + posTuple);
+			//This posTuple are the set of neighbours, taking into consideration the relative position
 			if (this.includesNeighbour(posTuple)) {
 				this.includeNeighbour(posTuple);
 				setNeighbours.add(posTuple);
@@ -55,18 +58,28 @@ public abstract class TopologyHexagon extends Topology {
 	protected void includeNeighbour(Tuple2D<Integer> posTuple) {
 		int x = posTuple.getX();
 		int y = posTuple.getY();
+		
+//		if (x==7 & y==6) {
+//			System.out.println("TopologyHexagon-> value of y: " + y);
+//			System.out.println("TopologyHexagon-> value of this.maxY: " + this.maxY);}
 
 		if (this.rollover.isVertical()) {
 			if (y < 0)
-				y = (this.maxY + y);
+				while (y<0)
+					y = (this.maxY + y);
+//				y = (this.maxY + y);
 			else if (y >= this.maxY)
-				y = y - this.maxY;
+//				y = y - this.maxY;
+				y = y%this.maxY;
 		}
 		if (this.rollover.isHorizontal()) {
 			if (x < 0)
-				x = (this.maxX + x);
+				while (x<0)
+					x = (this.maxX + x);
+//				x = (this.maxX + x);
 			else if (x >= this.maxX)
-				x = x - this.maxX;
+//				x = x - this.maxX;
+				x = x%this.maxX;
 		}
 
 		posTuple.setX(x);

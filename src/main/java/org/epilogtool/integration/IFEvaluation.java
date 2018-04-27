@@ -113,6 +113,22 @@ public class IFEvaluation {
 			rangeList.add(signal.getDistance().getMin());
 			rangeList.add(signal.getDistance().getMax());
 
+			List<Integer> rangeList_aux = new ArrayList<Integer>();
+			rangeList_aux.add(0);
+			if (signal.getDistance().getMin()-1>0)
+				rangeList_aux.add(signal.getDistance().getMin()-1);
+			else
+				rangeList_aux.add(0);
+
+			if (!this.relativeNeighboursCache.containsKey(rangeList_aux)) {
+				Map<Boolean, Set<Tuple2D<Integer>>> neighboursOutskirts = new HashMap<Boolean, Set<Tuple2D<Integer>>>();
+				neighboursOutskirts.put(true, this.neighboursGrid.getTopology().getRelativeNeighbours(true, rangeList_aux.get(0),
+						rangeList_aux.get(1)));
+				neighboursOutskirts.put(false, this.neighboursGrid.getTopology().getRelativeNeighbours(false, rangeList_aux.get(0),
+						rangeList_aux.get(1)));
+				this.relativeNeighboursCache.put(rangeList_aux, neighboursOutskirts);
+			}
+
 			if (!this.relativeNeighboursCache.containsKey(rangeList)) {
 				Map<Boolean, Set<Tuple2D<Integer>>> neighbours = new HashMap<Boolean, Set<Tuple2D<Integer>>>();
 				neighbours.put(true, this.neighboursGrid.getTopology().getRelativeNeighbours(true, rangeList.get(0),
@@ -123,11 +139,28 @@ public class IFEvaluation {
 			}
 
 			boolean even = this.neighboursGrid.getTopology().isEven(x, y);
+			
 			Set<Tuple2D<Integer>> neighbours = this.neighboursGrid.getTopology().getPositionNeighbours(x, y,
 					this.relativeNeighboursCache.get(rangeList).get(even));
-
-//			NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(signal.getComponentName(),
-//					this.neighboursGrid.getModel(x, y));
+			Set<Tuple2D<Integer>> neighboursOutskirts = this.neighboursGrid.getTopology().getPositionNeighbours(x, y,
+					this.relativeNeighboursCache.get(rangeList_aux).get(even));
+//			
+//			System.out.println("IFEvaluation-> Neighbours: " + neighbours);
+//			System.out.println("IFEvaluation-> neighboursOutskirts: " + neighboursOutskirts);
+			
+			Set<Tuple2D<Integer>> finalNeighbours = new HashSet<Tuple2D<Integer>>();
+			for (Tuple2D<Integer> nei: neighbours) {
+				if (!neighboursOutskirts.contains(nei)) {
+//					System.out.println(nei);
+					finalNeighbours.add(nei);
+				}
+			}
+			
+			
+			System.out.println("IFEvaluation-> x: " + x+ " y: "+ y);
+			System.out.println("IFEvaluation-> " + finalNeighbours);
+			
+			
 			NodeInfo node = this.epithelium.getComponentUsed(signal.getComponentName());
 
 			if (node == null) {
@@ -139,7 +172,7 @@ public class IFEvaluation {
 				return result;
 			}
 
-			for (Tuple2D<Integer> tuple : neighbours) {
+			for (Tuple2D<Integer> tuple : finalNeighbours) {
 				List<NodeInfo> lNodes = this.neighboursGrid.getModel(tuple.getX(), tuple.getY()).getComponents();
 				for (int n = 0; n < lNodes.size(); n++) {
 					if (node.getNodeID().equals(lNodes.get(n).getNodeID())) {

@@ -89,6 +89,7 @@ public class EpitheliumGrid {
 	}
 
 	public LogicalModel getModel(int x, int y) {
+//		System.out.println(y);
 		return this.gridEpiCell[x][y].getModel();
 	}
 
