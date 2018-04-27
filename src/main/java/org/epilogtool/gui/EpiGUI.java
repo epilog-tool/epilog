@@ -7,6 +7,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -529,17 +531,54 @@ public class EpiGUI extends JFrame {
 	}
 
 	public void saveAsPEPS() throws IOException {
-		String filename = FileSelectionHelper.saveFilename("peps");
-
-		if (filename != null) {
-			filename += (filename.endsWith(".peps") ? "" : ".peps");
-			FileIO.savePEPS(filename);
-			Project.getInstance().setFilenamePEPS(filename);
+		
+		// declare JFileChooser
+		JFileChooser fileChooser = new JFileChooser();
+		
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("EpiLog configuration File","peps");
+		fileChooser.setFileFilter(filter);
+		String fName = Project.getInstance().getFilenamePEPS();
+		fileChooser.setCurrentDirectory(new java.io.File(fName));
+		
+		 
+		// let the user choose the destination file
+		if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+		    // indicates whether the user still wants to export the settings
+		    boolean doExport = true;
+		 
+		    // indicates whether to override an already existing file
+		    boolean overrideExistingFile = false;
+		 
+		    // get destination file
+		    File destinationFile = new File(fileChooser.getSelectedFile().getAbsolutePath());
+		 
+		    // check if file already exists
+		    while (doExport && destinationFile.exists() && !overrideExistingFile) {
+		        // let the user decide whether to override the existing file
+		        overrideExistingFile = (JOptionPane.showConfirmDialog(this, "Replace file?", "Export Settings", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
+		 
+		        // let the user choose another file if the existing file shall not be overridden
+		        if (!overrideExistingFile) {
+		            if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+		                // get new destination file
+		                destinationFile = new File(fileChooser.getSelectedFile().getAbsolutePath());
+		            } else {
+		                // seems like the user does not want to export the settings any longer
+		                doExport = false;
+		            }
+		        }
+		    }
+		
+		if (doExport) {
+			// save the peps file with the new name and update Project
+			FileIO.savePEPS(destinationFile.getAbsolutePath());
+			Project.getInstance().setFilenamePEPS(destinationFile.getAbsolutePath());
 			Project.getInstance().setChanged(false);
-			this.setTitle(Txt.get("s_APP_NAME") + " - " + filename);
+			this.setTitle(Txt.get("s_APP_NAME") + " - " + destinationFile.getAbsolutePath());
 			this.validateGUI();
-		}
-	}
+			}
+}
+}
 
 	public void savePEPS() throws IOException {
 		String fName = Project.getInstance().getFilenamePEPS();
