@@ -113,10 +113,20 @@ public class IFEvaluation {
 		} else if (expression instanceof IntegrationSignal) {
 			IntegrationSignal signal = (IntegrationSignal) expression;
 
+			// Verify existence of node and threshold within limits
+			NodeInfo node = this.epithelium.getComponentUsed(signal.getComponentName());
+			byte minThreshold = signal.getMinThreshold();
+			if (node == null || minThreshold < 0 || minThreshold > node.getMax()) {
+				return result;
+			}
+
+			// Get neighbours
 			List<Integer> rangeList = new ArrayList<Integer>();
 			rangeList.add(signal.getDistance().getMin());
 			rangeList.add(signal.getDistance().getMax());
 
+			//Shouldn't this be outside of the grammar ?
+			
 			List<Integer> rangeList_aux = new ArrayList<Integer>();
 			rangeList_aux.add(0);
 			if (signal.getDistance().getMin()-1>0)
@@ -148,35 +158,12 @@ public class IFEvaluation {
 					this.relativeNeighboursCache.get(rangeList).get(even));
 			Set<Tuple2D<Integer>> neighboursOutskirts = this.neighboursGrid.getTopology().getPositionNeighbours(x, y,
 					this.relativeNeighboursCache.get(rangeList_aux).get(even));
-//			
-//			System.out.println("IFEvaluation-> Neighbours: " + neighbours);
-//			System.out.println("IFEvaluation-> neighboursOutskirts: " + neighboursOutskirts);
-			
-			Set<Tuple2D<Integer>> finalNeighbours = new HashSet<Tuple2D<Integer>>();
-			for (Tuple2D<Integer> nei: neighbours) {
-				if (!neighboursOutskirts.contains(nei)) {
-//					System.out.println(nei);
-					finalNeighbours.add(nei);
-				}
-			}
-			
+			neighbours.removeAll(neighboursOutskirts);
 			
 			System.out.println("IFEvaluation-> x: " + x+ " y: "+ y);
-			System.out.println("IFEvaluation-> " + finalNeighbours);
-			
-			
-			NodeInfo node = this.epithelium.getComponentUsed(signal.getComponentName());
+			System.out.println("IFEvaluation-> " + neighbours);
 
-			if (node == null) {
-				// Invalid node
-				// TODO: launch exception
-			}
-			byte minThreshold = signal.getMinThreshold();
-			if (minThreshold < 0 || minThreshold > node.getMax()) {
-				return result;
-			}
-
-			for (Tuple2D<Integer> tuple : finalNeighbours) {
+			for (Tuple2D<Integer> tuple : neighbours) {
 				List<NodeInfo> lNodes = this.neighboursGrid.getModel(tuple.getX(), tuple.getY()).getComponents();
 				for (int n = 0; n < lNodes.size(); n++) {
 					if (node.getNodeID().equals(lNodes.get(n).getNodeID())) {

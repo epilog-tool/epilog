@@ -20,7 +20,8 @@ public abstract class TopologyHexagon extends Topology {
 //			System.out.println("TopologyHexagon: " + setRelativeNeighbours);
 			Tuple2D<Integer> posTuple = this.relativeToAbsolutePosition(tuple,x, y);
 //			System.out.println("topologyHexagon: getPositionNeighbours " + posTuple);
-			//This posTuple are the set of neighbours, taking into consideration the relative position
+			
+			//posTuple are the set of neighbours, taking into consideration the relative position
 			if (this.includesNeighbour(posTuple)) {
 				this.includeNeighbour(posTuple);
 				setNeighbours.add(posTuple);
@@ -28,14 +29,14 @@ public abstract class TopologyHexagon extends Topology {
 		}
 		return setNeighbours;
 	}
-
-	public Set<Tuple2D<Integer>> getPositionNeighbours(int x, int y,
-			int minDist, int maxDist) {
-		boolean even = this.isEven(x, y);
-		Set<Tuple2D<Integer>> setRelativeNeighbours = this
-				.getRelativeNeighbours(even, minDist, maxDist);
-		return this.getPositionNeighbours(x, y, setRelativeNeighbours);
-	}
+//
+//	public Set<Tuple2D<Integer>> getPositionNeighbours(int x, int y,
+//			int minDist, int maxDist) {
+//		boolean even = this.isEven(x, y);
+//		Set<Tuple2D<Integer>> setRelativeNeighbours = this
+//				.getRelativeNeighbours(even, minDist, maxDist);
+//		return this.getPositionNeighbours(x, y, setRelativeNeighbours);
+//	}
 
 	protected Tuple2D<Integer> relativeToAbsolutePosition(
 			Tuple2D<Integer> tuple, int x, int y) {
@@ -48,9 +49,9 @@ public abstract class TopologyHexagon extends Topology {
 		int x = posTuple.getX();
 		int y = posTuple.getY();
 
-		if (!this.rollover.isVertical() & (y < 0 || y >= this.maxY))
+		if (!this.rollover.isVertical() && (y < 0 || y >= this.maxY))
 			return false;
-		if (!this.rollover.isHorizontal() & (x < 0 || x >= this.maxX))
+		if (!this.rollover.isHorizontal() && (x < 0 || x >= this.maxX))
 			return false;
 		return true;
 	}
@@ -64,22 +65,18 @@ public abstract class TopologyHexagon extends Topology {
 //			System.out.println("TopologyHexagon-> value of this.maxY: " + this.maxY);}
 
 		if (this.rollover.isVertical()) {
-			if (y < 0)
-				while (y<0)
-					y = (this.maxY + y);
-//				y = (this.maxY + y);
-			else if (y >= this.maxY)
-//				y = y - this.maxY;
+			if (y < 0) {
+				y = y%this.maxY + this.maxY; 
+			} else if (y >= this.maxY) {
 				y = y%this.maxY;
+			}
 		}
 		if (this.rollover.isHorizontal()) {
-			if (x < 0)
-				while (x<0)
-					x = (this.maxX + x);
-//				x = (this.maxX + x);
-			else if (x >= this.maxX)
-//				x = x - this.maxX;
+			if (x < 0) {
+				x = x%this.maxX + this.maxX; 
+			} else if (x >= this.maxX) {
 				x = x%this.maxX;
+			}
 		}
 
 		posTuple.setX(x);
