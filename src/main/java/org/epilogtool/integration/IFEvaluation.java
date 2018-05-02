@@ -159,9 +159,7 @@ public class IFEvaluation {
 			Set<Tuple2D<Integer>> neighboursOutskirts = this.neighboursGrid.getTopology().getPositionNeighbours(x, y,
 					this.relativeNeighboursCache.get(rangeList_aux).get(even));
 			neighbours.removeAll(neighboursOutskirts);
-			
-			System.out.println("IFEvaluation-> x: " + x+ " y: "+ y);
-			System.out.println("IFEvaluation-> " + neighbours);
+		
 
 			for (Tuple2D<Integer> tuple : neighbours) {
 				List<NodeInfo> lNodes = this.neighboursGrid.getModel(tuple.getX(), tuple.getY()).getComponents();
