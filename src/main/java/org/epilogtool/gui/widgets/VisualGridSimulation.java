@@ -26,17 +26,17 @@ public class VisualGridSimulation extends VisualGrid {
 
 	private EpitheliumGrid epiGrid;
 	private List<String> lCompON;
-	private GridInformation valuePanel;
+	private GridInformation gridInformation;
 	private Tuple2D<Integer> lastPos;
 
 	private Map<Tuple3D<Integer>, Float> cellNode2Count;
 
-	public VisualGridSimulation(EpitheliumGrid epiGrid, List<String> lCompON, GridInformation valuePanel) {
+	public VisualGridSimulation(EpitheliumGrid epiGrid, List<String> lCompON, GridInformation gridInformation) {
 		super(epiGrid.getX(), epiGrid.getY(), epiGrid.getTopology());
 
 		this.epiGrid = epiGrid;
 		this.lCompON = lCompON;
-		this.valuePanel = valuePanel;
+		this.gridInformation = gridInformation;
 
 		this.addMouseMotionListener(new MouseMotionListener() {
 			@Override
@@ -87,7 +87,7 @@ public class VisualGridSimulation extends VisualGrid {
 		if (!isInGrid(pos))
 			return;
 		this.lastPos = pos;
-		this.valuePanel.updateValues(pos.getX(), pos.getY(), this.epiGrid, null);
+		this.gridInformation.updateValues(pos.getX(), pos.getY(), this.epiGrid, null);
 	}
 
 	public void setEpitheliumGrid(EpitheliumGrid grid) {

@@ -48,6 +48,7 @@ import org.epilogtool.io.ButtonFactory;
 import org.epilogtool.project.Project;
 
 public class EpiTabInitialConditions extends EpiTabDefinitions {
+	
 	private static final long serialVersionUID = -3626371381385041594L;
 
 	private VisualGridInitialConditions visualGridICs;
@@ -59,7 +60,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private JPanel jpLeftTop;
 	private JPanel jpLeft;
 
-	private GridInformation lRight;
+	private GridInformation gridInformation;
 	private JRadioButton randomNodesAll;
 	private JRadioButton randomNodesSelected;
 
@@ -94,11 +95,11 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.mNodeID2Combobox = new HashMap<String, JComboBox<Byte>>();
 		this.mNodeID2JBColor = new HashMap<String, JButton>();
 
-		this.lRight = new GridInformation(this.epithelium.getIntegrationFunctions());
+		this.gridInformation = new GridInformation(this.epithelium.getIntegrationFunctions());
 
 		this.tpc = new TabProbablyChanged();
 		this.visualGridICs = new VisualGridInitialConditions(this.epiGridClone, this.mNode2ValueSelected,
-				this.mNodeID2Checkbox, this.lRight, this.tpc);
+				this.mNodeID2Checkbox, this.gridInformation, this.tpc);
 		this.center.add(this.visualGridICs, BorderLayout.CENTER);
 
 		this.jpLeft = new JPanel(new BorderLayout());
@@ -260,7 +261,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		JPanel jpLeftAggreg = new JPanel(new BorderLayout());
 		jpLeftAggreg.add(this.jpLeft, BorderLayout.LINE_START);
-		jpLeftAggreg.add(this.lRight, BorderLayout.LINE_END);
+		jpLeftAggreg.add(this.gridInformation, BorderLayout.LINE_END);
 
 		this.center.add(jpLeftAggreg, BorderLayout.LINE_START);
 		updateComponentList(this.jccbSBML.getSelectedItems());
