@@ -13,6 +13,7 @@ import org.epilogtool.gui.EpiGUI;
 import org.epilogtool.io.FileIO;
 import org.epilogtool.project.Project;
 import org.epilogtool.project.Simulation;
+import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Txt;
 
 import com.martiansoftware.jsap.FlaggedOption;
@@ -55,8 +56,7 @@ public class Launcher {
 							new Switch("cmd", JSAP.NO_SHORTFLAG, "cmd"), new Switch("dev", JSAP.NO_SHORTFLAG, "dev"),
 							new FlaggedOption("seed", JSAP.LONG_PARSER, "" + seed, JSAP.NOT_REQUIRED, JSAP.NO_SHORTFLAG,
 									"seed", "Random generator seed number."),
-							new FlaggedOption("peps", JSAP.STRING_PARSER, pepsFile, JSAP.NOT_REQUIRED,
-									JSAP.NO_SHORTFLAG, "peps",
+							new FlaggedOption("file", JSAP.STRING_PARSER, pepsFile, JSAP.NOT_REQUIRED, 'f', "file",
 									"PEPS (Project of Epithelium Patterning Simulation) file location."), });
 			jsapResult = jsap.parse(args);
 			if (jsap.messagePrinted())
@@ -76,10 +76,9 @@ public class Launcher {
 		checkJavaVersion(bCMD);
 
 		// Check Number Generator Seed number
-		// FIXME: Command line to be discontinued
-		// if (seed != -1) {
-		// RandCentral.getInstance().setSeed(seed);
-		// }
+		if (seed != -1) {
+			RandCentral.getInstance().setSeed(seed);
+		}
 
 		if (bCMD) {
 			// Command line

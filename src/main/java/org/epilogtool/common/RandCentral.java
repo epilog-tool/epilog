@@ -18,14 +18,18 @@ public class RandCentral {
 		return instance;
 	}
 
+	public void setSeed(long seed) {
+		this.random = new Random(seed);
+	}
+
 	public Random getNewGenerator() {
 		return new Random(this.nextInt());
 	}
-	
+
 	public Random getNewGenerator(int seed) {
 		return new Random(seed);
 	}
-	
+
 	public int nextInt() {
 		return this.random.nextInt();
 	}
