@@ -3,7 +3,6 @@ package org.epilogtool.gui.tab;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -40,7 +39,6 @@ import org.epilogtool.OptionStore;
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
-import org.epilogtool.gui.EpiGUI;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.SimulationEpiClone;
 import org.epilogtool.gui.color.ColorUtils;
@@ -55,17 +53,31 @@ import org.epilogtool.project.Project;
 import org.epilogtool.project.Simulation;
 
 public class EpiTabSimulation extends EpiTabTools {
-	private static final long serialVersionUID = 1394895739386499680L;
+	private static final long serialVersionUID = -1993376856622915249L;
 
 	private VisualGridSimulation visualGridSimulation;
 	private Simulation simulation;
-	private Map<String, Boolean> mSelCheckboxes;
-	private Map<String, JCheckBox> mNodeID2Checkbox;
-	private List<String> lPresentComps;
-	private List<String> lCompON;
-	private Map<JButton, String> colorButton2Node;
-	private SimulationEpiClone simEpiClone;
+	
+	private EpitheliumGrid epiGridClone;
 
+	private JPanel jpRCenter;
+	private JPanel jpLeftTop;
+	private JPanel jpLeft;
+
+	private GridInformation gridInformation;
+
+	private JComboCheckBox jccbSBML;
+
+	private Set<String> lModelVisibleComps;
+	private Map<String, Boolean> mSelCheckboxes;
+
+	private Map<String, JCheckBox> mNodeID2Checkbox;
+	private Map<String, JButton> mNodeID2JBColor;
+
+	private List<String> nodesSelected;
+	
+	private SimulationEpiClone simEpiClone;
+	
 	private int iUserBurst;
 	private int iCurrSimIter;
 	private JLabel jlStep;
@@ -74,15 +86,8 @@ public class EpiTabSimulation extends EpiTabTools {
 	private JButton jbBack;
 	private JButton jbForward;
 	private JButton jbFastFwr;
-
-	private JPanel jpVisualGrid; // Panel with the visual grid. Panel on the Right
-	private GridInformation jpGridInformation;
-	private JPanel jpLeft;
-	private JPanel jpLeftTop;
-	private JPanel jpLCCenter;
-	private JPanel jpLeftRight;
-	private JComboCheckBox jccbSBML;
 	private JButton jbRestart;
+	
 
 	public EpiTabSimulation(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
 			SimulationEpiClone simEpiClone) {
@@ -90,78 +95,65 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.simEpiClone = simEpiClone;
 	}
 
-	public void initialize() {
-		setLayout(new BorderLayout());
 
+	/**
+	 * Creates the InitialConditionsPanel, the first time the tab is created.
+	 * 
+	 */
+	public void initialize() {
+		
+		this.center.setLayout(new BorderLayout());
+		this.south.setLayout(new BorderLayout());
+		
 		this.iUserBurst = 30;
 		this.iCurrSimIter = 0;
-		this.simulation = new Simulation(this.epithelium.clone());
-		this.jpVisualGrid = new JPanel(new BorderLayout());
-		this.add(this.jpVisualGrid, BorderLayout.CENTER);
 
-		this.lCompON = new ArrayList<String>();
+		this.epiGridClone = this.epithelium.getEpitheliumGrid().clone();
 		this.mSelCheckboxes = new HashMap<String, Boolean>();
 		this.mNodeID2Checkbox = new HashMap<String, JCheckBox>();
-		this.colorButton2Node = new HashMap<JButton, String>();
-		for (LogicalModel m : this.epithelium.getEpitheliumGrid().getModelSet()) {
-			for (NodeInfo node : m.getComponents()) {
-				this.mSelCheckboxes.put(node.getNodeID(), false);
-			}
-		}
+		this.mNodeID2JBColor = new HashMap<String, JButton>();
+		
+		this.simulation = new Simulation(this.epithelium.clone());
+		this.gridInformation = new GridInformation(this.epithelium.getIntegrationFunctions());
+		this.nodesSelected = new ArrayList<String>();
+		
+		this.visualGridSimulation = new VisualGridSimulation(this.simulation.getGridAt(0), this.nodesSelected,
+				this.gridInformation);
 
-		this.jpLeftRight = new JPanel(new BorderLayout());
+		this.center.add(this.visualGridSimulation, BorderLayout.CENTER);
 
-		this.jpGridInformation = new GridInformation(this.epithelium.getIntegrationFunctions());
-		this.jpLeftRight.add(this.jpGridInformation, BorderLayout.CENTER);
+		this.jpLeft = new JPanel(new BorderLayout());
 
-		JPanel jpGridInfo = new JPanel(new GridBagLayout());
-		jpGridInfo.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-		// jpGridInfo.setBorder(BorderFactory.createTitledBorder(Txt.get("Simulation
-		// information")));
-
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridy = 0;
-		gbc.gridx = 0;
-		gbc.ipadx = gbc.ipady = 10;
-		gbc.anchor = GridBagConstraints.WEST;
-		jpGridInfo.add(new JLabel("Iteration:"), gbc);
-		gbc.gridx = 1;
-		this.jlStep = new JLabel("" + this.iCurrSimIter);
-		jpGridInfo.add(this.jlStep, gbc);
-		gbc.gridy = 1;
-		gbc.gridx = 0;
-		gbc.gridwidth = 2;
-		this.jlAttractor = new JLabel("");
-		this.jlAttractor.setForeground(Color.RED);
-		this.setGridGUIStable(false);
-		jpGridInfo.add(this.jlAttractor, gbc);
-
-		this.jpLeftRight.add(jpGridInfo, BorderLayout.PAGE_END);
-		this.visualGridSimulation = new VisualGridSimulation(this.simulation.getGridAt(0), this.lCompON,
-				this.jpGridInformation);
-		this.jpVisualGrid.add(this.visualGridSimulation, BorderLayout.CENTER);
-
-		JPanel jpButtons = new JPanel(new BorderLayout());
-		JPanel jpButtonsC = new JPanel();
-		jpButtons.add(jpButtonsC, BorderLayout.LINE_START);
-
-		JScrollPane jspButtons = new JScrollPane(jpButtons, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		jspButtons.setPreferredSize(new Dimension(jspButtons.getPreferredSize().width,
-				jspButtons.getPreferredSize().height + jspButtons.getHorizontalScrollBar().getVisibleAmount() * 3));
-		jspButtons.setBorder(BorderFactory.createEmptyBorder());
-
+		this.jpLeftTop = new JPanel();
+		this.jpLeftTop.setLayout(new BoxLayout(this.jpLeftTop, BoxLayout.Y_AXIS));
+		
+		this.south.setBackground(Color.black);
+		
+		//South Panel
+		
+		//Restart
+		
+		JPanel jpRestart = new JPanel();
 		this.jbRestart = ButtonFactory.getNoMargins(Txt.get("s_TAB_SIM_RESTART"));
 		this.jbRestart.setToolTipText(Txt.get("s_TAB_SIM_RESTART_DESC"));
 		this.jbRestart.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EpiGUI.getInstance().restartSimulationTab();
+				restartSimulationTab();
 				jbRestart.setBackground(jbBack.getBackground());
 			}
 		});
-		jpButtonsC.add(this.jbRestart);
-
+		jpRestart.add(this.jbRestart);
+		
+		this.south.add(jpRestart, BorderLayout.LINE_START);
+		
+		//Other Buttons
+		
+		JPanel jpButtons = new JPanel(new BorderLayout());
+		JPanel jpButtonsC = new JPanel();
+		jpButtons.add(jpButtonsC, BorderLayout.CENTER);
+		
+		
 		this.jbRewind = ButtonFactory.getImageNoBorder("media_step_0.png");//media_rewind-26x24.png");
 		this.jbRewind.setToolTipText(Txt.get("s_TAB_SIM_BACK_DESC"));
 		this.jbRewind.setEnabled(false);
@@ -263,15 +255,35 @@ public class EpiTabSimulation extends EpiTabTools {
 		jpButtonsR.add(jbSaveAll);
 
 		jpButtons.add(jpButtonsR, BorderLayout.LINE_END);
+		this.south.add(jpButtons, BorderLayout.LINE_END);
+		
+		//Iteration
+		
+		JPanel jpIteration = new JPanel(new GridBagLayout());
+		jpIteration.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+		
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridy = 0;
+		gbc.gridx = 0;
+		gbc.ipadx = gbc.ipady = 5;
+		gbc.anchor = GridBagConstraints.WEST;
+		jpIteration.add(new JLabel("Iteration:"), gbc);
+		gbc.gridx = 1;
+		this.jlStep = new JLabel("" + this.iCurrSimIter);
+		jpIteration.add(this.jlStep, gbc);
+		gbc.gridy = 1;
+		gbc.gridx = 0;
+		gbc.gridwidth = 2;
+		this.jlAttractor = new JLabel("");
+		this.jlAttractor.setForeground(Color.RED);
+		this.setGridGUIStable(false);
+		jpIteration.add(this.jlAttractor, gbc);
 
-		this.jpVisualGrid.add(jspButtons, BorderLayout.SOUTH);
+		this.south.add(jpIteration, BorderLayout.CENTER);
+		
+		// ---------------------------------------------------------------------------
+		// Model selection jcomboCheckBox
 
-		this.jpLeft = new JPanel(new BorderLayout());
-
-		this.jpLeftTop = new JPanel();
-		this.jpLeftTop.setLayout(new BoxLayout(this.jpLeftTop, BoxLayout.Y_AXIS));
-
-		// Model combobox
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		JCheckBox[] items = new JCheckBox[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
@@ -281,51 +293,56 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jccbSBML = new JComboCheckBox(items);
 		this.jpLeftTop.add(this.jccbSBML);
 
-		// Select/Deselect buttons
+		// ---------------------------------------------------------------------------
+		// Select/Deselect active nodes Buttons
+
+		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder("Model selection"));
+		this.jpLeft.add(this.jpLeftTop, BorderLayout.NORTH);
+
 		JPanel rrTopSel = new JPanel(new FlowLayout());
-		JButton jbSelectAll = new JButton("SelectAll");
+		JButton jbSelectAll = new JButton("Select All");
 		jbSelectAll.setMargin(new Insets(0, 0, 0, 0));
 		jbSelectAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				for (String nodeID : lPresentComps) {
+				for (String nodeID : lModelVisibleComps) {
 					if (mNodeID2Checkbox.containsKey(nodeID)) {
 						mNodeID2Checkbox.get(nodeID).setSelected(true);
 					}
-					mSelCheckboxes.put(nodeID, true);
-					if (!lCompON.contains(nodeID))
-						lCompON.add(nodeID);
+					// mSelCheckboxes.put(nodeID, true);
+					nodesSelected.add(nodeID);
+
 				}
 				visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
 			}
 		});
 		rrTopSel.add(jbSelectAll);
-		JButton jbDeselectAll = new JButton("DeselectAll");
+		JButton jbDeselectAll = new JButton("Deselect All");
 		jbDeselectAll.setMargin(new Insets(0, 0, 0, 0));
 		jbDeselectAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				for (String nodeID : lPresentComps) {
+				for (String nodeID : lModelVisibleComps) {
 					if (mNodeID2Checkbox.containsKey(nodeID)) {
 						mNodeID2Checkbox.get(nodeID).setSelected(false);
 					}
-					mSelCheckboxes.put(nodeID, false);
-					lCompON.remove(nodeID);
+					// mSelCheckboxes.put(nodeID, false);
+					nodesSelected.remove(nodeID);
 				}
 				visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
 			}
 		});
 		rrTopSel.add(jbDeselectAll);
-		this.jpLeftTop.add(rrTopSel);
+		JPanel jpLeftCenter = new JPanel(new BorderLayout());
+		jpLeftCenter.setBorder(BorderFactory.createTitledBorder("Components"));
 
-		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder(Txt.get("s_TAB_SIM_OPTIONS")));
-		this.jpLeft.add(this.jpLeftTop, BorderLayout.NORTH);
+		jpLeftCenter.add(rrTopSel, BorderLayout.NORTH);
 
-		this.jpLCCenter = new JPanel();
-		this.jpLCCenter.setLayout(new BoxLayout(jpLCCenter, BoxLayout.Y_AXIS));
-		JScrollPane jsLeftCenter = new JScrollPane(this.jpLCCenter);
+		this.jpRCenter = new JPanel();
+		this.jpRCenter.setLayout(new BoxLayout(jpRCenter, BoxLayout.Y_AXIS));
+		JScrollPane jsLeftCenter = new JScrollPane(this.jpRCenter);
+		jsLeftCenter.setBorder(BorderFactory.createEmptyBorder());
 		jsLeftCenter.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		this.jpLeft.add(jsLeftCenter, BorderLayout.CENTER);
 		this.jccbSBML.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -335,15 +352,203 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 
+		jpLeftCenter.add(jsLeftCenter, BorderLayout.CENTER);
+		this.jpLeft.add(jpLeftCenter, BorderLayout.CENTER);
+
+		// ---------------------------------------------------------------------------
+		// Create Panel for the random initial conditions
+
+
+
 		JPanel jpLeftAggreg = new JPanel(new BorderLayout());
 		jpLeftAggreg.add(this.jpLeft, BorderLayout.LINE_START);
-		jpLeftAggreg.add(this.jpLeftRight, BorderLayout.LINE_END);
+		jpLeftAggreg.add(this.gridInformation, BorderLayout.LINE_END);
 
-		this.add(jpLeftAggreg, BorderLayout.LINE_START);
+		this.center.add(jpLeftAggreg, BorderLayout.LINE_START);
 		updateComponentList(this.jccbSBML.getSelectedItems());
 		this.isInitialized = true;
 	}
+	// ---------------------------------------------------------------------------
+	// End initialize
+	
 
+	protected void restartSimulationTab() {
+		
+		this.simulation = new Simulation(this.epithelium.clone());
+		this.simulationRewind();
+		
+		for (int i = 0; i < this.south.getComponentCount(); i++) {
+			Component c = this.south.getComponent(i);
+			if (c instanceof JTextPane) {
+				this.south.remove(i);
+				break;
+			}
+		}
+
+		//TODO: Test integration functions; perturbations; initial conditions, integration inputs; priorities; update scheme
+		
+		this.south.repaint();
+		this.repaint();
+		this.revalidate();
+		
+	}
+
+
+	/**
+	 * Creates the panel with the selection of the components to display.
+	 * 
+	 * @param sNodeIDs
+	 *            : List with the nodes names to be written
+	 * @param titleBorder
+	 *            : String with the title of the panel
+	 */
+	private void setComponentTypeList(List<NodeInfo> lNodes, String titleBorder, List<LogicalModel> listModels) {
+		JPanel jpRRC = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(5, 5, 4, 0);
+		jpRRC.setBorder(BorderFactory.createTitledBorder(titleBorder));
+		// Collections.sort(nodeList, ObjectComparator.STRING); // orders the numbers
+		int y = 0;
+		for (NodeInfo node : lNodes) {
+			for (LogicalModel m : listModels) {
+				if (m.getComponents().contains(node) && !this.epithelium.isIntegrationComponent(node)) {
+					this.lModelVisibleComps.add(node.getNodeID());
+					this.getCompMiniPanel(jpRRC, gbc, y++, node);
+					break;
+				}
+			}
+		}
+		this.jpRCenter.add(jpRRC);
+	}
+
+	/**
+	 * Updates components check selection list, once the selected model to display
+	 * is changed.
+	 * 
+	 * @param modelNames
+	 */
+	private void updateComponentList(List<String> modelNames) {
+		List<LogicalModel> lModels = new ArrayList<LogicalModel>();
+		for (String modelName : modelNames) {
+			lModels.add(Project.getInstance().getProjectFeatures().getModel(modelName));
+		}
+//		this.visualGridICs.setModels(lModels);
+
+		this.lModelVisibleComps = new HashSet<String>();
+		this.jpRCenter.removeAll();
+
+		List<NodeInfo> lInternal = new ArrayList<NodeInfo>(
+				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, false));
+		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
+				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
+//		for (int i = lInputs.size() - 1; i >= 0; i--) {
+//			if (this.epithelium.isIntegrationComponent(lInputs.get(i))) {
+//				lInputs.remove(i);
+//			}
+//		}
+
+		if (!lInternal.isEmpty())
+			this.setComponentTypeList(lInternal, "Internal", lModels);
+		if (!lInputs.isEmpty())
+			this.setComponentTypeList(lInputs, "Inputs", lModels);
+
+		visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
+		this.jpRCenter.revalidate();
+		this.jpRCenter.repaint();
+	}
+
+	/**
+	 * Creates the inner panel of each component (checkbox and color)
+	 * 
+	 * @param jp
+	 * @param gbc
+	 * @param y
+	 * @param nodeID
+	 */
+	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, NodeInfo node) {
+		String nodeID = node.getNodeID();
+		EpitheliumGrid grid = this.epiGridClone;
+
+		gbc.gridy = y;
+		gbc.anchor = GridBagConstraints.WEST;
+
+		// ----------------------------------------------------------------------------
+		gbc.gridx = 0;
+		jp.add(new JLabel(nodeID), gbc);
+
+		// ----------------------------------------------------------------------------
+		gbc.gridx = 1;
+
+		JButton jbColor = this.mNodeID2JBColor.get(nodeID);
+		if (jbColor == null) {
+			jbColor = new JButton();
+			jbColor.setToolTipText(nodeID);
+			jbColor.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					setNewColor((JButton) e.getSource());
+				}
+			});
+			this.mNodeID2JBColor.put(nodeID, jbColor);
+		}
+		jbColor.setBackground(Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
+		jp.add(jbColor, gbc);
+
+		// ----------------------------------------------------------------------------
+		gbc.gridx = 2;
+
+		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
+		if (jcb == null) {
+			this.mSelCheckboxes.put(nodeID, false);
+			// node percentage is the checkbox text
+			String nodePercent = "";
+			String percPref = (String) OptionStore.getOption("PrefsNodePercent");
+			if (percPref != null && percPref.equals(EnumNodePercent.YES.toString())) {
+				nodePercent = grid.getPercentage(nodeID);
+			}
+			jcb = new JCheckBox(nodePercent);
+			jcb.setToolTipText(nodeID);
+			jcb.setSelected(this.mSelCheckboxes.get(nodeID));
+			jcb.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JCheckBox jcb = (JCheckBox) e.getSource();
+					String nodeID = jcb.getToolTipText();
+					mSelCheckboxes.put(nodeID, jcb.isSelected());
+					if (jcb.isSelected()) {
+						nodesSelected.add(nodeID);
+					} else {
+						nodesSelected.remove(nodeID);
+					}
+
+					visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
+				}
+			});
+			this.mNodeID2Checkbox.put(nodeID, jcb);
+		}
+		jp.add(jcb, gbc);
+	}
+
+
+	/**
+	 * Changes the color assigned to a node.
+	 * 
+	 * @param jb
+	 */
+	private void setNewColor(JButton jb) {
+		String nodeID = jb.getToolTipText();
+		Color newColor = JColorChooser.showDialog(jb, "Color chooser - " + nodeID, jb.getBackground());
+		if (newColor != null && !newColor.equals(Project.getInstance().getProjectFeatures().getNodeColor(nodeID))) {
+			jb.setBackground(newColor);
+			Project.getInstance().getProjectFeatures().setNodeColor(nodeID, newColor);
+			this.projChanged.setChanged(this);
+			if (this.nodesSelected.contains(nodeID)) {
+				// Paint only if NodeID is selected!!
+				visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
+			}
+		}
+	}
+	
 	/**
 	 * 
 	 */
@@ -373,11 +578,61 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		}
 	}
-
+	
 	private void cloneEpiWithCurrGrid() {
 		this.simEpiClone.cloneEpithelium(this.epithelium, this.simulation.getGridAt(this.iCurrSimIter));
 	}
-
+	
+	private void simulationFastFwr() {
+		EpitheliumGrid nextGrid = this.simulation.getGridAt(this.iCurrSimIter);
+		for (int i = 0; i < this.iUserBurst; i++) {
+			nextGrid = this.simulation.getGridAt(this.iCurrSimIter + 1);
+			if (this.simulation.isStableAt(this.iCurrSimIter + 1)) {
+				setGridGUIStable(true);
+				break;
+			} else {
+				int len = this.simulation.getTerminalCycleLen();
+				if (len > 0) {
+					this.setGUITerminalCycle(len);
+					break;
+				}
+			}
+			this.iCurrSimIter++;
+		}
+		this.visualGridSimulation.setEpitheliumGrid(nextGrid);
+		this.jlStep.setText("" + this.iCurrSimIter);
+		this.jbRewind.setEnabled(true);
+		this.jbBack.setEnabled(true);
+		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
+		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
+			nextGrid.updateNodeValueCounts();
+		}
+		this.updateComponentList(this.jccbSBML.getSelectedItems());
+		// Re-Paint
+		this.repaint();
+	}
+	
+	private void simulationStepFwr() {
+		EpitheliumGrid nextGrid = this.simulation.getGridAt(this.iCurrSimIter + 1);
+		if (this.simulation.isStableAt(this.iCurrSimIter + 1)) {
+			setGridGUIStable(true);
+		} else {
+			this.iCurrSimIter++;
+			this.visualGridSimulation.setEpitheliumGrid(nextGrid);
+			this.jlStep.setText("" + this.iCurrSimIter);
+			this.setGUITerminalCycle(this.simulation.getTerminalCycleLen());
+		}
+		this.jbRewind.setEnabled(true);
+		this.jbBack.setEnabled(true);
+		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
+		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
+			nextGrid.updateNodeValueCounts();
+		}
+		this.updateComponentList(this.jccbSBML.getSelectedItems());
+		// Re-Paint
+		this.repaint();
+	}
+	
 	private void simulationRewind() {
 		this.iCurrSimIter = 0;
 		this.jlStep.setText("" + this.iCurrSimIter);
@@ -420,7 +675,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		// Re-Paint
 		this.repaint();
 	}
-
+	
 	private void setGridGUIStable(boolean stable) {
 		if (stable) {
 			this.jlAttractor.setText(Txt.get("s_TAB_SIM_STABLE"));
@@ -439,197 +694,28 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 	}
 
-	private void simulationStepFwr() {
-		EpitheliumGrid nextGrid = this.simulation.getGridAt(this.iCurrSimIter + 1);
-		if (this.simulation.isStableAt(this.iCurrSimIter + 1)) {
-			setGridGUIStable(true);
-		} else {
-			this.iCurrSimIter++;
-			this.visualGridSimulation.setEpitheliumGrid(nextGrid);
-			this.jlStep.setText("" + this.iCurrSimIter);
-			this.setGUITerminalCycle(this.simulation.getTerminalCycleLen());
-		}
-		this.jbRewind.setEnabled(true);
-		this.jbBack.setEnabled(true);
-		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
-		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
-			nextGrid.updateNodeValueCounts();
-		}
-		this.updateComponentList(this.jccbSBML.getSelectedItems());
-		// Re-Paint
-		this.repaint();
-	}
-
-	private void simulationFastFwr() {
-		EpitheliumGrid nextGrid = this.simulation.getGridAt(this.iCurrSimIter);
-		for (int i = 0; i < this.iUserBurst; i++) {
-			nextGrid = this.simulation.getGridAt(this.iCurrSimIter + 1);
-			if (this.simulation.isStableAt(this.iCurrSimIter + 1)) {
-				setGridGUIStable(true);
-				break;
-			} else {
-				int len = this.simulation.getTerminalCycleLen();
-				if (len > 0) {
-					this.setGUITerminalCycle(len);
-					break;
-				}
-			}
-			this.iCurrSimIter++;
-		}
-		this.visualGridSimulation.setEpitheliumGrid(nextGrid);
-		this.jlStep.setText("" + this.iCurrSimIter);
-		this.jbRewind.setEnabled(true);
-		this.jbBack.setEnabled(true);
-		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
-		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
-			nextGrid.updateNodeValueCounts();
-		}
-		this.updateComponentList(this.jccbSBML.getSelectedItems());
-		// Re-Paint
-		this.repaint();
-	}
-
-	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String nodeID) {
-
-		EpitheliumGrid nextGrid = this.simulation.getGridAt(this.iCurrSimIter);
-
-		gbc.gridy = y;
-		gbc.gridx = 0;
-		gbc.anchor = GridBagConstraints.WEST;
-		jp.add(new JLabel(nodeID), gbc);
-
-		gbc.gridx = 1;
-		JButton jbColor = new JButton();
-		jbColor.setBackground(Project.getInstance().getProjectFeatures().getNodeColor(nodeID));
-		jbColor.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				setNewColor((JButton) e.getSource());
-			}
-		});
-		jp.add(jbColor, gbc);
-
-		gbc.gridx = 2;
-		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
-		if (jcb == null) {
-			jcb = new JCheckBox();
-			jcb.setToolTipText(nodeID);
-			jcb.setSelected(mSelCheckboxes.get(nodeID));
-			jcb.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					JCheckBox jcb = (JCheckBox) e.getSource();
-					String nodeID = jcb.getToolTipText();
-					mSelCheckboxes.put(nodeID, jcb.isSelected());
-					if (jcb.isSelected()) {
-						lCompON.add(nodeID);
-					} else {
-						lCompON.remove(nodeID);
-					}
-					visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
-				}
-			});
-			this.mNodeID2Checkbox.put(nodeID, jcb);
-		}
-		jp.add(jcb, gbc);
-
-		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
-		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
-			gbc.gridx = 3;
-			JLabel percentage = new JLabel(nextGrid.getPercentage(nodeID));
-			jp.add(percentage, gbc);
-		}
-		this.colorButton2Node.put(jbColor, nodeID);
-	}
-
-	private void setNewColor(JButton jb) {
-		String nodeID = this.colorButton2Node.get(jb);
-		Color newColor = JColorChooser.showDialog(jb, "Color chooser - " + nodeID, jb.getBackground());
-		if (newColor != null && !newColor.equals(Project.getInstance().getProjectFeatures().getNodeColor(nodeID))) {
-			jb.setBackground(newColor);
-			Project.getInstance().getProjectFeatures().setNodeColor(nodeID, newColor);
-			this.projChanged.setChanged(this);
-			this.visualGridSimulation.paintComponent(this.visualGridSimulation.getGraphics());
-		}
-	}
-
 	/**
-	 * Creates the panel with the selection of the components to display.
+	 * Updates the list of components to present. If a positional input is now an
+	 * integration input then it is no longer set to show in the components panel.
+	 * On the other hand if an integration input is change to a positional input it
+	 * will appear in the components list.
 	 * 
-	 * @param sNodeIDs
-	 *            : List with the nodes names to be written
-	 * @param titleBorder
-	 *            : String with the title of the panel
+	 * @param node
+	 *            node to the removed/added in String format.
+	 * @param b
+	 *            if b is true, then it should be added to the list, otherwise
+	 *            removed.
 	 */
-	private void setComponentTypeList(Set<String> sNodeIDs, String titleBorder) {
-		JPanel jpRRC = new JPanel(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.insets = new Insets(5, 5, 4, 0);
-		jpRRC.setBorder(BorderFactory.createTitledBorder(titleBorder));
-		List<String> nodeList = new ArrayList<String>(sNodeIDs);
-		// Collections.sort(nodeList, ObjectComparator.STRING);
-		int y = 0;
-		for (String nodeID : nodeList) {
-			this.lPresentComps.add(nodeID);
-			if (mSelCheckboxes.get(nodeID)) {
-				this.lCompON.add(nodeID);
-			}
-			this.getCompMiniPanel(jpRRC, gbc, y, nodeID);
-			y++;
-		}
-		this.jpLCCenter.add(jpRRC);
+	public void updatelPresentComps(String node, boolean b) {
+		if (b)
+			this.lModelVisibleComps.add(node);
+		else
+			this.lModelVisibleComps.remove(node);
 	}
 
-	/**
-	 * Updates components check selection list, once the selected model to display
-	 * is changed.
-	 * 
-	 * @param modelNames
-	 */
-	private void updateComponentList(List<String> modelNames) {
-		this.jpLCCenter.removeAll();
-		this.lCompON.clear();
-		this.colorButton2Node.clear();
-
-		List<LogicalModel> lModels = new ArrayList<LogicalModel>();
-		for (String modelName : modelNames) {
-			lModels.add(Project.getInstance().getProjectFeatures().getModel(modelName));
-		}
-
-		List<NodeInfo> lInternal = new ArrayList<NodeInfo>(
-				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, false));
-
-		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
-				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
-
-		this.lPresentComps = new ArrayList<String>();
-
-		Set<String> sInternalNodeIDs = new HashSet<String>();
-		Set<String> sInputNodeIDs = new HashSet<String>();
-		Set<String> sCommonNodeIDs = new HashSet<String>();
-
-		for (NodeInfo node : lInternal)
-			sInternalNodeIDs.add(node.getNodeID());
-
-		for (NodeInfo node : lInputs) {
-			if (sInternalNodeIDs.contains(node.getNodeID())) {
-				sCommonNodeIDs.add(node.getNodeID());
-				sInternalNodeIDs.remove(node.getNodeID());
-			} else if (!sCommonNodeIDs.contains(node.getNodeID())) {
-				sInputNodeIDs.add(node.getNodeID());
-			}
-		}
-
-		if (!sCommonNodeIDs.isEmpty())
-			this.setComponentTypeList(sCommonNodeIDs, Txt.get("s_TAB_SIM_COMP_BOTH"));
-		if (!sInternalNodeIDs.isEmpty())
-			this.setComponentTypeList(sInternalNodeIDs, Txt.get("s_TAB_SIM_COMP_INTERNAL"));
-		if (!sInputNodeIDs.isEmpty())
-			this.setComponentTypeList(sInputNodeIDs, Txt.get("s_TAB_SIM_COMP_INPUT"));
-
-		this.visualGridSimulation.paintComponent(this.visualGridSimulation.getGraphics());
-		this.jpLCCenter.revalidate();
-		this.jpLCCenter.repaint();
+	@Override
+	public String getName() {
+		return EpiTab.TOOL_SIMULATION;
 	}
 
 	@Override
@@ -637,35 +723,29 @@ public class EpiTabSimulation extends EpiTabTools {
 		return true;
 	}
 
-	public String state2str(byte[] state) {
-		String str = "";
-		for (int i = 0; i < state.length; i++)
-			str += state[i];
-		return str;
-	}
-
 	private boolean hasChangedEpithelium() {
 		return !this.simulation.getEpithelium().equals(this.epithelium);
 	}
-
+	
 	@Override
 	public void applyChange() {
-		System.out.println("EpiTabSimulation.applyChange()");
+//		System.out.println("EpiTabSimulation.applyChange()");
 		if (this.hasChangedEpithelium()) {
-			System.out.println("applyChange().changedEpi");
-			JPanel jpNorth = new JPanel(new BorderLayout());
-			this.jpVisualGrid.add(jpNorth, BorderLayout.NORTH);
+//			System.out.println("applyChange().changedEpi");
+//			JPanel jpNorth = new JPanel(new BorderLayout());
+			
 			JTextPane jtp = new JTextPane();
 			jtp.setContentType("text/html");
-			String color = ColorUtils.getColorCode(this.jpVisualGrid.getBackground());
-			jtp.setText("<html><body style=\"background-color:" + color + "\">" + "<font color=\"#ff0000\">"
+			String color = ColorUtils.getColorCode(this.south.getBackground());
+			color = "#000000";
+			jtp.setText("<html><body style=\"background-color:" + color + "\">" + "<font color=\"#FFDEAD\">"
 					+ "New Epithelium definitions detected!!<br/>"
-					+ "Continue current simulation with old definitions, "
-					+ "<br/>or press <b>Restart</b> to apply the new ones." + "</font></body></html>");
+					+ "Continue current simulation with old definitions, or press <b>Restart</b> to apply the new ones." + "</font></body></html>");
 			jtp.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 			jtp.setHighlighter(null);
-			jpNorth.add(jtp, BorderLayout.PAGE_START);
+//			jpNorth.add(jtp, BorderLayout.PAGE_START);
 			this.jbRestart.setBackground(Color.RED);
+			this.south.add(jtp, BorderLayout.NORTH);
 			// JButton jbRestart = ButtonFactory.getNoMargins("Restart");
 			// jbRestart.setToolTipText("Restart the simulation with recently applied
 			// definitions");
@@ -677,19 +757,20 @@ public class EpiTabSimulation extends EpiTabTools {
 			// });
 			// jpNorth.add(jbRestart, BorderLayout.PAGE_END);
 		} else {
-			for (int i = 0; i < this.jpVisualGrid.getComponentCount(); i++) {
-				Component c = this.jpVisualGrid.getComponent(i);
+			for (int i = 0; i < this.south.getComponentCount(); i++) {
+				Component c = this.south.getComponent(i);
 				if (c instanceof JTextPane) {
-					this.jpVisualGrid.remove(i);
+					this.south.remove(i);
 					break;
 				}
 			}
-		}
-		this.updateComponentList(this.jccbSBML.getSelectedItems());
+				}
+			
+//		this.updateComponentList(this.jccbSBML.getSelectedItems());
+		this.south.repaint();
+		this.repaint();
+		this.revalidate();
 	}
 
-	@Override
-	public String getName() {
-		return EpiTab.TOOL_SIMULATION;
-	}
+
 }
