@@ -84,6 +84,7 @@ class LoadProjAction extends AbstractAction {
 				EpiGUI.getInstance().loadPEPS(this.filename);
 			}
 		} catch (Exception e1) {
+			e1.printStackTrace();
 			EpiGUI.getInstance().userMessageError("Invalid project (PEPS) file!", Txt.get("s_MENU_LOAD_PROJ"));
 		}
 	}

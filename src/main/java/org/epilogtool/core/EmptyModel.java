@@ -53,6 +53,8 @@ public class EmptyModel {
 	}
 
 	public boolean isEmptyModel(String n) {
+//		System.out.println("Debug.Name:" + this.name);
+//		System.out.println("Debug.N:" + n);
 		return n.equals(this.name);
 	}
 
