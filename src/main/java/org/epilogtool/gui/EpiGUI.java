@@ -967,14 +967,21 @@ public class EpiGUI extends JFrame {
 		this.epiRightFrame.setSelectedIndex(tabIndex);
 	}
 
+	//TODO: Change The dynamics of the restart. it should do the following:
+	// 1) Make sure that the colors are saved 
+	// 2) set the grid to iteration 0
+	// 3) the gird information keeps pointing to the same cell?
+	// 4) 
+
 	public void restartSimulationTab() {
+		
 
 		// save settings
 		int simulationTabIndex = this.epiRightFrame.getSelectedIndex();
 		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
 		TreePath path = this.epiTreePanel.getSelectionEpiPath();
 
-		// remove tab
+//		// remove tab
 		this.epiRightFrame.removeTabAt(simulationTabIndex);
 
 		// restart
