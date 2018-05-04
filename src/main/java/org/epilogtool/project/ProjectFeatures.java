@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class ProjectFeatures {
 		this.modelColor = new HashMap<LogicalModel, Color>();
 		// node info
 		this.nodeID2Info = new HashMap<String, NodeInfo>();
-		this.nodeColor = new HashMap<String, Color>();
+		this.nodeColor = new LinkedHashMap<String, Color>();
 		// model 2 nodes
 		this.string2ComponentFeature = new HashMap<String, Set<ComponentPair>>();
 		this.replaceMessages = new ArrayList<String>();
@@ -131,7 +132,6 @@ public class ProjectFeatures {
 
 	public Set<NodeInfo> getModelNodeInfos(LogicalModel m, boolean input) {
 		Set<NodeInfo> sComps = new LinkedHashSet<NodeInfo>();  //LinkedHashSet: so that the set returns components with the same order
-		System.out.println("ProjectFeatures (getcomponents): " + m.getComponents());
 		for (NodeInfo node : m.getComponents()) {
 			if (!input && !node.isInput() || input && node.isInput()) {
 				sComps.add(node);

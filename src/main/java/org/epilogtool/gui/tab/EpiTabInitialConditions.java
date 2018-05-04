@@ -289,18 +289,15 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(5, 5, 4, 0);
 		jpRRC.setBorder(BorderFactory.createTitledBorder(titleBorder));
-		// Collections.sort(nodeList, ObjectComparator.STRING); // orders the numbers
+
 		int y = 0;
 		
 		String orderPref = (String) OptionStore.getOption("PrefsAlphaOrderNodes");
-		
-		System.out.println("The node list is: " + lNodes);
 		
 		if (orderPref != null && orderPref.equals(EnumOrderNodes.ALPHA.toString())) {
 			lNodes = getAlphaOrderedNodes(lNodes);
 		}
 		
-		System.out.println("The node list after possible reordereing is: " + lNodes);
 		
 		for (NodeInfo node : lNodes) {
 			for (LogicalModel m : listModels) {
@@ -361,7 +358,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		List<NodeInfo> lInternal = new ArrayList<NodeInfo>(
 				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, false));
-		System.out.println("EpiTabInitialComponents: " + lInternal);
+
 		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
 				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
 		for (int i = lInputs.size() - 1; i >= 0; i--) {
@@ -598,7 +595,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 	@Override
 	public void applyChange() {
-		System.out.println("EpiTabIC.applyChange()");
+
 		// Update grid
 		EpitheliumGrid projEpiGrid = this.epithelium.getEpitheliumGrid();
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {
