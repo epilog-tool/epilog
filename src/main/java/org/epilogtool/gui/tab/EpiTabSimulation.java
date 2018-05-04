@@ -421,7 +421,8 @@ public class EpiTabSimulation extends EpiTabTools {
 		
 		for (NodeInfo node : lNodes) {
 			for (LogicalModel m : listModels) {
-				if (m.getComponents().contains(node) && !this.epithelium.isIntegrationComponent(node)) {
+//				if (m.getComponents().contains(node) && !this.epithelium.isIntegrationComponent(node)) { //Integration input are not visible on the simulation
+				if (m.getComponents().contains(node) ) { 
 					this.lModelVisibleComps.add(node.getNodeID());
 					this.getCompMiniPanel(jpRRC, gbc, y++, node);
 					break;
