@@ -16,12 +16,14 @@ import javax.swing.JScrollPane;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.epilogtool.OptionStore;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.gui.EpiLogGUIFactory;
+import org.epilogtool.gui.dialog.EnumOrderNodes;
 import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.Project;
 
@@ -139,7 +141,13 @@ public class GridInformation extends JPanel {
 
 					List<String> lAllNodeIDs = new ArrayList<String>(
 							Project.getInstance().getProjectFeatures().getNodeIDs());
-					Collections.sort(lAllNodeIDs, ObjectComparator.STRING);
+					
+					String orderPref = (String) OptionStore.getOption("PrefsAlphaOrderNodes");
+					
+					if (orderPref != null && orderPref.equals(EnumOrderNodes.ALPHA.toString())) {
+						Collections.sort(lAllNodeIDs, ObjectComparator.STRING);
+					}
+					
 
 					// Proper values
 					jlTmp = new JLabel("Internal:");
