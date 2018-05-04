@@ -550,6 +550,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	@Override
 	protected void buttonReset() {
 		// Cancel CellGrid
+		
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {
 			for (int y = 0; y < this.epiGridClone.getY(); y++) {
 				byte[] currState = this.epiGridClone.getCellState(x, y);
@@ -564,11 +565,12 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 	@Override
 	protected void buttonAccept() {
-
+		
 		EpitheliumGrid gridOrig = this.epithelium.getEpitheliumGrid();
+		
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {
 			for (int y = 0; y < this.epiGridClone.getY(); y++) {
-				byte[] stateClone = this.epiGridClone.getCellState(x, y);
+				byte[] stateClone = this.epiGridClone.getCellState(x, y).clone();
 				byte[] stateOrig = gridOrig.getCellState(x, y);
 				if (!Arrays.equals(stateOrig, stateClone)) {
 					gridOrig.setCellState(x, y, stateClone);
@@ -608,6 +610,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				}
 			}
 		}
+		System.out.println("Just applied change");
 		// New (potential) model list -> Update JComboCheckBox
 		// and (potential) new node value counts
 		this.epithelium.getEpitheliumGrid().updateGrid();
