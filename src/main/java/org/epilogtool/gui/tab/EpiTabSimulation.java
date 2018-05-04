@@ -258,7 +258,6 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.south.add(jpButtons, BorderLayout.LINE_END);
 		
 		//Iteration
-		
 		JPanel jpIteration = new JPanel(new GridBagLayout());
 		jpIteration.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 		
@@ -299,6 +298,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder("Model selection"));
 		this.jpLeft.add(this.jpLeftTop, BorderLayout.NORTH);
 
+		//JButton select all
 		JPanel rrTopSel = new JPanel(new FlowLayout());
 		JButton jbSelectAll = new JButton("Select All");
 		jbSelectAll.setMargin(new Insets(0, 0, 0, 0));
@@ -309,7 +309,6 @@ public class EpiTabSimulation extends EpiTabTools {
 					if (mNodeID2Checkbox.containsKey(nodeID)) {
 						mNodeID2Checkbox.get(nodeID).setSelected(true);
 					}
-					// mSelCheckboxes.put(nodeID, true);
 					nodesSelected.add(nodeID);
 
 				}
@@ -317,6 +316,8 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		rrTopSel.add(jbSelectAll);
+		
+		//JButton deselect all
 		JButton jbDeselectAll = new JButton("Deselect All");
 		jbDeselectAll.setMargin(new Insets(0, 0, 0, 0));
 		jbDeselectAll.addActionListener(new ActionListener() {
@@ -326,13 +327,16 @@ public class EpiTabSimulation extends EpiTabTools {
 					if (mNodeID2Checkbox.containsKey(nodeID)) {
 						mNodeID2Checkbox.get(nodeID).setSelected(false);
 					}
-					// mSelCheckboxes.put(nodeID, false);
 					nodesSelected.remove(nodeID);
 				}
 				visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
 			}
 		});
 		rrTopSel.add(jbDeselectAll);
+		
+		// ---------------------------------------------------------------------------
+		// Components Panel
+		
 		JPanel jpLeftCenter = new JPanel(new BorderLayout());
 		jpLeftCenter.setBorder(BorderFactory.createTitledBorder("Components"));
 
@@ -354,10 +358,6 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		jpLeftCenter.add(jsLeftCenter, BorderLayout.CENTER);
 		this.jpLeft.add(jpLeftCenter, BorderLayout.CENTER);
-
-		// ---------------------------------------------------------------------------
-		// Create Panel for the random initial conditions
-
 
 
 		JPanel jpLeftAggreg = new JPanel(new BorderLayout());
@@ -432,7 +432,6 @@ public class EpiTabSimulation extends EpiTabTools {
 		for (String modelName : modelNames) {
 			lModels.add(Project.getInstance().getProjectFeatures().getModel(modelName));
 		}
-//		this.visualGridICs.setModels(lModels);
 
 		this.lModelVisibleComps = new HashSet<String>();
 		this.jpRCenter.removeAll();
@@ -731,9 +730,7 @@ public class EpiTabSimulation extends EpiTabTools {
 	public void applyChange() {
 //		System.out.println("EpiTabSimulation.applyChange()");
 		if (this.hasChangedEpithelium()) {
-//			System.out.println("applyChange().changedEpi");
-//			JPanel jpNorth = new JPanel(new BorderLayout());
-			
+//			System.out.println("applyChange().changedEpi");			
 			JTextPane jtp = new JTextPane();
 			jtp.setContentType("text/html");
 			String color = ColorUtils.getColorCode(this.south.getBackground());
@@ -743,19 +740,8 @@ public class EpiTabSimulation extends EpiTabTools {
 					+ "Continue current simulation with old definitions, or press <b>Restart</b> to apply the new ones." + "</font></body></html>");
 			jtp.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 			jtp.setHighlighter(null);
-//			jpNorth.add(jtp, BorderLayout.PAGE_START);
 			this.jbRestart.setBackground(Color.RED);
 			this.south.add(jtp, BorderLayout.NORTH);
-			// JButton jbRestart = ButtonFactory.getNoMargins("Restart");
-			// jbRestart.setToolTipText("Restart the simulation with recently applied
-			// definitions");
-			// jbRestart.addActionListener(new ActionListener() {
-			// @Override
-			// public void actionPerformed(ActionEvent e) {
-			// restart();
-			// }
-			// });
-			// jpNorth.add(jbRestart, BorderLayout.PAGE_END);
 		} else {
 			for (int i = 0; i < this.south.getComponentCount(); i++) {
 				Component c = this.south.getComponent(i);
