@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -119,7 +120,7 @@ public class ProjectFeatures {
 	}
 
 	public Set<String> getModelNodeIDs(LogicalModel m, boolean input) {
-		Set<String> sComps = new HashSet<String>();
+		Set<String> sComps = new LinkedHashSet<String>();//LinkedHashSet: so that the set returns components with the same order
 		for (NodeInfo node : m.getComponents()) {
 			if (!input && !node.isInput() || input && node.isInput()) {
 				sComps.add(node.getNodeID());
@@ -129,7 +130,8 @@ public class ProjectFeatures {
 	}
 
 	public Set<NodeInfo> getModelNodeInfos(LogicalModel m, boolean input) {
-		Set<NodeInfo> sComps = new HashSet<NodeInfo>();
+		Set<NodeInfo> sComps = new LinkedHashSet<NodeInfo>();  //LinkedHashSet: so that the set returns components with the same order
+		System.out.println("ProjectFeatures (getcomponents): " + m.getComponents());
 		for (NodeInfo node : m.getComponents()) {
 			if (!input && !node.isInput() || input && node.isInput()) {
 				sComps.add(node);
@@ -139,7 +141,7 @@ public class ProjectFeatures {
 	}
 
 	public Set<NodeInfo> getModelsNodeInfos(List<LogicalModel> lModels, boolean input) {
-		Set<NodeInfo> sComps = new HashSet<NodeInfo>();
+		Set<NodeInfo> sComps = new LinkedHashSet<NodeInfo>(); //LinkedHashSet: so that the set returns components with the same order
 		if (!lModels.isEmpty()) {
 			for (LogicalModel m : lModels) {
 				sComps.addAll(this.getModelNodeInfos(m, input));
