@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.epilogtool.FileSelectionHelper;
 import org.epilogtool.OptionStore;
+import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
@@ -43,6 +45,7 @@ import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.SimulationEpiClone;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.dialog.EnumNodePercent;
+import org.epilogtool.gui.dialog.EnumOrderNodes;
 import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboCheckBox;
 import org.epilogtool.gui.widgets.VisualGridSimulation;
@@ -409,6 +412,13 @@ public class EpiTabSimulation extends EpiTabTools {
 		jpRRC.setBorder(BorderFactory.createTitledBorder(titleBorder));
 		// Collections.sort(nodeList, ObjectComparator.STRING); // orders the numbers
 		int y = 0;
+		
+		String orderPref = (String) OptionStore.getOption("PrefsAlphaOrderNodes");
+		
+		if (orderPref != null && orderPref.equals(EnumOrderNodes.ALPHA.toString())) {
+			lNodes = getAlphaOrderedNodes(lNodes);
+		}
+		
 		for (NodeInfo node : lNodes) {
 			for (LogicalModel m : listModels) {
 				if (m.getComponents().contains(node) && !this.epithelium.isIntegrationComponent(node)) {
@@ -421,6 +431,32 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jpRCenter.add(jpRRC);
 	}
 
+	private List<NodeInfo> getAlphaOrderedNodes( List<NodeInfo> lNodes) {
+		//TODO: Project.getinstance().getProjectPreferences.getNodeInfo(String, LogicalModel)
+		//Faz sentido? afinal proibimos que um ficheiro esteja carregado quando tem o mesmo nome e ranges de valores diferentes!
+		
+		List<String> lNodeID = new ArrayList<String>();
+		List<NodeInfo> lOrderedNods = new ArrayList<NodeInfo>();
+		
+		for (NodeInfo node: lNodes) {
+			lNodeID.add(node.getNodeID());
+		}
+
+//		lNodeID = lNodeID.stream().sorted().collect(Collectors.toList()); //First presents the capital letter, then the smaller
+		Collections.sort(lNodeID, ObjectComparator.STRING); //Orders alphabetically, not case-sensitive
+		
+		for (String nodeID: lNodeID) {
+
+			for (NodeInfo node: lNodes) {
+				if (node.getNodeID().equals(nodeID)) {
+					lOrderedNods.add(node);
+					continue;
+				}
+			}
+		}
+		
+		return lOrderedNods;
+	}
 	/**
 	 * Updates components check selection list, once the selected model to display
 	 * is changed.
@@ -432,6 +468,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		for (String modelName : modelNames) {
 			lModels.add(Project.getInstance().getProjectFeatures().getModel(modelName));
 		}
+		
 
 		this.lModelVisibleComps = new HashSet<String>();
 		this.jpRCenter.removeAll();
