@@ -214,6 +214,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 				}
 			}
 		}
+		
 		this.epiGrid.updateNodeValueCounts();
 		this.updateNodePercentages();
 		this.paint(getGraphics());
