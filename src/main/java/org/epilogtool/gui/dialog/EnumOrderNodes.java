@@ -18,11 +18,11 @@ public enum EnumOrderNodes {
 		return this.desc;
 	}
 
-	public static EnumOrderNodes fromString(String str) {
-		if (str.equals(ORIGINAL.toString()))
-			return ORIGINAL;
-		else if (str.equals(ALPHA.toString()))
-			return ALPHA;
-		return null;
-	}
+//	public static EnumOrderNodes fromString(String str) {
+//		if (str.equals(ORIGINAL.toString()))
+//			return ORIGINAL;
+//		else if (str.equals(ALPHA.toString()))
+//			return ALPHA;
+//		return null;
+//	}
 }

@@ -12,11 +12,13 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -36,11 +38,13 @@ import javax.swing.tree.TreePath;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.epilogtool.OptionStore;
+import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.dialog.EnumNodePercent;
+import org.epilogtool.gui.dialog.EnumOrderNodes;
 import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboCheckBox;
 import org.epilogtool.gui.widgets.VisualGridInitialConditions;
@@ -111,6 +115,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		// Model selection jcomboCheckBox
 
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
+		
+		
 		JCheckBox[] items = new JCheckBox[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
 			items[i] = new JCheckBox(Project.getInstance().getProjectFeatures().getModelName(modelList.get(i)));
@@ -285,6 +291,17 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		jpRRC.setBorder(BorderFactory.createTitledBorder(titleBorder));
 		// Collections.sort(nodeList, ObjectComparator.STRING); // orders the numbers
 		int y = 0;
+		
+		String orderPref = (String) OptionStore.getOption("PrefsAlphaOrderNodes");
+		
+		System.out.println("The node list is: " + lNodes);
+		
+		if (orderPref != null && orderPref.equals(EnumOrderNodes.ALPHA.toString())) {
+			lNodes = getAlphaOrderedNodes(lNodes);
+		}
+		
+		System.out.println("The node list after possible reordereing is: " + lNodes);
+		
 		for (NodeInfo node : lNodes) {
 			for (LogicalModel m : listModels) {
 				if (m.getComponents().contains(node) && !this.epithelium.isIntegrationComponent(node)) {
@@ -294,7 +311,36 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				}
 			}
 		}
+		
+		
 		this.jpRCenter.add(jpRRC);
+	}
+
+	private List<NodeInfo> getAlphaOrderedNodes( List<NodeInfo> lNodes) {
+		//TODO: Project.getinstance().getProjectPreferences.getNodeInfo(String, LogicalModel)
+		//Faz sentido? afinal proibimos que um ficheiro esteja carregado quando tem o mesmo nome e ranges de valores diferentes!
+		
+		List<String> lNodeID = new ArrayList<String>();
+		List<NodeInfo> lOrderedNods = new ArrayList<NodeInfo>();
+		
+		for (NodeInfo node: lNodes) {
+			lNodeID.add(node.getNodeID());
+		}
+
+//		lNodeID = lNodeID.stream().sorted().collect(Collectors.toList()); //First presents the capital letter, then the smaller
+		Collections.sort(lNodeID, ObjectComparator.STRING); //Orders alphabetically, not case-sensitive
+		
+		for (String nodeID: lNodeID) {
+
+			for (NodeInfo node: lNodes) {
+				if (node.getNodeID().equals(nodeID)) {
+					lOrderedNods.add(node);
+					continue;
+				}
+			}
+		}
+		
+		return lOrderedNods;
 	}
 
 	/**
@@ -315,6 +361,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		List<NodeInfo> lInternal = new ArrayList<NodeInfo>(
 				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, false));
+		System.out.println("EpiTabInitialComponents: " + lInternal);
 		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
 				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
 		for (int i = lInputs.size() - 1; i >= 0; i--) {

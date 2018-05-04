@@ -416,9 +416,11 @@ public class EpiGUI extends JFrame {
 	}
 
 	public void editPreferences() {
+		
 		DialogEditPreferences dialogPanel = new DialogEditPreferences();
 		Window win = SwingUtilities.getWindowAncestor(this);
 		JDialog dialog = new JDialog(win, Txt.get("s_EDIT_PREFS"), ModalityType.APPLICATION_MODAL);
+		
 		dialog.getContentPane().add(dialogPanel);
 		dialog.pack();
 		dialog.setLocationRelativeTo(null);
@@ -967,38 +969,38 @@ public class EpiGUI extends JFrame {
 		this.epiRightFrame.setSelectedIndex(tabIndex);
 	}
 
-	//TODO: Change The dynamics of the restart. it should do the following:
-	// 1) Make sure that the colors are saved 
-	// 2) set the grid to iteration 0
-	// 3) the gird information keeps pointing to the same cell?
-	// 4) 
-
-	public void restartSimulationTab() {
-		
-
-		// save settings
-		int simulationTabIndex = this.epiRightFrame.getSelectedIndex();
-		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
-		TreePath path = this.epiTreePanel.getSelectionEpiPath();
-
-//		// remove tab
-		this.epiRightFrame.removeTabAt(simulationTabIndex);
-
-		// restart
-		ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
-		EpiTab tab;
-		tab = new EpiTabSimulation(epi, path, projChanged, new SimulationEpiClone());
-		String title = epi.getName() + ":Simulation";
-		this.epiRightFrame.addTab(title, tab);
-		tab.initialize();
-
-		CloseTabButton tabButton = new CloseTabButton(title, this.epiRightFrame);
-
-		int tabIndex = this.epiRightFrame.getTabCount() - 1;
-		this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
-
-		this.epiRightFrame.setSelectedIndex(tabIndex);
-	}
+//	//TODO: Change The dynamics of the restart. it should do the following:
+//	// 1) Make sure that the colors are saved 
+//	// 2) set the grid to iteration 0
+//	// 3) the gird information keeps pointing to the same cell?
+//	// 4) 
+//
+//	public void restartSimulationTab() {
+//		
+//
+//		// save settings
+//		int simulationTabIndex = this.epiRightFrame.getSelectedIndex();
+//		Epithelium epi = this.epiTreePanel.getSelectedEpithelium();
+//		TreePath path = this.epiTreePanel.getSelectionEpiPath();
+//
+////		// remove tab
+//		this.epiRightFrame.removeTabAt(simulationTabIndex);
+//
+//		// restart
+//		ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
+//		EpiTab tab;
+//		tab = new EpiTabSimulation(epi, path, projChanged, new SimulationEpiClone());
+//		String title = epi.getName() + ":Simulation";
+//		this.epiRightFrame.addTab(title, tab);
+//		tab.initialize();
+//
+//		CloseTabButton tabButton = new CloseTabButton(title, this.epiRightFrame);
+//
+//		int tabIndex = this.epiRightFrame.getTabCount() - 1;
+//		this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
+//
+//		this.epiRightFrame.setSelectedIndex(tabIndex);
+//	}
 
 	// Inner Classes
 	public class SimulationEpiClone {
@@ -1066,7 +1068,6 @@ public class EpiGUI extends JFrame {
 				if (c instanceof EpiTabSimulation || c instanceof EpiTabInitialConditions) {
 					EpiTab tab = (EpiTab) c;
 					if (!tab.equals(changedTab)) {
-						// System.out.println("ProjChangeNotifyTab -> " + tab.getName());
 						tab.notifyChange();
 					}
 				}
