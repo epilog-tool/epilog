@@ -338,13 +338,18 @@ public class EpitheliumGrid {
 		// Compute corresponding percentages
 		this.compPercents.clear();
 		int nCells = this.getX() * this.getY();
+		System.out.println("cells: " + nCells);
 		for (String nodeID : this.compCounts.keySet()) {
 			this.compPercents.put(nodeID, new HashMap<Byte, Float>());
 			for (Byte value : this.compCounts.get(nodeID).keySet()) {
+				if (nodeID=="Nodal") {
+					System.out.println("node counts: " + this.compCounts.get(nodeID));
+				}
 				float count = this.compCounts.get(nodeID).get(value);
 				float percent = (count / nCells) * 100;
 				this.compPercents.get(nodeID).put(value, percent);
 			}
 		}
+		System.out.println(this.compPercents);
 	}
 }
