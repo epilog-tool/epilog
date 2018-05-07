@@ -610,7 +610,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				}
 			}
 		}
-		System.out.println("Just applied change");
+
 		// New (potential) model list -> Update JComboCheckBox
 		// and (potential) new node value counts
 		this.epithelium.getEpitheliumGrid().updateGrid();
