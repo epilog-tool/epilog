@@ -3,6 +3,7 @@ package org.epilogtool.gui.tab;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -130,13 +131,23 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jpLeftTop = new JPanel();
 		this.jpLeftTop.setLayout(new BoxLayout(this.jpLeftTop, BoxLayout.Y_AXIS));
 		
-		this.south.setBackground(Color.black);
 		
 		//South Panel
+		
+	
+		
+		//Buttons
+		
+		JPanel jpButtons = new JPanel(new BorderLayout());
+		JPanel jpButtonsC = new JPanel();
+		jpButtons.add(jpButtonsC, BorderLayout.CENTER);
 		
 		//Restart
 		
 		JPanel jpRestart = new JPanel();
+		jpRestart.setBorder(BorderFactory.createTitledBorder(""));
+//		jpRestart.setPreferredSize(new Dimension(40, 40));
+		jpRestart.setSize(20, 80);
 		this.jbRestart = ButtonFactory.getNoMargins(Txt.get("s_TAB_SIM_RESTART"));
 		this.jbRestart.setToolTipText(Txt.get("s_TAB_SIM_RESTART_DESC"));
 		this.jbRestart.addActionListener(new ActionListener() {
@@ -146,15 +157,10 @@ public class EpiTabSimulation extends EpiTabTools {
 				jbRestart.setBackground(jbBack.getBackground());
 			}
 		});
+		
 		jpRestart.add(this.jbRestart);
-		
-		this.south.add(jpRestart, BorderLayout.LINE_START);
-		
-		//Other Buttons
-		
-		JPanel jpButtons = new JPanel(new BorderLayout());
-		JPanel jpButtonsC = new JPanel();
-		jpButtons.add(jpButtonsC, BorderLayout.CENTER);
+//		jpButtons.add(jpRestart,BorderLayout.LINE_START);
+		this.south.add(jpRestart,BorderLayout.LINE_START);
 		
 		
 		this.jbRewind = ButtonFactory.getImageNoBorder("media_step_0.png");//media_rewind-26x24.png");
@@ -423,7 +429,9 @@ public class EpiTabSimulation extends EpiTabTools {
 			for (LogicalModel m : listModels) {
 //				if (m.getComponents().contains(node) && !this.epithelium.isIntegrationComponent(node)) { //Integration input are not visible on the simulation
 				if (m.getComponents().contains(node) ) { 
+					System.out.println("doing setComponentTypeList: " + node);
 					this.lModelVisibleComps.add(node.getNodeID());
+				
 					this.getCompMiniPanel(jpRRC, gbc, y++, node);
 					break;
 				}
@@ -465,12 +473,15 @@ public class EpiTabSimulation extends EpiTabTools {
 	 * @param modelNames
 	 */
 	private void updateComponentList(List<String> modelNames) {
+		
+		System.out.println("doing updateComponentList");
+		
 		List<LogicalModel> lModels = new ArrayList<LogicalModel>();
 		for (String modelName : modelNames) {
 			lModels.add(Project.getInstance().getProjectFeatures().getModel(modelName));
 		}
 		
-
+		
 		this.lModelVisibleComps = new HashSet<String>();
 		this.jpRCenter.removeAll();
 
@@ -535,14 +546,18 @@ public class EpiTabSimulation extends EpiTabTools {
 		gbc.gridx = 2;
 
 		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
+		System.out.println("jcb: " + jcb);
 		if (jcb == null) {
 			this.mSelCheckboxes.put(nodeID, false);
 			// node percentage is the checkbox text
+			
 			String nodePercent = "";
 			String percPref = (String) OptionStore.getOption("PrefsNodePercent");
 			if (percPref != null && percPref.equals(EnumNodePercent.YES.toString())) {
 				nodePercent = grid.getPercentage(nodeID);
 			}
+			System.out.println("node Percent" + nodePercent);
+			
 			jcb = new JCheckBox(nodePercent);
 			jcb.setToolTipText(nodeID);
 			jcb.setSelected(this.mSelCheckboxes.get(nodeID));
@@ -564,6 +579,13 @@ public class EpiTabSimulation extends EpiTabTools {
 			this.mNodeID2Checkbox.put(nodeID, jcb);
 		}
 		jp.add(jcb, gbc);
+		
+		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
+		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
+			gbc.gridx = 3;
+			JLabel percentage = new JLabel(this.simulation.getGridAt(this.iCurrSimIter).getPercentage(nodeID));
+			jp.add(percentage, gbc);
+		}
 	}
 
 
@@ -684,8 +706,11 @@ public class EpiTabSimulation extends EpiTabTools {
 		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			firstGrid.updateNodeValueCounts();
 		}
+	
 		this.updateComponentList(this.jccbSBML.getSelectedItems());
 		// Re-Paint
+		this.center.repaint();
+		this.revalidate();
 		this.repaint();
 	}
 
@@ -766,19 +791,18 @@ public class EpiTabSimulation extends EpiTabTools {
 	
 	@Override
 	public void applyChange() {
-//		System.out.println("EpiTabSimulation.applyChange()");
-		if (this.hasChangedEpithelium()) {
-//			System.out.println("applyChange().changedEpi");			
+		if (this.hasChangedEpithelium()) {	
 			JTextPane jtp = new JTextPane();
 			jtp.setContentType("text/html");
 			String color = ColorUtils.getColorCode(this.south.getBackground());
-			color = "#000000";
-			jtp.setText("<html><body style=\"background-color:" + color + "\">" + "<font color=\"#FFDEAD\">"
+			color = "#FF9A99";
+			jtp.setText("<html><body style=\"background-color:" + color + "\">" + "<font color=\"#000000\">"
 					+ "New Epithelium definitions detected!!<br/>"
 					+ "Continue current simulation with old definitions, or press <b>Restart</b> to apply the new ones." + "</font></body></html>");
 			jtp.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 			jtp.setHighlighter(null);
-			this.jbRestart.setBackground(Color.RED);
+//			this.jbRestart.setBackground(Color.getHSBColor(226, 68, 93));
+			this.jbRestart.setBackground(new Color(255, 154, 153));
 			this.south.add(jtp, BorderLayout.NORTH);
 		} else {
 			for (int i = 0; i < this.south.getComponentCount(); i++) {
@@ -790,7 +814,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 				}
 			
-//		this.updateComponentList(this.jccbSBML.getSelectedItems());
+		this.updateComponentList(this.jccbSBML.getSelectedItems());
 		this.south.repaint();
 		this.repaint();
 		this.revalidate();
