@@ -494,7 +494,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		if (!lInternal.isEmpty())
 			this.setComponentTypeList(lInternal, "Internal", lModels);
-		List lIntegrationInputs = new ArrayList<NodeInfo>();
+		List<NodeInfo> lIntegrationInputs = new ArrayList<NodeInfo>();
 		for (int i = lInputs.size() - 1; i >= 0; i--) {
 		if (this.epithelium.isIntegrationComponent(lInputs.get(i))) {
 			lIntegrationInputs.add(lInputs.get(i));
@@ -560,13 +560,13 @@ public class EpiTabSimulation extends EpiTabTools {
 			// node percentage is the checkbox text
 			
 			String nodePercent = "";
-			String percPref = (String) OptionStore.getOption("PrefsNodePercent");
-			if (percPref != null && percPref.equals(EnumNodePercent.YES.toString())) {
-				nodePercent = grid.getPercentage(nodeID);
-			}
+//			String percPref = (String) OptionStore.getOption("PrefsNodePercent");
+//			if (percPref != null && percPref.equals(EnumNodePercent.YES.toString())) {
+//				nodePercent = grid.getPercentage(nodeID);
+//			}
 
 			
-			jcb = new JCheckBox(nodePercent);
+			jcb = new JCheckBox();
 			jcb.setToolTipText(nodeID);
 			jcb.setSelected(this.mSelCheckboxes.get(nodeID));
 			jcb.addActionListener(new ActionListener() {
