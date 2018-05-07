@@ -429,7 +429,6 @@ public class EpiTabSimulation extends EpiTabTools {
 			for (LogicalModel m : listModels) {
 //				if (m.getComponents().contains(node) && !this.epithelium.isIntegrationComponent(node)) { //Integration input are not visible on the simulation
 				if (m.getComponents().contains(node) ) { 
-					System.out.println("doing setComponentTypeList: " + node);
 					this.lModelVisibleComps.add(node.getNodeID());
 				
 					this.getCompMiniPanel(jpRRC, gbc, y++, node);
@@ -474,8 +473,6 @@ public class EpiTabSimulation extends EpiTabTools {
 	 */
 	private void updateComponentList(List<String> modelNames) {
 		
-		System.out.println("doing updateComponentList");
-		
 		List<LogicalModel> lModels = new ArrayList<LogicalModel>();
 		for (String modelName : modelNames) {
 			lModels.add(Project.getInstance().getProjectFeatures().getModel(modelName));
@@ -497,8 +494,19 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		if (!lInternal.isEmpty())
 			this.setComponentTypeList(lInternal, "Internal", lModels);
-		if (!lInputs.isEmpty())
-			this.setComponentTypeList(lInputs, "Inputs", lModels);
+		List lIntegrationInputs = new ArrayList<NodeInfo>();
+		for (int i = lInputs.size() - 1; i >= 0; i--) {
+		if (this.epithelium.isIntegrationComponent(lInputs.get(i))) {
+			lIntegrationInputs.add(lInputs.get(i));
+			lInputs.remove(i);
+		}
+	}
+		if (!lInputs.isEmpty()) {
+			this.setComponentTypeList(lInputs, "Positional Inputs", lModels);
+		}
+		if (!lIntegrationInputs.isEmpty()) {
+			this.setComponentTypeList(lIntegrationInputs, "Integration Inputs", lModels);
+		}
 
 		visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
 		this.jpRCenter.revalidate();
@@ -546,7 +554,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		gbc.gridx = 2;
 
 		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
-		System.out.println("jcb: " + jcb);
+
 		if (jcb == null) {
 			this.mSelCheckboxes.put(nodeID, false);
 			// node percentage is the checkbox text
@@ -556,7 +564,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			if (percPref != null && percPref.equals(EnumNodePercent.YES.toString())) {
 				nodePercent = grid.getPercentage(nodeID);
 			}
-			System.out.println("node Percent" + nodePercent);
+
 			
 			jcb = new JCheckBox(nodePercent);
 			jcb.setToolTipText(nodeID);
