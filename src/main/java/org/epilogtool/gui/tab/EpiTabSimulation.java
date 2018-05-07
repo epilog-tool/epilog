@@ -560,13 +560,9 @@ public class EpiTabSimulation extends EpiTabTools {
 			// node percentage is the checkbox text
 			
 			String nodePercent = "";
-//			String percPref = (String) OptionStore.getOption("PrefsNodePercent");
-//			if (percPref != null && percPref.equals(EnumNodePercent.YES.toString())) {
-//				nodePercent = grid.getPercentage(nodeID);
-//			}
 
 			
-			jcb = new JCheckBox();
+			jcb = new JCheckBox(nodePercent);
 			jcb.setToolTipText(nodeID);
 			jcb.setSelected(this.mSelCheckboxes.get(nodeID));
 			jcb.addActionListener(new ActionListener() {
