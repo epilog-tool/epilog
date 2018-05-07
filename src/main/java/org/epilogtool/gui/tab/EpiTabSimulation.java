@@ -134,33 +134,37 @@ public class EpiTabSimulation extends EpiTabTools {
 		
 		//South Panel
 		
-	
+		//Iteration
+		JPanel jpIteration = new JPanel(new GridBagLayout());
+		jpIteration.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+		
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridy = 0;
+		gbc.gridx = 0;
+		gbc.ipadx = gbc.ipady = 5;
+		gbc.anchor = GridBagConstraints.WEST;
+		jpIteration.add(new JLabel("Iteration:"), gbc);
+		gbc.gridx = 1;
+		this.jlStep = new JLabel("" + this.iCurrSimIter);
+		jpIteration.add(this.jlStep, gbc);
+		gbc.gridy = 1;
+		gbc.gridx = 0;
+		gbc.gridwidth = 2;
+		this.jlAttractor = new JLabel("");
+		this.jlAttractor.setForeground(Color.RED);
+		this.setGridGUIStable(false);
+		jpIteration.add(this.jlAttractor, gbc);
+
+		this.south.add(jpIteration, BorderLayout.CENTER);
 		
 		//Buttons
 		
 		JPanel jpButtons = new JPanel(new BorderLayout());
+		jpButtons.setBorder(BorderFactory.createTitledBorder(""));
+		jpButtons.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 		JPanel jpButtonsC = new JPanel();
 		jpButtons.add(jpButtonsC, BorderLayout.CENTER);
 		
-		//Restart
-		
-		JPanel jpRestart = new JPanel();
-		jpRestart.setBorder(BorderFactory.createTitledBorder(""));
-//		jpRestart.setPreferredSize(new Dimension(40, 40));
-		jpRestart.setSize(20, 80);
-		this.jbRestart = ButtonFactory.getNoMargins(Txt.get("s_TAB_SIM_RESTART"));
-		this.jbRestart.setToolTipText(Txt.get("s_TAB_SIM_RESTART_DESC"));
-		this.jbRestart.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				restartSimulationTab();
-				jbRestart.setBackground(jbBack.getBackground());
-			}
-		});
-		
-		jpRestart.add(this.jbRestart);
-//		jpButtons.add(jpRestart,BorderLayout.LINE_START);
-		this.south.add(jpRestart,BorderLayout.LINE_START);
 		
 		
 		this.jbRewind = ButtonFactory.getImageNoBorder("media_step_0.png");//media_rewind-26x24.png");
@@ -262,32 +266,12 @@ public class EpiTabSimulation extends EpiTabTools {
 		});
 
 		jpButtonsR.add(jbSaveAll);
+		
+//		jpButtons.setPreferredSize(new Dimension(jpButtons.getPreferredSize().width+110, jpIteration.getPreferredSize().height));
 
 		jpButtons.add(jpButtonsR, BorderLayout.LINE_END);
 		this.south.add(jpButtons, BorderLayout.LINE_END);
 		
-		//Iteration
-		JPanel jpIteration = new JPanel(new GridBagLayout());
-		jpIteration.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-		
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridy = 0;
-		gbc.gridx = 0;
-		gbc.ipadx = gbc.ipady = 5;
-		gbc.anchor = GridBagConstraints.WEST;
-		jpIteration.add(new JLabel("Iteration:"), gbc);
-		gbc.gridx = 1;
-		this.jlStep = new JLabel("" + this.iCurrSimIter);
-		jpIteration.add(this.jlStep, gbc);
-		gbc.gridy = 1;
-		gbc.gridx = 0;
-		gbc.gridwidth = 2;
-		this.jlAttractor = new JLabel("");
-		this.jlAttractor.setForeground(Color.RED);
-		this.setGridGUIStable(false);
-		jpIteration.add(this.jlAttractor, gbc);
-
-		this.south.add(jpIteration, BorderLayout.CENTER);
 		
 		// ---------------------------------------------------------------------------
 		// Model selection jcomboCheckBox
@@ -376,6 +360,29 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.center.add(jpLeftAggreg, BorderLayout.LINE_START);
 		updateComponentList(this.jccbSBML.getSelectedItems());
 		this.isInitialized = true;
+		
+		
+		//Restart
+		
+		JPanel jpRestart = new JPanel();
+		jpRestart.setBorder(BorderFactory.createTitledBorder(""));
+		jpRestart.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+//		jpRestart.setPreferredSize(new Dimension(40, 40));
+
+		this.jbRestart = ButtonFactory.getNoMargins(Txt.get("s_TAB_SIM_RESTART"));
+		this.jbRestart.setToolTipText(Txt.get("s_TAB_SIM_RESTART_DESC"));
+		this.jbRestart.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				restartSimulationTab();
+				jbRestart.setBackground(jbBack.getBackground());
+			}
+		});
+		this.jbRestart.setPreferredSize(new Dimension(this.jbRestart.getPreferredSize().width+30, jpIteration.getPreferredSize().height-10));
+		jpRestart.add(this.jbRestart);
+//		jpButtons.add(jpRestart,BorderLayout.LINE_START);
+		this.south.add(jpRestart,BorderLayout.LINE_START);
+		
 	}
 	// ---------------------------------------------------------------------------
 	// End initialize
