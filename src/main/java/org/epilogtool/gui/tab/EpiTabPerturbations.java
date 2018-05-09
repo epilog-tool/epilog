@@ -79,6 +79,9 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	private JPanel lTop;
 	private GridInformation gridInfo;
 	private TabProbablyChanged tpc;
+	
+	private byte minValue;
+	private byte maxValue;
 
 	public EpiTabPerturbations(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
 			TabChangeNotifyProj tabChanged) {
@@ -221,15 +224,23 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 				byte min = (Byte) jcbMinVal.getSelectedItem();
 				byte max = (Byte) jcbMaxVal.getSelectedItem();
 				AbstractPerturbation ap;
+				
 				if (max < min) {
-					NotificationManager.warning("EpiTabPerturbations", Txt.get("s_TAB_PERTURB_INVALID"));
-					NotificationManager.dispatchDialogWarning(false, false);
-					return;
+					
+					jcbMaxVal.setSelectedItem(min);
+					jcbMaxVal.repaint();
+					max=min;
+					ap = new FixedValuePerturbation(node, min);
+//					NotificationManager.warning("EpiTabPerturbations", Txt.get("s_TAB_PERTURB_INVALID"));
+//					NotificationManager.dispatchDialogWarning(false, false);
+//					return;
 				} else if (min == max) {
 					ap = new FixedValuePerturbation(node, min);
+					System.out.println(ap);
 				} else {
 					ap = new RangePerturbation(node, min, max);
 				}
+				
 				if (!mID2AP.containsKey(ap.toString())) {
 					epiPerturbClone.addPerturbation(selModel, ap);
 					mID2AP.put(ap.toString(), ap);
@@ -294,16 +305,23 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 					mAP2Checkbox.get(ap).setSelected(false);
 				}
 				if (lAPs.size() > 1) {
-					// Need to check the unicity of the existing perturbations
+					//TODO: create personalized message saying why it is not possible to create this multiple perturbation (only one 
 					Collections.sort(lAPs, ObjectComparator.ABSTRACT_PERTURB);
 					List<AbstractPerturbation> lAPsClean = new ArrayList<AbstractPerturbation>();
 					for (int i = 0; i < lAPs.size(); i++) {
 						boolean sub = false;
+						String component_A = lAPs.get(i).toString().split(" ")[0];
 						for (int j = i + 1; j < lAPs.size(); j++) {
-							if (lAPs.get(j).toString().contains(lAPs.get(i).toString())) {
+							String component_B = lAPs.get(j).toString().split(" ")[0];
+							if (component_A.equals(component_B)) {
 								sub = true;
 								break;
-							}
+							}		
+//							if (lAPs.get(j).toString().contains(lAPs.get(i).toString())) {
+//								sub = true;
+//								System.out.println(lAPs.get(j).toString());
+//								break;
+//							}
 						}
 						if (!sub) {
 							lAPsClean.add(lAPs.get(i));
@@ -501,8 +519,9 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	private void updateMinMaxValues(String nodeID) {
 		jcbMinVal.removeAllItems();
 		jcbMaxVal.removeAllItems();
-		byte max = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, selModel).getMax();
-		for (byte b = 0; b <= max; b++) {
+		this.maxValue = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, selModel).getMax();
+		this.minValue = 0;
+		for (byte b = 0; b <= this.maxValue; b++) {
 			jcbMinVal.addItem(b);
 			jcbMaxVal.addItem(b);
 		}
