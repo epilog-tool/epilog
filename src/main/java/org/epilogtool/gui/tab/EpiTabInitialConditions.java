@@ -128,7 +128,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		// ---------------------------------------------------------------------------
 		// Select/Deselect active nodes Buttons
 
-		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder("Model selection"));
+		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder("Model Selection"));
 		this.jpLeft.add(this.jpLeftTop, BorderLayout.NORTH);
 
 		JPanel rrTopSel = new JPanel(new FlowLayout());
