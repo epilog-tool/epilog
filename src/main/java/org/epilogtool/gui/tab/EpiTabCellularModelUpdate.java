@@ -53,6 +53,10 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 	private JPanel jpNorthLeft;
 	private JPanel jpSouth;
 	private JPanel jpIntraCenter;
+	
+	private JButton jbInc;
+	private JButton jbDec;
+	
 
 	public EpiTabCellularModelUpdate(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
 			TabChangeNotifyProj tabChanged) {
@@ -60,17 +64,24 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 	}
 
 	public void initialize() {
+		
 		this.center.setLayout(new BorderLayout());
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
+		
 		this.userPriorityClasses = new EpitheliumUpdateSchemeIntra();
+		
 		for (LogicalModel m : modelList) {
 			this.userPriorityClasses.addModelPriorityClasses(this.epithelium.getPriorityClasses(m).clone());
 		}
+		
 		this.guiClasses = new ArrayList<JList<String>>();
 		this.tpc = new TabProbablyChanged();
 
 		this.jpNorth = new JPanel(new BorderLayout());
 		this.center.add(this.jpNorth, BorderLayout.NORTH);
+		
+		this.jbInc = ButtonFactory.getNoMargins("<-");
+		this.jbDec = ButtonFactory.getNoMargins("->");
 
 		// Model selection JPanel
 		this.jpNorthLeft = new JPanel();
@@ -106,8 +117,8 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 			}
 		});
 		jpSouthCenter.add(jbUnsplit);
-		JButton jbInc = ButtonFactory.getNoMargins("<-");
-		jbInc.addActionListener(new ActionListener() {
+		
+		this.jbInc.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				incPriorityOfSelVars();
@@ -115,9 +126,10 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 				getParent().repaint();
 			}
 		});
-		jpSouthCenter.add(jbInc);
-		JButton jbDec = ButtonFactory.getNoMargins("->");
-		jbDec.addActionListener(new ActionListener() {
+		
+		jpSouthCenter.add(this.jbInc);
+
+		this.jbDec.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				decPriorityOfSelVars();
@@ -125,7 +137,8 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 				getParent().repaint();
 			}
 		});
-		jpSouthCenter.add(jbDec);
+		jpSouthCenter.add(this.jbDec);
+		
 		JButton jbSingle = ButtonFactory.getNoMargins("Single class");
 		jbSingle.addActionListener(new ActionListener() {
 			@Override
@@ -143,6 +156,15 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 
 		LogicalModel m = Project.getInstance().getProjectFeatures().getModel((String) jcbSBML.getSelectedItem());
 		this.updatePriorityList(m);
+		
+		ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(this.selectedModel);
+		
+		if (mpc.getPriorities().size()>1) {
+			this.jbInc.setEnabled(true);
+		}
+		else {
+			this.jbInc.setEnabled(false);
+		}
 		this.isInitialized = true;
 	}
 
@@ -205,6 +227,12 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 				break;
 			}
 		}
+		if (mpc.getPriorities().size()>1) {
+			this.jbInc.setEnabled(true);
+		}
+		else {
+			this.jbInc.setEnabled(false);
+		}
 		this.updatePriorityList(this.selectedModel);
 	}
 
@@ -219,11 +247,19 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 			}
 		}
 		this.updatePriorityList(this.selectedModel);
+
+		if (mpc.getPriorities().size()>1) {
+			this.jbInc.setEnabled(true);
+		}
+		else {
+			this.jbInc.setEnabled(false);
+		}
 	}
 
 	private void createSingleClass() {
 		this.userPriorityClasses.getModelPriorityClasses(this.selectedModel).singlePriorityClass();
 		tpc.setChanged();
+		this.jbInc.setEnabled(false);
 		this.updatePriorityList(this.selectedModel);
 	}
 
