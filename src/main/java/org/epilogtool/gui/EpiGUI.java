@@ -379,9 +379,11 @@ public class EpiGUI extends JFrame {
 		// File Menu
 		boolean bIsValid = Project.getInstance().getFilenamePEPS() != null ? Project.getInstance().hasChanged()
 				: this.projDescPanel.countModels() > 0;
+				
 		JMenu file = this.epiMenu.getMenu(0);
 		file.getItem(4).setEnabled(bIsValid); // Save
-		file.getItem(5).setEnabled(this.projDescPanel.countModels() > 0); // SaveAs
+		
+		file.getItem(5).setEnabled(Project.getInstance().getFilenamePEPS()!=null); // SaveAs
 
 		// Cellular Model Menu
 		this.projDescPanel.updateSBMLMenuItems();
@@ -540,9 +542,11 @@ public class EpiGUI extends JFrame {
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("EpiLog configuration File","peps");
 		fileChooser.setFileFilter(filter);
 		String fName = Project.getInstance().getFilenamePEPS();
-		fileChooser.setCurrentDirectory(new java.io.File(fName));
-		
-		 
+		if (fName!=null) {
+			fileChooser.setCurrentDirectory(new java.io.File(fName));
+		}
+		//TODO: remember folder?
+				 
 		// let the user choose the destination file
 		if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
 		    // indicates whether the user still wants to export the settings
