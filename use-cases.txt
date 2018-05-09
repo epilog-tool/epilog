@@ -1,8 +1,0 @@
-
-Sub-tabs  
-        * Quando fazemos uma altera<8d><8b>o numa tab, antes de aceitar deve aparecer um asterisco antes do X. Ou seja, obriga a confirmar cada vez que fazemos uma altera<8d><8b>o numa tab. Esta altera<8d><8b>o deve aparecer na epitab de lado.      
-        
-
-Carregamento de um Modelo
-        * Estes autom<87>ticos para confirmar que o modelo n<8b>o tem erros
-
