@@ -1,3 +1,0 @@
-- Allow the user to change the format of cells
-- think about the synchronisation 
-- 
