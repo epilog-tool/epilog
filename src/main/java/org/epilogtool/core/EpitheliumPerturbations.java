@@ -1,9 +1,12 @@
 package org.epilogtool.core;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -86,4 +89,19 @@ public class EpitheliumPerturbations {
 		}
 		return true;
 	}
+	
+	
+	public List<AbstractPerturbation> getAllCreatedPerturbations() {
+		
+		List<AbstractPerturbation> lPertubations = new ArrayList<AbstractPerturbation>();
+		
+		if (perturbations!=null) {
+		for (LogicalModel m : perturbations.keySet()) {
+			for (AbstractPerturbation p : perturbations.get(m).getAllPerturbations()) {
+				lPertubations.add(p);
+			}
+			
+	}}
+		return lPertubations;
+}
 }
