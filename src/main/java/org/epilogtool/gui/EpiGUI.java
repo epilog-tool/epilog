@@ -806,10 +806,8 @@ public class EpiGUI extends JFrame {
 	 */
 	private void cleanGUI() {
 		this.setTitle(Txt.get("s_APP_NAME") + Txt.get("s_UNTITLED"));
+		this.epiTabCloseAllTabs(true);
 		this.epiTreePanel.initEpitheliumJTree();
-		while (this.epiRightFrame.getTabCount() > 0) {
-			this.epiRightFrame.removeTabAt(0);
-		}
 		this.projDescPanel.clean();
 
 	}
@@ -927,16 +925,20 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
-	public boolean epiTabCloseAllTabs() {
+	public boolean epiTabCloseAllTabs(boolean force) {
 		boolean canClose = true;
 		for (int i = this.epiRightFrame.getTabCount() - 1; i >= 0; i--) {
 			EpiTab tab = (EpiTab) this.epiRightFrame.getComponentAt(i);
-			if (tab.canClose()) {
+			if (force || tab.canClose()) {
 				this.epiRightFrame.remove(i);
 			} else
 				canClose = false;
 		}
-		return canClose;
+		return canClose;		
+	}
+	
+	public boolean epiTabCloseAllTabs() {
+		return this.epiTabCloseAllTabs(false);
 	}
 
 	public void epiTabCloseActiveEpi(boolean force) {
