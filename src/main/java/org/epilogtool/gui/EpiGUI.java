@@ -1,5 +1,6 @@
 package org.epilogtool.gui;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog.ModalityType;
 import java.awt.Window;
@@ -752,6 +753,7 @@ public class EpiGUI extends JFrame {
 				DialogReplaceSBML dialogPanel = new DialogReplaceSBML(model,
 						Project.getInstance().getProjectFeatures().getGUIModelNames(),
 						Project.getInstance().getHashModel2EpitheliumList().get(model));
+				
 				Window win = SwingUtilities.getWindowAncestor(this);
 				JDialog dialog = new JDialog(win, "Replace SBML", ModalityType.APPLICATION_MODAL);
 				dialog.getContentPane().add(dialogPanel);
@@ -768,14 +770,19 @@ public class EpiGUI extends JFrame {
 					DialogMessage dialogMsg = new DialogMessage();
 					Project.getInstance().replaceModel(model, newModel, selectedEpiList, dialogMsg);
 					dialogMsg.show("Replace Model");
+					
 
 					JPanel jp = new JPanel();
-					String msgs = join(Project.getInstance().getProjectFeatures().getReplaceMessages(), "\n");
-					JOptionPane.showMessageDialog(jp, msgs, Txt.get("s_WARNING"), JOptionPane.WARNING_MESSAGE);
-				}
+					if (!Project.getInstance().getProjectFeatures().getReplaceMessages().isEmpty()) {
+						
+						String msgs = join(Project.getInstance().getProjectFeatures().getReplaceMessages(), "\n");
+					
+						JOptionPane.showMessageDialog(jp, msgs, Txt.get("s_WARNING"), JOptionPane.WARNING_MESSAGE);
+				}}
 
 			}
-		} else {
+		} 
+		else {
 			JOptionPane.showMessageDialog(this, Txt.get("s_SEL_MODEL"), Txt.get("s_WARNING"),
 					JOptionPane.WARNING_MESSAGE);
 		}
