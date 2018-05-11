@@ -257,6 +257,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		});
 		jpTmp.add(jbCreate);
 		// Delete
+		
 		JButton jbDelete = ButtonFactory.getNoMargins(Txt.get("s_TAB_PERTURB_DELETE"));
 		jbDelete.addActionListener(new ActionListener() {
 			@Override
@@ -277,8 +278,10 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 							mID2AP.remove(ap.toString());
 							colorMapClone.remove(ap);
 							epiPerturbClone.getModelPerturbations(selModel).delPerturbationColor(ap);
+							epiPerturbClone.getModelPerturbations(selModel).delPerturbation(ap);
 							tpc.setChanged();
 							repaintAPColorsPanel();
+
 						}
 						return;
 					}
