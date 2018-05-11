@@ -318,6 +318,8 @@ public class EpiGUI extends JFrame {
 		dialog.setVisible(true);
 
 		if (dialogPanel.isDefined()) {
+			
+			
 			// Update Epithelium Name
 			boolean bChanged = false;
 
@@ -352,6 +354,8 @@ public class EpiGUI extends JFrame {
 			}
 
 			Project.getInstance().setChanged(bChanged);
+		
+			
 			this.validateGUI();
 		}
 	}
@@ -749,6 +753,7 @@ public class EpiGUI extends JFrame {
 			if (Project.getInstance().getHashModel2EpitheliumList().get(model).isEmpty()) {
 				JOptionPane.showMessageDialog(null, Txt.get("s_NOEPI_MODEL") + model);
 			} else {
+			
 
 				DialogReplaceSBML dialogPanel = new DialogReplaceSBML(model,
 						Project.getInstance().getProjectFeatures().getGUIModelNames(),
@@ -778,7 +783,13 @@ public class EpiGUI extends JFrame {
 						String msgs = join(Project.getInstance().getProjectFeatures().getReplaceMessages(), "\n");
 					
 						JOptionPane.showMessageDialog(jp, msgs, Txt.get("s_WARNING"), JOptionPane.WARNING_MESSAGE);
-				}}
+
+				}
+					//TODO: NOT CLEAR THIS IS the best way to go
+					this.epiTabCloseOtherEpis();
+					this.epiTabCloseActiveEpi(true);
+					this.validateGUI();	
+				}
 
 			}
 		} 
@@ -786,8 +797,8 @@ public class EpiGUI extends JFrame {
 			JOptionPane.showMessageDialog(this, Txt.get("s_SEL_MODEL"), Txt.get("s_WARNING"),
 					JOptionPane.WARNING_MESSAGE);
 		}
-
-		this.validateGUI();
+		
+		
 	}
 
 	/**
