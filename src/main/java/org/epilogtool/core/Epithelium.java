@@ -288,8 +288,8 @@ public class Epithelium {
 					commonNodeNames.add(node.toString());
 
 					if (oldEpi.isIntegrationComponent(node) && nNode.isInput()) {
-
-						// TODO validate IntegrationFunction
+						
+						//i) validate integration function
 						ComponentPair cp = new ComponentPair(oldModel, node);
 						EpitheliumIntegrationFunctions eif = this.getIntegrationFunctions();
 						ComponentIntegrationFunctions cif = eif.getComponentIntegrationFunctions(cp);
@@ -335,8 +335,8 @@ public class Epithelium {
 			}
 		}
 		this.initPriorityClasses(newModel);
-		// this.validateAllIntegrationFunctions(oldEpi, oldModel, newModel);
-		// this.replacePriorities(oldEpi, oldModel, newModel, commonNodeNames);
+//		 this.validateAllIntegrationFunctions(oldEpi, oldModel, newModel);
+		 this.replacePriorities(oldEpi, oldModel, newModel, commonNodeNames);
 
 		if (this.getModelPerturbations(oldModel) != null) {
 			ModelPerturbations mpClone = this.getModelPerturbations(oldModel).clone();
