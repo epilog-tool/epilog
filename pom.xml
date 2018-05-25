@@ -7,7 +7,7 @@
   <groupId>org.ginsim.epilog</groupId>
   <artifactId>Epilog</artifactId>
   <name>Epilog</name>
-  <version>0.4-SNAPSHOT</version>
+  <version>1.0-SNAPSHOT</version>
 	<description>Epilog: a software for the logical modelling of epithelial patterning</description>
   <inceptionYear>2013</inceptionYear>
   <packaging>jar</packaging>
@@ -62,7 +62,7 @@
     <dependency>
       <groupId>org.colomoto</groupId>
       <artifactId>bioLQM</artifactId>
-      <version>0.4-SNAPSHOT</version>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
 
 		<dependency>
