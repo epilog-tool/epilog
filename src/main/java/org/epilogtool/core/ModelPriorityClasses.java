@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
-import org.colomoto.biolqm.tool.simulation.updater.PriorityClasses;
+import org.colomoto.biolqm.tool.simulation.multiplesuccessor.PriorityClasses;
 
 public class ModelPriorityClasses {
 
