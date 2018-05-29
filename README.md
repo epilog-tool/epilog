@@ -6,7 +6,7 @@ EpiLog supports the definition, simulation and visualisation of qualitative, log
 
 EpiLog defines hexagonal cellular automata, where the behaviour of each cell is governed by the associated (logical) cellular model, subject to input signals from neighbouring cells or to other positional cues. Signalling is defined through appropriate logical functions, which qualitatively handle signal ranges and synergies.
 
-Cellular models should be provided in the SBML-qual](http://sbml.org/Community/Wiki/SBML_Level_3_Proposals/Qualitative_Models) format, being generated using e.g. [GINsim](http://www.ginsim.org). Internal handling of logical models is made with the support of [bioLQM](https://github.com/colomoto/bioLQM).
+Cellular models should be provided in the [SBML-qual](http://sbml.org/Community/Wiki/SBML_Level_3_Proposals/Qualitative_Models) format, being generated using e.g. [GINsim](http://www.ginsim.org). Internal handling of logical models is made with the support of [bioLQM](https://github.com/colomoto/bioLQM).
 
 How to use it?
 --------------
