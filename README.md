@@ -1,13 +1,12 @@
 EpiLog (Epithelium Logical modelling) 
 =========================================================
 
-EpiLog supports the definition, simulation and visualisation of qualitative models for epithelial pattern formation.
 
-It relies on a modelling framework where simple (one layer) epithelia are defined as multicellular systems involving intracellular regulatory models, cell-cell communication, as well as other environmental cues. These "epithelial models" are defined as cellular automata, where the behaviour of each cell is governed by its (logical) regulatory model, subject to input signals from neighbouring cells. Neighbouring relations are defined through appropriate functions, which qualitatively describe signalling ranges and integration.
+EpiLog supports the definition, simulation and visualisation of qualitative, logical models over hexagonal grids of cells.  Such models conveniently support the study of epithelial pattern formation.
 
-EpiLog supports the loading of cellular models as [SBML-qual](http://sbml.org/Community/Wiki/SBML_Level_3_Proposals/Qualitative_Models) files, which may be modelled using tools such as [GINsim](http://www.ginsim.org).
-Internal representation of Logical Models is made with the support of [bioLQM](https://github.com/colomoto/bioLQM).
+EpiLog defines hexagonal cellular automata, where the behaviour of each cell is governed by the associated (logical) cellular model, subject to input signals from neighbouring cells or to other positional cues. Signalling is defined through appropriate logical functions, which qualitatively handle signal ranges and synergies.
 
+Cellular models should be provided in the SBML-qual](http://sbml.org/Community/Wiki/SBML_Level_3_Proposals/Qualitative_Models) format, being generated using e.g. [GINsim](http://www.ginsim.org). Internal handling of logical models is made with the support of [bioLQM](https://github.com/colomoto/bioLQM).
 
 How to use it?
 --------------
@@ -24,14 +23,18 @@ Licence
 --------------
 This code is available under GPL-3.0.
 
-Authors
+Implementation
 --------------
 
-Pedro Monteiro  
-Pedro Varela  
+Pedro T. Monteiro  
+Pedro L. Varela  
 Camila Ramos  
 
-The rest of the EpiLog crew provided insight:   
-Claudine Chaouiya     
-Adrien Faure  
+Project supervision
+--------------
+Claudine Chaouiya & Pedro T. Monteiro  
+
+Ackowledgements
+--------------
+A. Fauré & C. Hernandez for insightful comments
 
