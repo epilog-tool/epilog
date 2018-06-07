@@ -1,7 +1,9 @@
 package org.epilogtool.core;
 
+import org.epilogtool.common.Txt;
+
 public enum UpdateCells {
-	ALLCELLS("All Cells"), UPDATABLECELLS("Only Updatable Cells");
+	ALLCELLS(Txt.get("s_TAB_EPIUPDATE_ALL_CELLS")), UPDATABLECELLS(Txt.get("s_TAB_EPIUPDATE_UPDATABLE"));
 	private String description;
 
 	private UpdateCells(String desc) {
