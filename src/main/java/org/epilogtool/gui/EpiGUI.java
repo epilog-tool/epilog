@@ -260,7 +260,7 @@ public class EpiGUI extends JFrame {
 				Project.getInstance().getEpitheliumNameList());
 
 		Window win = SwingUtilities.getWindowAncestor(this);
-		JDialog dialog = new JDialog(win, "New Epithelium", ModalityType.APPLICATION_MODAL);
+		JDialog dialog = new JDialog(win, "New epithelium", ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(dialogPanel);
 		dialog.pack();
 		dialog.setLocationRelativeTo(null);
@@ -311,7 +311,7 @@ public class EpiGUI extends JFrame {
 
 		DialogEditEpithelium dialogPanel = new DialogEditEpithelium(epi, Project.getInstance().getEpitheliumNameList());
 		Window win = SwingUtilities.getWindowAncestor(this);
-		JDialog dialog = new JDialog(win, "Edit Epithelium", ModalityType.APPLICATION_MODAL);
+		JDialog dialog = new JDialog(win, "Edit epithelium", ModalityType.APPLICATION_MODAL);
 		dialog.getContentPane().add(dialogPanel);
 		dialog.pack();
 		dialog.setLocationRelativeTo(null);
@@ -544,7 +544,7 @@ public class EpiGUI extends JFrame {
 		// declare JFileChooser
 		JFileChooser fileChooser = new JFileChooser();
 		
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("EpiLog configuration File","peps");
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("EpiLog configuration file","peps");
 		fileChooser.setFileFilter(filter);
 		String fName = Project.getInstance().getFilenamePEPS();
 		if (fName!=null) {
@@ -566,7 +566,7 @@ public class EpiGUI extends JFrame {
 		    // check if file already exists
 		    while (doExport && destinationFile.exists() && !overrideExistingFile) {
 		        // let the user decide whether to override the existing file
-		        overrideExistingFile = (JOptionPane.showConfirmDialog(this, "Replace file?", "Export Settings", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
+		        overrideExistingFile = (JOptionPane.showConfirmDialog(this, "Replace file?", "Export settings", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
 		 
 		        // let the user choose another file if the existing file shall not be overridden
 		        if (!overrideExistingFile) {
@@ -774,7 +774,7 @@ public class EpiGUI extends JFrame {
 					Project.getInstance().getProjectFeatures().initializeReplaceMessages();
 					DialogMessage dialogMsg = new DialogMessage();
 					Project.getInstance().replaceModel(model, newModel, selectedEpiList, dialogMsg);
-					dialogMsg.show("Replace Model");
+					dialogMsg.show("Replace model");
 					
 
 					JPanel jp = new JPanel();
