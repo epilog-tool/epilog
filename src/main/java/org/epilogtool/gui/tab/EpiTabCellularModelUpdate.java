@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -27,6 +28,7 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.biolqm.LogicalModel;
+import org.epilogtool.common.Txt;
 import org.epilogtool.common.Web;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumUpdateSchemeIntra;
@@ -66,7 +68,18 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 	public void initialize() {
 		
 		this.center.setLayout(new BorderLayout());
+		
+		this.jpNorth = new JPanel(new BorderLayout());
+		this.center.add(this.jpNorth, BorderLayout.NORTH);
+		
+		// Model selection JPanel
+		this.jpNorthLeft = new JPanel(new FlowLayout());
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
+		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
+		this.jpNorthLeft.add(jcbSBML);
+		this.jpNorthLeft.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
+		this.jpNorth.add(this.jpNorthLeft, BorderLayout.WEST);
+
 		
 		this.userPriorityClasses = new EpitheliumUpdateSchemeIntra();
 		
@@ -76,19 +89,11 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 		
 		this.guiClasses = new ArrayList<JList<String>>();
 		this.tpc = new TabProbablyChanged();
-
-		this.jpNorth = new JPanel(new BorderLayout());
-		this.center.add(this.jpNorth, BorderLayout.NORTH);
 		
 		this.jbInc = ButtonFactory.getNoMargins("<-");
 		this.jbDec = ButtonFactory.getNoMargins("->");
 
-		// Model selection JPanel
-		this.jpNorthLeft = new JPanel();
-		this.jpNorth.add(this.jpNorthLeft, BorderLayout.WEST);
-		this.jpNorthLeft.add(new JLabel("Model: "));
-		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
-		this.jpNorthLeft.add(jcbSBML);
+		
 
 		this.jpSouth = new JPanel(new BorderLayout());
 		this.center.add(jpSouth, BorderLayout.SOUTH);
