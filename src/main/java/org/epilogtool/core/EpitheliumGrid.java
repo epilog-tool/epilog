@@ -254,27 +254,27 @@ public class EpitheliumGrid {
 
 	public boolean equals(Object a) {
 		if (a == null || !(a instanceof EpitheliumGrid)) {
-			System.out.println("EpiGrid.equals: Not a grid");
+//			System.out.println("EpiGrid.equals: Not a grid");
 			return false;
 		}
 		if (a == this) {
-			System.out.println("EpiGrid.equals: Same ref");
+//			System.out.println("EpiGrid.equals: Same ref");
 			return true;
 		}
 		EpitheliumGrid o = (EpitheliumGrid) a;
 		if (!this.topology.equals(o.topology)) {
-			System.out.println("EpiGrid.equals: =/= topology");
+//			System.out.println("EpiGrid.equals: =/= topology");
 			return false;
 		}
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
 				if (!this.gridEpiCell[x][y].equals(o.gridEpiCell[x][y])) {
-					System.out.println("EpiGrid.equals: =/= epicell (" +x+","+ y+")");
+//					System.out.println("EpiGrid.equals: =/= epicell (" +x+","+ y+")");
 					return false;
 				}
 			}
 		}
-		System.out.println("EpiGrid.equals: same grid");
+//		System.out.println("EpiGrid.equals: same grid");
 		return true;
 	}
 
@@ -338,18 +338,18 @@ public class EpitheliumGrid {
 		// Compute corresponding percentages
 		this.compPercents.clear();
 		int nCells = this.getX() * this.getY();
-		System.out.println("cells: " + nCells);
+//		System.out.println("cells: " + nCells);
 		for (String nodeID : this.compCounts.keySet()) {
 			this.compPercents.put(nodeID, new HashMap<Byte, Float>());
 			for (Byte value : this.compCounts.get(nodeID).keySet()) {
 				if (nodeID=="Nodal") {
-					System.out.println("node counts: " + this.compCounts.get(nodeID));
+//					System.out.println("node counts: " + this.compCounts.get(nodeID));
 				}
 				float count = this.compCounts.get(nodeID).get(value);
 				float percent = (count / nCells) * 100;
 				this.compPercents.get(nodeID).put(value, percent);
 			}
 		}
-		System.out.println(this.compPercents);
+//		System.out.println(this.compPercents);
 	}
 }

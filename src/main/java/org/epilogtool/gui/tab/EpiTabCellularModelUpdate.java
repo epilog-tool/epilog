@@ -411,7 +411,6 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 		}
 		this.userPriorityClasses = newPCs;
 		this.jpNorthLeft.removeAll();
-		this.jpNorthLeft.add(new JLabel("Model:"));
 		this.jpNorthLeft.add(this.newModelCombobox(modelList));
 		this.updatePriorityList(modelList.get(0));
 	}

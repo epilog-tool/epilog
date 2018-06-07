@@ -110,7 +110,7 @@ public class DialogEditPreferences extends EscapableDialog {
 	}
 
 	public String getOptionOrderedNodes() {
-		System.out.println("DialogEditPreferences: "+ this.jcbOrderedComponents.getSelectedItem());
+//		System.out.println("DialogEditPreferences: "+ this.jcbOrderedComponents.getSelectedItem());
 		return ((EnumOrderNodes) this.jcbOrderedComponents.getSelectedItem()).toString();
 	}
 

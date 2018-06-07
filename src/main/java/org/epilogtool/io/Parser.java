@@ -24,6 +24,7 @@ import org.colomoto.biolqm.modifier.perturbation.RangePerturbation;
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.common.Txt;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;

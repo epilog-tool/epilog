@@ -19,9 +19,10 @@ public enum UpdateCells {
 	}
 
 	public static UpdateCells fromString(String str) {
-		if (str.equals(ALLCELLS.toString()))
+
+		if (str.toLowerCase().equals(ALLCELLS.toString().toLowerCase()))
 			return ALLCELLS;
-		else if (str.equals(UPDATABLECELLS.toString()))
+		else if (str.toLowerCase().equals(UPDATABLECELLS.toString().toLowerCase()))
 			return UPDATABLECELLS;
 		return null;
 	}
