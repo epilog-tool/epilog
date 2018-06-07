@@ -288,7 +288,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		// ---------------------------------------------------------------------------
 		// Select/Deselect active nodes Buttons
 
-		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder("Model selection"));
+		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
 		this.jpLeft.add(this.jpLeftTop, BorderLayout.NORTH);
 
 		//JButton select all
