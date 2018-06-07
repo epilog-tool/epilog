@@ -1,5 +1,7 @@
 package org.epilogtool.core.topology;
 
+import javax.swing.JOptionPane;
+
 public enum RollOver {
 	NONE("Rectangular", false, false), HORIZ("Cylinder (horizontal wrap)", true,
 			false), VERT("Cylinder (vertical wrap)", false, true), HORIZ_VERT("Torus", true, true);
@@ -26,7 +28,7 @@ public enum RollOver {
 		return this.isHorizontal;
 	}
 
-	public static RollOver string2RollOver(String str) {
+	public static RollOver string2RollOver(String epiName, String str) {
 		if (str.equals(HORIZ.toString()) || str.equals("Horizontal"))
 			return HORIZ;
 		else if (str.equals(VERT.toString()) || str.equals("Vertical"))
@@ -35,6 +37,10 @@ public enum RollOver {
 			return NONE;
 		else if (str.equals(HORIZ_VERT.toString()) || str.equals("Horizontal&Vertical"))
 			return HORIZ_VERT;
-		return null;
+		else {
+			 JOptionPane.showMessageDialog(null, epiName+": Loaded border option incorrect. Border set to rectangular.");
+			return NONE;
+		}
 	}
+
 }

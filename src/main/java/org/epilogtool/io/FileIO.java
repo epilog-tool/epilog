@@ -187,7 +187,7 @@ public class FileIO {
 				break;
 			}
 		}
-
+		
 		// Deletes the unzip temporary folder
 		FileIO.deleteTempDirectory(tmpFolder);
 		Project.getInstance().setFilenamePEPS(filename);
