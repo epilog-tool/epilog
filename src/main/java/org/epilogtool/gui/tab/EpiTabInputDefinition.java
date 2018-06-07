@@ -31,6 +31,7 @@ import org.antlr.runtime.RecognitionException;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.epilogtool.common.ObjectComparator;
+import org.epilogtool.common.Txt;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
@@ -79,7 +80,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		// Model selection list
 		JComboBox<String> jcbSBML = this.newModelCombobox(this.epithelium.getEpitheliumGrid().getModelSet());
 		this.jpNLTop = new JPanel();
-		this.jpNLTop.setBorder(BorderFactory.createTitledBorder("Model selection"));
+		this.jpNLTop.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
 		this.jpNLTop.add(jcbSBML);
 		jpNLeft.add(this.jpNLTop, BorderLayout.NORTH);
 

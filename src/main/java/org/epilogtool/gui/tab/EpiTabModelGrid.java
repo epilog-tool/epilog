@@ -22,6 +22,7 @@ import javax.swing.JToggleButton;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.biolqm.LogicalModel;
+import org.epilogtool.common.Txt;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
@@ -61,7 +62,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 		// Panel with the model selection
 		this.jpModelSelection = new JPanel(new GridBagLayout());
-		this.jpModelSelection.setBorder(BorderFactory.createTitledBorder("Model selection"));
+		this.jpModelSelection.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
 
 		// Panel with the grid Info
 		this.gridInfo = new GridInformation(this.epithelium.getIntegrationFunctions());
