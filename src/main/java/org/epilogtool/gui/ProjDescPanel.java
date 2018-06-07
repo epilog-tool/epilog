@@ -108,12 +108,14 @@ public class ProjDescPanel extends JPanel {
 	public void updateSBMLMenuItems() {
 		boolean hasModel = this.listSBMLs.getSelectionModel().getMinSelectionIndex() >= 0;
 		boolean hasMore1 = this.listSBMLs.getModel().getSize() > 1;
+		
 		// Menu
 		this.menu.getItem(0).setEnabled(true);
 		this.menu.getItem(1).setEnabled(hasModel);
 		this.menu.getItem(2).setEnabled(hasModel);
 		this.menu.getItem(3).setEnabled(hasModel);
 		this.menu.getItem(4).setEnabled(hasModel && hasMore1);
+		
 		// Popup menu
 		this.popupmenu.updateMenuItems(hasModel, hasMore1);
 	}

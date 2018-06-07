@@ -23,6 +23,7 @@ import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.gui.menu.EpiTreePopupMenu;
 import org.epilogtool.gui.tab.EpiTab;
+import org.epilogtool.project.Project;
 
 public class EpiTreePanel extends JPanel {
 	private static final long serialVersionUID = -2143708024027520789L;
@@ -166,10 +167,15 @@ public class EpiTreePanel extends JPanel {
 	private void validateTreeNodeSelection() {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.epiTree.getLastSelectedPathComponent();
 		boolean bActive = node != null && !node.isLeaf() && !node.isRoot();
+		//TODO: getitem(0) should only be enabled if there is at least one SBML
+		boolean hasmodel = false;
+		if (Project.getInstance().getModelNames().size()>0) hasmodel = true;
+		this.epiMenu.getItem(0).setEnabled(hasmodel);
 		this.epiMenu.getItem(1).setEnabled(bActive);
 		this.epiMenu.getItem(2).setEnabled(bActive);
 		this.epiMenu.getItem(3).setEnabled(bActive);
 		this.popupmenu.notifySelection(this.epiMenu.isEnabled(), bActive);
+		
 		bActive = node != null && !node.isRoot();
 		this.toolsMenu.getItem(0).setEnabled(bActive); // Simulation
 	}
