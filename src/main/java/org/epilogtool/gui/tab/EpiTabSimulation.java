@@ -293,7 +293,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		//JButton select all
 		JPanel rrTopSel = new JPanel(new FlowLayout());
-		JButton jbSelectAll = new JButton("Select All");
+		JButton jbSelectAll = new JButton("Select all");
 		jbSelectAll.setMargin(new Insets(0, 0, 0, 0));
 		jbSelectAll.addActionListener(new ActionListener() {
 			@Override
@@ -311,7 +311,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		rrTopSel.add(jbSelectAll);
 		
 		//JButton deselect all
-		JButton jbDeselectAll = new JButton("Deselect All");
+		JButton jbDeselectAll = new JButton("Deselect all");
 		jbDeselectAll.setMargin(new Insets(0, 0, 0, 0));
 		jbDeselectAll.addActionListener(new ActionListener() {
 			@Override
@@ -509,10 +509,10 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 	}
 		if (!lInputs.isEmpty()) {
-			this.setComponentTypeList(lInputs, "Positional Inputs", lModels);
+			this.setComponentTypeList(lInputs, "Positional inputs", lModels);
 		}
 		if (!lIntegrationInputs.isEmpty()) {
-			this.setComponentTypeList(lIntegrationInputs, "Integration Inputs", lModels);
+			this.setComponentTypeList(lIntegrationInputs, "Integration inputs", lModels);
 		}
 
 		visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
