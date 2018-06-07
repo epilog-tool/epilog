@@ -214,6 +214,9 @@ public class FileIO {
 		}
 
 		// Save PEPS to file
+		//TODO: This could be made in such a way that ideintified if there are more than one .peps on the name
+		if (!newPEPSFile.contains(".peps")) newPEPSFile = newPEPSFile+".peps";
+		
 		FileIO.zipTmpDir(newPEPSTmpDir, newPEPSFile);
 		OptionStore.addRecentFile(newPEPSFile);
 	}
