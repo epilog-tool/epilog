@@ -369,7 +369,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		this.jpCenter.add(this.jspRBColor, BorderLayout.CENTER);
 
 		JPanel jpColorApplyClear = new JPanel(new FlowLayout());
-		JButton jbApplyAll = ButtonFactory.getNoMargins("Apply to All");
+		JButton jbApplyAll = ButtonFactory.getNoMargins("Apply to all");
 		jbApplyAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -378,7 +378,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		});
 		jpColorApplyClear.add(jbApplyAll);
 		JPanel jpColorRect = new JPanel(new FlowLayout());
-		JToggleButton jtbRectFill = new JToggleButton("Rectangle Fill", false);
+		JToggleButton jtbRectFill = new JToggleButton("Rectangle fill", false);
 		jtbRectFill.setMargin(new Insets(0, 0, 0, 0));
 		jtbRectFill.addItemListener(new ItemListener() {
 			@Override

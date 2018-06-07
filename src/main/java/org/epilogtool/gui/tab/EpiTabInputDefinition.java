@@ -79,13 +79,13 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		// Model selection list
 		JComboBox<String> jcbSBML = this.newModelCombobox(this.epithelium.getEpitheliumGrid().getModelSet());
 		this.jpNLTop = new JPanel();
-		this.jpNLTop.setBorder(BorderFactory.createTitledBorder("Model Selection"));
+		this.jpNLTop.setBorder(BorderFactory.createTitledBorder("Model selection"));
 		this.jpNLTop.add(jcbSBML);
 		jpNLeft.add(this.jpNLTop, BorderLayout.NORTH);
 
 		// Component selection list
 		this.jpNLBottom = new JPanel(new GridBagLayout());
-		this.jpNLBottom.setBorder(BorderFactory.createTitledBorder("Input Component"));
+		this.jpNLBottom.setBorder(BorderFactory.createTitledBorder("Input component"));
 		jpNLeft.add(this.jpNLBottom, BorderLayout.CENTER);
 
 		JPanel jpNRight = new JPanel(new BorderLayout());
@@ -163,7 +163,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		this.jpNRBottom.removeAll();
 		ButtonGroup group = new ButtonGroup();
 		this.jpNRTop.add(new JLabel(this.activeNodeID + ": "));
-		JRadioButton jrModelInput = new JRadioButton("Positional Input");
+		JRadioButton jrModelInput = new JRadioButton("Positional input");
 		jrModelInput.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -175,7 +175,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		});
 		group.add(jrModelInput);
 		this.jpNRTop.add(jrModelInput);
-		JRadioButton jrModelInt = new JRadioButton("Integration Input");
+		JRadioButton jrModelInt = new JRadioButton("Integration input");
 		jrModelInt.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -299,7 +299,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		jEmptyInputPane.setEditable(false);
 		jEmptyInputPane.setEnabled(true);
 		jEmptyInputPane.setBackground(this.jpNRBottom.getBackground());
-		jEmptyInputPane.setText("There are no Input Components in this Model");
+		jEmptyInputPane.setText("There are no input components in this model");
 		this.jpNRBottom.add(jEmptyInputPane);
 	}
 

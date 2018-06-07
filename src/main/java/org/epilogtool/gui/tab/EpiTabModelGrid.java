@@ -68,8 +68,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 		// Panel with the cell selection
 		JPanel jpCellSelection = new JPanel(new GridBagLayout());
-		jpCellSelection.setBorder(BorderFactory.createTitledBorder("Apply Selection"));
-		this.jbApplyAll = new JButton("Apply All");
+		jpCellSelection.setBorder(BorderFactory.createTitledBorder("Apply selection"));
+		this.jbApplyAll = new JButton("Apply all");
 		jbApplyAll.setEnabled(false);
 		jbApplyAll.setMargin(new Insets(0, 0, 0, 0));
 		jbApplyAll.addActionListener(new ActionListener() {
@@ -79,7 +79,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 			}
 		});
 		jpCellSelection.add(jbApplyAll);
-		this.jtbRectFill = new JToggleButton("Rectangle Fill", false);
+		this.jtbRectFill = new JToggleButton("Rectangle fill", false);
 		jtbRectFill.setEnabled(false);
 		jtbRectFill.setMargin(new Insets(0, 0, 0, 0));
 		jtbRectFill.addItemListener(new ItemListener() {
@@ -94,7 +94,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		// Panel with the models assigned to the grid
 		this.jpModelsUsed = new JPanel(new GridBagLayout());
 
-		this.jpModelsUsed.setBorder(BorderFactory.createTitledBorder("Models Assigned"));
+		this.jpModelsUsed.setBorder(BorderFactory.createTitledBorder("Models assigned"));
 
 		// Panel on the left bottom
 		JPanel jpLeftBottom = new JPanel(new BorderLayout());

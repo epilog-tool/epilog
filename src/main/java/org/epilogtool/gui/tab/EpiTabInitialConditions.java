@@ -127,11 +127,11 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		// ---------------------------------------------------------------------------
 		// Select/Deselect active nodes Buttons
 
-		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder("Model Selection"));
+		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder("Model selection"));
 		this.jpLeft.add(this.jpLeftTop, BorderLayout.NORTH);
 
 		JPanel rrTopSel = new JPanel(new FlowLayout());
-		JButton jbSelectAll = new JButton("Select All");
+		JButton jbSelectAll = new JButton("Select all");
 		jbSelectAll.setMargin(new Insets(0, 0, 0, 0));
 		jbSelectAll.addActionListener(new ActionListener() {
 			@Override
@@ -148,7 +148,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			}
 		});
 		rrTopSel.add(jbSelectAll);
-		JButton jbDeselectAll = new JButton("Deselect All");
+		JButton jbDeselectAll = new JButton("Deselect all");
 		jbDeselectAll.setMargin(new Insets(0, 0, 0, 0));
 		jbDeselectAll.addActionListener(new ActionListener() {
 			@Override
@@ -191,7 +191,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		JPanel rBottom = new JPanel();
 		rBottom.setLayout(new BoxLayout(rBottom, BoxLayout.Y_AXIS));
 		JPanel rBottomApplyClear = new JPanel(new FlowLayout());
-		JButton jbApplyAll = ButtonFactory.getNoMargins("Apply Grid");
+		JButton jbApplyAll = ButtonFactory.getNoMargins("Apply grid");
 		jbApplyAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -206,7 +206,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		rBottomApplyClear.add(jbApplyAll);
 
 		// Clear
-		JButton jbClearAll = ButtonFactory.getNoMargins("Clear Grid");
+		JButton jbClearAll = ButtonFactory.getNoMargins("Clear grid");
 		jbClearAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -217,7 +217,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		// Rectangle fill
 		JPanel rBottomRect = new JPanel(new FlowLayout());
-		JToggleButton jtbRectFill = new JToggleButton("Rectangle Fill", false);
+		JToggleButton jtbRectFill = new JToggleButton("Rectangle fill", false);
 		jtbRectFill.setMargin(new Insets(0, 0, 0, 0));
 		jtbRectFill.addItemListener(new ItemListener() {
 			@Override
@@ -235,7 +235,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		// Create Panel for the random initial conditions
 
 		JPanel RRandomInitialConditions = new JPanel(new BorderLayout());
-		RRandomInitialConditions.setBorder(BorderFactory.createTitledBorder("Random Initial Conditions"));
+		RRandomInitialConditions.setBorder(BorderFactory.createTitledBorder("Random initial conditions"));
 
 		this.randomNodesAll = new JRadioButton("All components");
 		this.randomNodesSelected = new JRadioButton("Selected components");
@@ -369,7 +369,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		if (!lInternal.isEmpty())
 			this.setComponentTypeList(lInternal, "Internal", lModels);
 		if (!lInputs.isEmpty())
-			this.setComponentTypeList(lInputs, "Positional Inputs", lModels);
+			this.setComponentTypeList(lInputs, "Positional inputs", lModels);
 
 		this.visualGridICs.paintComponent(this.visualGridICs.getGraphics());
 		this.jpRCenter.revalidate();
