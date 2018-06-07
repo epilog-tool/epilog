@@ -369,7 +369,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		this.jpCenter.add(this.jspRBColor, BorderLayout.CENTER);
 
 		JPanel jpColorApplyClear = new JPanel(new FlowLayout());
-		JButton jbApplyAll = ButtonFactory.getNoMargins("Apply to all");
+		JButton jbApplyAll = ButtonFactory.getNoMargins("Apply all");
 		jbApplyAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
