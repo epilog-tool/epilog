@@ -54,6 +54,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	}
 
 	public void initialize() {
+		
 		this.center.setLayout(new BorderLayout());
 
 		this.mapSBMLMiniPanels = new HashMap<JRadioComponentButton, JButton>();
@@ -181,7 +182,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		}
 		visualGridModel.setSelModelName(null);
 		this.revalidate();
-		this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
+//		this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
 	}
 
 	/**

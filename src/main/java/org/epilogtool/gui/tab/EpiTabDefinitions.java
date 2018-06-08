@@ -88,7 +88,7 @@ public abstract class EpiTabDefinitions extends EpiTab {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					if (isChanged()) {
-						System.out.println("EpiTabDefinitions: Change is pressed");
+//						System.out.println("EpiTabDefinitions: Change is pressed");
 						buttonAccept();
 						tabChanged.setEpiChanged();
 					}
@@ -119,7 +119,7 @@ public abstract class EpiTabDefinitions extends EpiTab {
 	}
 
 	public void notifyChange() {
-		System.out.println("EpiTabDefinitions.notifyChange()");
+//		System.out.println("EpiTabDefinitions.notifyChange()");
 		if (!this.isInitialized) {
 			return;
 		}

@@ -402,6 +402,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 
 		//TODO: Test integration functions; perturbations; initial conditions, integration inputs; priorities; update scheme
+		System.out.println("EpitalSimulation: " + this.simulation.getEpithelium().getEpitheliumGrid().getModelSet());
 		
 		this.south.repaint();
 		this.repaint();
@@ -824,6 +825,15 @@ public class EpiTabSimulation extends EpiTabTools {
 				}
 			}
 				}
+		
+		// New (potential) model list -> Update JComboCheckBox
+		// and (potential) new node value counts
+		this.epithelium.getEpitheliumGrid().updateGrid();
+		List<String> newModelList = new ArrayList<String>();
+		for (LogicalModel m : this.epithelium.getEpitheliumGrid().getModelSet()) {
+			newModelList.add(Project.getInstance().getProjectFeatures().getModelName(m));
+		}
+		this.jccbSBML.updateItemList(newModelList);
 			
 		this.updateComponentList(this.jccbSBML.getSelectedItems());
 		this.south.repaint();

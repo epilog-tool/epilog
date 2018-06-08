@@ -395,8 +395,6 @@ public class EpiGUI extends JFrame {
 		this.epiTreePanel.updateEpiMenuItems();
 		this.epiTreePanel.validateJTreeExpansion();
 
-		// Tools Menu
-
 	}
 
 	private boolean canClose(String msg) {
@@ -658,6 +656,7 @@ public class EpiGUI extends JFrame {
 		// TODO: Make sure that the model does not change place in list
 		// TODO: If a tab is open, and the name of a model is changed, should it
 		// just be refreshed?
+		
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
 			DialogRenameSBML dialogPanel = new DialogRenameSBML(model,
@@ -1059,9 +1058,11 @@ public class EpiGUI extends JFrame {
 	private void notifyEpiModelGrids() {
 		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
 			Component c = this.epiRightFrame.getComponentAt(i);
-			if (c instanceof EpiTabModelGrid) {
-				((EpiTabModelGrid) c).notifyChange();
-			}
+//			if (c instanceof EpiTabModelGrid) {
+//				((EpiTabModelGrid) c).notifyChange();
+				EpiTab tab = (EpiTab) c;
+				tab.notifyChange();
+//			}
 		}
 	}
 
