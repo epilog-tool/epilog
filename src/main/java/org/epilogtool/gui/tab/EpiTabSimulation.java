@@ -12,6 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,11 +29,13 @@ import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.biolqm.LogicalModel;
@@ -251,7 +255,12 @@ public class EpiTabSimulation extends EpiTabTools {
 		jbPicture.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveEpiGrid2File();
+				try {
+					saveEpiGrid2File(true);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		jpButtonsR.add(jbPicture);
@@ -261,7 +270,12 @@ public class EpiTabSimulation extends EpiTabTools {
 		jbSaveAll.setToolTipText(Txt.get("s_TAB_SIM_SAVE_ALL"));
 		jbSaveAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				saveAllEpiGrid2File();
+				try {
+					saveEpiGrid2File(false);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 
@@ -620,35 +634,107 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 	}
 	
-	/**
-	 * 
-	 */
-	// get current simulation step
-	private void saveEpiGrid2File() {
-		String ext = "png";
-		String filename = FileSelectionHelper.saveFilename(ext);
-		if (filename != null) {
-			filename += (filename.endsWith("." + ext) ? "" : "." + ext);
-			FileIO.writeEpitheliumGrid2File(filename, this.visualGridSimulation, ext);
+	
+	
+	public void saveEpiGrid2File(boolean single) throws IOException {
+		// declare JFileChooser
+		JFileChooser fileChooser = new JFileChooser();
+		
+		FileNameExtensionFilter filter = null;
+		if (single)
+			filter = new FileNameExtensionFilter("PNG files","png");
+		else
+			filter = new FileNameExtensionFilter("ZIP files","zip");
+		
+		fileChooser.setFileFilter(filter);
+		if (Project.getInstance().getFilenamePEPS()!=null) {
+			fileChooser.setCurrentDirectory(new java.io.File(Project.getInstance().getFilenamePEPS()));
 		}
-	}
+				 
+		// let the user choose the destination file
+		if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+			
+		    // indicates whether the user still wants to save the picture
+		    boolean doExport = true;
+		    
+		    // indicates whether to override an already existing file
+		    boolean overrideExistingFile = false;
+		    
+		    // get destination file
+		    String filename = fileChooser.getSelectedFile().getAbsolutePath();
+		    if (single) filename += (filename.endsWith("." + "png") ? "" : "." + "png");
+		    else filename += (filename.endsWith("." + "zip") ? "" : "." + "zip");
+		    	
+		    File destinationFile = new File(filename);
 
-	// get all the simulation steps
-	private void saveAllEpiGrid2File() {
-		JFileChooser fc = new JFileChooser();
-		fc.setFileFilter(new EpiLogFileFilter("png"));
-		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-			String file = fc.getSelectedFile().getAbsolutePath();
-			String ext = "png";
-			file += (file.endsWith(ext) ? "" : "." + ext);
-			for (int i = 0; i <= this.iCurrSimIter; i++) {
-				String file_name = file.replace(".", "_" + i + ".");
-				EpitheliumGrid grid = this.simulation.getGridAt(i);
-				this.visualGridSimulation.setEpitheliumGrid(grid);
-				FileIO.writeEpitheliumGrid2File(file_name, this.visualGridSimulation, ext);
+		    // check if file already exists
+		    while (doExport && destinationFile.exists() && !overrideExistingFile) {
+		        // let the user decide whether to override the existing file
+		        overrideExistingFile = (JOptionPane.showConfirmDialog(this, "Replace file?", "Export settings", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
+		 
+		        // let the user choose another file if the existing file shall not be overridden
+		        if (!overrideExistingFile) {
+		            if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+		                // get new destination file
+		    		    		filename = fileChooser.getSelectedFile().getAbsolutePath();
+		    				 
+		    		    		if (single) filename += (filename.endsWith("." + "png") ? "" : "." + "png");
+		    				else filename += (filename.endsWith("." + "zip") ? "" : "." + "zip");
+
+		    		    		destinationFile = new File(filename);
+
+		            } else {
+		                // seems like the user does not want to export the settings any longer
+		                doExport = false;
+		            }
+		        }
+		    }
+		
+		if (doExport) {
+			if (single)
+				FileIO.writeEpitheliumGrid2File(filename, this.visualGridSimulation, "png");
+			else {
+				File temp = FileIO.createTempDirectory();
+				for (int i = 0; i <= this.iCurrSimIter; i++) {
+					String imageName = "image" +i+".png";
+					EpitheliumGrid grid = this.simulation.getGridAt(i);
+					this.visualGridSimulation.setEpitheliumGrid(grid);
+					String imageFile = temp+"/" + imageName;
+					FileIO.writeEpitheliumGrid2File(imageFile, this.visualGridSimulation, "png");
+				}
+				FileIO.zipTmpDir(temp, filename);
+				OptionStore.addRecentFile(filename);
 			}
-		}
-	}
+			}
+}
+}
+	// get current simulation step
+//	private void saveEpiGrid2File() {
+//		String ext = "png";
+//		String filename = FileSelectionHelper.saveFilename(ext);
+//		if (filename != null) {
+//			filename += (filename.endsWith("." + ext) ? "" : "." + ext);
+//			FileIO.writeEpitheliumGrid2File(filename, this.visualGridSimulation, ext);
+//		}
+//		
+//	}
+
+//	// get all the simulation steps
+//	private void saveAllEpiGrid2File() {
+//		JFileChooser fc = new JFileChooser();
+//		fc.setFileFilter(new EpiLogFileFilter("png"));
+//		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+//			String file = fc.getSelectedFile().getAbsolutePath();
+//			String ext = "png";
+//			file += (file.endsWith(ext) ? "" : "." + ext);
+//			for (int i = 0; i <= this.iCurrSimIter; i++) {
+//				String file_name = file.replace(".", "_" + i + ".");
+//				EpitheliumGrid grid = this.simulation.getGridAt(i);
+//				this.visualGridSimulation.setEpitheliumGrid(grid);
+//				FileIO.writeEpitheliumGrid2File(file_name, this.visualGridSimulation, ext);
+//			}
+//		}
+//	}
 	
 	private void cloneEpiWithCurrGrid() {
 		this.simEpiClone.cloneEpithelium(this.epithelium, this.simulation.getGridAt(this.iCurrSimIter));
