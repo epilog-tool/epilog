@@ -65,7 +65,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 	private VisualGridSimulation visualGridSimulation;
 	private Simulation simulation;
-	
+
 	private EpitheliumGrid epiGridClone;
 
 	private JPanel jpRCenter;
@@ -83,9 +83,9 @@ public class EpiTabSimulation extends EpiTabTools {
 	private Map<String, JButton> mNodeID2JBColor;
 
 	private List<String> nodesSelected;
-	
+
 	private SimulationEpiClone simEpiClone;
-	
+
 	private int iUserBurst;
 	private int iCurrSimIter;
 	private JLabel jlStep;
@@ -95,7 +95,7 @@ public class EpiTabSimulation extends EpiTabTools {
 	private JButton jbForward;
 	private JButton jbFastFwr;
 	private JButton jbRestart;
-	
+
 
 	public EpiTabSimulation(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
 			SimulationEpiClone simEpiClone) {
@@ -109,10 +109,10 @@ public class EpiTabSimulation extends EpiTabTools {
 	 * 
 	 */
 	public void initialize() {
-		
+
 		this.center.setLayout(new BorderLayout());
 		this.south.setLayout(new BorderLayout());
-		
+
 		this.iUserBurst = 30;
 		this.iCurrSimIter = 0;
 
@@ -120,11 +120,11 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.mSelCheckboxes = new HashMap<String, Boolean>();
 		this.mNodeID2Checkbox = new HashMap<String, JCheckBox>();
 		this.mNodeID2JBColor = new HashMap<String, JButton>();
-		
+
 		this.simulation = new Simulation(this.epithelium.clone());
 		this.gridInformation = new GridInformation(this.epithelium.getIntegrationFunctions());
 		this.nodesSelected = new ArrayList<String>();
-		
+
 		this.visualGridSimulation = new VisualGridSimulation(this.simulation.getGridAt(0), this.nodesSelected,
 				this.gridInformation);
 
@@ -134,14 +134,14 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		this.jpLeftTop = new JPanel();
 		this.jpLeftTop.setLayout(new BoxLayout(this.jpLeftTop, BoxLayout.Y_AXIS));
-		
-		
+
+
 		//South Panel
-		
+
 		//Iteration
 		JPanel jpIteration = new JPanel(new GridBagLayout());
 		jpIteration.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-		
+
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridy = 0;
 		gbc.gridx = 0;
@@ -160,17 +160,17 @@ public class EpiTabSimulation extends EpiTabTools {
 		jpIteration.add(this.jlAttractor, gbc);
 
 		this.south.add(jpIteration, BorderLayout.CENTER);
-		
+
 		//Buttons
-		
+
 		JPanel jpButtons = new JPanel(new BorderLayout());
 		jpButtons.setBorder(BorderFactory.createTitledBorder(""));
 		jpButtons.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 		JPanel jpButtonsC = new JPanel();
 		jpButtons.add(jpButtonsC, BorderLayout.CENTER);
-		
-		
-		
+
+
+
 		this.jbRewind = ButtonFactory.getImageNoBorder("media_step_0.png");//media_rewind-26x24.png");
 		this.jbRewind.setToolTipText(Txt.get("s_TAB_SIM_BACK_DESC"));
 		this.jbRewind.setEnabled(false);
@@ -280,13 +280,13 @@ public class EpiTabSimulation extends EpiTabTools {
 		});
 
 		jpButtonsR.add(jbSaveAll);
-		
-//		jpButtons.setPreferredSize(new Dimension(jpButtons.getPreferredSize().width+110, jpIteration.getPreferredSize().height));
+
+		//		jpButtons.setPreferredSize(new Dimension(jpButtons.getPreferredSize().width+110, jpIteration.getPreferredSize().height));
 
 		jpButtons.add(jpButtonsR, BorderLayout.LINE_END);
 		this.south.add(jpButtons, BorderLayout.LINE_END);
-		
-		
+
+
 		// ---------------------------------------------------------------------------
 		// Model selection jcomboCheckBox
 
@@ -323,7 +323,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		rrTopSel.add(jbSelectAll);
-		
+
 		//JButton deselect all
 		JButton jbDeselectAll = new JButton("Deselect all");
 		jbDeselectAll.setMargin(new Insets(0, 0, 0, 0));
@@ -340,10 +340,10 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		});
 		rrTopSel.add(jbDeselectAll);
-		
+
 		// ---------------------------------------------------------------------------
 		// Components Panel
-		
+
 		JPanel jpLeftCenter = new JPanel(new BorderLayout());
 		jpLeftCenter.setBorder(BorderFactory.createTitledBorder("Components"));
 
@@ -374,14 +374,14 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.center.add(jpLeftAggreg, BorderLayout.LINE_START);
 		updateComponentList(this.jccbSBML.getSelectedItems());
 		this.isInitialized = true;
-		
-		
+
+
 		//Restart
-		
+
 		JPanel jpRestart = new JPanel();
 		jpRestart.setBorder(BorderFactory.createTitledBorder(""));
 		jpRestart.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-//		jpRestart.setPreferredSize(new Dimension(40, 40));
+		//		jpRestart.setPreferredSize(new Dimension(40, 40));
 
 		this.jbRestart = ButtonFactory.getNoMargins(Txt.get("s_TAB_SIM_RESTART"));
 		this.jbRestart.setToolTipText(Txt.get("s_TAB_SIM_RESTART_DESC"));
@@ -394,19 +394,19 @@ public class EpiTabSimulation extends EpiTabTools {
 		});
 		this.jbRestart.setPreferredSize(new Dimension(this.jbRestart.getPreferredSize().width+30, jpIteration.getPreferredSize().height-10));
 		jpRestart.add(this.jbRestart);
-//		jpButtons.add(jpRestart,BorderLayout.LINE_START);
+		//		jpButtons.add(jpRestart,BorderLayout.LINE_START);
 		this.south.add(jpRestart,BorderLayout.LINE_START);
-		
+
 	}
 	// ---------------------------------------------------------------------------
 	// End initialize
-	
+
 
 	protected void restartSimulationTab() {
-		
+
 		this.simulation = new Simulation(this.epithelium.clone());
 		this.simulationRewind();
-		
+
 		for (int i = 0; i < this.south.getComponentCount(); i++) {
 			Component c = this.south.getComponent(i);
 			if (c instanceof JTextPane) {
@@ -417,11 +417,11 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		//TODO: Test integration functions; perturbations; initial conditions, integration inputs; priorities; update scheme
 		System.out.println("EpitalSimulation: " + this.simulation.getEpithelium().getEpitheliumGrid().getModelSet());
-		
+
 		this.south.repaint();
 		this.repaint();
 		this.revalidate();
-		
+
 	}
 
 
@@ -440,19 +440,19 @@ public class EpiTabSimulation extends EpiTabTools {
 		jpRRC.setBorder(BorderFactory.createTitledBorder(titleBorder));
 		// Collections.sort(nodeList, ObjectComparator.STRING); // orders the numbers
 		int y = 0;
-		
+
 		String orderPref = (String) OptionStore.getOption("PrefsAlphaOrderNodes");
-		
+
 		if (orderPref != null && orderPref.equals(EnumOrderNodes.ALPHA.toString())) {
 			lNodes = getAlphaOrderedNodes(lNodes);
 		}
-		
+
 		for (NodeInfo node : lNodes) {
 			for (LogicalModel m : listModels) {
-//				if (m.getComponents().contains(node) && !this.epithelium.isIntegrationComponent(node)) { //Integration input are not visible on the simulation
+				//				if (m.getComponents().contains(node) && !this.epithelium.isIntegrationComponent(node)) { //Integration input are not visible on the simulation
 				if (m.getComponents().contains(node) ) { 
 					this.lModelVisibleComps.add(node.getNodeID());
-				
+
 					this.getCompMiniPanel(jpRRC, gbc, y++, node);
 					break;
 				}
@@ -464,17 +464,17 @@ public class EpiTabSimulation extends EpiTabTools {
 	private List<NodeInfo> getAlphaOrderedNodes( List<NodeInfo> lNodes) {
 		//TODO: Project.getinstance().getProjectPreferences.getNodeInfo(String, LogicalModel)
 		//Faz sentido? afinal proibimos que um ficheiro esteja carregado quando tem o mesmo nome e ranges de valores diferentes!
-		
+
 		List<String> lNodeID = new ArrayList<String>();
 		List<NodeInfo> lOrderedNods = new ArrayList<NodeInfo>();
-		
+
 		for (NodeInfo node: lNodes) {
 			lNodeID.add(node.getNodeID());
 		}
 
-//		lNodeID = lNodeID.stream().sorted().collect(Collectors.toList()); //First presents the capital letter, then the smaller
+		//		lNodeID = lNodeID.stream().sorted().collect(Collectors.toList()); //First presents the capital letter, then the smaller
 		Collections.sort(lNodeID, ObjectComparator.STRING); //Orders alphabetically, not case-sensitive
-		
+
 		for (String nodeID: lNodeID) {
 
 			for (NodeInfo node: lNodes) {
@@ -484,7 +484,7 @@ public class EpiTabSimulation extends EpiTabTools {
 				}
 			}
 		}
-		
+
 		return lOrderedNods;
 	}
 	/**
@@ -494,13 +494,13 @@ public class EpiTabSimulation extends EpiTabTools {
 	 * @param modelNames
 	 */
 	private void updateComponentList(List<String> modelNames) {
-		
+
 		List<LogicalModel> lModels = new ArrayList<LogicalModel>();
 		for (String modelName : modelNames) {
 			lModels.add(Project.getInstance().getProjectFeatures().getModel(modelName));
 		}
-		
-		
+
+
 		this.lModelVisibleComps = new HashSet<String>();
 		this.jpRCenter.removeAll();
 
@@ -508,21 +508,21 @@ public class EpiTabSimulation extends EpiTabTools {
 				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, false));
 		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
 				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
-//		for (int i = lInputs.size() - 1; i >= 0; i--) {
-//			if (this.epithelium.isIntegrationComponent(lInputs.get(i))) {
-//				lInputs.remove(i);
-//			}
-//		}
+		//		for (int i = lInputs.size() - 1; i >= 0; i--) {
+		//			if (this.epithelium.isIntegrationComponent(lInputs.get(i))) {
+		//				lInputs.remove(i);
+		//			}
+		//		}
 
 		if (!lInternal.isEmpty())
 			this.setComponentTypeList(lInternal, "Internal", lModels);
 		List<NodeInfo> lIntegrationInputs = new ArrayList<NodeInfo>();
 		for (int i = lInputs.size() - 1; i >= 0; i--) {
-		if (this.epithelium.isIntegrationComponent(lInputs.get(i))) {
-			lIntegrationInputs.add(lInputs.get(i));
-			lInputs.remove(i);
+			if (this.epithelium.isIntegrationComponent(lInputs.get(i))) {
+				lIntegrationInputs.add(lInputs.get(i));
+				lInputs.remove(i);
+			}
 		}
-	}
 		if (!lInputs.isEmpty()) {
 			this.setComponentTypeList(lInputs, "Positional inputs", lModels);
 		}
@@ -580,10 +580,10 @@ public class EpiTabSimulation extends EpiTabTools {
 		if (jcb == null) {
 			this.mSelCheckboxes.put(nodeID, false);
 			// node percentage is the checkbox text
-			
+
 			String nodePercent = "";
 
-			
+
 			jcb = new JCheckBox(nodePercent);
 			jcb.setToolTipText(nodeID);
 			jcb.setSelected(this.mSelCheckboxes.get(nodeID));
@@ -605,7 +605,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			this.mNodeID2Checkbox.put(nodeID, jcb);
 		}
 		jp.add(jcb, gbc);
-		
+
 		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
 		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			gbc.gridx = 3;
@@ -633,113 +633,115 @@ public class EpiTabSimulation extends EpiTabTools {
 			}
 		}
 	}
-	
-	
-	
+
+
+
 	public void saveEpiGrid2File(boolean single) throws IOException {
 		// declare JFileChooser
 		JFileChooser fileChooser = new JFileChooser();
-		
+
 		FileNameExtensionFilter filter = null;
 		if (single)
 			filter = new FileNameExtensionFilter("PNG files","png");
 		else
 			filter = new FileNameExtensionFilter("ZIP files","zip");
-		
+
 		fileChooser.setFileFilter(filter);
 		if (Project.getInstance().getFilenamePEPS()!=null) {
 			fileChooser.setCurrentDirectory(new java.io.File(Project.getInstance().getFilenamePEPS()));
 		}
-				 
+
 		// let the user choose the destination file
 		if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-			
-		    // indicates whether the user still wants to save the picture
-		    boolean doExport = true;
-		    
-		    // indicates whether to override an already existing file
-		    boolean overrideExistingFile = false;
-		    
-		    // get destination file
-		    String filename = fileChooser.getSelectedFile().getAbsolutePath();
-		    if (single) filename += (filename.endsWith("." + "png") ? "" : "." + "png");
-		    else filename += (filename.endsWith("." + "zip") ? "" : "." + "zip");
-		    	
-		    File destinationFile = new File(filename);
 
-		    // check if file already exists
-		    while (doExport && destinationFile.exists() && !overrideExistingFile) {
-		        // let the user decide whether to override the existing file
-		        overrideExistingFile = (JOptionPane.showConfirmDialog(this, "Replace file?", "Export settings", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
-		 
-		        // let the user choose another file if the existing file shall not be overridden
-		        if (!overrideExistingFile) {
-		            if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-		                // get new destination file
-		    		    		filename = fileChooser.getSelectedFile().getAbsolutePath();
-		    				 
-		    		    		if (single) filename += (filename.endsWith("." + "png") ? "" : "." + "png");
-		    				else filename += (filename.endsWith("." + "zip") ? "" : "." + "zip");
+			// indicates whether the user still wants to save the picture
+			boolean doExport = true;
 
-		    		    		destinationFile = new File(filename);
+			// indicates whether to override an already existing file
+			boolean overrideExistingFile = false;
 
-		            } else {
-		                // seems like the user does not want to export the settings any longer
-		                doExport = false;
-		            }
-		        }
-		    }
-		
-		if (doExport) {
-			if (single)
-				FileIO.writeEpitheliumGrid2File(filename, this.visualGridSimulation, "png");
-			else {
-				File temp = FileIO.createTempDirectory();
-				for (int i = 0; i <= this.iCurrSimIter; i++) {
-					String imageName = "image" +i+".png";
-					EpitheliumGrid grid = this.simulation.getGridAt(i);
-					this.visualGridSimulation.setEpitheliumGrid(grid);
-					String imageFile = temp+"/" + imageName;
-					FileIO.writeEpitheliumGrid2File(imageFile, this.visualGridSimulation, "png");
+			// get destination file
+			String filename = fileChooser.getSelectedFile().getAbsolutePath();
+			if (single) filename += (filename.endsWith("." + "png") ? "" : "." + "png");
+			else filename += (filename.endsWith("." + "zip") ? "" : "." + "zip");
+
+			File destinationFile = new File(filename);
+
+			// check if file already exists
+			while (doExport && destinationFile.exists() && !overrideExistingFile) {
+				// let the user decide whether to override the existing file
+				overrideExistingFile = (JOptionPane.showConfirmDialog(this, "Replace file?", "Export settings", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
+
+				// let the user choose another file if the existing file shall not be overridden
+				if (!overrideExistingFile) {
+					if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+						// get new destination file
+						filename = fileChooser.getSelectedFile().getAbsolutePath();
+
+						if (single) filename += (filename.endsWith("." + "png") ? "" : "." + "png");
+						else filename += (filename.endsWith("." + "zip") ? "" : "." + "zip");
+
+						destinationFile = new File(filename);
+
+					} else {
+						// seems like the user does not want to export the settings any longer
+						doExport = false;
+					}
 				}
-				FileIO.zipTmpDir(temp, filename);
-				OptionStore.addRecentFile(filename);
 			}
-			}
-}
-}
-	// get current simulation step
-//	private void saveEpiGrid2File() {
-//		String ext = "png";
-//		String filename = FileSelectionHelper.saveFilename(ext);
-//		if (filename != null) {
-//			filename += (filename.endsWith("." + ext) ? "" : "." + ext);
-//			FileIO.writeEpitheliumGrid2File(filename, this.visualGridSimulation, ext);
-//		}
-//		
-//	}
 
-//	// get all the simulation steps
-//	private void saveAllEpiGrid2File() {
-//		JFileChooser fc = new JFileChooser();
-//		fc.setFileFilter(new EpiLogFileFilter("png"));
-//		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-//			String file = fc.getSelectedFile().getAbsolutePath();
-//			String ext = "png";
-//			file += (file.endsWith(ext) ? "" : "." + ext);
-//			for (int i = 0; i <= this.iCurrSimIter; i++) {
-//				String file_name = file.replace(".", "_" + i + ".");
-//				EpitheliumGrid grid = this.simulation.getGridAt(i);
-//				this.visualGridSimulation.setEpitheliumGrid(grid);
-//				FileIO.writeEpitheliumGrid2File(file_name, this.visualGridSimulation, ext);
-//			}
-//		}
-//	}
+			if (doExport) {
+				if (single)
+					FileIO.writeEpitheliumGrid2File(filename, this.visualGridSimulation, "png");
+				else {
+					File temp = FileIO.createTempDirectory();
+					for (int i = 0; i <= this.iCurrSimIter; i++) {
+						String imageName = "image" +i+".png";
+						EpitheliumGrid grid = this.simulation.getGridAt(i);
+						this.visualGridSimulation.setEpitheliumGrid(grid);
+						String imageFile = temp+"/" + imageName;
+						FileIO.writeEpitheliumGrid2File(imageFile, this.visualGridSimulation, "png");
+					}
+					FileIO.zipTmpDir(temp, filename);
+					OptionStore.addRecentFile(filename);
+				}
+			}
+		}
+	}
 	
+	
+	// get current simulation step
+	//	private void saveEpiGrid2File() {
+	//		String ext = "png";
+	//		String filename = FileSelectionHelper.saveFilename(ext);
+	//		if (filename != null) {
+	//			filename += (filename.endsWith("." + ext) ? "" : "." + ext);
+	//			FileIO.writeEpitheliumGrid2File(filename, this.visualGridSimulation, ext);
+	//		}
+	//		
+	//	}
+
+	//	// get all the simulation steps
+	//	private void saveAllEpiGrid2File() {
+	//		JFileChooser fc = new JFileChooser();
+	//		fc.setFileFilter(new EpiLogFileFilter("png"));
+	//		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+	//			String file = fc.getSelectedFile().getAbsolutePath();
+	//			String ext = "png";
+	//			file += (file.endsWith(ext) ? "" : "." + ext);
+	//			for (int i = 0; i <= this.iCurrSimIter; i++) {
+	//				String file_name = file.replace(".", "_" + i + ".");
+	//				EpitheliumGrid grid = this.simulation.getGridAt(i);
+	//				this.visualGridSimulation.setEpitheliumGrid(grid);
+	//				FileIO.writeEpitheliumGrid2File(file_name, this.visualGridSimulation, ext);
+	//			}
+	//		}
+	//	}
+
 	private void cloneEpiWithCurrGrid() {
 		this.simEpiClone.cloneEpithelium(this.epithelium, this.simulation.getGridAt(this.iCurrSimIter));
 	}
-	
+
 	private void simulationFastFwr() {
 		EpitheliumGrid nextGrid = this.simulation.getGridAt(this.iCurrSimIter);
 		for (int i = 0; i < this.iUserBurst; i++) {
@@ -768,7 +770,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		// Re-Paint
 		this.repaint();
 	}
-	
+
 	private void simulationStepFwr() {
 		EpitheliumGrid nextGrid = this.simulation.getGridAt(this.iCurrSimIter + 1);
 		if (this.simulation.isStableAt(this.iCurrSimIter + 1)) {
@@ -789,7 +791,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		// Re-Paint
 		this.repaint();
 	}
-	
+
 	private void simulationRewind() {
 		this.iCurrSimIter = 0;
 		this.jlStep.setText("" + this.iCurrSimIter);
@@ -804,7 +806,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			firstGrid.updateNodeValueCounts();
 		}
-	
+
 		this.updateComponentList(this.jccbSBML.getSelectedItems());
 		// Re-Paint
 		this.center.repaint();
@@ -835,7 +837,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		// Re-Paint
 		this.repaint();
 	}
-	
+
 	private void setGridGUIStable(boolean stable) {
 		if (stable) {
 			this.jlAttractor.setText(Txt.get("s_TAB_SIM_STABLE"));
@@ -886,7 +888,7 @@ public class EpiTabSimulation extends EpiTabTools {
 	private boolean hasChangedEpithelium() {
 		return !this.simulation.getEpithelium().equals(this.epithelium);
 	}
-	
+
 	@Override
 	public void applyChange() {
 		if (this.hasChangedEpithelium()) {	
@@ -899,7 +901,7 @@ public class EpiTabSimulation extends EpiTabTools {
 					+ "Continue current simulation with old definitions, or press <b>Restart</b> to apply the new ones." + "</font></body></html>");
 			jtp.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 			jtp.setHighlighter(null);
-//			this.jbRestart.setBackground(Color.getHSBColor(226, 68, 93));
+			//			this.jbRestart.setBackground(Color.getHSBColor(226, 68, 93));
 			this.jbRestart.setBackground(new Color(255, 154, 153));
 			this.south.add(jtp, BorderLayout.NORTH);
 		} else {
@@ -910,8 +912,8 @@ public class EpiTabSimulation extends EpiTabTools {
 					break;
 				}
 			}
-				}
-		
+		}
+
 		// New (potential) model list -> Update JComboCheckBox
 		// and (potential) new node value counts
 		this.epithelium.getEpitheliumGrid().updateGrid();
@@ -920,7 +922,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			newModelList.add(Project.getInstance().getProjectFeatures().getModelName(m));
 		}
 		this.jccbSBML.updateItemList(newModelList);
-			
+
 		this.updateComponentList(this.jccbSBML.getSelectedItems());
 		this.south.repaint();
 		this.repaint();
