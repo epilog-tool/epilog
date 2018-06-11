@@ -546,7 +546,9 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		// ----------------------------------------------------------------------------
 		gbc.gridx = 0;
-		jp.add(new JLabel(nodeID), gbc);
+		JLabel jlNodeId = new JLabel(nodeID);
+		jlNodeId.setToolTipText(nodeID);
+		jp.add(jlNodeId, gbc);
 
 		// ----------------------------------------------------------------------------
 		gbc.gridx = 1;
@@ -697,6 +699,7 @@ public class EpiTabSimulation extends EpiTabTools {
 						FileIO.writeEpitheliumGrid2File(imageFile, this.visualGridSimulation, "png");
 					}
 					FileIO.zipTmpDir(temp, filename);
+					FileIO.deleteTempDirectory(temp);
 				}
 			}
 		}

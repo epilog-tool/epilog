@@ -395,7 +395,9 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		// ----------------------------------------------------------------------------
 		gbc.gridx = 0;
-		jp.add(new JLabel(nodeID), gbc);
+		JLabel jlNodeId = new JLabel(nodeID);
+		jlNodeId.setToolTipText(nodeID);
+		jp.add(jlNodeId, gbc);
 
 		// ----------------------------------------------------------------------------
 		gbc.gridx = 1;
