@@ -186,12 +186,14 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		for (String nodeID : sProper)
 			saProper[i++] = nodeID;
 		this.jcbComps = new JComboBox<String>(saProper);
+		this.jcbComps.setToolTipText(this.jcbComps.getSelectedItem().toString());
 		jcbComps.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
 				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
 				String nodeID = (String) jcb.getSelectedItem();
+				jcb.setToolTipText(nodeID);
 				updateMinMaxValues(nodeID);
 			}
 		});
