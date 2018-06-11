@@ -149,6 +149,8 @@ public class EpiTreePanel extends JPanel {
 
 	public void validateJTreeExpansion() {
 		if (this.epiTree != null) {
+			DefaultTreeModel model = (DefaultTreeModel) this.epiTree.getModel();
+			model.reload();
 			for (int i = 0; i < this.epiTree.getRowCount(); i++) {
 				this.epiTree.expandRow(i);
 			}
