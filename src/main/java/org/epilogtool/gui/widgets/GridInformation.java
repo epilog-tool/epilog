@@ -109,6 +109,7 @@ public class GridInformation extends JPanel {
 				this.jCellPanel.add(jlTmp, gbc);
 				this.constraints(gbc, 0, ++y, 2);
 				jlTmp = new JLabel("  " + Project.getInstance().getProjectFeatures().getModelName(m));
+				jlTmp.setToolTipText(Project.getInstance().getProjectFeatures().getModelName(m));
 				this.jCellPanel.add(jlTmp, gbc);
 
 				if (grid != null) {
@@ -124,6 +125,7 @@ public class GridInformation extends JPanel {
 						jlTmp = EpiLogGUIFactory.getJLabelItalic("  None");
 					} else {
 						jlTmp = new JLabel("  " + ap.toString());
+						jlTmp.setToolTipText(ap.toString());
 					}
 					this.constraints(gbc, 0, ++y, 2);
 					this.jCellPanel.add(jlTmp, gbc);
@@ -161,6 +163,7 @@ public class GridInformation extends JPanel {
 							continue;
 						}
 						jlTmp = new JLabel("  " + nodeID + " ");
+						jlTmp.setToolTipText(nodeID);
 						this.constraints(gbc, 0, ++y, 1);
 						this.jCellPanel.add(jlTmp, gbc);
 						isEmpty = false;
@@ -169,6 +172,7 @@ public class GridInformation extends JPanel {
 							continue;
 						this.constraints(gbc, 1, y, 1);
 						jlTmp = new JLabel(": " + grid.getCellState(posX, posY)[index]);
+						jlTmp.setToolTipText(nodeID);
 						this.jCellPanel.add(jlTmp, gbc);
 					}
 					this.checkEmpty(gbc, ++y, isEmpty);
@@ -189,6 +193,7 @@ public class GridInformation extends JPanel {
 							continue;
 						}
 						jlTmp = new JLabel("  " + nodeID + " ");
+						jlTmp.setToolTipText(nodeID);
 						this.constraints(gbc, 0, ++y, 1);
 						this.jCellPanel.add(jlTmp, gbc);
 						isEmpty = false;
@@ -196,6 +201,7 @@ public class GridInformation extends JPanel {
 						if (index < 0)
 							continue;
 						jlTmp = new JLabel(": " + grid.getCellState(posX, posY)[index]);
+						jlTmp.setToolTipText(nodeID);
 						this.constraints(gbc, 1, y, 1);
 						this.jCellPanel.add(jlTmp, gbc);
 					}
@@ -217,6 +223,7 @@ public class GridInformation extends JPanel {
 							continue;
 						}
 						jlTmp = new JLabel("  " + nodeID + " ");
+						jlTmp.setToolTipText(nodeID);
 						this.constraints(gbc, 0, ++y, 1);
 						this.jCellPanel.add(jlTmp, gbc);
 						isEmpty = false;
@@ -224,6 +231,7 @@ public class GridInformation extends JPanel {
 						if (index < 0)
 							continue;
 						jlTmp = new JLabel(": " + grid.getCellState(posX, posY)[index]);
+						jlTmp.setToolTipText(nodeID);
 						this.constraints(gbc, 1, y, 1);
 						this.jCellPanel.add(jlTmp, gbc);
 					}
