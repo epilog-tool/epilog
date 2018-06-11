@@ -703,7 +703,6 @@ public class EpiTabSimulation extends EpiTabTools {
 						FileIO.writeEpitheliumGrid2File(imageFile, this.visualGridSimulation, "png");
 					}
 					FileIO.zipTmpDir(temp, filename);
-					OptionStore.addRecentFile(filename);
 				}
 			}
 		}
