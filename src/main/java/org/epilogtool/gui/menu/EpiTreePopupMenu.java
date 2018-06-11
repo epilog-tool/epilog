@@ -8,6 +8,7 @@ import javax.swing.JPopupMenu;
 
 import org.epilogtool.common.Txt;
 import org.epilogtool.gui.EpiGUI;
+import org.epilogtool.project.Project;
 
 public class EpiTreePopupMenu extends JPopupMenu {
 	private static final long serialVersionUID = 1483544836367897496L;
@@ -62,7 +63,10 @@ public class EpiTreePopupMenu extends JPopupMenu {
 	}
 	
 	public void notifySelection(boolean thisEnable, boolean itemsEnable) {
-		this.getComponent(0).setEnabled(thisEnable);
+		//TODO: getitem(0) should only be enabled if there is at least one SBML
+		boolean hasmodel = false;
+		if (Project.getInstance().getModelNames().size()>0) hasmodel = true;
+		this.getComponent(0).setEnabled(hasmodel);
 		this.getComponent(1).setEnabled(itemsEnable);
 		this.getComponent(2).setEnabled(itemsEnable);
 		this.getComponent(3).setEnabled(itemsEnable);
