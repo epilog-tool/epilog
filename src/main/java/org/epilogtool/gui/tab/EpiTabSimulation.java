@@ -40,7 +40,6 @@ import javax.swing.tree.TreePath;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
-import org.epilogtool.FileSelectionHelper;
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.common.Txt;
@@ -55,7 +54,6 @@ import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JComboCheckBox;
 import org.epilogtool.gui.widgets.VisualGridSimulation;
 import org.epilogtool.io.ButtonFactory;
-import org.epilogtool.io.EpiLogFileFilter;
 import org.epilogtool.io.FileIO;
 import org.epilogtool.project.Project;
 import org.epilogtool.project.Simulation;
@@ -65,8 +63,6 @@ public class EpiTabSimulation extends EpiTabTools {
 
 	private VisualGridSimulation visualGridSimulation;
 	private Simulation simulation;
-
-	private EpitheliumGrid epiGridClone;
 
 	private JPanel jpRCenter;
 	private JPanel jpLeftTop;
@@ -116,7 +112,6 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.iUserBurst = 30;
 		this.iCurrSimIter = 0;
 
-		this.epiGridClone = this.epithelium.getEpitheliumGrid().clone();
 		this.mSelCheckboxes = new HashMap<String, Boolean>();
 		this.mNodeID2Checkbox = new HashMap<String, JCheckBox>();
 		this.mNodeID2JBColor = new HashMap<String, JButton>();
@@ -416,7 +411,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 
 		//TODO: Test integration functions; perturbations; initial conditions, integration inputs; priorities; update scheme
-		System.out.println("EpitalSimulation: " + this.simulation.getEpithelium().getEpitheliumGrid().getModelSet());
+//		System.out.println("EpitalSimulation: " + this.simulation.getEpithelium().getEpitheliumGrid().getModelSet());
 
 		this.south.repaint();
 		this.repaint();
@@ -545,7 +540,6 @@ public class EpiTabSimulation extends EpiTabTools {
 	 */
 	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, NodeInfo node) {
 		String nodeID = node.getNodeID();
-		EpitheliumGrid grid = this.epiGridClone;
 
 		gbc.gridy = y;
 		gbc.anchor = GridBagConstraints.WEST;

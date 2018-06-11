@@ -80,7 +80,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	private GridInformation gridInfo;
 	private TabProbablyChanged tpc;
 	
-	private byte minValue;
 	private byte maxValue;
 
 	public EpiTabPerturbations(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
@@ -236,7 +235,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 //					return;
 				} else if (min == max) {
 					ap = new FixedValuePerturbation(node, min);
-					System.out.println(ap);
 				} else {
 					ap = new RangePerturbation(node, min, max);
 				}
@@ -320,11 +318,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 								sub = true;
 								break;
 							}		
-//							if (lAPs.get(j).toString().contains(lAPs.get(i).toString())) {
-//								sub = true;
-//								System.out.println(lAPs.get(j).toString());
-//								break;
-//							}
 						}
 						if (!sub) {
 							lAPsClean.add(lAPs.get(i));
@@ -523,7 +516,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		jcbMinVal.removeAllItems();
 		jcbMaxVal.removeAllItems();
 		this.maxValue = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, selModel).getMax();
-		this.minValue = 0;
 		for (byte b = 0; b <= this.maxValue; b++) {
 			jcbMinVal.addItem(b);
 			jcbMaxVal.addItem(b);

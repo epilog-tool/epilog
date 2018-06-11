@@ -16,7 +16,6 @@ import javax.swing.JPanel;
 
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.Txt;
-import org.epilogtool.project.Project;
 
 public class DialogEditPreferences extends EscapableDialog {
 	private static final long serialVersionUID = 1877338344309723137L;
