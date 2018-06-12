@@ -289,7 +289,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		JCheckBox[] items = new JCheckBox[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
 			items[i] = new JCheckBox(Project.getInstance().getProjectFeatures().getModelName(modelList.get(i)));
-			items[i].setSelected(false);
+			items[i].setSelected(true);
 		}
 		this.jccbSBML = new JComboCheckBox(items);
 		this.jpLeftTop.add(this.jccbSBML);
