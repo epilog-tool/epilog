@@ -1056,12 +1056,12 @@ public class EpiGUI extends JFrame {
 			Project.getInstance().setChanged(true);
 			for (int i = 0; i < epiRightFrame.getTabCount(); i++) {
 				Component c = epiRightFrame.getComponentAt(i);
-				if (c instanceof EpiTabSimulation || c instanceof EpiTabInitialConditions) {
-					EpiTab tab = (EpiTab) c;
-					if (!tab.equals(changedTab)) {
-						tab.notifyChange();
-					}
-				}
+//				if (c instanceof EpiTabSimulation || c instanceof EpiTabInitialConditions) {
+//					EpiTab tab = (EpiTab) c;
+//					if (!tab.equals(changedTab)) {
+//						tab.notifyChange();
+//					}
+//				}
 			}
 			validateGUI();
 		}

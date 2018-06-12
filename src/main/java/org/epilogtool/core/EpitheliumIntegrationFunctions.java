@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.antlr.runtime.RecognitionException;
 import org.colomoto.biolqm.NodeInfo;
-import org.epilogtool.project.ComponentPair;
 
 public class EpitheliumIntegrationFunctions {
 	private Map<NodeInfo, ComponentIntegrationFunctions> functions;
