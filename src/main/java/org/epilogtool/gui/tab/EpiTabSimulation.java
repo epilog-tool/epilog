@@ -545,13 +545,13 @@ public class EpiTabSimulation extends EpiTabTools {
 		gbc.anchor = GridBagConstraints.WEST;
 
 		// ----------------------------------------------------------------------------
-		gbc.gridx = 0;
+		gbc.gridx = 1;
 		JLabel jlNodeId = new JLabel(nodeID);
 		jlNodeId.setToolTipText(nodeID);
 		jp.add(jlNodeId, gbc);
 
 		// ----------------------------------------------------------------------------
-		gbc.gridx = 1;
+		gbc.gridx = 2;
 
 		JButton jbColor = this.mNodeID2JBColor.get(nodeID);
 		if (jbColor == null) {
@@ -569,7 +569,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		jp.add(jbColor, gbc);
 
 		// ----------------------------------------------------------------------------
-		gbc.gridx = 2;
+		gbc.gridx = 0;
 
 		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
 
