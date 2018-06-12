@@ -15,10 +15,12 @@ import javax.swing.JCheckBox;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
+import org.epilogtool.OptionStore;
 import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.color.ColorUtils;
+import org.epilogtool.gui.dialog.EnumNodePercent;
 import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
 import org.epilogtool.project.Project;
 
@@ -99,12 +101,15 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 	}
 	
 	private void updateNodePercentages() {
+		
+		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
+		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 		for (String nodeID : this.mNodeID2Checkbox.keySet()) {
 			JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
 			jcb.setText(this.epiGrid.getPercentage(nodeID));
 			jcb.paintComponents(this.getGraphics());
 		}
-	}
+	}}
 
 	@Override
 	protected void paintCellAt(Tuple2D<Integer> pos) {
