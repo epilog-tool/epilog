@@ -74,6 +74,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private Map<String, Boolean> mSelCheckboxes;
 
 	private Map<String, JCheckBox> mNodeID2Checkbox;
+	private Map<String, JLabel> mNodeID2JLabel;
 	private Map<String, JComboBox<Byte>> mNodeID2Combobox;
 	private Map<String, JButton> mNodeID2JBColor;
 
@@ -96,6 +97,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.mSelCheckboxes = new HashMap<String, Boolean>();
 		this.mNode2ValueSelected = new HashMap<String, Byte>();
 		this.mNodeID2Checkbox = new HashMap<String, JCheckBox>();
+		this.mNodeID2JLabel = new HashMap<String, JLabel>();
 		this.mNodeID2Combobox = new HashMap<String, JComboBox<Byte>>();
 		this.mNodeID2JBColor = new HashMap<String, JButton>();
 
@@ -103,7 +105,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		this.tpc = new TabProbablyChanged();
 		this.visualGridICs = new VisualGridInitialConditions(this.epiGridClone, this.mNode2ValueSelected,
-				this.mNodeID2Checkbox, this.gridInformation, this.tpc);
+				this.mNodeID2JLabel, this.gridInformation, this.tpc);
 		this.center.add(this.visualGridICs, BorderLayout.CENTER);
 
 		this.jpLeft = new JPanel(new BorderLayout());
@@ -395,13 +397,13 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		gbc.anchor = GridBagConstraints.WEST;
 
 		// ----------------------------------------------------------------------------
-		gbc.gridx = 1;
-		JLabel jlNodeId = new JLabel(nodeID);
-		jlNodeId.setToolTipText(nodeID);
-		jp.add(jlNodeId, gbc);
+//		gbc.gridx = 1;
+//		JLabel jlNodeId = new JLabel(nodeID);
+//		jlNodeId.setToolTipText(nodeID);
+//		jp.add(jlNodeId, gbc);
 
 		// ----------------------------------------------------------------------------
-		gbc.gridx = 2;
+		gbc.gridx = 1;
 
 		JComboBox<Byte> jcombob = this.mNodeID2Combobox.get(nodeID);
 		if (jcombob == null) {
@@ -448,13 +450,15 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
 		if (jcb == null) {
 			this.mSelCheckboxes.put(nodeID, false);
-			// node percentage is the checkbox text
-			String nodePercent = "";
-			String percPref = (String) OptionStore.getOption("PrefsNodePercent");
-			if (percPref != null && percPref.equals(EnumNodePercent.YES.toString())) {
-				nodePercent = grid.getPercentage(nodeID);
-			}
-			jcb = new JCheckBox(nodePercent);
+			
+//			// node percentage is the checkbox text
+//			String nodePercent = "";
+//			String percPref = (String) OptionStore.getOption("PrefsNodePercent");
+//			if (percPref != null && percPref.equals(EnumNodePercent.YES.toString())) {
+//				nodePercent = grid.getPercentage(nodeID);
+//			}
+
+			jcb = new JCheckBox(nodeID);
 			jcb.setToolTipText(nodeID);
 			jcb.setSelected(this.mSelCheckboxes.get(nodeID));
 			jcb.addActionListener(new ActionListener() {
@@ -473,8 +477,19 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				}
 			});
 			this.mNodeID2Checkbox.put(nodeID, jcb);
+			this.mNodeID2JLabel.put(nodeID, new JLabel(""));
 		}
 		jp.add(jcb, gbc);
+		
+		// ----------------------------------------------------------------------------
+		//Percentages
+		String percPref = (String) OptionStore.getOption("PrefsNodePercent");
+		if (percPref != null && percPref.equals(EnumNodePercent.YES.toString())) {
+			JLabel nodePercent = new JLabel();
+			gbc.gridx = 4;
+			nodePercent.setText(grid.getPercentage(nodeID));
+			jp.add(nodePercent, gbc);
+		}
 	}
 
 	/**

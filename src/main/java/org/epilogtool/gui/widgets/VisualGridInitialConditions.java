@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
@@ -29,18 +30,18 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 
 	private EpitheliumGrid epiGrid;
 	private Map<String, Byte> mNode2ValueSelected;
-	private Map<String, JCheckBox> mNodeID2Checkbox;
+	private Map<String, JLabel> mNodeID2JLabel;
 	private boolean isRectFill;
 	private Tuple2D<Integer> initialRectPos;
 	private List<LogicalModel> selectedModels;
 	private GridInformation valuePanel;
 
 	public VisualGridInitialConditions(EpitheliumGrid gridClone, Map<String, Byte> mNode2ValueSelected,
-			Map<String, JCheckBox> mNodeID2Checkbox, GridInformation valuePanel, TabProbablyChanged tpc) {
+			Map<String, JLabel> mNodeID2JLabel, GridInformation valuePanel, TabProbablyChanged tpc) {
 		super(gridClone.getX(), gridClone.getY(), gridClone.getTopology(), tpc);
 		this.epiGrid = gridClone;
 		this.mNode2ValueSelected = mNode2ValueSelected;
-		this.mNodeID2Checkbox = mNodeID2Checkbox;
+		this.mNodeID2JLabel = mNodeID2JLabel;
 		this.isRectFill = false;
 		this.initialRectPos = null;
 		this.selectedModels = new ArrayList<LogicalModel>();
@@ -104,10 +105,10 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 		
 		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
 		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
-		for (String nodeID : this.mNodeID2Checkbox.keySet()) {
-			JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
-			jcb.setText(this.epiGrid.getPercentage(nodeID));
-			jcb.paintComponents(this.getGraphics());
+		for (String nodeID : this.mNodeID2JLabel.keySet()) {
+			JLabel jl = this.mNodeID2JLabel.get(nodeID);
+			jl.setText(this.epiGrid.getPercentage(nodeID));
+			jl.paintComponents(this.getGraphics());
 		}
 	}}
 

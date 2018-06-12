@@ -546,12 +546,6 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		// ----------------------------------------------------------------------------
 		gbc.gridx = 1;
-		JLabel jlNodeId = new JLabel(nodeID);
-		jlNodeId.setToolTipText(nodeID);
-		jp.add(jlNodeId, gbc);
-
-		// ----------------------------------------------------------------------------
-		gbc.gridx = 2;
 
 		JButton jbColor = this.mNodeID2JBColor.get(nodeID);
 		if (jbColor == null) {
@@ -577,10 +571,8 @@ public class EpiTabSimulation extends EpiTabTools {
 			this.mSelCheckboxes.put(nodeID, false);
 			// node percentage is the checkbox text
 
-			String nodePercent = "";
 
-
-			jcb = new JCheckBox(nodePercent);
+			jcb = new JCheckBox(nodeID);
 			jcb.setToolTipText(nodeID);
 			jcb.setSelected(this.mSelCheckboxes.get(nodeID));
 			jcb.addActionListener(new ActionListener() {
