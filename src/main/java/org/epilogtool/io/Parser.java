@@ -34,7 +34,6 @@ import org.epilogtool.core.UpdateCells;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.notification.NotificationManager;
-import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.Project;
 import org.epilogtool.project.ProjectFeatures;
 import org.epilogtool.services.TopologyService;
@@ -157,9 +156,9 @@ public class Parser {
 
 			// Component Integration Functions
 			// IT #model Node Level {Function}
+			//Old Integration function identifier, where an integration function was associated with a model and a component. 
 			if (line.startsWith("IT")) {
 				saTmp = line.split("\\s+");
-				LogicalModel m = Project.getInstance().getModel(modelKey2Name.get(saTmp[1]));
 				byte value = Byte.parseByte(saTmp[3]);
 				String nodeID = saTmp[2];
 				String function = "";
@@ -172,10 +171,32 @@ public class Parser {
 					function = line.substring(pos).trim();
 				}
 				try {
-					currEpi.setIntegrationFunction(nodeID, m, value, function);
+					currEpi.setIntegrationFunction(nodeID, value, function);
 				} catch (RuntimeException re) {
 					NotificationManager.warning("Parser", 
 							"Integration function: " + saTmp[2] + ":" + value + " has invalid expression: " + function);
+				}
+			}
+			
+			// IF #model Node Level {Function}
+			if (line.startsWith("IF")) {
+				saTmp = line.split("\\s+");
+				byte value = Byte.parseByte(saTmp[2]);
+				String nodeID = saTmp[1];
+				String function = "";
+				if (saTmp.length > 3) {
+					int pos = line.indexOf(" ");
+					int n = 4;
+					while (--n > 0) {
+						pos = line.indexOf(" ", pos + 1);
+					}
+					function = line.substring(pos).trim();
+				}
+				try {
+					currEpi.setIntegrationFunction(nodeID, value, function);
+				} catch (RuntimeException re) {
+					NotificationManager.warning("Parser", 
+							"Integration function: " + nodeID + ":" + value + " has invalid expression: " + function);
 				}
 			}
 
@@ -386,12 +407,23 @@ public class Parser {
 
 		// Component Integration Functions
 		// IT #model Node Level {Function}
-		for (ComponentPair cp : epi.getIntegrationComponentPairs()) {
-			ComponentIntegrationFunctions cif = epi.getIntegrationFunctionsForComponent(cp);
+//		for (NodeInfo node : epi.getIntegrationNodes()) {
+//			ComponentIntegrationFunctions cif = epi.getIntegrationFunctionsForComponent(node);
+//			List<String> lFunctions = cif.getFunctions();
+//			for (int i = 0; i < lFunctions.size(); i++) {
+//				int modelIndex = model2Key.get(node.getModel());
+//				w.println("IT " + modelIndex + " " + cp.getNodeInfo().getNodeID() + " " + (i + 1) + " "
+//						+ lFunctions.get(i));
+//			}
+//		}
+//		w.println();
+		
+//		 IF Node Level {Function}
+		for (NodeInfo node : epi.getIntegrationNodes()) {
+			ComponentIntegrationFunctions cif = epi.getIntegrationFunctionsForComponent(node);
 			List<String> lFunctions = cif.getFunctions();
 			for (int i = 0; i < lFunctions.size(); i++) {
-				int modelIndex = model2Key.get(cp.getModel());
-				w.println("IT " + modelIndex + " " + cp.getNodeInfo().getNodeID() + " " + (i + 1) + " "
+				w.println("IF " + " " + node.getNodeID() + " " + (i + 1) + " "
 						+ lFunctions.get(i));
 			}
 		}

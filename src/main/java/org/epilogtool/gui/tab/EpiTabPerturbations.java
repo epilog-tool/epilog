@@ -215,6 +215,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		jpPerturbTop.add(jcbMaxVal, gbc);
 		updateMinMaxValues(saProper[0]);
 		JPanel jpTmp = new JPanel(new FlowLayout());
+		
+		
 		// Create
 		JButton jbCreate = ButtonFactory.getNoMargins(Txt.get("s_TAB_PERTURB_CREATE"));
 		jbCreate.addActionListener(new ActionListener() {

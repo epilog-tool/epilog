@@ -116,11 +116,10 @@ public class Epithelium {
 			}
 		}
 		// Clean Epithelium components
-		Set<ComponentPair> sCP = new HashSet<ComponentPair>(this.integrationFunctions.getComponentPair());
-		for (ComponentPair cp : sCP) {
-			NodeInfo node = cp.getNodeInfo();
+		Set<NodeInfo> sNodeInfo = new HashSet<NodeInfo>(this.integrationFunctions.getNodes());
+		for (NodeInfo node : sNodeInfo) {
 			if (!sNodeIDs.contains(node.getNodeID())) {
-				this.integrationFunctions.removeComponent(cp);
+				this.integrationFunctions.removeComponent(node);
 			}
 		}
 	}
@@ -149,17 +148,17 @@ public class Epithelium {
 		return this.priorities.getModelPriorityClasses(m);
 	}
 
-	public ComponentIntegrationFunctions getIntegrationFunctionsForComponent(ComponentPair cp) {
-		return this.integrationFunctions.getComponentIntegrationFunctions(cp);
+	public ComponentIntegrationFunctions getIntegrationFunctionsForComponent(NodeInfo node) {
+		return this.integrationFunctions.getComponentIntegrationFunctions(node);
 	}
 
-	public Set<ComponentPair> getIntegrationComponentPairs() {
-		return this.integrationFunctions.getComponentPair();
+	public Set<NodeInfo> getIntegrationNodes() {
+		return this.integrationFunctions.getNodes();
 	}
 
 	public boolean isIntegrationComponent(NodeInfo node) {
-		for (ComponentPair cp : this.integrationFunctions.getComponentPair()) {
-			if (node.equals(cp.getNodeInfo()))
+		for (NodeInfo nodeInf : this.integrationFunctions.getNodes()) {
+			if (node.equals(nodeInf))
 				return true;
 		}
 		return false;
@@ -183,14 +182,13 @@ public class Epithelium {
 		}
 	}
 
-	public void setIntegrationFunction(String nodeID, LogicalModel m, byte value, String function)
+	public void setIntegrationFunction(String nodeID, byte value, String function)
 			throws RecognitionException, RuntimeException {
-		NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m);
-		ComponentPair cp = new ComponentPair(m, node);
-		if (!this.integrationFunctions.containsComponentPair(cp)) {
-			this.integrationFunctions.addComponent(cp);
+		NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID);
+		if (!this.integrationFunctions.containsNode(node)) {
+			this.integrationFunctions.addComponent(node);
 		}
-		this.integrationFunctions.setFunctionAtLevel(cp, value, function);
+		this.integrationFunctions.setFunctionAtLevel(node, value, function);
 	}
 
 	public void initPriorityClasses(LogicalModel m) {
@@ -290,16 +288,15 @@ public class Epithelium {
 					if (oldEpi.isIntegrationComponent(node) && nNode.isInput()) {
 						
 						//i) validate integration function
-						ComponentPair cp = new ComponentPair(oldModel, node);
 						EpitheliumIntegrationFunctions eif = this.getIntegrationFunctions();
-						ComponentIntegrationFunctions cif = eif.getComponentIntegrationFunctions(cp);
+						ComponentIntegrationFunctions cif = eif.getComponentIntegrationFunctions(node);
 						List<String> lFunctions = cif.getFunctions();
 
 						for (int i = 0; i < lFunctions.size(); i++) {
 							String function = lFunctions.get(i);
 							if (validateIntegrationFunction(function)) {
 								try {
-									this.setIntegrationFunction(nNode.getNodeID(), newModel, (byte) (i + 1), function);
+									this.setIntegrationFunction(nNode.getNodeID(), (byte) (i + 1), function);
 								} catch (RecognitionException re) {
 									// TODO Auto-generated catch block
 								} catch (RuntimeException re) {

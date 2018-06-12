@@ -37,6 +37,7 @@ public class ProjectFeatures {
 		this.modelColor = new HashMap<LogicalModel, Color>();
 		// node info
 		this.nodeID2Info = new HashMap<String, NodeInfo>();
+		
 		this.nodeColor = new LinkedHashMap<String, Color>();
 		// model 2 nodes
 		this.string2ComponentFeature = new HashMap<String, Set<ComponentPair>>();
@@ -172,6 +173,11 @@ public class ProjectFeatures {
 		}
 		return null;
 	}
+	
+	public NodeInfo getNodeInfo(String nodeID) {
+		return nodeID2Info.get(nodeID);
+	}
+
 
 	public boolean hasNode(String nodeID, LogicalModel m) {
 		if (this.getNodeInfo(nodeID, m) != null) {

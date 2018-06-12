@@ -293,11 +293,11 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 		this.jccbSBML = new JComboCheckBox(items);
 		this.jpLeftTop.add(this.jccbSBML);
+		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
 
 		// ---------------------------------------------------------------------------
 		// Select/Deselect active nodes Buttons
 
-		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
 		this.jpLeft.add(this.jpLeftTop, BorderLayout.NORTH);
 
 		//JButton select all

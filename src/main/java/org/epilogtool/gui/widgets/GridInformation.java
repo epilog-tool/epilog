@@ -188,8 +188,8 @@ public class GridInformation extends JPanel {
 					isEmpty = true;
 					for (String nodeID : lAllNodeIDs) {
 						NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m);
-						ComponentPair cp = new ComponentPair(m, node);
-						if (node == null || !node.isInput() || this.integrFunctions.containsComponentPair(cp)) {
+						
+						if (node == null || !node.isInput() || this.integrFunctions.containsNode(node)) {
 							continue;
 						}
 						jlTmp = new JLabel("  " + nodeID + " ");
@@ -218,8 +218,7 @@ public class GridInformation extends JPanel {
 					isEmpty = true;
 					for (String nodeID : lAllNodeIDs) {
 						NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m);
-						ComponentPair cp = new ComponentPair(m, node);
-						if (node == null || !this.integrFunctions.containsComponentPair(cp)) {
+						if (node == null || !this.integrFunctions.containsNode(node)) {
 							continue;
 						}
 						jlTmp = new JLabel("  " + nodeID + " ");

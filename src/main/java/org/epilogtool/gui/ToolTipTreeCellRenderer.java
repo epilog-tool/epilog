@@ -11,6 +11,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
 import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
@@ -93,16 +94,15 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	private String getTooltipInputDefinition(Epithelium epi) {
 		String tipKey = "<html>";
 		EpitheliumIntegrationFunctions epiIF = epi.getIntegrationFunctions();
-		for (ComponentPair cp : epiIF.getComponentPair()) {
-			tipKey += "<b>" + cp.getNodeInfo().getNodeID() + " - "
-					+ Project.getInstance().getProjectFeatures().getModelName(cp.getModel()) + "</b><br/>";
-			ComponentIntegrationFunctions cif = epiIF.getComponentIntegrationFunctions(cp);
+		for (NodeInfo node : epiIF.getNodes()) {
+			tipKey += "<b>" + node.getNodeID() +"</b><br/>";
+			ComponentIntegrationFunctions cif = epiIF.getComponentIntegrationFunctions(node);
 			List<String> lFunctions = cif.getFunctions();
 			for (int i = 0; i < lFunctions.size(); i++) {
 				tipKey += (i + 1) + ": " + lFunctions.get(i) + "<br/>";
 			}
 		}
-		if (epiIF.getComponentPair().isEmpty()) {
+		if (epiIF.getNodes().isEmpty()) {
 			tipKey += "<i>Empty</i>";
 		}
 		tipKey += "</html>";

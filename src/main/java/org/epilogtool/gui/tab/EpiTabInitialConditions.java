@@ -124,13 +124,22 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		}
 		this.jccbSBML = new JComboCheckBox(items);
 		this.jpLeftTop.add(this.jccbSBML);
+		
+		this.jccbSBML.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JComboCheckBox jccb = (JComboCheckBox) e.getSource();
+				jccb.updateSelected();
+				updateComponentList(jccb.getSelectedItems());
+			}
+		});
 
-		// ---------------------------------------------------------------------------
-		// Select/Deselect active nodes Buttons
 
 		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
 		this.jpLeft.add(this.jpLeftTop, BorderLayout.NORTH);
-
+	
+		// ---------------------------------------------------------------------------
+		// Select/Deselect active nodes Buttons
 		JPanel rrTopSel = new JPanel(new FlowLayout());
 		JButton jbSelectAll = new JButton("Select all");
 		jbSelectAll.setMargin(new Insets(0, 0, 0, 0));
@@ -175,14 +184,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		JScrollPane jsLeftCenter = new JScrollPane(this.jpRCenter);
 		jsLeftCenter.setBorder(BorderFactory.createEmptyBorder());
 		jsLeftCenter.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		this.jccbSBML.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JComboCheckBox jccb = (JComboCheckBox) e.getSource();
-				jccb.updateSelected();
-				updateComponentList(jccb.getSelectedItems());
-			}
-		});
 
 		jpLeftCenter.add(jsLeftCenter, BorderLayout.CENTER);
 		this.jpLeft.add(jpLeftCenter, BorderLayout.CENTER);
