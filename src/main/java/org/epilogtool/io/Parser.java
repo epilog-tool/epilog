@@ -23,6 +23,7 @@ import org.colomoto.biolqm.modifier.perturbation.MultiplePerturbation;
 import org.colomoto.biolqm.modifier.perturbation.RangePerturbation;
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.EnumRandomSeed;
+import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.EmptyModel;
@@ -87,7 +88,7 @@ public class Parser {
 				epiName = line.split("\\s+")[1];
 				currEpi = null;
 				rollover = RollOver.NONE;
-				randomSeed = 0;
+				randomSeed = RandCentral.getInstance().nextInt();
 				randomSeedType = EnumRandomSeed.RANDOM;
 			}
 
@@ -115,8 +116,9 @@ public class Parser {
 					if (saTmp.length == 3) {
 						randomSeedType = rsType;
 						randomSeed = Integer.parseInt(saTmp[2]);
-					} else
-						NotificationManager.warning("Parser", "File with undefined Fixed Random Seed");
+					} else {
+						NotificationManager.warning("Parser", "File with an undefined Fixed Random Seed");
+					}
 				}
 			}
 
@@ -156,7 +158,8 @@ public class Parser {
 
 			// Component Integration Functions
 			// IT #model Node Level {Function}
-			//Old Integration function identifier, where an integration function was associated with a model and a component. 
+			// Old Integration function identifier, where an integration function was
+			// associated with a model and a component.
 			if (line.startsWith("IT")) {
 				saTmp = line.split("\\s+");
 				byte value = Byte.parseByte(saTmp[3]);
@@ -173,11 +176,11 @@ public class Parser {
 				try {
 					currEpi.setIntegrationFunction(nodeID, value, function);
 				} catch (RuntimeException re) {
-					NotificationManager.warning("Parser", 
+					NotificationManager.warning("Parser",
 							"Integration function: " + saTmp[2] + ":" + value + " has invalid expression: " + function);
 				}
 			}
-			
+
 			// IF #model Node Level {Function}
 			if (line.startsWith("IF")) {
 				saTmp = line.split("\\s+");
@@ -195,7 +198,7 @@ public class Parser {
 				try {
 					currEpi.setIntegrationFunction(nodeID, value, function);
 				} catch (RuntimeException re) {
-					NotificationManager.warning("Parser", 
+					NotificationManager.warning("Parser",
 							"Integration function: " + nodeID + ":" + value + " has invalid expression: " + function);
 				}
 			}
@@ -407,24 +410,25 @@ public class Parser {
 
 		// Component Integration Functions
 		// IT #model Node Level {Function}
-//		for (NodeInfo node : epi.getIntegrationNodes()) {
-//			ComponentIntegrationFunctions cif = epi.getIntegrationFunctionsForComponent(node);
-//			List<String> lFunctions = cif.getFunctions();
-//			for (int i = 0; i < lFunctions.size(); i++) {
-//				int modelIndex = model2Key.get(node.getModel());
-//				w.println("IT " + modelIndex + " " + cp.getNodeInfo().getNodeID() + " " + (i + 1) + " "
-//						+ lFunctions.get(i));
-//			}
-//		}
-//		w.println();
-		
-//		 IF Node Level {Function}
+		// for (NodeInfo node : epi.getIntegrationNodes()) {
+		// ComponentIntegrationFunctions cif =
+		// epi.getIntegrationFunctionsForComponent(node);
+		// List<String> lFunctions = cif.getFunctions();
+		// for (int i = 0; i < lFunctions.size(); i++) {
+		// int modelIndex = model2Key.get(node.getModel());
+		// w.println("IT " + modelIndex + " " + cp.getNodeInfo().getNodeID() + " " + (i
+		// + 1) + " "
+		// + lFunctions.get(i));
+		// }
+		// }
+		// w.println();
+
+		// IF Node Level {Function}
 		for (NodeInfo node : epi.getIntegrationNodes()) {
 			ComponentIntegrationFunctions cif = epi.getIntegrationFunctionsForComponent(node);
 			List<String> lFunctions = cif.getFunctions();
 			for (int i = 0; i < lFunctions.size(); i++) {
-				w.println("IF " + " " + node.getNodeID() + " " + (i + 1) + " "
-						+ lFunctions.get(i));
+				w.println("IF " + " " + node.getNodeID() + " " + (i + 1) + " " + lFunctions.get(i));
 			}
 		}
 		w.println();
