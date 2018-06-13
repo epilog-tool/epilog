@@ -2,7 +2,6 @@ package org.epilogtool.gui.color;
 
 import java.awt.Color;
 import java.util.List;
-import java.util.Random;
 
 import org.epilogtool.common.RandCentral;
 
@@ -36,7 +35,7 @@ public class ColorUtils {
 	}
 
 	private static int getRandomNumber(int n) {
-		return RandCentral.getInstance().nextInt();
+		return RandCentral.getInstance().nextInt(n);
 	}
 
 	public static Color combine(List<Color> l) {
