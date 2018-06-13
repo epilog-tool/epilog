@@ -61,7 +61,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 		// Width JLabel
 		c.gridx = 0;
 		c.gridy = 0;
-		this.add(new JLabel(Txt.get("s_NEWEPI_WIDTH")), c);
+		this.add(new JLabel(Txt.get("s_EPI_WIDTH")), c);
 
 		// Width JTextField
 		this.jtfWidth = new JTextField(DEFAULT_WIDTH_STRING);
@@ -86,7 +86,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 		// Height JLabel
 		c.gridx = 0;
 		c.gridy = 1;
-		this.add(new JLabel(Txt.get("s_NEWEPI_HEIGHT")), c);
+		this.add(new JLabel(Txt.get("s_EPI_HEIGHT")), c);
 
 		// Height JTextField
 		this.jtfHeight = new JTextField(DEFAULT_HEIGHT_STRING);
@@ -111,7 +111,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 		// Name JLabel
 		c.gridx = 0;
 		c.gridy = 2;
-		this.add(new JLabel(Txt.get("s_NEWEPI_NAME")), c);
+		this.add(new JLabel(Txt.get("s_EPI_NAME")), c);
 
 		// Name JTextField
 		this.jtfEpiName = new JTextField();
@@ -136,7 +136,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 		// SBML JLabel
 		c.gridx = 0;
 		c.gridy = 3;
-		this.add(new JLabel(Txt.get("s_NEWEPI_SBML")), c);
+		this.add(new JLabel(Txt.get("s_EPI_SBML")), c);
 
 		// SBML JComboBox
 		this.jcbSBMLs = new JComboBox<String>(
@@ -154,7 +154,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 		// Rollover JLabel
 		c.gridx = 0;
 		c.gridy = 4;
-		this.add(new JLabel(Txt.get("s_NEWEPI_ROLLOVER")), c);
+		this.add(new JLabel(Txt.get("s_EPI_ROLLOVER")), c);
 
 		// Rollover JComboBox
 		this.jcbRollover = new JComboBox<RollOver>(new RollOver[] {
@@ -174,7 +174,7 @@ public class DialogNewEpithelium extends EscapableDialog {
 		// Topology JLabel
 		c.gridx = 0;
 		c.gridy = 5;
-		this.add(new JLabel(Txt.get("s_NEWEPI_TOPOLOGY")), c);
+		this.add(new JLabel(Txt.get("s_EPI_TOPOLOGY")), c);
 
 		// Topology JComboBox
 		List<String> lDescs = new ArrayList<String>(TopologyService
