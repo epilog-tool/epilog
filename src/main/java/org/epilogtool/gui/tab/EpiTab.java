@@ -5,7 +5,7 @@ import javax.swing.tree.TreePath;
 
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
-import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
+import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 
 public abstract class EpiTab extends JPanel {
 	private static final long serialVersionUID = 4245892165061439503L;
@@ -23,14 +23,13 @@ public abstract class EpiTab extends JPanel {
 	protected Epithelium epithelium;
 	protected TreePath path;
 	protected boolean isInitialized;
-	protected ProjChangeNotifyTab projChanged;
+	protected TabChangeNotifyProj tabChanged;
 
-	protected EpiTab(Epithelium e, TreePath path,
-			ProjChangeNotifyTab projChanged) {
+	protected EpiTab(Epithelium e, TreePath path, TabChangeNotifyProj tabChanged) {
 		this.epithelium = e;
 		this.path = path;
 		this.isInitialized = false;
-		this.projChanged = projChanged;
+		this.tabChanged = tabChanged;
 	}
 
 	public TreePath getPath() {

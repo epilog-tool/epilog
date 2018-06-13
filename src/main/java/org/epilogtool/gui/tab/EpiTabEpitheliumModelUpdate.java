@@ -28,7 +28,6 @@ import org.epilogtool.common.Web;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
 import org.epilogtool.core.UpdateCells;
-import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.widgets.JComboWideBox;
 
@@ -51,9 +50,8 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 	private JComboBox<UpdateCells> jcbUpdateCells;
 	private JComboBox<EnumRandomSeed> jcbRandomSeedType;
 
-	public EpiTabEpitheliumModelUpdate(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
-			TabChangeNotifyProj tabChanged) {
-		super(e, path, projChanged, tabChanged);
+	public EpiTabEpitheliumModelUpdate(Epithelium e, TreePath path, TabChangeNotifyProj tabChanged) {
+		super(e, path, tabChanged);
 	}
 
 	public void initialize() {

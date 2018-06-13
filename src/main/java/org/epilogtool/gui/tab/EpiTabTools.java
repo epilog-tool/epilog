@@ -7,7 +7,7 @@ import javax.swing.tree.TreePath;
 
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.gui.EpiGUI;
-import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
+import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 
 
 public abstract class EpiTabTools extends EpiTab {
@@ -16,8 +16,8 @@ public abstract class EpiTabTools extends EpiTab {
 	protected JPanel center;
 	protected JPanel south;
 
-	protected EpiTabTools(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged) {
-		super(e, path, projChanged);
+	protected EpiTabTools(Epithelium e, TreePath path, TabChangeNotifyProj tabChanged) {
+		super(e, path, tabChanged);
 		this.initializeGUI();
 	}
 	

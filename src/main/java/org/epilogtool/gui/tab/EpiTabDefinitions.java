@@ -16,7 +16,6 @@ import javax.swing.tree.TreePath;
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.gui.EpiGUI;
-import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 
 public abstract class EpiTabDefinitions extends EpiTab {
@@ -24,12 +23,9 @@ public abstract class EpiTabDefinitions extends EpiTab {
 
 	protected JPanel center;
 	private JPanel south;
-	private TabChangeNotifyProj tabChanged;
 
-	protected EpiTabDefinitions(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
-			TabChangeNotifyProj tabChanged) {
-		super(e, path, projChanged);
-		this.tabChanged = tabChanged;
+	protected EpiTabDefinitions(Epithelium e, TreePath path, TabChangeNotifyProj tabChanged) {
+		super(e, path, tabChanged);
 		this.initializeGUI();
 	}
 
@@ -81,14 +77,14 @@ public abstract class EpiTabDefinitions extends EpiTab {
 				}
 			});
 			this.add(reset);
-			
-			//Accept button
+
+			// Accept button
 			this.accept = new JButton(Txt.get("s_ACCEPT"));
 			this.accept.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					if (isChanged()) {
-//						System.out.println("EpiTabDefinitions: Change is pressed");
+						// System.out.println("EpiTabDefinitions: Change is pressed");
 						buttonAccept();
 						tabChanged.setEpiChanged();
 					}
@@ -119,7 +115,7 @@ public abstract class EpiTabDefinitions extends EpiTab {
 	}
 
 	public void notifyChange() {
-//		System.out.println("EpiTabDefinitions.notifyChange()");
+		// System.out.println("EpiTabDefinitions.notifyChange()");
 		if (!this.isInitialized) {
 			return;
 		}

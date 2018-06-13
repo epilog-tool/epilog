@@ -316,8 +316,7 @@ public class EpiGUI extends JFrame {
 		dialog.setVisible(true);
 
 		if (dialogPanel.isDefined()) {
-			
-			
+
 			// Update Epithelium Name
 			boolean bChanged = false;
 
@@ -352,8 +351,7 @@ public class EpiGUI extends JFrame {
 			}
 
 			Project.getInstance().setChanged(bChanged);
-		
-			
+
 			this.validateGUI();
 		}
 	}
@@ -382,11 +380,11 @@ public class EpiGUI extends JFrame {
 		// File Menu
 		boolean bIsValid = Project.getInstance().getFilenamePEPS() != null ? Project.getInstance().hasChanged()
 				: this.projDescPanel.countModels() > 0;
-				
+
 		JMenu file = this.epiMenu.getMenu(0);
 		file.getItem(4).setEnabled(bIsValid); // Save
-		
-		file.getItem(5).setEnabled(Project.getInstance().getFilenamePEPS()!=null); // SaveAs
+
+		file.getItem(5).setEnabled(Project.getInstance().getFilenamePEPS() != null); // SaveAs
 
 		// Cellular Model Menu
 		this.projDescPanel.updateSBMLMenuItems();
@@ -419,11 +417,11 @@ public class EpiGUI extends JFrame {
 	}
 
 	public void editPreferences() {
-		
+
 		DialogEditPreferences dialogPanel = new DialogEditPreferences();
 		Window win = SwingUtilities.getWindowAncestor(this);
 		JDialog dialog = new JDialog(win, Txt.get("s_EDIT_PREFS"), ModalityType.APPLICATION_MODAL);
-		
+
 		dialog.getContentPane().add(dialogPanel);
 		dialog.pack();
 		dialog.setLocationRelativeTo(null);
@@ -536,56 +534,57 @@ public class EpiGUI extends JFrame {
 	}
 
 	public void saveAsPEPS() throws IOException {
-		
+
 		// declare JFileChooser
 		JFileChooser fileChooser = new JFileChooser();
-		
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("EpiLog configuration file","peps");
+
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("EpiLog configuration file", "peps");
 		fileChooser.setFileFilter(filter);
 		String fName = Project.getInstance().getFilenamePEPS();
-		if (fName!=null) {
+		if (fName != null) {
 			fileChooser.setCurrentDirectory(new java.io.File(fName));
 		}
-		//TODO: remember folder?
-				 
+		// TODO: remember folder?
+
 		// let the user choose the destination file
 		if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-		    // indicates whether the user still wants to export the settings
-		    boolean doExport = true;
-		 
-		    // indicates whether to override an already existing file
-		    boolean overrideExistingFile = false;
-		 
-		    // get destination file
-		    File destinationFile = new File(fileChooser.getSelectedFile().getAbsolutePath());
-		 
-		    // check if file already exists
-		    while (doExport && destinationFile.exists() && !overrideExistingFile) {
-		        // let the user decide whether to override the existing file
-		        overrideExistingFile = (JOptionPane.showConfirmDialog(this, "Replace file?", "Export settings", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
-		 
-		        // let the user choose another file if the existing file shall not be overridden
-		        if (!overrideExistingFile) {
-		            if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-		                // get new destination file
-		                destinationFile = new File(fileChooser.getSelectedFile().getAbsolutePath());
-		            } else {
-		                // seems like the user does not want to export the settings any longer
-		                doExport = false;
-		            }
-		        }
-		    }
-		
-		if (doExport) {
-			// save the peps file with the new name and update Project
-			FileIO.savePEPS(destinationFile.getAbsolutePath());
-			Project.getInstance().setFilenamePEPS(destinationFile.getAbsolutePath());
-			Project.getInstance().setChanged(false);
-			this.setTitle(Txt.get("s_APP_NAME") + " - " + destinationFile.getAbsolutePath());
-			this.validateGUI();
+			// indicates whether the user still wants to export the settings
+			boolean doExport = true;
+
+			// indicates whether to override an already existing file
+			boolean overrideExistingFile = false;
+
+			// get destination file
+			File destinationFile = new File(fileChooser.getSelectedFile().getAbsolutePath());
+
+			// check if file already exists
+			while (doExport && destinationFile.exists() && !overrideExistingFile) {
+				// let the user decide whether to override the existing file
+				overrideExistingFile = (JOptionPane.showConfirmDialog(this, "Replace file?", "Export settings",
+						JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
+
+				// let the user choose another file if the existing file shall not be overridden
+				if (!overrideExistingFile) {
+					if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+						// get new destination file
+						destinationFile = new File(fileChooser.getSelectedFile().getAbsolutePath());
+					} else {
+						// seems like the user does not want to export the settings any longer
+						doExport = false;
+					}
+				}
 			}
-}
-}
+
+			if (doExport) {
+				// save the peps file with the new name and update Project
+				FileIO.savePEPS(destinationFile.getAbsolutePath());
+				Project.getInstance().setFilenamePEPS(destinationFile.getAbsolutePath());
+				Project.getInstance().setChanged(false);
+				this.setTitle(Txt.get("s_APP_NAME") + " - " + destinationFile.getAbsolutePath());
+				this.validateGUI();
+			}
+		}
+	}
 
 	public void savePEPS() throws IOException {
 		String fName = Project.getInstance().getFilenamePEPS();
@@ -642,7 +641,7 @@ public class EpiGUI extends JFrame {
 
 			this.projDescPanel.addModel(fc.getSelectedFile().getName());
 			Project.getInstance().loadModel(fc.getSelectedFile().getName(), newModel);
-			this.notifyEpiModelGrids();
+			this.notifyOpenEpiTabs();
 			this.validateGUI();
 		}
 	}
@@ -656,7 +655,7 @@ public class EpiGUI extends JFrame {
 		// TODO: Make sure that the model does not change place in list
 		// TODO: If a tab is open, and the name of a model is changed, should it
 		// just be refreshed?
-		
+
 		String model = this.projDescPanel.getSelected();
 		if (model != null) {
 			DialogRenameSBML dialogPanel = new DialogRenameSBML(model,
@@ -682,7 +681,7 @@ public class EpiGUI extends JFrame {
 					newModel += (newModel.endsWith(".sbml") ? "" : ".sbml");
 					Project.getInstance().getProjectFeatures().renameModel(model, newModel);
 					this.projDescPanel.renameModel(model, newModel);
-					this.notifyEpiModelGrids();
+					this.notifyOpenEpiTabs();
 
 					bChanged = true;
 				}
@@ -707,7 +706,7 @@ public class EpiGUI extends JFrame {
 		if (model != null) {
 			if (Project.getInstance().removeModel(model)) {
 				this.projDescPanel.removeModel(model);
-				this.notifyEpiModelGrids();
+				this.notifyOpenEpiTabs();
 			} else {
 				JOptionPane.showMessageDialog(this, Txt.get("s_SBML_IN_USE") + model, "Warning",
 						JOptionPane.WARNING_MESSAGE);
@@ -750,12 +749,11 @@ public class EpiGUI extends JFrame {
 			if (Project.getInstance().getHashModel2EpitheliumList().get(model).isEmpty()) {
 				JOptionPane.showMessageDialog(null, Txt.get("s_NOEPI_MODEL") + model);
 			} else {
-			
 
 				DialogReplaceSBML dialogPanel = new DialogReplaceSBML(model,
 						Project.getInstance().getProjectFeatures().getGUIModelNames(),
 						Project.getInstance().getHashModel2EpitheliumList().get(model));
-				
+
 				Window win = SwingUtilities.getWindowAncestor(this);
 				JDialog dialog = new JDialog(win, "Replace SBML", ModalityType.APPLICATION_MODAL);
 				dialog.getContentPane().add(dialogPanel);
@@ -772,30 +770,27 @@ public class EpiGUI extends JFrame {
 					DialogMessage dialogMsg = new DialogMessage();
 					Project.getInstance().replaceModel(model, newModel, selectedEpiList, dialogMsg);
 					dialogMsg.show("Replace model");
-					
 
 					JPanel jp = new JPanel();
 					if (!Project.getInstance().getProjectFeatures().getReplaceMessages().isEmpty()) {
-						
+
 						String msgs = join(Project.getInstance().getProjectFeatures().getReplaceMessages(), "\n");
-					
+
 						JOptionPane.showMessageDialog(jp, msgs, Txt.get("s_WARNING"), JOptionPane.WARNING_MESSAGE);
 
-				}
-					//TODO: NOT CLEAR THIS IS the best way to go
+					}
+					// TODO: NOT CLEAR THIS IS the best way to go
 					this.epiTabCloseOtherEpis();
 					this.epiTabCloseActiveEpi(true);
-					this.validateGUI();	
+					this.validateGUI();
 				}
 
 			}
-		} 
-		else {
+		} else {
 			JOptionPane.showMessageDialog(this, Txt.get("s_SEL_MODEL"), Txt.get("s_WARNING"),
 					JOptionPane.WARNING_MESSAGE);
 		}
-		
-		
+
 	}
 
 	/**
@@ -832,19 +827,18 @@ public class EpiGUI extends JFrame {
 			EpiTab epiTab = null;
 			String title = epi.getName() + ":" + tabName;
 			TabChangeNotifyProj tabChanged = new TabChangeNotifyProj();
-			ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
 			if (tabName.equals(EpiTab.TAB_INITCONDITIONS)) {
-				epiTab = new EpiTabInitialConditions(epi, selPath, projChanged, tabChanged);
+				epiTab = new EpiTabInitialConditions(epi, selPath, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_INTEGRATION)) {
-				epiTab = new EpiTabInputDefinition(epi, selPath, projChanged, tabChanged);
+				epiTab = new EpiTabInputDefinition(epi, selPath, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_PERTURBATIONS)) {
-				epiTab = new EpiTabPerturbations(epi, selPath, projChanged, tabChanged);
+				epiTab = new EpiTabPerturbations(epi, selPath, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_PRIORITIES)) {
-				epiTab = new EpiTabCellularModelUpdate(epi, selPath, projChanged, tabChanged);
+				epiTab = new EpiTabCellularModelUpdate(epi, selPath, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_EPIUPDATING)) {
-				epiTab = new EpiTabEpitheliumModelUpdate(epi, selPath, projChanged, tabChanged);
+				epiTab = new EpiTabEpitheliumModelUpdate(epi, selPath, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_MODELGRID)) {
-				epiTab = new EpiTabModelGrid(epi, selPath, projChanged, tabChanged);
+				epiTab = new EpiTabModelGrid(epi, selPath, tabChanged);
 			}
 			if (epiTab != null) {
 				this.epiRightFrame.addTab(title, epiTab);
@@ -931,9 +925,9 @@ public class EpiGUI extends JFrame {
 			} else
 				canClose = false;
 		}
-		return canClose;		
+		return canClose;
 	}
-	
+
 	public boolean epiTabCloseAllTabs() {
 		return this.epiTabCloseAllTabs(false);
 	}
@@ -972,9 +966,9 @@ public class EpiGUI extends JFrame {
 		}
 		EpiTab tab;
 		if (tabIndex < 0) {
-			ProjChangeNotifyTab projChanged = new ProjChangeNotifyTab();
 			TreePath path = this.epiTreePanel.getSelectionEpiPath();
-			tab = new EpiTabSimulation(epi, path, projChanged, new SimulationEpiClone());
+			TabChangeNotifyProj tabChanged = new TabChangeNotifyProj();
+			tab = new EpiTabSimulation(epi, path, tabChanged, new SimulationEpiClone());
 			String title = epi.getName() + ":Simulation";
 			this.epiRightFrame.addTab(title, tab);
 			tab.initialize();
@@ -989,7 +983,6 @@ public class EpiGUI extends JFrame {
 		// Select existing Tab
 		this.epiRightFrame.setSelectedIndex(tabIndex);
 	}
-
 
 	// Inner Classes
 	public class SimulationEpiClone {
@@ -1020,17 +1013,14 @@ public class EpiGUI extends JFrame {
 	// ***************** NOTIFICATION OF CHANGES ****************************
 
 	/**
-	 * Notify the Model grid, that an sbml model has been loaded, renamed or removed
-	 * at project level.
+	 * Notify open Tabs, that an sbml model has been loaded, renamed or removed at
+	 * project level.
 	 */
-	private void notifyEpiModelGrids() {
+	private void notifyOpenEpiTabs() {
 		for (int i = 0; i < this.epiRightFrame.getTabCount(); i++) {
 			Component c = this.epiRightFrame.getComponentAt(i);
-//			if (c instanceof EpiTabModelGrid) {
-//				((EpiTabModelGrid) c).notifyChange();
-				EpiTab tab = (EpiTab) c;
-				tab.notifyChange();
-//			}
+			EpiTab tab = (EpiTab) c;
+			tab.notifyChange();
 		}
 	}
 
@@ -1045,26 +1035,4 @@ public class EpiGUI extends JFrame {
 			validateGUI();
 		}
 	}
-
-	/**
-	 * Notifies the project that something has changed (so far only color changing
-	 * have such a global warning)
-	 *
-	 */
-	public class ProjChangeNotifyTab {
-		public void setChanged(EpiTab changedTab) {
-			Project.getInstance().setChanged(true);
-			for (int i = 0; i < epiRightFrame.getTabCount(); i++) {
-				Component c = epiRightFrame.getComponentAt(i);
-//				if (c instanceof EpiTabSimulation || c instanceof EpiTabInitialConditions) {
-//					EpiTab tab = (EpiTab) c;
-//					if (!tab.equals(changedTab)) {
-//						tab.notifyChange();
-//					}
-//				}
-			}
-			validateGUI();
-		}
-	}
-
 }

@@ -33,7 +33,6 @@ import org.epilogtool.common.Web;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumUpdateSchemeIntra;
 import org.epilogtool.core.ModelPriorityClasses;
-import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.widgets.JComboWideBox;
 import org.epilogtool.io.ButtonFactory;
@@ -55,23 +54,21 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 	private JPanel jpNorthLeft;
 	private JPanel jpSouth;
 	private JPanel jpIntraCenter;
-	
+
 	private JButton jbInc;
 	private JButton jbDec;
-	
 
-	public EpiTabCellularModelUpdate(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
-			TabChangeNotifyProj tabChanged) {
-		super(e, path, projChanged, tabChanged);
+	public EpiTabCellularModelUpdate(Epithelium e, TreePath path, TabChangeNotifyProj tabChanged) {
+		super(e, path, tabChanged);
 	}
 
 	public void initialize() {
-		
+
 		this.center.setLayout(new BorderLayout());
-		
+
 		this.jpNorth = new JPanel(new BorderLayout());
 		this.center.add(this.jpNorth, BorderLayout.NORTH);
-		
+
 		// Model selection JPanel
 		this.jpNorthLeft = new JPanel(new FlowLayout());
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
@@ -80,20 +77,17 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 		this.jpNorthLeft.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
 		this.jpNorth.add(this.jpNorthLeft, BorderLayout.WEST);
 
-		
 		this.userPriorityClasses = new EpitheliumUpdateSchemeIntra();
-		
+
 		for (LogicalModel m : modelList) {
 			this.userPriorityClasses.addModelPriorityClasses(this.epithelium.getPriorityClasses(m).clone());
 		}
-		
+
 		this.guiClasses = new ArrayList<JList<String>>();
 		this.tpc = new TabProbablyChanged();
-		
+
 		this.jbInc = ButtonFactory.getNoMargins("<-");
 		this.jbDec = ButtonFactory.getNoMargins("->");
-
-		
 
 		this.jpSouth = new JPanel(new BorderLayout());
 		this.center.add(jpSouth, BorderLayout.SOUTH);
@@ -122,7 +116,7 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 			}
 		});
 		jpSouthCenter.add(jbUnsplit);
-		
+
 		this.jbInc.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -131,7 +125,7 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 				getParent().repaint();
 			}
 		});
-		
+
 		jpSouthCenter.add(this.jbInc);
 
 		this.jbDec.addActionListener(new ActionListener() {
@@ -143,7 +137,7 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 			}
 		});
 		jpSouthCenter.add(this.jbDec);
-		
+
 		JButton jbSingle = ButtonFactory.getNoMargins("Single class");
 		jbSingle.addActionListener(new ActionListener() {
 			@Override
@@ -161,13 +155,12 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 
 		LogicalModel m = Project.getInstance().getProjectFeatures().getModel((String) jcbSBML.getSelectedItem());
 		this.updatePriorityList(m);
-		
+
 		ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(this.selectedModel);
-		
-		if (mpc.getPriorities().size()>1) {
+
+		if (mpc.getPriorities().size() > 1) {
 			this.jbInc.setEnabled(true);
-		}
-		else {
+		} else {
 			this.jbInc.setEnabled(false);
 		}
 		this.isInitialized = true;
@@ -232,10 +225,9 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 				break;
 			}
 		}
-		if (mpc.getPriorities().size()>1) {
+		if (mpc.getPriorities().size() > 1) {
 			this.jbInc.setEnabled(true);
-		}
-		else {
+		} else {
 			this.jbInc.setEnabled(false);
 		}
 		this.updatePriorityList(this.selectedModel);
@@ -253,10 +245,9 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 		}
 		this.updatePriorityList(this.selectedModel);
 
-		if (mpc.getPriorities().size()>1) {
+		if (mpc.getPriorities().size() > 1) {
 			this.jbInc.setEnabled(true);
-		}
-		else {
+		} else {
 			this.jbInc.setEnabled(false);
 		}
 	}

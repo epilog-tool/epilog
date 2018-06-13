@@ -41,7 +41,6 @@ import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
-import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.dialog.EnumNodePercent;
 import org.epilogtool.gui.dialog.EnumOrderNodes;
@@ -52,7 +51,7 @@ import org.epilogtool.io.ButtonFactory;
 import org.epilogtool.project.Project;
 
 public class EpiTabInitialConditions extends EpiTabDefinitions {
-	
+
 	private static final long serialVersionUID = -3626371381385041594L;
 
 	private VisualGridInitialConditions visualGridICs;
@@ -80,9 +79,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 	private Map<String, Byte> mNode2ValueSelected;
 
-	public EpiTabInitialConditions(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
-			TabChangeNotifyProj tabChanged) {
-		super(e, path, projChanged, tabChanged);
+	public EpiTabInitialConditions(Epithelium e, TreePath path, TabChangeNotifyProj tabChanged) {
+		super(e, path, tabChanged);
 	}
 
 	/**
@@ -117,8 +115,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		// Model selection jcomboCheckBox
 
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
-		
-		
+
 		JCheckBox[] items = new JCheckBox[modelList.size()];
 		for (int i = 0; i < modelList.size(); i++) {
 			items[i] = new JCheckBox(Project.getInstance().getProjectFeatures().getModelName(modelList.get(i)));
@@ -126,7 +123,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		}
 		this.jccbSBML = new JComboCheckBox(items);
 		this.jpLeftTop.add(this.jccbSBML);
-		
+
 		this.jccbSBML.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -136,10 +133,9 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			}
 		});
 
-
 		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
 		this.jpLeft.add(this.jpLeftTop, BorderLayout.NORTH);
-	
+
 		// ---------------------------------------------------------------------------
 		// Select/Deselect active nodes Buttons
 		JPanel rrTopSel = new JPanel(new FlowLayout());
@@ -294,14 +290,13 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		jpRRC.setBorder(BorderFactory.createTitledBorder(titleBorder));
 
 		int y = 0;
-		
+
 		String orderPref = (String) OptionStore.getOption("PrefsAlphaOrderNodes");
-		
+
 		if (orderPref != null && orderPref.equals(EnumOrderNodes.ALPHA.toString())) {
 			lNodes = getAlphaOrderedNodes(lNodes);
 		}
-		
-		
+
 		for (NodeInfo node : lNodes) {
 			for (LogicalModel m : listModels) {
 				if (m.getComponents().contains(node) && !this.epithelium.isIntegrationComponent(node)) {
@@ -311,35 +306,37 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				}
 			}
 		}
-		
-		
+
 		this.jpRCenter.add(jpRRC);
 	}
 
-	private List<NodeInfo> getAlphaOrderedNodes( List<NodeInfo> lNodes) {
-		//TODO: Project.getinstance().getProjectPreferences.getNodeInfo(String, LogicalModel)
-		//Faz sentido? afinal proibimos que um ficheiro esteja carregado quando tem o mesmo nome e ranges de valores diferentes!
-		
+	private List<NodeInfo> getAlphaOrderedNodes(List<NodeInfo> lNodes) {
+		// TODO: Project.getinstance().getProjectPreferences.getNodeInfo(String,
+		// LogicalModel)
+		// Faz sentido? afinal proibimos que um ficheiro esteja carregado quando tem o
+		// mesmo nome e ranges de valores diferentes!
+
 		List<String> lNodeID = new ArrayList<String>();
 		List<NodeInfo> lOrderedNods = new ArrayList<NodeInfo>();
-		
-		for (NodeInfo node: lNodes) {
+
+		for (NodeInfo node : lNodes) {
 			lNodeID.add(node.getNodeID());
 		}
 
-//		lNodeID = lNodeID.stream().sorted().collect(Collectors.toList()); //First presents the capital letter, then the smaller
-		Collections.sort(lNodeID, ObjectComparator.STRING); //Orders alphabetically, not case-sensitive
-		
-		for (String nodeID: lNodeID) {
+		// lNodeID = lNodeID.stream().sorted().collect(Collectors.toList()); //First
+		// presents the capital letter, then the smaller
+		Collections.sort(lNodeID, ObjectComparator.STRING); // Orders alphabetically, not case-sensitive
 
-			for (NodeInfo node: lNodes) {
+		for (String nodeID : lNodeID) {
+
+			for (NodeInfo node : lNodes) {
 				if (node.getNodeID().equals(nodeID)) {
 					lOrderedNods.add(node);
 					continue;
 				}
 			}
 		}
-		
+
 		return lOrderedNods;
 	}
 
@@ -397,10 +394,10 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		gbc.anchor = GridBagConstraints.WEST;
 
 		// ----------------------------------------------------------------------------
-//		gbc.gridx = 1;
-//		JLabel jlNodeId = new JLabel(nodeID);
-//		jlNodeId.setToolTipText(nodeID);
-//		jp.add(jlNodeId, gbc);
+		// gbc.gridx = 1;
+		// JLabel jlNodeId = new JLabel(nodeID);
+		// jlNodeId.setToolTipText(nodeID);
+		// jp.add(jlNodeId, gbc);
 
 		// ----------------------------------------------------------------------------
 		gbc.gridx = 1;
@@ -450,13 +447,13 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		JCheckBox jcb = this.mNodeID2Checkbox.get(nodeID);
 		if (jcb == null) {
 			this.mSelCheckboxes.put(nodeID, false);
-			
-//			// node percentage is the checkbox text
-//			String nodePercent = "";
-//			String percPref = (String) OptionStore.getOption("PrefsNodePercent");
-//			if (percPref != null && percPref.equals(EnumNodePercent.YES.toString())) {
-//				nodePercent = grid.getPercentage(nodeID);
-//			}
+
+			// // node percentage is the checkbox text
+			// String nodePercent = "";
+			// String percPref = (String) OptionStore.getOption("PrefsNodePercent");
+			// if (percPref != null && percPref.equals(EnumNodePercent.YES.toString())) {
+			// nodePercent = grid.getPercentage(nodeID);
+			// }
 
 			jcb = new JCheckBox(nodeID);
 			jcb.setToolTipText(nodeID);
@@ -480,9 +477,9 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			this.mNodeID2JLabel.put(nodeID, new JLabel(""));
 		}
 		jp.add(jcb, gbc);
-		
+
 		// ----------------------------------------------------------------------------
-		//Percentages
+		// Percentages
 		String percPref = (String) OptionStore.getOption("PrefsNodePercent");
 		if (percPref != null && percPref.equals(EnumNodePercent.YES.toString())) {
 			JLabel nodePercent = new JLabel();
@@ -538,7 +535,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		if (newColor != null && !newColor.equals(Project.getInstance().getProjectFeatures().getNodeColor(nodeID))) {
 			jb.setBackground(newColor);
 			Project.getInstance().getProjectFeatures().setNodeColor(nodeID, newColor);
-			this.projChanged.setChanged(this);
+			this.tabChanged.setEpiChanged();
 			if (this.mNode2ValueSelected.containsKey(nodeID)) {
 				// Paint only if NodeID is selected!!
 				this.visualGridICs.paintComponent(this.visualGridICs.getGraphics());
@@ -568,7 +565,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	@Override
 	protected void buttonReset() {
 		// Cancel CellGrid
-		
+
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {
 			for (int y = 0; y < this.epiGridClone.getY(); y++) {
 				byte[] currState = this.epiGridClone.getCellState(x, y);
@@ -583,9 +580,9 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 	@Override
 	protected void buttonAccept() {
-		
+
 		EpitheliumGrid gridOrig = this.epithelium.getEpitheliumGrid();
-		
+
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {
 			for (int y = 0; y < this.epiGridClone.getY(); y++) {
 				byte[] stateClone = this.epiGridClone.getCellState(x, y).clone();

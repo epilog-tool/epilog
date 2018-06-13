@@ -135,7 +135,7 @@ public class DialogEditEpithelium extends EscapableDialog {
 		// Rollover JLabel
 		c.gridx = 0;
 		c.gridy = 4;
-		this.add(new JLabel(Txt.get("s_Borders")), c);
+		this.add(new JLabel(Txt.get("s_Rollover")), c);
 
 		// Rollover JComboBox
 		this.jcbRollover = new JComboBox<RollOver>(

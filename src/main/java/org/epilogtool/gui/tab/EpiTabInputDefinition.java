@@ -34,7 +34,6 @@ import org.epilogtool.common.Txt;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
-import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.dialog.DialogMessage;
@@ -51,22 +50,21 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	private TabProbablyChanged tpc;
 
 	private Map<NodeInfo, JRadioButton> mNode2RadioButton;
-	
+
 	private JPanel jpInputComp;
 	private JPanel jpNRTop;
 	private JPanel jpNRBottom;
 	private JPanel jpNLTop;
-	
+
 	private JComboCheckBox jccbSBML;
 
-	public EpiTabInputDefinition(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
-			TabChangeNotifyProj tabChanged) {
-		super(e, path, projChanged, tabChanged);
+	public EpiTabInputDefinition(Epithelium e, TreePath path, TabChangeNotifyProj tabChanged) {
+		super(e, path, tabChanged);
 		this.mNode2RadioButton = new HashMap<NodeInfo, JRadioButton>();
 	}
 
 	public void initialize() {
-		
+
 		this.center.setLayout(new BorderLayout());
 
 		this.userIntegrationFunctions = this.epithelium.getIntegrationFunctions().clone();
@@ -77,7 +75,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		JPanel jpNorth = new JPanel(new BorderLayout());
 		JPanel jpNLeft = new JPanel(new BorderLayout());
 		this.jpNLTop = new JPanel(new BorderLayout());
-		
+
 		JPanel jpNRight = new JPanel(new BorderLayout());
 		jpNorth.add(jpNRight, BorderLayout.CENTER);
 		this.center.add(jpNorth, BorderLayout.NORTH);
@@ -86,24 +84,22 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		jpNRight.add(this.jpNRTop, BorderLayout.NORTH);
 		this.jpNRBottom = new JPanel(new GridBagLayout());
 		jpNRight.add(this.jpNRBottom, BorderLayout.CENTER);
-		
-		
+
 		jpNorth.add(jpNLeft, BorderLayout.LINE_START);
-		
-		
+
 		// ---------------------------------------------------------------------------
 		// Model selection jcomboCheckBox
 
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
-		
+
 		JCheckBox[] items = new JCheckBox[modelList.size()];
-		
+
 		for (int i = 0; i < modelList.size(); i++) {
 			items[i] = new JCheckBox(Project.getInstance().getProjectFeatures().getModelName(modelList.get(i)));
 			items[i].setSelected(true);
 		}
 		this.jccbSBML = new JComboCheckBox(items);
-		
+
 		this.jccbSBML.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -112,7 +108,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 				updateComponentList(jccb.getSelectedItems());
 			}
 		});
-		
+
 		this.jpNLTop.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
 		this.jpNLTop.add(this.jccbSBML);
 		jpNLeft.add(this.jpNLTop, BorderLayout.NORTH);
@@ -121,15 +117,12 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		this.jpInputComp = new JPanel(new GridBagLayout());
 		this.jpInputComp.setBorder(BorderFactory.createTitledBorder("Input component"));
 		jpNLeft.add(this.jpInputComp, BorderLayout.CENTER);
-		
+
 		updateComponentList(this.jccbSBML.getSelectedItems());
-		
 
 		this.isInitialized = true;
 	}
 
-	
-	
 	/**
 	 * Updates components check selection list, once the selected model to display
 	 * is changed.
@@ -147,31 +140,29 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 
 		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
 				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
-		
-		
+
 		ButtonGroup group = new ButtonGroup();
-			for (NodeInfo node : lInputs) {
-				JRadioButton jrb;
-				if (this.mNode2RadioButton.containsKey(node)) {
-					jrb = this.mNode2RadioButton.get(node);
-				} else {
-					jrb = new JRadioButton(node.getNodeID());
-					jrb.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							JRadioButton jrb = (JRadioButton) e.getSource();
-							activeNodeID = jrb.getText();
-							updateNodeID();
-							// Re-Paint
-							getParent().repaint();
-						}
-					});
-					this.mNode2RadioButton.put(node, jrb);
-				}
-				group.add(jrb);
+		for (NodeInfo node : lInputs) {
+			JRadioButton jrb;
+			if (this.mNode2RadioButton.containsKey(node)) {
+				jrb = this.mNode2RadioButton.get(node);
+			} else {
+				jrb = new JRadioButton(node.getNodeID());
+				jrb.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						JRadioButton jrb = (JRadioButton) e.getSource();
+						activeNodeID = jrb.getText();
+						updateNodeID();
+						// Re-Paint
+						getParent().repaint();
+					}
+				});
+				this.mNode2RadioButton.put(node, jrb);
 			}
-		
-		
+			group.add(jrb);
+		}
+
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(1, 5, 1, 0);
 
@@ -184,7 +175,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 			for (NodeInfo node : lInputs) {
 				if (y == 0) {
 					this.activeNodeID = node.getNodeID();
-					
+
 					updateNodeID();
 					this.mNode2RadioButton.get(node).setSelected(true);
 				}
@@ -199,8 +190,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		this.repaint();
 		this.revalidate();
 	}
-	
-	
+
 	/**
 	 * Reaction function to the change of the selected input to defined as either
 	 * Positional or Integration. 1) By default an input is positional, if it is
@@ -211,7 +201,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	 * another
 	 */
 	private void updateNodeID() {
-		
+
 		this.jpNRTop.removeAll();
 		this.jpNRBottom.removeAll();
 		ButtonGroup group = new ButtonGroup();
@@ -242,7 +232,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		this.jpNRTop.add(jrModelInt);
 
 		NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(this.activeNodeID);
-		
+
 		if (this.userIntegrationFunctions.containsNode(node)) {
 			jrModelInt.setSelected(true);
 			paintModelIntegrationPanel();
@@ -251,7 +241,6 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 			paintModelInputPanel();
 		}
 	}
-
 
 	/**
 	 * Sets the integration function (IF) defined in the integration function box
@@ -303,9 +292,6 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		}
 		tpc.setChanged();
 	}
-
-
-	
 
 	private void getNoInputTextField() {
 		this.jpNRBottom.removeAll();
@@ -382,7 +368,8 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	protected void buttonAccept() {
 		allNodes: for (NodeInfo node : mNode2RadioButton.keySet()) {
 
-			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions.getComponentIntegrationFunctions(node);
+			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions
+					.getComponentIntegrationFunctions(node);
 			EpitheliumIntegrationFunctions eifOrig = this.epithelium.getIntegrationFunctions();
 			if (cifClone == null) {
 				eifOrig.removeComponent(node);
@@ -407,7 +394,8 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	protected boolean isChanged() {
 		for (NodeInfo node : mNode2RadioButton.keySet()) {
 
-			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions.getComponentIntegrationFunctions(node);
+			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions
+					.getComponentIntegrationFunctions(node);
 			ComponentIntegrationFunctions cifOrig = this.epithelium.getIntegrationFunctions()
 					.getComponentIntegrationFunctions(node);
 
@@ -423,7 +411,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 
 	@Override
 	public void applyChange() {
-		
+
 		// New (potential) model list -> Update JComboCheckBox
 		// and (potential) new node value counts
 		this.epithelium.getEpitheliumGrid().updateGrid();

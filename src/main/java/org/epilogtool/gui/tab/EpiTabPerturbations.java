@@ -45,7 +45,6 @@ import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumPerturbations;
 import org.epilogtool.core.ModelPerturbations;
-import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.widgets.GridInformation;
@@ -79,12 +78,11 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	private JPanel lTop;
 	private GridInformation gridInfo;
 	private TabProbablyChanged tpc;
-	
+
 	private byte maxValue;
 
-	public EpiTabPerturbations(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
-			TabChangeNotifyProj tabChanged) {
-		super(e, path, projChanged, tabChanged);
+	public EpiTabPerturbations(Epithelium e, TreePath path, TabChangeNotifyProj tabChanged) {
+		super(e, path, tabChanged);
 	}
 
 	public void initialize() {
@@ -215,8 +213,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		jpPerturbTop.add(jcbMaxVal, gbc);
 		updateMinMaxValues(saProper[0]);
 		JPanel jpTmp = new JPanel(new FlowLayout());
-		
-		
+
 		// Create
 		JButton jbCreate = ButtonFactory.getNoMargins(Txt.get("s_TAB_PERTURB_CREATE"));
 		jbCreate.addActionListener(new ActionListener() {
@@ -227,22 +224,23 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 				byte min = (Byte) jcbMinVal.getSelectedItem();
 				byte max = (Byte) jcbMaxVal.getSelectedItem();
 				AbstractPerturbation ap;
-				
+
 				if (max < min) {
-					
+
 					jcbMaxVal.setSelectedItem(min);
 					jcbMaxVal.repaint();
-					max=min;
+					max = min;
 					ap = new FixedValuePerturbation(node, min);
-//					NotificationManager.warning("EpiTabPerturbations", Txt.get("s_TAB_PERTURB_INVALID"));
-//					NotificationManager.dispatchDialogWarning(false, false);
-//					return;
+					// NotificationManager.warning("EpiTabPerturbations",
+					// Txt.get("s_TAB_PERTURB_INVALID"));
+					// NotificationManager.dispatchDialogWarning(false, false);
+					// return;
 				} else if (min == max) {
 					ap = new FixedValuePerturbation(node, min);
 				} else {
 					ap = new RangePerturbation(node, min, max);
 				}
-				
+
 				if (!mID2AP.containsKey(ap.toString())) {
 					epiPerturbClone.addPerturbation(selModel, ap);
 					mID2AP.put(ap.toString(), ap);
@@ -259,7 +257,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		});
 		jpTmp.add(jbCreate);
 		// Delete
-		
+
 		JButton jbDelete = ButtonFactory.getNoMargins(Txt.get("s_TAB_PERTURB_DELETE"));
 		jbDelete.addActionListener(new ActionListener() {
 			@Override
@@ -310,7 +308,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 					mAP2Checkbox.get(ap).setSelected(false);
 				}
 				if (lAPs.size() > 1) {
-					//TODO: create personalized message saying why it is not possible to create this multiple perturbation (only one 
+					// TODO: create personalized message saying why it is not possible to create
+					// this multiple perturbation (only one
 					Collections.sort(lAPs, ObjectComparator.ABSTRACT_PERTURB);
 					List<AbstractPerturbation> lAPsClean = new ArrayList<AbstractPerturbation>();
 					for (int i = 0; i < lAPs.size(); i++) {
@@ -321,7 +320,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 							if (component_A.equals(component_B)) {
 								sub = true;
 								break;
-							}		
+							}
 						}
 						if (!sub) {
 							lAPsClean.add(lAPs.get(i));

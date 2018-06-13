@@ -26,7 +26,6 @@ import org.epilogtool.common.Txt;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
-import org.epilogtool.gui.EpiGUI.ProjChangeNotifyTab;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JRadioComponentButton;
@@ -48,13 +47,12 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	JToggleButton jtbRectFill;
 	JButton jbApplyAll;
 
-	public EpiTabModelGrid(Epithelium e, TreePath path, ProjChangeNotifyTab projChanged,
-			TabChangeNotifyProj tabChanged) {
-		super(e, path, projChanged, tabChanged);
+	public EpiTabModelGrid(Epithelium e, TreePath path, TabChangeNotifyProj tabChanged) {
+		super(e, path, tabChanged);
 	}
 
 	public void initialize() {
-		
+
 		this.center.setLayout(new BorderLayout());
 
 		this.mapSBMLMiniPanels = new HashMap<JRadioComponentButton, JButton>();
@@ -182,7 +180,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		}
 		visualGridModel.setSelModelName(null);
 		this.revalidate();
-//		this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
+		// this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
 	}
 
 	/**
@@ -199,7 +197,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 				Color newColor = JColorChooser.showDialog(jb, "Color Chooser - " + name, jb.getBackground());
 				if (newColor != null && newColor != jb.getBackground()) {
 					jb.setBackground(newColor);
-					this.projChanged.setChanged(this);
+					tabChanged.setEpiChanged();
 					Project.getInstance().getProjectFeatures().setModelColor(name, newColor);
 					if (EmptyModel.getInstance().isEmptyModel(name)) {
 						EmptyModel.getInstance().setColor(newColor);
@@ -211,7 +209,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 			}
 		}
 	}
-
+	
 	@Override
 	protected void buttonReset() {
 		// Cancel Models
