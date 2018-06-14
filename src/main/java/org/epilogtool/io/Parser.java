@@ -97,6 +97,11 @@ public class Parser {
 				x = saTmp[1];
 				y = saTmp[2];
 				topologyLayout = saTmp[3];
+				
+				if (topologyLayout == "Hexagon-Even-PointyTopped") {topologyLayout = "Pointy-Even";}
+				else if (topologyLayout == "Hexagon-Odd-PointyTopped") {topologyLayout = "Pointy-Odd";}
+				else if (topologyLayout == "Hexagon-Even-FlatTopped") {topologyLayout = "Flat-Even";}
+				else if (topologyLayout == "Hexagon-Odd-FlatTopped") {topologyLayout = "Flat-Odd";}
 			}
 
 			// RollOver

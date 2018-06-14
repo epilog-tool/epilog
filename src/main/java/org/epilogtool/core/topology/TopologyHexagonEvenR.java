@@ -15,7 +15,8 @@ public class TopologyHexagonEvenR extends TopologyHexagon {
 	}
 
 	public String getDescription() {
-		return "Hexagon-Even-PointyTopped";
+//		return "Hexagon-Even-PointyTopped";
+		return "Pointy-Even";
 	}
 	
 	public Set<Tuple2D<Integer>> evenRelativeNeighboursAt(int distance) {

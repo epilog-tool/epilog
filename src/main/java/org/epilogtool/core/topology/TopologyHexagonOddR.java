@@ -15,7 +15,8 @@ public class TopologyHexagonOddR extends TopologyHexagon {
 	}
 
 	public String getDescription() {
-		return "Hexagon-Odd-PointyTopped";
+//		return "Hexagon-Odd-PointyTopped";
+		return "Pointy-Odd";
 	}
 	
 	public Set<Tuple2D<Integer>> evenRelativeNeighboursAt(int distance){
