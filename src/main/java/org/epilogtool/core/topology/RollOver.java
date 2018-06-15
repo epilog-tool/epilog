@@ -31,13 +31,14 @@ public enum RollOver {
 
 	public static RollOver string2RollOver(String epiName, String str) {
 		// Note: The equals with additional options are for backward compatibility
+		System.out.println(str);
 		if (str.equals(HORIZ.toString()) || str.equals("Horizontal"))
 			return HORIZ;
 		else if (str.equals(VERT.toString()) || str.equals("Vertical"))
 			return VERT;
-		else if (str.equals(NONE.toString()) || str.equals("NoRollover"))
+		else if (str.equals(NONE.toString()) || str.equals("NoRollover")||str.equals("Rectangular"))
 			return NONE;
-		else if (str.equals(HORIZ_VERT.toString()) || str.equals("Torus") || str.equals("Horizontal&Vertical"))
+		else if (str.equals(HORIZ_VERT.toString()) || str.equals("Torus") || str.equals("Horizontal&Vertical")||str.equals("Torus"))
 			return HORIZ_VERT;
 		else {
 			JOptionPane.showMessageDialog(null,
