@@ -302,7 +302,7 @@ public class Parser {
 		// Component colors
 		for (String nodeID : Project.getInstance().getProjectFeatures().getNodeIDs()) {
 			Color c = Project.getInstance().getProjectFeatures().getNodeColor(nodeID);
-			w.println("CC " + nodeID + " " + c.getRed() + " " + c.getBlue() + " " + c.getGreen());
+			w.println("CC " + nodeID + " " + c.getRed()  + " " + c.getGreen()+ " " + c.getBlue());
 			OptionStore.setOption("CC " + nodeID, ColorUtils.getColorCode(c));
 		}
 
