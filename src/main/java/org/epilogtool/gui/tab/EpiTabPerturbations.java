@@ -518,6 +518,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	private void updateMinMaxValues(String nodeID) {
 		jcbMinVal.removeAllItems();
 		jcbMaxVal.removeAllItems();
+		//TODO: Bug here
 		this.maxValue = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, selModel).getMax();
 		for (byte b = 0; b <= this.maxValue; b++) {
 			jcbMinVal.addItem(b);

@@ -31,7 +31,6 @@ public enum RollOver {
 
 	public static RollOver string2RollOver(String epiName, String str) {
 		// Note: The equals with additional options are for backward compatibility
-		System.out.println(str);
 		if (str.equals(HORIZ.toString()) || str.equals("Horizontal"))
 			return HORIZ;
 		else if (str.equals(VERT.toString()) || str.equals("Vertical"))
