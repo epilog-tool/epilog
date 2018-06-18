@@ -65,6 +65,7 @@ import org.epilogtool.gui.tab.EpiTabPerturbations;
 import org.epilogtool.gui.tab.EpiTabSimulation;
 import org.epilogtool.gui.widgets.CloseTabButton;
 import org.epilogtool.io.FileIO;
+import org.epilogtool.io.FileResource;
 import org.epilogtool.project.Project;
 
 /**
@@ -103,6 +104,7 @@ public class EpiGUI extends JFrame {
 		super(Txt.get("s_APP_NAME"));
 
 		try {
+			setIconImage(FileResource.getImage("icon_epilog.png"));
 			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 			// UI Alternatives
 			// com.sun.java.swing.plaf.gtk.GTKLookAndFeel <- +/-
