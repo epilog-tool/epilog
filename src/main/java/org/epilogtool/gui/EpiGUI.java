@@ -2,6 +2,7 @@ package org.epilogtool.gui;
 
 import java.awt.Component;
 import java.awt.Dialog.ModalityType;
+import java.awt.Image;
 import java.awt.Window;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -37,6 +38,7 @@ import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.biolqm.io.sbml.SBMLFormat;
 import org.epilogtool.FileSelectionHelper;
 import org.epilogtool.OptionStore;
+import org.epilogtool.common.CurrentOS;
 import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
@@ -67,6 +69,8 @@ import org.epilogtool.gui.widgets.CloseTabButton;
 import org.epilogtool.io.FileIO;
 import org.epilogtool.io.FileResource;
 import org.epilogtool.project.Project;
+
+import com.apple.eawt.Application;
 
 /**
  * Class that defines the GUI of EPILOG. This is the main window where the GUI
@@ -104,7 +108,12 @@ public class EpiGUI extends JFrame {
 		super(Txt.get("s_APP_NAME"));
 
 		try {
-			setIconImage(FileResource.getImage("icon_epilog.png"));
+			Image dockImg = FileResource.getImage("icon_epilog.png");
+			if (CurrentOS.CURRENT_OS.equals(CurrentOS.MACOSX)) {
+				com.apple.eawt.Application.getApplication().setDockIconImage(dockImg);
+			} else {
+				setIconImage(dockImg);
+			}
 			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 			// UI Alternatives
 			// com.sun.java.swing.plaf.gtk.GTKLookAndFeel <- +/-
