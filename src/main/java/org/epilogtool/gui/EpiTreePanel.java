@@ -145,6 +145,7 @@ public class EpiTreePanel extends JPanel {
 		if (root.getChildCount() == 0) {
 			this.initEpitheliumJTree();
 		}
+		this.validateJTreeExpansion();
 	}
 
 	public void validateJTreeExpansion() {
