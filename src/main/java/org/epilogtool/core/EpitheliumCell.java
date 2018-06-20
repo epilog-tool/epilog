@@ -98,23 +98,23 @@ public class EpitheliumCell {
 	public boolean equals(Object o) {
 		EpitheliumCell ecOut = (EpitheliumCell) o;
 		if (!this.model.equals(ecOut.model)) {
-			System.out.println("  EpiCell.equals: =/= model");
+//			System.out.println("  EpiCell.equals: =/= model");
 			return false;
 		}
 		if (this.perturbation == null) {
 			if (ecOut.perturbation != null) {
-				System.out.println("  EpiCell.equals: =/= perturb 1");
+//				System.out.println("  EpiCell.equals: =/= perturb 1");
 				return false;
 			}
 		} else {
 			if (ecOut.perturbation == null
 					|| !this.perturbation.equals(ecOut.perturbation)) {
-				System.out.println("  EpiCell.equals: =/= perturb 2");
+//				System.out.println("  EpiCell.equals: =/= perturb 2");
 				return false;
 			}
 		}
 		if (state.length != ecOut.state.length) {
-			System.out.println("  EpiCell.equals: =/= state len");
+//			System.out.println("  EpiCell.equals: =/= state len");
 			return false;
 		}
 		for (int i = 0; i < state.length; i++) {
