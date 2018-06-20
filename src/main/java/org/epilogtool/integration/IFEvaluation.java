@@ -1,6 +1,5 @@
 package org.epilogtool.integration;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,13 +14,13 @@ import org.epilogtool.core.EpitheliumGrid;
 public class IFEvaluation {
 
 	private EpitheliumGrid neighboursGrid;
-	private Map<List<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>> relativeNeighboursCache;
+	private Map<Tuple2D<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>> relativeNeighboursCache;
 	private Epithelium epithelium;
 
 	public IFEvaluation(EpitheliumGrid neighboursGrid, Epithelium epithelium) {
 		this.neighboursGrid = neighboursGrid;
 		this.epithelium = epithelium;
-		this.relativeNeighboursCache = new HashMap<List<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>>();
+		this.relativeNeighboursCache = new HashMap<Tuple2D<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>>();
 	}
 
 	public boolean evaluate(int x, int y, IntegrationFunctionExpression expression) {
@@ -121,47 +120,41 @@ public class IFEvaluation {
 			}
 
 			// Get neighbours
-			List<Integer> rangeList = new ArrayList<Integer>();
-			rangeList.add(signal.getDistance().getMin());
-			rangeList.add(signal.getDistance().getMax());
+			Tuple2D<Integer> rangePair = new Tuple2D<Integer>(signal.getDistance().getMin(),
+					signal.getDistance().getMax());
 
-			//Shouldn't this be outside of the grammar ?
-			
-			List<Integer> rangeList_aux = new ArrayList<Integer>();
-			rangeList_aux.add(0);
-			if (signal.getDistance().getMin()-1>0)
-				rangeList_aux.add(signal.getDistance().getMin()-1);
-			else
-				rangeList_aux.add(0);
+			// Shouldn't this be outside of the grammar ?
+
+			Tuple2D<Integer> rangeList_aux = new Tuple2D<Integer>(0,
+					(signal.getDistance().getMin() - 1 > 0) ? signal.getDistance().getMin() - 1 : 0);
 
 			if (!this.relativeNeighboursCache.containsKey(rangeList_aux)) {
 				Map<Boolean, Set<Tuple2D<Integer>>> neighboursOutskirts = new HashMap<Boolean, Set<Tuple2D<Integer>>>();
-				neighboursOutskirts.put(true, this.neighboursGrid.getTopology().getRelativeNeighbours(true, rangeList_aux.get(0),
-						rangeList_aux.get(1)));
-				neighboursOutskirts.put(false, this.neighboursGrid.getTopology().getRelativeNeighbours(false, rangeList_aux.get(0),
-						rangeList_aux.get(1)));
+				neighboursOutskirts.put(true, this.neighboursGrid.getTopology().getRelativeNeighbours(true,
+						rangeList_aux.getX(), rangeList_aux.getY()));
+				neighboursOutskirts.put(false, this.neighboursGrid.getTopology().getRelativeNeighbours(false,
+						rangeList_aux.getX(), rangeList_aux.getY()));
 				this.relativeNeighboursCache.put(rangeList_aux, neighboursOutskirts);
 			}
 
-			if (!this.relativeNeighboursCache.containsKey(rangeList)) {
-				Map<Boolean, Set<Tuple2D<Integer>>> neighbours = new HashMap<Boolean, Set<Tuple2D<Integer>>>();
-				neighbours.put(true, this.neighboursGrid.getTopology().getRelativeNeighbours(true, rangeList.get(0),
-						rangeList.get(1)));
-				neighbours.put(false, this.neighboursGrid.getTopology().getRelativeNeighbours(false, rangeList.get(0),
-						rangeList.get(1)));
-				this.relativeNeighboursCache.put(rangeList, neighbours);
+			if (!this.relativeNeighboursCache.containsKey(rangePair)) {
+				Map<Boolean, Set<Tuple2D<Integer>>> relativeNeighbours = new HashMap<Boolean, Set<Tuple2D<Integer>>>();
+				relativeNeighbours.put(true, this.neighboursGrid.getTopology().getRelativeNeighbours(true, rangePair.getX(),
+						rangePair.getY()));
+				relativeNeighbours.put(false, this.neighboursGrid.getTopology().getRelativeNeighbours(false, rangePair.getX(),
+						rangePair.getY()));
+				this.relativeNeighboursCache.put(rangePair, relativeNeighbours);
 			}
 
 			boolean even = this.neighboursGrid.getTopology().isEven(x, y);
-			
-			Set<Tuple2D<Integer>> neighbours = this.neighboursGrid.getTopology().getPositionNeighbours(x, y,
-					this.relativeNeighboursCache.get(rangeList).get(even));
+
+			Set<Tuple2D<Integer>> positionNeighbours = this.neighboursGrid.getTopology().getPositionNeighbours(x, y,
+					this.relativeNeighboursCache.get(rangePair).get(even));
 			Set<Tuple2D<Integer>> neighboursOutskirts = this.neighboursGrid.getTopology().getPositionNeighbours(x, y,
 					this.relativeNeighboursCache.get(rangeList_aux).get(even));
-			neighbours.removeAll(neighboursOutskirts);
-		
+			positionNeighbours.removeAll(neighboursOutskirts);
 
-			for (Tuple2D<Integer> tuple : neighbours) {
+			for (Tuple2D<Integer> tuple : positionNeighbours) {
 				List<NodeInfo> lNodes = this.neighboursGrid.getModel(tuple.getX(), tuple.getY()).getComponents();
 				for (int n = 0; n < lNodes.size(); n++) {
 					if (node.getNodeID().equals(lNodes.get(n).getNodeID())) {

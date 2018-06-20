@@ -18,13 +18,13 @@ public abstract class TopologyHexagon extends Topology {
 
 		for (Tuple2D<Integer> tuple : setRelativeNeighbours) {
 //			System.out.println("TopologyHexagon: " + setRelativeNeighbours);
-			Tuple2D<Integer> posTuple = this.relativeToAbsolutePosition(tuple,x, y);
+			Tuple2D<Integer> posTupleCandidate = this.relativeToAbsolutePosition(tuple,x, y);
 //			System.out.println("topologyHexagon: getPositionNeighbours " + posTuple);
 			
 			//posTuple are the set of neighbours, taking into consideration the relative position
-			if (this.includesNeighbour(posTuple)) {
-				this.includeNeighbour(posTuple);
-				setNeighbours.add(posTuple);
+			if (this.isValidPosTuple(posTupleCandidate)) {
+				this.correctPosTuple(posTupleCandidate);
+				setNeighbours.add(posTupleCandidate);
 			}
 		}
 		return setNeighbours;
@@ -45,7 +45,7 @@ public abstract class TopologyHexagon extends Topology {
 		return new Tuple2D<Integer>(newX, newY);
 	}
 
-	protected boolean includesNeighbour(Tuple2D<Integer> posTuple) {
+	protected boolean isValidPosTuple(Tuple2D<Integer> posTuple) {
 		int x = posTuple.getX();
 		int y = posTuple.getY();
 
@@ -56,7 +56,7 @@ public abstract class TopologyHexagon extends Topology {
 		return true;
 	}
 
-	protected void includeNeighbour(Tuple2D<Integer> posTuple) {
+	protected void correctPosTuple(Tuple2D<Integer> posTuple) {
 		int x = posTuple.getX();
 		int y = posTuple.getY();
 		

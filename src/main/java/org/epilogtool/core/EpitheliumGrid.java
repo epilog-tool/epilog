@@ -88,8 +88,7 @@ public class EpitheliumGrid {
 		return this.topology;
 	}
 
-	public LogicalModel getModel(int x, int y) {
-		
+	public LogicalModel getModel(int x, int y) {		
 		return this.gridEpiCell[x][y].getModel();
 	}
 
