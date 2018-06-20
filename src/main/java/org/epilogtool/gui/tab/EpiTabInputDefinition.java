@@ -2,6 +2,7 @@ package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.ButtonModel;
 import javax.swing.JCheckBox;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
@@ -56,6 +58,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	private JPanel jpNRBottom;
 	private JPanel jpNLTop;
 
+	private ButtonGroup group;
 	private JComboCheckBox jccbSBML;
 
 	public EpiTabInputDefinition(Epithelium e, TreePath path, TabChangeNotifyProj tabChanged) {
@@ -70,6 +73,8 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		this.userIntegrationFunctions = this.epithelium.getIntegrationFunctions().clone();
 		this.activeNodeID = null;
 		this.tpc = new TabProbablyChanged();
+		
+		this.group = new ButtonGroup();
 
 		// North Panel
 		JPanel jpNorth = new JPanel(new BorderLayout());
@@ -141,7 +146,6 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
 				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
 
-		ButtonGroup group = new ButtonGroup();
 		for (NodeInfo node : lInputs) {
 			JRadioButton jrb;
 			if (this.mNode2RadioButton.containsKey(node)) {
@@ -160,7 +164,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 				});
 				this.mNode2RadioButton.put(node, jrb);
 			}
-			group.add(jrb);
+			this.group.add(jrb);
 		}
 
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -204,7 +208,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 
 		this.jpNRTop.removeAll();
 		this.jpNRBottom.removeAll();
-		ButtonGroup group = new ButtonGroup();
+		ButtonGroup groupRole = new ButtonGroup();
 		this.jpNRTop.add(new JLabel(this.activeNodeID + ": "));
 		JRadioButton jrModelInput = new JRadioButton("Positional input");
 		jrModelInput.addActionListener(new ActionListener() {
@@ -216,7 +220,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 				getParent().repaint();
 			}
 		});
-		group.add(jrModelInput);
+		groupRole.add(jrModelInput);
 		this.jpNRTop.add(jrModelInput);
 		JRadioButton jrModelInt = new JRadioButton("Integration input");
 		jrModelInt.addActionListener(new ActionListener() {
@@ -228,7 +232,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 				getParent().repaint();
 			}
 		});
-		group.add(jrModelInt);
+		groupRole.add(jrModelInt);
 		this.jpNRTop.add(jrModelInt);
 
 		NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(this.activeNodeID);
@@ -420,7 +424,11 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 			newModelList.add(Project.getInstance().getProjectFeatures().getModelName(m));
 		}
 		this.jccbSBML.updateItemList(newModelList);
-
+		
+		
 		updateComponentList(this.jccbSBML.getSelectedItems());
+		
+
+		
 	}
 }
