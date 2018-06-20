@@ -142,7 +142,6 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		}
 
 		this.jpInputComp.removeAll();
-		this.activeNodeID = null;
 
 		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
 				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
@@ -160,7 +159,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 						activeNodeID = jrb.getText();
 						updateNodeID();
 						// Re-Paint
-						getParent().repaint();
+//						getParent().repaint();
 					}
 				});
 				this.mNode2RadioButton.put(node, jrb);
