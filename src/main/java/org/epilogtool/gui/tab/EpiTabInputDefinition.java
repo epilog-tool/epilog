@@ -2,7 +2,6 @@ package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -18,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.ButtonModel;
 import javax.swing.JCheckBox;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
@@ -54,9 +53,11 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	private Map<NodeInfo, JRadioButton> mNode2RadioButton;
 
 	private JPanel jpInputComp;
-	private JPanel jpNRTop;
 	private JPanel jpNRBottom;
-	private JPanel jpNLTop;
+//	
+	private JPanel jpNRTop; //NodeId top
+	private JPanel jpLeftTop;
+	private JPanel jpLeft;
 
 	private ButtonGroup group;
 	private JComboCheckBox jccbSBML;
@@ -67,6 +68,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	}
 
 	public void initialize() {
+		
 
 		this.center.setLayout(new BorderLayout());
 
@@ -75,35 +77,47 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		this.tpc = new TabProbablyChanged();
 		
 		this.group = new ButtonGroup();
-
+		
+		//Panels
+		
+		this.jpLeft = new JPanel(new BorderLayout());
+		
+		this.jpLeftTop = new JPanel(); //Model Selection Panel
+		this.jpLeftTop.setLayout(new BoxLayout(this.jpLeftTop, BoxLayout.Y_AXIS));
+		
+		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
+		this.jpLeft.add(this.jpLeftTop, BorderLayout.NORTH);
+	
+		
+		this.add(this.jpLeft, BorderLayout.LINE_START);
+		
+		
 		// North Panel
 		JPanel jpNorth = new JPanel(new BorderLayout());
 		JPanel jpNLeft = new JPanel(new BorderLayout());
-		this.jpNLTop = new JPanel(new BorderLayout());
-
+//
 		JPanel jpNRight = new JPanel(new BorderLayout());
 		jpNorth.add(jpNRight, BorderLayout.CENTER);
 		this.center.add(jpNorth, BorderLayout.NORTH);
-
+//
 		this.jpNRTop = new JPanel(new FlowLayout());
 		jpNRight.add(this.jpNRTop, BorderLayout.NORTH);
 		this.jpNRBottom = new JPanel(new GridBagLayout());
 		jpNRight.add(this.jpNRBottom, BorderLayout.CENTER);
-
+//
 		jpNorth.add(jpNLeft, BorderLayout.LINE_START);
 
-		// ---------------------------------------------------------------------------
 		// Model selection jcomboCheckBox
 
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 
 		JCheckBox[] items = new JCheckBox[modelList.size()];
-
 		for (int i = 0; i < modelList.size(); i++) {
 			items[i] = new JCheckBox(Project.getInstance().getProjectFeatures().getModelName(modelList.get(i)));
 			items[i].setSelected(true);
 		}
 		this.jccbSBML = new JComboCheckBox(items);
+		this.jpLeftTop.add(this.jccbSBML);
 
 		this.jccbSBML.addActionListener(new ActionListener() {
 			@Override
@@ -114,14 +128,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 			}
 		});
 
-		this.jpNLTop.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
-		this.jpNLTop.add(this.jccbSBML);
-		jpNLeft.add(this.jpNLTop, BorderLayout.NORTH);
-
 		// Component selection list
-		this.jpInputComp = new JPanel(new GridBagLayout());
-		this.jpInputComp.setBorder(BorderFactory.createTitledBorder("Input component"));
-		jpNLeft.add(this.jpInputComp, BorderLayout.CENTER);
 
 		updateComponentList(this.jccbSBML.getSelectedItems());
 
@@ -141,16 +148,19 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 			lModels.add(Project.getInstance().getProjectFeatures().getModel(modelName));
 		}
 
-		this.jpInputComp.removeAll();
+		this.jpInputComp = new JPanel(new GridBagLayout());
+		this.jpInputComp.setBorder(BorderFactory.createTitledBorder("Input component"));
 
 		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
 				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
 
 		for (NodeInfo node : lInputs) {
+
 			JRadioButton jrb;
 			if (this.mNode2RadioButton.containsKey(node)) {
 				jrb = this.mNode2RadioButton.get(node);
 			} else {
+
 				jrb = new JRadioButton(node.getNodeID());
 				jrb.addActionListener(new ActionListener() {
 					@Override
@@ -159,7 +169,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 						activeNodeID = jrb.getText();
 						updateNodeID();
 						// Re-Paint
-//						getParent().repaint();
+						getParent().repaint();
 					}
 				});
 				this.mNode2RadioButton.put(node, jrb);
@@ -173,26 +183,42 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		if (lInputs.size() == 0) {
 			this.getNoInputTextField();
 		} else {
-
 			Collections.sort(lInputs, ObjectComparator.NODE_INFO);
 			int y = 0;
+			
+			boolean checkIfnodeExistsmodel = false;
+			NodeInfo nodeAux = null;
+			
 			for (NodeInfo node : lInputs) {
-				if (y == 0) {
-					this.activeNodeID = node.getNodeID();
-
+				
+				if (y == 0) {nodeAux = node;}
+				
+				if (node.getNodeID().equals(this.activeNodeID)) {
 					updateNodeID();
 					this.mNode2RadioButton.get(node).setSelected(true);
+					checkIfnodeExistsmodel= true;
 				}
+
 				gbc.gridy = y++;
 				gbc.gridx = 0;
 				gbc.anchor = GridBagConstraints.WEST;
 				this.jpInputComp.add(this.mNode2RadioButton.get(node), gbc);
-			}
-		}
 
-		System.out.println(this.jpInputComp.getComponentCount());
-		this.jpInputComp.repaint();
-		this.jpInputComp.revalidate();
+				this.jpInputComp.repaint();
+				this.jpInputComp.revalidate();
+			}
+			if (!checkIfnodeExistsmodel) {
+				this.activeNodeID = nodeAux.toString();
+				updateNodeID();
+				this.mNode2RadioButton.get(nodeAux).setSelected(true);
+			}
+				
+		}
+		
+		this.jpLeft.removeAll();
+		this.jpLeft.add(this.jpLeftTop, BorderLayout.NORTH);
+		this.jpLeft.add(this.jpInputComp, BorderLayout.CENTER);
+		
 		this.repaint();
 		this.revalidate();
 	}
@@ -420,7 +446,6 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 
 		// New (potential) model list -> Update JComboCheckBox
 		// and (potential) new node value counts
-		
 		this.epithelium.getEpitheliumGrid().updateGrid();
 		List<String> newModelList = new ArrayList<String>();
 		for (LogicalModel m : this.epithelium.getEpitheliumGrid().getModelSet()) {
@@ -429,8 +454,6 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		this.jccbSBML.updateItemList(newModelList);
 		
 		updateComponentList(this.jccbSBML.getSelectedItems());
-		
-
 		
 	}
 }
