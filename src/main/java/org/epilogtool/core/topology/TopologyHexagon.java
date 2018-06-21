@@ -23,20 +23,17 @@ public abstract class TopologyHexagon extends Topology {
 			
 			//posTuple are the set of neighbours, taking into consideration the relative position
 			if (this.isValidPosTuple(posTupleCandidate)) {
+//				System.out.print(posTupleCandidate + " -> ");
 				this.correctPosTuple(posTupleCandidate);
+//				System.out.println(posTupleCandidate);
 				setNeighbours.add(posTupleCandidate);
 			}
 		}
+		
+//		if (x==3 & y==3) {
+//			System.out.println("TopologyHexagon-> posTuple: "+ setNeighbours);}
 		return setNeighbours;
 	}
-//
-//	public Set<Tuple2D<Integer>> getPositionNeighbours(int x, int y,
-//			int minDist, int maxDist) {
-//		boolean even = this.isEven(x, y);
-//		Set<Tuple2D<Integer>> setRelativeNeighbours = this
-//				.getRelativeNeighbours(even, minDist, maxDist);
-//		return this.getPositionNeighbours(x, y, setRelativeNeighbours);
-//	}
 
 	protected Tuple2D<Integer> relativeToAbsolutePosition(
 			Tuple2D<Integer> tuple, int x, int y) {
@@ -60,27 +57,27 @@ public abstract class TopologyHexagon extends Topology {
 		int x = posTuple.getX();
 		int y = posTuple.getY();
 		
-//		if (x==7 & y==6) {
-//			System.out.println("TopologyHexagon-> value of y: " + y);
-//			System.out.println("TopologyHexagon-> value of this.maxY: " + this.maxY);}
 
 		if (this.rollover.isVertical()) {
 			if (y < 0) {
 				y = y%this.maxY + this.maxY; 
-			} else if (y >= this.maxY) {
+			} 
+			if (y >= this.maxY) {
 				y = y%this.maxY;
 			}
 		}
 		if (this.rollover.isHorizontal()) {
 			if (x < 0) {
 				x = x%this.maxX + this.maxX; 
-			} else if (x >= this.maxX) {
+			} 
+			if (x >= this.maxX) {
 				x = x%this.maxX;
 			}
+		
 		}
-
 		posTuple.setX(x);
 		posTuple.setY(y);
+		
 	}
 
 	public Set<Tuple2D<Integer>> getRelativeNeighbours(boolean even,
@@ -92,6 +89,13 @@ public abstract class TopologyHexagon extends Topology {
 			setRelativeNeighbours.add(new Tuple2D<Integer>(0, 0));
 			minDist++;
 		}
+		
+		if (maxDist==-1) {
+			maxDist = Math.max(this.getX(),this.getY());
+		}
+		
+//		System.out.println("TopologyHexagon: " + minDist +" "+ maxDist);
+		
 		if (even) {
 			for (int i = minDist; i <= maxDist; i++) {
 				setRelativeNeighbours.addAll(this.evenRelativeNeighboursAt(i));

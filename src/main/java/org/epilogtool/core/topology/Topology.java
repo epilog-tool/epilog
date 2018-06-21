@@ -93,7 +93,5 @@ public abstract class Topology {
 
 	public abstract boolean isEven(int x, int y);
 
-//	public abstract Set<Tuple2D<Integer>> getPositionNeighbours(int x, int y, int minDist, int maxDist);
-
 	public abstract Set<Tuple2D<Integer>> getRelativeNeighbours(boolean even, int minDist, int maxDist);
 }

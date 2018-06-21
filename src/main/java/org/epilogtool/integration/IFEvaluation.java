@@ -122,7 +122,9 @@ public class IFEvaluation {
 			// Get neighbours
 			Tuple2D<Integer> rangePair = new Tuple2D<Integer>(signal.getDistance().getMin(),
 					signal.getDistance().getMax());
-
+			
+//			System.out.println("IFevaluation:rangePair:  " + rangePair.getX() +" "+ rangePair.getY());
+			
 			// Shouldn't this be outside of the grammar ?
 
 			Tuple2D<Integer> rangeList_aux = new Tuple2D<Integer>(0,
@@ -136,6 +138,8 @@ public class IFEvaluation {
 						rangeList_aux.getX(), rangeList_aux.getY()));
 				this.relativeNeighboursCache.put(rangeList_aux, neighboursOutskirts);
 			}
+			
+//			System.out.println("IFevaluation: " + rangeList_aux.getX() +" "+ rangeList_aux.getY());
 
 			if (!this.relativeNeighboursCache.containsKey(rangePair)) {
 				Map<Boolean, Set<Tuple2D<Integer>>> relativeNeighbours = new HashMap<Boolean, Set<Tuple2D<Integer>>>();
