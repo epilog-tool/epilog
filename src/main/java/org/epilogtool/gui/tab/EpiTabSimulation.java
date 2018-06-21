@@ -741,7 +741,7 @@ public class EpiTabSimulation extends EpiTabTools {
 				int len = this.simulation.getTerminalCycleLen();
 				if (len > 0) {
 					this.setGUITerminalCycle(len);
-					break;
+//					break;
 				}
 			}
 			this.iCurrSimIter++;
