@@ -138,6 +138,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		// ---------------------------------------------------------------------------
 		// Select/Deselect active nodes Buttons
+		
 		JPanel rrTopSel = new JPanel(new FlowLayout());
 		JButton jbSelectAll = new JButton("Select all");
 		jbSelectAll.setMargin(new Insets(0, 0, 0, 0));
@@ -148,7 +149,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 					if (mNodeID2Checkbox.containsKey(nodeID)) {
 						mNodeID2Checkbox.get(nodeID).setSelected(true);
 					}
-					// mSelCheckboxes.put(nodeID, true);
+
 					mNode2ValueSelected.put(nodeID, (Byte) mNodeID2Combobox.get(nodeID).getSelectedItem());
 
 				}
@@ -165,7 +166,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 					if (mNodeID2Checkbox.containsKey(nodeID)) {
 						mNodeID2Checkbox.get(nodeID).setSelected(false);
 					}
-					// mSelCheckboxes.put(nodeID, false);
 					mNode2ValueSelected.remove(nodeID);
 				}
 				visualGridICs.paintComponent(visualGridICs.getGraphics());
