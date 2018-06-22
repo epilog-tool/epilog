@@ -182,7 +182,9 @@ public class FileIO {
 					Project.getInstance().reset();
 					Parser.loadConfigurations(fileEntry);
 				} catch (Exception e) {
-					NotificationManager.error("Loading PEPS file", e.getStackTrace().toString());
+					NotificationManager.error("Loading PEPS file", e.getMessage() + "\n" +
+							"Help us improve EpiLog, please send us this file to support@epilog-tool.org."
+							);
 				}
 				break;
 			}
