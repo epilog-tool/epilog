@@ -91,6 +91,9 @@ public class EpiTabSimulation extends EpiTabTools {
 	private JButton jbForward;
 	private JButton jbFastFwr;
 	private JButton jbRestart;
+	
+	private JButton jbSelectAll;
+	private JButton jbDeselectAll;
 
 	public EpiTabSimulation(Epithelium e, TreePath path, TabChangeNotifyProj tabChanged,
 			SimulationEpiClone simEpiClone) {
@@ -298,9 +301,9 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		// JButton select all
 		JPanel rrTopSel = new JPanel(new FlowLayout());
-		JButton jbSelectAll = new JButton("Select all");
-		jbSelectAll.setMargin(new Insets(0, 0, 0, 0));
-		jbSelectAll.addActionListener(new ActionListener() {
+		this.jbSelectAll = new JButton("Select all");
+		this.jbSelectAll.setMargin(new Insets(0, 0, 0, 0));
+		this.jbSelectAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				for (String nodeID : lModelVisibleComps) {
@@ -313,12 +316,12 @@ public class EpiTabSimulation extends EpiTabTools {
 				visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
 			}
 		});
-		rrTopSel.add(jbSelectAll);
+		rrTopSel.add(this.jbSelectAll);
 
 		// JButton deselect all
-		JButton jbDeselectAll = new JButton("Deselect all");
-		jbDeselectAll.setMargin(new Insets(0, 0, 0, 0));
-		jbDeselectAll.addActionListener(new ActionListener() {
+		this.jbDeselectAll = new JButton("Deselect all");
+		this.jbDeselectAll.setMargin(new Insets(0, 0, 0, 0));
+	this.jbDeselectAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				for (String nodeID : lModelVisibleComps) {
@@ -330,7 +333,7 @@ public class EpiTabSimulation extends EpiTabTools {
 				visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
 			}
 		});
-		rrTopSel.add(jbDeselectAll);
+		rrTopSel.add(this.jbDeselectAll);
 
 		// ---------------------------------------------------------------------------
 		// Components Panel
@@ -342,6 +345,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		this.jpRCenter = new JPanel();
 		this.jpRCenter.setLayout(new BoxLayout(jpRCenter, BoxLayout.Y_AXIS));
+		
 		JScrollPane jsLeftCenter = new JScrollPane(this.jpRCenter);
 		jsLeftCenter.setBorder(BorderFactory.createEmptyBorder());
 		jsLeftCenter.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -495,6 +499,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		for (String modelName : modelNames) {
 			lModels.add(Project.getInstance().getProjectFeatures().getModel(modelName));
 		}
+		
 
 		this.lModelVisibleComps = new HashSet<String>();
 		this.jpRCenter.removeAll();
@@ -508,7 +513,9 @@ public class EpiTabSimulation extends EpiTabTools {
 		// lInputs.remove(i);
 		// }
 		// }
-
+		
+		updateSelectedNodes(lInternal,lInputs);
+		
 		if (!lInternal.isEmpty())
 			this.setComponentTypeList(lInternal, "Internal", lModels);
 		List<NodeInfo> lIntegrationInputs = new ArrayList<NodeInfo>();
@@ -525,9 +532,35 @@ public class EpiTabSimulation extends EpiTabTools {
 			this.setComponentTypeList(lIntegrationInputs, "Integration inputs", lModels);
 		}
 
+		if ((lIntegrationInputs.isEmpty()) & (lInputs.isEmpty())){
+			this.jbDeselectAll.setEnabled(false);
+			this.jbSelectAll.setEnabled(false);
+		}
+		else {
+			this.jbDeselectAll.setEnabled(true);
+			this.jbSelectAll.setEnabled(true);
+		}
 		visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
 		this.jpRCenter.revalidate();
 		this.jpRCenter.repaint();
+	}
+
+	private void updateSelectedNodes(List<NodeInfo> lInternal, List<NodeInfo> lInputs) {
+		
+		List<NodeInfo> nodes = new ArrayList<NodeInfo>();
+		nodes.addAll(lInputs);
+		nodes.addAll(lInternal);
+		for (String nodeID: this.nodesSelected) {
+			if (!nodes.contains(Project.getInstance().getProjectFeatures().getNodeInfo(nodeID))) {
+				this.mNodeID2Checkbox.get(nodeID).setSelected(false);
+			}
+		}
+		
+		for (String nodeID: this.mNodeID2Checkbox.keySet()) {
+			if (!this.mNodeID2Checkbox.get(nodeID).isSelected()){
+				this.nodesSelected.remove(nodeID);
+			}
+		}
 	}
 
 	/**
@@ -754,7 +787,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			nextGrid.updateNodeValueCounts();
 		}
-		this.updateComponentList(this.jccbSBML.getSelectedItems());
+//		this.updateComponentList(this.jccbSBML.getSelectedItems());
 		// Re-Paint
 		this.repaint();
 	}
@@ -775,7 +808,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			nextGrid.updateNodeValueCounts();
 		}
-		this.updateComponentList(this.jccbSBML.getSelectedItems());
+//		this.updateComponentList(this.jccbSBML.getSelectedItems());
 		// Re-Paint
 		this.repaint();
 	}
@@ -795,7 +828,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			firstGrid.updateNodeValueCounts();
 		}
 
-		this.updateComponentList(this.jccbSBML.getSelectedItems());
+//		this.updateComponentList(this.jccbSBML.getSelectedItems());
 		// Re-Paint
 		this.center.repaint();
 		this.revalidate();
@@ -821,7 +854,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			prevGrid.updateNodeValueCounts();
 		}
-		this.updateComponentList(this.jccbSBML.getSelectedItems());
+//		this.updateComponentList(this.jccbSBML.getSelectedItems());
 		// Re-Paint
 		this.repaint();
 	}
