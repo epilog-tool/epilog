@@ -50,7 +50,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	private String activeNodeID;
 	private TabProbablyChanged tpc;
 
-	private Map<NodeInfo, JRadioButton> mNode2RadioButton;
+	private Map<String, JRadioButton> mNode2RadioButton;
 
 	private JPanel jpInputComp;
 	private JPanel jpNRBottom;
@@ -64,7 +64,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 
 	public EpiTabInputDefinition(Epithelium e, TreePath path, TabChangeNotifyProj tabChanged) {
 		super(e, path, tabChanged);
-		this.mNode2RadioButton = new HashMap<NodeInfo, JRadioButton>();
+		this.mNode2RadioButton = new HashMap<String, JRadioButton>();
 	}
 
 	public void initialize() {
@@ -155,12 +155,10 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
 
 		for (NodeInfo node : lInputs) {
-
 			JRadioButton jrb;
-			if (this.mNode2RadioButton.containsKey(node)) {
-				jrb = this.mNode2RadioButton.get(node);
+			if (this.mNode2RadioButton.containsKey(node.getNodeID())) {
+				jrb = this.mNode2RadioButton.get(node.getNodeID());
 			} else {
-
 				jrb = new JRadioButton(node.getNodeID());
 				jrb.addActionListener(new ActionListener() {
 					@Override
@@ -172,7 +170,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 						getParent().repaint();
 					}
 				});
-				this.mNode2RadioButton.put(node, jrb);
+				this.mNode2RadioButton.put(node.getNodeID(), jrb);
 			}
 			this.group.add(jrb);
 		}
@@ -195,14 +193,14 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 				
 				if (node.getNodeID().equals(this.activeNodeID)) {
 					updateNodeID();
-					this.mNode2RadioButton.get(node).setSelected(true);
+					this.mNode2RadioButton.get(node.getNodeID()).setSelected(true);
 					checkIfnodeExistsmodel= true;
 				}
 
 				gbc.gridy = y++;
 				gbc.gridx = 0;
 				gbc.anchor = GridBagConstraints.WEST;
-				this.jpInputComp.add(this.mNode2RadioButton.get(node), gbc);
+				this.jpInputComp.add(this.mNode2RadioButton.get(node.getNodeID()), gbc);
 
 				this.jpInputComp.repaint();
 				this.jpInputComp.revalidate();
@@ -210,7 +208,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 			if (!checkIfnodeExistsmodel) {
 				this.activeNodeID = nodeAux.toString();
 				updateNodeID();
-				this.mNode2RadioButton.get(nodeAux).setSelected(true);
+				this.mNode2RadioButton.get(nodeAux.getNodeID()).setSelected(true);
 			}
 				
 		}
@@ -398,22 +396,23 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 
 	@Override
 	protected void buttonAccept() {
-		allNodes: for (NodeInfo node : mNode2RadioButton.keySet()) {
-
+		allNodes: for (String node : mNode2RadioButton.keySet()) {
+			NodeInfo nodeInfo = Project.getInstance().getProjectFeatures().getNodeInfo(node);
+			
 			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions
-					.getComponentIntegrationFunctions(node);
+					.getComponentIntegrationFunctions(nodeInfo);
 			EpitheliumIntegrationFunctions eifOrig = this.epithelium.getIntegrationFunctions();
 			if (cifClone == null) {
-				eifOrig.removeComponent(node);
+				eifOrig.removeComponent(nodeInfo);
 			} else {
-				eifOrig.addComponent(node);
-				for (byte i = 1; i <= node.getMax(); i++) {
+				eifOrig.addComponent(nodeInfo);
+				for (byte i = 1; i <= nodeInfo.getMax(); i++) {
 					try {
-						eifOrig.getComponentIntegrationFunctions(node).setFunctionAtLevel(i,
+						eifOrig.getComponentIntegrationFunctions(nodeInfo).setFunctionAtLevel(i,
 								cifClone.getFunctions().get(i - 1));
 					} catch (RecognitionException re) {
 					} catch (RuntimeException re) {
-						DialogMessage.showError(this, "Integration function error", node.getNodeID() + ":" + i
+						DialogMessage.showError(this, "Integration function error", nodeInfo.getNodeID() + ":" + i
 								+ " has invalid expression: " + cifClone.getFunctions().get(i - 1));
 						break allNodes;
 					}
@@ -424,7 +423,8 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 
 	@Override
 	protected boolean isChanged() {
-		for (NodeInfo node : mNode2RadioButton.keySet()) {
+		for (String nodeID : mNode2RadioButton.keySet()) {
+			NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID);
 
 			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions
 					.getComponentIntegrationFunctions(node);
