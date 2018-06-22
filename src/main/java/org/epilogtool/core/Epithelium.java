@@ -16,7 +16,6 @@ import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.dialog.DialogMessage;
-import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.Project;
 
 public class Epithelium {
