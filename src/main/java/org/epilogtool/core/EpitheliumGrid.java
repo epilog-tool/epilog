@@ -311,6 +311,7 @@ public class EpitheliumGrid {
 
 	public void updateNodeValueCounts() {
 		// Compute component/value counts
+		
 		this.compCounts.clear();
 		for (int x = 0; x < this.getX(); x++) {
 			for (int y = 0; y < this.getY(); y++) {
@@ -330,13 +331,12 @@ public class EpitheliumGrid {
 			}
 		}
 		// Compute corresponding percentages
+		
 		this.compPercents.clear();
 		int nCells = this.getX() * this.getY();
 		for (String nodeID : this.compCounts.keySet()) {
 			this.compPercents.put(nodeID, new HashMap<Byte, Float>());
 			for (Byte value : this.compCounts.get(nodeID).keySet()) {
-				if (nodeID=="Nodal") {
-				}
 				float count = this.compCounts.get(nodeID).get(value);
 				float percent = (count / nCells) * 100;
 				this.compPercents.get(nodeID).put(value, percent);

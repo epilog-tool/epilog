@@ -115,7 +115,7 @@ public abstract class EpiTabDefinitions extends EpiTab {
 	}
 
 	public void notifyChange() {
-		// System.out.println("EpiTabDefinitions.notifyChange()");
+
 		if (!this.isInitialized) {
 			return;
 		}

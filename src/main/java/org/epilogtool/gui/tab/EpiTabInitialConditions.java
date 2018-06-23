@@ -76,6 +76,9 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private Map<String, JLabel> mNodeID2JLabel;
 	private Map<String, JComboBox<Byte>> mNodeID2Combobox;
 	private Map<String, JButton> mNodeID2JBColor;
+	
+	private JButton jbSelectAll;
+	private JButton jbDeselectAll;
 
 	private Map<String, Byte> mNode2ValueSelected;
 
@@ -129,7 +132,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			public void actionPerformed(ActionEvent e) {
 				JComboCheckBox jccb = (JComboCheckBox) e.getSource();
 				jccb.updateSelected();
-				updateComponentList(jccb.getSelectedItems());
+				fireUpdateComponentList();
 			}
 		});
 
@@ -140,9 +143,9 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		// Select/Deselect active nodes Buttons
 		
 		JPanel rrTopSel = new JPanel(new FlowLayout());
-		JButton jbSelectAll = new JButton("Select all");
-		jbSelectAll.setMargin(new Insets(0, 0, 0, 0));
-		jbSelectAll.addActionListener(new ActionListener() {
+		this.jbSelectAll = new JButton("Select all");
+		this.jbSelectAll.setMargin(new Insets(0, 0, 0, 0));
+		this.jbSelectAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				for (String nodeID : lModelVisibleComps) {
@@ -154,12 +157,16 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 				}
 				visualGridICs.paintComponent(visualGridICs.getGraphics());
+				fireUpdateComponentList();
 			}
+
 		});
-		rrTopSel.add(jbSelectAll);
-		JButton jbDeselectAll = new JButton("Deselect all");
-		jbDeselectAll.setMargin(new Insets(0, 0, 0, 0));
-		jbDeselectAll.addActionListener(new ActionListener() {
+		rrTopSel.add(this.jbSelectAll);
+		
+		
+		this.jbDeselectAll = new JButton("Deselect all");
+		this.jbDeselectAll.setMargin(new Insets(0, 0, 0, 0));
+		this.jbDeselectAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				for (String nodeID : lModelVisibleComps) {
@@ -169,9 +176,11 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 					mNode2ValueSelected.remove(nodeID);
 				}
 				visualGridICs.paintComponent(visualGridICs.getGraphics());
+				fireUpdateComponentList();
 			}
 		});
-		rrTopSel.add(jbDeselectAll);
+		rrTopSel.add(this.jbDeselectAll);
+		
 		JPanel jpLeftCenter = new JPanel(new BorderLayout());
 		jpLeftCenter.setBorder(BorderFactory.createTitledBorder("Components"));
 
@@ -201,6 +210,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 					}
 				}
 				visualGridICs.applyDataToAll();
+				fireUpdateComponentList();
+				
 			}
 		});
 		rBottomApplyClear.add(jbApplyAll);
@@ -211,6 +222,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				visualGridICs.clearGrid();
+				fireUpdateComponentList();
 			}
 		});
 		rBottomApplyClear.add(jbClearAll);
@@ -224,6 +236,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			public void itemStateChanged(ItemEvent e) {
 				JToggleButton jtb = (JToggleButton) e.getSource();
 				visualGridICs.isRectangleFill(jtb.isSelected());
+				fireUpdateComponentList();
 			}
 		});
 		rBottomRect.add(jtbRectFill);
@@ -275,6 +288,12 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	// ---------------------------------------------------------------------------
 	// End initialize
 
+	
+	private void fireUpdateComponentList() {
+		visualGridICs.updateNodeValueCounts();
+		updateComponentList(this.jccbSBML.getSelectedItems());
+	}
+	
 	/**
 	 * Creates the panel with the selection of the components to display.
 	 * 
@@ -283,7 +302,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	 * @param titleBorder
 	 *            : String with the title of the panel
 	 */
-	private void setComponentTypeList(List<NodeInfo> lNodes, String titleBorder, List<LogicalModel> listModels) {
+	private void setComponentTypeList(List<String> lInternal, String titleBorder, List<LogicalModel> listModels) {
 		JPanel jpRRC = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(5, 5, 4, 0);
@@ -294,14 +313,15 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		String orderPref = (String) OptionStore.getOption("PrefsAlphaOrderNodes");
 
 		if (orderPref != null && orderPref.equals(EnumOrderNodes.ALPHA.toString())) {
-			lNodes = getAlphaOrderedNodes(lNodes);
+			lInternal = getAlphaOrderedNodes(lInternal);
 		}
 
-		for (NodeInfo node : lNodes) {
+		for (String nodeID : lInternal) {
 			for (LogicalModel m : listModels) {
-				if (m.getComponents().contains(node) && !this.epithelium.isIntegrationComponent(node)) {
-					this.lModelVisibleComps.add(node.getNodeID());
-					this.getCompMiniPanel(jpRRC, gbc, y++, node);
+				NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID);
+				if (m.getComponents().contains(node) && !this.epithelium.isIntegrationComponent(nodeID)) {
+					this.lModelVisibleComps.add(nodeID);
+					getCompMiniPanel(jpRRC, gbc, y++, nodeID);
 					break;
 				}
 			}
@@ -310,33 +330,16 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.jpRCenter.add(jpRRC);
 	}
 
-	private List<NodeInfo> getAlphaOrderedNodes(List<NodeInfo> lNodes) {
-		// TODO: Project.getinstance().getProjectPreferences.getNodeInfo(String,
-		// LogicalModel)
-		// Faz sentido? afinal proibimos que um ficheiro esteja carregado quando tem o
-		// mesmo nome e ranges de valores diferentes!
+	private List<String> getAlphaOrderedNodes(List<String> lNodeID) {
 
-		List<String> lNodeID = new ArrayList<String>();
-		List<NodeInfo> lOrderedNods = new ArrayList<NodeInfo>();
+		List<String> lOrderedNods = new ArrayList<String>();
 
-		for (NodeInfo node : lNodes) {
-			lNodeID.add(node.getNodeID());
-		}
-
-		// lNodeID = lNodeID.stream().sorted().collect(Collectors.toList()); //First
-		// presents the capital letter, then the smaller
 		Collections.sort(lNodeID, ObjectComparator.STRING); // Orders alphabetically, not case-sensitive
 
 		for (String nodeID : lNodeID) {
-
-			for (NodeInfo node : lNodes) {
-				if (node.getNodeID().equals(nodeID)) {
-					lOrderedNods.add(node);
+					lOrderedNods.add(nodeID);
 					continue;
 				}
-			}
-		}
-
 		return lOrderedNods;
 	}
 
@@ -356,17 +359,28 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.lModelVisibleComps = new HashSet<String>();
 		this.jpRCenter.removeAll();
 
-		List<NodeInfo> lInternal = new ArrayList<NodeInfo>(
-				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, false));
 
-		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
-				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
+		List<String> lInternal = new ArrayList<String>(
+				Project.getInstance().getProjectFeatures().getModelsNodeIDs(lModels, false));
+		
+		List<String> lInputs = new ArrayList<String>(
+				Project.getInstance().getProjectFeatures().getModelsNodeIDs(lModels, true));
+		
 		for (int i = lInputs.size() - 1; i >= 0; i--) {
 			if (this.epithelium.isIntegrationComponent(lInputs.get(i))) {
 				lInputs.remove(i);
 			}
 		}
 
+		if ((lInternal.isEmpty()) & (lInputs.isEmpty())){
+			this.jbDeselectAll.setEnabled(false);
+			this.jbSelectAll.setEnabled(false);
+		}
+		else {
+			this.jbDeselectAll.setEnabled(true);
+			this.jbSelectAll.setEnabled(true);
+		}
+		
 		if (!lInternal.isEmpty())
 			this.setComponentTypeList(lInternal, "Internal", lModels);
 		if (!lInputs.isEmpty())
@@ -386,8 +400,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	 * @param nodeID
 	 * @param max
 	 */
-	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, NodeInfo node) {
-		String nodeID = node.getNodeID();
+	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String nodeID) {
+		NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID);
 		EpitheliumGrid grid = this.epiGridClone;
 
 		gbc.gridy = y;
@@ -488,6 +502,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			jp.add(nodePercent, gbc);
 		}
 	}
+	
 
 	/**
 	 * Randomly assign a state to the cells. Note that only the list of nodes
@@ -522,6 +537,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		}
 		this.visualGridICs.setRandomValue(lNodes);
+		
+		updateComponentList(this.jccbSBML.getSelectedItems());
 	}
 
 	/**

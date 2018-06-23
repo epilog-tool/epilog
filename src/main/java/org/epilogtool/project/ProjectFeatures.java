@@ -148,6 +148,17 @@ public class ProjectFeatures {
 				sComps.addAll(this.getModelNodeInfos(m, input));
 			}
 		}
+		
+		return sComps;
+	}
+	
+	public Set<String> getModelsNodeIDs(List<LogicalModel> lModels, boolean input) {
+		Set<String> sComps = new LinkedHashSet<String>(); //LinkedHashSet: so that the set returns components with the same order
+		if (!lModels.isEmpty()) {
+			for (LogicalModel m : lModels) {
+				sComps.addAll(this.getModelNodeIDs(m, input));
+			}
+		}
 		return sComps;
 	}
 

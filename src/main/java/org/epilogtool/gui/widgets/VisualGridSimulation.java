@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.Tuple2D;
@@ -25,17 +26,17 @@ public class VisualGridSimulation extends VisualGrid {
 	private static final long serialVersionUID = -3880244278613986980L;
 
 	private EpitheliumGrid epiGrid;
-	private List<String> lCompON;
+	private Set<String> lCompON;
 	private GridInformation gridInformation;
 	private Tuple2D<Integer> lastPos;
 
 	private Map<Tuple3D<Integer>, Float> cellNode2Count;
 
-	public VisualGridSimulation(EpitheliumGrid epiGrid, List<String> lCompON, GridInformation gridInformation) {
+	public VisualGridSimulation(EpitheliumGrid epiGrid, Set<String> nodesSelected, GridInformation gridInformation) {
 		super(epiGrid.getX(), epiGrid.getY(), epiGrid.getTopology());
 
 		this.epiGrid = epiGrid;
-		this.lCompON = lCompON;
+		this.lCompON = nodesSelected;
 		this.gridInformation = gridInformation;
 
 		this.addMouseMotionListener(new MouseMotionListener() {

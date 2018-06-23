@@ -78,7 +78,7 @@ public class EpiTabSimulation extends EpiTabTools {
 	private Map<String, JCheckBox> mNodeID2Checkbox;
 	private Map<String, JButton> mNodeID2JBColor;
 
-	private List<String> nodesSelected;
+	private Set<String> nodesSelected;
 
 	private SimulationEpiClone simEpiClone;
 
@@ -119,7 +119,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 		this.simulation = new Simulation(this.epithelium.clone());
 		this.gridInformation = new GridInformation(this.epithelium.getIntegrationFunctions());
-		this.nodesSelected = new ArrayList<String>();
+		this.nodesSelected = new HashSet<String>();
 
 		this.visualGridSimulation = new VisualGridSimulation(this.simulation.getGridAt(0), this.nodesSelected,
 				this.gridInformation);
@@ -314,8 +314,10 @@ public class EpiTabSimulation extends EpiTabTools {
 
 				}
 				visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
+//				System.out.println("select all: " + nodesSelected + "(models, " + jccbSBML.getSelectedItems()+")");
 			}
 		});
+		
 		rrTopSel.add(this.jbSelectAll);
 
 		// JButton deselect all
@@ -333,6 +335,7 @@ public class EpiTabSimulation extends EpiTabTools {
 				visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
 			}
 		});
+		
 		rrTopSel.add(this.jbDeselectAll);
 
 		// ---------------------------------------------------------------------------
@@ -427,7 +430,7 @@ public class EpiTabSimulation extends EpiTabTools {
 	 * @param titleBorder
 	 *            : String with the title of the panel
 	 */
-	private void setComponentTypeList(List<NodeInfo> lNodes, String titleBorder, List<LogicalModel> listModels) {
+	private void setComponentTypeList(List<String> lNodes, String titleBorder, List<LogicalModel> listModels) {
 		JPanel jpRRC = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(5, 5, 4, 0);
@@ -441,11 +444,12 @@ public class EpiTabSimulation extends EpiTabTools {
 			lNodes = getAlphaOrderedNodes(lNodes);
 		}
 
-		for (NodeInfo node : lNodes) {
+		for (String nodeId : lNodes) {
 			for (LogicalModel m : listModels) {
 				// if (m.getComponents().contains(node) &&
 				// !this.epithelium.isIntegrationComponent(node)) { //Integration input are not
 				// visible on the simulation
+				NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeId);
 				if (m.getComponents().contains(node)) {
 					this.lModelVisibleComps.add(node.getNodeID());
 
@@ -457,33 +461,16 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jpRCenter.add(jpRRC);
 	}
 
-	private List<NodeInfo> getAlphaOrderedNodes(List<NodeInfo> lNodes) {
-		// TODO: Project.getinstance().getProjectPreferences.getNodeInfo(String,
-		// LogicalModel)
-		// Faz sentido? afinal proibimos que um ficheiro esteja carregado quando tem o
-		// mesmo nome e ranges de valores diferentes!
+	private List<String> getAlphaOrderedNodes(List<String> lNodeID) {
 
-		List<String> lNodeID = new ArrayList<String>();
-		List<NodeInfo> lOrderedNods = new ArrayList<NodeInfo>();
+		List<String> lOrderedNods = new ArrayList<String>();
 
-		for (NodeInfo node : lNodes) {
-			lNodeID.add(node.getNodeID());
-		}
-
-		// lNodeID = lNodeID.stream().sorted().collect(Collectors.toList()); //First
-		// presents the capital letter, then the smaller
 		Collections.sort(lNodeID, ObjectComparator.STRING); // Orders alphabetically, not case-sensitive
 
 		for (String nodeID : lNodeID) {
-
-			for (NodeInfo node : lNodes) {
-				if (node.getNodeID().equals(nodeID)) {
-					lOrderedNods.add(node);
+					lOrderedNods.add(nodeID);
 					continue;
 				}
-			}
-		}
-
 		return lOrderedNods;
 	}
 
@@ -504,21 +491,34 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.lModelVisibleComps = new HashSet<String>();
 		this.jpRCenter.removeAll();
 
-		List<NodeInfo> lInternal = new ArrayList<NodeInfo>(
-				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, false));
-		List<NodeInfo> lInputs = new ArrayList<NodeInfo>(
-				Project.getInstance().getProjectFeatures().getModelsNodeInfos(lModels, true));
+		List<String> lInternal = new ArrayList<String>(
+				Project.getInstance().getProjectFeatures().getModelsNodeIDs(lModels, false));
+		List<String> lInputs = new ArrayList<String>(
+				Project.getInstance().getProjectFeatures().getModelsNodeIDs(lModels, true));
+		
+		
+		if ((lInternal.isEmpty()) & (lInputs.isEmpty())){
+			this.jbDeselectAll.setEnabled(false);
+			this.jbSelectAll.setEnabled(false);
+		}
+		else {
+			this.jbDeselectAll.setEnabled(true);
+			this.jbSelectAll.setEnabled(true);
+		}
+		
 		// for (int i = lInputs.size() - 1; i >= 0; i--) {
 		// if (this.epithelium.isIntegrationComponent(lInputs.get(i))) {
 		// lInputs.remove(i);
 		// }
 		// }
 		
+
 		updateSelectedNodes(lInternal,lInputs);
 		
 		if (!lInternal.isEmpty())
 			this.setComponentTypeList(lInternal, "Internal", lModels);
-		List<NodeInfo> lIntegrationInputs = new ArrayList<NodeInfo>();
+		
+		List<String> lIntegrationInputs = new ArrayList<String>();
 		for (int i = lInputs.size() - 1; i >= 0; i--) {
 			if (this.epithelium.isIntegrationComponent(lInputs.get(i))) {
 				lIntegrationInputs.add(lInputs.get(i));
@@ -531,27 +531,19 @@ public class EpiTabSimulation extends EpiTabTools {
 		if (!lIntegrationInputs.isEmpty()) {
 			this.setComponentTypeList(lIntegrationInputs, "Integration inputs", lModels);
 		}
-
-		if ((lIntegrationInputs.isEmpty()) & (lInputs.isEmpty())){
-			this.jbDeselectAll.setEnabled(false);
-			this.jbSelectAll.setEnabled(false);
-		}
-		else {
-			this.jbDeselectAll.setEnabled(true);
-			this.jbSelectAll.setEnabled(true);
-		}
+		
 		visualGridSimulation.paintComponent(visualGridSimulation.getGraphics());
 		this.jpRCenter.revalidate();
 		this.jpRCenter.repaint();
 	}
 
-	private void updateSelectedNodes(List<NodeInfo> lInternal, List<NodeInfo> lInputs) {
+	private void updateSelectedNodes(List<String> lInternal, List<String> lInputs) {
 		
-		List<NodeInfo> nodes = new ArrayList<NodeInfo>();
+		List<String> nodes = new ArrayList<String>();
 		nodes.addAll(lInputs);
 		nodes.addAll(lInternal);
 		for (String nodeID: this.nodesSelected) {
-			if (!nodes.contains(Project.getInstance().getProjectFeatures().getNodeInfo(nodeID))) {
+			if (!nodes.contains(nodeID)) {
 				this.mNodeID2Checkbox.get(nodeID).setSelected(false);
 			}
 		}
@@ -784,10 +776,11 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.jbRewind.setEnabled(true);
 		this.jbBack.setEnabled(true);
 		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
+		
 		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			nextGrid.updateNodeValueCounts();
 		}
-//		this.updateComponentList(this.jccbSBML.getSelectedItems());
+		this.updateComponentList(this.jccbSBML.getSelectedItems());
 		// Re-Paint
 		this.repaint();
 	}
@@ -808,7 +801,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			nextGrid.updateNodeValueCounts();
 		}
-//		this.updateComponentList(this.jccbSBML.getSelectedItems());
+		this.updateComponentList(this.jccbSBML.getSelectedItems());
 		// Re-Paint
 		this.repaint();
 	}
@@ -828,7 +821,7 @@ public class EpiTabSimulation extends EpiTabTools {
 			firstGrid.updateNodeValueCounts();
 		}
 
-//		this.updateComponentList(this.jccbSBML.getSelectedItems());
+		this.updateComponentList(this.jccbSBML.getSelectedItems());
 		// Re-Paint
 		this.center.repaint();
 		this.revalidate();
@@ -854,7 +847,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
 			prevGrid.updateNodeValueCounts();
 		}
-//		this.updateComponentList(this.jccbSBML.getSelectedItems());
+		this.updateComponentList(this.jccbSBML.getSelectedItems());
 		// Re-Paint
 		this.repaint();
 	}

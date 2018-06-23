@@ -155,6 +155,16 @@ public class Epithelium {
 		return this.integrationFunctions.getNodes();
 	}
 
+	public boolean isIntegrationComponent(String nodeID) {
+		NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID);
+		
+		for (NodeInfo nodeInf : this.integrationFunctions.getNodes()) {
+			if (node.equals(nodeInf))
+				return true;
+		}
+		return false;
+	}
+	
 	public boolean isIntegrationComponent(NodeInfo node) {
 		for (NodeInfo nodeInf : this.integrationFunctions.getNodes()) {
 			if (node.equals(nodeInf))
@@ -282,8 +292,8 @@ public class Epithelium {
 				if (node.toString().equals(nNode.toString())) {
 					flag = true;
 					this.replaceInitialConditions(node, nNode, gridCopy);
-					commonNodeNames.add(node.toString());
-
+					commonNodeNames.add(node.getNodeID());
+					
 					if (oldEpi.isIntegrationComponent(node) && nNode.isInput()) {
 						
 						//i) validate integration function

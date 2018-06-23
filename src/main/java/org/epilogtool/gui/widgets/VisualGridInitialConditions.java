@@ -11,22 +11,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
-import org.epilogtool.OptionStore;
 import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.EpitheliumGrid;
+import org.epilogtool.core.topology.Topology;
 import org.epilogtool.gui.color.ColorUtils;
-import org.epilogtool.gui.dialog.EnumNodePercent;
 import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
 import org.epilogtool.project.Project;
 
 public class VisualGridInitialConditions extends VisualGridDefinitions {
-	private static final long serialVersionUID = 7590023855645466271L;
+	
 
 	private EpitheliumGrid epiGrid;
 	private Map<String, Byte> mNode2ValueSelected;
@@ -63,7 +61,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 					paintCellAt(mouseGrid);
 				}
 				epiGrid.updateNodeValueCounts();
-				updateNodePercentages();
+
 			}
 		});
 		this.addMouseListener(new MouseListener() {
@@ -73,7 +71,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 					applyRectangleOnCells(initialRectPos, mouseGrid);
 				}
 				epiGrid.updateNodeValueCounts();
-				updateNodePercentages();
+
 			}
 
 			@Override
@@ -84,7 +82,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 					paintCellAt(mouseGrid);
 				}
 				epiGrid.updateNodeValueCounts();
-				updateNodePercentages();
+
 			}
 
 			@Override
@@ -101,16 +99,10 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 		});
 	}
 	
-	private void updateNodePercentages() {
-		
-		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
-		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
-		for (String nodeID : this.mNodeID2JLabel.keySet()) {
-			JLabel jl = this.mNodeID2JLabel.get(nodeID);
-			jl.setText(this.epiGrid.getPercentage(nodeID));
-			jl.paintComponents(this.getGraphics());
+	public  String updateNodePercentages (String nodeID) {
+			return this.epiGrid.getPercentage(nodeID);
+
 		}
-	}}
 
 	@Override
 	protected void paintCellAt(Tuple2D<Integer> pos) {
@@ -222,10 +214,14 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 		}
 		
 		this.epiGrid.updateNodeValueCounts();
-		this.updateNodePercentages();
+
 		this.paint(getGraphics());
 	}
 
+	public void updateNodeValueCounts() {
+		this.epiGrid.updateNodeValueCounts();
+	}
+	
 	public EpitheliumGrid getEpitheliumGrid() {
 		return epiGrid;
 	}
