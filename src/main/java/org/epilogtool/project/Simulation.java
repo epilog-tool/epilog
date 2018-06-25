@@ -191,8 +191,8 @@ public class Simulation {
 		PriorityUpdater updater = this.updaterCache.get(m).get(ap);
 
 		// 2. Update integration components
-		for (NodeInfo node : m.getComponents()) {
-	
+		for (NodeInfo node :this.epithelium.getIntegrationNodes()) {
+			if (m.getComponents().contains(node)) {
 			if (node.isInput() && sNodeInfos.contains(node)) {
 				List<IntegrationFunctionExpression> lExpressions = this.epithelium
 						.getIntegrationFunctionsForComponent(node).getComputedExpressions();
@@ -205,7 +205,7 @@ public class Simulation {
 				}
 				currState[m.getComponents().indexOf(node)] = target;
 			}
-		}
+		}}
 		List<byte[]> succ = updater.getSuccessors(currState);
 		if (succ == null) {
 			return currState;

@@ -40,7 +40,7 @@ public class ProjectFeatures {
 		
 		this.nodeColor = new LinkedHashMap<String, Color>();
 		// model 2 nodes
-		this.string2ComponentFeature = new HashMap<String, Set<ComponentPair>>();
+//		this.string2ComponentFeature = new HashMap<String, Set<ComponentPair>>();
 		this.replaceMessages = new ArrayList<String>();
 	}
 
@@ -80,14 +80,14 @@ public class ProjectFeatures {
 			} else {
 				this.nodeColor.put(nodeID, ColorUtils.random());
 			}
-			ComponentPair cp = new ComponentPair(m, node);
-			if (!this.string2ComponentFeature.containsKey(nodeID)) {
-				Set<ComponentPair> tmpSet = new HashSet<ComponentPair>();
-				tmpSet.add(cp);
-				this.string2ComponentFeature.put(nodeID, tmpSet);
-			} else {
-				this.string2ComponentFeature.get(nodeID).add(cp);
-			}
+//			ComponentPair cp = new ComponentPair(m, node);
+//			if (!this.string2ComponentFeature.containsKey(nodeID)) {
+//				Set<ComponentPair> tmpSet = new HashSet<ComponentPair>();
+//				tmpSet.add(cp);
+//				this.string2ComponentFeature.put(nodeID, tmpSet);
+//			} else {
+//				this.string2ComponentFeature.get(nodeID).add(cp);
+//			}
 		}
 	}
 
@@ -173,17 +173,17 @@ public class ProjectFeatures {
 		return this.modelColor.get(m);
 	}
 
-	public NodeInfo getNodeInfo(String nodeID, LogicalModel m) {
-		Set<ComponentPair> sCP = this.string2ComponentFeature.get(nodeID);
-		if (sCP != null) {
-			for (ComponentPair cp : sCP) {
-				if (cp.getModel().equals(m)) {
-					return cp.getNodeInfo();
-				}
-			}
-		}
-		return null;
-	}
+//	public NodeInfo getNodeInfo(String nodeID, LogicalModel m) {
+//		Set<ComponentPair> sCP = this.string2ComponentFeature.get(nodeID);
+//		if (sCP != null) {
+//			for (ComponentPair cp : sCP) {
+//				if (cp.getModel().equals(m)) {
+//					return cp.getNodeInfo();
+//				}
+//			}
+//		}
+//		return null;
+//	}
 	
 	public NodeInfo getNodeInfo(String nodeID) {
 		return nodeID2Info.get(nodeID);
@@ -191,7 +191,7 @@ public class ProjectFeatures {
 
 
 	public boolean hasNode(String nodeID, LogicalModel m) {
-		if (this.getNodeInfo(nodeID, m) != null) {
+		if (this.getNodeInfo(nodeID) != null) {
 			return true;
 		}
 		return false;
