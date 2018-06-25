@@ -281,7 +281,7 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 				if (var.contains("+") | var.contains("-")) {
 					tmpVar = var.split("\\[")[0];
 				}
-				if (!Project.getInstance().getProjectFeatures().getNodeInfo(tmpVar, m).isInput()) {
+				if (!Project.getInstance().getProjectFeatures().getNodeInfo(tmpVar).isInput()) {
 					lModel.addElement(var);
 				}
 			}
@@ -347,7 +347,7 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 			if (var.contains("+") | var.contains("-")) {
 				tmpVar = var.split("\\[")[0];
 			}
-			if (!Project.getInstance().getProjectFeatures().getNodeInfo(tmpVar, m).isInput()) {
+			if (!Project.getInstance().getProjectFeatures().getNodeInfo(tmpVar).isInput()) {
 				allInputFlag = false;
 			}
 		}

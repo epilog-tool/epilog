@@ -126,7 +126,7 @@ public class VisualGridMonteCarlo extends VisualGrid {
 					for (String nodeID : this.lCompON) {
 						Color cBase = Project.getInstance().getProjectFeatures().getNodeColor(nodeID);
 						if (Project.getInstance().getProjectFeatures().hasNode(nodeID, m)) {
-							byte max = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m).getMax();
+							byte max = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID).getMax();
 
 							int index = this.epiGrid.getNodeIndex(x, y, nodeID);
 							if (index >= 0) { // if cell has nodeID

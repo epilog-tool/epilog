@@ -24,7 +24,6 @@ import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.gui.EpiLogGUIFactory;
 import org.epilogtool.gui.dialog.EnumOrderNodes;
-import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.Project;
 
 public class GridInformation extends JPanel {
@@ -159,7 +158,7 @@ public class GridInformation extends JPanel {
 					boolean isEmpty = true;
 					for (String nodeID : lAllNodeIDs) {
 						if (!Project.getInstance().getProjectFeatures().hasNode(nodeID, m)
-								|| Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m).isInput()) {
+								|| Project.getInstance().getProjectFeatures().getNodeInfo(nodeID).isInput()) {
 							continue;
 						}
 						jlTmp = new JLabel("  " + nodeID + " ");
@@ -187,7 +186,7 @@ public class GridInformation extends JPanel {
 					gbc.gridwidth = 1;
 					isEmpty = true;
 					for (String nodeID : lAllNodeIDs) {
-						NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m);
+						NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID);
 						
 						if (node == null || !node.isInput() || this.integrFunctions.containsNode(node)) {
 							continue;
@@ -217,7 +216,7 @@ public class GridInformation extends JPanel {
 					gbc.gridwidth = 1;
 					isEmpty = true;
 					for (String nodeID : lAllNodeIDs) {
-						NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m);
+						NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID);
 						if (node == null || !this.integrFunctions.containsNode(node)) {
 							continue;
 						}

@@ -19,7 +19,6 @@ import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.gui.tab.EpiTab;
-import org.epilogtool.project.ComponentPair;
 import org.epilogtool.project.Project;
 
 class ToolTipTreeCellRenderer implements TreeCellRenderer {

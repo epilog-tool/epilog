@@ -220,7 +220,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String nodeID = (String) jcbComps.getSelectedItem();
-				NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, selModel);
+				NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID);
 				byte min = (Byte) jcbMinVal.getSelectedItem();
 				byte max = (Byte) jcbMaxVal.getSelectedItem();
 				AbstractPerturbation ap;
@@ -519,7 +519,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		jcbMinVal.removeAllItems();
 		jcbMaxVal.removeAllItems();
 		//TODO: Bug here
-		this.maxValue = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, selModel).getMax();
+		this.maxValue = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID).getMax();
 		for (byte b = 0; b <= this.maxValue; b++) {
 			jcbMinVal.addItem(b);
 			jcbMaxVal.addItem(b);

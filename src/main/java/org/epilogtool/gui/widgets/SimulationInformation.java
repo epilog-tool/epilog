@@ -139,7 +139,7 @@ public class SimulationInformation extends JPanel {
 				boolean isEmpty = true;
 				for (String nodeID : lAllNodeIDs) {
 					if (!Project.getInstance().getProjectFeatures().hasNode(nodeID, m)
-							|| Project.getInstance().getProjectFeatures().getNodeInfo(nodeID, m).isInput()) {
+							|| Project.getInstance().getProjectFeatures().getNodeInfo(nodeID).isInput()) {
 						continue;
 					}
 					jlTmp = new JLabel("  " + nodeID + " ");

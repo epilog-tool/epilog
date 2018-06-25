@@ -408,7 +408,6 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		
 		
 		NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID);
-		EpitheliumGrid grid = this.epiGridClone;
 
 		gbc.gridy = y;
 		gbc.anchor = GridBagConstraints.WEST;
