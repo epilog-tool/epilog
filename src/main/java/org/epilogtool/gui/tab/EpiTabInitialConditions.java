@@ -77,6 +77,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	private Map<String, JComboBox<Byte>> mNodeID2Combobox;
 	private Map<String, JButton> mNodeID2JBColor;
 	
+	private Map<String, JPanel> mNodeId2MiniPanel;
+	
 	private JButton jbSelectAll;
 	private JButton jbDeselectAll;
 
@@ -101,6 +103,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		this.mNodeID2JLabel = new HashMap<String, JLabel>();
 		this.mNodeID2Combobox = new HashMap<String, JComboBox<Byte>>();
 		this.mNodeID2JBColor = new HashMap<String, JButton>();
+		
+		this.mNodeId2MiniPanel = new HashMap<String, JPanel>();
 
 		this.gridInformation = new GridInformation(this.epithelium.getIntegrationFunctions());
 
@@ -401,6 +405,8 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	 * @param max
 	 */
 	private void getCompMiniPanel(JPanel jp, GridBagConstraints gbc, int y, String nodeID) {
+		
+		
 		NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID);
 		EpitheliumGrid grid = this.epiGridClone;
 
@@ -488,7 +494,10 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				}
 			});
 			this.mNodeID2Checkbox.put(nodeID, jcb);
-			this.mNodeID2JLabel.put(nodeID, new JLabel(""));
+			
+			if (!mNodeID2JLabel.containsKey(nodeID))  {
+				this.mNodeID2JLabel.put(nodeID, new JLabel(""));
+			}
 		}
 		jp.add(jcb, gbc);
 
@@ -496,11 +505,16 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		// Percentages
 		String percPref = (String) OptionStore.getOption("PrefsNodePercent");
 		if (percPref != null && percPref.equals(EnumNodePercent.YES.toString())) {
-			JLabel nodePercent = new JLabel();
+			this.visualGridICs.updateNodePercentages();
+			System.out.println();
+			JLabel jlb = this.mNodeID2JLabel.get(nodeID);
+//			System.out.println(jlb.getText());
 			gbc.gridx = 4;
-			nodePercent.setText(grid.getPercentage(nodeID));
-			jp.add(nodePercent, gbc);
+//			this.nodePercent.setText(grid.getPercentage(nodeID));
+			jp.add(jlb, gbc);
+	
 		}
+		this.mNodeId2MiniPanel.put(nodeID,jp);
 	}
 	
 

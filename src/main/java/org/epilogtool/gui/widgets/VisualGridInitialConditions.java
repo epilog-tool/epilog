@@ -15,17 +15,23 @@ import javax.swing.JLabel;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
+import org.epilogtool.OptionStore;
 import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.EpitheliumGrid;
-import org.epilogtool.core.topology.Topology;
 import org.epilogtool.gui.color.ColorUtils;
+import org.epilogtool.gui.dialog.EnumNodePercent;
 import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
 import org.epilogtool.project.Project;
 
 public class VisualGridInitialConditions extends VisualGridDefinitions {
 	
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private EpitheliumGrid epiGrid;
 	private Map<String, Byte> mNode2ValueSelected;
 	private Map<String, JLabel> mNodeID2JLabel;
@@ -37,6 +43,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 	public VisualGridInitialConditions(EpitheliumGrid gridClone, Map<String, Byte> mNode2ValueSelected,
 			Map<String, JLabel> mNodeID2JLabel, GridInformation valuePanel, TabProbablyChanged tpc) {
 		super(gridClone.getX(), gridClone.getY(), gridClone.getTopology(), tpc);
+		
 		this.epiGrid = gridClone;
 		this.mNode2ValueSelected = mNode2ValueSelected;
 		this.mNodeID2JLabel = mNodeID2JLabel;
@@ -61,6 +68,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 					paintCellAt(mouseGrid);
 				}
 				epiGrid.updateNodeValueCounts();
+				updateNodePercentages();
 
 			}
 		});
@@ -71,7 +79,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 					applyRectangleOnCells(initialRectPos, mouseGrid);
 				}
 				epiGrid.updateNodeValueCounts();
-
+				updateNodePercentages();
 			}
 
 			@Override
@@ -82,6 +90,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 					paintCellAt(mouseGrid);
 				}
 				epiGrid.updateNodeValueCounts();
+				updateNodePercentages();
 
 			}
 
@@ -99,7 +108,18 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 		});
 	}
 	
-	public  String updateNodePercentages (String nodeID) {
+public void updateNodePercentages() {
+		
+		String nodePercent = (String) OptionStore.getOption("PrefsNodePercent");
+		if (nodePercent != null && nodePercent.equals(EnumNodePercent.YES.toString())) {
+		for (String nodeID : this.mNodeID2JLabel.keySet()) {
+			JLabel jlb = this.mNodeID2JLabel.get(nodeID);
+			jlb.setText(this.epiGrid.getPercentage(nodeID));
+			jlb.paintComponents(this.getGraphics());
+		}
+	}}
+	public String updateNodePercentages (String nodeID) {
+		updateNodePercentages();
 			return this.epiGrid.getPercentage(nodeID);
 
 		}
@@ -160,6 +180,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 				}
 			}
 		}
+		updateNodePercentages();
 		this.paintComponent(this.getGraphics());
 	}
 
@@ -214,7 +235,7 @@ public class VisualGridInitialConditions extends VisualGridDefinitions {
 		}
 		
 		this.epiGrid.updateNodeValueCounts();
-
+		updateNodePercentages();
 		this.paint(getGraphics());
 	}
 
