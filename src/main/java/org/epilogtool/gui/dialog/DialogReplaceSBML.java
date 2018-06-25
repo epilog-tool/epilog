@@ -40,7 +40,7 @@ public class DialogReplaceSBML extends EscapableDialog {
 	 *            -> Models existing in the project (STRING)
 	 * @param mapModel2Epithelium
 	 *            -> Map that receives as key a model and as value a list of
-	 *            epitheliums that contain the model
+	 *            epithelia that contain the model
 	 */
 	public DialogReplaceSBML(String model, List<String> modelNames, List<Epithelium> epiList) {
 		// TODO: Replace receiving list in Dialog
@@ -55,7 +55,7 @@ public class DialogReplaceSBML extends EscapableDialog {
 		// North Panel
 		JPanel northPanel = new JPanel(new FlowLayout());
 
-		northPanel.add(new JLabel("Replace Cellular Model " + model + " by "));
+		northPanel.add(new JLabel("Replace cellular model " + model + " by "));
 
 		// Name JComboBox
 		String[] array = this.listModelNames.toArray(new String[this.listModelNames.size()]);
