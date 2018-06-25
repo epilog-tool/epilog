@@ -30,7 +30,7 @@ public abstract class TopologyHexagon extends Topology {
 			}
 		}
 		
-//		if (x==3 & y==3) {
+//		if (x==0 & y==0) {
 //			System.out.println("TopologyHexagon-> posTuple: "+ setNeighbours);}
 		return setNeighbours;
 	}

@@ -156,8 +156,14 @@ public class IFEvaluation {
 					this.relativeNeighboursCache.get(rangePair).get(even));
 			Set<Tuple2D<Integer>> neighboursOutskirts = this.neighboursGrid.getTopology().getPositionNeighbours(x, y,
 					this.relativeNeighboursCache.get(rangeList_aux).get(even));
-			positionNeighbours.removeAll(neighboursOutskirts);
+			
+			if (signal.getDistance().getMin()>0) {
+					positionNeighbours.removeAll(neighboursOutskirts);
+			}
 
+			if (x==0 & y==0) {
+				System.out.println("TopologyHexagon-> posTuple: "+ positionNeighbours);}
+			
 			for (Tuple2D<Integer> tuple : positionNeighbours) {
 				List<NodeInfo> lNodes = this.neighboursGrid.getModel(tuple.getX(), tuple.getY()).getComponents();
 				for (int n = 0; n < lNodes.size(); n++) {
