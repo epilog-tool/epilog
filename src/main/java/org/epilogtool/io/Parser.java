@@ -258,7 +258,7 @@ public class Parser {
 		for (String sTmp : saExpr) {
 			AbstractPerturbation ap;
 			String name = sTmp.split(" ")[0];
-			NodeInfo node = features.getNodeInfo(name, m);
+			NodeInfo node = features.getNodeInfo(name);
 			String perturb = sTmp.split(" ")[1];
 
 			if (perturb.equals("KO")) {
