@@ -39,6 +39,8 @@ import org.epilogtool.project.Project;
 import org.epilogtool.project.ProjectFeatures;
 import org.epilogtool.services.TopologyService;
 
+import org.epilogtool.common.Txt;
+
 public class Parser {
 
 	public static void loadConfigurations(File fConfig) throws IOException, InstantiationException,
@@ -71,7 +73,11 @@ public class Parser {
 				saTmp = line.split("\\s+");
 
 				File fSBML = new File(fConfig.getParent() + "/" + saTmp[2]);
-				Project.getInstance().loadModel(fSBML.getName(), FileIO.loadSBMLModel(fSBML));
+				try {
+					Project.getInstance().loadModel(fSBML.getName(), FileIO.loadSBMLModel(fSBML));
+				} catch (IOException e) {
+					throw new IOException(Txt.get("s_SBML_failed_load"));
+				}
 				modelKey2Name.put(saTmp[1], saTmp[2]);
 				Color modelColor = ColorUtils.getColor(saTmp[3], saTmp[4], saTmp[5]);
 				Project.getInstance().getProjectFeatures().setModelColor(saTmp[2], modelColor);
@@ -97,11 +103,16 @@ public class Parser {
 				x = saTmp[1];
 				y = saTmp[2];
 				topologyLayout = saTmp[3];
-				
-				if (topologyLayout == "Hexagon-Even-PointyTopped") {topologyLayout = "Pointy-Even";}
-				else if (topologyLayout == "Hexagon-Odd-PointyTopped") {topologyLayout = "Pointy-Odd";}
-				else if (topologyLayout == "Hexagon-Even-FlatTopped") {topologyLayout = "Flat-Even";}
-				else if (topologyLayout == "Hexagon-Odd-FlatTopped") {topologyLayout = "Flat-Odd";}
+
+				if (topologyLayout == "Hexagon-Even-PointyTopped") {
+					topologyLayout = "Pointy-Even";
+				} else if (topologyLayout == "Hexagon-Odd-PointyTopped") {
+					topologyLayout = "Pointy-Odd";
+				} else if (topologyLayout == "Hexagon-Even-FlatTopped") {
+					topologyLayout = "Flat-Even";
+				} else if (topologyLayout == "Hexagon-Odd-FlatTopped") {
+					topologyLayout = "Flat-Odd";
+				}
 			}
 
 			// RollOver
@@ -302,7 +313,7 @@ public class Parser {
 		// Component colors
 		for (String nodeID : Project.getInstance().getProjectFeatures().getNodeIDs()) {
 			Color c = Project.getInstance().getProjectFeatures().getNodeColor(nodeID);
-			w.println("CC " + nodeID + " " + c.getRed()  + " " + c.getGreen()+ " " + c.getBlue());
+			w.println("CC " + nodeID + " " + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
 			OptionStore.setOption("CC " + nodeID, ColorUtils.getColorCode(c));
 		}
 

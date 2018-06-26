@@ -111,15 +111,6 @@ public class FileIO {
 		return fDestDir;
 	}
 
-	public static File getSBMLFileInDir(File fdir) {
-		for (File entry : fdir.listFiles()) {
-			if (entry.getName().endsWith(".sbml") || entry.getName().endsWith(".SBML")) {
-				return entry;
-			}
-		}
-		return null;
-	}
-
 	private static void unZipIt(String zipFile, File folder) {
 
 		byte[] buffer = new byte[1024];
@@ -169,31 +160,49 @@ public class FileIO {
 		return sbmlFormat.importFile(file);
 	}
 
-	public static void loadPEPS(String filename)
+	/**
+	 * Reads the configuration file (config.txt) from the peps model. There are two different messages in case there is a configuration file missing or
+	 *  the configuration couldn't be loaded. 
+	 * 
+	 * @param filename -> name of the peps file
+	 * @return boolean -> needed for the tests, otherwise could be void
+	 * 
+	 * @throws IOException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws ClassNotFoundException
+	 */
+	public static boolean loadPEPS(String filename)
 			throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		File tmpFolder = FileIO.unzipPEPSTmpDir(filename);
-
+		boolean load = false;
 		// Loads all the epithelium from the config.txt configuration file
 
-		for (final File fileEntry : tmpFolder.listFiles()) {
-			if (fileEntry.getName().toLowerCase().equals(CONFIG_FILE)) {
-				try {
-					Project.getInstance().reset();
-					Parser.loadConfigurations(fileEntry);
-				} catch (Exception e) {
-					NotificationManager.error("Loading PEPS file", e.getMessage() + "\n" +
-							"Help us improve EpiLog, please send us this file to support@epilog-tool.org."
-							);
-				}
-				break;
-			}
+		File confFile = new File(tmpFolder, CONFIG_FILE);
+		if (confFile.exists()) {
+			try {
+				Project.getInstance().reset();
+				Parser.loadConfigurations(confFile);
+				load = true;
+			} catch (Exception e) {
+				NotificationManager.error("Loading PEPS file: ", e.getMessage() + "\n" +
+						"Help us improve EpiLog, please send us this file to support@epilog-tool.org."
+						);
+			}			
+		} else {
+			NotificationManager.warning("Loading PEPS file", "Configuration file " + CONFIG_FILE + " not found inside " + filename);
 		}
 		
 		// Deletes the unzip temporary folder
 		FileIO.deleteTempDirectory(tmpFolder);
 		Project.getInstance().setFilenamePEPS(filename);
 		OptionStore.addRecentFile(filename);
+		return load;
 	}
 
 	public static void savePEPS(String newPEPSFile) throws IOException {
@@ -221,9 +230,6 @@ public class FileIO {
 		FileIO.zipTmpDir(newPEPSTmpDir, newPEPSFile);
 		OptionStore.addRecentFile(newPEPSFile);
 	}
-
-	
-	
 	
 	
 	public static void writeEpitheliumGrid2File(String file, Container c, String ext) {

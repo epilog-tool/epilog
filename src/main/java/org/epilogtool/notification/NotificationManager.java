@@ -31,10 +31,12 @@ public class NotificationManager {
 	}
 
 	public static void error(String location, String message) {
-		getManager().clearMessages();
+		getManager();
+		NotificationManager.clearMessages();
 		if (location != null && message != null) {
 			getManager().register(new ErrorNotification(location, message));
-			getManager().dispatchDialogError(true, true);
+			getManager();
+			NotificationManager.dispatchDialogError(true, true);
 		}
 	}
 
@@ -47,6 +49,8 @@ public class NotificationManager {
 	public static void warning(String location, String message) {
 		if (location != null && message != null) {
 			getManager().register(new WarningNotification(location, message));
+			getManager();
+			NotificationManager.dispatchDialogWarning(true, true);
 		}
 	}
 
