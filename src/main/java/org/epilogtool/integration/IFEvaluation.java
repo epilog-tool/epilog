@@ -160,9 +160,9 @@ public class IFEvaluation {
 			if (signal.getDistance().getMin()>0) {
 					positionNeighbours.removeAll(neighboursOutskirts);
 			}
-
-			if (x==0 & y==0) {
-				System.out.println("TopologyHexagon-> posTuple: "+ positionNeighbours);}
+//
+//			if (x==5 & y==5) {
+//				System.out.println("TopologyHexagon-> posTuple: "+ positionNeighbours);}
 			
 			for (Tuple2D<Integer> tuple : positionNeighbours) {
 				List<NodeInfo> lNodes = this.neighboursGrid.getModel(tuple.getX(), tuple.getY()).getComponents();
