@@ -276,6 +276,18 @@ public class EpitheliumCellTest {
 		neighbours(6,Arrays.asList(0,4,7,10,13,15,14,13,12,11),0,0,9);		  //Horizontal
 		neighbours(7,Arrays.asList(0,3,7,9,13,12,10,10,10,10,9,5,1),0,0,10);   //vertical
 		
+		//***************FlatOdd
+		neighbours(8,Arrays.asList(0,6,12,18,24,23,12,4),0,0,8); 				  //Torus
+		neighbours(9,Arrays.asList(0,2,4,5,7,8,10,11,13,14,9,7,5,3,1),0,0,14);  //rectangular
+		neighbours(10,Arrays.asList(0,4,7,10,13,15,14,13,12,11),0,0,9);		  //Horizontal
+		neighbours(11,Arrays.asList(0,3,7,9,13,12,10,10,10,10,9,5,1),0,0,10);   //vertical
+		
+		//***************FlatEven
+		neighbours(12,Arrays.asList(0,6,12,18,24,23,12,4),0,0,8); 				  //Torus
+		neighbours(13,Arrays.asList(0,2,4,5,7,8,10,11,13,14,9,7,5,3,1),0,0,14);  //rectangular
+		neighbours(14,Arrays.asList(0,4,7,10,13,15,14,13,12,11),0,0,9);		  //Horizontal
+		neighbours(15,Arrays.asList(0,3,7,9,13,12,10,10,10,10,9,5,1),0,0,10);   //vertical
+		
 		//TODO: verify neighbours for a given cell (2)
 	}
 	
