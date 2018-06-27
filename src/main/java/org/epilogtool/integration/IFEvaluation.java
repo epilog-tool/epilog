@@ -130,39 +130,10 @@ public class IFEvaluation {
 			Tuple2D<Integer> rangeList_aux = new Tuple2D<Integer>(0,
 					(signal.getDistance().getMin() - 1 > 0) ? signal.getDistance().getMin() - 1 : 0);
 
-			if (!this.relativeNeighboursCache.containsKey(rangeList_aux)) {
-				Map<Boolean, Set<Tuple2D<Integer>>> neighboursOutskirts = new HashMap<Boolean, Set<Tuple2D<Integer>>>();
-				neighboursOutskirts.put(true, this.neighboursGrid.getTopology().getRelativeNeighbours(true,
-						rangeList_aux.getX(), rangeList_aux.getY()));
-				neighboursOutskirts.put(false, this.neighboursGrid.getTopology().getRelativeNeighbours(false,
-						rangeList_aux.getX(), rangeList_aux.getY()));
-				this.relativeNeighboursCache.put(rangeList_aux, neighboursOutskirts);
-			}
 			
-//			System.out.println("IFevaluation: " + rangeList_aux.getX() +" "+ rangeList_aux.getY());
-
-			if (!this.relativeNeighboursCache.containsKey(rangePair)) {
-				Map<Boolean, Set<Tuple2D<Integer>>> relativeNeighbours = new HashMap<Boolean, Set<Tuple2D<Integer>>>();
-				relativeNeighbours.put(true, this.neighboursGrid.getTopology().getRelativeNeighbours(true, rangePair.getX(),
-						rangePair.getY()));
-				relativeNeighbours.put(false, this.neighboursGrid.getTopology().getRelativeNeighbours(false, rangePair.getX(),
-						rangePair.getY()));
-				this.relativeNeighboursCache.put(rangePair, relativeNeighbours);
-			}
-
-			boolean even = this.neighboursGrid.getTopology().isEven(x, y);
-
-			Set<Tuple2D<Integer>> positionNeighbours = this.neighboursGrid.getTopology().getPositionNeighbours(x, y,
-					this.relativeNeighboursCache.get(rangePair).get(even));
-			Set<Tuple2D<Integer>> neighboursOutskirts = this.neighboursGrid.getTopology().getPositionNeighbours(x, y,
-					this.relativeNeighboursCache.get(rangeList_aux).get(even));
+			Set<Tuple2D<Integer>> positionNeighbours = this.neighboursGrid.getPositionNeighbours(this.relativeNeighboursCache, rangeList_aux, rangePair,signal.getDistance().getMin(),x,y);
 			
-			if (signal.getDistance().getMin()>0) {
-					positionNeighbours.removeAll(neighboursOutskirts);
-			}
-//
-//			if (x==5 & y==5) {
-//				System.out.println("TopologyHexagon-> posTuple: "+ positionNeighbours);}
+//			System.out.println(positionNeighbours);
 			
 			for (Tuple2D<Integer> tuple : positionNeighbours) {
 				List<NodeInfo> lNodes = this.neighboursGrid.getModel(tuple.getX(), tuple.getY()).getComponents();
@@ -177,6 +148,7 @@ public class IFEvaluation {
 				}
 			}
 		}
+
 		return result;
 	}
 
