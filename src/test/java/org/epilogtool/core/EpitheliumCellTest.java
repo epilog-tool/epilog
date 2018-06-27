@@ -6,8 +6,11 @@ import static org.hamcrest.CoreMatchers.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.colomoto.biolqm.LogicalModel;
@@ -16,6 +19,7 @@ import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.colomoto.biolqm.modifier.perturbation.RangePerturbation;
 import org.epilogtool.TestHelper;
 import org.epilogtool.common.EnumRandomSeed;
+import org.epilogtool.common.Tuple2D;
 import org.epilogtool.common.Txt;
 import org.epilogtool.io.FileIO;
 import org.epilogtool.project.Project;
@@ -35,6 +39,8 @@ public class EpitheliumCellTest {
 	private static EpitheliumCell epicell;
 	private static LogicalModel YellowRed;
 	private static LogicalModel GreenRed;
+	
+	private Map<Tuple2D<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>> relativeNeighboursCache = new HashMap<Tuple2D<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>>();
 
 	
 	//Test if an sbml is properly loaded
@@ -125,8 +131,10 @@ public class EpitheliumCellTest {
 	integrationInputs.add(YellowRed.getComponent("Yellow"));
 	integrationInputs.add(GreenRed.getComponent("Green"));
 	
+	String strIntFunctions = "[Yellow, Green]";
+	
 		//Test if the integration inputs are correct
-		assertEquals(Project.getInstance().getEpitheliumList().get(0).getIntegrationNodes().toString(),integrationInputs.toString());
+		assertEquals(Project.getInstance().getEpitheliumList().get(0).getIntegrationNodes().toString(), strIntFunctions);
 		
 		
 		//Test if the integration functions are correct
@@ -217,18 +225,59 @@ public class EpitheliumCellTest {
 		
 	}
 	
-	@Test
-	public void neighbours() {
+	public void neighbours(int index,List<Integer> neighboursNumber,int x, int y,int max) {
+
+//		int minSign = 1;
+		for (int maxSign = 0;maxSign<max;maxSign++) {
 		
-		//TODO
+		//verify cumulative distances
+		int minSign = 1;
+		Tuple2D<Integer> rangePair = new Tuple2D<Integer>(minSign,maxSign);
+		Tuple2D<Integer> rangeList_aux = new Tuple2D<Integer>(0,(minSign - 1 > 0) ? minSign - 1 : 0);
 		
+		Set <Tuple2D<Integer>> posNeighbours  = Project.getInstance().getEpitheliumList().get(index).getEpitheliumGrid().getPositionNeighbours(this.relativeNeighboursCache, rangeList_aux, rangePair, minSign, x, y);
 		
-		//verify neighbours Number
+		int number = 0;
+		for (int ind = 0;ind<=maxSign;ind++) {
+			number = number + neighboursNumber.get(ind);
+		}
 		
-		//verify neighbours for a given cell (2)
+		assertEquals(posNeighbours.size(),number);
+		
+		//verify exact distances
+		//must increase the value of minSig to have exactly the same number of neighbours
+		
+		minSign = maxSign;
+		rangePair = new Tuple2D<Integer>(minSign,maxSign);
+		rangeList_aux = new Tuple2D<Integer>(0,(minSign - 1 > 0) ? minSign - 1 : 0);
+		posNeighbours  = Project.getInstance().getEpitheliumList().get(index).getEpitheliumGrid().getPositionNeighbours(this.relativeNeighboursCache, rangeList_aux, rangePair, minSign, x, y);
+		
+//		System.out.println(posNeighbours);
+		number = neighboursNumber.get(maxSign);
+		if (minSign ==0) number = 1;
+		assertEquals(posNeighbours.size(),number);
+		}
+		
 	
 	}
 	
+	@Test
+	public void neighbours() {
+		
+		//***************PointyOdd
+		neighbours(0,Arrays.asList(0,6,12,18,24,23,12,4),0,0,8); 				  //Torus
+		neighbours(1,Arrays.asList(0,2,4,5,7,8,10,11,13,14,9,7,5,3,1),0,0,14);  //rectangular
+		neighbours(2,Arrays.asList(0,4,7,10,13,15,14,13,12,11),0,0,9);		  //Horizontal
+		neighbours(3,Arrays.asList(0,3,7,9,13,12,10,10,10,10,9,5,1),0,0,10);   //vertical
+		
+		//***************PointyEven
+		neighbours(4,Arrays.asList(0,6,12,18,24,23,12,4),0,0,8); 				  //Torus
+		neighbours(5,Arrays.asList(0,2,4,5,7,8,10,11,13,14,9,7,5,3,1),0,0,14);  //rectangular
+		neighbours(6,Arrays.asList(0,4,7,10,13,15,14,13,12,11),0,0,9);		  //Horizontal
+		neighbours(7,Arrays.asList(0,3,7,9,13,12,10,10,10,10,9,5,1),0,0,10);   //vertical
+		
+		//TODO: verify neighbours for a given cell (2)
+	}
 	
 	@Test
 	public void cellularModelOnCell() {
