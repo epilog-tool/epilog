@@ -1,6 +1,5 @@
 package org.epilogtool.core;
 
-//import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -27,8 +26,8 @@ import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.common.Txt;
 import org.epilogtool.io.FileIO;
+import org.epilogtool.notification.NotificationManager;
 import org.epilogtool.project.Project;
-import org.epilogtool.project.Simulation;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -73,6 +72,7 @@ public class EpitheliumCellTest {
 		File noConfigPepsFile = TestHelper.getTestResource("testProjects", noConfigPepsName);
 		File noSBMLPepsFile = TestHelper.getTestResource("testProjects", noSBMLPepsName);
 
+		NotificationManager.setGUI(false);
 		try {
 			assertFalse(FileIO.loadPEPS(noConfigPepsFile.getAbsolutePath()));
 		} catch (Exception e) {
@@ -84,7 +84,7 @@ public class EpitheliumCellTest {
 		} catch (Exception e) {
 			fail("");
 		}
-
+		NotificationManager.setGUI(true);
 	}
 
 	// Tests if rollOver is being identified
