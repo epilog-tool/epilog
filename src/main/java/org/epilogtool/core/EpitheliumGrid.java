@@ -67,7 +67,7 @@ public class EpitheliumGrid {
 		this.modelSet = new HashSet<LogicalModel>();
 		this.modelSet.add(m);
 		this.compCounts = new HashMap<String, Map<Byte, Integer>>();
-		this.compPercents = new HashMap<String, Map<Byte, Float>>();//ptgm
+		this.compPercents = new HashMap<String, Map<Byte, Float>>();// ptgm
 	}
 
 	private void setTopology(String topologyID, int gridX, int gridY, RollOver rollover)
@@ -88,7 +88,7 @@ public class EpitheliumGrid {
 		return this.topology;
 	}
 
-	public LogicalModel getModel(int x, int y) {		
+	public LogicalModel getModel(int x, int y) {
 		return this.gridEpiCell[x][y].getModel();
 	}
 
@@ -160,7 +160,7 @@ public class EpitheliumGrid {
 		this.updateModelSet();
 		this.updateNodeValueCounts();
 	}
-	
+
 	public void updateModelSet() {
 		this.modelSet.clear();
 		for (int y = 0; y < this.getY(); y++) {
@@ -311,7 +311,7 @@ public class EpitheliumGrid {
 
 	public void updateNodeValueCounts() {
 		// Compute component/value counts
-		
+
 		this.compCounts.clear();
 		for (int x = 0; x < this.getX(); x++) {
 			for (int y = 0; y < this.getY(); y++) {
@@ -331,7 +331,7 @@ public class EpitheliumGrid {
 			}
 		}
 		// Compute corresponding percentages
-		
+
 		this.compPercents.clear();
 		int nCells = this.getX() * this.getY();
 		for (String nodeID : this.compCounts.keySet()) {
@@ -344,26 +344,24 @@ public class EpitheliumGrid {
 		}
 	}
 
-	public Set<Tuple2D<Integer>> getPositionNeighbours(Map<Tuple2D<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>> relativeNeighboursCache, Tuple2D<Integer> rangeList_aux, Tuple2D<Integer> rangePair, int minSigDist, int x, int y) {
-		
-		
+	public Set<Tuple2D<Integer>> getPositionNeighbours(
+			Map<Tuple2D<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>> relativeNeighboursCache,
+			Tuple2D<Integer> rangeList_aux, Tuple2D<Integer> rangePair, int minSigDist, int x, int y) {
 		if (!relativeNeighboursCache.containsKey(rangeList_aux)) {
 			Map<Boolean, Set<Tuple2D<Integer>>> neighboursOutskirts = new HashMap<Boolean, Set<Tuple2D<Integer>>>();
-			neighboursOutskirts.put(true, this.getTopology().getRelativeNeighbours(true,
-					rangeList_aux.getX(), rangeList_aux.getY()));
-			neighboursOutskirts.put(false, this.getTopology().getRelativeNeighbours(false,
-					rangeList_aux.getX(), rangeList_aux.getY()));
+			neighboursOutskirts.put(true,
+					this.getTopology().getRelativeNeighbours(true, rangeList_aux.getX(), rangeList_aux.getY()));
+			neighboursOutskirts.put(false,
+					this.getTopology().getRelativeNeighbours(false, rangeList_aux.getX(), rangeList_aux.getY()));
 			relativeNeighboursCache.put(rangeList_aux, neighboursOutskirts);
 		}
-		
-//		System.out.println("IFevaluation: " + rangeList_aux.getX() +" "+ rangeList_aux.getY());
 
 		if (!relativeNeighboursCache.containsKey(rangePair)) {
 			Map<Boolean, Set<Tuple2D<Integer>>> relativeNeighbours = new HashMap<Boolean, Set<Tuple2D<Integer>>>();
-			relativeNeighbours.put(true, this.getTopology().getRelativeNeighbours(true, rangePair.getX(),
-					rangePair.getY()));
-			relativeNeighbours.put(false, this.getTopology().getRelativeNeighbours(false, rangePair.getX(),
-					rangePair.getY()));
+			relativeNeighbours.put(true,
+					this.getTopology().getRelativeNeighbours(true, rangePair.getX(), rangePair.getY()));
+			relativeNeighbours.put(false,
+					this.getTopology().getRelativeNeighbours(false, rangePair.getX(), rangePair.getY()));
 			relativeNeighboursCache.put(rangePair, relativeNeighbours);
 		}
 
@@ -373,14 +371,11 @@ public class EpitheliumGrid {
 				relativeNeighboursCache.get(rangePair).get(even));
 		Set<Tuple2D<Integer>> neighboursOutskirts = this.getTopology().getPositionNeighbours(x, y,
 				relativeNeighboursCache.get(rangeList_aux).get(even));
-		
-		if (minSigDist>0) {
-				positionNeighbours.removeAll(neighboursOutskirts);
+
+		if (minSigDist > 0) {
+			positionNeighbours.removeAll(neighboursOutskirts);
 		}
-//
-//		if (x==5 & y==5) {
-//			System.out.println("TopologyHexagon-> posTuple: "+ positionNeighbours);}
-		
+
 		return positionNeighbours;
 	}
 }

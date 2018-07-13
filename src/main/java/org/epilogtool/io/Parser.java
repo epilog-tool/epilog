@@ -25,6 +25,7 @@ import org.epilogtool.OptionStore;
 import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.common.Txt;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
@@ -38,8 +39,6 @@ import org.epilogtool.notification.NotificationManager;
 import org.epilogtool.project.Project;
 import org.epilogtool.project.ProjectFeatures;
 import org.epilogtool.services.TopologyService;
-
-import org.epilogtool.common.Txt;
 
 public class Parser {
 
@@ -118,7 +117,10 @@ public class Parser {
 			// RollOver
 			if (line.startsWith("RL")) {
 				rollover = RollOver.string2RollOver(epiName, line.split("\\s+")[1]);
-
+				if (rollover.equals(RollOver.NONE)) {
+					NotificationManager.warning("Parser",
+							epiName + ": Loaded border option incorrect. Border set to rectangular.");
+				}
 				if (currEpi != null) {
 					currEpi.getEpitheliumGrid().setRollOver(rollover);
 				}
@@ -253,7 +255,7 @@ public class Parser {
 		for (Epithelium epi : Project.getInstance().getEpitheliumList()) {
 			epi.getEpitheliumGrid().updateGrid();
 		}
-		// System.out.println("Final: " + project);
+
 		Project.getInstance().setChanged(false);
 		br.close();
 		in.close();

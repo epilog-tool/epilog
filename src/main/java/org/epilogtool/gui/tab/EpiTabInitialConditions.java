@@ -505,9 +505,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		String percPref = (String) OptionStore.getOption("PrefsNodePercent");
 		if (percPref != null && percPref.equals(EnumNodePercent.YES.toString())) {
 			this.visualGridICs.updateNodePercentages();
-			System.out.println();
 			JLabel jlb = this.mNodeID2JLabel.get(nodeID);
-//			System.out.println(jlb.getText());
 			gbc.gridx = 4;
 //			this.nodePercent.setText(grid.getPercentage(nodeID));
 			jp.add(jlb, gbc);

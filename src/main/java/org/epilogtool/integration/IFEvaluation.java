@@ -122,19 +122,15 @@ public class IFEvaluation {
 			// Get neighbours
 			Tuple2D<Integer> rangePair = new Tuple2D<Integer>(signal.getDistance().getMin(),
 					signal.getDistance().getMax());
-			
-//			System.out.println("IFevaluation:rangePair:  " + rangePair.getX() +" "+ rangePair.getY());
-			
+
 			// Shouldn't this be outside of the grammar ?
 
 			Tuple2D<Integer> rangeList_aux = new Tuple2D<Integer>(0,
 					(signal.getDistance().getMin() - 1 > 0) ? signal.getDistance().getMin() - 1 : 0);
 
-			
-			Set<Tuple2D<Integer>> positionNeighbours = this.neighboursGrid.getPositionNeighbours(this.relativeNeighboursCache, rangeList_aux, rangePair,signal.getDistance().getMin(),x,y);
-			
-//			System.out.println(positionNeighbours);
-			
+			Set<Tuple2D<Integer>> positionNeighbours = this.neighboursGrid.getPositionNeighbours(
+					this.relativeNeighboursCache, rangeList_aux, rangePair, signal.getDistance().getMin(), x, y);
+
 			for (Tuple2D<Integer> tuple : positionNeighbours) {
 				List<NodeInfo> lNodes = this.neighboursGrid.getModel(tuple.getX(), tuple.getY()).getComponents();
 				for (int n = 0; n < lNodes.size(); n++) {

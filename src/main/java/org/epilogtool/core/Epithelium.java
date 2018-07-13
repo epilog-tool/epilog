@@ -399,7 +399,6 @@ public class Epithelium {
 				if (pcVarIndex == 0 && idxPC == 0) {
 					for (NodeInfo node : newModel.getComponents()) {
 						if (!commonNodeNames.contains(node.toString()) && !node.isInput()) {
-							// System.out.println(node);
 							newPCVars.add(node.toString());
 						}
 					}
@@ -457,9 +456,6 @@ public class Epithelium {
 
 					if (p != null) {
 						Boolean apply = false;
-						// System.out.println(p);
-						// Tuple2D<Integer> tmpTuple = new Tuple2D<Integer>(x,
-						// y);
 						List<Tuple2D<Integer>> tmpList = new ArrayList<Tuple2D<Integer>>();
 						Color c = mpClone.getPerturbationColor(p);
 
@@ -494,8 +490,6 @@ public class Epithelium {
 	}
 
 	public void setRandomInitialConditions() {
-		// TODO Auto-generated method stub
-
 		Random randomGenerator = new Random();
 
 		for (int x = 0; x < this.getX(); x++) {

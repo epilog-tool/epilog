@@ -116,8 +116,6 @@ public class FileIO {
 		byte[] buffer = new byte[1024];
 
 		try {
-
-			// System.out.println(folder.getAbsolutePath());
 			if (!folder.exists()) {
 				folder.mkdir();
 			}
@@ -161,10 +159,12 @@ public class FileIO {
 	}
 
 	/**
-	 * Reads the configuration file (config.txt) from the peps model. There are two different messages in case there is a configuration file missing or
-	 *  the configuration couldn't be loaded. 
+	 * Reads the configuration file (config.txt) from the peps model. There are two
+	 * different messages in case there is a configuration file missing or the
+	 * configuration couldn't be loaded.
 	 * 
-	 * @param filename -> name of the peps file
+	 * @param filename
+	 *            -> name of the peps file
 	 * @return boolean -> needed for the tests, otherwise could be void
 	 * 
 	 * @throws IOException
@@ -190,14 +190,14 @@ public class FileIO {
 				Parser.loadConfigurations(confFile);
 				load = true;
 			} catch (Exception e) {
-				NotificationManager.error("Loading PEPS file: ", e.getMessage() + "\n" +
-						"Help us improve EpiLog, please send us this file to support@epilog-tool.org."
-						);
-			}			
+				NotificationManager.error("Loading PEPS file: ", e.getMessage() + "\n"
+						+ "Help us improve EpiLog, please send us this file to support@epilog-tool.org.");
+			}
 		} else {
-			NotificationManager.warning("Loading PEPS file", "Configuration file " + CONFIG_FILE + " not found inside " + filename);
+			NotificationManager.warning("Loading PEPS file",
+					"Configuration file " + CONFIG_FILE + " not found inside " + filename);
 		}
-		
+
 		// Deletes the unzip temporary folder
 		FileIO.deleteTempDirectory(tmpFolder);
 		Project.getInstance().setFilenamePEPS(filename);
@@ -226,12 +226,11 @@ public class FileIO {
 
 		// Save PEPS to file
 		newPEPSFile += (newPEPSFile.endsWith(".peps") ? "" : ".peps");
-		
+
 		FileIO.zipTmpDir(newPEPSTmpDir, newPEPSFile);
 		OptionStore.addRecentFile(newPEPSFile);
 	}
-	
-	
+
 	public static void writeEpitheliumGrid2File(String file, Container c, String ext) {
 		BufferedImage dest = new BufferedImage(c.getWidth(), c.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		c.paint(dest.getGraphics());

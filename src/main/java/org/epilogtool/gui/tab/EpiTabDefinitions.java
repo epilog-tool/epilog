@@ -84,7 +84,6 @@ public abstract class EpiTabDefinitions extends EpiTab {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					if (isChanged()) {
-						// System.out.println("EpiTabDefinitions: Change is pressed");
 						buttonAccept();
 						tabChanged.setEpiChanged();
 					}

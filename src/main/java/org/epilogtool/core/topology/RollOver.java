@@ -1,6 +1,5 @@
 package org.epilogtool.core.topology;
 
-import javax.swing.JOptionPane;
 import org.epilogtool.common.Txt;
 
 public enum RollOver {
@@ -40,12 +39,6 @@ public enum RollOver {
 		else if (str.equals(HORIZ_VERT.toString()) || str.equals("Torus") || str.equals("Horizontal&Vertical")||str.equals("Torus_(both_wraps)"))
 			return HORIZ_VERT;
 		else {
-			JOptionPane.showMessageDialog(null,
-					epiName + ": Loaded border option incorrect. Border set to rectangular.");
-			System.out.println("WE "+str.equals(HORIZ.toString()));
-			System.out.println("WE "+str.equals(VERT.toString()));
-			System.out.println(str);
-			
 			return NONE;
 		}
 	}
