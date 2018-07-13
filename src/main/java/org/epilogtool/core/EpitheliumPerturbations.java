@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 
 public class EpitheliumPerturbations {
@@ -26,6 +27,7 @@ public class EpitheliumPerturbations {
 					.clone());
 		return epiPerturb;
 	}
+
 
 	public boolean hasModel(LogicalModel m) {
 		return this.perturbations.containsKey(m);

@@ -120,6 +120,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		this.lTop = new JPanel(new FlowLayout());
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
+		
 		this.lTop.add(jcbSBML);
 		this.lTop.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
 		left.add(this.lTop, BorderLayout.NORTH);
@@ -158,10 +159,13 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	}
 
 	private void updatePanelsWithModel(LogicalModel m) {
+		
 		this.selModel = m;
 		this.visualGridPerturb.setModel(this.selModel);
+		
 		this.mAP2Checkbox.clear();
 		this.mAP2RadioButton.clear();
+		
 		for (JButton jb : this.mAP2JButton.values())
 			this.jrbGroup.remove(jb);
 		this.mAP2JButton.clear();
@@ -183,6 +187,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		int i = 0;
 		for (String nodeID : sProper)
 			saProper[i++] = nodeID;
+		
 		this.jcbComps = new JComboBox<String>(saProper);
 		this.jcbComps.setToolTipText(this.jcbComps.getSelectedItem().toString());
 		jcbComps.addActionListener(new ActionListener() {
@@ -231,19 +236,32 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 					jcbMaxVal.repaint();
 					max = min;
 					ap = new FixedValuePerturbation(node, min);
-					// NotificationManager.warning("EpiTabPerturbations",
-					// Txt.get("s_TAB_PERTURB_INVALID"));
-					// NotificationManager.dispatchDialogWarning(false, false);
-					// return;
 				} else if (min == max) {
 					ap = new FixedValuePerturbation(node, min);
 				} else {
 					ap = new RangePerturbation(node, min, max);
 				}
 
-				if (!mID2AP.containsKey(ap.toString())) {
+				if (epiPerturbClone.getModelPerturbations(selModel)==null) {
 					epiPerturbClone.addPerturbation(selModel, ap);
+					if (!mID2AP.containsKey(ap.toString())) {
+						mID2AP.put(ap.toString(), ap);
+						}
+					ModelPerturbations mp = epiPerturbClone.getModelPerturbations(selModel);
+					Color c = mp.getPerturbationColor(ap);
+					if (c == null) {
+						c = ColorUtils.random();
+					}
+					addColor2MarkPanel(ap, c);
+					tpc.setChanged();
+					repaintAPColorsPanel();
+				}
+			
+				  if(!epiPerturbClone.getModelPerturbations(selModel).getAllPerturbations().contains(ap)) {
+					epiPerturbClone.addPerturbation(selModel, ap);
+					if (!mID2AP.containsKey(ap.toString())) {
 					mID2AP.put(ap.toString(), ap);
+					}
 					ModelPerturbations mp = epiPerturbClone.getModelPerturbations(selModel);
 					Color c = mp.getPerturbationColor(ap);
 					if (c == null) {
@@ -263,6 +281,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				List<AbstractPerturbation> lTmp = new ArrayList<AbstractPerturbation>(mAP2Checkbox.keySet());
+				
 				for (AbstractPerturbation ap : lTmp) {
 					JCheckBox jcb = mAP2Checkbox.get(ap);
 					if (jcb.isSelected()) {
@@ -309,7 +328,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 				}
 				if (lAPs.size() > 1) {
 					// TODO: create personalized message saying why it is not possible to create
-					// this multiple perturbation (only one
+					// this multiple perturbation (only one)
 					Collections.sort(lAPs, ObjectComparator.ABSTRACT_PERTURB);
 					List<AbstractPerturbation> lAPsClean = new ArrayList<AbstractPerturbation>();
 					for (int i = 0; i < lAPs.size(); i++) {
@@ -336,6 +355,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 						NotificationManager.dispatchDialogWarning(false, false);
 					} else {
 						epiPerturbClone.addPerturbation(selModel, mulap);
+						
 						mID2AP.put(mulap.toString(), mulap);
 						ModelPerturbations mp = epiPerturbClone.getModelPerturbations(selModel);
 						Color c = mp.getPerturbationColor(mulap);
@@ -355,7 +375,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		jpPerturbTop.add(jbMultiple, gbc);
 
 		this.jpCenter.add(jpPerturbTop, BorderLayout.NORTH);
-
+		
 		ModelPerturbations mp = this.epiPerturbClone.getModelPerturbations(this.selModel);
 		if (mp != null) {
 			for (AbstractPerturbation ap : mp.getAllPerturbations()) {
