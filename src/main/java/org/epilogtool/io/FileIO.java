@@ -111,46 +111,41 @@ public class FileIO {
 		return fDestDir;
 	}
 
-	private static void unZipIt(String zipFile, File folder) {
+	private static void unZipIt(String zipFile, File folder) throws IOException {
 
 		byte[] buffer = new byte[1024];
 
-		try {
-			if (!folder.exists()) {
-				folder.mkdir();
-			}
-
-			// get the zip file content
-			ZipInputStream zis = new ZipInputStream(new FileInputStream(new File(zipFile)));
-			// get the zipped file list entry
-			ZipEntry ze = zis.getNextEntry();
-
-			while (ze != null) {
-
-				String fileName = ze.getName().split("/")[ze.getName().split("/").length - 1];
-				File newFile = new File(folder + File.separator + fileName);
-
-				// create all non exists folders
-				// else you will hit FileNotFoundException for compressed folder
-				new File(newFile.getParent()).mkdirs();
-
-				FileOutputStream fos = new FileOutputStream(newFile);
-
-				int len;
-				while ((len = zis.read(buffer)) > 0) {
-					fos.write(buffer, 0, len);
-				}
-
-				fos.close();
-				ze = zis.getNextEntry();
-			}
-
-			zis.closeEntry();
-			zis.close();
-
-		} catch (IOException ex) {
-			ex.printStackTrace();
+		if (!folder.exists()) {
+			folder.mkdir();
 		}
+
+		// get the zip file content
+		ZipInputStream zis = new ZipInputStream(new FileInputStream(new File(zipFile)));
+		// get the zipped file list entry
+		ZipEntry ze = zis.getNextEntry();
+
+		while (ze != null) {
+
+			String fileName = ze.getName().split("/")[ze.getName().split("/").length - 1];
+			File newFile = new File(folder + File.separator + fileName);
+
+			// create all non exists folders
+			// else you will hit FileNotFoundException for compressed folder
+			new File(newFile.getParent()).mkdirs();
+
+			FileOutputStream fos = new FileOutputStream(newFile);
+
+			int len;
+			while ((len = zis.read(buffer)) > 0) {
+				fos.write(buffer, 0, len);
+			}
+
+			fos.close();
+			ze = zis.getNextEntry();
+		}
+
+		zis.closeEntry();
+		zis.close();
 	}
 
 	public static LogicalModel loadSBMLModel(File file) throws IOException {
@@ -176,9 +171,7 @@ public class FileIO {
 	 * @throws SecurityException
 	 * @throws ClassNotFoundException
 	 */
-	public static boolean loadPEPS(String filename)
-			throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+	public static boolean loadPEPS(String filename) throws IOException {
 		File tmpFolder = FileIO.unzipPEPSTmpDir(filename);
 		boolean load = false;
 		// Loads all the epithelium from the config.txt configuration file
