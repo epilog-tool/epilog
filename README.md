@@ -10,7 +10,7 @@ Cellular models should be provided in the [SBML-qual](http://sbml.org/Community/
 
 How to use it?
 --------------
-To compile EpiLog all you will need is java6 JDK and [maven](http://maven.apache.org/).
+To compile EpiLog all you will need is java7 JDK and [maven](http://maven.apache.org/).
 
 * grab the source from github
 * run "mvn package assembly:single" to compile and package it.
@@ -38,5 +38,5 @@ Claudine Chaouiya & Pedro T. Monteiro
 
 Ackowledgements
 --------------
-A. Fauré & C. Hernandez for insightful comments
+A. Fauré & C. Hernandez for insightful feedback and comments
 
