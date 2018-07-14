@@ -17,6 +17,7 @@ To compile EpiLog all you will need is java6 JDK and [maven](http://maven.apache
 * You can use the jar in the "target" subdirectory.
 
 The command line is:
+
     java -jar EpiLog-v1.1.jar
 
 
