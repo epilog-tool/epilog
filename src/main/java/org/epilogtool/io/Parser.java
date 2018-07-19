@@ -117,9 +117,10 @@ public class Parser {
 			// RollOver
 			if (line.startsWith("RL")) {
 				rollover = RollOver.string2RollOver(epiName, line.split("\\s+")[1]);
-				if (rollover.equals(RollOver.NONE)) {
+				if (rollover == null) {
 					NotificationManager.warning("Parser",
 							epiName + ": Loaded border option incorrect. Border set to rectangular.");
+					rollover = RollOver.NONE;
 				}
 				if (currEpi != null) {
 					currEpi.getEpitheliumGrid().setRollOver(rollover);
