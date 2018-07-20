@@ -111,48 +111,41 @@ public class FileIO {
 		return fDestDir;
 	}
 
-	private static void unZipIt(String zipFile, File folder) {
+	private static void unZipIt(String zipFile, File folder) throws IOException {
 
 		byte[] buffer = new byte[1024];
 
-		try {
-
-			// System.out.println(folder.getAbsolutePath());
-			if (!folder.exists()) {
-				folder.mkdir();
-			}
-
-			// get the zip file content
-			ZipInputStream zis = new ZipInputStream(new FileInputStream(new File(zipFile)));
-			// get the zipped file list entry
-			ZipEntry ze = zis.getNextEntry();
-
-			while (ze != null) {
-
-				String fileName = ze.getName().split("/")[ze.getName().split("/").length - 1];
-				File newFile = new File(folder + File.separator + fileName);
-
-				// create all non exists folders
-				// else you will hit FileNotFoundException for compressed folder
-				new File(newFile.getParent()).mkdirs();
-
-				FileOutputStream fos = new FileOutputStream(newFile);
-
-				int len;
-				while ((len = zis.read(buffer)) > 0) {
-					fos.write(buffer, 0, len);
-				}
-
-				fos.close();
-				ze = zis.getNextEntry();
-			}
-
-			zis.closeEntry();
-			zis.close();
-
-		} catch (IOException ex) {
-			ex.printStackTrace();
+		if (!folder.exists()) {
+			folder.mkdir();
 		}
+
+		// get the zip file content
+		ZipInputStream zis = new ZipInputStream(new FileInputStream(new File(zipFile)));
+		// get the zipped file list entry
+		ZipEntry ze = zis.getNextEntry();
+
+		while (ze != null) {
+
+			String fileName = ze.getName().split("/")[ze.getName().split("/").length - 1];
+			File newFile = new File(folder + File.separator + fileName);
+
+			// create all non exists folders
+			// else you will hit FileNotFoundException for compressed folder
+			new File(newFile.getParent()).mkdirs();
+
+			FileOutputStream fos = new FileOutputStream(newFile);
+
+			int len;
+			while ((len = zis.read(buffer)) > 0) {
+				fos.write(buffer, 0, len);
+			}
+
+			fos.close();
+			ze = zis.getNextEntry();
+		}
+
+		zis.closeEntry();
+		zis.close();
 	}
 
 	public static LogicalModel loadSBMLModel(File file) throws IOException {
@@ -161,10 +154,12 @@ public class FileIO {
 	}
 
 	/**
-	 * Reads the configuration file (config.txt) from the peps model. There are two different messages in case there is a configuration file missing or
-	 *  the configuration couldn't be loaded. 
+	 * Reads the configuration file (config.txt) from the peps model. There are two
+	 * different messages in case there is a configuration file missing or the
+	 * configuration couldn't be loaded.
 	 * 
-	 * @param filename -> name of the peps file
+	 * @param filename
+	 *            -> name of the peps file
 	 * @return boolean -> needed for the tests, otherwise could be void
 	 * 
 	 * @throws IOException
@@ -176,9 +171,7 @@ public class FileIO {
 	 * @throws SecurityException
 	 * @throws ClassNotFoundException
 	 */
-	public static boolean loadPEPS(String filename)
-			throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+	public static boolean loadPEPS(String filename) throws IOException {
 		File tmpFolder = FileIO.unzipPEPSTmpDir(filename);
 		boolean load = false;
 		// Loads all the epithelium from the config.txt configuration file
@@ -190,14 +183,14 @@ public class FileIO {
 				Parser.loadConfigurations(confFile);
 				load = true;
 			} catch (Exception e) {
-				NotificationManager.error("Loading PEPS file: ", e.getMessage() + "\n" +
-						"Help us improve EpiLog, please send us this file to support@epilog-tool.org."
-						);
-			}			
+				NotificationManager.error("Loading PEPS file: ", e.getMessage() + "\n"
+						+ "Help us improve EpiLog, please send us this file to support@epilog-tool.org.");
+			}
 		} else {
-			NotificationManager.warning("Loading PEPS file", "Configuration file " + CONFIG_FILE + " not found inside " + filename);
+			NotificationManager.warning("Loading PEPS file",
+					"Configuration file " + CONFIG_FILE + " not found inside " + filename);
 		}
-		
+
 		// Deletes the unzip temporary folder
 		FileIO.deleteTempDirectory(tmpFolder);
 		Project.getInstance().setFilenamePEPS(filename);
@@ -226,12 +219,11 @@ public class FileIO {
 
 		// Save PEPS to file
 		newPEPSFile += (newPEPSFile.endsWith(".peps") ? "" : ".peps");
-		
+
 		FileIO.zipTmpDir(newPEPSTmpDir, newPEPSFile);
 		OptionStore.addRecentFile(newPEPSFile);
 	}
-	
-	
+
 	public static void writeEpitheliumGrid2File(String file, Container c, String ext) {
 		BufferedImage dest = new BufferedImage(c.getWidth(), c.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		c.paint(dest.getGraphics());

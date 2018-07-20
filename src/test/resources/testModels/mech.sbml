@@ -1,0 +1,896 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" xmlns:layout="http://www.sbml.org/sbml/level3/version1/layout/version1" qual:required="true" level="3" xmlns:qual="http://www.sbml.org/sbml/level3/version1/qual/version1" version="1" layout:required="false">
+  <model id="model_id">
+    <listOfCompartments>
+      <compartment id="comp1" constant="true"/>
+    </listOfCompartments>
+      <layout:listOfLayouts xmlns:layout="http://www.sbml.org/sbml/level3/version1/layout/version1">
+      <layout:layout>
+        <layout:listOfSpeciesGlyphs>
+          <layout:speciesGlyph layout:species="s_Dpp">
+            <layout:boundingBox>
+              <layout:position layout:x="100" layout:y="130"/>
+              <layout:dimensions layout:width="60" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_Grk">
+            <layout:boundingBox>
+              <layout:position layout:x="170" layout:y="131"/>
+              <layout:dimensions layout:width="60" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_Br_adj">
+            <layout:boundingBox>
+              <layout:position layout:x="650" layout:y="590"/>
+              <layout:dimensions layout:width="60" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_Aos_ext">
+            <layout:boundingBox>
+              <layout:position layout:x="650" layout:y="431"/>
+              <layout:dimensions layout:width="60" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_Rho_ext">
+            <layout:boundingBox>
+              <layout:position layout:x="650" layout:y="490"/>
+              <layout:dimensions layout:width="60" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_dpERK">
+            <layout:boundingBox>
+              <layout:position layout:x="180" layout:y="270"/>
+              <layout:dimensions layout:width="71" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_Mirr">
+            <layout:boundingBox>
+              <layout:position layout:x="284" layout:y="331"/>
+              <layout:dimensions layout:width="55" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_Pnt">
+            <layout:boundingBox>
+              <layout:position layout:x="149" layout:y="430"/>
+              <layout:dimensions layout:width="55" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_Rho">
+            <layout:boundingBox>
+              <layout:position layout:x="350" layout:y="492"/>
+              <layout:dimensions layout:width="55" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_Aos">
+            <layout:boundingBox>
+              <layout:position layout:x="339" layout:y="425"/>
+              <layout:dimensions layout:width="55" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_Br">
+            <layout:boundingBox>
+              <layout:position layout:x="174" layout:y="571"/>
+              <layout:dimensions layout:width="55" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_S">
+            <layout:boundingBox>
+              <layout:position layout:x="508" layout:y="484"/>
+              <layout:dimensions layout:width="35" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_X">
+            <layout:boundingBox>
+              <layout:position layout:x="462" layout:y="588"/>
+              <layout:dimensions layout:width="35" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_A">
+            <layout:boundingBox>
+              <layout:position layout:x="559" layout:y="432"/>
+              <layout:dimensions layout:width="35" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_earlyGrk">
+            <layout:boundingBox>
+              <layout:position layout:x="357" layout:y="70"/>
+              <layout:dimensions layout:width="70" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_Mid">
+            <layout:boundingBox>
+              <layout:position layout:x="310" layout:y="128"/>
+              <layout:dimensions layout:width="71" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_earlyDpp">
+            <layout:boundingBox>
+              <layout:position layout:x="268" layout:y="70"/>
+              <layout:dimensions layout:width="70" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+        </layout:listOfSpeciesGlyphs>
+      </layout:layout>
+    </layout:listOfLayouts>
+      <qual:listOfQualitativeSpecies xmlns:qual="http://www.sbml.org/sbml/level3/version1/qual/version1">
+      <qual:qualitativeSpecies qual:constant="true" qual:compartment="comp1" qual:maxLevel="1" qual:id="s_Dpp"/>
+      <qual:qualitativeSpecies qual:constant="true" qual:compartment="comp1" qual:maxLevel="3" qual:id="s_Grk"/>
+      <qual:qualitativeSpecies qual:constant="true" qual:compartment="comp1" qual:maxLevel="1" qual:id="s_Br_adj"/>
+      <qual:qualitativeSpecies qual:constant="true" qual:compartment="comp1" qual:maxLevel="2" qual:id="s_Aos_ext"/>
+      <qual:qualitativeSpecies qual:constant="true" qual:compartment="comp1" qual:maxLevel="2" qual:id="s_Rho_ext"/>
+      <qual:qualitativeSpecies qual:compartment="comp1" qual:maxLevel="2" qual:id="s_dpERK"/>
+      <qual:qualitativeSpecies qual:compartment="comp1" qual:maxLevel="1" qual:id="s_Mirr"/>
+      <qual:qualitativeSpecies qual:compartment="comp1" qual:maxLevel="1" qual:id="s_Pnt"/>
+      <qual:qualitativeSpecies qual:compartment="comp1" qual:maxLevel="2" qual:id="s_Rho"/>
+      <qual:qualitativeSpecies qual:compartment="comp1" qual:maxLevel="1" qual:id="s_Aos"/>
+      <qual:qualitativeSpecies qual:compartment="comp1" qual:maxLevel="1" qual:id="s_Br"/>
+      <qual:qualitativeSpecies qual:compartment="comp1" qual:maxLevel="2" qual:id="s_S"/>
+      <qual:qualitativeSpecies qual:compartment="comp1" qual:maxLevel="1" qual:id="s_X"/>
+      <qual:qualitativeSpecies qual:compartment="comp1" qual:maxLevel="1" qual:id="s_A"/>
+      <qual:qualitativeSpecies qual:constant="true" qual:compartment="comp1" qual:maxLevel="1" qual:id="s_earlyGrk"/>
+      <qual:qualitativeSpecies qual:compartment="comp1" qual:maxLevel="1" qual:id="s_Mid"/>
+      <qual:qualitativeSpecies qual:constant="true" qual:compartment="comp1" qual:maxLevel="1" qual:id="s_earlyDpp"/>
+    </qual:listOfQualitativeSpecies>
+    <qual:listOfTransitions xmlns:qual="http://www.sbml.org/sbml/level3/version1/qual/version1">
+      <qual:transition qual:id="tr_dpERK">
+        <qual:listOfInputs>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_Grk" qual:id="tr_dpERK_in_1"/>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_S" qual:id="tr_dpERK_in_11"/>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_X" qual:id="tr_dpERK_in_12"/>
+          <qual:input qual:transitionEffect="none" qual:sign="negative" qual:qualitativeSpecies="s_A" qual:id="tr_dpERK_in_13"/>
+        </qual:listOfInputs>
+        <qual:listOfOutputs>
+          <qual:output qual:transitionEffect="assignmentLevel" qual:qualitativeSpecies="s_dpERK" qual:id="tr_dpERK_out"/>
+        </qual:listOfOutputs>
+        <qual:listOfFunctionTerms>
+          <qual:defaultTerm qual:resultLevel="0">
+          </qual:defaultTerm>
+          <qual:functionTerm qual:resultLevel="1">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+              <apply>
+                <or/>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Grk </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_S </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_X </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_A </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Grk </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_S </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_X </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Grk </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_S </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_X </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Grk </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_S </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_X </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Grk </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_S </ci>
+                    <cn type="integer"> 2 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_X </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_A </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Grk </ci>
+                    <cn type="integer"> 2 </cn>
+                  </apply>
+                  <apply>
+                    <leq/>
+                    <ci> s_S </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_X </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Grk </ci>
+                    <cn type="integer"> 2 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_S </ci>
+                    <cn type="integer"> 2 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_X </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_A </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                </apply>
+              </apply>
+            </math>
+                                </qual:functionTerm>
+          <qual:functionTerm qual:resultLevel="2">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+              <apply>
+                <or/>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Grk </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_S </ci>
+                    <cn type="integer"> 2 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_X </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_A </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Grk </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_S </ci>
+                    <cn type="integer"> 2 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_X </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Grk </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_S </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_X </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Grk </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_S </ci>
+                    <cn type="integer"> 2 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_X </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_A </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Grk </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_S </ci>
+                    <cn type="integer"> 2 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_X </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Grk </ci>
+                    <cn type="integer"> 2 </cn>
+                  </apply>
+                  <apply>
+                    <leq/>
+                    <ci> s_S </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_X </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Grk </ci>
+                    <cn type="integer"> 2 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_S </ci>
+                    <cn type="integer"> 2 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_X </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_A </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Grk </ci>
+                    <cn type="integer"> 2 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_S </ci>
+                    <cn type="integer"> 2 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_X </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <eq/>
+                  <ci> s_Grk </ci>
+                  <cn type="integer"> 3 </cn>
+                </apply>
+              </apply>
+            </math>
+                                </qual:functionTerm>
+        </qual:listOfFunctionTerms>
+      </qual:transition>
+      <qual:transition qual:id="tr_Mirr">
+        <qual:listOfInputs>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_dpERK" qual:id="tr_Mirr_in_5"/>
+          <qual:input qual:transitionEffect="none" qual:sign="negative" qual:qualitativeSpecies="s_Mid" qual:id="tr_Mirr_in_15"/>
+        </qual:listOfInputs>
+        <qual:listOfOutputs>
+          <qual:output qual:transitionEffect="assignmentLevel" qual:qualitativeSpecies="s_Mirr" qual:id="tr_Mirr_out"/>
+        </qual:listOfOutputs>
+        <qual:listOfFunctionTerms>
+          <qual:defaultTerm qual:resultLevel="0">
+          </qual:defaultTerm>
+          <qual:functionTerm qual:resultLevel="1">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+              <apply>
+                <and/>
+                <apply>
+                  <geq/>
+                  <ci> s_dpERK </ci>
+                  <cn type="integer"> 1 </cn>
+                </apply>
+                <apply>
+                  <eq/>
+                  <ci> s_Mid </ci>
+                  <cn type="integer"> 0 </cn>
+                </apply>
+              </apply>
+            </math>
+                                </qual:functionTerm>
+        </qual:listOfFunctionTerms>
+      </qual:transition>
+      <qual:transition qual:id="tr_Pnt">
+        <qual:listOfInputs>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_dpERK" qual:id="tr_Pnt_in_5"/>
+        </qual:listOfInputs>
+        <qual:listOfOutputs>
+          <qual:output qual:transitionEffect="assignmentLevel" qual:qualitativeSpecies="s_Pnt" qual:id="tr_Pnt_out"/>
+        </qual:listOfOutputs>
+        <qual:listOfFunctionTerms>
+          <qual:defaultTerm qual:resultLevel="0">
+          </qual:defaultTerm>
+          <qual:functionTerm qual:resultLevel="1">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+              <apply>
+                <eq/>
+                <ci> s_dpERK </ci>
+                <cn type="integer"> 2 </cn>
+              </apply>
+            </math>
+                                </qual:functionTerm>
+        </qual:listOfFunctionTerms>
+      </qual:transition>
+      <qual:transition qual:id="tr_Rho">
+        <qual:listOfInputs>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_dpERK" qual:id="tr_Rho_in_5"/>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_Mirr" qual:id="tr_Rho_in_6"/>
+          <qual:input qual:transitionEffect="none" qual:sign="negative" qual:qualitativeSpecies="s_Br" qual:id="tr_Rho_in_10"/>
+        </qual:listOfInputs>
+        <qual:listOfOutputs>
+          <qual:output qual:transitionEffect="assignmentLevel" qual:qualitativeSpecies="s_Rho" qual:id="tr_Rho_out"/>
+        </qual:listOfOutputs>
+        <qual:listOfFunctionTerms>
+          <qual:defaultTerm qual:resultLevel="0">
+          </qual:defaultTerm>
+          <qual:functionTerm qual:resultLevel="1">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+              <apply>
+                <and/>
+                <apply>
+                  <eq/>
+                  <ci> s_dpERK </ci>
+                  <cn type="integer"> 1 </cn>
+                </apply>
+                <apply>
+                  <eq/>
+                  <ci> s_Mirr </ci>
+                  <cn type="integer"> 1 </cn>
+                </apply>
+                <apply>
+                  <eq/>
+                  <ci> s_Br </ci>
+                  <cn type="integer"> 0 </cn>
+                </apply>
+              </apply>
+            </math>
+                                </qual:functionTerm>
+          <qual:functionTerm qual:resultLevel="2">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+              <apply>
+                <and/>
+                <apply>
+                  <eq/>
+                  <ci> s_dpERK </ci>
+                  <cn type="integer"> 2 </cn>
+                </apply>
+                <apply>
+                  <eq/>
+                  <ci> s_Mirr </ci>
+                  <cn type="integer"> 1 </cn>
+                </apply>
+                <apply>
+                  <eq/>
+                  <ci> s_Br </ci>
+                  <cn type="integer"> 0 </cn>
+                </apply>
+              </apply>
+            </math>
+                                </qual:functionTerm>
+        </qual:listOfFunctionTerms>
+      </qual:transition>
+      <qual:transition qual:id="tr_Aos">
+        <qual:listOfInputs>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_dpERK" qual:id="tr_Aos_in_5"/>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_Pnt" qual:id="tr_Aos_in_7"/>
+          <qual:input qual:transitionEffect="none" qual:sign="negative" qual:qualitativeSpecies="s_Mid" qual:id="tr_Aos_in_15"/>
+        </qual:listOfInputs>
+        <qual:listOfOutputs>
+          <qual:output qual:transitionEffect="assignmentLevel" qual:qualitativeSpecies="s_Aos" qual:id="tr_Aos_out"/>
+        </qual:listOfOutputs>
+        <qual:listOfFunctionTerms>
+          <qual:defaultTerm qual:resultLevel="0">
+          </qual:defaultTerm>
+          <qual:functionTerm qual:resultLevel="1">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+              <apply>
+                <and/>
+                <apply>
+                  <geq/>
+                  <ci> s_dpERK </ci>
+                  <cn type="integer"> 1 </cn>
+                </apply>
+                <apply>
+                  <eq/>
+                  <ci> s_Pnt </ci>
+                  <cn type="integer"> 1 </cn>
+                </apply>
+                <apply>
+                  <eq/>
+                  <ci> s_Mid </ci>
+                  <cn type="integer"> 0 </cn>
+                </apply>
+              </apply>
+            </math>
+                                </qual:functionTerm>
+        </qual:listOfFunctionTerms>
+      </qual:transition>
+      <qual:transition qual:id="tr_Br">
+        <qual:listOfInputs>
+          <qual:input qual:transitionEffect="none" qual:sign="negative" qual:qualitativeSpecies="s_Dpp" qual:id="tr_Br_in_0"/>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_Mirr" qual:id="tr_Br_in_6"/>
+          <qual:input qual:transitionEffect="none" qual:sign="negative" qual:qualitativeSpecies="s_Pnt" qual:id="tr_Br_in_7"/>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_Br" qual:id="tr_Br_in_10"/>
+        </qual:listOfInputs>
+        <qual:listOfOutputs>
+          <qual:output qual:transitionEffect="assignmentLevel" qual:qualitativeSpecies="s_Br" qual:id="tr_Br_out"/>
+        </qual:listOfOutputs>
+        <qual:listOfFunctionTerms>
+          <qual:defaultTerm qual:resultLevel="0">
+          </qual:defaultTerm>
+          <qual:functionTerm qual:resultLevel="1">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+              <apply>
+                <or/>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Dpp </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_Mirr </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_Pnt </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_Br </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Dpp </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_Mirr </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_Pnt </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                </apply>
+              </apply>
+            </math>
+                                </qual:functionTerm>
+        </qual:listOfFunctionTerms>
+      </qual:transition>
+      <qual:transition qual:id="tr_S">
+        <qual:listOfInputs>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_Rho_ext" qual:id="tr_S_in_4"/>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_Rho" qual:id="tr_S_in_8"/>
+        </qual:listOfInputs>
+        <qual:listOfOutputs>
+          <qual:output qual:transitionEffect="assignmentLevel" qual:qualitativeSpecies="s_S" qual:id="tr_S_out"/>
+        </qual:listOfOutputs>
+        <qual:listOfFunctionTerms>
+          <qual:defaultTerm qual:resultLevel="0">
+          </qual:defaultTerm>
+          <qual:functionTerm qual:resultLevel="1">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+              <apply>
+                <or/>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Rho_ext </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_Rho </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Rho_ext </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <leq/>
+                    <ci> s_Rho </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                </apply>
+              </apply>
+            </math>
+                                </qual:functionTerm>
+          <qual:functionTerm qual:resultLevel="2">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+              <apply>
+                <or/>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Rho_ext </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_Rho </ci>
+                    <cn type="integer"> 2 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Rho_ext </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_Rho </ci>
+                    <cn type="integer"> 2 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <eq/>
+                  <ci> s_Rho_ext </ci>
+                  <cn type="integer"> 2 </cn>
+                </apply>
+              </apply>
+            </math>
+                                </qual:functionTerm>
+        </qual:listOfFunctionTerms>
+      </qual:transition>
+      <qual:transition qual:id="tr_X">
+        <qual:listOfInputs>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_Br_adj" qual:id="tr_X_in_2"/>
+          <qual:input qual:transitionEffect="none" qual:sign="negative" qual:qualitativeSpecies="s_Br" qual:id="tr_X_in_10"/>
+        </qual:listOfInputs>
+        <qual:listOfOutputs>
+          <qual:output qual:transitionEffect="assignmentLevel" qual:qualitativeSpecies="s_X" qual:id="tr_X_out"/>
+        </qual:listOfOutputs>
+        <qual:listOfFunctionTerms>
+          <qual:defaultTerm qual:resultLevel="0">
+          </qual:defaultTerm>
+          <qual:functionTerm qual:resultLevel="1">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+              <apply>
+                <and/>
+                <apply>
+                  <eq/>
+                  <ci> s_Br_adj </ci>
+                  <cn type="integer"> 1 </cn>
+                </apply>
+                <apply>
+                  <eq/>
+                  <ci> s_Br </ci>
+                  <cn type="integer"> 0 </cn>
+                </apply>
+              </apply>
+            </math>
+                                </qual:functionTerm>
+        </qual:listOfFunctionTerms>
+      </qual:transition>
+      <qual:transition qual:id="tr_A">
+        <qual:listOfInputs>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_Aos_ext" qual:id="tr_A_in_3"/>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_Aos" qual:id="tr_A_in_9"/>
+        </qual:listOfInputs>
+        <qual:listOfOutputs>
+          <qual:output qual:transitionEffect="assignmentLevel" qual:qualitativeSpecies="s_A" qual:id="tr_A_out"/>
+        </qual:listOfOutputs>
+        <qual:listOfFunctionTerms>
+          <qual:defaultTerm qual:resultLevel="0">
+          </qual:defaultTerm>
+          <qual:functionTerm qual:resultLevel="1">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+              <apply>
+                <or/>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_Aos_ext </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_Aos </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <eq/>
+                  <ci> s_Aos_ext </ci>
+                  <cn type="integer"> 2 </cn>
+                </apply>
+              </apply>
+            </math>
+                                </qual:functionTerm>
+        </qual:listOfFunctionTerms>
+      </qual:transition>
+      <qual:transition qual:id="tr_Mid">
+        <qual:listOfInputs>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_earlyGrk" qual:id="tr_Mid_in_14"/>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_Mid" qual:id="tr_Mid_in_15"/>
+          <qual:input qual:transitionEffect="none" qual:sign="negative" qual:qualitativeSpecies="s_earlyDpp" qual:id="tr_Mid_in_16"/>
+        </qual:listOfInputs>
+        <qual:listOfOutputs>
+          <qual:output qual:transitionEffect="assignmentLevel" qual:qualitativeSpecies="s_Mid" qual:id="tr_Mid_out"/>
+        </qual:listOfOutputs>
+        <qual:listOfFunctionTerms>
+          <qual:defaultTerm qual:resultLevel="0">
+          </qual:defaultTerm>
+          <qual:functionTerm qual:resultLevel="1">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+              <apply>
+                <or/>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_earlyGrk </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_Mid </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_earlyGrk </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_Mid </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_earlyDpp </ci>
+                    <cn type="integer"> 0 </cn>
+                  </apply>
+                </apply>
+                <apply>
+                  <and/>
+                  <apply>
+                    <eq/>
+                    <ci> s_earlyGrk </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                  <apply>
+                    <eq/>
+                    <ci> s_Mid </ci>
+                    <cn type="integer"> 1 </cn>
+                  </apply>
+                </apply>
+              </apply>
+            </math>
+                                </qual:functionTerm>
+        </qual:listOfFunctionTerms>
+      </qual:transition>
+    </qual:listOfTransitions>
+  </model>
+</sbml>

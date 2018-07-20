@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" xmlns:layout="http://www.sbml.org/sbml/level3/version1/layout/version1" qual:required="true" level="3" xmlns:qual="http://www.sbml.org/sbml/level3/version1/qual/version1" version="1" layout:required="false">
+  <model id="model_id">
+    <listOfCompartments>
+      <compartment id="comp1" constant="true"/>
+    </listOfCompartments>
+      <layout:listOfLayouts xmlns:layout="http://www.sbml.org/sbml/level3/version1/layout/version1">
+      <layout:layout>
+        <layout:listOfSpeciesGlyphs>
+          <layout:speciesGlyph layout:species="s_G0">
+            <layout:boundingBox>
+              <layout:position layout:x="231" layout:y="89"/>
+              <layout:dimensions layout:width="50" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_G1">
+            <layout:boundingBox>
+              <layout:position layout:x="232" layout:y="167"/>
+              <layout:dimensions layout:width="50" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+          <layout:speciesGlyph layout:species="s_G2">
+            <layout:boundingBox>
+              <layout:position layout:x="346" layout:y="128"/>
+              <layout:dimensions layout:width="50" layout:height="25" layout:depth="0"/>
+            </layout:boundingBox>
+          </layout:speciesGlyph>
+        </layout:listOfSpeciesGlyphs>
+      </layout:layout>
+    </layout:listOfLayouts>
+      <qual:listOfQualitativeSpecies xmlns:qual="http://www.sbml.org/sbml/level3/version1/qual/version1">
+      <qual:qualitativeSpecies qual:compartment="comp1" qual:maxLevel="2" qual:id="s_G0"/>
+      <qual:qualitativeSpecies qual:compartment="comp1" qual:maxLevel="1" qual:id="s_G1"/>
+      <qual:qualitativeSpecies qual:constant="true" qual:compartment="comp1" qual:maxLevel="1" qual:id="s_G2"/>
+    </qual:listOfQualitativeSpecies>
+    <qual:listOfTransitions xmlns:qual="http://www.sbml.org/sbml/level3/version1/qual/version1">
+      <qual:transition qual:id="tr_G0">
+        <qual:listOfInputs>
+          <qual:input qual:transitionEffect="none" qual:sign="negative" qual:qualitativeSpecies="s_G1" qual:id="tr_G0_in_1"/>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_G2" qual:id="tr_G0_in_2"/>
+        </qual:listOfInputs>
+        <qual:listOfOutputs>
+          <qual:output qual:transitionEffect="assignmentLevel" qual:qualitativeSpecies="s_G0" qual:id="tr_G0_out"/>
+        </qual:listOfOutputs>
+        <qual:listOfFunctionTerms>
+          <qual:defaultTerm qual:resultLevel="0">
+          </qual:defaultTerm>
+          <qual:functionTerm qual:resultLevel="2">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+              <apply>
+                <and/>
+                <apply>
+                  <eq/>
+                  <ci> s_G1 </ci>
+                  <cn type="integer"> 0 </cn>
+                </apply>
+                <apply>
+                  <eq/>
+                  <ci> s_G2 </ci>
+                  <cn type="integer"> 1 </cn>
+                </apply>
+              </apply>
+            </math>
+                                </qual:functionTerm>
+        </qual:listOfFunctionTerms>
+      </qual:transition>
+      <qual:transition qual:id="tr_G1">
+        <qual:listOfInputs>
+          <qual:input qual:transitionEffect="none" qual:sign="negative" qual:qualitativeSpecies="s_G0" qual:id="tr_G1_in_0"/>
+          <qual:input qual:transitionEffect="none" qual:sign="positive" qual:qualitativeSpecies="s_G2" qual:id="tr_G1_in_2"/>
+        </qual:listOfInputs>
+        <qual:listOfOutputs>
+          <qual:output qual:transitionEffect="assignmentLevel" qual:qualitativeSpecies="s_G1" qual:id="tr_G1_out"/>
+        </qual:listOfOutputs>
+        <qual:listOfFunctionTerms>
+          <qual:defaultTerm qual:resultLevel="0">
+          </qual:defaultTerm>
+          <qual:functionTerm qual:resultLevel="1">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">            
+              <apply>
+                <and/>
+                <apply>
+                  <eq/>
+                  <ci> s_G0 </ci>
+                  <cn type="integer"> 0 </cn>
+                </apply>
+                <apply>
+                  <eq/>
+                  <ci> s_G2 </ci>
+                  <cn type="integer"> 1 </cn>
+                </apply>
+              </apply>
+            </math>
+                                </qual:functionTerm>
+        </qual:listOfFunctionTerms>
+      </qual:transition>
+    </qual:listOfTransitions>
+  </model>
+</sbml>

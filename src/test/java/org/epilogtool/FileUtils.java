@@ -2,7 +2,7 @@ package org.epilogtool;
 
 import java.io.File;
 
-public class TestHelper {
+public class FileUtils {
 	static File resourceFolder;
 	static {
 		resourceFolder = new File("target", "test-classes");
@@ -11,7 +11,7 @@ public class TestHelper {
 		}
 	}
 
-	public static File getTestResource(String group, String name) {
+	public static File getResource(String group, String name) {
 		File dir = resourceFolder;
 		
 		if (group != null && group.length() > 0) {

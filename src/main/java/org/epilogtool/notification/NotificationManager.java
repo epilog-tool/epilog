@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 
 public class NotificationManager {
 
+	private boolean gui;
 	private List<Notification> lNotifOld;
 	private List<Notification> lNotifNew;
 	// The static instance of the manager
@@ -15,6 +16,7 @@ public class NotificationManager {
 	private NotificationManager() {
 		this.lNotifNew = new ArrayList<Notification>();
 		this.lNotifOld = new ArrayList<Notification>();
+		this.gui = true;
 	}
 
 	private static NotificationManager getManager() {
@@ -22,6 +24,10 @@ public class NotificationManager {
 			instance = new NotificationManager();
 		}
 		return instance;
+	}
+
+	public static void setGUI(boolean hasGUI) {
+		getManager().gui = hasGUI;
 	}
 
 	private void register(Notification notif) {
@@ -81,6 +87,10 @@ public class NotificationManager {
 			msg += n.getMessage() + "\n";
 		}
 		NotificationManager.clearMessages();
-		JOptionPane.showMessageDialog(null, msg, "Notifications", type);
+		if (instance.gui) {
+			JOptionPane.showMessageDialog(null, msg, "Notifications", type);
+		} else {
+			System.err.println(msg);
+		}
 	}
 }

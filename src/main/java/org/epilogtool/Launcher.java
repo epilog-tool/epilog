@@ -13,6 +13,7 @@ import org.epilogtool.gui.EpiGUI;
 import org.epilogtool.io.FileIO;
 import org.epilogtool.project.Project;
 import org.epilogtool.project.Simulation;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Txt;
 
@@ -26,7 +27,7 @@ import com.martiansoftware.jsap.Switch;
 
 public class Launcher {
 
-	private static double MIN_JAVA_VERSION = 1.7;
+	private static DefaultArtifactVersion MIN_JAVA_VERSION = new DefaultArtifactVersion("1.7");
 
 	/**
 	 * @param args
@@ -108,9 +109,9 @@ public class Launcher {
 	}
 
 	private static void checkJavaVersion(boolean cmd) {
-		Double version = Double.parseDouble(Runtime.class.getPackage().getSpecificationVersion());
-		if (version < MIN_JAVA_VERSION) {
-			String msg = "You're using Java version " + version + ". EpiLog needs Java version >= 1.7";
+		DefaultArtifactVersion currVersion = new DefaultArtifactVersion(System.getProperty("java.version"));
+		if (currVersion.compareTo(MIN_JAVA_VERSION) < 0) {
+			String msg = "You're using Java version " + currVersion + ". EpiLog needs Java version >= " + MIN_JAVA_VERSION;
 			if (cmd) {
 				System.err.println(msg);
 			} else {

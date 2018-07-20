@@ -30,7 +30,7 @@ public class DialogEditPreferences extends EscapableDialog {
 	private JButton buttonOK;
 
 	public DialogEditPreferences() {
-		
+
 		this.setLayout(new BorderLayout());
 
 		this.panelSimulation = new JPanel();
@@ -109,7 +109,6 @@ public class DialogEditPreferences extends EscapableDialog {
 	}
 
 	public String getOptionOrderedNodes() {
-//		System.out.println("DialogEditPreferences: "+ this.jcbOrderedComponents.getSelectedItem());
 		return ((EnumOrderNodes) this.jcbOrderedComponents.getSelectedItem()).toString();
 	}
 
