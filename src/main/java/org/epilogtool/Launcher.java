@@ -1,7 +1,9 @@
 package org.epilogtool;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -14,9 +16,12 @@ import org.epilogtool.io.FileIO;
 import org.epilogtool.project.Project;
 import org.epilogtool.project.Simulation;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Txt;
 
+import com.apple.eawt.Application;
 import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
@@ -97,8 +102,22 @@ public class Launcher {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+
 			EpiGUI gui = EpiGUI.getInstance();
 			gui.setDeveloperMode(dev);
+
+			try {
+				MavenXpp3Reader reader = new MavenXpp3Reader();
+				Model model;
+				if ((new File("pom.xml")).exists()) {
+					model = reader.read(new FileReader("pom.xml"));					
+				} else {
+					model = reader.read(new InputStreamReader(
+							Application.class.getResourceAsStream("/META-INF/maven/org.epilogtool/EpiLog/pom.xml")));
+				}
+				gui.setVersion(model.getVersion());
+			} catch (Exception e) {
+			}
 
 			if (pepsFile != null && (new File(pepsFile).exists())) {
 				gui.loadPEPS(pepsFile);
@@ -111,7 +130,8 @@ public class Launcher {
 	private static void checkJavaVersion(boolean cmd) {
 		DefaultArtifactVersion currVersion = new DefaultArtifactVersion(System.getProperty("java.version"));
 		if (currVersion.compareTo(MIN_JAVA_VERSION) < 0) {
-			String msg = "You're using Java version " + currVersion + ". EpiLog needs Java version >= " + MIN_JAVA_VERSION;
+			String msg = "You're using Java version " + currVersion + ". EpiLog needs Java version >= "
+					+ MIN_JAVA_VERSION;
 			if (cmd) {
 				System.err.println(msg);
 			} else {

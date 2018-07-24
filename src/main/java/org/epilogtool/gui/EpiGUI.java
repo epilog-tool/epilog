@@ -96,6 +96,7 @@ public class EpiGUI extends JFrame {
 
 	private static EpiGUI epigui;
 	private boolean devMode;
+	private String version;
 
 	public static EpiGUI getInstance() {
 		if (epigui == null) {
@@ -135,6 +136,7 @@ public class EpiGUI extends JFrame {
 			e2.printStackTrace();
 		}
 		this.devMode = false;
+		this.version = "";
 
 		this.closeTabPopupMenu = new CloseTabPopupMenu();
 
@@ -244,6 +246,10 @@ public class EpiGUI extends JFrame {
 
 	public boolean getDeveloperMode() {
 		return this.devMode;
+	}
+	
+	public void setVersion(String version) {
+		this.version = version;
 	}
 
 	public void aboutDialog() {
@@ -379,7 +385,11 @@ public class EpiGUI extends JFrame {
 		this.cleanGUI();
 		this.validateGUI();
 	}
-
+	
+	public String getVersion() {
+		return this.version;
+	}
+	
 	private void validateGUI() {
 		if (Project.getInstance().hasChanged() && !this.getTitle().endsWith(Txt.get("s_APP_MODIFIED"))) {
 			this.setTitle(this.getTitle() + Txt.get("s_APP_MODIFIED"));

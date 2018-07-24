@@ -16,6 +16,7 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
 import org.epilogtool.common.Web;
+import org.epilogtool.gui.EpiGUI;
 import org.epilogtool.io.FileResource;
 
 public class DialogAbout extends EscapableDialog implements HyperlinkListener {
@@ -59,7 +60,7 @@ public class DialogAbout extends EscapableDialog implements HyperlinkListener {
 	private String getContent() {
 		String s = "<body><center>\n";
 		s += "<img src='" + FileResource.getResource("logo_epilog.png") + "'/>";
-		s += "<p>EpiLog is a tool used for qualitative simulations ";
+		s += "<p>EpiLog (v" + EpiGUI.getInstance().getVersion() + ") is a tool used for qualitative simulations ";
 		s += "of <b>Epi</b>thelium <b>Log</b>ical models.<br/>\n";
 		s += "It makes use of Cellular Automata to visualize the ";
 		s += "evolution of the pattern formation.</p>\n";
@@ -72,9 +73,9 @@ public class DialogAbout extends EscapableDialog implements HyperlinkListener {
 		s += "<tr><td>Pedro T. Monteiro</td><td>&#10003;</td><td>&#10003;</td><td></td></tr>\n";
 		s += "<tr><td>Pedro L. Varela</td><td></td><td>&#10003;</td><td></td></tr>\n";
 		s += "<tr><td>Camila Veludo</td><td></td><td>&#10003;</td><td>&#10003;</td></tr>\n";
-		s += "<tr><td>Adrien Faur&eacute;</td><td></td><td></td><td>&#10003;</td></tr>\n";
 
 		s += "<tr><td colspan=\"4\"><b>Past Contributors</b></td></tr>";
+		s += "<tr><td>Adrien Faur&eacute;</td><td></td><td></td><td>&#10003;</td></tr>\n";
 		s += "<tr><td>Nuno D. Mendes</td><td></td><td>&#10003;</td><td></td></tr>\n";
 		s += "</table>\n";
 		s += "\n";
