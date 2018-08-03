@@ -2,6 +2,7 @@ package org.epilogtool.core;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -120,20 +121,18 @@ public class EpitheliumGrid {
 		return this.gridEpiCell[x][y].getPerturbation();
 	}
 
-	public Map<LogicalModel, Set<AbstractPerturbation>> getAppliedPerturb() {
-		Map<LogicalModel, Set<AbstractPerturbation>> map = new HashMap<LogicalModel, Set<AbstractPerturbation>>();
+	public List<AbstractPerturbation> getAppliedPerturb() {
+		List<AbstractPerturbation> perturbations = new ArrayList<AbstractPerturbation>();
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
 				AbstractPerturbation ap = this.getPerturbation(x, y);
 				if (ap != null) {
-					LogicalModel m = this.getModel(x, y);
-					if (!map.containsKey(m))
-						map.put(m, new HashSet<AbstractPerturbation>());
-					map.get(m).add(ap);
+					if (!perturbations.contains(ap))
+						perturbations.add(ap);
 				}
 			}
 		}
-		return map;
+		return perturbations;
 	}
 
 	public int getNodeIndex(int x, int y, String nodeID) {
@@ -188,12 +187,12 @@ public class EpitheliumGrid {
 		gridEpiCell[x][y].setModel(m);
 	}
 
-	public void setPerturbation(LogicalModel m, List<Tuple2D<Integer>> lTuples, AbstractPerturbation ap) {
+	public void setPerturbation(List<Tuple2D<Integer>> lTuples, AbstractPerturbation ap) {
 		for (Tuple2D<Integer> tuple : lTuples) {
-			if (this.gridEpiCell[tuple.getX()][tuple.getY()].getModel().equals(m)) {
+//			if (this.gridEpiCell[tuple.getX()][tuple.getY()].getModel().equals(m)) {
 				this.setPerturbation(tuple.getX(), tuple.getY(), ap);
 			}
-		}
+//		}
 	}
 
 	public void setPerturbation(int x, int y, AbstractPerturbation ap) {

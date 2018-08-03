@@ -116,16 +116,16 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	private String getTooltipPerturbations(Epithelium epi) {
 		String tipKey = "<html>";
 		boolean isEmpty = true;
-		Map<LogicalModel, Set<AbstractPerturbation>> map = epi.getEpitheliumGrid().getAppliedPerturb();
-		for (LogicalModel m : map.keySet()) {
-			if (map.get(m).isEmpty())
-				continue;
-			tipKey += "<b>" + Project.getInstance().getProjectFeatures().getModelName(m) + "</b>";
-			for (AbstractPerturbation ap : map.get(m)) {
+//		Map<LogicalModel, Set<AbstractPerturbation>> map = epi.getEpitheliumGrid().getAppliedPerturb();
+//		for (LogicalModel m : map.keySet()) {
+//			if (map.get(m).isEmpty())
+//				continue;
+//			tipKey += "<b>" + Project.getInstance().getProjectFeatures().getModelName(m) + "</b>";
+			for (AbstractPerturbation ap : epi.getEpitheliumPerturbations().getPerturbations()) {
 				tipKey += "<br/>&nbsp;. " + ap;
 			}
 			isEmpty = false;
-		}
+//		}
 		if (isEmpty) {
 			tipKey += "<i>Empty</i>";
 		}
