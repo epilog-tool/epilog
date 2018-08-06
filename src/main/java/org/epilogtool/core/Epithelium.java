@@ -91,8 +91,8 @@ public class Epithelium {
 				this.priorities.addModel(mSet);
 			}
 			// Perturbations
-//			if (!this.perturbations.hasModel(mSet))
-//				this.perturbations.addModel(mSet);
+			if (!this.perturbations.hasModel(mSet))
+				this.perturbations.addModel(mSet);
 		}
 
 		// Remove from Epithelium state absent models from modelSet
@@ -101,15 +101,12 @@ public class Epithelium {
 				this.priorities.removeModel(mPriorities);
 			}
 		}
-//		for (LogicalModel mPerturbation : new ArrayList<LogicalModel>(this.perturbations.getModelSet())) {
-//			if (!modelSet.contains(mPerturbation)) {
-//				this.perturbations.removeModel(mPerturbation);
-//			}
-//		
-//		}
-		//TODO
-//		updatePerturbations();
-		
+		for (LogicalModel mPerturbation : new ArrayList<LogicalModel>(this.perturbations.getModelSet())) {
+			if (!modelSet.contains(mPerturbation)) {
+				this.perturbations.removeModel(mPerturbation);
+			}
+		}
+
 		// Create list with all existing Components
 		Set<String> sNodeIDs = new HashSet<String>();
 		for (LogicalModel m : modelSet) {
@@ -180,9 +177,9 @@ public class Epithelium {
 		return this.integrationFunctions;
 	}
 
-//	public ModelPerturbations getModelPerturbations(LogicalModel m) {
-//		return this.perturbations.getModelPerturbations(m;
-//	}
+	public ModelPerturbations getModelPerturbations(LogicalModel m) {
+		return this.perturbations.getModelPerturbations(m);
+	}
 
 	public EpitheliumPerturbations getEpitheliumPerturbations() {
 		return this.perturbations;
@@ -218,18 +215,20 @@ public class Epithelium {
 		this.priorities.addModelPriorityClasses(mpc);
 	}
 
-	public void addPerturbation(AbstractPerturbation ap) {
+	public void addPerturbation(LogicalModel m, AbstractPerturbation ap) {
+		this.perturbations.addPerturbation(m, ap);
 		this.perturbations.addPerturbation(ap);
 	}
 
-	public void removePerturbation(AbstractPerturbation ap) {
-		this.perturbations.removePerturbation(ap);
+	public void delPerturbation(LogicalModel m, AbstractPerturbation ap) {
+		this.perturbations.delPerturbation(m, ap);
+		this.perturbations.delPerturbation(ap);
 	}
 
-	public void applyPerturbation(AbstractPerturbation ap, Color c, List<Tuple2D<Integer>> lTuples) {
-		this.perturbations.addPerturbationColor(ap, c);
+	public void applyPerturbation(LogicalModel m, AbstractPerturbation ap, Color c, List<Tuple2D<Integer>> lTuples) {
+		this.perturbations.addPerturbationColor(m, ap, c);
 		if (lTuples != null) {
-			this.grid.setPerturbation(lTuples, ap);
+			this.grid.setPerturbation(m, lTuples, ap);
 		}
 	}
 
@@ -347,10 +346,10 @@ public class Epithelium {
 //		 this.validateAllIntegrationFunctions(oldEpi, oldModel, newModel);
 		 this.replacePriorities(oldEpi, oldModel, newModel, commonNodeNames);
 
-		if (this.perturbations.getPerturbations() != null) {
-//			ModelPerturbations mpClone = this.getModelPerturbations(oldModel).clone();
+		if (this.getModelPerturbations(oldModel) != null) {
+			ModelPerturbations mpClone = this.getModelPerturbations(oldModel).clone();
 			EpitheliumPerturbations epClone = this.getEpitheliumPerturbations().clone();
-			this.replacePerturbations(gridCopy, epClone, oldModel, newModel, commonNodeNames);
+			this.replacePerturbations(gridCopy, mpClone, epClone, oldModel, newModel, commonNodeNames);
 		}
 	}
 
@@ -422,15 +421,15 @@ public class Epithelium {
 		}
 	}
 
-	private void replacePerturbations(EpitheliumGrid gridCopy, 
+	private void replacePerturbations(EpitheliumGrid gridCopy, ModelPerturbations mpClone,
 			EpitheliumPerturbations epClone, LogicalModel oldModel, LogicalModel newModel,
 			List<String> commonNodeNames) {
 
-		Set<AbstractPerturbation> oldPerturbations = this.perturbations.getPerturbations();
+		ModelPerturbations oldPerturbations = this.perturbations.getModelPerturbations(oldModel);
 		List<AbstractPerturbation> perturbation = new ArrayList<AbstractPerturbation>();
 		Boolean hasChanged = false;
 		if (oldPerturbations != null) {
-			for (AbstractPerturbation p : oldPerturbations) {
+			for (AbstractPerturbation p : oldPerturbations.getAllPerturbations()) {
 				int indexPerturbationShared = 0;
 				for (String pert : p.toString().split(",")) {
 					if (commonNodeNames.contains(pert.trim().split(" ")[0].trim())) {
@@ -440,12 +439,12 @@ public class Epithelium {
 				if (p.toString().contains(",")) {
 					if (indexPerturbationShared == p.toString().split(",").length) {
 						perturbation.add(p);
-						this.addPerturbation(p);
+						this.addPerturbation(newModel, p);
 					}
 				} else {
 					if (indexPerturbationShared == 1) {
 						perturbation.add(p);
-						this.addPerturbation(p);
+						this.addPerturbation(newModel, p);
 					}
 				}
 				if (!perturbation.contains(p))
@@ -460,7 +459,7 @@ public class Epithelium {
 					if (p != null) {
 						Boolean apply = false;
 						List<Tuple2D<Integer>> tmpList = new ArrayList<Tuple2D<Integer>>();
-						Color c = perturbations.getPerturbationColor(p);
+						Color c = mpClone.getPerturbationColor(p);
 
 						if (perturbation.contains(p)) {
 							tmpList.add(new Tuple2D<Integer>(x, y));
@@ -468,7 +467,7 @@ public class Epithelium {
 							apply = true;
 						}
 						if (apply)
-							this.applyPerturbation(p, c, tmpList);
+							this.applyPerturbation(newModel, p, c, tmpList);
 					}
 				}
 			}

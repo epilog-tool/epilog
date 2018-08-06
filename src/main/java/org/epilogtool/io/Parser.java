@@ -236,9 +236,10 @@ public class Parser {
 				saTmp = line.split("\\s+");
 				LogicalModel m = Project.getInstance().getModel(modelKey2Name.get(saTmp[1]));
 				String sPerturb = line.substring(line.indexOf("(") + 1, line.indexOf(")"));
-				AbstractPerturbation ap = string2AbstractPerturbation(Project.getInstance().getProjectFeatures(),sPerturb, m);
-				currEpi.addPerturbation(ap);
-
+				AbstractPerturbation ap = string2AbstractPerturbation(Project.getInstance().getProjectFeatures(),
+						sPerturb);
+				currEpi.addPerturbation(m, ap);
+	
 
 				String rest = line.substring(line.indexOf(")") + 1).trim();
 				if (!rest.isEmpty()) {
@@ -248,7 +249,7 @@ public class Parser {
 					if (saTmp.length > 3) {
 						lTuple = currEpi.getEpitheliumGrid().getTopology().instances2Tuples2D(saTmp[3].split(","));
 					}
-					currEpi.applyPerturbation(ap, c, lTuple);
+					currEpi.applyPerturbation(m, ap, c, lTuple);
 				}
 			}
 		}
@@ -264,8 +265,7 @@ public class Parser {
 		NotificationManager.dispatchDialogWarning(true, false);
 	}
 
-	private static AbstractPerturbation string2AbstractPerturbation(ProjectFeatures features, String sExpr,
-			LogicalModel m) {
+	private static AbstractPerturbation string2AbstractPerturbation(ProjectFeatures features, String sExpr) {
 		String[] saExpr = sExpr.split(", ");
 		List<AbstractPerturbation> lPerturb = new ArrayList<AbstractPerturbation>();
 
@@ -471,7 +471,6 @@ public class Parser {
 
 		// Model All Perturbations
 		// PT #model (Perturbation) R G B cell1-celli,celln,...
-		
 		Map<AbstractPerturbation, List<Integer>> apInst = new HashMap<AbstractPerturbation, List<Integer>>();
 		for (int y = 0, currI = 0; y < grid.getY(); y++) {
 			for (int x = 0; x < grid.getX(); x++, currI++) {
@@ -488,9 +487,12 @@ public class Parser {
 		}
 		w.println();
 		for (LogicalModel m : model2Key.keySet()) {
-			for (AbstractPerturbation ap : epi.getEpitheliumPerturbations().getPerturbations()) {
+			ModelPerturbations mp = epi.getModelPerturbations(m);
+			if (mp == null)
+				continue;
+			for (AbstractPerturbation ap : mp.getAllPerturbations()) {
 				w.print("PT " + model2Key.get(m) + " (" + ap + ")");
-				Color c = epi.getEpitheliumPerturbations().getPerturbationColor(ap);
+				Color c = mp.getPerturbationColor(ap);
 				if (c != null) {
 					w.print(" " + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
 					if (apInst.containsKey(ap)) {
