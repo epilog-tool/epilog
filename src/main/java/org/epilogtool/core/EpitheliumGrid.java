@@ -2,6 +2,7 @@ package org.epilogtool.core;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +16,8 @@ import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.core.topology.Topology;
+import org.epilogtool.project.Project;
+import org.epilogtool.project.ProjectFeatures;
 import org.epilogtool.services.TopologyService;
 
 public class EpitheliumGrid {
@@ -188,12 +191,42 @@ public class EpitheliumGrid {
 		gridEpiCell[x][y].setModel(m);
 	}
 
-	public void setPerturbation(LogicalModel m, List<Tuple2D<Integer>> lTuples, AbstractPerturbation ap) {
+	public void setPerturbation(List<Tuple2D<Integer>> lTuples, AbstractPerturbation ap) {
 		for (Tuple2D<Integer> tuple : lTuples) {
-			if (this.gridEpiCell[tuple.getX()][tuple.getY()].getModel().equals(m)) {
+			LogicalModel model = this.gridEpiCell[tuple.getX()][tuple.getY()].getModel();
+			if (apBelongsToModel(model, ap)) {
 				this.setPerturbation(tuple.getX(), tuple.getY(), ap);
 			}
 		}
+	}
+
+	private boolean apBelongsToModel(LogicalModel model, AbstractPerturbation ap) {
+		// TODO Auto-generated method stub
+
+		String sExpr = ap.getStringRepresentation();
+		String[] saExpr = sExpr.split(", ");
+		List<NodeInfo> nodes = new ArrayList<NodeInfo>();
+		
+		for (String sTmp : saExpr) {
+			String name = sTmp.split("%")[0];
+//			System.out.println("EpitheliumGrid: name -> " + name);
+			NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(name);
+			nodes.add(node);
+//			System.out.println("EpitheliumGrid: " + node);
+		}
+		
+		if (nodes.size()==1) {
+			NodeInfo node = nodes.get(0);
+			if  (model.getComponents().contains(node))
+				return true;
+		}
+		else if (nodes.size()>1){
+		for (NodeInfo node : nodes) {
+			if  (!model.getComponents().contains(node))
+				return false;
+		}
+		}
+			return false;
 	}
 
 	public void setPerturbation(int x, int y, AbstractPerturbation ap) {
