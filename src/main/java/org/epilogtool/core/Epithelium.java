@@ -177,10 +177,6 @@ public class Epithelium {
 		return this.integrationFunctions;
 	}
 
-//	public ModelPerturbations getModelPerturbations(LogicalModel m) {
-//		return this.perturbations.getModelPerturbations(m);
-//	}
-
 	public EpitheliumPerturbations getEpitheliumPerturbations() {
 		return this.perturbations;
 	}

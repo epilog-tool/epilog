@@ -70,7 +70,6 @@ import org.epilogtool.io.FileIO;
 import org.epilogtool.io.FileResource;
 import org.epilogtool.project.Project;
 
-import com.apple.eawt.Application;
 
 /**
  * Class that defines the GUI of EPILOG. This is the main window where the GUI

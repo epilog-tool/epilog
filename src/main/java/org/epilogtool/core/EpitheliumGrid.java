@@ -17,7 +17,6 @@ import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.project.Project;
-import org.epilogtool.project.ProjectFeatures;
 import org.epilogtool.services.TopologyService;
 
 public class EpitheliumGrid {

@@ -2,7 +2,6 @@ package org.epilogtool.core;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +24,10 @@ public class EpitheliumPerturbations {
 		this.perturbation2Color = new HashMap<AbstractPerturbation, Color>();
 	}
 
+	
+	public Map<AbstractPerturbation, Color> getPerturbation2Color() {
+		return perturbation2Color;
+	}
 	public EpitheliumPerturbations clone() {
 		EpitheliumPerturbations epiPerturb = new EpitheliumPerturbations();
 //		for (LogicalModel m : this.getModelSet())
@@ -183,5 +186,9 @@ public class EpitheliumPerturbations {
 
 	public void delAllPerturbations() {
 		this.lstPerturbations = new HashSet<AbstractPerturbation>();
+	}
+
+	public void delAllPerturbationsColors() {
+		this.perturbation2Color = new HashMap<AbstractPerturbation, Color>();	
 	}
 }
