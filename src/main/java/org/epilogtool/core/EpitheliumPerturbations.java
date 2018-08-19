@@ -14,12 +14,10 @@ import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.epilogtool.gui.color.ColorUtils;
 
 public class EpitheliumPerturbations {
-//	private Map<LogicalModel, ModelPerturbations> perturbations;
 	private Set<AbstractPerturbation> lstPerturbations;
 	private Map<AbstractPerturbation, Color> perturbation2Color;
 
 	public EpitheliumPerturbations() {
-//		this.perturbations = new HashMap<LogicalModel, ModelPerturbations>();
 		this.lstPerturbations = new HashSet<AbstractPerturbation>();
 		this.perturbation2Color = new HashMap<AbstractPerturbation, Color>();
 	}
@@ -30,11 +28,11 @@ public class EpitheliumPerturbations {
 	}
 	public EpitheliumPerturbations clone() {
 		EpitheliumPerturbations epiPerturb = new EpitheliumPerturbations();
-//		for (LogicalModel m : this.getModelSet())
-//			epiPerturb.addModelPerturbation(m, this.getModelPerturbations(m)
-//					.clone());
-		for (AbstractPerturbation ap : this.lstPerturbations)
+		
+		for (AbstractPerturbation ap : this.lstPerturbations) {
 			epiPerturb.addPerturbation(ap);
+			epiPerturb.addPerturbationColor(ap, this.perturbation2Color.get(ap));
+		}
 		return epiPerturb;
 	}
 
