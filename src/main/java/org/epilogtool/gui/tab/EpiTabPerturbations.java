@@ -166,8 +166,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		// Center Panel
 		this.jpCenter.removeAll();
 		this.jpCenter.repaint();
-		
-//		System.out.println(this.mAP2Checkbox);
 
 		// Perturbation list Panel
 		JPanel jpPerturbTop = new JPanel(new GridBagLayout());
@@ -231,10 +229,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 					jcbMaxVal.repaint();
 					max = min;
 					ap = new FixedValuePerturbation(node, min);
-					// NotificationManager.warning("EpiTabPerturbations",
-					// Txt.get("s_TAB_PERTURB_INVALID"));
-					// NotificationManager.dispatchDialogWarning(false, false);
-					// return;
 				} else if (min == max) {
 					ap = new FixedValuePerturbation(node, min);
 				} else {
@@ -245,7 +239,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 					epiPerturbClone.addPerturbation(ap);
 					mID2AP.put(ap.toString(), ap);
 					Color c = epiPerturbClone.getPerturbationColor(ap);
-					System.out.println("1: "+ c);
 					if (c == null) {
 						c = ColorUtils.random();
 					}
@@ -388,16 +381,11 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		this.jpCenter.add(jpColorTop, BorderLayout.PAGE_END);
 
 		
-//		if (mp != null) {
-//			for (AbstractPerturbation ap : mp.getAllPerturbations()) {
-//		System.out.println("Added perturbation " +  this.epiPerturbClone.getVisiblePerturbations(this.selModel));
+
 			for (AbstractPerturbation ap : this.epiPerturbClone.getVisiblePerturbations(this.selModel)) {
-//				System.out.println("Added perturbation " + ap);
 				Color c = this.epiPerturbClone.getPerturbationColor(ap);
 				this.addColor2MarkPanel(ap, c);
-				
 			}
-//		}
 		this.repaintAPColorsPanel();
 
 		// Re-Paint
@@ -420,7 +408,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		GridBagConstraints gbc = new GridBagConstraints();
 		int y = 0;
 		for (AbstractPerturbation ap : this.epiPerturbClone.getVisiblePerturbations(this.selModel)) {
-//			System.out.println("repaintAPColorsPanel: " + ap);
 			if (this.epiPerturbClone.getAllCreatedPerturbations() == null)
 				continue;
 			gbc.gridy = y;
@@ -461,8 +448,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	}
 
 	private void addColor2MarkPanel(AbstractPerturbation ap, Color c) {
-		System.out.println("ap: "+ ap);
-		System.out.println("colour: "+ c);
+
 		// JCheckbox
 		JCheckBox jcb = new JCheckBox();
 		jcb.setToolTipText(ap.toString());
@@ -492,7 +478,6 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 			}
 		});
 		this.mAP2JButton.put(ap, jbColor);
-//		System.out.println(this.epiPerturbClone.getModelPerturbations(this.selModel));
 		this.epiPerturbClone.addPerturbationColor(ap, c);
 	}
 

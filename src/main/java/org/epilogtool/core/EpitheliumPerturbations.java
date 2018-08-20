@@ -36,32 +36,7 @@ public class EpitheliumPerturbations {
 		return epiPerturb;
 	}
 
-	
-//	/**
-//	 * Check if a given model has perturbations
-//	 * @param m
-//	 * @return
-//	 */
-//	public boolean hasModel(LogicalModel m) {
-//		return this.perturbations.containsKey(m);
-//	}
 
-//	/**
-//	 * Add a model to the perturbation perturbed models
-//	 * @param m
-//	 */
-//	public void addModel(LogicalModel m) {
-//		this.perturbations.put(m, new ModelPerturbations());
-//	}
-
-//	/**
-//	 * Add a petrurbation associated with a model 
-//	 * @param m
-//	 * @param mp
-//	 */
-//	public void addModelPerturbation(LogicalModel m, ModelPerturbations mp) {
-//		this.perturbations.put(m, mp);
-//	}
 	
 	/** Add a perturbation to the general perturbations list
 	 * @param ap
@@ -70,29 +45,6 @@ public class EpitheliumPerturbations {
 		this.lstPerturbations.add(ap);
 	}
 
-//	public void removeModel(LogicalModel m) {
-//		if (this.perturbations.containsKey(m))
-//			this.perturbations.remove(m);
-//	}
-
-//	public Set<LogicalModel> getModelSet() {
-//		return Collections.unmodifiableSet(this.perturbations.keySet());
-//	}
-
-//	public void addPerturbation(LogicalModel m, AbstractPerturbation ap) {
-//		if (!this.perturbations.containsKey(m)) {
-//			ModelPerturbations mp = new ModelPerturbations();
-//			this.perturbations.put(m, mp);
-//		}
-//		this.perturbations.get(m).addPerturbation(ap);
-//	}
-
-//	public void delPerturbation(LogicalModel m, AbstractPerturbation ap) {
-//		if (this.perturbations.containsKey(m)) {
-//			ModelPerturbations mp = this.perturbations.get(m);
-//			mp.delPerturbation(ap);
-//		}
-//	}
 	
 	/** Remove a perturbation from the general perturabation list
 	 * @param ap
@@ -101,10 +53,6 @@ public class EpitheliumPerturbations {
 		this.lstPerturbations.remove(ap);
 	}
 
-//	public void addPerturbationColor(LogicalModel m, AbstractPerturbation ap,
-//			Color c) {
-//		this.perturbations.get(m).addPerturbationColor(ap, c);
-//	}
 	
 	public void addPerturbationColor(AbstractPerturbation ap,
 			Color c) {
@@ -119,9 +67,6 @@ public class EpitheliumPerturbations {
 		return this.perturbation2Color.get(ap);
 	}
 
-//	public ModelPerturbations getModelPerturbations(LogicalModel m) {
-//		return this.perturbations.get(m);
-//	}
 
 	public boolean equals(Object o) {
 		EpitheliumPerturbations ep = (EpitheliumPerturbations) o;
@@ -147,16 +92,6 @@ public class EpitheliumPerturbations {
 	
 	
 	public Set<AbstractPerturbation> getAllCreatedPerturbations() {
-//		
-//		List<AbstractPerturbation> lPertubations = new ArrayList<AbstractPerturbation>();
-//		
-//		if (this.perturbations!=null) {
-//		for (LogicalModel m : this.perturbations.keySet()) {
-//			for (AbstractPerturbation p : this.perturbations.get(m).getAllPerturbations()) {
-//				lPertubations.add(p);
-//			}
-//			
-//	}}
 		return this.lstPerturbations;
 }
 
@@ -169,12 +104,9 @@ public class EpitheliumPerturbations {
 				for (NodeInfo node: selModel.getComponents()) {
 					if (ap.affectsNode(node)) {
 						lPertubations.add(ap);
-//						System.out.println(selModel.getComponents() + " : " + ap);
 						continue;
 					}
 				}
-				
-				
 				
 			}
 		}
