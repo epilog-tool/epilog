@@ -17,6 +17,7 @@ public abstract class EpiTab extends JPanel {
 	public static final String TAB_PRIORITIES = Txt.get("s_TAB_PRIORITIES");
 	public static final String TAB_EPIUPDATING = Txt.get("s_TAB_EPIUPDATING");
 	public static final String TAB_CELLDIVISION = Txt.get("s_TAB_CELLDIVISION");
+	public static final String TAB_CELLULAREVENTS = Txt.get("s_TAB_CELLEVENT");
 	public static final String TOOL_SIMULATION = Txt.get("s_TOOL_SIMULATION");
 	public static final String TOOL_MONTECARLO = Txt.get("s_TOOL_MONTECARLO");
 

@@ -199,10 +199,12 @@ public class EpiTreePanel extends JPanel {
 		epiNode.add(mu);
 		DefaultMutableTreeNode eu = new DefaultMutableTreeNode(EpiTab.TAB_EPIUPDATING);
 		epiNode.add(eu);
-		if (EpiGUI.getInstance().getDeveloperMode()) {
-			DefaultMutableTreeNode cd = new DefaultMutableTreeNode(EpiTab.TAB_CELLDIVISION);
-			epiNode.add(cd);
-		}
+		DefaultMutableTreeNode ev = new DefaultMutableTreeNode(EpiTab.TAB_CELLULAREVENTS);
+		epiNode.add(ev);
+//		if (EpiGUI.getInstance().getDeveloperMode()) {
+//			DefaultMutableTreeNode cd = new DefaultMutableTreeNode(EpiTab.TAB_CELLDIVISION);
+//			epiNode.add(cd);
+//		}
 
 		this.epiTree.setRootVisible(false);
 		DefaultTreeModel model = (DefaultTreeModel) this.epiTree.getModel();

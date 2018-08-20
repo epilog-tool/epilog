@@ -59,6 +59,7 @@ import org.epilogtool.gui.menu.ToolsMenu;
 import org.epilogtool.gui.menu.WindowMenu;
 import org.epilogtool.gui.tab.EpiTab;
 import org.epilogtool.gui.tab.EpiTabEpitheliumModelUpdate;
+import org.epilogtool.gui.tab.EpiTabEvents;
 import org.epilogtool.gui.tab.EpiTabInitialConditions;
 import org.epilogtool.gui.tab.EpiTabInputDefinition;
 import org.epilogtool.gui.tab.EpiTabModelGrid;
@@ -810,7 +811,6 @@ public class EpiGUI extends JFrame {
 			JOptionPane.showMessageDialog(this, Txt.get("s_SEL_MODEL"), Txt.get("s_WARNING"),
 					JOptionPane.WARNING_MESSAGE);
 		}
-
 	}
 
 	/**
@@ -859,6 +859,8 @@ public class EpiGUI extends JFrame {
 				epiTab = new EpiTabEpitheliumModelUpdate(epi, selPath, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_MODELGRID)) {
 				epiTab = new EpiTabModelGrid(epi, selPath, tabChanged);
+			} else if (tabName.equals(EpiTab.TAB_CELLULAREVENTS)) {
+				epiTab = new EpiTabEvents(epi, selPath, tabChanged);
 			}
 			if (epiTab != null) {
 				this.epiRightFrame.addTab(title, epiTab);
