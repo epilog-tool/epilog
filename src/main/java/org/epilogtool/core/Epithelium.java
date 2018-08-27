@@ -25,7 +25,10 @@ public class Epithelium {
 	private EpitheliumPerturbations perturbations;
 	private EpitheliumUpdateSchemeIntra priorities;
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
-	// private HashMap<String, NodeInfo> sComponentsUsed2Node;
+	private EpitheliumEvents epitheliumEvents;
+
+	
+	
 
 	public Epithelium(int x, int y, String topologyID, String name, LogicalModel m, RollOver rollover,
 			EnumRandomSeed randomSeedType, int randomSeed)
@@ -39,23 +42,25 @@ public class Epithelium {
 		this.perturbations = new EpitheliumPerturbations();
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(EpitheliumUpdateSchemeInter.DEFAULT_ALPHA,
 				UpdateCells.UPDATABLECELLS, randomSeedType, randomSeed);
-		// this.sComponentsUsed2Node = new HashMap<String, NodeInfo>();
+		this.epitheliumEvents = new EpitheliumEvents(EpitheliumEvents.DEFAULT_ORDER,EpitheliumEvents.DEFAULT_NEWCELL,EpitheliumEvents.DEFAULT_DEATHOPTION,null);
+	
 	}
 
 	private Epithelium(String name, EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
-			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap, EpitheliumUpdateSchemeInter usi) {
+			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap, EpitheliumUpdateSchemeInter usi, EpitheliumEvents ev) {
 		this.name = name;
 		this.grid = grid;
 		this.priorities = epc;
 		this.integrationFunctions = eif;
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
-		// this.sComponentsUsed2Node = new HashMap<String, NodeInfo>();
+		this.epitheliumEvents = ev;
+		
 	}
 
 	public Epithelium clone() {
 		return new Epithelium("CopyOf_" + this.name, this.grid.clone(), this.integrationFunctions.clone(),
-				this.priorities.clone(), this.perturbations.clone(), this.updateSchemeInter.clone());
+				this.priorities.clone(), this.perturbations.clone(), this.updateSchemeInter.clone(), this.epitheliumEvents.clone());
 	}
 
 	public String toString() {
@@ -67,6 +72,7 @@ public class Epithelium {
 		return (this.grid.equals(otherEpi.grid) && this.priorities.equals(otherEpi.priorities)
 				&& this.integrationFunctions.equals(otherEpi.integrationFunctions)
 				&& this.perturbations.equals(otherEpi.perturbations)
+				&& this.epitheliumEvents.equals(otherEpi.getEpitheliumEvents())
 				&& this.updateSchemeInter.equals(otherEpi.getUpdateSchemeInter()));
 	}
 
@@ -90,9 +96,7 @@ public class Epithelium {
 			if (this.priorities.getModelPriorityClasses(mSet) == null) {
 				this.priorities.addModel(mSet);
 			}
-			// Perturbations
-//			if (!this.perturbations.hasModel(mSet))
-//				this.perturbations.addModel(mSet);
+
 		}
 
 		// Remove from Epithelium state absent models from modelSet
@@ -101,11 +105,7 @@ public class Epithelium {
 				this.priorities.removeModel(mPriorities);
 			}
 		}
-//		for (LogicalModel mPerturbation : new ArrayList<LogicalModel>(this.perturbations.getModelSet())) {
-//			if (!modelSet.contains(mPerturbation)) {
-//				this.perturbations.removeModel(mPerturbation);
-//			}
-//		}
+
 
 		// Create list with all existing Components
 		Set<String> sNodeIDs = new HashSet<String>();
@@ -141,6 +141,10 @@ public class Epithelium {
 
 	public EpitheliumUpdateSchemeInter getUpdateSchemeInter() {
 		return this.updateSchemeInter;
+	}
+	
+	public EpitheliumEvents getEpitheliumEvents() {
+		return this.epitheliumEvents;
 	}
 
 	public ModelPriorityClasses getPriorityClasses(LogicalModel m) {

@@ -2,6 +2,7 @@ package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -9,9 +10,12 @@ import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
@@ -26,6 +30,7 @@ import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Txt;
 import org.epilogtool.common.Web;
 import org.epilogtool.core.Epithelium;
+import org.epilogtool.core.EpitheliumEvents;
 import org.epilogtool.core.EpitheliumUpdateSchemeInter;
 import org.epilogtool.core.UpdateCells;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
@@ -39,6 +44,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 	private final int SLIDER_STEP = 10;
 
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
+	private EpitheliumEvents epitheliumEvents;
 	private LogicalModel selectedModel;
 	private TabProbablyChanged tpc;
 
@@ -56,10 +62,11 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 
 	public void initialize() {
 
-		this.center.setLayout(new BorderLayout());
+		this.center.setLayout(new BoxLayout(this.center, BoxLayout.Y_AXIS));
 		this.tpc = new TabProbablyChanged();
 
 		this.updateSchemeInter = this.epithelium.getUpdateSchemeInter().clone();
+		this.epitheliumEvents = this.epithelium.getEpitheliumEvents().clone();
 
 		// Alpha asynchronism panel
 		this.jpAlpha = new JPanel(new BorderLayout());
@@ -68,14 +75,16 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		this.jpAlpha.setMinimumSize(new Dimension(100, 100));
 		this.jspAlpha = new JScrollPane(this.jpAlpha);
 		this.jspAlpha.setBorder(BorderFactory.createEmptyBorder());
-		this.center.add(this.jspAlpha, BorderLayout.NORTH);
 		this.jpAlpha.setBorder(BorderFactory.createTitledBorder(Txt.get("s_TAB_ALPHA_TITLE")));
+		
+		this.center.add(this.jspAlpha);
 
 		// JSlider for alpha-asynchronism
 		this.generateAlphaSlider();
 
 		// Update all/updatable cells
 		JPanel jpUpdateCells = new JPanel(new BorderLayout());
+
 		jpUpdateCells.setBorder(BorderFactory.createTitledBorder(UpdateCells.title()));
 		this.jcbUpdateCells = new JComboWideBox<UpdateCells>(
 				new UpdateCells[] { UpdateCells.UPDATABLECELLS, UpdateCells.ALLCELLS });
@@ -110,13 +119,116 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		});
 		jpRandomSeedType.add(this.jcbRandomSeedType);
 
-		JPanel southPanel = new JPanel(new BorderLayout());
-		southPanel.add(jpUpdateCells, BorderLayout.NORTH);
-		southPanel.add(jpRandomSeedType, BorderLayout.SOUTH);
+		this.center.add(jpUpdateCells);
+		this.center.add(jpRandomSeedType);
+		
+		
+		//Empty Panel
+		
+		JPanel jpEmpty = new JPanel ();
+		jpEmpty.setPreferredSize(new Dimension(100,100));
+		this.center.add(jpEmpty);
+		//Event order Panel
+		
+		
+		JPanel jpOrder = new JPanel ();
 
-		this.center.add(southPanel, BorderLayout.SOUTH);
+		List<String> triggerOrderOptions = new ArrayList<String>();
+		triggerOrderOptions.add("Division first");
+		triggerOrderOptions.add("Death first");
+		triggerOrderOptions.add("Random order");
+		
+		jpOrder.setBorder(BorderFactory.createTitledBorder("Event Order"));
+		ButtonGroup groupOrder = new ButtonGroup();
+		
+		for (String triggerOption: triggerOrderOptions) {
+			JRadioButton jrb = new JRadioButton(triggerOption);
+			jrb.setName(triggerOption);
+//			triggerDivision2Radio.put(triggerOption,jrb);
+				jrb.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						updateEventOrder(jrb);
+						tpc.setChanged();
+					}
+				});
+				jpOrder.add(jrb);
+				groupOrder.add(jrb);
+		}
+		this.center.add(jpOrder);
+
+		//New Cell Options
+		
+		JPanel jpNewCell = new JPanel ();
+
+		List<String> triggerCellOptions = new ArrayList<String>();
+		triggerCellOptions.add("Random");
+		triggerCellOptions.add("Same");
+		triggerCellOptions.add("Naive");
+		triggerCellOptions.add("Predefined");
+		
+		jpNewCell.setBorder(BorderFactory.createTitledBorder("New Cell State"));
+		ButtonGroup groupCell = new ButtonGroup();
+		
+		for (String triggerOption: triggerCellOptions) {
+			JRadioButton jrb = new JRadioButton(triggerOption);
+			jrb.setName(triggerOption);
+				jrb.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						updateNewCellState(jrb);
+						tpc.setChanged();
+					}
+				});
+				jpNewCell.add(jrb);
+				groupCell.add(jrb);
+		}
+		this.center.add(jpNewCell);
+		
+		//Cell death Options
+		
+		JPanel jpCellDeath= new JPanel ();
+
+		List<String> triggerDeathOptions = new ArrayList<String>();
+		triggerDeathOptions.add("Empty position");
+		triggerDeathOptions.add("Permanent death");
+		triggerDeathOptions.add("Random");
+
+		
+		jpCellDeath.setBorder(BorderFactory.createTitledBorder("Cell death options"));
+		ButtonGroup groupDeath = new ButtonGroup();
+		
+		for (String triggerOption: triggerDeathOptions) {
+			JRadioButton jrb = new JRadioButton(triggerOption);
+			jrb.setName(triggerOption);
+				jrb.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						updateCellDeath(jrb);
+						tpc.setChanged();
+					}
+				});
+				jpCellDeath.add(jrb);
+				groupDeath.add(jrb);
+		}
+		this.center.add(jpCellDeath);
+
 		this.isInitialized = true;
 	}
+
+	private void updateEventOrder(JRadioButton jrb) {
+		this.epitheliumEvents.setEventOrder(jrb.getName());
+	}
+	
+	private void updateNewCellState(JRadioButton jrb) {
+		this.epitheliumEvents.setNewCellState(jrb.getName());
+	}
+	
+	private void updateCellDeath(JRadioButton jrb) {
+		this.epitheliumEvents.setDeathOption(jrb.getName());
+	}
+	
+	
 
 	private void updateJCBUpdateCells() {
 		UpdateCells upCells = this.updateSchemeInter.getUpdateCells();
@@ -181,6 +293,8 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		this.jAlphaSlide.setValue((int) (this.epithelium.getUpdateSchemeInter().getAlpha() * SLIDER_MAX));
 		this.updateAlpha(this.jAlphaSlide.getValue());
 		this.updateSchemeInter.setUpdateCells(this.epithelium.getUpdateSchemeInter().getUpdateCells());
+		
+		
 		this.updateJCBUpdateCells();
 		// Repaint
 		this.getParent().repaint();
@@ -192,6 +306,11 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		this.epithelium.getUpdateSchemeInter().setUpdateCells(this.updateSchemeInter.getUpdateCells());
 		this.epithelium.getUpdateSchemeInter().setRandomSeedType(this.updateSchemeInter.getRandomSeedType());
 		this.epithelium.getUpdateSchemeInter().setRandomSeed(this.updateSchemeInter.getRandomSeed());
+		
+		this.epithelium.getEpitheliumEvents().setEventOrder(this.epitheliumEvents.getEventOrder());
+		this.epithelium.getEpitheliumEvents().setNewCellState(this.epitheliumEvents.getNewCellState());
+		this.epithelium.getEpitheliumEvents().setDeathOption(this.epitheliumEvents.getDeathOption());
+
 	}
 
 	@Override
@@ -202,6 +321,16 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 			return true;
 		if (!this.epithelium.getUpdateSchemeInter().getRandomSeedType()
 				.equals(this.updateSchemeInter.getRandomSeedType()))
+			return true;
+		
+		if (!this.epithelium.getEpitheliumEvents().getEventOrder()
+				.equals(this.epitheliumEvents.getEventOrder()))
+			return true;
+		if (!this.epithelium.getEpitheliumEvents().getNewCellState()
+				.equals(this.epitheliumEvents.getNewCellState()))
+			return true;
+		if (!this.epithelium.getEpitheliumEvents().getDeathOption()
+				.equals(this.epitheliumEvents.getDeathOption()))
 			return true;
 		return false;
 	}
@@ -215,6 +344,11 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		this.updateSchemeInter.setUpdateCells(this.epithelium.getUpdateSchemeInter().getUpdateCells());
 		this.updateSchemeInter.setRandomSeedType(this.epithelium.getUpdateSchemeInter().getRandomSeedType());
 		this.updateSchemeInter.setRandomSeed(this.epithelium.getUpdateSchemeInter().getRandomSeed());
+		
+		this.epitheliumEvents.setEventOrder(this.epithelium.getEpitheliumEvents().getEventOrder());
+		this.epitheliumEvents.setNewCellState(this.epithelium.getEpitheliumEvents().getNewCellState());
+		this.epitheliumEvents.setDeathOption(this.epithelium.getEpitheliumEvents().getDeathOption());
+
 		this.getParent().repaint();
 	}
 

@@ -226,9 +226,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	 * Positional or Integration. 1) By default an input is positional, if it is
 	 * already defined as an integration, the integration functions immediately
 	 * appear. 2) Inputs are defined locally, i.e. if more than one model has an
-	 * input with the same name, functions must be defined for each. 3) Same name
-	 * inputs (from different models) may be positional in one and integration in
-	 * another
+	 * input with the same name, functions must be defined for each. 
 	 */
 	private void updateNodeID() {
 
