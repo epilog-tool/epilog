@@ -68,6 +68,9 @@ public class EpiTabEvents extends EpiTabDefinitions {
 
 	private Object jpAlphaInfoDivision;
 	
+	private String trigerOrder;
+	
+	
 //	private JPanel jpRandomDeath;
 //	private JScrollPane jspRandomDeath;
 //	private JSlider jRandomSlideDeath;
@@ -90,10 +93,42 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		
 		this.jpPatternDeath = new JPanel();
 		this.jpPatternDivision = new JPanel();
-		
-		
+	
 		this.auxDivisionPanel = new JPanel(new BorderLayout());
 		this.auxDeathPanel = new JPanel(new BorderLayout());
+		
+		this.trigerOrder = "1";
+		
+		JPanel jpOrder = new JPanel ();
+
+		
+		//ORDER
+		List<String> triggerOrderOptions = new ArrayList<String>();
+		triggerOrderOptions.add("Division first");
+		triggerOrderOptions.add("Death first");
+		triggerOrderOptions.add("Random order");
+		
+		jpOrder.setBorder(BorderFactory.createTitledBorder("Event Order"));
+		ButtonGroup groupOrder = new ButtonGroup();
+		
+		for (String triggerOption: triggerOrderOptions) {
+			JRadioButton jrb = new JRadioButton(triggerOption);
+			jrb.setName(triggerOption);
+//			triggerDivision2Radio.put(triggerOption,jrb);
+				jrb.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						updateTriggerOrder(jrb);
+					}
+				});
+				jpOrder.add(jrb);
+				groupOrder.add(jrb);
+		}
+		
+
+		
+		this.center.add(jpOrder, BorderLayout.NORTH);
+		
 		
 		///PATTERN DIVISON
 		
@@ -136,7 +171,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			labelTableDivision.put(new Integer(i), new JLabel("" + ((float) i / alphaDivisionMax)));
 		}
 		jAlphaSlideDivision.setLabelTable(labelTableDivision);
-		System.out.println(jAlphaSlideDivision);
+	
 		jAlphaSlideDivision.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
@@ -279,7 +314,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		jpDivision.add(jpTriggerDivision);
 		//Event
 		
-		this.center.add(jpDivision, BorderLayout.NORTH);
+		this.center.add(jpDivision, BorderLayout.CENTER);
 		
 		////Death
 		
@@ -317,6 +352,11 @@ public class EpiTabEvents extends EpiTabDefinitions {
 	}
 	
 	
+	protected void updateTriggerOrder(JRadioButton jrb) {
+		this.trigerOrder = (jrb.getName());
+		
+	}
+
 	protected void updateTriggerDivision(JRadioButton jrb) {
 		
 		this.auxDivisionPanel.removeAll();
@@ -366,6 +406,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 
 	protected void updateSliderValues(JSlider jAlphaSlide) {
 		// TODO Auto-generated method stub
+		if (this.trigerOrder.equals("Random order")) {
 		if (this.jAlphaSlideDivision.getValue() + this.jAlphaSlideDeath.getValue()>100) {
 			if (jAlphaSlide.getName().equals("Division")){
 				this.jAlphaSlideDeath.setValue(100-this.jAlphaSlideDivision.getValue());
@@ -373,6 +414,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			else if (jAlphaSlide.getName().equals("Death")){
 				this.jAlphaSlideDivision.setValue(100-this.jAlphaSlideDeath.getValue());
 			}
+		}
 		}
 		float valueDivision = (float) this.jAlphaSlideDivision.getValue() / 100;
 		float valueDeath = (float) this.jAlphaSlideDeath.getValue() / 100;
