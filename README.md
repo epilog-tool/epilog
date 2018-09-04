@@ -12,13 +12,17 @@ How to use it?
 --------------
 To compile EpiLog all you will need is java7 JDK and [maven](http://maven.apache.org/).
 
-* grab the source from github
-* run "mvn package assembly:single" to compile and package it.
-* You can use the jar in the "target" subdirectory.
+Grab the source from github:
 
-The command line is:
+    git clone https://github.com/epilog-tool/epilog.git
+    
+To compile and package it, run:
 
-    java -jar EpiLog-v1.1.jar
+    mvn package assembly:single
+
+Launch the jar package in the "target/" subdirectory:
+
+    java -jar target/EpiLog-<version>.jar
 
 
 Licence
@@ -28,9 +32,9 @@ This code is available under GPL-3.0.
 Implementation
 --------------
 
-Pedro T. Monteiro  
-Pedro L. Varela  
-Camila Ramos  
+Pedro T. Monteiro
+Pedro L. Varela
+Camila Ramos
 
 Project supervision
 --------------
