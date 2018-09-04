@@ -25,23 +25,23 @@ public class IFSpecification {
 		return new IntegrationSignal(name, minThreshold, distance);
 	}
 
-	public static IntegrationSignalOperationOR integrationSignalOperationOR(IntegrationSignalExpression expr1,
+	public static IntegrationSignalBinOpOR integrationSignalOperationOR(IntegrationSignalExpression expr1,
 			IntegrationSignalExpression expr2) {
-		return new IntegrationSignalOperationOR(expr1, expr2);
+		return new IntegrationSignalBinOpOR(expr1, expr2);
 	}
 
 	public static IntegrationFunctionNOT integrationFunctionNOT(IntegrationFunctionExpression expr) {
 		return new IntegrationFunctionNOT(expr);
 	}
 
-	public static IntegrationFunctionOperationAND integrationFunctionOperationAND(IntegrationFunctionExpression expr1,
+	public static IntegrationFunctionBinOpAND integrationFunctionOperationAND(IntegrationFunctionExpression expr1,
 			IntegrationFunctionExpression expr2) {
-		return new IntegrationFunctionOperationAND(expr1, expr2);
+		return new IntegrationFunctionBinOpAND(expr1, expr2);
 	}
 
-	public static IntegrationFunctionOperationOR integrationFunctionOperationOR(IntegrationFunctionExpression expr1,
+	public static IntegrationFunctionBinOpOR integrationFunctionOperationOR(IntegrationFunctionExpression expr1,
 			IntegrationFunctionExpression expr2) {
-		return new IntegrationFunctionOperationOR(expr1, expr2);
+		return new IntegrationFunctionBinOpOR(expr1, expr2);
 	}
 	
 	public static IntegrationFunctionTRUE integrationFunctionTRUE() {
