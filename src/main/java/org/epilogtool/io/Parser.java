@@ -73,7 +73,7 @@ public class Parser {
 				File fSBML = new File(fConfig.getParent() + "/" + saTmp[2]);
 				try {
 					Project.getInstance().loadModel(fSBML.getName(), FileIO.loadSBMLModel(fSBML));
-				} catch (IOException e) {
+				} catch (Exception e) {
 					throw new IOException(Txt.get("s_SBML_failed_load"));
 				}
 				modelKey2Name.put(saTmp[1], saTmp[2]);
@@ -232,14 +232,13 @@ public class Parser {
 			// Model All Perturbations
 			// Old version -> PT #model (Perturbation) R G B cell1-celli,celln,...
 			// Old NewVersion -> PT (Perturbation) R G B cell1-celli,celln,...
-			
+
 			if (line.startsWith("PT")) {
 				saTmp = line.split("\\s+");
 				String sPerturb = line.substring(line.indexOf("(") + 1, line.indexOf(")"));
 				AbstractPerturbation ap = string2AbstractPerturbation(Project.getInstance().getProjectFeatures(),
 						sPerturb);
 				currEpi.addPerturbation(ap);
-	
 
 				String rest = line.substring(line.indexOf(")") + 1).trim();
 				if (!rest.isEmpty()) {
@@ -249,9 +248,9 @@ public class Parser {
 					if (saTmp.length > 3) {
 						lTuple = currEpi.getEpitheliumGrid().getTopology().instances2Tuples2D(saTmp[3].split(","));
 					}
-//					System.out.println("Parser: " + ap);
-//					System.out.println("Parser: " + c);
-//					System.out.println("Parser: " + lTuple);
+					// System.out.println("Parser: " + ap);
+					// System.out.println("Parser: " + c);
+					// System.out.println("Parser: " + lTuple);
 					currEpi.applyPerturbation(ap, c, lTuple);
 				}
 			}
@@ -482,9 +481,9 @@ public class Parser {
 				if (currAP == null) {
 					continue;
 				} else {
-//					System.out.println("Parser: " + currAP);
-//					System.out.println("Parser: " + x);
-//					System.out.println("Parser: " + y);
+					// System.out.println("Parser: " + currAP);
+					// System.out.println("Parser: " + x);
+					// System.out.println("Parser: " + y);
 					if (!apInst.containsKey(currAP)) {
 						apInst.put(currAP, new ArrayList<Integer>());
 					}
@@ -493,18 +492,17 @@ public class Parser {
 			}
 		}
 		w.println();
-			for (AbstractPerturbation ap : epi.getEpitheliumPerturbations().getAllCreatedPerturbations())
-			{
-				w.print("PT " +"(" + ap + ")");
-				Color c = epi.getEpitheliumPerturbations().getPerturbationColor(ap);
-				if (c != null) {
-					w.print(" " + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
-					if (apInst.containsKey(ap)) {
-						w.print(" " + join(compactIntegerSequences(apInst.get(ap)), ","));
-					}
+		for (AbstractPerturbation ap : epi.getEpitheliumPerturbations().getAllCreatedPerturbations()) {
+			w.print("PT " + "(" + ap + ")");
+			Color c = epi.getEpitheliumPerturbations().getPerturbationColor(ap);
+			if (c != null) {
+				w.print(" " + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
+				if (apInst.containsKey(ap)) {
+					w.print(" " + join(compactIntegerSequences(apInst.get(ap)), ","));
 				}
-				w.println();
-			
+			}
+			w.println();
+
 		}
 
 		w.println("\n\n");

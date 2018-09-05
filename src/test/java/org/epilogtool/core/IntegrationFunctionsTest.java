@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,7 +22,7 @@ public class IntegrationFunctionsTest {
 	private static LogicalModel GreenRed;
 
 	@BeforeClass
-	public static void loadModelBeforeTests() throws IOException {
+	public static void loadModelBeforeTests() throws Exception {
 
 		File fYellowRed = FileUtils.getResource("testModels", YellowRedName);
 		File fGreenRed = FileUtils.getResource("testModels", GreenRedName);

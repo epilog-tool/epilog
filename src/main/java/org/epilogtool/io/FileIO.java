@@ -18,6 +18,7 @@ import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
 
 import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.io.LogicalModelFormat;
 import org.colomoto.biolqm.io.sbml.SBMLFormat;
 import org.epilogtool.OptionStore;
 import org.epilogtool.notification.NotificationManager;
@@ -148,9 +149,9 @@ public class FileIO {
 		zis.close();
 	}
 
-	public static LogicalModel loadSBMLModel(File file) throws IOException {
-		SBMLFormat sbmlFormat = new SBMLFormat();
-		return sbmlFormat.importFile(file);
+	public static LogicalModel loadSBMLModel(File file) throws Exception {
+		LogicalModelFormat sbmlFormat = new SBMLFormat();
+		return sbmlFormat.load(file);
 	}
 
 	/**
@@ -198,7 +199,7 @@ public class FileIO {
 		return load;
 	}
 
-	public static void savePEPS(String newPEPSFile) throws IOException {
+	public static void savePEPS(String newPEPSFile) throws Exception {
 		// Create new PEPS temp directory
 		File newPEPSTmpDir = FileIO.createTempDirectory();
 
@@ -210,11 +211,9 @@ public class FileIO {
 
 		// Save all SBML files to tmpDir
 		for (String sSBML : Project.getInstance().getModelNames()) {
-			File fNewSBML = new File(newPEPSTmpDir.getAbsolutePath() + "/" + sSBML);
-			FileOutputStream outSBML = new FileOutputStream(fNewSBML);
-			SBMLFormat sbmlFormat = new SBMLFormat();
-			sbmlFormat.export(Project.getInstance().getModel(sSBML), outSBML);
-			outSBML.close();
+			String sFile = newPEPSTmpDir.getAbsolutePath() + "/" + sSBML;
+			LogicalModelFormat sbmlFormat = new SBMLFormat();
+			sbmlFormat.export(Project.getInstance().getModel(sSBML), sFile);
 		}
 
 		// Save PEPS to file

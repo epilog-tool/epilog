@@ -23,7 +23,7 @@ public class EpitheliumTest {
 
 	// Test if an sbml is properly loaded
 	@BeforeClass
-	public static void loadModelBeforeTests() throws IOException {
+	public static void loadModelBeforeTests() throws Exception {
 		yellowRed = FileIO.loadSBMLModel(FileUtils.getResource("testModels", YellowRedName));
 		greenRed = FileIO.loadSBMLModel(FileUtils.getResource("testModels", GreenRedName));
 	}

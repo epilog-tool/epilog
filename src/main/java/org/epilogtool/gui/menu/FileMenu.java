@@ -120,10 +120,10 @@ class SaveAction extends AbstractAction {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent ae) {
 		try {
 			EpiGUI.getInstance().savePEPS();
-		} catch (IOException e1) {
+		} catch (Exception e) {
 			EpiGUI.getInstance().userMessageError(Txt.get("s_MENU_CANNOT_SAVE"), Txt.get("s_MENU_SAVE"));
 		}
 	}
@@ -138,10 +138,10 @@ class SaveAsAction extends AbstractAction {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent ae) {
 		try {
 			EpiGUI.getInstance().saveAsPEPS();
-		} catch (IOException e1) {
+		} catch (Exception e) {
 			EpiGUI.getInstance().userMessageError(Txt.get("s_MENU_CANNOT_SAVE"), Txt.get("s_MENU_SAVE_AS"));
 		}
 	}

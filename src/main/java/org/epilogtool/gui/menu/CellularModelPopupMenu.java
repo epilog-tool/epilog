@@ -2,7 +2,6 @@ package org.epilogtool.gui.menu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -11,13 +10,11 @@ import org.epilogtool.common.Txt;
 import org.epilogtool.gui.EpiGUI;
 
 /**
- * Class that implements the options popup for the SBML. 
- * Instead of going to the "SBML" menu bar the user can select the action here. 
- * There are 4 possible actions: 
- * Load (Add an SBML file to the list of SBLMs in the project) 
- * Rename (Rename an existing SBML)
- * Remove (Remove an SBML from the project) - Check dependencies
- * Export (Save an SBML as an .SBML file in a chosen directory)  
+ * Class that implements the options popup for the SBML. Instead of going to the
+ * "SBML" menu bar the user can select the action here. There are 4 possible
+ * actions: Load (Add an SBML file to the list of SBLMs in the project) Rename
+ * (Rename an existing SBML) Remove (Remove an SBML from the project) - Check
+ * dependencies Export (Save an SBML as an .SBML file in a chosen directory)
  * 
  * Once an option is selected it is the EpiGUI that calls the shots.
  *
@@ -33,17 +30,17 @@ public class CellularModelPopupMenu extends JPopupMenu {
 	JMenuItem replace;
 
 	public CellularModelPopupMenu() {
-		
+
 		// LOAD SBML
 		this.load = new JMenuItem(Txt.get("s_MENU_SBML_LOAD"));
 		this.load.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent ae) {
 				try {
 					EpiGUI.getInstance().loadSBML();
-				} catch (IOException e1) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					e.printStackTrace();
 				}
 			}
 		});
@@ -58,7 +55,7 @@ public class CellularModelPopupMenu extends JPopupMenu {
 			}
 		});
 		this.add(this.rename);
-		
+
 		// Remove SBML
 		this.remove = new JMenuItem(Txt.get("s_MENU_SBML_REMOVE"));
 		this.remove.addActionListener(new ActionListener() {
@@ -68,23 +65,22 @@ public class CellularModelPopupMenu extends JPopupMenu {
 			}
 		});
 		this.add(this.remove);
-		
-		
+
 		// Save SBML
 		this.save = new JMenuItem(Txt.get("s_MENU_SBML_SAVE"));
 		this.save.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent ae) {
 				try {
 					EpiGUI.getInstance().exportSBML();
-				} catch (IOException e1) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					e.printStackTrace();
 				}
 			}
 		});
-		this.add(this.save);	
-		
+		this.add(this.save);
+
 		// Replace SBML
 		this.replace = new JMenuItem(Txt.get("s_MENU_SBML_REPLACE"));
 		this.replace.addActionListener(new ActionListener() {
@@ -93,8 +89,8 @@ public class CellularModelPopupMenu extends JPopupMenu {
 				EpiGUI.getInstance().replaceSBML();
 			}
 		});
-		this.add(this.replace);	
-		
+		this.add(this.replace);
+
 	}
 
 	public void updateMenuItems(boolean hasModel, boolean hasMore1) {

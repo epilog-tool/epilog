@@ -2,7 +2,6 @@ package org.epilogtool.gui.menu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
@@ -11,11 +10,10 @@ import org.epilogtool.common.Txt;
 import org.epilogtool.gui.EpiGUI;
 
 /**
- * This class implements the SBML Menu at the toolbar. There are 4 possible actions: 
- * Load (Add an SBML file to the list of SBLMs in the project) 
- * Rename (Rename an existing SBML)
- * Remove (Remove an SBML from the project) - Check dependencies
- * Export (Save an SBML as an .SBML file in a chosen directory)  
+ * This class implements the SBML Menu at the toolbar. There are 4 possible
+ * actions: Load (Add an SBML file to the list of SBLMs in the project) Rename
+ * (Rename an existing SBML) Remove (Remove an SBML from the project) - Check
+ * dependencies Export (Save an SBML as an .SBML file in a chosen directory)
  * 
  * Once an option is selected it is the EpiGUI that calls the shots.
  *
@@ -47,12 +45,12 @@ class LoadSBMLAction extends AbstractAction {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent ae) {
 		try {
 			EpiGUI.getInstance().loadSBML();
-		} catch (IOException e1) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 
@@ -74,7 +72,6 @@ class RenameSBMLAction extends AbstractAction {
 	}
 
 }
-
 
 class RemoveSBMLAction extends AbstractAction {
 	private static final long serialVersionUID = -7400365619490423300L;
@@ -103,12 +100,12 @@ class ExportSBMLAction extends AbstractAction {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent ae) {
 		try {
 			EpiGUI.getInstance().exportSBML();
-		} catch (IOException e1) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 }

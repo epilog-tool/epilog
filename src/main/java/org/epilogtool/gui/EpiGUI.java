@@ -9,7 +9,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -35,6 +34,7 @@ import javax.swing.tree.TreePath;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
+import org.colomoto.biolqm.io.LogicalModelFormat;
 import org.colomoto.biolqm.io.sbml.SBMLFormat;
 import org.epilogtool.FileSelectionHelper;
 import org.epilogtool.OptionStore;
@@ -50,26 +50,25 @@ import org.epilogtool.gui.dialog.DialogMessage;
 import org.epilogtool.gui.dialog.DialogNewEpithelium;
 import org.epilogtool.gui.dialog.DialogRenameSBML;
 import org.epilogtool.gui.dialog.DialogReplaceSBML;
+import org.epilogtool.gui.menu.CellularModelMenu;
 import org.epilogtool.gui.menu.CloseTabPopupMenu;
 import org.epilogtool.gui.menu.EpitheliumMenu;
 import org.epilogtool.gui.menu.FileMenu;
 import org.epilogtool.gui.menu.HelpMenu;
-import org.epilogtool.gui.menu.CellularModelMenu;
 import org.epilogtool.gui.menu.ToolsMenu;
 import org.epilogtool.gui.menu.WindowMenu;
 import org.epilogtool.gui.tab.EpiTab;
+import org.epilogtool.gui.tab.EpiTabCellularModelUpdate;
 import org.epilogtool.gui.tab.EpiTabEpitheliumModelUpdate;
 import org.epilogtool.gui.tab.EpiTabInitialConditions;
 import org.epilogtool.gui.tab.EpiTabInputDefinition;
 import org.epilogtool.gui.tab.EpiTabModelGrid;
-import org.epilogtool.gui.tab.EpiTabCellularModelUpdate;
 import org.epilogtool.gui.tab.EpiTabPerturbations;
 import org.epilogtool.gui.tab.EpiTabSimulation;
 import org.epilogtool.gui.widgets.CloseTabButton;
 import org.epilogtool.io.FileIO;
 import org.epilogtool.io.FileResource;
 import org.epilogtool.project.Project;
-
 
 /**
  * Class that defines the GUI of EPILOG. This is the main window where the GUI
@@ -246,7 +245,7 @@ public class EpiGUI extends JFrame {
 	public boolean getDeveloperMode() {
 		return this.devMode;
 	}
-	
+
 	public void setVersion(String version) {
 		this.version = version;
 	}
@@ -384,11 +383,11 @@ public class EpiGUI extends JFrame {
 		this.cleanGUI();
 		this.validateGUI();
 	}
-	
+
 	public String getVersion() {
 		return this.version;
 	}
-	
+
 	private void validateGUI() {
 		if (Project.getInstance().hasChanged() && !this.getTitle().endsWith(Txt.get("s_APP_MODIFIED"))) {
 			this.setTitle(this.getTitle() + Txt.get("s_APP_MODIFIED"));
@@ -553,7 +552,7 @@ public class EpiGUI extends JFrame {
 		this.validateGUI();
 	}
 
-	public void saveAsPEPS() throws IOException {
+	public void saveAsPEPS() throws Exception {
 
 		// declare JFileChooser
 		JFileChooser fileChooser = new JFileChooser();
@@ -606,7 +605,7 @@ public class EpiGUI extends JFrame {
 		}
 	}
 
-	public void savePEPS() throws IOException {
+	public void savePEPS() throws Exception {
 		String fName = Project.getInstance().getFilenamePEPS();
 		if (fName == null) {
 			saveAsPEPS();
@@ -623,7 +622,7 @@ public class EpiGUI extends JFrame {
 	 * 
 	 * @throws IOException
 	 */
-	public void loadSBML() throws IOException {
+	public void loadSBML() throws Exception {
 		FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter("sbml files (*.sbml)", "sbml");
 		JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(xmlfilter);
@@ -736,19 +735,17 @@ public class EpiGUI extends JFrame {
 	}
 
 	/**
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	public void exportSBML() throws IOException {
+	public void exportSBML() throws Exception {
 		String stringModel = this.projDescPanel.getSelected();
 		if (stringModel != null) {
 			String filename = FileSelectionHelper.saveFilename("sbml");
 			if (filename != null) {
 				filename += (filename.endsWith(".sbml") ? "" : ".sbml");
 				LogicalModel logicalModel = Project.getInstance().getProjectFeatures().getModel(stringModel);
-				FileOutputStream outSBML = new FileOutputStream(filename);
-				SBMLFormat sbmlFormat = new SBMLFormat();
-				sbmlFormat.export(logicalModel, outSBML);
-				outSBML.close();
+				LogicalModelFormat sbmlFormat = new SBMLFormat();
+				sbmlFormat.export(logicalModel, filename);
 				this.validateGUI();
 			}
 		} else {
