@@ -108,14 +108,14 @@ public class Launcher {
 
 			try {
 				MavenXpp3Reader reader = new MavenXpp3Reader();
-				Model model;
+				Model project;
 				if ((new File("pom.xml")).exists()) {
-					model = reader.read(new FileReader("pom.xml"));					
+					project = reader.read(new FileReader("pom.xml"));					
 				} else {
-					model = reader.read(new InputStreamReader(
+					project = reader.read(new InputStreamReader(
 							Application.class.getResourceAsStream("/META-INF/maven/org.epilogtool/EpiLog/pom.xml")));
 				}
-				gui.setVersion(model.getVersion());
+				gui.setVersion(project.getVersion());
 			} catch (Exception e) {
 			}
 

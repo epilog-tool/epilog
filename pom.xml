@@ -7,7 +7,7 @@
   <groupId>org.epilogtool</groupId>
   <artifactId>EpiLog</artifactId>
   <name>EpiLog</name>
-  <version>1.1.1</version>
+  <version>v1.1.1</version>
 	<description>EpiLog: a software for the logical modelling of epithelial patterning</description>
   <inceptionYear>2013</inceptionYear>
   <packaging>jar</packaging>
@@ -15,6 +15,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.main.class>${project.groupId}.Launcher</project.main.class>
   </properties>
 
   <repositories>
@@ -113,17 +114,48 @@
 				</plugin>
 
 				<plugin>
-					<artifactId>maven-assembly-plugin</artifactId>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.4</version>
 					<configuration>
 						<archive>
 							<manifest>
-								<mainClass>org.epilogtool.Launcher</mainClass>
+								<addClasspath>true</addClasspath>
+								<classpathPrefix>lib/</classpathPrefix>
+								<useUniqueVersions>false</useUniqueVersions>
+								<mainClass>${project.main.class}</mainClass>
 							</manifest>
 						</archive>
-						<descriptorRefs>
-							<descriptorRef>jar-with-dependencies</descriptorRef>
-						</descriptorRefs>
 					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<configuration>
+						<descriptors>
+							<descriptor>assembly-jar.xml</descriptor>
+						</descriptors>
+						<archive>
+							<manifest>
+								<addClasspath>true</addClasspath>
+								<mainClass>${project.main.class}</mainClass>
+							</manifest>
+							<manifestEntries>
+								<Project-Version>${project.version}</Project-Version>
+								<Project-Name>${project.artifactId}_${project.version}</Project-Name>
+							</manifestEntries>
+						</archive>
+					</configuration>
+					<executions> <!-- launch assembly:single during package -->
+						<execution>
+							<id>make-assembly</id>
+							<phase>package</phase>
+							<goals>
+								<goal>single</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 
 				<plugin>
@@ -141,22 +173,6 @@
 							</configuration>
 						</execution>
 					</executions>
-				</plugin>
-
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.4</version>
-					<configuration>
-						<archive>
-							<manifest>
-								<addClasspath>true</addClasspath>
-								<classpathPrefix>lib/</classpathPrefix>
-								<useUniqueVersions>false</useUniqueVersions>
-								<mainClass>org.epilogtool.Launcher</mainClass>
-							</manifest>
-						</archive>
-					</configuration>
 				</plugin>
 
 				<plugin>

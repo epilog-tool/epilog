@@ -60,7 +60,7 @@ public class DialogAbout extends EscapableDialog implements HyperlinkListener {
 	private String getContent() {
 		String s = "<body><center>\n";
 		s += "<img src='" + FileResource.getResource("logo_epilog.png") + "'/>";
-		s += "<p>EpiLog (v" + EpiGUI.getInstance().getVersion() + ") is a tool used for qualitative simulations ";
+		s += "<p>EpiLog (" + EpiGUI.getInstance().getVersion() + ") is a tool used for qualitative simulations ";
 		s += "of <b>Epi</b>thelium <b>Log</b>ical models.<br/>\n";
 		s += "It makes use of Cellular Automata to visualize the ";
 		s += "evolution of the pattern formation.</p>\n";
