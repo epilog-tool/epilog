@@ -139,6 +139,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		gbc.insets = new Insets(1, 5, 1, 0);
 		int i = 0;
 		for (String name : Project.getInstance().getProjectFeatures().getGUIModelNames()) {
+
 			gbc.gridy = i;
 			i++;
 			gbc.gridx = 0;

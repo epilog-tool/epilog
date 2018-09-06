@@ -303,7 +303,9 @@ public class Parser {
 
 		// SBML numerical identifiers
 
-		OptionStore.setOption("EM", ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
+		OptionStore.setOption(Txt.get("s_INVALID_POSITION"), ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
+		OptionStore.setOption(Txt.get("s_EMPTY_POSITION"), ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
+		OptionStore.setOption(Txt.get("s_DEAD_POSITION"), ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
 
 		int i = 0;
 		Map<LogicalModel, Integer> model2Key = new HashMap<LogicalModel, Integer>();

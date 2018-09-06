@@ -10,28 +10,29 @@ import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.internal.MDDStoreImpl;
 import org.epilogtool.OptionStore;
+import org.epilogtool.common.Txt;
 
-public class EmptyModel {
-	private static final Color default_color = Color.black;
+public class InvalidPosition {
+	private static final Color default_color = Color.gray;
 	private Color color;
 	private String name;
 	private LogicalModel model;
 
-	private static EmptyModel emptyModel = null;
+	private static InvalidPosition emptyModel = null;
 
-	private EmptyModel() {
-		String c = (String) OptionStore.getOption("EM");
+	private InvalidPosition() {
+		String c = (String) OptionStore.getOption("s_INVALID_POSITION");
 		this.color = ((c == null) ? default_color: Color.decode(c));
-		this.name = "Empty cell";
+		this.name = Txt.get("s_INVALID_POSITION");
 		List<NodeInfo> vars = new ArrayList<NodeInfo>();
 		MDDManager manager = new MDDStoreImpl(vars, 2);
 		int[] functions = new int[0];
 		this.model = new LogicalModelImpl(vars, manager, functions);
 	}
 
-	public static EmptyModel getInstance() {
+	public static InvalidPosition getInstance() {
 		if (emptyModel == null) {
-			emptyModel = new EmptyModel();
+			emptyModel = new InvalidPosition();
 		}
 		return emptyModel;
 	}
@@ -52,11 +53,11 @@ public class EmptyModel {
 		this.color = c;
 	}
 
-	public boolean isEmptyModel(String n) {
+	public boolean isInvalidPosition(String n) {
 		return n.equals(this.name);
 	}
 
-	public boolean isEmptyModel(LogicalModel m) {
+	public boolean isInvalidPosition(LogicalModel m) {
 		return m.equals(this.model);
 	}
 }

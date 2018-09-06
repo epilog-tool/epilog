@@ -62,8 +62,6 @@ public class EpiTabEvents extends EpiTabDefinitions {
 	private int alphaDeathMax;
 
 
-	
-	private String trigerOrder;
 
 	public EpiTabEvents(Epithelium e, TreePath path, TabChangeNotifyProj tabChanged) {
 		super(e, path, tabChanged);
@@ -98,6 +96,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		this.jpNewState.add(new JLabel("New Cell State"));
 		JTextField state = new JTextField();
 		state.setColumns(30);
+		this.jpNewState.add(state);
 		
 	
 		////////////////////////////////////////////////////////////////// ALPHA SLIDER DIVISION
@@ -315,11 +314,6 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		this.isInitialized = true;
 	}
 	
-	
-	protected void updateTriggerOrder(JRadioButton jrb) {
-		this.trigerOrder = (jrb.getName());
-		
-	}
 
 	protected void updateTriggerDivision(JRadioButton jrb) {
 		
@@ -328,14 +322,18 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		
 		if (str == "Random") {
 			this.auxDivisionPanel.add(this.jpAlphaDivision,BorderLayout.SOUTH);
+			this.epithelium.getEpitheliumEvents().setNewCellState("Random");
 		}
 
-		if (str == "Pattern") {
+		else if (str == "Pattern") {
 			this.auxDivisionPanel.add(this.jpPatternDivision, BorderLayout.CENTER);
-			System.out.println(this.epithelium.getEpitheliumEvents().getNewCellState());
+			this.epithelium.getEpitheliumEvents().setNewCellState("Pattern");
 			if (this.epithelium.getEpitheliumEvents().getNewCellState().equals("Predefined")) {
 				this.auxDivisionPanel.add(this.jpNewState, BorderLayout.SOUTH);
 			}
+		}
+		else {
+			this.epithelium.getEpitheliumEvents().setNewCellState("None");
 		}
 		
 		this.jpTriggerDivision.add(this.auxDivisionPanel, BorderLayout.SOUTH);
@@ -352,11 +350,15 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		
 		if (str == "Random") {
 			this.auxDeathPanel.add(this.jpAlphaDeath,BorderLayout.SOUTH);
+			this.epithelium.getEpitheliumEvents().setDeathOption("Random");
 		}
 
-		if (str == "Pattern") {
+		else if (str == "Pattern") {
 			this.auxDeathPanel.add(this.jpPatternDeath, BorderLayout.CENTER);
-//			this.auxDeathPanel.add(this.jpAlphaDeath,BorderLayout.SOUTH);
+			this.epithelium.getEpitheliumEvents().setDeathOption("Pattern");
+		}
+		else {
+			this.epithelium.getEpitheliumEvents().setDeathOption("None");
 		}
 		
 		this.jpTriggerDeath.add(this.auxDeathPanel, BorderLayout.SOUTH);

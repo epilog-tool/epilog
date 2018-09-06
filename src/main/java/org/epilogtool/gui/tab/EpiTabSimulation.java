@@ -716,33 +716,6 @@ public class EpiTabSimulation extends EpiTabTools {
 		}
 	}
 
-	// get current simulation step
-	// private void saveEpiGrid2File() {
-	// String ext = "png";
-	// String filename = FileSelectionHelper.saveFilename(ext);
-	// if (filename != null) {
-	// filename += (filename.endsWith("." + ext) ? "" : "." + ext);
-	// FileIO.writeEpitheliumGrid2File(filename, this.visualGridSimulation, ext);
-	// }
-	//
-	// }
-
-	// // get all the simulation steps
-	// private void saveAllEpiGrid2File() {
-	// JFileChooser fc = new JFileChooser();
-	// fc.setFileFilter(new EpiLogFileFilter("png"));
-	// if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-	// String file = fc.getSelectedFile().getAbsolutePath();
-	// String ext = "png";
-	// file += (file.endsWith(ext) ? "" : "." + ext);
-	// for (int i = 0; i <= this.iCurrSimIter; i++) {
-	// String file_name = file.replace(".", "_" + i + ".");
-	// EpitheliumGrid grid = this.simulation.getGridAt(i);
-	// this.visualGridSimulation.setEpitheliumGrid(grid);
-	// FileIO.writeEpitheliumGrid2File(file_name, this.visualGridSimulation, ext);
-	// }
-	// }
-	// }
 
 	private void cloneEpiWithCurrGrid() {
 		this.simEpiClone.cloneEpithelium(this.epithelium, this.simulation.getGridAt(this.iCurrSimIter));
@@ -763,6 +736,8 @@ public class EpiTabSimulation extends EpiTabTools {
 				}
 			}
 			this.iCurrSimIter++;
+			//TODO
+			
 		}
 		this.visualGridSimulation.setEpitheliumGrid(nextGrid);
 		this.jlStep.setText("" + this.iCurrSimIter);
@@ -784,6 +759,8 @@ public class EpiTabSimulation extends EpiTabTools {
 			setGridGUIStable(true);
 		} else {
 			this.iCurrSimIter++;
+			//TODO
+			this.simulation.updateCellularEvents();
 			this.visualGridSimulation.setEpitheliumGrid(nextGrid);
 			this.jlStep.setText("" + this.iCurrSimIter);
 			this.setGUITerminalCycle(this.simulation.getTerminalCycleLen());

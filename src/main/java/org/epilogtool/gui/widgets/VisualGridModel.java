@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.core.DeadCell;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
@@ -175,7 +176,11 @@ public class VisualGridModel extends VisualGridDefinitions {
 				Color c;
 				if (EmptyModel.getInstance().isEmptyModel(this.modelGridClone[x][y])) {
 					c = EmptyModel.getInstance().getColor();
-				} else {
+				}
+				else if (DeadCell.getInstance().isDeadCell(this.modelGridClone[x][y])) {
+					c = DeadCell.getInstance().getColor();
+				}
+				else {
 					c = Project.getInstance().getProjectFeatures().getModelColor(this.modelGridClone[x][y]);
 				}
 				Tuple2D<Double> center = topology.getPolygonCenter(this.radius, x, y);

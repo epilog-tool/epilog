@@ -1,25 +1,43 @@
 package org.epilogtool.core;
 
+import java.util.List;
+import java.util.Map;
 
 public class EpitheliumEvents {
 	
 	public static String DEFAULT_ORDER = "Random";
 	public static String DEFAULT_NEWCELL = "Naive";
 	public static String DEFAULT_DEATHOPTION = "Empty position";
+	public static float DEFAULT_DIVISIONPROBABILITY = (float) 1.0;
+	public static float DEFAULT_DEATHPROBABILITY = (float) 1.0;
+	
+	private List<LivingCell> lstLivingCells;
+	private List<DeadCell> lstDeadCells;
+	private List<InvalidPosition> lstInvalidPositions;
+	private List<EmptyPosition> lstEmptyPositions;
+	
 	
 	private String eventOrder;
 	private String deathOption;
 	private String strNewCellState;
 	private byte[] newCellState;
-	
+	private float  divisionProbability;
+	private float  deathProbability;
 
-	public EpitheliumEvents(String eventOrder, String strNewCellState, String deathOption, byte[] newCellState) {
+	public EpitheliumEvents(float divisionProbability, float deathProbability, String eventOrder, String strNewCellState, String deathOption, byte[] newCellState) {
 		this.eventOrder = eventOrder;
 		this.deathOption = deathOption;
 		this.strNewCellState = strNewCellState;
 		this.newCellState = newCellState;
+		this.divisionProbability = divisionProbability;
+		this.deathProbability = deathProbability;
 	}
 
+
+	public float getDivisionProbability() {
+		return this.divisionProbability;
+	}
+	
 	
 	public void setEventOrder(String str) {
 		this.eventOrder = str;
@@ -55,7 +73,7 @@ public class EpitheliumEvents {
 	}
 	
 	public EpitheliumEvents clone() {
-		return new EpitheliumEvents(this.eventOrder, this.deathOption, this.strNewCellState, this.newCellState);
+		return new EpitheliumEvents(this.divisionProbability, this.deathProbability, this.eventOrder, this.deathOption, this.strNewCellState, this.newCellState);
 	}
 
 	public boolean equals(Object o) {

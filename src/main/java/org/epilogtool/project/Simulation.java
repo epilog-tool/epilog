@@ -271,4 +271,27 @@ public class Simulation {
 		}
 		return percentageHistory;
 	}
+
+	public void updateCellularEvents() {
+		// TODO Auto-generated method stub
+		Set<Tuple2D<Integer>> lstAliveCells = this.epithelium.getEpitheliumGrid().getLivingCells();
+		
+		Set<Tuple2D<Integer>> lstCellsToDie = new HashSet<Tuple2D<Integer>>();
+		Set<Tuple2D<Integer>> lstCellsToDivide = new HashSet<Tuple2D<Integer>>();
+		
+		if (this.epithelium.getEpitheliumEvents().getNewCellState().equals("None")) {
+			//TODO Cell will not divide
+		}
+		else if (this.epithelium.getEpitheliumEvents().getNewCellState().equals("Pattern")) {
+			//TODO Check if state fits the pattern
+		}
+		else if (this.epithelium.getEpitheliumEvents().getNewCellState().equals("Random")) {
+			
+			float divisionProbability = this.epithelium.getEpitheliumEvents().getDivisionProbability();
+			System.out.println(divisionProbability);
+			
+			//TODO select 
+		}
+		
+	}
 }

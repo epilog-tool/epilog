@@ -10,28 +10,29 @@ import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.mddlib.MDDManager;
 import org.colomoto.mddlib.internal.MDDStoreImpl;
 import org.epilogtool.OptionStore;
+import org.epilogtool.common.Txt;
 
-public class EmptyModel {
-	private static final Color default_color = Color.black;
+public class EmptyPosition {
+	private static final Color default_color = Color.DARK_GRAY;
 	private Color color;
 	private String name;
 	private LogicalModel model;
 
-	private static EmptyModel emptyModel = null;
+	private static EmptyPosition emptyModel = null;
 
-	private EmptyModel() {
-		String c = (String) OptionStore.getOption("EM");
+	private EmptyPosition() {
+		String c = (String) OptionStore.getOption(Txt.get("s_EMPTY_POSITION"));
 		this.color = ((c == null) ? default_color: Color.decode(c));
-		this.name = "Empty cell";
+		this.name = Txt.get("s_EMPTY_POSITION");
 		List<NodeInfo> vars = new ArrayList<NodeInfo>();
 		MDDManager manager = new MDDStoreImpl(vars, 2);
 		int[] functions = new int[0];
 		this.model = new LogicalModelImpl(vars, manager, functions);
 	}
 
-	public static EmptyModel getInstance() {
+	public static EmptyPosition getInstance() {
 		if (emptyModel == null) {
-			emptyModel = new EmptyModel();
+			emptyModel = new EmptyPosition();
 		}
 		return emptyModel;
 	}
