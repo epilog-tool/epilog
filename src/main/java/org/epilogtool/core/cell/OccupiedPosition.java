@@ -1,4 +1,4 @@
-package org.epilogtool.core;
+package org.epilogtool.core.cell;
 
 public interface  OccupiedPosition {
 	

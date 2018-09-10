@@ -1,4 +1,4 @@
-package org.epilogtool.core;
+package org.epilogtool.core.cell;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -15,6 +15,7 @@ import org.epilogtool.common.Txt;
 public class DeadCell extends AbstractCell{
 	
 	private static final Color default_color = Color.black;
+	
 	private static DeadCell deadCell = null;
 
 
@@ -41,8 +42,5 @@ public class DeadCell extends AbstractCell{
 		return n.equals(this.name);
 	}
 
-	public boolean isDeadCell(LogicalModel m) {
-		return m.equals(this.model);
-	}
 
 }

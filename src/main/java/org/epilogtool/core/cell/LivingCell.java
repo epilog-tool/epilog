@@ -1,7 +1,8 @@
-package org.epilogtool.core;
+package org.epilogtool.core.cell;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.epilogtool.core.EmptyModel;
 
 public class LivingCell implements OccupiedPosition{
 	

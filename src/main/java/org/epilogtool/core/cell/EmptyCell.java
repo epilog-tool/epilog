@@ -1,4 +1,4 @@
-package org.epilogtool.core;
+package org.epilogtool.core.cell;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -12,15 +12,15 @@ import org.colomoto.mddlib.internal.MDDStoreImpl;
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.Txt;
 
-public class EmptyPosition {
+public class EmptyCell {
 	private static final Color default_color = Color.DARK_GRAY;
 	private Color color;
 	private String name;
 	private LogicalModel model;
 
-	private static EmptyPosition emptyModel = null;
+	private static EmptyCell emptyModel = null;
 
-	private EmptyPosition() {
+	private EmptyCell() {
 		String c = (String) OptionStore.getOption(Txt.get("s_EMPTY_POSITION"));
 		this.color = ((c == null) ? default_color: Color.decode(c));
 		this.name = Txt.get("s_EMPTY_POSITION");
@@ -30,9 +30,9 @@ public class EmptyPosition {
 		this.model = new LogicalModelImpl(vars, manager, functions);
 	}
 
-	public static EmptyPosition getInstance() {
+	public static EmptyCell getInstance() {
 		if (emptyModel == null) {
-			emptyModel = new EmptyPosition();
+			emptyModel = new EmptyCell();
 		}
 		return emptyModel;
 	}
@@ -57,7 +57,4 @@ public class EmptyPosition {
 		return n.equals(this.name);
 	}
 
-	public boolean isEmptyModel(LogicalModel m) {
-		return m.equals(this.model);
-	}
 }

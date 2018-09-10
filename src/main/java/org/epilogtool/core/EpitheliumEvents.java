@@ -3,6 +3,11 @@ package org.epilogtool.core;
 import java.util.List;
 import java.util.Map;
 
+import org.epilogtool.core.cell.DeadCell;
+import org.epilogtool.core.cell.EmptyCell;
+import org.epilogtool.core.cell.InvalidCell;
+import org.epilogtool.core.cell.LivingCell;
+
 public class EpitheliumEvents {
 	
 	public static String DEFAULT_ORDER = "Random";
@@ -13,8 +18,8 @@ public class EpitheliumEvents {
 	
 	private List<LivingCell> lstLivingCells;
 	private List<DeadCell> lstDeadCells;
-	private List<InvalidPosition> lstInvalidPositions;
-	private List<EmptyPosition> lstEmptyPositions;
+	private List<InvalidCell> lstInvalidPositions;
+	private List<EmptyCell> lstEmptyPositions;
 	
 	
 	private String eventOrder;

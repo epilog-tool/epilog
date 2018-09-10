@@ -1,4 +1,4 @@
-package org.epilogtool.core;
+package org.epilogtool.core.cell;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -18,7 +18,6 @@ public class AbstractCell{
 	protected String name;
 	protected LogicalModel model;
 	
-	private static AbstractCell abstractCell = null;
 
 	protected AbstractCell() {
 	}

@@ -1,4 +1,4 @@
-package org.epilogtool.core;
+package org.epilogtool.core.cell;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -12,15 +12,15 @@ import org.colomoto.mddlib.internal.MDDStoreImpl;
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.Txt;
 
-public class InvalidPosition {
+public class InvalidCell {
 	private static final Color default_color = Color.gray;
 	private Color color;
 	private String name;
 	private LogicalModel model;
 
-	private static InvalidPosition emptyModel = null;
+	private static InvalidCell emptyModel = null;
 
-	private InvalidPosition() {
+	private InvalidCell() {
 		String c = (String) OptionStore.getOption("s_INVALID_POSITION");
 		this.color = ((c == null) ? default_color: Color.decode(c));
 		this.name = Txt.get("s_INVALID_POSITION");
@@ -30,9 +30,9 @@ public class InvalidPosition {
 		this.model = new LogicalModelImpl(vars, manager, functions);
 	}
 
-	public static InvalidPosition getInstance() {
+	public static InvalidCell getInstance() {
 		if (emptyModel == null) {
-			emptyModel = new InvalidPosition();
+			emptyModel = new InvalidCell();
 		}
 		return emptyModel;
 	}

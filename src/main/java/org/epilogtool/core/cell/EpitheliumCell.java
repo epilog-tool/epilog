@@ -1,3 +1,4 @@
+package org.epilogtool.core.cell;
 //package org.epilogtool.core;
 //
 //import org.colomoto.biolqm.LogicalModel;

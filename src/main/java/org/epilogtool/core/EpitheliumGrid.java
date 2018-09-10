@@ -14,6 +14,7 @@ import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.core.cell.LivingCell;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.project.Project;
