@@ -17,8 +17,8 @@ import javax.swing.JPanel;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.Tuple2D;
-import org.epilogtool.core.DeadCell;
 import org.epilogtool.core.EmptyModel;
+import org.epilogtool.core.cell.DeadCell;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
 import org.epilogtool.project.Project;
