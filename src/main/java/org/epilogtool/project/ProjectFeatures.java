@@ -14,10 +14,10 @@ import java.util.Set;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.epilogtool.OptionStore;
-import org.epilogtool.core.DeadCell;
 import org.epilogtool.core.EmptyModel;
-import org.epilogtool.core.EmptyPosition;
-import org.epilogtool.core.InvalidPosition;
+import org.epilogtool.core.cell.DeadCell;
+import org.epilogtool.core.cell.EmptyCell;
+import org.epilogtool.core.cell.InvalidCell;
 import org.epilogtool.gui.color.ColorUtils;
 
 public class ProjectFeatures {
@@ -115,8 +115,8 @@ public class ProjectFeatures {
 
 	public List<String> getGUIModelNames() {
 		List<String> ltmp = new ArrayList<String>();
-		ltmp.add(EmptyPosition.getInstance().getName());
-		ltmp.add(InvalidPosition.getInstance().getName());
+		ltmp.add(EmptyCell.getInstance().getName());
+		ltmp.add(InvalidCell.getInstance().getName());
 		ltmp.add(DeadCell.getInstance().getName());
 		ltmp.addAll(this.string2Model.keySet());
 		return ltmp;
