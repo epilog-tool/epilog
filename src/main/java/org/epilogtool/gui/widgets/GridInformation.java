@@ -22,9 +22,11 @@ import org.epilogtool.common.Txt;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
+import org.epilogtool.core.cell.AbstractCell;
 import org.epilogtool.gui.EpiLogGUIFactory;
 import org.epilogtool.gui.dialog.EnumOrderNodes;
 import org.epilogtool.project.Project;
+import org.epilogtool.core.cell.LivingCell;
 
 public class GridInformation extends JPanel {
 	private static final long serialVersionUID = -1449994132920814592L;
@@ -68,7 +70,7 @@ public class GridInformation extends JPanel {
 		gbc.gridwidth = width;
 	}
 
-	public void updateValues(int posX, int posY, EpitheliumGrid grid, LogicalModel[][] modelGrid) {
+	public void updateValues(int posX, int posY, EpitheliumGrid grid, AbstractCell[][] cellGrid) {
 		this.jCellPanel.removeAll();
 		JLabel jlTmp;
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -80,9 +82,10 @@ public class GridInformation extends JPanel {
 		this.minimalSpace(gbc, ++y);
 
 		// Separation
-		if (grid != null || modelGrid != null) {
-			LogicalModel m = (grid != null) ? grid.getModel(posX, posY) : modelGrid[posX][posY];
-
+		if (grid != null || cellGrid != null) {
+			if (cellGrid[posX][posY].getName().equals(Txt.get("s_LIVING_CELL"))) {
+			LogicalModel m = (grid != null) ? grid.getModel(posX, posY) : ((LivingCell) cellGrid[posX][posY]).getModel();
+			}
 			// Cell Position
 			jlTmp = new JLabel("Grid position:");
 			this.constraints(gbc, 0, ++y, 2);
@@ -95,7 +98,7 @@ public class GridInformation extends JPanel {
 			this.minimalSpace(gbc, ++y);
 
 			// Empty cell specification
-			if (EmptyModel.getInstance().getModel().equals(m)) {
+			if (cellGrid[posX][posY].getName().equals(Txt.get("s_EMPTY_POSITION"))) {
 				this.constraints(gbc, 0, ++y, 2);
 				jlTmp = new JLabel(EmptyModel.getInstance().getName());
 				this.jCellPanel.add(jlTmp, gbc);
@@ -107,9 +110,13 @@ public class GridInformation extends JPanel {
 				jlTmp = new JLabel("Model:");
 				this.jCellPanel.add(jlTmp, gbc);
 				this.constraints(gbc, 0, ++y, 2);
-				jlTmp = new JLabel("  " + Project.getInstance().getProjectFeatures().getModelName(m));
-				jlTmp.setToolTipText(Project.getInstance().getProjectFeatures().getModelName(m));
-				this.jCellPanel.add(jlTmp, gbc);
+				if (cellGrid[posX][posY].getName().equals(Txt.get("s_LIVING_CELL"))) {
+					LogicalModel m = (grid != null) ? grid.getModel(posX, posY) : ((LivingCell) cellGrid[posX][posY]).getModel();
+					jlTmp = new JLabel("  " + Project.getInstance().getProjectFeatures().getModelName(m));
+					jlTmp.setToolTipText(Project.getInstance().getProjectFeatures().getModelName(m));
+					this.jCellPanel.add(jlTmp, gbc);
+					}
+
 
 				if (grid != null) {
 					// Separation
@@ -157,10 +164,14 @@ public class GridInformation extends JPanel {
 					gbc.gridwidth = 1;
 					boolean isEmpty = true;
 					for (String nodeID : lAllNodeIDs) {
+						if (cellGrid[posX][posY].getName().equals(Txt.get("s_LIVING_CELL"))) {
+							LogicalModel m = (grid != null) ? grid.getModel(posX, posY) : ((LivingCell) cellGrid[posX][posY]).getModel();
+							
 						if (!Project.getInstance().getProjectFeatures().hasNode(nodeID, m)
 								|| Project.getInstance().getProjectFeatures().getNodeInfo(nodeID).isInput()) {
 							continue;
-						}
+						}}
+					
 						jlTmp = new JLabel("  " + nodeID + " ");
 						jlTmp.setToolTipText(nodeID);
 						this.constraints(gbc, 0, ++y, 1);

@@ -14,6 +14,10 @@ import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.common.Txt;
+import org.epilogtool.core.cell.AbstractCell;
+import org.epilogtool.core.cell.CellFactory;
+import org.epilogtool.core.cell.EmptyCell;
 import org.epilogtool.core.cell.LivingCell;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.core.topology.Topology;
@@ -21,37 +25,42 @@ import org.epilogtool.project.Project;
 import org.epilogtool.services.TopologyService;
 
 public class EpitheliumGrid {
-	private LivingCell[][] gridEpiCell;
+	private AbstractCell[][] gridCells;
 	private Topology topology;
 	private Set<LogicalModel> modelSet;
 	private Map<String, Map<Byte, Integer>> compCounts;
 	private Map<String, Map<Byte, Float>> compPercents;
+	private CellFactory cellFactory;
 
-	private EpitheliumGrid(LivingCell[][] gridEpiCell, Topology topology, Set<LogicalModel> modelSet,
+	private EpitheliumGrid(AbstractCell[][] gridEpiCell, Topology topology, Set<LogicalModel> modelSet,
 			Map<String, Map<Byte, Integer>> compCounts, Map<String, Map<Byte, Float>> compPercents) {
-		this.gridEpiCell = gridEpiCell;
+		
+		this.gridCells = gridEpiCell;
 		this.topology = topology;
 		this.modelSet = modelSet;
 		this.compCounts = compCounts;
 		this.compPercents = compPercents;
 	}
 	
-
+	//The user may have edited one of the parameters of the grid, meaning that one of the epithelium parameters has changed.
 	public void editEpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
-		// Create new EpiCell[][]
-		LivingCell[][] newGrid = new LivingCell[gridX][gridY];
+		
+		// Create new EpiCell[][] in case the dimension of the grid has changed
+		AbstractCell[][] newGrid = new AbstractCell[gridX][gridY];
 		for (int y = 0; y < gridY; y++) {
 			for (int x = 0; x < gridX; x++) {
-				if (x >= this.getX() || y >= this.getY()) {
-					newGrid[x][y] = new LivingCell(EmptyModel.getInstance().getModel());
-				} else {
-					newGrid[x][y] = this.gridEpiCell[x][y];
+				if (x <= this.getX() || y <= this.getY()) {
+					newGrid[x][y] = this.gridCells[x][y];
+				}
+				else {
+					newGrid[x][y] = cellFactory.newEmptyCell();
 				}
 			}
 		}
-		this.gridEpiCell = newGrid;
+		this.gridCells = newGrid;
+		
 		// Create new Topology
 		this.setTopology(topologyID, gridX, gridY, rollover);
 		// Update grid
@@ -62,10 +71,11 @@ public class EpitheliumGrid {
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		this.setTopology(topologyID, gridX, gridY, rollover);
-		this.gridEpiCell = new LivingCell[gridX][gridY];
+		
+		this.gridCells = new AbstractCell[gridX][gridY];
 		for (int y = 0; y < gridY; y++) {
 			for (int x = 0; x < gridX; x++) {
-				this.gridEpiCell[x][y] = new LivingCell(m);
+				this.gridCells[x][y] = cellFactory.newLivingCell(m);
 			}
 		}
 		this.modelSet = new HashSet<LogicalModel>();
@@ -92,8 +102,14 @@ public class EpitheliumGrid {
 		return this.topology;
 	}
 
+	//ISSUE: 
 	public LogicalModel getModel(int x, int y) {
-		return this.gridEpiCell[x][y].getModel();
+		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+			LivingCell lCell = (LivingCell) this.gridCells[x][y];
+			return lCell.getModel();
+		}
+		else return null;
+			
 	}
 
 	public boolean hasModel(LogicalModel m) {
@@ -109,19 +125,36 @@ public class EpitheliumGrid {
 	}
 
 	private void restrictCellWithPerturbation(int x, int y) {
-		this.gridEpiCell[x][y].restrictValuesWithPerturbation();
+		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+			LivingCell lCell = (LivingCell) this.gridCells[x][y];
+			lCell.restrictValuesWithPerturbation();
+		}
+
 	}
 
 	public byte[] getCellState(int x, int y) {
-		return this.gridEpiCell[x][y].getState();
+		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+			LivingCell lCell = (LivingCell) this.gridCells[x][y];
+			return lCell.getState();
+	}
+		else return null;
 	}
 
+	@SuppressWarnings("null")
 	public byte getCellValue(int x, int y, String nodeID) {
-		return this.gridEpiCell[x][y].getValue(nodeID);
+		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+			LivingCell lCell = (LivingCell) this.gridCells[x][y];
+			return lCell.getValue(nodeID);
+	}
+		else return (Byte) null;
 	}
 
 	public AbstractPerturbation getPerturbation(int x, int y) {
-		return this.gridEpiCell[x][y].getPerturbation();
+		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+			LivingCell lCell = (LivingCell) this.gridCells[x][y];
+			return lCell.getPerturbation();
+	}
+		else return null;
 	}
 
 	public Map<LogicalModel, Set<AbstractPerturbation>> getAppliedPerturb() {
@@ -141,23 +174,24 @@ public class EpitheliumGrid {
 	}
 
 	public int getNodeIndex(int x, int y, String nodeID) {
-		return this.gridEpiCell[x][y].getNodeIndex(nodeID);
+		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+			LivingCell lCell = (LivingCell) this.gridCells[x][y];
+			return lCell.getNodeIndex(nodeID);
+	}
+		else return -1;
 	}
 
+
 	public byte getCellComponentValue(int x, int y, String nodeID) {
-		return this.gridEpiCell[x][y].getNodeValue(nodeID);
+		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+			LivingCell lCell = (LivingCell) this.gridCells[x][y];
+			return lCell.getNodeValue(nodeID);
+	}
+		else return -1;
 	}
 
 	public Set<LogicalModel> getModelSet() {
 		return Collections.unmodifiableSet(this.modelSet);
-	}
-
-//	public boolean isEmptyCell(int x, int y) {
-//		return this.gridEpiCell[x][y].isEmptyCell();
-//	}
-
-	public boolean hasEmptyModel(int x, int y) {
-		return this.gridEpiCell[x][y].hasEmptyModel();
 	}
 
 	public void updateGrid() {
@@ -171,10 +205,10 @@ public class EpitheliumGrid {
 		this.modelSet.clear();
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
-//				if (this.isEmptyCell(x, y)) {
-//					continue;
-//				}
-				this.modelSet.add(this.gridEpiCell[x][y].getModel());
+				if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+					LivingCell lCell = (LivingCell) this.gridCells[x][y];
+					this.modelSet.add(lCell.getModel());
+				}
 			}
 		}
 	}
@@ -191,16 +225,18 @@ public class EpitheliumGrid {
 	 * @param m
 	 */
 	public void setModel(int x, int y, LogicalModel m) {
-		gridEpiCell[x][y].setModel(m);
+		this.gridCells[x][y] = cellFactory.newLivingCell(m);
 	}
 
+	
 	public void setPerturbation(List<Tuple2D<Integer>> lTuples, AbstractPerturbation ap) {
 		for (Tuple2D<Integer> tuple : lTuples) {
-			LogicalModel model = this.gridEpiCell[tuple.getX()][tuple.getY()].getModel();
-			if (apBelongsToModel(model, ap)) {
+			if (this.gridCells[tuple.getX()][tuple.getY()].getName().equals(Txt.get("s_LIVING_CELL"))) {
+				LogicalModel model = ((LivingCell) this.gridCells[tuple.getX()][tuple.getY()]).getModel();
+				if (apBelongsToModel(model, ap)) {
 				this.setPerturbation(tuple.getX(), tuple.getY(), ap);
 			}
-		}
+		}}
 	}
 
 	private boolean apBelongsToModel(LogicalModel model, AbstractPerturbation ap) {
@@ -233,39 +269,44 @@ public class EpitheliumGrid {
 	}
 
 	public void setPerturbation(int x, int y, AbstractPerturbation ap) {
-		gridEpiCell[x][y].setPerturbation(ap);
+		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+			((LivingCell) this.gridCells[x][y]).setPerturbation(ap);
+	}
 	}
 
 	public void setCellState(int x, int y, byte[] state) {
-		gridEpiCell[x][y].setState(state);
-	}
+		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+			((LivingCell) this.gridCells[x][y]).setState(state);
+	}}
 
 	public void setCellComponentValue(int x, int y, String nodeID, byte value) {
-		gridEpiCell[x][y].setValue(nodeID, value);
+		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+			((LivingCell) this.gridCells[x][y]).setValue(nodeID, value);
+	}}
+
+	public AbstractCell cloneEpitheliumCellAt(int x, int y) {
+		return this.gridCells[x][y].clone();
 	}
 
-	public LivingCell cloneEpitheliumCellAt(int x, int y) {
-		return this.gridEpiCell[x][y].clone();
+	public AbstractCell getEpitheliumCell(int x, int y) {
+		return this.gridCells[x][y];
 	}
 
-	public LivingCell getEpitheliumCell(int x, int y) {
-		return this.gridEpiCell[x][y];
-	}
-
-	public void setEpitheliumCell(int x, int y, LivingCell epiCell) {
-		this.gridEpiCell[x][y] = epiCell;
+	public void setEpitheliumCell(int x, int y, AbstractCell absCell) {
+		this.gridCells[x][y] = absCell;
 	}
 
 	protected void cloneEpitheliumCellTo(int x1, int y1, int x2, int y2) {
-		LivingCell epiCell = this.cloneEpitheliumCellAt(x1, y1);
-		this.gridEpiCell[x2][y2] = epiCell;
+		AbstractCell epiCell = this.cloneEpitheliumCellAt(x1, y1);
+		this.gridCells[x2][y2] = epiCell;
 	}
 
 	public String hashGrid() {
 		String hash = "";
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
-				hash += this.gridEpiCell[x][y].hashState();
+				if(this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) 
+					hash += ((LivingCell) this.gridCells[x][y]).hashState();
 			}
 		}
 		return hash;
@@ -300,7 +341,7 @@ public class EpitheliumGrid {
 		}
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
-				if (!this.gridEpiCell[x][y].equals(o.gridEpiCell[x][y])) {
+				if (!this.gridCells[x][y].equals(o.gridCells[x][y])) {
 					return false;
 				}
 			}
@@ -309,10 +350,10 @@ public class EpitheliumGrid {
 	}
 
 	public EpitheliumGrid clone() {
-		LivingCell[][] newGrid = new LivingCell[this.getX()][this.getY()];
+		AbstractCell[][] newGrid = new LivingCell[this.getX()][this.getY()];
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
-				newGrid[x][y] = this.gridEpiCell[x][y].clone();
+				newGrid[x][y] = this.gridCells[x][y].clone();
 			}
 		}
 		Topology newTop = this.topology.clone();

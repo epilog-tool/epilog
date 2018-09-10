@@ -2,9 +2,10 @@ package org.epilogtool.core.cell;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.epilogtool.common.Txt;
 import org.epilogtool.core.EmptyModel;
 
-public class LivingCell implements OccupiedPosition{
+public class LivingCell extends AbstractCell{
 	
 	public static String DEFAULT_EVENTOPTION = "None";
 
@@ -18,6 +19,7 @@ public class LivingCell implements OccupiedPosition{
 
 		this.eventState = DEFAULT_EVENTOPTION;
 		this.setModel(m);
+		this.name = Txt.get("s_LIVING_CELL");
 	}
 
 	public void setEventState(String str) {

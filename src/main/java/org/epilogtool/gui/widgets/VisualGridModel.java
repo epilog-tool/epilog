@@ -17,8 +17,11 @@ import javax.swing.JPanel;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.common.Txt;
 import org.epilogtool.core.EmptyModel;
+import org.epilogtool.core.cell.AbstractCell;
 import org.epilogtool.core.cell.DeadCell;
+import org.epilogtool.core.cell.LivingCell;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
 import org.epilogtool.project.Project;
@@ -26,17 +29,17 @@ import org.epilogtool.project.Project;
 public class VisualGridModel extends VisualGridDefinitions {
 	private static final long serialVersionUID = -8878704517273291774L;
 
-	private LogicalModel[][] modelGridClone;
+	private AbstractCell[][] epiGridClone;
 	private String selModelName;
 	private boolean isRectFill;
 	private Tuple2D<Integer> initialRectPos;
 	private GridInformation valuePanel;
 	private JPanel jpModelsUsed;
 
-	public VisualGridModel(int gridX, int gridY, Topology topology, LogicalModel[][] modelGridClone,
+	public VisualGridModel(int gridX, int gridY, Topology topology, AbstractCell[][] epiGrid,
 			GridInformation valuePanel, TabProbablyChanged tpc, JPanel jpModelsUsed) {
 		super(gridX, gridY, topology, tpc);
-		this.modelGridClone = modelGridClone;
+		this.epiGridClone = epiGrid;
 		this.selModelName = null;
 		this.isRectFill = false;
 		this.initialRectPos = null;
@@ -115,12 +118,15 @@ public class VisualGridModel extends VisualGridDefinitions {
 				gbc.gridy = i;
 				i++;
 				// gbc.anchor = GridBagConstraints.WEST;
-				LogicalModel model = this.modelGridClone[x][y];
-				String modelString = Project.getInstance().getProjectFeatures().getModelName(model);
-				if (!models.contains(modelString)) {
-					models.add(modelString);
-					JLabel modelName = new JLabel(modelString);
-					this.jpModelsUsed.add(modelName, gbc);
+		
+				if (this.epiGridClone[x][y].getName().equals(Txt.get("s_LIVING_CELL"))){
+					LogicalModel model =((LivingCell) this.epiGridClone[x][y]).getModel();
+					String modelString = Project.getInstance().getProjectFeatures().getModelName(model);
+					if (!models.contains(modelString)) {
+						models.add(modelString);
+						JLabel modelName = new JLabel(modelString);
+						this.jpModelsUsed.add(modelName, gbc);
+					}
 				}
 			}
 		}
@@ -143,7 +149,7 @@ public class VisualGridModel extends VisualGridDefinitions {
 		if (!isInGrid(pos))
 			return;
 
-		this.valuePanel.updateValues(pos.getX(), pos.getY(), null, this.modelGridClone);
+		this.valuePanel.updateValues(pos.getX(), pos.getY(), null, this.epiGridClone);
 	}
 
 	public void setSelModelName(String name) {
@@ -154,16 +160,6 @@ public class VisualGridModel extends VisualGridDefinitions {
 		this.isRectFill = fill;
 	}
 
-	protected void applyDataAt(int x, int y) {
-		if (this.selModelName == null)
-			return;
-		LogicalModel m = Project.getInstance().getProjectFeatures().getModel(this.selModelName);
-		if (!this.tpc.isChanged() && !this.modelGridClone[x][y].equals(m)) {
-			this.tpc.setChanged();
-		}
-		this.modelGridClone[x][y] = m;
-		updateModelUsed();
-	}
 
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
@@ -173,20 +169,25 @@ public class VisualGridModel extends VisualGridDefinitions {
 
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
-				Color c;
-				if (EmptyModel.getInstance().isEmptyModel(this.modelGridClone[x][y])) {
-					c = EmptyModel.getInstance().getColor();
-				}
-				else if (DeadCell.getInstance().isDeadCell(this.modelGridClone[x][y])) {
-					c = DeadCell.getInstance().getColor();
-				}
-				else {
-					c = Project.getInstance().getProjectFeatures().getModelColor(this.modelGridClone[x][y]);
-				}
+				Color c = this.epiGridClone[x][y].getColor();
+					
 				Tuple2D<Double> center = topology.getPolygonCenter(this.radius, x, y);
 				Polygon polygon = topology.createNewPolygon(this.radius, center);
 				this.paintPolygon(this.strokeBasic, c, polygon, g2);
 			}
 		}
+	}
+
+	@Override
+	protected void applyDataAt(int x, int y) {
+		// TODO Auto-generated method stub
+//		if (this.selModelName == null)
+//		return;
+//	if (!this.tpc.isChanged() && !this.epiGridClone[x][y].equals(epiGridClone[x][y])) {
+//		this.tpc.setChanged();
+//	}
+//	this.epiGridClone[x][y] = m;
+//	updateModelUsed();
+		
 	}
 }

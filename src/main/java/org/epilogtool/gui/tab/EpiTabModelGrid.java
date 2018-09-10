@@ -26,6 +26,8 @@ import org.epilogtool.common.Txt;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
+import org.epilogtool.core.cell.AbstractCell;
+import org.epilogtool.core.cell.LivingCell;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.widgets.GridInformation;
 import org.epilogtool.gui.widgets.JRadioComponentButton;
@@ -37,7 +39,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 	private VisualGridModel visualGridModel;
 	private Map<JRadioComponentButton, JButton> mapSBMLMiniPanels;
-	private LogicalModel[][] modelGridClone;
+	private AbstractCell[][] cellGridClone;
 	private JPanel jpModelSelection;
 	private JPanel jpModelsUsed;
 	private GridInformation gridInfo;
@@ -57,7 +59,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 		this.mapSBMLMiniPanels = new HashMap<JRadioComponentButton, JButton>();
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
-		this.modelGridClone = new LogicalModel[grid.getX()][grid.getY()];
+		this.cellGridClone = new AbstractCell[grid.getX()][grid.getY()];
 
 		// Panel with the model selection
 		this.jpModelSelection = new JPanel(new GridBagLayout());
@@ -114,7 +116,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		this.tpc = new TabProbablyChanged();
 		this.visualGridModel = new VisualGridModel(this.epithelium.getEpitheliumGrid().getX(),
 				this.epithelium.getEpitheliumGrid().getY(), this.epithelium.getEpitheliumGrid().getTopology(),
-				this.modelGridClone, this.gridInfo, this.tpc, this.jpModelsUsed);
+				this.cellGridClone, this.gridInfo, this.tpc, this.jpModelsUsed);
 		this.center.add(this.visualGridModel, BorderLayout.CENTER);
 
 		this.buttonReset();
@@ -172,11 +174,15 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		}
 		// Clean grid of models that were deleted before an accept
 		String defaultModel = Project.getInstance().getProjectFeatures().getModelNames().iterator().next();
-		for (int x = 0; x < this.modelGridClone.length; x++) {
-			for (int y = 0; y < this.modelGridClone[0].length; y++) {
-				if (!Project.getInstance().getProjectFeatures().hasModel(this.modelGridClone[x][y])) {
-					this.modelGridClone[x][y] = Project.getInstance().getProjectFeatures().getModel(defaultModel);
+		for (int x = 0; x < this.cellGridClone.length; x++) {
+			for (int y = 0; y < this.cellGridClone[0].length; y++) {
+				if (this.cellGridClone[x][y].isLivingCell()) {
+					LivingCell lCell = (LivingCell) this.cellGridClone[x][y];
+					if (!Project.getInstance().getProjectFeatures().hasModel(lCell.getModel())) {
+						lCell.setModel(Project.getInstance().getProjectFeatures().getModel(defaultModel));
+					}
 				}
+				
 			}
 		}
 		visualGridModel.setSelModelName(null);
@@ -214,9 +220,9 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	@Override
 	protected void buttonReset() {
 		// Cancel Models
-		for (int x = 0; x < this.modelGridClone.length; x++) {
-			for (int y = 0; y < this.modelGridClone[0].length; y++) {
-				this.modelGridClone[x][y] = this.epithelium.getModel(x, y);
+		for (int x = 0; x < this.cellGridClone.length; x++) {
+			for (int y = 0; y < this.cellGridClone[0].length; y++) {
+				this.cellGridClone[x][y] = this.epithelium.getCell(x,y);
 			}
 		}
 		this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
