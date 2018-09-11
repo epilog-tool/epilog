@@ -18,7 +18,6 @@ import javax.swing.JPanel;
 import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.common.Txt;
-import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.cell.AbstractCell;
 import org.epilogtool.core.cell.DeadCell;
 import org.epilogtool.core.cell.LivingCell;
@@ -169,7 +168,14 @@ public class VisualGridModel extends VisualGridDefinitions {
 
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
-				Color c = this.epiGridClone[x][y].getColor();
+				Color c;
+				if (this.epiGridClone[x][y].isLivingCell()) {
+					LogicalModel m = ((LivingCell) this.epiGridClone[x][y]).getModel();
+					c =  Project.getInstance().getProjectFeatures().getModelColor(m);
+				}
+				else {
+					c =  Project.getInstance().getProjectFeatures().getAbstCellColor(this.epiGridClone[x][y].getName());
+				}
 					
 				Tuple2D<Double> center = topology.getPolygonCenter(this.radius, x, y);
 				Polygon polygon = topology.createNewPolygon(this.radius, center);

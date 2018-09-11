@@ -17,7 +17,6 @@ import java.util.Set;
 import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.common.Tuple3D;
-import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.project.Project;
@@ -111,8 +110,7 @@ public class VisualGridSimulation extends VisualGrid {
 				}
 				LogicalModel m = this.epiGrid.getModel(x, y);
 				List<Color> lColors = new ArrayList<Color>();
-				if (EmptyModel.getInstance().isEmptyModel(m)) {
-//					lColors.add(EmptyModel.getInstance().getColor());
+				if(this.epiGrid.getModel(x, y) != null){
 					lColors.add(this.getParent().getBackground());
 				} else {
 					for (String nodeID : this.lCompON) {
@@ -164,8 +162,9 @@ public class VisualGridSimulation extends VisualGrid {
 				}
 				LogicalModel m = this.epiGrid.getModel(x, y);
 				List<Color> lColors = new ArrayList<Color>();
-				if (EmptyModel.getInstance().isEmptyModel(m)) {
-					lColors.add(EmptyModel.getInstance().getColor());
+					if (!this.epiGrid.getAbstCell(x, y).isLivingCell()){
+						lColors.add(Project.getInstance().getProjectFeatures().getAbstCellColor(this.epiGrid.getAbstCell(x, y).getName()));
+
 				} else {
 					for (String nodeID : this.lCompON) {
 

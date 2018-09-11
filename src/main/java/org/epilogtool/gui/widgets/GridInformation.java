@@ -19,7 +19,6 @@ import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.common.Txt;
-import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
 import org.epilogtool.core.cell.AbstractCell;
@@ -83,7 +82,7 @@ public class GridInformation extends JPanel {
 
 		// Separation
 		if (grid != null || cellGrid != null) {
-			if (cellGrid[posX][posY].getName().equals(Txt.get("s_LIVING_CELL"))) {
+			if (cellGrid[posX][posY].isLivingCell()) {
 			LogicalModel m = (grid != null) ? grid.getModel(posX, posY) : ((LivingCell) cellGrid[posX][posY]).getModel();
 			}
 			// Cell Position
@@ -98,9 +97,9 @@ public class GridInformation extends JPanel {
 			this.minimalSpace(gbc, ++y);
 
 			// Empty cell specification
-			if (cellGrid[posX][posY].getName().equals(Txt.get("s_EMPTY_POSITION"))) {
+			if (cellGrid[posX][posY].isEmptyCell()) {
 				this.constraints(gbc, 0, ++y, 2);
-				jlTmp = new JLabel(EmptyModel.getInstance().getName());
+				jlTmp = new JLabel(Txt.get("s_EMPTY_CELL"));
 				this.jCellPanel.add(jlTmp, gbc);
 
 			} else {
@@ -110,7 +109,7 @@ public class GridInformation extends JPanel {
 				jlTmp = new JLabel("Model:");
 				this.jCellPanel.add(jlTmp, gbc);
 				this.constraints(gbc, 0, ++y, 2);
-				if (cellGrid[posX][posY].getName().equals(Txt.get("s_LIVING_CELL"))) {
+				if (cellGrid[posX][posY].isLivingCell()) {
 					LogicalModel m = (grid != null) ? grid.getModel(posX, posY) : ((LivingCell) cellGrid[posX][posY]).getModel();
 					jlTmp = new JLabel("  " + Project.getInstance().getProjectFeatures().getModelName(m));
 					jlTmp.setToolTipText(Project.getInstance().getProjectFeatures().getModelName(m));
@@ -164,7 +163,7 @@ public class GridInformation extends JPanel {
 					gbc.gridwidth = 1;
 					boolean isEmpty = true;
 					for (String nodeID : lAllNodeIDs) {
-						if (cellGrid[posX][posY].getName().equals(Txt.get("s_LIVING_CELL"))) {
+						if (cellGrid[posX][posY].isLivingCell()) {
 							LogicalModel m = (grid != null) ? grid.getModel(posX, posY) : ((LivingCell) cellGrid[posX][posY]).getModel();
 							
 						if (!Project.getInstance().getProjectFeatures().hasNode(nodeID, m)

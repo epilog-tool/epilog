@@ -9,6 +9,7 @@ import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.colomoto.biolqm.modifier.perturbation.RangePerturbation;
 import org.epilogtool.FileUtils;
+import org.epilogtool.core.cell.LivingCell;
 import org.epilogtool.io.FileIO;
 import org.epilogtool.project.Project;
 import org.junit.BeforeClass;
@@ -27,7 +28,7 @@ public class PerturbationTest {
 	public void setPerturbation() {
 		Epithelium epi = Project.getInstance().getEpitheliumList().get(0);
 		LogicalModel m = epi.getModel(0, 0);
-		EpitheliumCell epicell = new EpitheliumCell(m);
+		LivingCell epicell = new LivingCell(m);
 		AbstractPerturbation rp = new RangePerturbation(m.getComponents().get(0), 0, 1);
 		epicell.setPerturbation(rp);
 		assertEquals(rp, epicell.getPerturbation());

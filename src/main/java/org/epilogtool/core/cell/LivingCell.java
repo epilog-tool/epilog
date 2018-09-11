@@ -3,17 +3,16 @@ package org.epilogtool.core.cell;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Txt;
-import org.epilogtool.core.EmptyModel;
 
-public class LivingCell extends AbstractCell{
-	
+public class LivingCell extends AbstractCell {
+
 	public static String DEFAULT_EVENTOPTION = "None";
 
 	private LogicalModel model;
 	private byte[] state;
 	private AbstractPerturbation perturbation;
-	
-	private String eventState; //Death, Divide, or none
+
+	private String eventState; // Death, Divide, or none
 
 	public LivingCell(LogicalModel m) {
 
@@ -25,18 +24,17 @@ public class LivingCell extends AbstractCell{
 	public void setEventState(String str) {
 		this.eventState = str;
 	}
-	
+
 	public String getEventState() {
 		return this.eventState;
 	}
 
-	
 	public void restrictValuesWithPerturbation() {
 		if (perturbation != null) {
 			this.perturbation.restrictValues(state, model.getComponents());
 		}
 	}
-	
+
 	public void setModel(LogicalModel m) {
 		if (this.model != null && this.model.equals(m)) {
 			return;
@@ -48,15 +46,15 @@ public class LivingCell extends AbstractCell{
 		}
 		this.perturbation = null;
 	}
-	
+
 	public void setState(byte[] state) {
 		this.state = state;
 	}
-	
+
 	public void setPerturbation(AbstractPerturbation ap) {
 		this.perturbation = ap;
 	}
-	
+
 	public void setValue(String nodeID, byte value) {
 		int index = this.getNodeIndex(nodeID);
 		if (index < 0)
@@ -64,7 +62,7 @@ public class LivingCell extends AbstractCell{
 		value = (byte) Math.min(value, this.model.getComponents().get(index).getMax());
 		state[index] = value;
 	}
-	
+
 	public byte getValue(String nodeID) {
 		int index = this.getNodeIndex(nodeID);
 		if (index < 0)
@@ -79,8 +77,8 @@ public class LivingCell extends AbstractCell{
 	public byte[] getState() {
 		return this.state;
 	}
-	
-	public byte getNodeValue(String nodeID){
+
+	public byte getNodeValue(String nodeID) {
 		return this.getState()[this.getNodeIndex(nodeID)];
 	}
 
@@ -96,10 +94,6 @@ public class LivingCell extends AbstractCell{
 		return -1;
 	}
 
-	public boolean hasEmptyModel() {
-		return EmptyModel.getInstance().isEmptyModel(this.getModel());
-	}
-	
 	public long hashState() {
 		long hash = 1;
 		for (int i = 0; i < model.getComponents().size(); i++) {
@@ -108,9 +102,12 @@ public class LivingCell extends AbstractCell{
 		}
 		return hash;
 	}
-	
+
 	public boolean equals(Object o) {
-		LivingCell ecOut = (LivingCell) o;
+		AbstractCell ac = (AbstractCell) o;
+		if (!ac.isLivingCell())
+			return false;
+		LivingCell ecOut = (LivingCell) ac;
 		if (!this.model.equals(ecOut.model)) {
 			return false;
 		}
@@ -119,8 +116,7 @@ public class LivingCell extends AbstractCell{
 				return false;
 			}
 		} else {
-			if (ecOut.perturbation == null
-					|| !this.perturbation.equals(ecOut.perturbation)) {
+			if (ecOut.perturbation == null || !this.perturbation.equals(ecOut.perturbation)) {
 				return false;
 			}
 		}
@@ -134,6 +130,7 @@ public class LivingCell extends AbstractCell{
 		}
 		return true;
 	}
+
 	public String state2str(byte[] state) {
 		String str = "";
 		for (int i = 0; i < state.length; i++)
@@ -142,7 +139,7 @@ public class LivingCell extends AbstractCell{
 	}
 
 	public LivingCell clone() {
-		LivingCell newCell = new LivingCell(this.model);
+		LivingCell newCell = CellFactory.newLivingCell(this.model);
 		newCell.setState(this.state.clone());
 		newCell.setPerturbation(this.perturbation);
 		return newCell;

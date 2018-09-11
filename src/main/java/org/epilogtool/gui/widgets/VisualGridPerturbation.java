@@ -13,10 +13,10 @@ import java.util.Map;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
-import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
+import org.epilogtool.project.Project;
 
 public class VisualGridPerturbation extends VisualGridDefinitions {
 	private static final long serialVersionUID = -8878704517273291774L;
@@ -142,8 +142,8 @@ public class VisualGridPerturbation extends VisualGridDefinitions {
 			for (int y = 0; y < this.gridY; y++) {
 				BasicStroke stroke = this.strokeBasic;
 				Color cPerturb = this.getParent().getBackground();
-				if (EmptyModel.getInstance().isEmptyModel(this.epiGrid.getModel(x, y))) {
-					cPerturb = EmptyModel.getInstance().getColor();
+				if (!this.epiGrid.getAbstCell(x, y).isLivingCell()){
+					cPerturb = Project.getInstance().getProjectFeatures().getAbstCellColor(this.epiGrid.getAbstCell(x, y).getName());
 				}
 
 				else if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {

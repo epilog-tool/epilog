@@ -16,7 +16,6 @@ import javax.swing.JScrollPane;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.epilogtool.common.ObjectComparator;
-import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.gui.EpiLogGUIFactory;
 import org.epilogtool.project.Project;
@@ -88,9 +87,10 @@ public class SimulationInformation extends JPanel {
 			this.minimalSpace(gbc, ++y);
 
 			// Empty cell specification
-			if (EmptyModel.getInstance().getModel().equals(grid.getModel(posX, posY))) {
+//			if (EmptyModel.getInstance().getModel().equals(grid.getModel(posX, posY))) {
+			if (!grid.getAbstCell(posX, posY).isLivingCell()){
 				this.constraints(gbc, 0, ++y, 2);
-				jlTmp = new JLabel(EmptyModel.getInstance().getName());
+				jlTmp = new JLabel(grid.getAbstCell(posX, posY).getName());
 				this.jCellPanel.add(jlTmp, gbc);
 			}
 

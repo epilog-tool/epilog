@@ -14,7 +14,7 @@ import java.util.Set;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.epilogtool.OptionStore;
-import org.epilogtool.core.EmptyModel;
+import org.epilogtool.common.Txt;
 import org.epilogtool.core.cell.DeadCell;
 import org.epilogtool.core.cell.EmptyCell;
 import org.epilogtool.core.cell.InvalidCell;
@@ -26,6 +26,8 @@ public class ProjectFeatures {
 	private Map<LogicalModel, String> model2String;
 	private Map<LogicalModel, Color> modelColor;
 
+	private Map<String, Color> abstCell2Color;
+	
 	private List<String> replaceMessages;
 
 	private Map<String, NodeInfo> nodeID2Info;
@@ -40,6 +42,8 @@ public class ProjectFeatures {
 		this.modelColor = new HashMap<LogicalModel, Color>();
 		// node info
 		this.nodeID2Info = new HashMap<String, NodeInfo>();
+		
+		this.abstCell2Color = new HashMap<String, Color>();
 		
 		this.nodeColor = new LinkedHashMap<String, Color>();
 		// model 2 nodes
@@ -83,25 +87,12 @@ public class ProjectFeatures {
 			} else {
 				this.nodeColor.put(nodeID, ColorUtils.random());
 			}
-//			ComponentPair cp = new ComponentPair(m, node);
-//			if (!this.string2ComponentFeature.containsKey(nodeID)) {
-//				Set<ComponentPair> tmpSet = new HashSet<ComponentPair>();
-//				tmpSet.add(cp);
-//				this.string2ComponentFeature.put(nodeID, tmpSet);
-//			} else {
-//				this.string2ComponentFeature.get(nodeID).add(cp);
-//			}
+
 		}
 	}
 
-	public boolean hasModel(LogicalModel m) {
-		return EmptyModel.getInstance().isEmptyModel(m) || this.model2String.containsKey(m);
-	}
 
 	public LogicalModel getModel(String name) {
-		if (EmptyModel.getInstance().isEmptyModel(name)) {
-			return EmptyModel.getInstance().getModel();
-		}
 		return this.string2Model.get(name);
 	}
 
@@ -115,9 +106,9 @@ public class ProjectFeatures {
 
 	public List<String> getGUIModelNames() {
 		List<String> ltmp = new ArrayList<String>();
-		ltmp.add(EmptyCell.getInstance().getName());
-		ltmp.add(InvalidCell.getInstance().getName());
-		ltmp.add(DeadCell.getInstance().getName());
+		ltmp.add(Txt.get("s_EMPTY_CELL"));
+		ltmp.add(Txt.get("s_INVALID_CELL"));
+		ltmp.add(Txt.get("s_DEAD_CELL"));
 		ltmp.addAll(this.string2Model.keySet());
 		return ltmp;
 	}
@@ -168,9 +159,6 @@ public class ProjectFeatures {
 	}
 
 	public Color getModelColor(String name) {
-		if (EmptyModel.getInstance().isEmptyModel(name)) {
-			return EmptyModel.getInstance().getColor();
-		}
 		return this.getModelColor(this.string2Model.get(name));
 	}
 
@@ -258,5 +246,17 @@ public class ProjectFeatures {
 	public void renameModel(String model, String newModel) {
 		this.model2String.put(this.string2Model.get(model), newModel);
 		this.string2Model.put(newModel, string2Model.remove(model));
+	}
+
+	public boolean hasModel(LogicalModel model) {
+		return model2String.containsKey(model);
+	}
+
+	public Color getAbstCellColor(String name) {
+		return abstCell2Color.get(name);
+	}
+	
+	public Color setAbstCellColor(String name, Color c) {
+		return abstCell2Color.put(name,c);
 	}
 }

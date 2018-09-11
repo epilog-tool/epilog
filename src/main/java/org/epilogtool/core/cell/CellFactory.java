@@ -4,21 +4,16 @@ import org.colomoto.biolqm.LogicalModel;
 
 public class CellFactory{
 
-
-
-	public CellFactory() {
-	}
-	
-	public AbstractCell newDeadCell() {
+	public static DeadCell newDeadCell() {
 		return new DeadCell();
 	}
-	public AbstractCell newLivingCell(LogicalModel m) {
+	public static LivingCell newLivingCell(LogicalModel m) {
 		return new LivingCell(m);
 	}
-	public AbstractCell newInvalidCell() {
+	public static InvalidCell newInvalidCell() {
 		return new InvalidCell();
 	}
-	public AbstractCell newEmptyCell() {
+	public static EmptyCell newEmptyCell() {
 		return new EmptyCell();
 	}
 

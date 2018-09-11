@@ -104,7 +104,7 @@ public class EpitheliumGrid {
 
 	//ISSUE: 
 	public LogicalModel getModel(int x, int y) {
-		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+		if (this.gridCells[x][y].isLivingCell()) {
 			LivingCell lCell = (LivingCell) this.gridCells[x][y];
 			return lCell.getModel();
 		}
@@ -125,7 +125,7 @@ public class EpitheliumGrid {
 	}
 
 	private void restrictCellWithPerturbation(int x, int y) {
-		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+		if (this.gridCells[x][y].isLivingCell()) {
 			LivingCell lCell = (LivingCell) this.gridCells[x][y];
 			lCell.restrictValuesWithPerturbation();
 		}
@@ -133,7 +133,7 @@ public class EpitheliumGrid {
 	}
 
 	public byte[] getCellState(int x, int y) {
-		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+		if (this.gridCells[x][y].isLivingCell()) {
 			LivingCell lCell = (LivingCell) this.gridCells[x][y];
 			return lCell.getState();
 	}
@@ -142,7 +142,7 @@ public class EpitheliumGrid {
 
 	@SuppressWarnings("null")
 	public byte getCellValue(int x, int y, String nodeID) {
-		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+		if (this.gridCells[x][y].isLivingCell()) {
 			LivingCell lCell = (LivingCell) this.gridCells[x][y];
 			return lCell.getValue(nodeID);
 	}
@@ -150,11 +150,15 @@ public class EpitheliumGrid {
 	}
 
 	public AbstractPerturbation getPerturbation(int x, int y) {
-		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+		if (this.gridCells[x][y].isLivingCell()) {
 			LivingCell lCell = (LivingCell) this.gridCells[x][y];
 			return lCell.getPerturbation();
 	}
 		else return null;
+	}
+	
+	public AbstractCell getAbstCell(int x, int y) {
+		return this.gridCells[x][y];
 	}
 
 	public Map<LogicalModel, Set<AbstractPerturbation>> getAppliedPerturb() {
@@ -174,7 +178,7 @@ public class EpitheliumGrid {
 	}
 
 	public int getNodeIndex(int x, int y, String nodeID) {
-		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+		if (this.gridCells[x][y].isLivingCell()) {
 			LivingCell lCell = (LivingCell) this.gridCells[x][y];
 			return lCell.getNodeIndex(nodeID);
 	}
@@ -183,7 +187,7 @@ public class EpitheliumGrid {
 
 
 	public byte getCellComponentValue(int x, int y, String nodeID) {
-		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+		if (this.gridCells[x][y].isLivingCell()) {
 			LivingCell lCell = (LivingCell) this.gridCells[x][y];
 			return lCell.getNodeValue(nodeID);
 	}
@@ -205,7 +209,7 @@ public class EpitheliumGrid {
 		this.modelSet.clear();
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
-				if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+				if (this.gridCells[x][y].isLivingCell()) {
 					LivingCell lCell = (LivingCell) this.gridCells[x][y];
 					this.modelSet.add(lCell.getModel());
 				}
@@ -231,7 +235,7 @@ public class EpitheliumGrid {
 	
 	public void setPerturbation(List<Tuple2D<Integer>> lTuples, AbstractPerturbation ap) {
 		for (Tuple2D<Integer> tuple : lTuples) {
-			if (this.gridCells[tuple.getX()][tuple.getY()].getName().equals(Txt.get("s_LIVING_CELL"))) {
+			if (this.gridCells[tuple.getX()][tuple.getY()].isLivingCell()) {
 				LogicalModel model = ((LivingCell) this.gridCells[tuple.getX()][tuple.getY()]).getModel();
 				if (apBelongsToModel(model, ap)) {
 				this.setPerturbation(tuple.getX(), tuple.getY(), ap);
@@ -269,21 +273,22 @@ public class EpitheliumGrid {
 	}
 
 	public void setPerturbation(int x, int y, AbstractPerturbation ap) {
-		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+		if (this.gridCells[x][y].isLivingCell()) {
 			((LivingCell) this.gridCells[x][y]).setPerturbation(ap);
 	}
 	}
 
 	public void setCellState(int x, int y, byte[] state) {
-		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+		if (this.gridCells[x][y].isLivingCell()) {
 			((LivingCell) this.gridCells[x][y]).setState(state);
 	}}
 
 	public void setCellComponentValue(int x, int y, String nodeID, byte value) {
-		if (this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) {
+		if (this.gridCells[x][y].isLivingCell()) {
 			((LivingCell) this.gridCells[x][y]).setValue(nodeID, value);
 	}}
 
+	//TODO: THIS IS WRONG
 	public AbstractCell cloneEpitheliumCellAt(int x, int y) {
 		return this.gridCells[x][y].clone();
 	}
@@ -305,9 +310,10 @@ public class EpitheliumGrid {
 		String hash = "";
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
-				if(this.gridCells[x][y].getName().equals(Txt.get("s_LIVING_CELL"))) 
+				if (this.gridCells[x][y].isLivingCell()) {
 					hash += ((LivingCell) this.gridCells[x][y]).hashState();
 			}
+		}
 		}
 		return hash;
 	}
@@ -457,21 +463,4 @@ public class EpitheliumGrid {
 	}
 	
 	
-//	public Set<Tuple2D<Integer>> getLivingCells() {
-//		
-//		Set<Tuple2D<Integer>> lstAliveCells = new HashSet<Tuple2D<Integer>>();
-//		
-//		for (int x = 0; x < this.getX(); x++) {
-//			for (int y = 0; y < this.getY(); y++) {
-//				if (this.getEpitheliumCell(x, y).isCellAlive()) {
-//					Tuple2D<Integer> cell = new Tuple2D<Integer>(x, y);
-//					System.out.println(cell);
-//					lstAliveCells.add(cell);
-//					
-//				}
-//			}
-//				
-//			}
-//		return lstAliveCells;
-//	}
 }

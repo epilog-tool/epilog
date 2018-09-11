@@ -23,7 +23,6 @@ import javax.swing.tree.TreePath;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.Txt;
-import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.cell.AbstractCell;
@@ -200,15 +199,20 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		for (JRadioComponentButton jrb : this.mapSBMLMiniPanels.keySet()) {
 			if (this.mapSBMLMiniPanels.get(jrb).equals(jb)) {
 				String name = jrb.getComponentText();
-
+				
 				Color newColor = JColorChooser.showDialog(jb, "Color Chooser - " + name, jb.getBackground());
 				if (newColor != null && newColor != jb.getBackground()) {
 					jb.setBackground(newColor);
 					tabChanged.setEpiChanged();
-					Project.getInstance().getProjectFeatures().setModelColor(name, newColor);
-					if (EmptyModel.getInstance().isEmptyModel(name)) {
-						EmptyModel.getInstance().setColor(newColor);
+					
+					if (Project.getInstance().getProjectFeatures().getModelNames().contains(name)) {
+						Project.getInstance().getProjectFeatures().setModelColor(name, newColor);
 					}
+					else {
+						Project.getInstance().getProjectFeatures().setAbstCellColor(name, newColor);
+					}
+					
+				
 					this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
 					jrb.setSelected(true);
 				}
@@ -222,7 +226,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		// Cancel Models
 		for (int x = 0; x < this.cellGridClone.length; x++) {
 			for (int y = 0; y < this.cellGridClone[0].length; y++) {
-				this.cellGridClone[x][y] = this.epithelium.getCell(x,y);
+				this.cellGridClone[x][y] = this.epithelium.getEpitheliumGrid().getAbstCell(x,y);
 			}
 		}
 		this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
@@ -232,9 +236,10 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	@Override
 	protected void buttonAccept() {
 		boolean isEmptyGrid = true;
-		for (int x = 0; x < this.modelGridClone.length; x++) {
-			for (int y = 0; y < this.modelGridClone[0].length; y++) {
-				if (Project.getInstance().getProjectFeatures().getModelName(this.modelGridClone[x][y]) != null) {
+		for (int x = 0; x < this.cellGridClone.length; x++) {
+			for (int y = 0; y < this.cellGridClone[0].length; y++) {
+				if (this.cellGridClone[x][y].isLivingCell()){
+//				if (Project.getInstance().getProjectFeatures().getModelName(this.cellGridClone[x][y]) != null) {
 					isEmptyGrid = false;
 					// FIXME: this should break 2 for's right?
 				}
@@ -246,22 +251,24 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		}
 
 		// Copy modelClone to modelGrid
-		for (int x = 0; x < this.modelGridClone.length; x++) {
-			for (int y = 0; y < this.modelGridClone[0].length; y++) {
-				if (!this.epithelium.getModel(x, y).equals(this.modelGridClone[x][y])) {
-					this.epithelium.setModel(x, y, this.modelGridClone[x][y]);
+		for (int x = 0; x < this.cellGridClone.length; x++) {
+			for (int y = 0; y < this.cellGridClone[0].length; y++) {
+				if (!this.epithelium.getEpitheliumGrid().getAbstCell(x, y).equals(this.cellGridClone[x][y])) {
+					this.epithelium.getEpitheliumGrid().setEpitheliumCell(x, y, this.cellGridClone[x][y]);
 				}
 			}
 		}
 		// Copy colorMapClone to ProjectModelFeatures
 		for (JRadioComponentButton jrb : this.mapSBMLMiniPanels.keySet()) {
 			String modelName = jrb.getComponentText();
-			if (EmptyModel.getInstance().getName().equals(modelName)) {
-				EmptyModel.getInstance().setColor(this.mapSBMLMiniPanels.get(jrb).getBackground());
-			} else {
-				Project.getInstance().getProjectFeatures().setModelColor(modelName,
-						this.mapSBMLMiniPanels.get(jrb).getBackground());
+			Color newColor = (this.mapSBMLMiniPanels.get(jrb).getBackground());
+			if (Project.getInstance().getProjectFeatures().getModelNames().contains(modelName)) {
+				Project.getInstance().getProjectFeatures().setModelColor(modelName, newColor);
 			}
+			else {
+				Project.getInstance().getProjectFeatures().setAbstCellColor(modelName, newColor);
+			}
+			
 		}
 		// Make Epithelium structures coherent
 		this.epithelium.update();
@@ -279,14 +286,14 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	@Override
 	protected boolean isChanged() {
 		// ------------------ Models were added/removed to the model list
-		if (this.modelGridClone.length != this.epithelium.getX()
-				|| this.modelGridClone[0].length != this.epithelium.getY()) {
+		if (this.cellGridClone.length != this.epithelium.getX()
+				|| this.cellGridClone[0].length != this.epithelium.getY()) {
 			return true;
 		}
 		// ------------------ Models were added/removed to the grid
-		for (int x = 0; x < this.modelGridClone.length; x++) {
-			for (int y = 0; y < this.modelGridClone[0].length; y++) {
-				if (!this.modelGridClone[x][y].equals(this.epithelium.getModel(x, y))) {
+		for (int x = 0; x < this.cellGridClone.length; x++) {
+			for (int y = 0; y < this.cellGridClone[0].length; y++) {
+				if (!this.cellGridClone[x][y].equals(this.epithelium.getEpitheliumGrid().getAbstCell(x, y))) {
 					return true;
 				}
 			}

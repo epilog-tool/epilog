@@ -760,7 +760,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		} else {
 			this.iCurrSimIter++;
 			//TODO
-			this.simulation.updateCellularEvents();
+//			this.simulation.updateCellularEvents();
 			this.visualGridSimulation.setEpitheliumGrid(nextGrid);
 			this.jlStep.setText("" + this.iCurrSimIter);
 			this.setGUITerminalCycle(this.simulation.getTerminalCycleLen());

@@ -1,29 +1,20 @@
 package org.epilogtool.core.cell;
 
-import java.awt.Color;
-
-import org.epilogtool.OptionStore;
 import org.epilogtool.common.Txt;
 
 public class EmptyCell extends AbstractCell {
-	private static final Color default_color = Color.DARK_GRAY;
-
-
-
-
+	
 	public EmptyCell() {
-		String c = (String) OptionStore.getOption(Txt.get("s_EMPTY_POSITION"));
-		this.color = ((c == null) ? default_color: Color.decode(c));
-		this.name = Txt.get("s_EMPTY_POSITION");
-
+		this.name = Txt.get("s_EMPTY_CELL");
 	}
 
 	public EmptyCell clone() {
-		return new EmptyCell();
+		return CellFactory.newEmptyCell();
 	}
+	
 
-	public boolean isEmptyModel(String n) {
-		return n.equals(this.name);
+	public boolean equals(Object o) {
+		AbstractCell ac = (AbstractCell) o;
+		return ac.isEmptyCell();
 	}
-
 }

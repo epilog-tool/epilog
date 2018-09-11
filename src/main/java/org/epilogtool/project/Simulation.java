@@ -82,7 +82,7 @@ public class Simulation {
 		this.updaterCache = new HashMap<LogicalModel, Map<AbstractPerturbation, PriorityUpdater>>();
 		for (int y = 0; y < this.getCurrentGrid().getY(); y++) {
 			for (int x = 0; x < this.getCurrentGrid().getX(); x++) {
-				if (this.getCurrentGrid().isEmptyCell(x, y)) {
+				if (!this.getCurrentGrid().getAbstCell(x, y).isLivingCell()) {
 					continue;
 				}
 				LogicalModel m = this.getCurrentGrid().getModel(x, y);
@@ -124,7 +124,7 @@ public class Simulation {
 
 		for (int y = 0; y < currGrid.getY(); y++) {
 			for (int x = 0; x < currGrid.getX(); x++) {
-				if (currGrid.isEmptyCell(x, y)) {
+				if (!currGrid.getAbstCell(x,y).isLivingCell()) {
 					continue;
 				}
 				byte[] currState = currGrid.getCellState(x, y);
@@ -272,26 +272,26 @@ public class Simulation {
 		return percentageHistory;
 	}
 
-	public void updateCellularEvents() {
-		// TODO Auto-generated method stub
-		Set<Tuple2D<Integer>> lstAliveCells = this.epithelium.getEpitheliumGrid().getLivingCells();
-		
-		Set<Tuple2D<Integer>> lstCellsToDie = new HashSet<Tuple2D<Integer>>();
-		Set<Tuple2D<Integer>> lstCellsToDivide = new HashSet<Tuple2D<Integer>>();
-		
-		if (this.epithelium.getEpitheliumEvents().getNewCellState().equals("None")) {
-			//TODO Cell will not divide
-		}
-		else if (this.epithelium.getEpitheliumEvents().getNewCellState().equals("Pattern")) {
-			//TODO Check if state fits the pattern
-		}
-		else if (this.epithelium.getEpitheliumEvents().getNewCellState().equals("Random")) {
-			
-			float divisionProbability = this.epithelium.getEpitheliumEvents().getDivisionProbability();
-			System.out.println(divisionProbability);
-			
-			//TODO select 
-		}
-		
-	}
+//	public void updateCellularEvents() {
+//		// TODO Auto-generated method stub
+//		Set<Tuple2D<Integer>> lstAliveCells = this.epithelium.getEpitheliumGrid().getLivingCells();
+//		
+//		Set<Tuple2D<Integer>> lstCellsToDie = new HashSet<Tuple2D<Integer>>();
+//		Set<Tuple2D<Integer>> lstCellsToDivide = new HashSet<Tuple2D<Integer>>();
+//		
+//		if (this.epithelium.getEpitheliumEvents().getNewCellState().equals("None")) {
+//			//TODO Cell will not divide
+//		}
+//		else if (this.epithelium.getEpitheliumEvents().getNewCellState().equals("Pattern")) {
+//			//TODO Check if state fits the pattern
+//		}
+//		else if (this.epithelium.getEpitheliumEvents().getNewCellState().equals("Random")) {
+//			
+//			float divisionProbability = this.epithelium.getEpitheliumEvents().getDivisionProbability();
+//			System.out.println(divisionProbability);
+//			
+//			//TODO select 
+//		}
+//		
+//	}
 }

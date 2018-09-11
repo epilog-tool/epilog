@@ -1,15 +1,10 @@
 package org.epilogtool.core.cell;
 
-import java.awt.Color;
-
-import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.Txt;
 
 public class AbstractCell{
 	
-	protected Color color;
 	protected String name;
-	protected LogicalModel model;
 	
 
 	protected AbstractCell() {
@@ -19,22 +14,24 @@ public class AbstractCell{
 		return this.name;
 	}
 	
-	public Color getColor(){
-		return this.color;
-	}
-	
-	public void setColor(Color c) {
-		this.color = c;
-	}
-	
-	public AbstractCell clone() {
-		return new AbstractCell();
-	}
-	
 	public boolean isLivingCell() {
-		if (this.getName().equals(Txt.get("s_LIVING_CELL")))
-			return true;
-		else return false;
+		return this.getName().equals(Txt.get("s_LIVING_CELL"));
 	}
 
+	public boolean isEmptyCell() {
+		return this.getName().equals(Txt.get("s_EMPTY_CELL"));
+	}
+	
+	public boolean isInvalidCell() {
+		return this.getName().equals(Txt.get("s_INVALID_CELL"));
+	}
+	
+	public boolean isDeadCell() {
+		return this.getName().equals(Txt.get("s_DEAD_CELL"));
+	}
+	
+	//What to do a clone of the abstractcell
+	public AbstractCell clone() {
+		return this;
+	}
 }

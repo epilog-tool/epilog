@@ -27,7 +27,6 @@ import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.ComponentIntegrationFunctions;
-import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.ModelPriorityClasses;
@@ -146,7 +145,7 @@ public class Parser {
 				LogicalModel m = Project.getInstance().getModel(modelKey2Name.get(saTmp[1]));
 				if (currEpi == null) {
 					currEpi = Project.getInstance().newEpithelium(Integer.parseInt(x), Integer.parseInt(y),
-							topologyLayout, epiName, EmptyModel.getInstance().getName(), rollover, randomSeedType,
+							topologyLayout, epiName, Txt.get("s_EMPTY_CELL"), rollover, randomSeedType,
 							randomSeed);
 				}
 				if (saTmp.length > 2) {
@@ -303,9 +302,9 @@ public class Parser {
 
 		// SBML numerical identifiers
 
-		OptionStore.setOption(Txt.get("s_INVALID_POSITION"), ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
-		OptionStore.setOption(Txt.get("s_EMPTY_POSITION"), ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
-		OptionStore.setOption(Txt.get("s_DEAD_POSITION"), ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
+//		OptionStore.setOption(Txt.get("s_INVALID_POSITION"), ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
+//		OptionStore.setOption(Txt.get("s_EMPTY_POSITION"), ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
+//		OptionStore.setOption(Txt.get("s_DEAD_POSITION"), ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
 
 		int i = 0;
 		Map<LogicalModel, Integer> model2Key = new HashMap<LogicalModel, Integer>();
