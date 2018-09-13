@@ -2,13 +2,9 @@ package org.epilogtool.core.cell;
 
 import org.epilogtool.common.Txt;
 
-public class AbstractCell{
+public abstract class AbstractCell{
 	
 	protected String name;
-	
-
-	protected AbstractCell() {
-	}
 	
 	public String getName() {
 		return this.name;
@@ -30,8 +26,6 @@ public class AbstractCell{
 		return this.getName().equals(Txt.get("s_DEAD_CELL"));
 	}
 	
-	//What to do a clone of the abstractcell
-	public AbstractCell clone() {
-		return this;
-	}
+	public abstract AbstractCell clone();
+
 }

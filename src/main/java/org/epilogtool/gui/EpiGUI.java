@@ -43,6 +43,7 @@ import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
+import org.epilogtool.core.cell.CellFactory;
 import org.epilogtool.gui.dialog.DialogAbout;
 import org.epilogtool.gui.dialog.DialogEditEpithelium;
 import org.epilogtool.gui.dialog.DialogEditPreferences;
@@ -70,7 +71,6 @@ import org.epilogtool.gui.widgets.CloseTabButton;
 import org.epilogtool.io.FileIO;
 import org.epilogtool.io.FileResource;
 import org.epilogtool.project.Project;
-
 
 /**
  * Class that defines the GUI of EPILOG. This is the main window where the GUI
@@ -247,7 +247,7 @@ public class EpiGUI extends JFrame {
 	public boolean getDeveloperMode() {
 		return this.devMode;
 	}
-	
+
 	public void setVersion(String version) {
 		this.version = version;
 	}
@@ -283,7 +283,8 @@ public class EpiGUI extends JFrame {
 		if (dialogPanel.isDefined()) {
 			Epithelium newEpi = Project.getInstance().newEpithelium(dialogPanel.getEpitheliumWidth(),
 					dialogPanel.getEpitheliumHeight(), dialogPanel.getTopologyID(), dialogPanel.getEpiName(),
-					dialogPanel.getSBMLName(), dialogPanel.getRollOver(), EnumRandomSeed.RANDOM, 0);
+					CellFactory.newLivingCell(Project.getInstance().getModel(dialogPanel.getSBMLName())),
+					dialogPanel.getRollOver(), EnumRandomSeed.RANDOM, 0);
 			this.addEpithelium2JTree(newEpi);
 		}
 	}
@@ -385,11 +386,11 @@ public class EpiGUI extends JFrame {
 		this.cleanGUI();
 		this.validateGUI();
 	}
-	
+
 	public String getVersion() {
 		return this.version;
 	}
-	
+
 	private void validateGUI() {
 		if (Project.getInstance().hasChanged() && !this.getTitle().endsWith(Txt.get("s_APP_MODIFIED"))) {
 			this.setTitle(this.getTitle() + Txt.get("s_APP_MODIFIED"));
@@ -1013,11 +1014,12 @@ public class EpiGUI extends JFrame {
 
 		public void cloneEpithelium(Epithelium epi, EpitheliumGrid currGrid) {
 			Epithelium epiClone = Project.getInstance().cloneEpithelium(epi);
-			for (int x = 0; x < currGrid.getX(); x++) {
-				for (int y = 0; y < currGrid.getY(); y++) {
-					epiClone.getEpitheliumGrid().setEpitheliumCell(x, y, currGrid.getEpitheliumCell(x, y).clone());
-				}
-			}
+			// for (int x = 0; x < currGrid.getX(); x++) {
+			// for (int y = 0; y < currGrid.getY(); y++) {
+			// epiClone.getEpitheliumGrid().setEpitheliumCell(x, y,
+			// currGrid.getEpitheliumCell(x, y).clone());
+			// }
+			// }
 			addEpithelium2JTree(epiClone);
 		}
 	}

@@ -31,6 +31,7 @@ import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.core.UpdateCells;
+import org.epilogtool.core.cell.CellFactory;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.notification.NotificationManager;
@@ -68,6 +69,23 @@ public class Parser {
 			// Load SBML model numerical identifiers and create new project
 			if (line.startsWith("SB")) {
 				saTmp = line.split("\\s+");
+				
+				if (saTmp[1].equals("-1")){
+					Color modelColor = ColorUtils.getColor(saTmp[3], saTmp[4], saTmp[5]);
+					Project.getInstance().getProjectFeatures().setAbstCellColor(Txt.get("s_INVALID_CELL"), modelColor);
+					System.out.println("s_INVALID_CELL: ");
+					System.out.println("modelColor: " + modelColor);
+					System.out.println(Project.getInstance().getProjectFeatures().getAbstCellColor(Txt.get("s_INVALID_CELL")));
+				}
+				else if (saTmp[1].equals("-2")){
+					Color modelColor = ColorUtils.getColor(saTmp[3], saTmp[4], saTmp[5]);
+					Project.getInstance().getProjectFeatures().setAbstCellColor(Txt.get("s_DEAD_CELL"), modelColor);
+				}
+				else if (saTmp[1].equals("-3")){
+					Color modelColor = ColorUtils.getColor(saTmp[3], saTmp[4], saTmp[5]);
+					Project.getInstance().getProjectFeatures().setAbstCellColor(Txt.get("s_EMPTY_CELL"), modelColor);
+				}
+				else {
 
 				File fSBML = new File(fConfig.getParent() + "/" + saTmp[2]);
 				try {
@@ -78,6 +96,7 @@ public class Parser {
 				modelKey2Name.put(saTmp[1], saTmp[2]);
 				Color modelColor = ColorUtils.getColor(saTmp[3], saTmp[4], saTmp[5]);
 				Project.getInstance().getProjectFeatures().setModelColor(saTmp[2], modelColor);
+				}
 			}
 
 			if (line.startsWith("CC")) {
@@ -145,7 +164,7 @@ public class Parser {
 				LogicalModel m = Project.getInstance().getModel(modelKey2Name.get(saTmp[1]));
 				if (currEpi == null) {
 					currEpi = Project.getInstance().newEpithelium(Integer.parseInt(x), Integer.parseInt(y),
-							topologyLayout, epiName, Txt.get("s_EMPTY_CELL"), rollover, randomSeedType,
+							topologyLayout, epiName, CellFactory.newEmptyCell(), rollover, randomSeedType,
 							randomSeed);
 				}
 				if (saTmp.length > 2) {
@@ -302,16 +321,29 @@ public class Parser {
 
 		// SBML numerical identifiers
 
-//		OptionStore.setOption(Txt.get("s_INVALID_POSITION"), ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
-//		OptionStore.setOption(Txt.get("s_EMPTY_POSITION"), ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
-//		OptionStore.setOption(Txt.get("s_DEAD_POSITION"), ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
+		OptionStore.setOption(Txt.get("s_INVALID_POSITION"), ColorUtils.getColorCode(Color.black));
+		OptionStore.setOption(Txt.get("s_EMPTY_POSITION"), ColorUtils.getColorCode(Color.gray));
+		OptionStore.setOption(Txt.get("s_DEAD_POSITION"), ColorUtils.getColorCode(Color.gray));
 
-		int i = 0;
+		int i= -3;
+		Color c = Project.getInstance().getProjectFeatures().getAbstCellColor(Txt.get("s_EMPTY_CELL"));
+		w.println("SB " + i + " " + "EMPTYCELL" + " " + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
+		
+		i= -2;
+		c = Project.getInstance().getProjectFeatures().getAbstCellColor(Txt.get("s_DEAD_CELL"));
+		w.println("SB " + i + " " + "DEADCELL" + " " + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
+		
+		i= -1;
+		c = Project.getInstance().getProjectFeatures().getAbstCellColor(Txt.get("s_INVALID_CELL"));
+		w.println("SB " + i + " " + "INVALIDCELL" + " " + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
+		
+		
+		i = 0;
 		Map<LogicalModel, Integer> model2Key = new HashMap<LogicalModel, Integer>();
 		for (String sbml : Project.getInstance().getModelNames()) {
 			LogicalModel m = Project.getInstance().getModel(sbml);
 			model2Key.put(m, i);
-			Color c = Project.getInstance().getProjectFeatures().getModelColor(m);
+			c = Project.getInstance().getProjectFeatures().getModelColor(m);
 			w.println("SB " + i + " " + sbml + " " + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
 			i++;
 		}
@@ -319,7 +351,7 @@ public class Parser {
 
 		// Component colors
 		for (String nodeID : Project.getInstance().getProjectFeatures().getNodeIDs()) {
-			Color c = Project.getInstance().getProjectFeatures().getNodeColor(nodeID);
+			c = Project.getInstance().getProjectFeatures().getNodeColor(nodeID);
 			w.println("CC " + nodeID + " " + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
 			OptionStore.setOption("CC " + nodeID, ColorUtils.getColorCode(c));
 		}

@@ -10,6 +10,8 @@ import java.util.Set;
 import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.core.Epithelium;
+import org.epilogtool.core.cell.AbstractCell;
+import org.epilogtool.core.cell.CellFactory;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.dialog.DialogMessage;
 
@@ -91,11 +93,11 @@ public class Project {
 		this.filenamePEPS = filename;
 	}
 
-	public Epithelium newEpithelium(int x, int y, String topologyID, String userName, String modelName,
+	public Epithelium newEpithelium(int x, int y, String topologyID, String userName, AbstractCell c,
 			RollOver rollover, EnumRandomSeed randomSeedType, int randomSeed)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
-		Epithelium epi = new Epithelium(x, y, topologyID, userName, this.projectFeatures.getModel(modelName), rollover,
+		Epithelium epi = new Epithelium(x, y, topologyID, userName, c, rollover,
 				randomSeedType, randomSeed);
 		this.epitheliumList.add(epi);
 		return epi;

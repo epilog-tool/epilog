@@ -14,6 +14,8 @@ import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.core.cell.AbstractCell;
+import org.epilogtool.core.cell.LivingCell;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.dialog.DialogMessage;
 import org.epilogtool.project.Project;
@@ -30,14 +32,17 @@ public class Epithelium {
 	
 	
 
-	public Epithelium(int x, int y, String topologyID, String name, LogicalModel m, RollOver rollover,
+	public Epithelium(int x, int y, String topologyID, String name, AbstractCell c, RollOver rollover,
 			EnumRandomSeed randomSeedType, int randomSeed)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		this.name = name;
-		this.grid = new EpitheliumGrid(x, y, topologyID, rollover, m);
+		this.grid = new EpitheliumGrid(x, y, topologyID, rollover,c);
 		this.priorities = new EpitheliumUpdateSchemeIntra();
-		this.priorities.addModel(m);
+		if (c.isLivingCell()) {
+			this.priorities.addModel(((LivingCell) c).getModel());
+		}
+
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
 		this.perturbations = new EpitheliumPerturbations();
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(EpitheliumUpdateSchemeInter.DEFAULT_ALPHA,

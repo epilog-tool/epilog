@@ -30,7 +30,6 @@ public class EpitheliumGrid {
 	private Set<LogicalModel> modelSet;
 	private Map<String, Map<Byte, Integer>> compCounts;
 	private Map<String, Map<Byte, Float>> compPercents;
-	private CellFactory cellFactory;
 
 	private EpitheliumGrid(AbstractCell[][] gridEpiCell, Topology topology, Set<LogicalModel> modelSet,
 			Map<String, Map<Byte, Integer>> compCounts, Map<String, Map<Byte, Float>> compPercents) {
@@ -55,7 +54,7 @@ public class EpitheliumGrid {
 					newGrid[x][y] = this.gridCells[x][y];
 				}
 				else {
-					newGrid[x][y] = cellFactory.newEmptyCell();
+					newGrid[x][y] = CellFactory.newEmptyCell();
 				}
 			}
 		}
@@ -67,7 +66,7 @@ public class EpitheliumGrid {
 		this.updateGrid();
 	}
 
-	public EpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover, LogicalModel m)
+	public EpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover, AbstractCell c)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		this.setTopology(topologyID, gridX, gridY, rollover);
@@ -75,11 +74,13 @@ public class EpitheliumGrid {
 		this.gridCells = new AbstractCell[gridX][gridY];
 		for (int y = 0; y < gridY; y++) {
 			for (int x = 0; x < gridX; x++) {
-				this.gridCells[x][y] = cellFactory.newLivingCell(m);
+				this.gridCells[x][y] = c;
 			}
 		}
 		this.modelSet = new HashSet<LogicalModel>();
-		this.modelSet.add(m);
+		if (c.isLivingCell()) {
+		this.modelSet.add(((LivingCell) c).getModel());
+		}
 		this.compCounts = new HashMap<String, Map<Byte, Integer>>();
 		this.compPercents = new HashMap<String, Map<Byte, Float>>();// ptgm
 	}
@@ -229,7 +230,7 @@ public class EpitheliumGrid {
 	 * @param m
 	 */
 	public void setModel(int x, int y, LogicalModel m) {
-		this.gridCells[x][y] = cellFactory.newLivingCell(m);
+		this.gridCells[x][y] = CellFactory.newLivingCell(m);
 	}
 
 	
@@ -289,9 +290,9 @@ public class EpitheliumGrid {
 	}}
 
 	//TODO: THIS IS WRONG
-	public AbstractCell cloneEpitheliumCellAt(int x, int y) {
-		return this.gridCells[x][y].clone();
-	}
+//	public AbstractCell cloneEpitheliumCellAt(int x, int y) {
+//		return this.gridCells[x][y].clone();
+//	}
 
 	public AbstractCell getEpitheliumCell(int x, int y) {
 		return this.gridCells[x][y];
@@ -301,10 +302,10 @@ public class EpitheliumGrid {
 		this.gridCells[x][y] = absCell;
 	}
 
-	protected void cloneEpitheliumCellTo(int x1, int y1, int x2, int y2) {
-		AbstractCell epiCell = this.cloneEpitheliumCellAt(x1, y1);
-		this.gridCells[x2][y2] = epiCell;
-	}
+//	protected void cloneEpitheliumCellTo(int x1, int y1, int x2, int y2) {
+//		AbstractCell epiCell = this.cloneEpitheliumCellAt(x1, y1);
+//		this.gridCells[x2][y2] = epiCell;
+//	}
 
 	public String hashGrid() {
 		String hash = "";
@@ -356,7 +357,7 @@ public class EpitheliumGrid {
 	}
 
 	public EpitheliumGrid clone() {
-		AbstractCell[][] newGrid = new LivingCell[this.getX()][this.getY()];
+		AbstractCell[][] newGrid = new AbstractCell[this.getX()][this.getY()];
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
 				newGrid[x][y] = this.gridCells[x][y].clone();

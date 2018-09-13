@@ -19,7 +19,7 @@ import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.cell.AbstractCell;
-import org.epilogtool.core.cell.DeadCell;
+import org.epilogtool.core.cell.CellFactory;
 import org.epilogtool.core.cell.LivingCell;
 import org.epilogtool.core.topology.Topology;
 import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
@@ -28,17 +28,17 @@ import org.epilogtool.project.Project;
 public class VisualGridModel extends VisualGridDefinitions {
 	private static final long serialVersionUID = -8878704517273291774L;
 
-	private AbstractCell[][] epiGridClone;
+	private AbstractCell[][] cellGridClone;
 	private String selModelName;
 	private boolean isRectFill;
 	private Tuple2D<Integer> initialRectPos;
 	private GridInformation valuePanel;
 	private JPanel jpModelsUsed;
 
-	public VisualGridModel(int gridX, int gridY, Topology topology, AbstractCell[][] epiGrid,
+	public VisualGridModel(int gridX, int gridY, Topology topology, AbstractCell[][] cellGrid,
 			GridInformation valuePanel, TabProbablyChanged tpc, JPanel jpModelsUsed) {
 		super(gridX, gridY, topology, tpc);
-		this.epiGridClone = epiGrid;
+		this.cellGridClone = cellGrid.clone();
 		this.selModelName = null;
 		this.isRectFill = false;
 		this.initialRectPos = null;
@@ -118,8 +118,8 @@ public class VisualGridModel extends VisualGridDefinitions {
 				i++;
 				// gbc.anchor = GridBagConstraints.WEST;
 		
-				if (this.epiGridClone[x][y].getName().equals(Txt.get("s_LIVING_CELL"))){
-					LogicalModel model =((LivingCell) this.epiGridClone[x][y]).getModel();
+				if (this.cellGridClone[x][y].isLivingCell()){
+					LogicalModel model =((LivingCell) this.cellGridClone[x][y]).getModel();
 					String modelString = Project.getInstance().getProjectFeatures().getModelName(model);
 					if (!models.contains(modelString)) {
 						models.add(modelString);
@@ -148,7 +148,7 @@ public class VisualGridModel extends VisualGridDefinitions {
 		if (!isInGrid(pos))
 			return;
 
-		this.valuePanel.updateValues(pos.getX(), pos.getY(), null, this.epiGridClone);
+		this.valuePanel.updateValues(pos.getX(), pos.getY(), null, this.cellGridClone);
 	}
 
 	public void setSelModelName(String name) {
@@ -169,12 +169,12 @@ public class VisualGridModel extends VisualGridDefinitions {
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
 				Color c;
-				if (this.epiGridClone[x][y].isLivingCell()) {
-					LogicalModel m = ((LivingCell) this.epiGridClone[x][y]).getModel();
+				if (this.cellGridClone[x][y].isLivingCell()) {
+					LogicalModel m = ((LivingCell) this.cellGridClone[x][y]).getModel();
 					c =  Project.getInstance().getProjectFeatures().getModelColor(m);
 				}
 				else {
-					c =  Project.getInstance().getProjectFeatures().getAbstCellColor(this.epiGridClone[x][y].getName());
+					c =  Project.getInstance().getProjectFeatures().getAbstCellColor(this.cellGridClone[x][y].getName());
 				}
 					
 				Tuple2D<Double> center = topology.getPolygonCenter(this.radius, x, y);
@@ -186,14 +186,41 @@ public class VisualGridModel extends VisualGridDefinitions {
 
 	@Override
 	protected void applyDataAt(int x, int y) {
-		// TODO Auto-generated method stub
-//		if (this.selModelName == null)
-//		return;
-//	if (!this.tpc.isChanged() && !this.epiGridClone[x][y].equals(epiGridClone[x][y])) {
+		
+		if (this.selModelName == null)
+		return;
+		
+//	if (!this.tpc.isChanged() && !this.cellGridClone[x][y].equals(cellGrid[x][y])) {
 //		this.tpc.setChanged();
 //	}
-//	this.epiGridClone[x][y] = m;
-//	updateModelUsed();
 		
+	if (this.selModelName.equals(Txt.get("s_INVALID_CELL"))) {
+		if (!this.cellGridClone[x][y].getName().equals(Txt.get("s_INVALID_CELL")))
+			this.tpc.setChanged();
+		this.cellGridClone[x][y] = CellFactory.newInvalidCell();
+	}
+	else if (this.selModelName.equals(Txt.get("s_EMPTY_CELL"))) {
+		if (!this.cellGridClone[x][y].getName().equals(Txt.get("s_EMPTY_CELL")))
+			this.tpc.setChanged();
+		this.cellGridClone[x][y] = CellFactory.newEmptyCell();
+	}
+	else if (this.selModelName.equals(Txt.get("s_DEAD_CELL"))) {
+		if (!this.cellGridClone[x][y].getName().equals(Txt.get("s_DEAD_CELL")))
+			this.tpc.setChanged();
+		this.cellGridClone[x][y] = CellFactory.newDeadCell();
+	}
+	else  {
+		if (!this.cellGridClone[x][y].getName().equals(Txt.get("s_LIVING_CELL")) || !((LivingCell) this.cellGridClone[x][y]).getModel().equals(Project.getInstance().getModel(this.selModelName))){
+			this.tpc.setChanged();
+		}
+		this.cellGridClone[x][y] = CellFactory.newLivingCell(Project.getInstance().getModel(this.selModelName));
+//		System.out.println("applyDataAtI " + Project.getInstance().getModel(this.selModelName));
+	}
+	
+	updateModelUsed();
+	
+//	System.out.println("applyDataAt " + this.selModelName);
+//	System.out.println("applyDataAt " + this.cellGridClone[x][y]);
+//	
 	}
 }

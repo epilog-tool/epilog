@@ -21,7 +21,6 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.tree.TreePath;
 
-import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
@@ -43,7 +42,6 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	private JPanel jpModelsUsed;
 	private GridInformation gridInfo;
 	private TabProbablyChanged tpc;
-	// private List<LogicalModel> modelsAssigned;
 
 	JToggleButton jtbRectFill;
 	JButton jbApplyAll;
@@ -134,13 +132,13 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	 * project, the model selection list is automatically updated.
 	 */
 	private void updateModelList() {
+		
 		this.jpModelSelection.removeAll();
 		ButtonGroup group = new ButtonGroup();
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(1, 5, 1, 0);
 		int i = 0;
 		for (String name : Project.getInstance().getProjectFeatures().getGUIModelNames()) {
-
 			gbc.gridy = i;
 			i++;
 			gbc.gridx = 0;
@@ -152,6 +150,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 				public void actionPerformed(ActionEvent e) {
 					JRadioComponentButton jrb = (JRadioComponentButton) e.getSource();
 					updateCellSelectionButtons();
+//					System.out.println("ww" + jrb.getComponentText());
 					visualGridModel.setSelModelName(jrb.getComponentText());
 				}
 			});
@@ -159,7 +158,15 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 			group.add(jrButton);
 
 			gbc.gridx = 1;
-			Color newColor = Project.getInstance().getProjectFeatures().getModelColor(name);
+			Color newColor;
+			if (name.equals(Txt.get("s_DEAD_CELL")) || name.equals(Txt.get("s_EMPTY_CELL")) || name.equals(Txt.get("s_INVALID_CELL"))){
+				newColor = Project.getInstance().getProjectFeatures().getAbstCellColor(name);
+			}
+			else {
+				newColor = Project.getInstance().getProjectFeatures().getModelColor(name);
+			}
+			System.out.println("name: " + name);
+			System.out.println("color: " + newColor);
 			JButton jbColor = new JButton();
 			jbColor.setBackground(newColor);
 			jbColor.addActionListener(new ActionListener() {

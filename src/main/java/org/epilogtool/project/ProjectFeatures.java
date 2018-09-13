@@ -15,9 +15,7 @@ import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.Txt;
-import org.epilogtool.core.cell.DeadCell;
-import org.epilogtool.core.cell.EmptyCell;
-import org.epilogtool.core.cell.InvalidCell;
+
 import org.epilogtool.gui.color.ColorUtils;
 
 public class ProjectFeatures {
@@ -227,9 +225,18 @@ public class ProjectFeatures {
 		}
 	}
 
-	public void setModelColor(String name, Color c) {
-		this.modelColor.put(this.getModel(name), c);
+	public void setModelColor(LogicalModel m, Color c) {
+		this.modelColor.put(m, c);
 	}
+	
+	public void setModelColor(String modelName, Color c) {
+//		System.out.println(modelName);
+		if (modelName.equals(Txt.get("s_DEAD_CELL")) || modelName.equals(Txt.get("s_EMPTY_CELL")) || modelName.equals(Txt.get("s_INVALID_CELL"))){
+			setAbstCellColor(modelName, c);
+		}
+		else setModelColor(this.string2Model.get(modelName), c);
+	}
+
 
 	public void setNodeColor(String nodeID, Color color) {
 		if (!this.nodeColor.containsKey(nodeID) || !color.equals(this.nodeColor.get(nodeID))) {
