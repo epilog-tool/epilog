@@ -20,14 +20,14 @@ public class NotificationManager {
 	}
 
 	private static NotificationManager getManager() {
-		if (instance == null) {
-			instance = new NotificationManager();
+		if (NotificationManager.instance == null) {
+			NotificationManager.instance = new NotificationManager();
 		}
-		return instance;
+		return NotificationManager.instance;
 	}
 
 	public static void setGUI(boolean hasGUI) {
-		getManager().gui = hasGUI;
+		NotificationManager.getManager().gui = hasGUI;
 	}
 
 	private void register(Notification notif) {
@@ -37,12 +37,8 @@ public class NotificationManager {
 	}
 
 	public static void error(String location, String message) {
-		getManager();
-		NotificationManager.clearMessages();
 		if (location != null && message != null) {
 			getManager().register(new ErrorNotification(location, message));
-			getManager();
-			NotificationManager.dispatchDialogError(true, true);
 		}
 	}
 
@@ -54,15 +50,13 @@ public class NotificationManager {
 
 	public static void warning(String location, String message) {
 		if (location != null && message != null) {
-			getManager().register(new WarningNotification(location, message));
-			getManager();
-			NotificationManager.dispatchDialogWarning(true, true);
+			NotificationManager.getManager().register(new WarningNotification(location, message));
 		}
 	}
 
 	private static void clearMessages() {
-		getManager().lNotifOld.addAll(getManager().lNotifNew);
-		getManager().lNotifNew.clear();
+		NotificationManager.getManager().lNotifOld.addAll(getManager().lNotifNew);
+		NotificationManager.getManager().lNotifNew.clear();
 	}
 
 	public static void dispatchDialogWarning(boolean bTime, boolean bLocation) {
