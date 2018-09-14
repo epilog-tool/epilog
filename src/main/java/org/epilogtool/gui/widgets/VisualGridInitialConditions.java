@@ -194,9 +194,7 @@ public void updateNodePercentages() {
 		for (int x = 0; x < this.gridX; x++) {
 			for (int y = 0; y < this.gridY; y++) {
 				Color cCombined;
-				// if (EmptyModel.getInstance().isEmptyModel(this.epiGrid.getModel(x, y))) {
-				// cCombined = EmptyModel.getInstance().getColor();
-				// } else
+
 				if (this.selectedModels.contains(this.epiGrid.getModel(x, y))) {
 					List<Color> lColors = new ArrayList<Color>();
 					for (String nodeID : this.mNode2ValueSelected.keySet()) {

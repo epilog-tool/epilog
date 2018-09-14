@@ -47,10 +47,12 @@ public class EpitheliumGrid {
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		
 		// Create new EpiCell[][] in case the dimension of the grid has changed
+		
+
 		AbstractCell[][] newGrid = new AbstractCell[gridX][gridY];
 		for (int y = 0; y < gridY; y++) {
 			for (int x = 0; x < gridX; x++) {
-				if (x <= this.getX() || y <= this.getY()) {
+				if (x < this.gridCells.length && y < this.gridCells[0].length ) {
 					newGrid[x][y] = this.gridCells[x][y];
 				}
 				else {
@@ -58,6 +60,7 @@ public class EpitheliumGrid {
 				}
 			}
 		}
+		
 		this.gridCells = newGrid;
 		
 		// Create new Topology
