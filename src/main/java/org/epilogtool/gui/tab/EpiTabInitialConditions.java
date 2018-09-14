@@ -613,12 +613,13 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {
 			for (int y = 0; y < this.epiGridClone.getY(); y++) {
+				if (this.epiGridClone.getAbstCell(x, y).isLivingCell()) {
 				byte[] stateClone = this.epiGridClone.getCellState(x, y).clone();
 				byte[] stateOrig = gridOrig.getCellState(x, y);
 				if (!Arrays.equals(stateOrig, stateClone)) {
 					gridOrig.setCellState(x, y, stateClone);
 				}
-			}
+			}}
 		}
 	}
 
@@ -645,12 +646,13 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		EpitheliumGrid projEpiGrid = this.epithelium.getEpitheliumGrid();
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {
 			for (int y = 0; y < this.epiGridClone.getY(); y++) {
+				if(this.epiGridClone.getAbstCell(x, y).isLivingCell()) {
 				if (!this.epiGridClone.getModel(x, y).equals(projEpiGrid.getModel(x, y))) {
 					this.epiGridClone.setModel(x, y, projEpiGrid.getModel(x, y));
 					if (!Arrays.equals(projEpiGrid.getCellState(x, y), this.epiGridClone.getCellState(x, y))) {
 						this.epiGridClone.setCellState(x, y, projEpiGrid.getCellState(x, y));
 					}
-				}
+				}}
 			}
 		}
 

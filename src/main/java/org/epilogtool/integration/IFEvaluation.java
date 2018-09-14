@@ -132,6 +132,7 @@ public class IFEvaluation {
 					this.relativeNeighboursCache, rangeList_aux, rangePair, signal.getDistance().getMin(), x, y);
 
 			for (Tuple2D<Integer> tuple : positionNeighbours) {
+				if (this.epithelium.getEpitheliumGrid().getAbstCell(tuple.getX(), tuple.getY()).isLivingCell()) {
 				List<NodeInfo> lNodes = this.neighboursGrid.getModel(tuple.getX(), tuple.getY()).getComponents();
 				for (int n = 0; n < lNodes.size(); n++) {
 					if (node.getNodeID().equals(lNodes.get(n).getNodeID())) {
@@ -141,7 +142,7 @@ public class IFEvaluation {
 							break;
 						}
 					}
-				}
+				}}
 			}
 		}
 

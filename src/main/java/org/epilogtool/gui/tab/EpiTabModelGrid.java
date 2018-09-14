@@ -165,8 +165,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 			else {
 				newColor = Project.getInstance().getProjectFeatures().getModelColor(name);
 			}
-			System.out.println("name: " + name);
-			System.out.println("color: " + newColor);
+//			System.out.println("name: " + name);
+//			System.out.println("color: " + newColor);
 			JButton jbColor = new JButton();
 			jbColor.setBackground(newColor);
 			jbColor.addActionListener(new ActionListener() {

@@ -31,6 +31,7 @@ import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.core.UpdateCells;
+import org.epilogtool.core.cell.AbstractCell;
 import org.epilogtool.core.cell.CellFactory;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.color.ColorUtils;
@@ -73,9 +74,6 @@ public class Parser {
 				if (saTmp[1].equals("-1")){
 					Color modelColor = ColorUtils.getColor(saTmp[3], saTmp[4], saTmp[5]);
 					Project.getInstance().getProjectFeatures().setAbstCellColor(Txt.get("s_INVALID_CELL"), modelColor);
-					System.out.println("s_INVALID_CELL: ");
-					System.out.println("modelColor: " + modelColor);
-					System.out.println(Project.getInstance().getProjectFeatures().getAbstCellColor(Txt.get("s_INVALID_CELL")));
 				}
 				else if (saTmp[1].equals("-2")){
 					Color modelColor = ColorUtils.getColor(saTmp[3], saTmp[4], saTmp[5]);
@@ -90,6 +88,7 @@ public class Parser {
 				File fSBML = new File(fConfig.getParent() + "/" + saTmp[2]);
 				try {
 					Project.getInstance().loadModel(fSBML.getName(), FileIO.loadSBMLModel(fSBML));
+					
 				} catch (IOException e) {
 					throw new IOException(Txt.get("s_SBML_failed_load"));
 				}
@@ -97,9 +96,11 @@ public class Parser {
 				Color modelColor = ColorUtils.getColor(saTmp[3], saTmp[4], saTmp[5]);
 				Project.getInstance().getProjectFeatures().setModelColor(saTmp[2], modelColor);
 				}
+				
 			}
 
 			if (line.startsWith("CC")) {
+				
 				saTmp = line.split("\\s+");
 				Color componentColor = ColorUtils.getColor(saTmp[2], saTmp[3], saTmp[4]);
 				Project.getInstance().getProjectFeatures().setNodeColor(saTmp[1], componentColor);
@@ -107,6 +108,7 @@ public class Parser {
 
 			// Epithelium name
 			if (line.startsWith("SN")) {
+				
 				epiName = line.split("\\s+")[1];
 				currEpi = null;
 				rollover = RollOver.NONE;
@@ -115,6 +117,7 @@ public class Parser {
 			}
 
 			if (line.startsWith("GD")) {
+				
 				saTmp = line.split("\\s+");
 				x = saTmp[1];
 				y = saTmp[2];
@@ -133,6 +136,7 @@ public class Parser {
 
 			// RollOver
 			if (line.startsWith("RL")) {
+				
 				rollover = RollOver.string2RollOver(epiName, line.split("\\s+")[1]);
 				if (rollover == null) {
 					NotificationManager.warning("Parser",
@@ -146,6 +150,7 @@ public class Parser {
 
 			// Random Seed
 			if (line.startsWith("SD")) {
+				
 				saTmp = line.split("\\s+");
 				EnumRandomSeed rsType = EnumRandomSeed.string2RandomSeed(saTmp[1]);
 				if (rsType != null && rsType.equals(EnumRandomSeed.FIXED)) {
@@ -159,34 +164,62 @@ public class Parser {
 			}
 
 			// Model grid
+			
 			if (line.startsWith("GM")) {
+				
+				
+				
 				saTmp = line.split("\\s+");
-				LogicalModel m = Project.getInstance().getModel(modelKey2Name.get(saTmp[1]));
+				
 				if (currEpi == null) {
+		
 					currEpi = Project.getInstance().newEpithelium(Integer.parseInt(x), Integer.parseInt(y),
 							topologyLayout, epiName, CellFactory.newEmptyCell(), rollover, randomSeedType,
 							randomSeed);
 				}
+				
 				if (saTmp.length > 2) {
-					currEpi.setGridWithModel(m,
+					
+					AbstractCell c;
+
+					if (saTmp[1].equals("-1")) {
+						c = CellFactory.newInvalidCell();
+					}
+					else if (saTmp[1].equals("-2")) {
+						c = CellFactory.newDeadCell();
+					}
+					else if (saTmp[1].equals("-3")) {
+						c = CellFactory.newEmptyCell();
+					}
+					else{
+						LogicalModel m = Project.getInstance().getModel(modelKey2Name.get(saTmp[1]));
+						c = CellFactory.newLivingCell(m);
+						currEpi.initPriorityClasses(m);
+					}
+				
+					currEpi.setGridWithCell(c,
 							currEpi.getEpitheliumGrid().getTopology().instances2Tuples2D(saTmp[2].split(",")));
-					currEpi.initPriorityClasses(m);
 				}
+				
+				
 			}
 			// alpha-asynchronous value
 			if (line.startsWith("AS")) {
+			
 				saTmp = line.split("\\s+");
 				currEpi.getUpdateSchemeInter().setAlpha(Float.parseFloat(saTmp[1]));
 			}
 
 			// Cell Update
 			if (line.startsWith("CU")) {
+				
 				String updateCells = line.substring(line.indexOf(" ") + 1);
 				currEpi.getUpdateSchemeInter().setUpdateCells(UpdateCells.fromString(updateCells));
 			}
 
 			// Initial Conditions grid
 			if (line.startsWith("IC")) {
+				
 				saTmp = line.split("\\s+");
 				currEpi.setGridWithComponentValue(saTmp[1], Byte.parseByte(saTmp[2]),
 						currEpi.getEpitheliumGrid().getTopology().instances2Tuples2D(saTmp[3].split(",")));
@@ -197,6 +230,7 @@ public class Parser {
 			// Old Integration function identifier, where an integration function was
 			// associated with a model and a component.
 			if (line.startsWith("IT")) {
+				
 				saTmp = line.split("\\s+");
 				byte value = Byte.parseByte(saTmp[3]);
 				String nodeID = saTmp[2];
@@ -219,6 +253,7 @@ public class Parser {
 
 			// IF #model Node Level {Function}
 			if (line.startsWith("IF")) {
+				
 				saTmp = line.split("\\s+");
 				byte value = Byte.parseByte(saTmp[2]);
 				String nodeID = saTmp[1];
@@ -242,6 +277,7 @@ public class Parser {
 			// Model Priority classes
 			// PR #model node1,node2:...:nodei
 			if (line.startsWith("PR")) {
+				
 				saTmp = line.split("\\s+");
 				LogicalModel m = Project.getInstance().getModel(modelKey2Name.get(saTmp[1]));
 				currEpi.setPriorityClasses(m, saTmp[2]);
@@ -252,6 +288,7 @@ public class Parser {
 			// Old NewVersion -> PT (Perturbation) R G B cell1-celli,celln,...
 			
 			if (line.startsWith("PT")) {
+				
 				saTmp = line.split("\\s+");
 				String sPerturb = line.substring(line.indexOf("(") + 1, line.indexOf(")"));
 				AbstractPerturbation ap = string2AbstractPerturbation(Project.getInstance().getProjectFeatures(),
@@ -318,31 +355,36 @@ public class Parser {
 		// Grid dimensions
 		// w.println("GD " + project.getX() + " " + project.getY() + " "
 		// + project.getTopologyLayout());
+		
+		Map<String, Integer> model2Key = new HashMap<String, Integer>();
 
 		// SBML numerical identifiers
 
-		OptionStore.setOption(Txt.get("s_INVALID_POSITION"), ColorUtils.getColorCode(Color.black));
-		OptionStore.setOption(Txt.get("s_EMPTY_POSITION"), ColorUtils.getColorCode(Color.gray));
-		OptionStore.setOption(Txt.get("s_DEAD_POSITION"), ColorUtils.getColorCode(Color.gray));
+		OptionStore.setOption(Txt.get("s_INVALID_CELL"), ColorUtils.getColorCode(Color.black));
+		OptionStore.setOption(Txt.get("s_EMPTY_CELL"), ColorUtils.getColorCode(Color.gray));
+		OptionStore.setOption(Txt.get("s_DEAD_CELL"), ColorUtils.getColorCode(Color.gray));
 
 		int i= -3;
 		Color c = Project.getInstance().getProjectFeatures().getAbstCellColor(Txt.get("s_EMPTY_CELL"));
+		
 		w.println("SB " + i + " " + "EMPTYCELL" + " " + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
+		model2Key.put(Txt.get("s_EMPTY_CELL"), i);
 		
 		i= -2;
 		c = Project.getInstance().getProjectFeatures().getAbstCellColor(Txt.get("s_DEAD_CELL"));
 		w.println("SB " + i + " " + "DEADCELL" + " " + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
+		model2Key.put(Txt.get("s_DEAD_CELL"), i);
 		
 		i= -1;
 		c = Project.getInstance().getProjectFeatures().getAbstCellColor(Txt.get("s_INVALID_CELL"));
 		w.println("SB " + i + " " + "INVALIDCELL" + " " + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
-		
+		model2Key.put(Txt.get("s_INVALID_CELL"), i);
 		
 		i = 0;
-		Map<LogicalModel, Integer> model2Key = new HashMap<LogicalModel, Integer>();
+	
 		for (String sbml : Project.getInstance().getModelNames()) {
 			LogicalModel m = Project.getInstance().getModel(sbml);
-			model2Key.put(m, i);
+			model2Key.put(sbml, i);
 			c = Project.getInstance().getProjectFeatures().getModelColor(m);
 			w.println("SB " + i + " " + sbml + " " + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
 			i++;
@@ -361,10 +403,10 @@ public class Parser {
 		}
 	}
 
-	private static void writeEpithelium(Epithelium epi, Map<LogicalModel, Integer> model2Key, PrintWriter w)
+	private static void writeEpithelium(Epithelium epi, Map<String, Integer> model2Key, PrintWriter w)
 			throws IOException {
 		w.println();
-
+		
 		// Epithelium name
 		w.println("SN " + epi.getName());
 		w.println("GD " + epi.getX() + " " + epi.getY() + " "
@@ -383,15 +425,25 @@ public class Parser {
 
 		// Models in the grid
 		EpitheliumGrid grid = epi.getEpitheliumGrid();
-		Map<LogicalModel, List<String>> modelInst = new HashMap<LogicalModel, List<String>>();
-		LogicalModel lastM = grid.getModel(0, 0);
+		Map<Integer, List<String>> indexInst = new HashMap<Integer, List<String>>();
+		int lastIndex = 0;
+		int currIndex;
+	
+
 		for (int y = 0, currI = 0, lastI = 0; y < grid.getY(); y++) {
 			for (int x = 0; x < grid.getX(); x++, currI++) {
-				LogicalModel currM = grid.getModel(x, y);
-				if (!currM.equals(lastM)) {
-					if (!modelInst.containsKey(lastM))
-						modelInst.put(lastM, new ArrayList<String>());
-					List<String> lTmp = modelInst.get(lastM);
+				if (grid.getAbstCell(x, y).isLivingCell()) {
+					String modelName  = Project.getInstance().getProjectFeatures().getModelName(grid.getModel(x, y));
+					currIndex = model2Key.get(modelName);
+				}
+				else {
+					currIndex = model2Key.get(grid.getAbstCell(x,y).getName());
+				}
+				
+				if (currIndex!=lastIndex) {
+					if (!indexInst.containsKey(lastIndex))
+						indexInst.put(lastIndex, new ArrayList<String>());
+					List<String> lTmp = indexInst.get(lastIndex);
 					if ((currI - 1) == lastI) {
 						lTmp.add("" + lastI);
 					} else {
@@ -399,23 +451,21 @@ public class Parser {
 					}
 					lastI = currI;
 				}
-				lastM = currM;
+				lastIndex = currIndex;
 				if (x == (grid.getX() - 1) && y == (grid.getY() - 1)) {
-					if (!modelInst.containsKey(lastM))
-						modelInst.put(lastM, new ArrayList<String>());
-					List<String> lTmp = modelInst.get(lastM);
+					if (!indexInst.containsKey(lastIndex))
+						indexInst.put(lastIndex, new ArrayList<String>());
+					List<String> lTmp = indexInst.get(lastIndex);
 					if (currI == lastI) {
 						lTmp.add("" + lastI);
 					} else {
 						lTmp.add(lastI + "-" + currI);
 					}
-				}
-			}
+				
+			}}
 		}
-		for (LogicalModel m : modelInst.keySet()) {
-			if (model2Key.containsKey(m)) {
-				w.println("GM " + model2Key.get(m) + " " + join(modelInst.get(m), ","));
-			}
+		for (int i : indexInst.keySet()) {
+				w.println("GM " + i + " " + join(indexInst.get(i), ","));
 		}
 
 		// Alpha asynchronism
@@ -431,6 +481,7 @@ public class Parser {
 		Map<LogicalModel, Map<String, Map<Byte, List<Integer>>>> valueInst = new HashMap<LogicalModel, Map<String, Map<Byte, List<Integer>>>>();
 		for (int y = 0, inst = 0; y < grid.getY(); y++) {
 			for (int x = 0; x < grid.getX(); x++, inst++) {
+				if (grid.getAbstCell(x, y).isLivingCell()) {
 				LogicalModel currM = grid.getModel(x, y);
 				if (!valueInst.containsKey(currM))
 					valueInst.put(currM, new HashMap<String, Map<Byte, List<Integer>>>());
@@ -449,7 +500,7 @@ public class Parser {
 					iTmp.add(inst);
 					valueInst.get(currM).get(nodeID).put(value, iTmp);
 				}
-			}
+			}}
 		}
 		for (LogicalModel m : valueInst.keySet()) {
 			for (String nodeID : valueInst.get(m).keySet()) {
@@ -490,7 +541,11 @@ public class Parser {
 
 		// Model Priority classes
 		// PR #model node1,node2:...:nodei
-		for (LogicalModel m : model2Key.keySet()) {
+		for (String name : model2Key.keySet()) {
+			if (model2Key.get(name)<0)
+				continue;
+			LogicalModel m = Project.getInstance().getProjectFeatures().getModel(name);
+			
 			if (epi.hasModel(m)) {
 				ModelPriorityClasses mpc = epi.getPriorityClasses(m);
 				String sPCs = "";
@@ -500,7 +555,7 @@ public class Parser {
 					List<String> pcVars = mpc.getClassVars(idxPC);
 					sPCs += join(pcVars, ",");
 				}
-				w.println("PR " + model2Key.get(m) + " " + sPCs);
+				w.println("PR " + model2Key.get(name) + " " + sPCs);
 			}
 			w.println();
 		}
@@ -508,21 +563,20 @@ public class Parser {
 		// Model All Perturbations
 		// old -> PT #model (Perturbation) R G B cell1-celli,celln,...
 		// new -> PT (Perturbation) R G B cell1-celli,celln,...
+		
 		Map<AbstractPerturbation, List<Integer>> apInst = new HashMap<AbstractPerturbation, List<Integer>>();
 		for (int y = 0, currI = 0; y < grid.getY(); y++) {
 			for (int x = 0; x < grid.getX(); x++, currI++) {
+				if (grid.getAbstCell(x, y).isLivingCell()) {
 				AbstractPerturbation currAP = grid.getPerturbation(x, y);
 				if (currAP == null) {
 					continue;
 				} else {
-//					System.out.println("Parser: " + currAP);
-//					System.out.println("Parser: " + x);
-//					System.out.println("Parser: " + y);
 					if (!apInst.containsKey(currAP)) {
 						apInst.put(currAP, new ArrayList<Integer>());
 					}
 					apInst.get(currAP).add(currI);
-				}
+				}}
 			}
 		}
 		w.println();

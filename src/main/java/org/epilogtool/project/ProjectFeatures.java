@@ -260,10 +260,12 @@ public class ProjectFeatures {
 	}
 
 	public Color getAbstCellColor(String name) {
+		if (!abstCell2Color.keySet().contains(name))
+			this.abstCell2Color.put(name, Color.decode((String) OptionStore.getOption(name)));
 		return abstCell2Color.get(name);
 	}
 	
-	public Color setAbstCellColor(String name, Color c) {
-		return abstCell2Color.put(name,c);
+	public void setAbstCellColor(String name, Color c) {
+		abstCell2Color.put(name,c);
 	}
 }

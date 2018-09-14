@@ -118,7 +118,7 @@ public class VisualGridPerturbation extends VisualGridDefinitions {
 
 	protected void applyDataAt(int x, int y) {
 		// TODO: Probably a better way, but the old method was not working
-		if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
+		if (this.epiGrid.getAbstCell(x, y).isLivingCell() && this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
 			if (!this.tpc.isChanged()) {
 				if ((this.epiGrid.getPerturbation(x, y) == null && this.selAbsPerturb != null)
 						|| (this.epiGrid.getPerturbation(x, y) != null && this.selAbsPerturb == null)

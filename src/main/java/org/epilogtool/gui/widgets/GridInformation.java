@@ -76,15 +76,18 @@ public class GridInformation extends JPanel {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.EAST;
 		int y = 0;
-
+		
+		if (cellGrid==null && grid !=null) {
+			cellGrid = grid.getCellGrid();
+		}
 		// Separation
 		this.minimalSpace(gbc, ++y);
 
 		// Separation
 		if (grid != null || cellGrid != null) {
-			if (cellGrid[posX][posY].isLivingCell()) {
-			LogicalModel m = (grid != null) ? grid.getModel(posX, posY) : ((LivingCell) cellGrid[posX][posY]).getModel();
-			}
+//			if (cellGrid[posX][posY].isLivingCell()) {
+//			LogicalModel m = ((LivingCell) cellGrid[posX][posY]).getModel();
+//			}
 			// Cell Position
 			jlTmp = new JLabel("Grid position:");
 			this.constraints(gbc, 0, ++y, 2);
@@ -96,10 +99,12 @@ public class GridInformation extends JPanel {
 			// Separation
 			this.minimalSpace(gbc, ++y);
 
+//			System.out.println(cellGrid[posX][posY]);
 			// Empty cell specification
-			if (cellGrid[posX][posY].isEmptyCell()) {
+			if (!cellGrid[posX][posY].isLivingCell()) {
+				
 				this.constraints(gbc, 0, ++y, 2);
-				jlTmp = new JLabel(Txt.get("s_EMPTY_CELL"));
+				jlTmp = new JLabel(cellGrid[posX][posY].getName());
 				this.jCellPanel.add(jlTmp, gbc);
 
 			} else {
@@ -110,7 +115,7 @@ public class GridInformation extends JPanel {
 				this.jCellPanel.add(jlTmp, gbc);
 				this.constraints(gbc, 0, ++y, 2);
 				if (cellGrid[posX][posY].isLivingCell()) {
-					LogicalModel m = (grid != null) ? grid.getModel(posX, posY) : ((LivingCell) cellGrid[posX][posY]).getModel();
+					LogicalModel m = ((LivingCell) cellGrid[posX][posY]).getModel();
 					jlTmp = new JLabel("  " + Project.getInstance().getProjectFeatures().getModelName(m));
 					jlTmp.setToolTipText(Project.getInstance().getProjectFeatures().getModelName(m));
 					this.jCellPanel.add(jlTmp, gbc);

@@ -70,6 +70,9 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	}
 
 	private String getTooltipEpithelium(Epithelium epi) {
+
+
+		
 		String tipKey = "<html><b>Epithelium</b><br/>";
 		tipKey += "Name: " + epi.getName() + "<br/>";
 		tipKey += "Grid: " + epi.getEpitheliumGrid().getX() + " (width) x " + epi.getEpitheliumGrid().getY()
@@ -116,6 +119,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	private String getTooltipPerturbations(Epithelium epi) {
 		String tipKey = "<html>";
 		boolean isEmpty = true;
+
 		Map<LogicalModel, Set<AbstractPerturbation>> map = epi.getEpitheliumGrid().getAppliedPerturb();
 		for (LogicalModel m : map.keySet()) {
 			if (map.get(m).isEmpty())

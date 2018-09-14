@@ -141,6 +141,7 @@ public class Epithelium {
 	}
 
 	public EpitheliumGrid getEpitheliumGrid() {
+
 		return this.grid;
 	}
 
@@ -238,13 +239,13 @@ public class Epithelium {
 		}
 	}
 
-	public void setModel(int x, int y, LogicalModel m) {
-		this.grid.setModel(x, y, m);
+	public void setModel(int x, int y, AbstractCell c) {
+		this.grid.setAbstractCell(x,y,c);
 	}
 
-	public void setGridWithModel(LogicalModel m, List<Tuple2D<Integer>> lTuples) {
+	public void setGridWithCell(AbstractCell c, List<Tuple2D<Integer>> lTuples) {
 		for (Tuple2D<Integer> tuple : lTuples) {
-			this.setModel(tuple.getX(), tuple.getY(), m);
+			this.setModel(tuple.getX(), tuple.getY(), c);
 		}
 	}
 

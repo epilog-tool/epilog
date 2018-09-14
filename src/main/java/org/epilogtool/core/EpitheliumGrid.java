@@ -66,21 +66,30 @@ public class EpitheliumGrid {
 		this.updateGrid();
 	}
 
+	//When an Epithelium is loaded
 	public EpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover, AbstractCell c)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		this.setTopology(topologyID, gridX, gridY, rollover);
 		
+		this.modelSet = new HashSet<LogicalModel>();
+		
+		
+		if (c.isLivingCell()) {
+			this.modelSet.add(((LivingCell) c).getModel());
+		}
+		
+		
 		this.gridCells = new AbstractCell[gridX][gridY];
+		
 		for (int y = 0; y < gridY; y++) {
 			for (int x = 0; x < gridX; x++) {
 				this.gridCells[x][y] = c;
+				
 			}
 		}
-		this.modelSet = new HashSet<LogicalModel>();
-		if (c.isLivingCell()) {
-		this.modelSet.add(((LivingCell) c).getModel());
-		}
+		
+		
 		this.compCounts = new HashMap<String, Map<Byte, Integer>>();
 		this.compPercents = new HashMap<String, Map<Byte, Float>>();// ptgm
 	}
@@ -151,6 +160,7 @@ public class EpitheliumGrid {
 	}
 
 	public AbstractPerturbation getPerturbation(int x, int y) {
+		
 		if (this.gridCells[x][y].isLivingCell()) {
 			LivingCell lCell = (LivingCell) this.gridCells[x][y];
 			return lCell.getPerturbation();
@@ -166,6 +176,7 @@ public class EpitheliumGrid {
 		Map<LogicalModel, Set<AbstractPerturbation>> map = new HashMap<LogicalModel, Set<AbstractPerturbation>>();
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
+
 				AbstractPerturbation ap = this.getPerturbation(x, y);
 				if (ap != null) {
 					LogicalModel m = this.getModel(x, y);
@@ -289,11 +300,6 @@ public class EpitheliumGrid {
 			((LivingCell) this.gridCells[x][y]).setValue(nodeID, value);
 	}}
 
-	//TODO: THIS IS WRONG
-//	public AbstractCell cloneEpitheliumCellAt(int x, int y) {
-//		return this.gridCells[x][y].clone();
-//	}
-
 	public AbstractCell getEpitheliumCell(int x, int y) {
 		return this.gridCells[x][y];
 	}
@@ -301,11 +307,6 @@ public class EpitheliumGrid {
 	public void setEpitheliumCell(int x, int y, AbstractCell absCell) {
 		this.gridCells[x][y] = absCell;
 	}
-
-//	protected void cloneEpitheliumCellTo(int x1, int y1, int x2, int y2) {
-//		AbstractCell epiCell = this.cloneEpitheliumCellAt(x1, y1);
-//		this.gridCells[x2][y2] = epiCell;
-//	}
 
 	public String hashGrid() {
 		String hash = "";
@@ -399,6 +400,8 @@ public class EpitheliumGrid {
 		this.compCounts.clear();
 		for (int x = 0; x < this.getX(); x++) {
 			for (int y = 0; y < this.getY(); y++) {
+				if (this.getAbstCell(x, y).isLivingCell()) {
+					
 				LogicalModel model = this.getModel(x, y);
 				for (NodeInfo node : model.getComponents()) {
 					String nodeID = node.getNodeID();
@@ -412,7 +415,7 @@ public class EpitheliumGrid {
 					int count = this.compCounts.get(nodeID).get(val) + 1;
 					this.compCounts.get(nodeID).put(val, count);
 				}
-			}
+			}}
 		}
 		// Compute corresponding percentages
 
@@ -461,6 +464,15 @@ public class EpitheliumGrid {
 		}
 
 		return positionNeighbours;
+	}
+
+	public AbstractCell[][] getCellGrid() {
+		// TODO Auto-generated method stub
+		return this.gridCells;
+	}
+
+	public void setAbstractCell(int x, int y, AbstractCell c) {
+		this.gridCells[x][y] = c;	
 	}
 	
 	

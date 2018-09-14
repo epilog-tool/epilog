@@ -116,6 +116,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		// Model selection Panel
 		this.lTop = new JPanel(new FlowLayout());
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
+
 		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
 		this.lTop.add(jcbSBML);
 		this.lTop.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
@@ -130,7 +131,9 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		jpLeftAggreg.add(this.gridInfo, BorderLayout.LINE_END);
 
 		this.center.add(jpLeftAggreg, BorderLayout.LINE_START);
+
 		LogicalModel m = Project.getInstance().getProjectFeatures().getModel((String) jcbSBML.getSelectedItem());
+		
 		updatePanelsWithModel(m);
 		this.isInitialized = true;
 	}
@@ -177,6 +180,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		gbc.anchor = GridBagConstraints.WEST;
 		jpPerturbTop.add(new JLabel(Txt.get("s_TAB_PERTURB_NODE")), gbc);
 
+		
 		Set<String> sProper = Project.getInstance().getProjectFeatures().getModelNodeIDs(this.selModel, false);
 
 		String[] saProper = new String[sProper.size()];
@@ -245,7 +249,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 					epiPerturbClone.addPerturbation(ap);
 					mID2AP.put(ap.toString(), ap);
 					Color c = epiPerturbClone.getPerturbationColor(ap);
-					System.out.println("1: "+ c);
+
 					if (c == null) {
 						c = ColorUtils.random();
 					}
@@ -461,8 +465,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	}
 
 	private void addColor2MarkPanel(AbstractPerturbation ap, Color c) {
-		System.out.println("ap: "+ ap);
-		System.out.println("colour: "+ c);
+
 		// JCheckbox
 		JCheckBox jcb = new JCheckBox();
 		jcb.setToolTipText(ap.toString());
@@ -593,12 +596,13 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
 		for (int x = 0; x < grid.getX(); x++) {
 			for (int y = 0; y < grid.getY(); y++) {
+				if (grid.getModel(x, y)!= null && this.epiGridClone.getModel(x, y)!= null) {
 				if (!grid.getModel(x, y).equals(this.epiGridClone.getModel(x, y))) {
 					this.epiGridClone.setModel(x, y, grid.getModel(x, y));
 					this.epiGridClone.setPerturbation(x, y, grid.getPerturbation(x, y));
 				}
 			}
-		}
+		}}
 		if (this.selModel!=null) this.updatePanelsWithModel(this.selModel);
 		else this.updatePanelsWithModel(modelList.get(0));
 		

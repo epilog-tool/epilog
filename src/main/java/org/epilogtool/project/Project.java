@@ -93,6 +93,7 @@ public class Project {
 		this.filenamePEPS = filename;
 	}
 
+	//Called when an epithelium is loaded
 	public Epithelium newEpithelium(int x, int y, String topologyID, String userName, AbstractCell c,
 			RollOver rollover, EnumRandomSeed randomSeedType, int randomSeed)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
