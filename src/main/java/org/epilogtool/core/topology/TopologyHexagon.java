@@ -29,6 +29,14 @@ public abstract class TopologyHexagon extends Topology {
 		return setNeighbours;
 	}
 
+	/**
+	 * From the relative positions given by the neighborhood relationship, return the position on the grid. 
+	 * It will depend on the size of the grid. 
+	 *
+	 * @param Tuple2D<Integer> (x,y), which are the relative coordinates
+	 * @return    Tuple2D<Integer> (newX,newY), which are the absolute position on the grid
+	 * @see         Topology
+	 */
 	protected Tuple2D<Integer> relativeToAbsolutePosition(Tuple2D<Integer> tuple, int x, int y) {
 		int newX = tuple.getX() + x;
 		int newY = tuple.getY() + y;
