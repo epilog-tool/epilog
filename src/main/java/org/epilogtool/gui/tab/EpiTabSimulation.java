@@ -870,14 +870,12 @@ public class EpiTabSimulation extends EpiTabTools {
 	}
 
 	private boolean hasChangedEpithelium() {
-		System.out.println(this.simulation.getEpithelium().equals(this.epithelium));
 		return !this.simulation.getEpithelium().equals(this.epithelium);
 	}
 
 	@Override
 	public void applyChange() {
 		if (this.hasChangedEpithelium()) {
-			System.out.println("applyChange: here");
 			JTextPane jtp = new JTextPane();
 			jtp.setContentType("text/html");
 			String color = ColorUtils.getColorCode(this.south.getBackground());

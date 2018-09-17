@@ -75,11 +75,7 @@ public class Epithelium {
 	public boolean equals(Object o) {
 		//TODO: solve the Events equals
 		Epithelium otherEpi = (Epithelium) o;
-//		System.out.println("PT " + this.perturbations.equals(otherEpi.perturbations));
-//		System.out.println("PR " + this.priorities.equals(otherEpi.priorities));
-////		System.out.println("EV: "+ this.epitheliumEvents.equals(otherEpi.getEpitheliumEvents()));
-//		System.out.println("UP: "+ this.updateSchemeInter.equals(otherEpi.getUpdateSchemeInter()));
-//		System.out.println("GR " + this.grid.equals(otherEpi.grid));
+
 		return (this.grid.equals(otherEpi.grid) && this.priorities.equals(otherEpi.priorities)
 				&& this.integrationFunctions.equals(otherEpi.integrationFunctions)
 				&& this.perturbations.equals(otherEpi.perturbations)
@@ -239,9 +235,6 @@ public class Epithelium {
 	public void applyPerturbation(AbstractPerturbation ap, Color c, List<Tuple2D<Integer>> lTuples) {
 		this.perturbations.addPerturbationColor(ap, c);
 		if (lTuples != null) {
-//			System.out.println("Epithelium: " + ap);
-//			System.out.println("Epithelium: " + c);
-//			System.out.println("Epithelium: " + lTuples);
 			this.grid.setPerturbation(lTuples, ap);
 		}
 	}

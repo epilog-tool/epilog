@@ -90,7 +90,6 @@ public abstract class EpiTabDefinitions extends EpiTab {
 						tabChanged.setEpiChanged();
 					}
 					buttonEnable(false);
-					System.out.println(((ModificationsPanel) south).accept.isEnabled());
 				}
 			});
 			this.add(accept);
