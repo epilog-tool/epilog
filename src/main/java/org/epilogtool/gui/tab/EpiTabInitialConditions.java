@@ -657,7 +657,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	@Override
 	public void applyChange() {
 
-		System.out.println("ApplyChange");
+		System.out.println("EpiTabInitialConditions:  ApplyChange");
 		// Update grid
 		EpitheliumGrid projEpiGrid = this.epithelium.getEpitheliumGrid();
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {

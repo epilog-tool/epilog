@@ -188,6 +188,7 @@ public class EpiGUI extends JFrame {
 				if (epitab == null)
 					return;
 				epitab.notifyChange();
+				System.out.println("notifyOpenEpiTabs");
 			}
 		});
 
@@ -1045,6 +1046,7 @@ public class EpiGUI extends JFrame {
 			Component c = this.epiRightFrame.getComponentAt(i);
 			EpiTab tab = (EpiTab) c;
 			tab.notifyChange();
+			System.out.println("notifyOpenEpiTabs:  ApplyChange");
 		}
 	}
 

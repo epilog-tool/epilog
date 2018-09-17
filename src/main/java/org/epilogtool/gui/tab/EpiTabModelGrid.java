@@ -310,6 +310,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	@Override
 	public void applyChange() {
 		this.updateModelList();
+		System.out.println("EpiTabModelGrid:  ApplyChange");
 		// TODO: update models assigned ?
 	}
 }
