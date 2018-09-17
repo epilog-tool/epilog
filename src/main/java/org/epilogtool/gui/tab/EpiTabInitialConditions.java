@@ -622,7 +622,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				byte[] stateOrig = gridOrig.getCellState(x, y);
 //				System.out.println(Arrays.toString(stateOrig));
 				if (!Arrays.equals(stateOrig, stateClone)) {
-					gridOrig.setCellState(x, y, stateClone);
+					gridOrig.setAbstractCell(x, y,  epiGridClone.getAbstCell(x, y).clone());
 					
 				}
 			}//Ends if Living Cell
@@ -630,18 +630,18 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				}
 		}
 		System.out.println(Project.getInstance().getProjectFeatures().getModelName(((LivingCell) gridOrig.getAbstCell(0, 0)).getModel()));
-		System.out.println(Arrays.toString(((LivingCell) gridOrig.getAbstCell(0, 0)).getState()));
+//		System.out.println(Arrays.toString(((LivingCell) gridOrig.getAbstCell(0, 0)).getState()));
 	}
 
 	@Override
 	protected boolean isChanged() {
 		// Check modifications on state
 		
-		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
+		EpitheliumGrid gridOrig = this.epithelium.getEpitheliumGrid();
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {
 			for (int y = 0; y < this.epiGridClone.getY(); y++) {
 				byte[] stateClone = this.epiGridClone.getCellState(x, y);
-				byte[] stateOrig = grid.getCellState(x, y);
+				byte[] stateOrig = gridOrig.getCellState(x, y);
 //				System.out.println("stateClone: " + stateClone);
 //				System.out.println("stateOrig: " + stateOrig.toString());
 				if (!Arrays.equals(stateOrig, stateClone)) {
@@ -663,13 +663,15 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {
 			for (int y = 0; y < this.epiGridClone.getY(); y++) {
 				if(this.epiGridClone.getAbstCell(x, y).isLivingCell()) {
-				if (!this.epiGridClone.getModel(x, y).equals(projEpiGrid.getModel(x, y))) {
-					this.epiGridClone.setModel(x, y, projEpiGrid.getModel(x, y));
-					if (!Arrays.equals(projEpiGrid.getCellState(x, y), this.epiGridClone.getCellState(x, y))) {
-						this.epiGridClone.setCellState(x, y, projEpiGrid.getCellState(x, y));
+				if (!this.epiGridClone.getModel(x, y).equals(projEpiGrid.getModel(x, y))) 
+					this.epiGridClone.setAbstractCell(x, y, projEpiGrid.getAbstCell(x, y));
+				else
+				if (!Arrays.equals(projEpiGrid.getCellState(x, y), this.epiGridClone.getCellState(x, y))) {
+					this.epiGridClone.setAbstractCell(x, y, projEpiGrid.getAbstCell(x, y));
+					System.out.println(Arrays.toString(((LivingCell) this.epiGridClone.getAbstCell(x, y)).getState()));
 					}
 				}}
-			}
+			
 		}
 
 		// New (potential) model list -> Update JComboCheckBox
