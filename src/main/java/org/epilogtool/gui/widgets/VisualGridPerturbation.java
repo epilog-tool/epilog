@@ -143,7 +143,9 @@ public class VisualGridPerturbation extends VisualGridDefinitions {
 				BasicStroke stroke = this.strokeBasic;
 				Color cPerturb = this.getParent().getBackground();
 				if (!this.epiGrid.getAbstCell(x, y).isLivingCell()){
-					cPerturb = Project.getInstance().getProjectFeatures().getAbstCellColor(this.epiGrid.getAbstCell(x, y).getName());
+//					cPerturb = Project.getInstance().getProjectFeatures().getAbstCellColor(this.epiGrid.getAbstCell(x, y).getName());
+//					cPerturb = Color.gray;
+					cPerturb = this.getParent().getBackground();
 				}
 
 				else if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {

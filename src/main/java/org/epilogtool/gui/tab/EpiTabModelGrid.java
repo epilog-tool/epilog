@@ -138,7 +138,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(1, 5, 1, 0);
 		int i = 0;
-		for (String name : Project.getInstance().getProjectFeatures().getGUIModelNames()) {
+		for (String name : Project.getInstance().getProjectFeatures().getGUICellAndModelTypes()) {
 			gbc.gridy = i;
 			i++;
 			gbc.gridx = 0;
@@ -150,7 +150,6 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 				public void actionPerformed(ActionEvent e) {
 					JRadioComponentButton jrb = (JRadioComponentButton) e.getSource();
 					updateCellSelectionButtons();
-//					System.out.println("ww" + jrb.getComponentText());
 					visualGridModel.setSelModelName(jrb.getComponentText());
 				}
 			});

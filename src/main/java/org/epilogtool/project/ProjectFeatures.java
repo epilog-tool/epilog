@@ -102,11 +102,18 @@ public class ProjectFeatures {
 		return this.model2String.get(m);
 	}
 
-	public List<String> getGUIModelNames() {
+	public List<String> getGUICellAndModelTypes(){
 		List<String> ltmp = new ArrayList<String>();
 		ltmp.add(Txt.get("s_EMPTY_CELL"));
 		ltmp.add(Txt.get("s_INVALID_CELL"));
 		ltmp.add(Txt.get("s_DEAD_CELL"));
+		ltmp.addAll(this.string2Model.keySet());
+		return ltmp;
+	}
+	
+	public List<String> getGUIModelNames() {
+		List<String> ltmp = new ArrayList<String>();
+
 		ltmp.addAll(this.string2Model.keySet());
 		return ltmp;
 	}

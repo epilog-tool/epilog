@@ -113,6 +113,7 @@ public class VisualGridSimulation extends VisualGrid {
 				
 				if(this.epiGrid.getModel(x, y) == null){
 					lColors.add(this.getParent().getBackground());
+//					lColors.add(Color.gray);
 				} else {
 					for (String nodeID : this.lCompON) {
 						Color cBase = Project.getInstance().getProjectFeatures().getNodeColor(nodeID);

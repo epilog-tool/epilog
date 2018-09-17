@@ -76,6 +76,8 @@ public abstract class EpiTabDefinitions extends EpiTab {
 					buttonEnable(false);
 				}
 			});
+			
+			
 			this.add(reset);
 
 			// Accept button

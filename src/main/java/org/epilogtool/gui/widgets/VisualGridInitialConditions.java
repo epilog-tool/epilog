@@ -19,6 +19,7 @@ import org.epilogtool.OptionStore;
 import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.EpitheliumGrid;
+import org.epilogtool.core.cell.LivingCell;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.gui.dialog.EnumNodePercent;
 import org.epilogtool.gui.tab.EpiTabDefinitions.TabProbablyChanged;
@@ -227,7 +228,11 @@ public void updateNodePercentages() {
 			for (int x = 0; x < this.gridX; x++) {
 				for (int y = 0; y < this.gridY; y++) {
 					int value = RandCentral.getInstance().nextInt(maxValue + 1);
+					if (this.epiGrid.getAbstCell(x, y).isLivingCell()) {
+					LivingCell c = (LivingCell) this.epiGrid.getAbstCell(x, y);
 					this.epiGrid.setCellComponentValue(x, y, node.getNodeID(), (byte) value);
+					c.setValue(node.getNodeID(), (byte) value);
+					}
 				}
 			}
 		}

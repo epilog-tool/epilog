@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -41,6 +42,7 @@ import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
+import org.epilogtool.core.cell.LivingCell;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.dialog.EnumNodePercent;
 import org.epilogtool.gui.dialog.EnumOrderNodes;
@@ -610,29 +612,42 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	protected void buttonAccept() {
 
 		EpitheliumGrid gridOrig = this.epithelium.getEpitheliumGrid();
-
+		System.out.println("Just accepted the change");
+		
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {
 			for (int y = 0; y < this.epiGridClone.getY(); y++) {
 				if (this.epiGridClone.getAbstCell(x, y).isLivingCell()) {
 				byte[] stateClone = this.epiGridClone.getCellState(x, y).clone();
+//				System.out.println(Arrays.toString(stateClone));
 				byte[] stateOrig = gridOrig.getCellState(x, y);
+//				System.out.println(Arrays.toString(stateOrig));
 				if (!Arrays.equals(stateOrig, stateClone)) {
 					gridOrig.setCellState(x, y, stateClone);
+					
 				}
-			}}
+			}//Ends if Living Cell
+				
+				}
 		}
+		System.out.println(Project.getInstance().getProjectFeatures().getModelName(((LivingCell) gridOrig.getAbstCell(0, 0)).getModel()));
+		System.out.println(Arrays.toString(((LivingCell) gridOrig.getAbstCell(0, 0)).getState()));
 	}
 
 	@Override
 	protected boolean isChanged() {
 		// Check modifications on state
+		
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {
 			for (int y = 0; y < this.epiGridClone.getY(); y++) {
 				byte[] stateClone = this.epiGridClone.getCellState(x, y);
 				byte[] stateOrig = grid.getCellState(x, y);
+//				System.out.println("stateClone: " + stateClone);
+//				System.out.println("stateOrig: " + stateOrig.toString());
 				if (!Arrays.equals(stateOrig, stateClone)) {
+					System.out.println("ischanged()");
 					return true;
+
 				}
 			}
 		}
@@ -642,6 +657,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 	@Override
 	public void applyChange() {
 
+		System.out.println("ApplyChange");
 		// Update grid
 		EpitheliumGrid projEpiGrid = this.epithelium.getEpitheliumGrid();
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {
