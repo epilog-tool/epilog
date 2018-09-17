@@ -164,8 +164,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 			else {
 				newColor = Project.getInstance().getProjectFeatures().getModelColor(name);
 			}
-//			System.out.println("name: " + name);
-//			System.out.println("color: " + newColor);
+
 			JButton jbColor = new JButton();
 			jbColor.setBackground(newColor);
 			jbColor.addActionListener(new ActionListener() {
@@ -310,7 +309,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	@Override
 	public void applyChange() {
 		this.updateModelList();
-		System.out.println("EpiTabModelGrid:  ApplyChange");
+
 		// TODO: update models assigned ?
 	}
 }
