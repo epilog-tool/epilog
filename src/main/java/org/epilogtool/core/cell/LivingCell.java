@@ -1,7 +1,5 @@
 package org.epilogtool.core.cell;
 
-import java.util.Arrays;
-
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Txt;
