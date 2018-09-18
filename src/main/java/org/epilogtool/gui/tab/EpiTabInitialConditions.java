@@ -616,7 +616,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {
 			for (int y = 0; y < this.epiGridClone.getY(); y++) {
 				if (this.epiGridClone.getAbstCell(x, y).isLivingCell()) {
-				byte[] stateClone = this.epiGridClone.getCellState(x, y).clone();
+				byte[] stateClone = this.epiGridClone.getCellState(x, y);
 				byte[] stateOrig = gridOrig.getCellState(x, y);
 				if (!Arrays.equals(stateOrig, stateClone)) {
 					gridOrig.setAbstractCell(x, y,  epiGridClone.getAbstCell(x, y).clone());

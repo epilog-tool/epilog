@@ -196,6 +196,7 @@ public class Epithelium {
 
 	public void setGridWithComponentValue(String nodeID, byte value, List<Tuple2D<Integer>> lTuples) {
 		for (Tuple2D<Integer> tuple : lTuples) {
+
 			this.grid.setCellComponentValue(tuple.getX(), tuple.getY(), nodeID, value);
 		}
 	}
@@ -245,7 +246,8 @@ public class Epithelium {
 
 	public void setGridWithCell(AbstractCell c, List<Tuple2D<Integer>> lTuples) {
 		for (Tuple2D<Integer> tuple : lTuples) {
-			this.setModel(tuple.getX(), tuple.getY(), c);
+			AbstractCell newC = c.clone();
+			this.setModel(tuple.getX(), tuple.getY(), newC);
 		}
 	}
 

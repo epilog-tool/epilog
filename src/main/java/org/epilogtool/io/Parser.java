@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.core.UpdateCells;
 import org.epilogtool.core.cell.AbstractCell;
 import org.epilogtool.core.cell.CellFactory;
+import org.epilogtool.core.cell.LivingCell;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.color.ColorUtils;
 import org.epilogtool.notification.NotificationManager;
@@ -223,7 +225,9 @@ public class Parser {
 				saTmp = line.split("\\s+");
 				currEpi.setGridWithComponentValue(saTmp[1], Byte.parseByte(saTmp[2]),
 						currEpi.getEpitheliumGrid().getTopology().instances2Tuples2D(saTmp[3].split(",")));
+				
 			}
+
 
 			// Component Integration Functions
 			// IT #model Node Level {Function}
@@ -304,9 +308,6 @@ public class Parser {
 					if (saTmp.length > 3) {
 						lTuple = currEpi.getEpitheliumGrid().getTopology().instances2Tuples2D(saTmp[3].split(","));
 					}
-//					System.out.println("Parser: " + ap);
-//					System.out.println("Parser: " + c);
-//					System.out.println("Parser: " + lTuple);
 					currEpi.applyPerturbation(ap, c, lTuple);
 				}
 			}
@@ -482,6 +483,7 @@ public class Parser {
 		for (int y = 0, inst = 0; y < grid.getY(); y++) {
 			for (int x = 0; x < grid.getX(); x++, inst++) {
 				if (grid.getAbstCell(x, y).isLivingCell()) {
+					
 				LogicalModel currM = grid.getModel(x, y);
 				if (!valueInst.containsKey(currM))
 					valueInst.put(currM, new HashMap<String, Map<Byte, List<Integer>>>());

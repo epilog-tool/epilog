@@ -3,6 +3,7 @@ package org.epilogtool.core;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,7 +61,7 @@ public class EpitheliumGrid {
 				}
 			}
 		}
-		
+
 		this.gridCells = newGrid;
 		
 		// Create new Topology
@@ -88,7 +89,6 @@ public class EpitheliumGrid {
 		for (int y = 0; y < gridY; y++) {
 			for (int x = 0; x < gridX; x++) {
 				this.gridCells[x][y] = c;
-				
 			}
 		}
 		
@@ -115,7 +115,6 @@ public class EpitheliumGrid {
 		return this.topology;
 	}
 
-	//ISSUE: 
 	public LogicalModel getModel(int x, int y) {
 		if (this.gridCells[x][y].isLivingCell()) {
 			LivingCell lCell = (LivingCell) this.gridCells[x][y];
@@ -267,10 +266,8 @@ public class EpitheliumGrid {
 		
 		for (String sTmp : saExpr) {
 			String name = sTmp.split("%")[0];
-//			System.out.println("EpitheliumGrid: name -> " + name);
 			NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(name);
 			nodes.add(node);
-//			System.out.println("EpitheliumGrid: " + node);
 		}
 		
 		if (nodes.size()==1) {
