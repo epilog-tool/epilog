@@ -349,10 +349,13 @@ public class EpitheliumGrid {
 		}
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
-				if (!this.gridCells[x][y].equals(o.gridCells[x][y])) {
+				if (!this.gridCells[x][y].getName().equals(o.getAbstCell(x, y).getName())) 
+					return false;
+				else if (this.gridCells[x][y].isLivingCell()){
+				if (!this.gridCells[x][y].equals(o.getAbstCell(x, y))) {
 					return false;
 				}
-			}
+			}}
 		}
 		return true;
 	}

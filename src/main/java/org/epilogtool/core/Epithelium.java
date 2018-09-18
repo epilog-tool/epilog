@@ -75,7 +75,12 @@ public class Epithelium {
 	public boolean equals(Object o) {
 		//TODO: solve the Events equals
 		Epithelium otherEpi = (Epithelium) o;
-
+//
+//		System.out.println("int " + this.integrationFunctions.equals(otherEpi.integrationFunctions));
+//		System.out.println("grid " + this.grid.equals(otherEpi.grid));
+//		System.out.println("prio " +this.priorities.equals(otherEpi.priorities));
+//		System.out.println("upda " + this.updateSchemeInter.equals(otherEpi.getUpdateSchemeInter()));
+//		System.out.println("pert " + this.perturbations.equals(otherEpi.perturbations));
 		return (this.grid.equals(otherEpi.grid) && this.priorities.equals(otherEpi.priorities)
 				&& this.integrationFunctions.equals(otherEpi.integrationFunctions)
 				&& this.perturbations.equals(otherEpi.perturbations)

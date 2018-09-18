@@ -870,7 +870,8 @@ public class EpiTabSimulation extends EpiTabTools {
 	}
 
 	private boolean hasChangedEpithelium() {
-		return !this.simulation.getEpithelium().equals(this.epithelium);
+
+		return !this.epithelium.equals(this.simulation.getEpithelium());
 	}
 
 	@Override

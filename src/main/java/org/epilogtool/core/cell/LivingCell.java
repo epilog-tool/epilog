@@ -1,5 +1,7 @@
 package org.epilogtool.core.cell;
 
+import java.util.Arrays;
+
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Txt;
@@ -105,11 +107,13 @@ public class LivingCell extends AbstractCell {
 
 	public boolean equals(Object o) {
 		AbstractCell ac = (AbstractCell) o;
+	
 		if (!ac.isLivingCell())
 			return false;
+		
 		LivingCell ecOut = (LivingCell) ac;
+	
 		if (!this.model.equals(ecOut.model)) {
-			
 			return false;
 		}
 		if (this.perturbation == null) {
