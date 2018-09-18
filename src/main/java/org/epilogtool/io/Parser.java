@@ -71,6 +71,7 @@ public class Parser {
 
 			// Load SBML model numerical identifiers and create new project
 			if (line.startsWith("SB")) {
+				System.out.println(line);
 				saTmp = line.split("\\s+");
 				
 				if (saTmp[1].equals("-1")){
@@ -102,7 +103,7 @@ public class Parser {
 			}
 
 			if (line.startsWith("CC")) {
-				
+				System.out.println(line);
 				saTmp = line.split("\\s+");
 				Color componentColor = ColorUtils.getColor(saTmp[2], saTmp[3], saTmp[4]);
 				Project.getInstance().getProjectFeatures().setNodeColor(saTmp[1], componentColor);
@@ -110,7 +111,7 @@ public class Parser {
 
 			// Epithelium name
 			if (line.startsWith("SN")) {
-				
+				System.out.println(line);
 				epiName = line.split("\\s+")[1];
 				currEpi = null;
 				rollover = RollOver.NONE;
@@ -119,7 +120,7 @@ public class Parser {
 			}
 
 			if (line.startsWith("GD")) {
-				
+				System.out.println(line);
 				saTmp = line.split("\\s+");
 				x = saTmp[1];
 				y = saTmp[2];
@@ -138,7 +139,7 @@ public class Parser {
 
 			// RollOver
 			if (line.startsWith("RL")) {
-				
+				System.out.println(line);
 				rollover = RollOver.string2RollOver(epiName, line.split("\\s+")[1]);
 				if (rollover == null) {
 					NotificationManager.warning("Parser",
@@ -152,7 +153,7 @@ public class Parser {
 
 			// Random Seed
 			if (line.startsWith("SD")) {
-				
+				System.out.println(line);
 				saTmp = line.split("\\s+");
 				EnumRandomSeed rsType = EnumRandomSeed.string2RandomSeed(saTmp[1]);
 				if (rsType != null && rsType.equals(EnumRandomSeed.FIXED)) {
@@ -169,7 +170,7 @@ public class Parser {
 			
 			if (line.startsWith("GM")) {
 				
-				
+				System.out.println(line);
 				
 				saTmp = line.split("\\s+");
 				
@@ -207,21 +208,21 @@ public class Parser {
 			}
 			// alpha-asynchronous value
 			if (line.startsWith("AS")) {
-			
+				System.out.println(line);
 				saTmp = line.split("\\s+");
 				currEpi.getUpdateSchemeInter().setAlpha(Float.parseFloat(saTmp[1]));
 			}
 
 			// Cell Update
 			if (line.startsWith("CU")) {
-				
+				System.out.println(line);
 				String updateCells = line.substring(line.indexOf(" ") + 1);
 				currEpi.getUpdateSchemeInter().setUpdateCells(UpdateCells.fromString(updateCells));
 			}
 
 			// Initial Conditions grid
 			if (line.startsWith("IC")) {
-				
+				System.out.println(line);
 				saTmp = line.split("\\s+");
 				currEpi.setGridWithComponentValue(saTmp[1], Byte.parseByte(saTmp[2]),
 						currEpi.getEpitheliumGrid().getTopology().instances2Tuples2D(saTmp[3].split(",")));
@@ -234,7 +235,7 @@ public class Parser {
 			// Old Integration function identifier, where an integration function was
 			// associated with a model and a component.
 			if (line.startsWith("IT")) {
-				
+				System.out.println(line);
 				saTmp = line.split("\\s+");
 				byte value = Byte.parseByte(saTmp[3]);
 				String nodeID = saTmp[2];
@@ -257,7 +258,7 @@ public class Parser {
 
 			// IF #model Node Level {Function}
 			if (line.startsWith("IF")) {
-				
+				System.out.println(line);
 				saTmp = line.split("\\s+");
 				byte value = Byte.parseByte(saTmp[2]);
 				String nodeID = saTmp[1];
@@ -281,7 +282,7 @@ public class Parser {
 			// Model Priority classes
 			// PR #model node1,node2:...:nodei
 			if (line.startsWith("PR")) {
-				
+				System.out.println(line);
 				saTmp = line.split("\\s+");
 				LogicalModel m = Project.getInstance().getModel(modelKey2Name.get(saTmp[1]));
 				currEpi.setPriorityClasses(m, saTmp[2]);
@@ -292,7 +293,7 @@ public class Parser {
 			// Old NewVersion -> PT (Perturbation) R G B cell1-celli,celln,...
 			
 			if (line.startsWith("PT")) {
-				
+				System.out.println(line);
 				saTmp = line.split("\\s+");
 				String sPerturb = line.substring(line.indexOf("(") + 1, line.indexOf(")"));
 				AbstractPerturbation ap = string2AbstractPerturbation(Project.getInstance().getProjectFeatures(),
@@ -466,7 +467,8 @@ public class Parser {
 			}}
 		}
 		for (int i : indexInst.keySet()) {
-				w.println("GM " + i + " " + join(indexInst.get(i), ","));
+			//TODO: the replace is temporary, fix the algorithm above
+				w.println("GM " + i + " " + join(indexInst.get(i), ",").replaceAll("--", "-"));
 		}
 
 		// Alpha asynchronism
