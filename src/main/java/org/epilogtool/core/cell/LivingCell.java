@@ -109,6 +109,7 @@ public class LivingCell extends AbstractCell {
 			return false;
 		LivingCell ecOut = (LivingCell) ac;
 		if (!this.model.equals(ecOut.model)) {
+			
 			return false;
 		}
 		if (this.perturbation == null) {

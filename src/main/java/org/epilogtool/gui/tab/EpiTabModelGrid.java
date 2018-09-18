@@ -298,9 +298,14 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		// ------------------ Models were added/removed to the grid
 		for (int x = 0; x < this.cellGridClone.length; x++) {
 			for (int y = 0; y < this.cellGridClone[0].length; y++) {
-				if (!this.cellGridClone[x][y].equals(this.epithelium.getEpitheliumGrid().getAbstCell(x, y))) {
+				if (!this.cellGridClone[x][y].getName().equals(this.epithelium.getEpitheliumGrid().getAbstCell(x, y).getName())) {
 					return true;
 				}
+					else  if (this.cellGridClone[x][y].isLivingCell()) {
+						if (!((LivingCell) this.cellGridClone[x][y]).getModel().equals(((LivingCell) this.epithelium.getEpitheliumGrid().getAbstCell(x, y)).getModel())) {
+							return true;
+						}
+					} 
 			}
 		}
 		return false;
