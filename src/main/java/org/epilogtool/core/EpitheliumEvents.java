@@ -16,10 +16,10 @@ public class EpitheliumEvents {
 	public static float DEFAULT_DIVISIONPROBABILITY = (float) 1.0;
 	public static float DEFAULT_DEATHPROBABILITY = (float) 1.0;
 	
-	private List<LivingCell> lstLivingCells;
-	private List<DeadCell> lstDeadCells;
-	private List<InvalidCell> lstInvalidPositions;
-	private List<EmptyCell> lstEmptyPositions;
+//	private List<LivingCell> lstLivingCells;
+//	private List<DeadCell> lstDeadCells;
+//	private List<InvalidCell> lstInvalidPositions;
+//	private List<EmptyCell> lstEmptyPositions;
 	
 	
 	private String eventOrder;
@@ -30,12 +30,14 @@ public class EpitheliumEvents {
 	private float  deathProbability;
 
 	public EpitheliumEvents(float divisionProbability, float deathProbability, String eventOrder, String strNewCellState, String deathOption, byte[] newCellState) {
+		
+		this.divisionProbability = divisionProbability;
+		this.deathProbability = deathProbability;
 		this.eventOrder = eventOrder;
 		this.deathOption = deathOption;
 		this.strNewCellState = strNewCellState;
 		this.newCellState = newCellState;
-		this.divisionProbability = divisionProbability;
-		this.deathProbability = deathProbability;
+
 	}
 
 
@@ -43,15 +45,26 @@ public class EpitheliumEvents {
 		return this.divisionProbability;
 	}
 	
+	public float getDeathProbability() {
+		return this.deathProbability;
+	}
 	
-	public void setEventOrder(String str) {
-		this.eventOrder = str;
+	public float setDivisionProbability() {
+		return this.divisionProbability;
+	}
+	
+	public float setDeathProbability() {
+		return this.deathProbability;
 	}
 	
 	public String getEventOrder() {
 		return this.eventOrder;
 	}
 	
+	public void setEventOrder(String str) {
+		this.eventOrder = str;
+	}
+
 	public String getDeathOption() {
 		return this.deathOption;
 	}
@@ -78,11 +91,35 @@ public class EpitheliumEvents {
 	}
 	
 	public EpitheliumEvents clone() {
-		return new EpitheliumEvents(this.divisionProbability, this.deathProbability, this.eventOrder, this.deathOption, this.strNewCellState, this.newCellState);
+		return new EpitheliumEvents(this.divisionProbability, this.deathProbability, this.eventOrder, this.strNewCellState, this.deathOption, this.newCellState);
 	}
 
 	public boolean equals(Object o) {
-		return false;
+		
+		EpitheliumEvents newEpiEvents = (EpitheliumEvents) o ;
+		
+		
+		if (this.divisionProbability != newEpiEvents.getDivisionProbability())
+			return false;
+		
+		if (this.deathProbability != newEpiEvents.getDeathProbability())
+			return false;
+		
+		if (!this.eventOrder.equals(newEpiEvents.getEventOrder()))
+			return false;
+		
+		if (!this.strNewCellState.equals(newEpiEvents.getNewCellState()))
+			return false;
+		
+		if (!this.deathOption.equals(newEpiEvents.getDeathOption()))
+			return false;
+		
+		if (this.newCellState!=null && newEpiEvents.getCellState()!= null)
+		if (!this.newCellState.equals(newEpiEvents.getCellState()))
+			return false;
+		
+		
+		return true;
 
 	}
 }

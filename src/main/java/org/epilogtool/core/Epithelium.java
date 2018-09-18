@@ -29,8 +29,6 @@ public class Epithelium {
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
 	private EpitheliumEvents epitheliumEvents;
 
-	
-	
 
 	public Epithelium(int x, int y, String topologyID, String name, AbstractCell c, RollOver rollover,
 			EnumRandomSeed randomSeedType, int randomSeed)
@@ -53,6 +51,7 @@ public class Epithelium {
 
 	private Epithelium(String name, EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
 			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap, EpitheliumUpdateSchemeInter usi, EpitheliumEvents ev) {
+		
 		this.name = name;
 		this.grid = grid;
 		this.priorities = epc;
@@ -60,7 +59,6 @@ public class Epithelium {
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
 		this.epitheliumEvents = ev;
-		
 	}
 
 	public Epithelium clone() {
@@ -81,10 +79,11 @@ public class Epithelium {
 //		System.out.println("prio " +this.priorities.equals(otherEpi.priorities));
 //		System.out.println("upda " + this.updateSchemeInter.equals(otherEpi.getUpdateSchemeInter()));
 //		System.out.println("pert " + this.perturbations.equals(otherEpi.perturbations));
+//		System.out.println("ev " + this.epitheliumEvents.equals(otherEpi.getEpitheliumEvents()));
 		return (this.grid.equals(otherEpi.grid) && this.priorities.equals(otherEpi.priorities)
 				&& this.integrationFunctions.equals(otherEpi.integrationFunctions)
 				&& this.perturbations.equals(otherEpi.perturbations)
-//				&& this.epitheliumEvents.equals(otherEpi.getEpitheliumEvents())
+				&& this.epitheliumEvents.equals(otherEpi.getEpitheliumEvents())
 				&& this.updateSchemeInter.equals(otherEpi.getUpdateSchemeInter()));
 		
 	}
