@@ -133,11 +133,11 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		JPanel jpOrder = new JPanel ();
 
 		List<String> triggerOrderOptions = new ArrayList<String>();
-		triggerOrderOptions.add("Division first");
-		triggerOrderOptions.add("Death first");
-		triggerOrderOptions.add("Random order");
+		triggerOrderOptions.add(Txt.get("s_TAB_EPIUPDATE_ORDER_DIVDEATH"));
+		triggerOrderOptions.add(Txt.get("s_TAB_EPIUPDATE_ORDER_DEATHDIV"));
+		triggerOrderOptions.add(Txt.get("s_TAB_EPIUPDATE_ORDER_RANDOM"));
 		
-		jpOrder.setBorder(BorderFactory.createTitledBorder("Event Order"));
+		jpOrder.setBorder(BorderFactory.createTitledBorder(Txt.get("s_TAB_EPIUPDATE_ORDER")));
 		ButtonGroup groupOrder = new ButtonGroup();
 		
 		for (String triggerOption: triggerOrderOptions) {
@@ -161,12 +161,13 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		JPanel jpNewCell = new JPanel ();
 
 		List<String> triggerCellOptions = new ArrayList<String>();
-		triggerCellOptions.add("Random");
-		triggerCellOptions.add("Same");
-		triggerCellOptions.add("Naive");
-		triggerCellOptions.add("Predefined");
 		
-		jpNewCell.setBorder(BorderFactory.createTitledBorder("New Cell State"));
+		triggerCellOptions.add(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_RANDOM"));
+		triggerCellOptions.add(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_SAME"));
+		triggerCellOptions.add(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_NAIVE"));
+		triggerCellOptions.add(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_PREDEFINED"));
+		
+		jpNewCell.setBorder(BorderFactory.createTitledBorder(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE")));
 		ButtonGroup groupCell = new ButtonGroup();
 		
 		for (String triggerOption: triggerCellOptions) {
@@ -189,12 +190,12 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		JPanel jpCellDeath= new JPanel ();
 
 		List<String> triggerDeathOptions = new ArrayList<String>();
-		triggerDeathOptions.add("Empty position");
-		triggerDeathOptions.add("Permanent death");
-		triggerDeathOptions.add("Random");
+		triggerDeathOptions.add(Txt.get("s_TAB_EPIUPDATE_CELLDEATH_EMPTY"));
+		triggerDeathOptions.add(Txt.get("s_TAB_EPIUPDATE_CELLDEATH_PERMANENT"));
+		triggerDeathOptions.add(Txt.get("s_TAB_EPIUPDATE_CELLDEATH_RANDOM"));
 
 		
-		jpCellDeath.setBorder(BorderFactory.createTitledBorder("Cell death options"));
+		jpCellDeath.setBorder(BorderFactory.createTitledBorder(Txt.get("s_TAB_EPIUPDATE_CELLDEATH")));
 		ButtonGroup groupDeath = new ButtonGroup();
 		
 		for (String triggerOption: triggerDeathOptions) {
@@ -220,7 +221,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 	}
 	
 	private void updateNewCellState(JRadioButton jrb) {
-		this.epitheliumEvents.setNewCellState(jrb.getName());
+		this.epitheliumEvents.setDivisionOption(jrb.getName());
 	}
 	
 	private void updateCellDeath(JRadioButton jrb) {
@@ -307,7 +308,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		this.epithelium.getUpdateSchemeInter().setRandomSeed(this.updateSchemeInter.getRandomSeed());
 		
 		this.epithelium.getEpitheliumEvents().setEventOrder(this.epitheliumEvents.getEventOrder());
-		this.epithelium.getEpitheliumEvents().setNewCellState(this.epitheliumEvents.getNewCellState());
+		this.epithelium.getEpitheliumEvents().setDivisionOption(this.epitheliumEvents.getDivisionOption());
 		this.epithelium.getEpitheliumEvents().setDeathOption(this.epitheliumEvents.getDeathOption());
 
 	}
@@ -325,8 +326,8 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		if (!this.epithelium.getEpitheliumEvents().getEventOrder()
 				.equals(this.epitheliumEvents.getEventOrder()))
 			return true;
-		if (!this.epithelium.getEpitheliumEvents().getNewCellState()
-				.equals(this.epitheliumEvents.getNewCellState()))
+		if (!this.epithelium.getEpitheliumEvents().getDivisionOption()
+				.equals(this.epitheliumEvents.getDivisionOption()))
 			return true;
 		if (!this.epithelium.getEpitheliumEvents().getDeathOption()
 				.equals(this.epitheliumEvents.getDeathOption()))
@@ -345,7 +346,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		this.updateSchemeInter.setRandomSeed(this.epithelium.getUpdateSchemeInter().getRandomSeed());
 		
 		this.epitheliumEvents.setEventOrder(this.epithelium.getEpitheliumEvents().getEventOrder());
-		this.epitheliumEvents.setNewCellState(this.epithelium.getEpitheliumEvents().getNewCellState());
+		this.epitheliumEvents.setDivisionOption(this.epithelium.getEpitheliumEvents().getDivisionOption());
 		this.epitheliumEvents.setDeathOption(this.epithelium.getEpitheliumEvents().getDeathOption());
 
 		this.getParent().repaint();
