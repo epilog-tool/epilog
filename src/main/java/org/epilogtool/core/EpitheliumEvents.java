@@ -1,10 +1,14 @@
 package org.epilogtool.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.Txt;
+import org.epilogtool.gui.widgets.SliderPanel;
 
 public class EpitheliumEvents {
 	
@@ -17,8 +21,8 @@ public class EpitheliumEvents {
 	public static String DEFAULT_DEATHPATTERN = "";
 	public static String DEFAULT_DIVISIONPATTERN = "";
 	
-	public static float DEFAULT_DIVISIONPROBABILITY = (float) 1.0;
-	public static float DEFAULT_DEATHPROBABILITY = (float) 1.0;
+	public static float DEFAULT_DIVISIONPROBABILITY = (int) 0.0;
+	public static float DEFAULT_DEATHPROBABILITY = (int) 0.0;
 	
 	
 	//GENERAL
@@ -28,13 +32,19 @@ public class EpitheliumEvents {
 	
 	private Map<LogicalModel, ModelCellularEvent> model2MCE;
 
-public EpitheliumEvents(String eventOrder, String deathOption, String divisionOption, Map<LogicalModel, ModelCellularEvent> model2MCE) {
+public EpitheliumEvents(String eventOrder, String deathOption, String divisionOption, Map<LogicalModel, ModelCellularEvent> model2MCE, Set<LogicalModel> modelList) {
 		
 		this.eventOrder = eventOrder;
 		this.deathOption = deathOption;
 		this.divisionOption = divisionOption;
-		this.model2MCE = new HashMap<LogicalModel, ModelCellularEvent>();
-	}
+		this.model2MCE = model2MCE;
+		
+		for (LogicalModel model: modelList) {
+			ModelCellularEvent mce = new ModelCellularEvent(model,new SliderPanel("", "", null),new SliderPanel("", "", null));
+			mce.setDeathValue((int) EpitheliumEvents.DEFAULT_DEATHPROBABILITY);
+			this.setModel2MCE(model, mce);
+		}
+}
 		
 		
 	public void setModel2MCE (LogicalModel model, ModelCellularEvent mce) {
@@ -123,15 +133,19 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 		this.model2MCE.get(m).setDivisionValue(value);
 	}
 	
-	public void setDeathProbability(LogicalModel m, int value) {
-		this.model2MCE.get(m).setDeathValue(value);
+	public void setDeathProbability(LogicalModel m, int f) {
+		this.model2MCE.get(m).setDeathValue(f);
 	}
 
 	
 	
 	public EpitheliumEvents clone() {
-		EpitheliumEvents epiEv = new  EpitheliumEvents(this.eventOrder, this.deathOption, this.divisionOption, this.model2MCE);
-		return epiEv;
+		
+		Map<LogicalModel, ModelCellularEvent> model2MCEClone = new HashMap<LogicalModel, ModelCellularEvent>();
+		for (LogicalModel m: this.model2MCE.keySet()) {
+			model2MCEClone.put(m, this.model2MCE.get(m));
+			}
+		return new EpitheliumEvents(this.getEventOrder(), this.getDeathOption(), this.getDivisionOption(), model2MCEClone);
 	}
 
 	public boolean equals(Object o) {
@@ -155,9 +169,17 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 		return true;
 
 	}
+	
+	
 
 
 	public ModelCellularEvent getMCE(LogicalModel selModel) {
 		return this.model2MCE.get(selModel);
 	}
+
+
+	public Set<LogicalModel> getModels() {
+		return this.model2MCE.keySet();
+	}
+	
 }

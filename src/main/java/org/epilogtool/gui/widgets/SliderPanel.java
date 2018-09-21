@@ -28,10 +28,11 @@ public class SliderPanel extends JPanel {
 	private int probMax;
 	
 	
-	private EpiTab epiTab;
+	private EpiTabEvents epiTab;
+	
+	private String name;
 
-
-	public SliderPanel(String borderName, String name, EpiTab epiTab) {
+	public SliderPanel(String borderName, String name, EpiTabEvents epiTab) {
 		
 		this.setLayout(new BorderLayout());
 		this.probMin = 0;
@@ -39,6 +40,7 @@ public class SliderPanel extends JPanel {
 		int probstep = 10;
 		
 		this.epiTab = epiTab;
+		this.name = name;
 		
 		this.setLayout(new BorderLayout());
 		this.setPreferredSize(new Dimension(400, 100));
@@ -56,7 +58,7 @@ public class SliderPanel extends JPanel {
 		this.add(jpInfo, BorderLayout.CENTER);
 
 		this.jsProb = new JSlider(JSlider.HORIZONTAL, probMin, probMax, probMax);
-		this.jsProb.setName(name);
+		this.jsProb.setName(this.name);
 		this.jsProb.setValue(50);
 		this.jsProb.setMajorTickSpacing(probstep);
 		this.jsProb.setMinorTickSpacing(1);
@@ -83,15 +85,14 @@ public class SliderPanel extends JPanel {
 	
 	protected void updateSliderValues(JSlider slide) {
 		// TODO Auto-generated method stub
-		if (this.epiTab.getName().equals(Txt.get("s_TAB_EVE_NAME")))
+		if (this.name.equals(Txt.get("s_TAB_EVE_DEATH")) ||  (this.name.equals(Txt.get("s_TAB_EVE_DIVISION"))))
 			((EpiTabEvents) this.epiTab).updateSliderValues(slide);
-		
 	}
 
 	public float getValue() {
 		return this.jsProb.getValue();
 	}
-
+	
 	public JLabel getLabel() {
 		// TODO Auto-generated method stub
 		return this.jlValue;
@@ -107,9 +108,9 @@ public class SliderPanel extends JPanel {
 		return this.probMin;
 	}
 
-	public void setValue(int value) {
+	public void setValue(int f) {
 		// TODO Auto-generated method stub
-		this.jsProb.setValue(value);
+		this.jsProb.setValue(f);
 	}
 
 	public void setText(String string) {
@@ -122,7 +123,9 @@ public class SliderPanel extends JPanel {
 		return this.jsProb.getName();
 	}
 
-
+public void setEpiTab (EpiTabEvents epiTab) {
+	this.epiTab = epiTab;
+}
 
 
 

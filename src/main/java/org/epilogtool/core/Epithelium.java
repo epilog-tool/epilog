@@ -3,6 +3,7 @@ package org.epilogtool.core;
 import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.epilogtool.core.cell.AbstractCell;
 import org.epilogtool.core.cell.LivingCell;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.dialog.DialogMessage;
+import org.epilogtool.gui.widgets.SliderPanel;
 import org.epilogtool.project.Project;
 
 public class Epithelium {
@@ -35,24 +37,27 @@ public class Epithelium {
 			EnumRandomSeed randomSeedType, int randomSeed)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
+		
 		this.name = name;
 		this.grid = new EpitheliumGrid(x, y, topologyID, rollover,c);
 		this.priorities = new EpitheliumUpdateSchemeIntra();
 		if (c.isLivingCell()) {
 			this.priorities.addModel(((LivingCell) c).getModel());
 		}
-
 		this.integrationFunctions = new EpitheliumIntegrationFunctions();
 		this.perturbations = new EpitheliumPerturbations();
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(EpitheliumUpdateSchemeInter.DEFAULT_ALPHA,
 				UpdateCells.UPDATABLECELLS, randomSeedType, randomSeed);
-		this.epitheliumEvents = new EpitheliumEvents(EpitheliumEvents.DEFAULT_ORDER,EpitheliumEvents.DEFAULT_DEATHOPTION,EpitheliumEvents.DEFAULT_DIVISIONOPTION,null);
+		this.epitheliumEvents = new EpitheliumEvents(EpitheliumEvents.DEFAULT_ORDER,EpitheliumEvents.DEFAULT_DEATHOPTION,EpitheliumEvents.DEFAULT_DIVISIONOPTION,new HashMap<LogicalModel, ModelCellularEvent>(), this.grid.getModelSet());
+		
+//		System.out.println(modelList);
+//		System.out.println(this.epitheliumEvents.getModels());
 	
 	}
 
 	private Epithelium(String name, EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
 			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap, EpitheliumUpdateSchemeInter usi, EpitheliumEvents ev) {
-		
+		System.out.println("2");
 		this.name = name;
 		this.grid = grid;
 		this.priorities = epc;
@@ -60,6 +65,15 @@ public class Epithelium {
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
 		this.epitheliumEvents = ev;
+		
+		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.getEpitheliumGrid().getModelSet());
+		for (LogicalModel model: modelList) {
+			
+			if (!this.epitheliumEvents.getModels().contains(model)){
+				ModelCellularEvent mce = new ModelCellularEvent(model,null,null);
+				this.epitheliumEvents.setModel2MCE(model, mce);
+				System.out.println("here " + model);
+	}}
 	}
 
 	public Epithelium clone() {
@@ -435,65 +449,6 @@ public class Epithelium {
 		}
 	}
 
-	private void replacePerturbations(EpitheliumGrid gridCopy,
-			EpitheliumPerturbations epClone, LogicalModel oldModel, LogicalModel newModel,
-			List<String> commonNodeNames) {
-
-			//TODO
-//		List<AbstractPerturbation> perturbation = new ArrayList<AbstractPerturbation>();
-//		Boolean hasChanged = false;
-//		if (oldPerturbations != null) {
-//			for (AbstractPerturbation p : oldPerturbations.getAllPerturbations()) {
-//				int indexPerturbationShared = 0;
-//				for (String pert : p.toString().split(",")) {
-//					if (commonNodeNames.contains(pert.trim().split(" ")[0].trim())) {
-//						indexPerturbationShared++;
-//					}
-//				}
-//				if (p.toString().contains(",")) {
-//					if (indexPerturbationShared == p.toString().split(",").length) {
-//						perturbation.add(p);
-//						this.addPerturbation(p);
-//					}
-//				} else {
-//					if (indexPerturbationShared == 1) {
-//						perturbation.add(p);
-//						this.addPerturbation(p);
-//					}
-//				}
-//				if (!perturbation.contains(p))
-//					hasChanged = true;
-//			}
-//
-//			// Add perturbation to cell
-//			for (int y = 0; y < this.getY(); y++) {
-//				for (int x = 0; x < this.getX(); x++) {
-//					AbstractPerturbation p = gridCopy.getPerturbation(x, y);
-//
-//					if (p != null) {
-//						Boolean apply = false;
-//						List<Tuple2D<Integer>> tmpList = new ArrayList<Tuple2D<Integer>>();
-//						Color c = mpClone.getPerturbationColor(p);
-//
-//						if (perturbation.contains(p)) {
-//							tmpList.add(new Tuple2D<Integer>(x, y));
-//							this.getEpitheliumGrid().setPerturbation(x, y, p);
-//							apply = true;
-//						}
-//						if (apply)
-//							this.applyPerturbation(p, c, tmpList);
-//					}
-//				}
-//			}
-//		}
-//
-//		if (hasChanged) {
-//			String msg = "" + this.toString() + ": " + "Perturbations were changed.";
-//			if (!Project.getInstance().getProjectFeatures().getReplaceMessages().contains(msg)) {
-//				Project.getInstance().getProjectFeatures().addReplaceMessages(msg);
-//			}
-//		}
-	}
 
 	private static String join(List<String> list, String sep) {
 		String s = "";

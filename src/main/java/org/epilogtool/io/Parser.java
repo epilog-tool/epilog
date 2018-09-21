@@ -30,6 +30,7 @@ import org.epilogtool.common.Txt;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
+import org.epilogtool.core.ModelCellularEvent;
 import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.core.UpdateCells;
 import org.epilogtool.core.cell.AbstractCell;
@@ -208,21 +209,18 @@ public class Parser {
 			}
 			// alpha-asynchronous value
 			if (line.startsWith("AS")) {
-//				System.out.println(line);
 				saTmp = line.split("\\s+");
 				currEpi.getUpdateSchemeInter().setAlpha(Float.parseFloat(saTmp[1]));
 			}
 
 			// Cell Update
 			if (line.startsWith("CU")) {
-//				System.out.println(line);
 				String updateCells = line.substring(line.indexOf(" ") + 1);
 				currEpi.getUpdateSchemeInter().setUpdateCells(UpdateCells.fromString(updateCells));
 			}
 
 			// Initial Conditions grid
 			if (line.startsWith("IC")) {
-//				System.out.println(line);
 				saTmp = line.split("\\s+");
 				currEpi.setGridWithComponentValue(saTmp[1], Byte.parseByte(saTmp[2]),
 						currEpi.getEpitheliumGrid().getTopology().instances2Tuples2D(saTmp[3].split(",")));
@@ -312,17 +310,20 @@ public class Parser {
 					currEpi.applyPerturbation(ap, c, lTuple);
 				}
 			}
+			
 		}
 		// // Ensure coherence of all epithelia
 		for (Epithelium epi : Project.getInstance().getEpitheliumList()) {
 			epi.getEpitheliumGrid().updateGrid();
 		}
 
+		
 		Project.getInstance().setChanged(false);
 		br.close();
 		in.close();
 		fstream.close();
 		NotificationManager.dispatchDialogWarning(true, false);
+	
 	}
 
 	private static AbstractPerturbation string2AbstractPerturbation(ProjectFeatures features, String sExpr) {
@@ -518,21 +519,6 @@ public class Parser {
 		}
 		w.println();
 
-		// Component Integration Functions
-		// IT #model Node Level {Function}
-		// for (NodeInfo node : epi.getIntegrationNodes()) {
-		// ComponentIntegrationFunctions cif =
-		// epi.getIntegrationFunctionsForComponent(node);
-		// List<String> lFunctions = cif.getFunctions();
-		// for (int i = 0; i < lFunctions.size(); i++) {
-		// int modelIndex = model2Key.get(node.getModel());
-		// w.println("IT " + modelIndex + " " + cp.getNodeInfo().getNodeID() + " " + (i
-		// + 1) + " "
-		// + lFunctions.get(i));
-		// }
-		// }
-		// w.println();
-
 		// IF Node Level {Function}
 		for (NodeInfo node : epi.getIntegrationNodes()) {
 			ComponentIntegrationFunctions cif = epi.getIntegrationFunctionsForComponent(node);
@@ -598,8 +584,53 @@ public class Parser {
 			
 		}
 
-		w.println("\n\n");
+			
+		//ModelEvents
+			
+			List<String> lst = new ArrayList<String>();
+			
+			lst.add(epi.getEpitheliumEvents().getDeathOption());
+			lst.add(epi.getEpitheliumEvents().getDivisionOption());
+			lst.add(epi.getEpitheliumEvents().getEventOrder());
+			
+			w.print("ME " + " " + join(lst,";"));
+			
+		//CellularEvents
+		//
+			
+			for (String name : model2Key.keySet()) {
+				if (model2Key.get(name)<0)
+					continue;
+
+			LogicalModel m = Project.getInstance().getProjectFeatures().getModel(name);
+
+			if (epi.getEpitheliumGrid().getModelSet().contains(m)) {
+
+			List<String> paramList = new ArrayList<String>();
+			
+			ModelCellularEvent mce = epi.getEpitheliumEvents().getMCE(m);
+			
+			System.out.println(m);
+			System.out.println(epi.getEpitheliumEvents().getModels());
+			System.out.println(epi.getEpitheliumEvents().getMCE(m));
+			
+			paramList.add(mce.getDeathTrigger());
+			paramList.add(""+mce.getDeathValue());
+			paramList.add(mce.getDeathPattern());
+			
+			paramList.add(mce.getDivisionTrigger());
+			paramList.add(""+mce.getDivisionValue());
+			paramList.add(mce.getDivisionPattern());
+			paramList.add(""+mce.getNewCellState());
+	
+			w.print("CE " + model2Key.get(name) + " " + join(paramList,";"));
+		}
+			}
+		
+		
+		
 		// EpitheliumCell Connections
+		w.println("\n\n");
 	}
 
 	private static List<String> compactIntegerSequences(List<Integer> iInsts) {

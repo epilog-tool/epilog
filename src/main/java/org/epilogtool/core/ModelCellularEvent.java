@@ -62,8 +62,8 @@ public class ModelCellularEvent {
 		this.spDivision.setValue(value);
 	}
 	
-	public void setDeathValue(int value){
-		this.spDeath.setValue(value);
+	public void setDeathValue(int f){
+		this.spDeath.setValue(f);
 	}
 	
 	public float getDeathValue(){
