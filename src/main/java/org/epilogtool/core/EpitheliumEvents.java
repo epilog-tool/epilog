@@ -40,7 +40,7 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 		this.model2MCE = model2MCE;
 		
 		for (LogicalModel model: modelList) {
-			ModelCellularEvent mce = new ModelCellularEvent(model,new SliderPanel("", "", null),new SliderPanel("", "", null));
+			ModelCellularEvent mce = new ModelCellularEvent(model,0,0);
 			mce.setDeathValue((int) EpitheliumEvents.DEFAULT_DEATHPROBABILITY);
 			this.setModel2MCE(model, mce);
 		}
@@ -145,7 +145,7 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 		for (LogicalModel m: this.model2MCE.keySet()) {
 			model2MCEClone.put(m, this.model2MCE.get(m));
 			}
-		return new EpitheliumEvents(this.getEventOrder(), this.getDeathOption(), this.getDivisionOption(), model2MCEClone);
+		return new EpitheliumEvents(this.getEventOrder(), this.getDeathOption(), this.getDivisionOption(), model2MCEClone, model2MCEClone.keySet());
 	}
 
 	public boolean equals(Object o) {

@@ -1,42 +1,38 @@
 package org.epilogtool.core;
 
-import java.awt.Component;
-
-import javax.swing.JLabel;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.Txt;
-import org.epilogtool.gui.widgets.SliderPanel;
 
 //
 public class ModelCellularEvent {
 	
-	private SliderPanel spDeath;
-	private SliderPanel spDivision;
+	private float deathValue;
+	private float divisionValue;
 	
-	private String triggerDeath;
-	private String triggerDivision;
+	private String deathTrigger;
+	private String divisionTrigger;
 	
-	private String patternDeath;
-	private String patternDivision;
+	private String deathPattern;
+	private String divisionPattern;
 	
-	private String  newCellSate;
+//	private String  newCellSate;
 	private byte[] newCellState;
 	
 	private LogicalModel model;
 
-	public ModelCellularEvent(LogicalModel model, SliderPanel spDeath, SliderPanel spDivision) {
+	public ModelCellularEvent(LogicalModel model, float deathValue, float divisionValue) {
 
-		this.spDeath  = spDeath;
-		this.spDivision = spDivision;
+		this.deathValue  = deathValue;
+		this.divisionValue = divisionValue;
 		
-		this.triggerDeath = Txt.get("s_TAB_EVE_TRIGGER_NONE");
-		this.triggerDivision = Txt.get("s_TAB_EVE_TRIGGER_NONE");
+		this.deathTrigger = Txt.get("s_TAB_EVE_TRIGGER_NONE");
+		this.divisionTrigger = Txt.get("s_TAB_EVE_TRIGGER_NONE");
 		
-		this.patternDeath = "";
-		this.patternDivision = "";
+		this.deathPattern = "";
+		this.divisionPattern = "";
 		
-		this.newCellSate = "";
+//		this.newCellSate = "";
 		this.newCellState = null;
 		
 		this.model = model;		
@@ -55,97 +51,97 @@ public class ModelCellularEvent {
 	}
 	
 	public float getDivisionValue(){
-		return this.spDivision.getValue();
+		return this.divisionValue;
 	}
 	
-	public void setDivisionValue(int value){
-		this.spDivision.setValue(value);
+	public void setDivisionValue(float value){
+		this.divisionValue = value;
 	}
 	
-	public void setDeathValue(int f){
-		this.spDeath.setValue(f);
+	public void setDeathValue(float value){
+		this.deathValue = value;
 	}
 	
 	public float getDeathValue(){
-		return this.spDeath.getValue();
+		return this.deathValue;
 	}
 
 
-	public JLabel getDivisionLabel() {
-		return spDivision.getLabel();
-	}
-
-	public int getDivisionMin() {
-		return spDivision.getMin();
-	}
+//	public JLabel getDivisionLabel() {
+//		return spDivision.getLabel();
+//	}
+//
+//	public int getDivisionMin() {
+//		return spDivision.getMin();
+//	}
 	
-	public int getDivisionMax() {
-		return spDivision.getMax();
-	}
-	
-	public JLabel getDeathLabel() {
-		return spDivision.getLabel();
-	}
+//	public int getDivisionMax() {
+//		return spDivision.getMax();
+//	}
+//	
+//	public JLabel getDeathLabel() {
+//		return spDivision.getLabel();
+//	}
 
-	public int getDeathMin() {
-		return spDivision.getMin();
-	}
-	
-	public int getDeathMax() {
-		return spDivision.getMax();
-	}
-
-
-	public SliderPanel getDivisionSlider() {
-		return this.spDivision;
-	}
-	
-	public SliderPanel getDeathSlider() {
-		return this.spDeath;
-	}
+//	public int getDeathMin() {
+//		return spDivision.getMin();
+//	}
+//	
+//	public int getDeathMax() {
+//		return spDivision.getMax();
+//	}
 
 
-	public void setDivisionText(String string) {
-		this.spDivision.setText(string);
-	}
-	
-	public void setDeathText(String string) {
-		this.spDeath.setText(string);
-	}
+//	public SliderPanel getDivisionSlider() {
+//		return this.spDivision;
+//	}
+//	
+//	public SliderPanel getDeathSlider() {
+//		return this.spDeath;
+//	}
+
+
+//	public void setDivisionText(String string) {
+//		this.spDivision.setText(string);
+//	}
+//	
+//	public void setDeathText(String string) {
+//		this.spDeath.setText(string);
+//	}
 
 
 	public String getDeathPattern() {
-		return this.patternDeath;
+		return this.deathPattern;
 	}
 	
 	public String getDivisionPattern() {
-		return this.patternDivision;
+		return this.divisionPattern;
 	}
 
 
 	public void setDeathPattern(String pattern) {
-		this.patternDeath = pattern;
+		this.deathPattern = pattern;
 	}
 	
 	public void setDivisionPattern(String pattern) {
-		this.patternDivision = pattern;
+		this.divisionPattern = pattern;
 	}
 
 
 	public String getDeathTrigger() {
-		return this.triggerDeath;
+		return this.deathTrigger;
 	}
 	
 	public String getDivisionTrigger() {
-		return this.triggerDivision;
+		return this.divisionTrigger;
 	}
 	
 	public void setDeathTrigger(String trigger) {
-		this.triggerDeath = trigger;
+		this.deathTrigger = trigger;
 	}
 	
 	public void setDivisionTrigger(String trigger) {
-		this.triggerDivision= trigger;
+		this.divisionTrigger= trigger;
 	}
 	
 }

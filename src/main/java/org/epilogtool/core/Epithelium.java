@@ -70,7 +70,7 @@ public class Epithelium {
 		for (LogicalModel model: modelList) {
 			
 			if (!this.epitheliumEvents.getModels().contains(model)){
-				ModelCellularEvent mce = new ModelCellularEvent(model,null,null);
+				ModelCellularEvent mce = new ModelCellularEvent(model,0,0);
 				this.epitheliumEvents.setModel2MCE(model, mce);
 				System.out.println("here " + model);
 	}}
