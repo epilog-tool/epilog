@@ -23,6 +23,7 @@ import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumEvents;
+import org.epilogtool.core.EpitheliumUpdateSchemeIntra;
 import org.epilogtool.core.ModelCellularEvent;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.widgets.JComboWideBox;
@@ -54,6 +55,8 @@ public class EpiTabEvents extends EpiTabDefinitions {
 	private JPanel auxDivisionPanel;
 	private JPanel auxDeathPanel;
 	
+	private JPanel modelSelectionPanel;
+	
 	private EpitheliumEvents epiEventClone;
 	
 	private Map<LogicalModel, List<SliderPanel>> mModel2lsSPanel;
@@ -79,6 +82,8 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		this.mName2JRBdivision = new HashMap<String, JRadioButton>();
 		
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
+		
+		
 		for (LogicalModel model: modelList) {
 			List<SliderPanel> sp = new ArrayList<SliderPanel>();
 			SliderPanel spSliderDeath = new SliderPanel(Txt.get("s_TAB_EVE_DEATH_PROBABILITY"),Txt.get("s_TAB_EVE_DEATH"), this);
@@ -86,9 +91,6 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			SliderPanel spSliderDivision = new SliderPanel(Txt.get("s_TAB_EVE_DIVISION_PROBABILITY"),Txt.get("s_TAB_EVE_DIVISION"), this);
 			sp.add(spSliderDivision);
 			mModel2lsSPanel.put(model, sp);
-			
-			ModelCellularEvent mce = new ModelCellularEvent(model,spSliderDeath.getValue(),spSliderDivision.getValue());
-			this.epithelium.getEpitheliumEvents().setModel2MCE(model, mce);
 		}
 		
 		this.epiEventClone = this.epithelium.getEpitheliumEvents().clone();
@@ -113,7 +115,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 	
 		////Model selection jcomboCheckBox
 
-		JPanel modelSelectionPanel = new JPanel();
+		this.modelSelectionPanel = new JPanel();
 		modelSelectionPanel.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
 		
 		JComboBox<String> jcbSBML = this.newModelCombobox(modelList);
@@ -166,6 +168,16 @@ public class EpiTabEvents extends EpiTabDefinitions {
 				groupDivision.add(jrb);
 		}
 		
+//		if (this.mce.getDivisionTrigger().equals(Txt.get("s_TAB_EVE_TRIGGER_PATTERN"))) {
+//			this.mName2JRBdivision.get(Txt.get("s_TAB_EVE_TRIGGER_PATTERN")).setEnabled(true);
+//		}
+//		if (this.mce.getDivisionTrigger().equals(Txt.get("s_TAB_EVE_TRIGGER_NONE"))) {
+//			this.mName2JRBdivision.get(Txt.get("s_TAB_EVE_TRIGGER_NONE")).setEnabled(true);
+//		}
+//		if (this.mce.getDivisionTrigger().equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM"))) {
+//			this.mName2JRBdivision.get(Txt.get("s_TAB_EVE_TRIGGER_RANDOM")).setEnabled(true);
+//		}
+		
 		
 		this.jpTriggerDivision.add(jpTriggerDivisionOptions,BorderLayout.NORTH);
 		this.jpDivision.add(this.jpTriggerDivision, BorderLayout.NORTH);
@@ -215,9 +227,9 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			JRadioButton jrb = new JRadioButton(triggerOption);
 			this.mName2JRBdeath.put(triggerOption, jrb);
 			jrb.setName(triggerOption);
+			triggerDeath2Radio.put(triggerOption,jrb);
 			if (triggerOption.equals(Txt.get("s_TAB_EVE_TRIGGER_NONE")))
 				jrb.setSelected(true);
-			triggerDeath2Radio.put(triggerOption,jrb);
 				jrb.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -228,7 +240,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 				groupDeath.add(jrb);
 		}
 	
-		
+	
 		this.jpTriggerDeath.add(jpTriggerDeathOptions,BorderLayout.NORTH);
 		this.jpDeath.add(this.jpTriggerDeath, BorderLayout.NORTH);
 		
@@ -386,6 +398,18 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		for (LogicalModel model: modelList) {
 		mce = this.epiEventClone.getMCE(model);
 		
+//		System.out.println("1 " + mce.getDeathTrigger());
+//		System.out.println("1 " + mce.getDivisionTrigger());
+//		System.out.println("1 " + mce.getDeathValue());
+//		System.out.println("1 " + mce.getDivisionValue());
+//		
+//		
+//		System.out.println("2 " + this.epithelium.getEpitheliumEvents().getMCE(model).getDeathTrigger());
+//		System.out.println("2 " + this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionTrigger());
+//		System.out.println("2 " + this.epithelium.getEpitheliumEvents().getMCE(model).getDeathValue());
+//		System.out.println("2 " + this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionValue());
+//		
+		
 		this.epithelium.getEpitheliumEvents().setDeathTrigger(model, mce.getDeathTrigger());
 		this.epithelium.getEpitheliumEvents().setDivisionTrigger(model, mce.getDivisionTrigger());
 		this.epithelium.getEpitheliumEvents().setDeathProbability(model, (int) mce.getDeathValue());
@@ -394,6 +418,11 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		this.epithelium.getEpitheliumEvents().setDivisionPattern(model, mce.getDivisionPattern());
 		//TODO
 		this.epithelium.getEpitheliumEvents().setDivisionNewState(model, null);
+		
+//		System.out.println("3 " + this.epithelium.getEpitheliumEvents().getMCE(model).getDeathTrigger());
+//		System.out.println("3 " + this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionTrigger());
+//		System.out.println("3 " + this.epithelium.getEpitheliumEvents().getMCE(model).getDeathValue());
+//		System.out.println("3 " + this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionValue());
 		}
 	
 	}
@@ -429,6 +458,15 @@ public class EpiTabEvents extends EpiTabDefinitions {
 	@Override
 	public void applyChange() {
 		// TODO Auto-generated method stub
+		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
+		
+		this.epiEventClone = this.epithelium.getEpitheliumEvents().clone();
+		
+		
+		this.modelSelectionPanel.removeAll();
+		this.modelSelectionPanel.add(this.newModelCombobox(modelList));
+		this.mce = this.epiEventClone.getMCE(this.selModel);
+		this.selModel = modelList.get(0);
 		
 	}
 
@@ -441,6 +479,10 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			saSBML[i] = Project.getInstance().getProjectFeatures().getModelName(modelList.get(i));
 		}
 		JComboBox<String> jcb = new JComboWideBox<String>(saSBML);
+		if (this.selModel!=null)
+		{
+			jcb.setSelectedItem(this.selModel);
+		}
 		jcb.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -457,6 +499,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		
 		this.selModel = m;
 		this.mce = this.epiEventClone.getMCE(this.selModel);
+
 		
 		if (mName2JRBdivision.containsKey(this.mce.getDivisionTrigger())) {
 		this.mName2JRBdivision.get(this.mce.getDivisionTrigger()).setSelected(true);

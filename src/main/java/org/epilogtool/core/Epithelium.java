@@ -50,14 +50,11 @@ public class Epithelium {
 				UpdateCells.UPDATABLECELLS, randomSeedType, randomSeed);
 		this.epitheliumEvents = new EpitheliumEvents(EpitheliumEvents.DEFAULT_ORDER,EpitheliumEvents.DEFAULT_DEATHOPTION,EpitheliumEvents.DEFAULT_DIVISIONOPTION,new HashMap<LogicalModel, ModelCellularEvent>(), this.grid.getModelSet());
 		
-//		System.out.println(modelList);
-//		System.out.println(this.epitheliumEvents.getModels());
-	
 	}
 
 	private Epithelium(String name, EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
 			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap, EpitheliumUpdateSchemeInter usi, EpitheliumEvents ev) {
-		System.out.println("2");
+		
 		this.name = name;
 		this.grid = grid;
 		this.priorities = epc;
@@ -65,15 +62,7 @@ public class Epithelium {
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
 		this.epitheliumEvents = ev;
-		
-		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.getEpitheliumGrid().getModelSet());
-		for (LogicalModel model: modelList) {
-			
-			if (!this.epitheliumEvents.getModels().contains(model)){
-				ModelCellularEvent mce = new ModelCellularEvent(model,0,0);
-				this.epitheliumEvents.setModel2MCE(model, mce);
-				System.out.println("here " + model);
-	}}
+	
 	}
 
 	public Epithelium clone() {
@@ -118,18 +107,29 @@ public class Epithelium {
 		Set<LogicalModel> modelSet = this.grid.getModelSet();
 
 		// Add to Epithelium state new models from modelSet
-		for (LogicalModel mSet : modelSet) {
+		for (LogicalModel model : modelSet) {
 			// Priority classes
-			if (this.priorities.getModelPriorityClasses(mSet) == null) {
-				this.priorities.addModel(mSet);
+			if (this.priorities.getModelPriorityClasses(model) == null) {
+				this.priorities.addModel(model);
 			}
+			// Epithelium Events
+			this.epitheliumEvents.addModel2MCE(model);
 
 		}
 
 		// Remove from Epithelium state absent models from modelSet
-		for (LogicalModel mPriorities : new ArrayList<LogicalModel>(this.priorities.getModelSet())) {
-			if (!modelSet.contains(mPriorities)) {
-				this.priorities.removeModel(mPriorities);
+		
+		//remove from priorities
+		for (LogicalModel model : new ArrayList<LogicalModel>(this.priorities.getModelSet())) {
+			if (!modelSet.contains(model)) {
+				this.priorities.removeModel(model);
+			}
+		}
+		
+		//remove from Epithelium events
+		for (LogicalModel model : new ArrayList<LogicalModel>(this.epitheliumEvents.getModels())) {
+			if (!modelSet.contains(model)) {
+				this.epitheliumEvents.removeModel2MCE(model);
 			}
 		}
 
@@ -261,13 +261,20 @@ public class Epithelium {
 
 	public void setModel(int x, int y, AbstractCell c) {
 		this.grid.setAbstractCell(x,y,c);
+		update();
 	}
 
 	public void setGridWithCell(AbstractCell c, List<Tuple2D<Integer>> lTuples) {
 		for (Tuple2D<Integer> tuple : lTuples) {
 			AbstractCell newC = c.clone();
 			this.setModel(tuple.getX(), tuple.getY(), newC);
+//			if (c.isLivingCell()) {
+//				LogicalModel model = ((LivingCell) c).getModel();
+//				this.epitheliumEvents.addModel2MCE(model);
+//			}
+			
 		}
+		update();
 	}
 
 	public int getX() {

@@ -92,7 +92,6 @@ public class EpitheliumGrid {
 			}
 		}
 		
-		
 		this.compCounts = new HashMap<String, Map<Byte, Integer>>();
 		this.compPercents = new HashMap<String, Map<Byte, Float>>();// ptgm
 	}

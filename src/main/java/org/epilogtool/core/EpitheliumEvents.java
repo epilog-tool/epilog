@@ -40,13 +40,25 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 		this.model2MCE = model2MCE;
 		
 		for (LogicalModel model: modelList) {
-			ModelCellularEvent mce = new ModelCellularEvent(model,0,0);
-			mce.setDeathValue((int) EpitheliumEvents.DEFAULT_DEATHPROBABILITY);
+			ModelCellularEvent mce = new ModelCellularEvent(DEFAULT_DEATHPROBABILITY,DEFAULT_DIVISIONPROBABILITY,DEFAULT_DEATHTRIGGER, DEFAULT_DIVISIONTRIGGER, DEFAULT_DEATHPATTERN, DEFAULT_DIVISIONPATTERN, null);
 			this.setModel2MCE(model, mce);
 		}
 }
 		
-		
+
+	public void addModel2MCE(LogicalModel model) {
+		if (!model2MCE.containsKey(model)){
+			ModelCellularEvent mce = new ModelCellularEvent(DEFAULT_DEATHPROBABILITY,DEFAULT_DIVISIONPROBABILITY,DEFAULT_DEATHTRIGGER, DEFAULT_DIVISIONTRIGGER, DEFAULT_DEATHPATTERN, DEFAULT_DIVISIONPATTERN, null);
+			this.setModel2MCE(model, mce);
+		}
+	}
+	
+	public void removeModel2MCE(LogicalModel model) {
+		if (model2MCE.containsKey(model)){
+			this.model2MCE.remove(model);
+		}
+	}
+
 	public void setModel2MCE (LogicalModel model, ModelCellularEvent mce) {
 		this.model2MCE.put(model, mce);
 	}

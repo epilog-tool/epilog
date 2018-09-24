@@ -1,8 +1,6 @@
 package org.epilogtool.core;
 
 
-import org.colomoto.biolqm.LogicalModel;
-import org.epilogtool.common.Txt;
 
 //
 public class ModelCellularEvent {
@@ -19,23 +17,21 @@ public class ModelCellularEvent {
 //	private String  newCellSate;
 	private byte[] newCellState;
 	
-	private LogicalModel model;
 
-	public ModelCellularEvent(LogicalModel model, float deathValue, float divisionValue) {
+	public ModelCellularEvent(float deathValue, float divisionValue, String deathTrigger, String divisionTrigger, String deathPattern, String divisionPattern, byte[] newCellState) {
 
 		this.deathValue  = deathValue;
 		this.divisionValue = divisionValue;
 		
-		this.deathTrigger = Txt.get("s_TAB_EVE_TRIGGER_NONE");
-		this.divisionTrigger = Txt.get("s_TAB_EVE_TRIGGER_NONE");
+		this.deathTrigger = deathTrigger;
+		this.divisionTrigger = divisionTrigger;
 		
-		this.deathPattern = "";
-		this.divisionPattern = "";
+		this.deathPattern = deathPattern;
+		this.divisionPattern = divisionPattern;
 		
 //		this.newCellSate = "";
-		this.newCellState = null;
+		this.newCellState = newCellState;
 		
-		this.model = model;		
 	}
 
 
@@ -46,9 +42,9 @@ public class ModelCellularEvent {
 		this.newCellState = state;
 	}
 	
-	public LogicalModel getModel() {
-		return this.model;
-	}
+//	public LogicalModel getModel() {
+//		return this.model;
+//	}
 	
 	public float getDivisionValue(){
 		return this.divisionValue;

@@ -175,6 +175,9 @@ public class Parser {
 				
 				saTmp = line.split("\\s+");
 				
+				// The model grid is now created. The epithelium is suposed to be null at this stage, and a new epithelium 
+				// is created with all cells as empty cells.	
+				
 				if (currEpi == null) {
 		
 					currEpi = Project.getInstance().newEpithelium(Integer.parseInt(x), Integer.parseInt(y),
@@ -201,6 +204,7 @@ public class Parser {
 						currEpi.initPriorityClasses(m);
 					}
 				
+					// At least one living cell is added to the grid at this stage.
 					currEpi.setGridWithCell(c,
 							currEpi.getEpitheliumGrid().getTopology().instances2Tuples2D(saTmp[2].split(",")));
 				}
@@ -610,9 +614,9 @@ public class Parser {
 			
 			ModelCellularEvent mce = epi.getEpitheliumEvents().getMCE(m);
 			
-			System.out.println(m);
-			System.out.println(epi.getEpitheliumEvents().getModels());
-			System.out.println(epi.getEpitheliumEvents().getMCE(m));
+//			System.out.println(m);
+//			System.out.println(epi.getEpitheliumEvents().getModels());
+//			System.out.println(epi.getEpitheliumEvents().getMCE(m));
 			
 			paramList.add(mce.getDeathTrigger());
 			paramList.add(""+mce.getDeathValue());
