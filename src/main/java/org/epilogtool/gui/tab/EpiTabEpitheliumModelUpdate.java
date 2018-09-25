@@ -1,12 +1,16 @@
 package org.epilogtool.gui.tab;
 
+import static org.junit.Assume.assumeTrue;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -54,6 +58,10 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 
 	private JComboBox<UpdateCells> jcbUpdateCells;
 	private JComboBox<EnumRandomSeed> jcbRandomSeedType;
+	
+	private Map<String, JRadioButton> mName2JrbCell;
+	private Map<String, JRadioButton> mName2JrbEventOrder;
+	private Map<String, JRadioButton> mName2JrbDeath;
 
 	public EpiTabEpitheliumModelUpdate(Epithelium e, TreePath path, TabChangeNotifyProj tabChanged) {
 		super(e, path, tabChanged);
@@ -63,6 +71,10 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 
 		this.center.setLayout(new BoxLayout(this.center, BoxLayout.Y_AXIS));
 		this.tpc = new TabProbablyChanged();
+		
+		this.mName2JrbCell = new HashMap<String, JRadioButton>();
+		this.mName2JrbEventOrder = new HashMap<String, JRadioButton>();
+		this.mName2JrbDeath= new HashMap<String, JRadioButton>();
 
 		this.updateSchemeInter = this.epithelium.getUpdateSchemeInter().clone();
 		this.epitheliumEvents = this.epithelium.getEpitheliumEvents().clone();
@@ -143,7 +155,9 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		for (String triggerOption: triggerOrderOptions) {
 			JRadioButton jrb = new JRadioButton(triggerOption);
 			jrb.setName(triggerOption);
-//			triggerDivision2Radio.put(triggerOption,jrb);
+			this.mName2JrbEventOrder.put(triggerOption,jrb);
+			if(triggerOption.equals(this.epitheliumEvents.getEventOrder()))
+				jrb.setSelected(true);
 				jrb.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -154,6 +168,17 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 				jpOrder.add(jrb);
 				groupOrder.add(jrb);
 		}
+		
+		boolean control = false;
+		for (String jrbName : mName2JrbEventOrder.keySet()) {
+			if(jrbName.equals(this.epitheliumEvents.getEventOrder())) {
+				mName2JrbEventOrder.get(jrbName).setSelected(true);
+				control = true;
+			}
+		}
+		if (!control)
+			mName2JrbEventOrder.get(Txt.get("s_TAB_EPIUPDATE_ORDER_DIVDEATH")).setSelected(true);
+		
 		this.center.add(jpOrder);
 
 		//New Cell Options
@@ -173,6 +198,9 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		for (String triggerOption: triggerCellOptions) {
 			JRadioButton jrb = new JRadioButton(triggerOption);
 			jrb.setName(triggerOption);
+			if(triggerOption.equals(this.epitheliumEvents.getDivisionOption()))
+				jrb.setSelected(true);
+			this.mName2JrbCell.put(triggerOption,jrb);
 				jrb.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -183,6 +211,17 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 				jpNewCell.add(jrb);
 				groupCell.add(jrb);
 		}
+		
+		control = false;
+		for (String jrbName : mName2JrbCell.keySet()) {
+			if(jrbName.equals(this.epitheliumEvents.getDivisionOption())) {
+				mName2JrbCell.get(jrbName).setSelected(true);
+				control = true;
+			}
+		}
+		if (!control)
+			mName2JrbCell.get(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_RANDOM")).setSelected(true);
+		
 		this.center.add(jpNewCell);
 		
 		//Cell death Options
@@ -198,9 +237,13 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		jpCellDeath.setBorder(BorderFactory.createTitledBorder(Txt.get("s_TAB_EPIUPDATE_CELLDEATH")));
 		ButtonGroup groupDeath = new ButtonGroup();
 		
+		control = false;
 		for (String triggerOption: triggerDeathOptions) {
 			JRadioButton jrb = new JRadioButton(triggerOption);
 			jrb.setName(triggerOption);
+			if(triggerOption.equals(this.epitheliumEvents.getDeathOption()))
+				jrb.setSelected(true);
+			this.mName2JrbDeath.put(triggerOption,jrb);
 				jrb.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -211,6 +254,16 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 				jpCellDeath.add(jrb);
 				groupDeath.add(jrb);
 		}
+		
+		for (String jrbName : mName2JrbDeath.keySet()) {
+			if(jrbName.equals(this.epitheliumEvents.getDeathOption())) {
+				mName2JrbDeath.get(jrbName).setSelected(true);
+				control = true;
+			}	
+		}
+		if (!control)
+			mName2JrbDeath.get(Txt.get("s_TAB_EPIUPDATE_CELLDEATH_EMPTY")).setSelected(true);
+		
 		this.center.add(jpCellDeath);
 
 		this.isInitialized = true;

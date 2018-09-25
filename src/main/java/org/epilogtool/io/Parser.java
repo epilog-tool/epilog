@@ -315,6 +315,38 @@ public class Parser {
 				}
 			}
 			
+			if (line.startsWith("ME")) {
+				saTmp = line.split(";");
+				
+				String eventOrder = saTmp[0].replace("ME [","");
+				String newCellState = saTmp[1];
+				String cellDeathOption = saTmp[2].replace("]","");
+				
+				currEpi.getEpitheliumEvents().setEventOrder(eventOrder);
+				currEpi.getEpitheliumEvents().setDivisionOption(newCellState);
+				currEpi.getEpitheliumEvents().setDeathOption(cellDeathOption);
+				
+			}
+			
+			if (line.startsWith("CE")) {
+				saTmp = line.split("\\s+");
+				LogicalModel m = Project.getInstance().getModel(modelKey2Name.get(saTmp[1]));
+
+				String s = saTmp[2];
+				String[] sArray = s.split(";");
+				
+				currEpi.getEpitheliumEvents().setDeathTrigger(m, sArray[0].replace("[",""));
+				currEpi.getEpitheliumEvents().setDeathValue(m, Float.parseFloat(sArray[1]));
+				currEpi.getEpitheliumEvents().setDeathPattern(m, sArray[2]);
+				
+				currEpi.getEpitheliumEvents().setDivisionTrigger(m, sArray[3]);
+				currEpi.getEpitheliumEvents().setDivisionValue(m, Float.parseFloat(sArray[4]));
+				currEpi.getEpitheliumEvents().setDivisionPattern(m, sArray[5]);
+				currEpi.getEpitheliumEvents().setDivisionNewState(m, null);
+				
+				
+			}
+			
 		}
 		// // Ensure coherence of all epithelia
 		for (Epithelium epi : Project.getInstance().getEpitheliumList()) {
@@ -593,11 +625,12 @@ public class Parser {
 			
 			List<String> lst = new ArrayList<String>();
 			
-			lst.add(epi.getEpitheliumEvents().getDeathOption());
-			lst.add(epi.getEpitheliumEvents().getDivisionOption());
 			lst.add(epi.getEpitheliumEvents().getEventOrder());
+			lst.add(epi.getEpitheliumEvents().getDivisionOption());
+			lst.add(epi.getEpitheliumEvents().getDeathOption());
 			
-			w.print("ME " + " " + join(lst,";"));
+//			System.out.println("ME " + "[" + join(lst,";") + "]");
+			w.println("ME " + "[" + join(lst,";") + "]");
 			
 		//CellularEvents
 		//
@@ -614,10 +647,6 @@ public class Parser {
 			
 			ModelCellularEvent mce = epi.getEpitheliumEvents().getMCE(m);
 			
-//			System.out.println(m);
-//			System.out.println(epi.getEpitheliumEvents().getModels());
-//			System.out.println(epi.getEpitheliumEvents().getMCE(m));
-			
 			paramList.add(mce.getDeathTrigger());
 			paramList.add(""+mce.getDeathValue());
 			paramList.add(mce.getDeathPattern());
@@ -627,7 +656,7 @@ public class Parser {
 			paramList.add(mce.getDivisionPattern());
 			paramList.add(""+mce.getNewCellState());
 	
-			w.print("CE " + model2Key.get(name) + " " + join(paramList,";"));
+			w.println("CE " + model2Key.get(name) + " [" + join(paramList,";") +"]");
 		}
 			}
 		

@@ -1,14 +1,11 @@
 package org.epilogtool.core;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.Txt;
-import org.epilogtool.gui.widgets.SliderPanel;
 
 public class EpitheliumEvents {
 	
@@ -40,8 +37,7 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 		this.model2MCE = model2MCE;
 		
 		for (LogicalModel model: modelList) {
-			ModelCellularEvent mce = new ModelCellularEvent(DEFAULT_DEATHPROBABILITY,DEFAULT_DIVISIONPROBABILITY,DEFAULT_DEATHTRIGGER, DEFAULT_DIVISIONTRIGGER, DEFAULT_DEATHPATTERN, DEFAULT_DIVISIONPATTERN, null);
-			this.setModel2MCE(model, mce);
+			this.setModel2MCE(model, model2MCE.get(model).clone());
 		}
 }
 		
@@ -132,20 +128,19 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 		 this.divisionOption = option;
 	}
 	
-	
-	public float getDivisionProbability(LogicalModel m) {
+	public float getDivisionValue(LogicalModel m) {
 		return this.model2MCE.get(m).getDivisionValue();
 	}
 	
-	public float getDeathProbability(LogicalModel m) {
+	public float getDeathValue(LogicalModel m) {
 		return this.model2MCE.get(m).getDeathValue();
 	}
 	
-	public void setDivisionProbability(LogicalModel m, int value) {
+	public void setDivisionValue(LogicalModel m, float value) {
 		this.model2MCE.get(m).setDivisionValue(value);
 	}
 	
-	public void setDeathProbability(LogicalModel m, int f) {
+	public void setDeathValue(LogicalModel m, float f) {
 		this.model2MCE.get(m).setDeathValue(f);
 	}
 
@@ -156,6 +151,7 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 		Map<LogicalModel, ModelCellularEvent> model2MCEClone = new HashMap<LogicalModel, ModelCellularEvent>();
 		for (LogicalModel m: this.model2MCE.keySet()) {
 			model2MCEClone.put(m, this.model2MCE.get(m));
+//			System.out.println("3 " + this.model2MCE.get(m).getDeathTrigger());
 			}
 		return new EpitheliumEvents(this.getEventOrder(), this.getDeathOption(), this.getDivisionOption(), model2MCEClone, model2MCEClone.keySet());
 	}

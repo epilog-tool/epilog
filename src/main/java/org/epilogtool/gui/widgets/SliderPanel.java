@@ -73,7 +73,9 @@ public class SliderPanel extends JPanel {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				JSlider slide = (JSlider) e.getSource();
+				if (epiTab.isInitialized())
 				updateSliderValues(slide);
+				
 //				tpc.setChanged();
 			}
 		});
@@ -84,7 +86,7 @@ public class SliderPanel extends JPanel {
 	}
 	
 	protected void updateSliderValues(JSlider slide) {
-		// TODO Auto-generated method stub
+
 		if (this.name.equals(Txt.get("s_TAB_EVE_DEATH")) ||  (this.name.equals(Txt.get("s_TAB_EVE_DIVISION"))))
 			((EpiTabEvents) this.epiTab).updateSliderValues(slide);
 	}
@@ -108,9 +110,8 @@ public class SliderPanel extends JPanel {
 		return this.probMin;
 	}
 
-	public void setValue(int f) {
-		// TODO Auto-generated method stub
-		this.jsProb.setValue(f);
+	public void setValue(float f) {
+		this.jsProb.setValue((int) (f*100));
 	}
 
 	public void setText(String string) {

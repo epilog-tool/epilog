@@ -37,7 +37,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 	private static final long serialVersionUID = 4263444740319547502L;
 	
 	private LogicalModel selModel;
-	private ModelCellularEvent mce;
+//	private ModelCellularEvent mce;
 	
 	private JPanel jpTriggerDivision;
 	private JPanel jpTriggerDeath;
@@ -89,8 +89,15 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			SliderPanel spSliderDeath = new SliderPanel(Txt.get("s_TAB_EVE_DEATH_PROBABILITY"),Txt.get("s_TAB_EVE_DEATH"), this);
 			sp.add(spSliderDeath);
 			SliderPanel spSliderDivision = new SliderPanel(Txt.get("s_TAB_EVE_DIVISION_PROBABILITY"),Txt.get("s_TAB_EVE_DIVISION"), this);
+			
 			sp.add(spSliderDivision);
 			mModel2lsSPanel.put(model, sp);
+		}
+		
+		for (LogicalModel model: modelList) {
+			List<SliderPanel> sp = mModel2lsSPanel.get(model);
+			sp.get(1).setValue(this.epithelium.getEpitheliumEvents().getDivisionValue(model));
+			sp.get(0).setValue(this.epithelium.getEpitheliumEvents().getMCE(model).getDeathValue());
 		}
 		
 		this.epiEventClone = this.epithelium.getEpitheliumEvents().clone();
@@ -123,7 +130,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		jcbSBML.setSelectedIndex(0);
 		left.add(modelSelectionPanel);
 		this.selModel = Project.getInstance().getProjectFeatures().getModel((String) jcbSBML.getSelectedItem());
-		this.mce = this.epiEventClone.getMCE(this.selModel);
+//		this.mce = this.epiEventClone.getMCE(this.selModel);
 		
 		
 		
@@ -155,28 +162,19 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			JRadioButton jrb = new JRadioButton(triggerOption);
 			this.mName2JRBdivision.put(triggerOption, jrb);
 			jrb.setName(triggerOption);
-			if (triggerOption.equals(Txt.get("s_TAB_EVE_TRIGGER_NONE")))
-				jrb.setSelected(true);
+//			if (triggerOption.equals(Txt.get("s_TAB_EVE_TRIGGER_NONE")))
+//				jrb.setSelected(true);
 			triggerDivision2Radio.put(triggerOption,jrb);
 				jrb.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						updateTriggerDivision(jrb.getName());
+						updateTriggerDivision(jrb.getName(), true);
 					}
 				});
 				jpTriggerDivisionOptions.add(jrb);
 				groupDivision.add(jrb);
 		}
-		
-//		if (this.mce.getDivisionTrigger().equals(Txt.get("s_TAB_EVE_TRIGGER_PATTERN"))) {
-//			this.mName2JRBdivision.get(Txt.get("s_TAB_EVE_TRIGGER_PATTERN")).setEnabled(true);
-//		}
-//		if (this.mce.getDivisionTrigger().equals(Txt.get("s_TAB_EVE_TRIGGER_NONE"))) {
-//			this.mName2JRBdivision.get(Txt.get("s_TAB_EVE_TRIGGER_NONE")).setEnabled(true);
-//		}
-//		if (this.mce.getDivisionTrigger().equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM"))) {
-//			this.mName2JRBdivision.get(Txt.get("s_TAB_EVE_TRIGGER_RANDOM")).setEnabled(true);
-//		}
+		this.updateTriggerDivision(this.epiEventClone.getMCE(this.selModel).getDivisionTrigger(), true);
 		
 		
 		this.jpTriggerDivision.add(jpTriggerDivisionOptions,BorderLayout.NORTH);
@@ -197,7 +195,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		state.setColumns(30);
 		this.jpNewState.add(state);
 		
-		updateTriggerDivision(this.mce.getDivisionTrigger());
+		updateTriggerDivision(this.epiEventClone.getMCE(this.selModel).getDivisionTrigger(), true);
 		
 		//TRIGGERS SOUTH PANEL: RANDOM
 		
@@ -228,18 +226,16 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			this.mName2JRBdeath.put(triggerOption, jrb);
 			jrb.setName(triggerOption);
 			triggerDeath2Radio.put(triggerOption,jrb);
-			if (triggerOption.equals(Txt.get("s_TAB_EVE_TRIGGER_NONE")))
-				jrb.setSelected(true);
 				jrb.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						updateTriggerDeath(jrb.getName());
+						updateTriggerDeath(jrb.getName(), true);
 					}
 				});
 				jpTriggerDeathOptions.add(jrb);
 				groupDeath.add(jrb);
 		}
-	
+		this.updateTriggerDeath(this.epiEventClone.getMCE(this.selModel).getDeathTrigger(), true);
 	
 		this.jpTriggerDeath.add(jpTriggerDeathOptions,BorderLayout.NORTH);
 		this.jpDeath.add(this.jpTriggerDeath, BorderLayout.NORTH);
@@ -251,7 +247,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		jtfPatternDeath.setColumns(30);
 		this.jpPatternDeath.add(jtfPatternDeath);
 		
-		updateTriggerDeath(this.mce.getDeathTrigger());
+		updateTriggerDeath(this.epiEventClone.getMCE(this.selModel).getDeathTrigger(), true);
 		
 		//TRIGGERS SOUTH PANEL: RANDOM
 		SliderPanel spDeath = this.mModel2lsSPanel.get(selModel).get(0);
@@ -270,20 +266,22 @@ public class EpiTabEvents extends EpiTabDefinitions {
 	
 
 	
-	protected void updateTriggerDivision(String string) {
+	protected void updateTriggerDivision(String string, boolean control) {
 		
-		if (this.isInitialized)
+		if (this.isInitialized && control)
 				tpc.setChanged();
 		
 		this.auxDivisionPanel.removeAll();
 		String str = string;
 		
-		if (str == Txt.get("s_TAB_EVE_TRIGGER_RANDOM")) {
+		if (str.equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM"))) {
+			this.mName2JRBdivision.get(Txt.get("s_TAB_EVE_TRIGGER_RANDOM")).setSelected(true);
 			this.auxDivisionPanel.add(this.mModel2lsSPanel.get(this.selModel).get(1),BorderLayout.SOUTH);
 			this.epiEventClone.setDivisionTrigger(this.selModel,Txt.get("s_TAB_EVE_TRIGGER_RANDOM"));
 		}
 
-		else if (str == Txt.get("s_TAB_EVE_TRIGGER_PATTERN")) {
+		else if (str.equals(Txt.get("s_TAB_EVE_TRIGGER_PATTERN"))) {
+			this.mName2JRBdivision.get(Txt.get("s_TAB_EVE_TRIGGER_PATTERN")).setSelected(true);
 			this.auxDivisionPanel.add(this.jpPatternDivision, BorderLayout.CENTER);
 			this.epiEventClone.setDivisionTrigger(this.selModel, Txt.get("s_TAB_EVE_TRIGGER_PATTERN"));
 			if (this.epiEventClone.getDivisionOption().equals(Txt.get("s_TAB_EVE_DIVISON_NEWCELLSTATE_PREDEFINED"))) {
@@ -291,6 +289,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			}
 		}
 		else {
+			this.mName2JRBdivision.get(Txt.get("s_TAB_EVE_TRIGGER_NONE")).setSelected(true);
 			this.epiEventClone.setDivisionTrigger(this.selModel,Txt.get("s_TAB_EVE_TRIGGER_NONE"));
 		}
 		
@@ -301,24 +300,25 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		this.jpTriggerDivision.revalidate();
 	}
 	
-	protected void updateTriggerDeath(String string) {
+	protected void updateTriggerDeath(String str, boolean control) {
 		
-		if (this.isInitialized)
+		if (this.isInitialized && control)
 			tpc.setChanged();
 		this.auxDeathPanel.removeAll();
-		String str = string;
 		
-		if (str == Txt.get("s_TAB_EVE_TRIGGER_RANDOM")) {
-			
+		if (str.equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM"))) {
+			this.mName2JRBdeath.get(Txt.get("s_TAB_EVE_TRIGGER_RANDOM")).setSelected(true);
 			this.auxDeathPanel.add(this.mModel2lsSPanel.get(this.selModel).get(0),BorderLayout.SOUTH);
 			this.epiEventClone.setDeathTrigger(this.selModel,Txt.get("s_TAB_EVE_TRIGGER_RANDOM"));
 		}
 
-		else if (str == Txt.get("s_TAB_EVE_TRIGGER_PATTERN")) {
+		else if (str.equals(Txt.get("s_TAB_EVE_TRIGGER_PATTERN"))) {
+			this.mName2JRBdeath.get(Txt.get("s_TAB_EVE_TRIGGER_PATTERN")).setSelected(true);
 			this.auxDeathPanel.add(this.jpPatternDeath, BorderLayout.CENTER);
 			this.epiEventClone.setDeathTrigger(this.selModel,Txt.get("s_TAB_EVE_TRIGGER_PATTERN"));;
 		}
 		else {
+			this.mName2JRBdeath.get(Txt.get("s_TAB_EVE_TRIGGER_NONE")).setSelected(true);
 			this.epithelium.getEpitheliumEvents().setDeathTrigger(this.selModel,Txt.get("s_TAB_EVE_TRIGGER_NONE"));
 		}
 		
@@ -335,7 +335,8 @@ public class EpiTabEvents extends EpiTabDefinitions {
 	// End initialize
 
 	public void updateSliderValues(JSlider slider) {
-		tpc.setChanged();
+		if (this.isInitialized)
+			tpc.setChanged();
 		
 		SliderPanel spDeath = this.mModel2lsSPanel.get(this.selModel).get(0);
 		SliderPanel spDivision = this.mModel2lsSPanel.get(this.selModel).get(1);
@@ -349,17 +350,18 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			}
 //		}
 		}
-		float valueDivision = (float) this.mce.getDivisionValue() / 100;
-		float valueDeath = (float) this.mce.getDeathValue() / 100;
+		
+		float valueDivision = (float) spDivision.getValue() / 100;
+		float valueDeath = (float) spDeath.getValue() / 100;
 		
 		
 		spDeath.setText(""+valueDeath);
 		spDivision.setText(""+valueDivision);
 		
-		this.mce = this.epiEventClone.getMCE(this.selModel);
 		
-		mce.setDeathValue(valueDeath);
-		mce.setDivisionValue(valueDivision);
+		
+		this.epiEventClone.getMCE(this.selModel).setDeathValue(valueDeath);
+		this.epiEventClone.getMCE(this.selModel).setDivisionValue(valueDivision);
 		updateAlpha(spDeath.getValue(), spDeath.getLabel(), spDeath.getMin(), spDeath.getMax());
 		updateAlpha(spDivision.getValue(), spDivision.getLabel(), spDivision.getMin(), spDivision.getMax());
 
@@ -377,16 +379,17 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		for (LogicalModel model: modelList) {
-		mce = this.epithelium.getEpitheliumEvents().getMCE(model);
+		ModelCellularEvent mce = this.epithelium.getEpitheliumEvents().getMCE(model);
 		
 		this.epiEventClone.setDeathTrigger(model, mce.getDeathTrigger());
 		this.epiEventClone.setDivisionTrigger(model, mce.getDivisionTrigger());
-		this.epiEventClone.setDeathProbability(model, (int) mce.getDeathValue());
-		this.epiEventClone.setDivisionProbability(model, (int) mce.getDivisionValue());
+		this.epiEventClone.setDeathValue(model, (int) mce.getDeathValue());
+		this.epiEventClone.setDivisionValue(model, (int) mce.getDivisionValue());
 		this.epiEventClone.setDeathPattern(model, mce.getDeathPattern());
 		this.epiEventClone.setDivisionPattern(model, mce.getDivisionPattern());
 		//TODO
 		this.epiEventClone.setDivisionNewState(model, null);
+
 		}
 	}
 
@@ -396,7 +399,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
 		for (LogicalModel model: modelList) {
-		mce = this.epiEventClone.getMCE(model);
+		ModelCellularEvent  mce = this.epiEventClone.getMCE(model);
 		
 //		System.out.println("1 " + mce.getDeathTrigger());
 //		System.out.println("1 " + mce.getDivisionTrigger());
@@ -412,12 +415,13 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		
 		this.epithelium.getEpitheliumEvents().setDeathTrigger(model, mce.getDeathTrigger());
 		this.epithelium.getEpitheliumEvents().setDivisionTrigger(model, mce.getDivisionTrigger());
-		this.epithelium.getEpitheliumEvents().setDeathProbability(model, (int) mce.getDeathValue());
-		this.epithelium.getEpitheliumEvents().setDivisionProbability(model, (int) mce.getDivisionValue());
+		this.epithelium.getEpitheliumEvents().setDeathValue(model, (float) mce.getDeathValue());
+		this.epithelium.getEpitheliumEvents().setDivisionValue(model, (float) mce.getDivisionValue());
 		this.epithelium.getEpitheliumEvents().setDeathPattern(model, mce.getDeathPattern());
 		this.epithelium.getEpitheliumEvents().setDivisionPattern(model, mce.getDivisionPattern());
 		//TODO
 		this.epithelium.getEpitheliumEvents().setDivisionNewState(model, null);
+
 		
 //		System.out.println("3 " + this.epithelium.getEpitheliumEvents().getMCE(model).getDeathTrigger());
 //		System.out.println("3 " + this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionTrigger());
@@ -430,10 +434,10 @@ public class EpiTabEvents extends EpiTabDefinitions {
 	@Override
 	protected boolean isChanged() {
 
-		if (this.epithelium.getEpitheliumEvents().getDivisionProbability(this.selModel)!=(this.epiEventClone.getMCE(this.selModel).getDivisionValue()))
+		if (this.epithelium.getEpitheliumEvents().getDivisionValue(this.selModel)!=(this.epiEventClone.getMCE(this.selModel).getDivisionValue()))
 				return true;
 		
-		if (this.epithelium.getEpitheliumEvents().getDeathProbability(this.selModel)!=(this.epiEventClone.getMCE(this.selModel).getDeathValue()))
+		if (this.epithelium.getEpitheliumEvents().getDeathValue(this.selModel)!=(this.epiEventClone.getMCE(this.selModel).getDeathValue()))
 			return true;
 		
 		if (!this.epithelium.getEpitheliumEvents().getMCE(this.selModel).getDeathPattern().equals(this.epiEventClone.getMCE(this.selModel).getDeathPattern()))
@@ -464,8 +468,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		
 		
 		this.modelSelectionPanel.removeAll();
-		this.modelSelectionPanel.add(this.newModelCombobox(modelList));
-		this.mce = this.epiEventClone.getMCE(this.selModel);
+		this.modelSelectionPanel.add(this.newModelCombobox(modelList)); 
 		this.selModel = modelList.get(0);
 		
 	}
@@ -498,21 +501,25 @@ public class EpiTabEvents extends EpiTabDefinitions {
 	protected void updatePanelsWithModel(LogicalModel m) {
 		
 		this.selModel = m;
-		this.mce = this.epiEventClone.getMCE(this.selModel);
+		ModelCellularEvent mce = this.epiEventClone.getMCE(this.selModel);
 
 		
-		if (mName2JRBdivision.containsKey(this.mce.getDivisionTrigger())) {
-		this.mName2JRBdivision.get(this.mce.getDivisionTrigger()).setSelected(true);
-		updateTriggerDivision(this.mce.getDivisionTrigger());
+		if (mName2JRBdivision.containsKey(mce.getDivisionTrigger())) {
+		this.mName2JRBdivision.get(mce.getDivisionTrigger()).setSelected(true);
+		updateTriggerDivision(mce.getDivisionTrigger(), false);
 		}
-		if (mName2JRBdeath.containsKey(this.mce.getDeathTrigger())) {
-			this.mName2JRBdeath.get(this.mce.getDeathTrigger()).setSelected(true);
-			updateTriggerDeath(this.mce.getDeathTrigger());
+		if (mName2JRBdeath.containsKey(mce.getDeathTrigger())) {
+			this.mName2JRBdeath.get(mce.getDeathTrigger()).setSelected(true);
+			updateTriggerDeath(mce.getDeathTrigger(), false);
 		}
 		
 		SliderPanel spDeath = this.mModel2lsSPanel.get(selModel).get(0);
 		updateAlpha(spDeath.getValue(), spDeath.getLabel(), spDeath.getMin(), spDeath.getMax());
 		SliderPanel spDivision = this.mModel2lsSPanel.get(selModel).get(1);
 		updateAlpha(spDivision.getValue(), spDivision.getLabel(), spDivision.getMin(), spDivision.getMax());
+	}
+
+	public boolean isInitialized() {
+		return this.isInitialized;
 	}
 }

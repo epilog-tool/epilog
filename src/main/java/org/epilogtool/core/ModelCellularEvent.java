@@ -14,7 +14,6 @@ public class ModelCellularEvent {
 	private String deathPattern;
 	private String divisionPattern;
 	
-//	private String  newCellSate;
 	private byte[] newCellState;
 	
 
@@ -35,16 +34,15 @@ public class ModelCellularEvent {
 	}
 
 
+	public ModelCellularEvent clone() {
+		return new ModelCellularEvent(this.getDeathValue(), this.getDivisionValue(), this.getDeathTrigger(), this.getDivisionTrigger(), this.getDeathPattern(), this.getDivisionPattern(), this.getNewCellState());
+	}
 	public byte[] getNewCellState(){
 		return this.newCellState;
 	}
 	public void setNewCellState(byte[] state){
 		this.newCellState = state;
 	}
-	
-//	public LogicalModel getModel() {
-//		return this.model;
-//	}
 	
 	public float getDivisionValue(){
 		return this.divisionValue;
@@ -61,49 +59,6 @@ public class ModelCellularEvent {
 	public float getDeathValue(){
 		return this.deathValue;
 	}
-
-
-//	public JLabel getDivisionLabel() {
-//		return spDivision.getLabel();
-//	}
-//
-//	public int getDivisionMin() {
-//		return spDivision.getMin();
-//	}
-	
-//	public int getDivisionMax() {
-//		return spDivision.getMax();
-//	}
-//	
-//	public JLabel getDeathLabel() {
-//		return spDivision.getLabel();
-//	}
-
-//	public int getDeathMin() {
-//		return spDivision.getMin();
-//	}
-//	
-//	public int getDeathMax() {
-//		return spDivision.getMax();
-//	}
-
-
-//	public SliderPanel getDivisionSlider() {
-//		return this.spDivision;
-//	}
-//	
-//	public SliderPanel getDeathSlider() {
-//		return this.spDeath;
-//	}
-
-
-//	public void setDivisionText(String string) {
-//		this.spDivision.setText(string);
-//	}
-//	
-//	public void setDeathText(String string) {
-//		this.spDeath.setText(string);
-//	}
 
 
 	public String getDeathPattern() {
