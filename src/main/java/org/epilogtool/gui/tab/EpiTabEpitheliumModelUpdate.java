@@ -1,7 +1,5 @@
 package org.epilogtool.gui.tab;
 
-import static org.junit.Assume.assumeTrue;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -161,6 +159,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 				jrb.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
+						JRadioButton jrb = (JRadioButton)e.getSource();
 						updateEventOrder(jrb);
 						tpc.setChanged();
 					}
@@ -204,6 +203,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 				jrb.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
+						JRadioButton jrb = (JRadioButton)e.getSource();
 						updateNewCellState(jrb);
 						tpc.setChanged();
 					}
@@ -247,6 +247,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 				jrb.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
+						JRadioButton jrb = (JRadioButton)e.getSource();
 						updateCellDeath(jrb);
 						tpc.setChanged();
 					}

@@ -3,8 +3,8 @@ package org.epilogtool.core;
 import org.epilogtool.common.EnumRandomSeed;
 
 public class EpitheliumUpdateSchemeInter {
-	public static float DEFAULT_ALPHA = (float) 1.0;
-	public static float DEFAULT_SIGMA = (float) 1.0;
+	public static float DEFAULT_ALPHA = (float) 0.0;
+	public static float DEFAULT_SIGMA = (float) 0.0;
 
 	private float alphaAsyncParam;
 	private UpdateCells updateCells;

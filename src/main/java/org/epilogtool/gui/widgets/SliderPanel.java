@@ -73,7 +73,6 @@ public class SliderPanel extends JPanel {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				JSlider slide = (JSlider) e.getSource();
-				if (epiTab.isInitialized())
 				updateSliderValues(slide);
 				
 //				tpc.setChanged();
@@ -86,7 +85,8 @@ public class SliderPanel extends JPanel {
 	}
 	
 	protected void updateSliderValues(JSlider slide) {
-
+		if (!this.epiTab.isInitialized()) // FIXME
+			return;
 		if (this.name.equals(Txt.get("s_TAB_EVE_DEATH")) ||  (this.name.equals(Txt.get("s_TAB_EVE_DIVISION"))))
 			((EpiTabEvents) this.epiTab).updateSliderValues(slide);
 	}

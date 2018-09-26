@@ -497,8 +497,7 @@ public class EpitheliumGrid {
 			if (this.livingCells.contains(tuple))
 				this.livingCells.remove(tuple);
 		}
-		
-		System.out.println(this.livingCells);
+
 	}
 	
 	

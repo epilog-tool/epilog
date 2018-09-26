@@ -62,21 +62,14 @@ public class ModelCellularEvent {
 
 
 	public String getDeathPattern() {
-		return this.deathPattern;
-	}
+		return this.deathPattern;}
+	public void setDeathPattern(String pattern) {
+		this.deathPattern = pattern;}
 	
 	public String getDivisionPattern() {
-		return this.divisionPattern;
-	}
-
-
-	public void setDeathPattern(String pattern) {
-		this.deathPattern = pattern;
-	}
-	
+		return this.divisionPattern;}
 	public void setDivisionPattern(String pattern) {
-		this.divisionPattern = pattern;
-	}
+		this.divisionPattern = pattern;}
 
 
 	public String getDeathTrigger() {

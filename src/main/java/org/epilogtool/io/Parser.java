@@ -338,10 +338,12 @@ public class Parser {
 				currEpi.getEpitheliumEvents().setDeathTrigger(m, sArray[0].replace("[",""));
 				currEpi.getEpitheliumEvents().setDeathValue(m, Float.parseFloat(sArray[1]));
 				currEpi.getEpitheliumEvents().setDeathPattern(m, sArray[2]);
+//				System.out.println("deathpatterh: " + sArray[2]);
 				
 				currEpi.getEpitheliumEvents().setDivisionTrigger(m, sArray[3]);
 				currEpi.getEpitheliumEvents().setDivisionValue(m, Float.parseFloat(sArray[4]));
 				currEpi.getEpitheliumEvents().setDivisionPattern(m, sArray[5]);
+//				System.out.println("divisionpatterh: " + sArray[5]);
 				currEpi.getEpitheliumEvents().setDivisionNewState(m, null);
 				
 				
