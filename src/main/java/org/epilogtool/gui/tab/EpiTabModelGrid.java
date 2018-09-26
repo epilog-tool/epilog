@@ -37,7 +37,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 	private VisualGridModel visualGridModel;
 	private Map<JRadioComponentButton, JButton> mapSBMLMiniPanels;
-	private AbstractCell[][] cellGridClone;
+//	private AbstractCell[][] cellGridClone;
+	private EpitheliumGrid epiGridClone;
 	private JPanel jpModelSelection;
 	private JPanel jpModelsUsed;
 	private GridInformation gridInfo;
@@ -56,7 +57,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 		this.mapSBMLMiniPanels = new HashMap<JRadioComponentButton, JButton>();
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
-		this.cellGridClone = new AbstractCell[grid.getX()][grid.getY()];
+		this.epiGridClone = grid.clone();
+//		this.cellGridClone = new AbstractCell[grid.getX()][grid.getY()];
 
 		// Panel with the model selection
 		this.jpModelSelection = new JPanel(new GridBagLayout());
@@ -111,9 +113,10 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		this.center.add(left, BorderLayout.LINE_START);
 
 		this.tpc = new TabProbablyChanged();
+		//CHANGE THE VISUALGIRDMODELXs
 		this.visualGridModel = new VisualGridModel(this.epithelium.getEpitheliumGrid().getX(),
 				this.epithelium.getEpitheliumGrid().getY(), this.epithelium.getEpitheliumGrid().getTopology(),
-				this.cellGridClone, this.gridInfo, this.tpc, this.jpModelsUsed);
+				this.epiGridClone.clone(), this.gridInfo, this.tpc, this.jpModelsUsed);
 		this.center.add(this.visualGridModel, BorderLayout.CENTER);
 
 		this.buttonReset();
@@ -178,10 +181,11 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		}
 		// Clean grid of models that were deleted before an accept
 		String defaultModel = Project.getInstance().getProjectFeatures().getModelNames().iterator().next();
-		for (int x = 0; x < this.cellGridClone.length; x++) {
-			for (int y = 0; y < this.cellGridClone[0].length; y++) {
-				if (this.cellGridClone[x][y].isLivingCell()) {
-					LivingCell lCell = (LivingCell) this.cellGridClone[x][y];
+		
+		for (int x = 0; x < this.epiGridClone.getCellGrid().length; x++) {
+			for (int y = 0; y < this.epiGridClone.getCellGrid()[0].length; y++) {
+				if (this.epiGridClone.getCellGrid()[x][y].isLivingCell()) {
+					LivingCell lCell = (LivingCell) this.epiGridClone.getCellGrid()[x][y];
 					if (!Project.getInstance().getProjectFeatures().hasModel(lCell.getModel())) {
 						lCell.setModel(Project.getInstance().getProjectFeatures().getModel(defaultModel));
 					}
@@ -229,9 +233,9 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	@Override
 	protected void buttonReset() {
 		// Cancel Models
-		for (int x = 0; x < this.cellGridClone.length; x++) {
-			for (int y = 0; y < this.cellGridClone[0].length; y++) {
-				this.cellGridClone[x][y] = this.epithelium.getEpitheliumGrid().getAbstCell(x,y);
+		for (int x = 0; x < this.epiGridClone.getCellGrid().length; x++) {
+			for (int y = 0; y < this.epiGridClone.getCellGrid()[0].length; y++) {
+				this.epiGridClone.setAbstractCell(x,y,this.epithelium.getEpitheliumGrid().getAbstCell(x,y));
 			}
 		}
 		this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
@@ -241,9 +245,9 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	@Override
 	protected void buttonAccept() {
 		boolean isEmptyGrid = true;
-		for (int x = 0; x < this.cellGridClone.length; x++) {
-			for (int y = 0; y < this.cellGridClone[0].length; y++) {
-				if (this.cellGridClone[x][y].isLivingCell()){
+		for (int x = 0; x < this.epiGridClone.getCellGrid().length; x++) {
+			for (int y = 0; y < this.epiGridClone.getCellGrid()[0].length; y++) {
+				if (this.epiGridClone.getCellGrid()[x][y].isLivingCell()){
 //				if (Project.getInstance().getProjectFeatures().getModelName(this.cellGridClone[x][y]) != null) {
 					isEmptyGrid = false;
 					// FIXME: this should break 2 for's right?
@@ -256,10 +260,10 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		}
 
 		// Copy modelClone to modelGrid
-		for (int x = 0; x < this.cellGridClone.length; x++) {
-			for (int y = 0; y < this.cellGridClone[0].length; y++) {
-				if (!this.epithelium.getEpitheliumGrid().getAbstCell(x, y).equals(this.cellGridClone[x][y])) {
-					this.epithelium.getEpitheliumGrid().setEpitheliumCell(x, y, this.cellGridClone[x][y]);
+		for (int x = 0; x < this.epiGridClone.getCellGrid().length; x++) {
+			for (int y = 0; y < this.epiGridClone.getCellGrid()[0].length; y++) {
+				if (!this.epithelium.getEpitheliumGrid().getAbstCell(x, y).equals(this.epiGridClone.getCellGrid()[x][y])) {
+					this.epithelium.getEpitheliumGrid().setAbstractCell(x, y, this.epiGridClone.getCellGrid()[x][y]);
 				}
 			}
 		}
@@ -291,18 +295,18 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	@Override
 	protected boolean isChanged() {
 		// ------------------ Models were added/removed to the model list
-		if (this.cellGridClone.length != this.epithelium.getX()
-				|| this.cellGridClone[0].length != this.epithelium.getY()) {
+		if (this.epiGridClone.getCellGrid().length != this.epithelium.getX()
+				|| this.epiGridClone.getCellGrid()[0].length != this.epithelium.getY()) {
 			return true;
 		}
 		// ------------------ Models were added/removed to the grid
-		for (int x = 0; x < this.cellGridClone.length; x++) {
-			for (int y = 0; y < this.cellGridClone[0].length; y++) {
-				if (!this.cellGridClone[x][y].getName().equals(this.epithelium.getEpitheliumGrid().getAbstCell(x, y).getName())) {
+		for (int x = 0; x < this.epiGridClone.getCellGrid().length; x++) {
+			for (int y = 0; y < this.epiGridClone.getCellGrid()[0].length; y++) {
+				if (!this.epiGridClone.getCellGrid()[x][y].getName().equals(this.epithelium.getEpitheliumGrid().getAbstCell(x, y).getName())) {
 					return true;
 				}
-					else  if (this.cellGridClone[x][y].isLivingCell()) {
-						if (!((LivingCell) this.cellGridClone[x][y]).getModel().equals(((LivingCell) this.epithelium.getEpitheliumGrid().getAbstCell(x, y)).getModel())) {
+					else  if (this.epiGridClone.getCellGrid()[x][y].isLivingCell()) {
+						if (!((LivingCell) this.epiGridClone.getCellGrid()[x][y]).getModel().equals(((LivingCell) this.epithelium.getEpitheliumGrid().getAbstCell(x, y)).getModel())) {
 							return true;
 						}
 					} 

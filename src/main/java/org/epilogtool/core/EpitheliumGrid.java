@@ -3,7 +3,6 @@ package org.epilogtool.core;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,10 +14,8 @@ import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.epilogtool.common.Tuple2D;
-import org.epilogtool.common.Txt;
 import org.epilogtool.core.cell.AbstractCell;
 import org.epilogtool.core.cell.CellFactory;
-import org.epilogtool.core.cell.EmptyCell;
 import org.epilogtool.core.cell.LivingCell;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.core.topology.Topology;
@@ -31,6 +28,9 @@ public class EpitheliumGrid {
 	private Set<LogicalModel> modelSet;
 	private Map<String, Map<Byte, Integer>> compCounts;
 	private Map<String, Map<Byte, Float>> compPercents;
+	
+	private List<Tuple2D> livingCells;
+	private List<Tuple2D> emptyCells;
 
 	private EpitheliumGrid(AbstractCell[][] gridEpiCell, Topology topology, Set<LogicalModel> modelSet,
 			Map<String, Map<Byte, Integer>> compCounts, Map<String, Map<Byte, Float>> compPercents) {
@@ -40,6 +40,9 @@ public class EpitheliumGrid {
 		this.modelSet = modelSet;
 		this.compCounts = compCounts;
 		this.compPercents = compPercents;
+		
+		this.livingCells = new ArrayList<Tuple2D>();
+		this.emptyCells = new ArrayList<Tuple2D>();
 	}
 	
 	//The user may have edited one of the parameters of the grid, meaning that one of the epithelium parameters has changed.
@@ -48,24 +51,26 @@ public class EpitheliumGrid {
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
 		
 		// Create new EpiCell[][] in case the dimension of the grid has changed
-		
 
 		AbstractCell[][] newGrid = new AbstractCell[gridX][gridY];
+		AbstractCell[][] oldGrid = this.gridCells.clone();
+		this.gridCells = newGrid;
+		
 		for (int y = 0; y < gridY; y++) {
 			for (int x = 0; x < gridX; x++) {
-				if (x < this.gridCells.length && y < this.gridCells[0].length ) {
-					newGrid[x][y] = this.gridCells[x][y];
+				if (x < oldGrid.length && y < oldGrid[0].length ) {
+					this.setAbstractCell(x, y, oldGrid[x][y]);
 				}
 				else {
-					newGrid[x][y] = CellFactory.newEmptyCell();
+					this.setAbstractCell(x, y, CellFactory.newEmptyCell());
 				}
 			}
 		}
-
-		this.gridCells = newGrid;
 		
 		// Create new Topology
 		this.setTopology(topologyID, gridX, gridY, rollover);
+		
+		
 		// Update grid
 		this.updateGrid();
 	}
@@ -78,6 +83,8 @@ public class EpitheliumGrid {
 		
 		this.modelSet = new HashSet<LogicalModel>();
 		
+		this.livingCells = new ArrayList<Tuple2D>();
+		this.emptyCells = new ArrayList<Tuple2D>();
 		
 		if (c.isLivingCell()) {
 			this.modelSet.add(((LivingCell) c).getModel());
@@ -88,7 +95,7 @@ public class EpitheliumGrid {
 		
 		for (int y = 0; y < gridY; y++) {
 			for (int x = 0; x < gridX; x++) {
-				this.gridCells[x][y] = c;
+				this.setAbstractCell(x, y, c);
 			}
 		}
 		
@@ -217,7 +224,7 @@ public class EpitheliumGrid {
 	}
 
 	public void updateModelSet() {
-		//TODO TOD OT
+		//TODO OPTIMIZE (pv)
 		
 		this.modelSet.clear();
 		for (int y = 0; y < this.getY(); y++) {
@@ -242,7 +249,7 @@ public class EpitheliumGrid {
 	 * @param m
 	 */
 	public void setModel(int x, int y, LogicalModel m) {
-		this.gridCells[x][y] = CellFactory.newLivingCell(m);
+		this.setAbstractCell(x, y,CellFactory.newLivingCell(m));
 	}
 
 	
@@ -299,13 +306,6 @@ public class EpitheliumGrid {
 			((LivingCell) this.gridCells[x][y]).setValue(nodeID, value);
 	}}
 
-	public AbstractCell getEpitheliumCell(int x, int y) {
-		return this.gridCells[x][y];
-	}
-
-	public void setEpitheliumCell(int x, int y, AbstractCell absCell) {
-		this.gridCells[x][y] = absCell;
-	}
 
 	public String hashGrid() {
 		String hash = "";
@@ -360,17 +360,19 @@ public class EpitheliumGrid {
 	}
 
 	public EpitheliumGrid clone() {
-		AbstractCell[][] newGrid = new AbstractCell[this.getX()][this.getY()];
-		for (int y = 0; y < this.getY(); y++) {
-			for (int x = 0; x < this.getX(); x++) {
-				newGrid[x][y] = this.gridCells[x][y].clone();
-			}
-		}
+		
 		Topology newTop = this.topology.clone();
 		Set<LogicalModel> newModelSet = new HashSet<LogicalModel>(this.modelSet);
 		Map<String, Map<Byte, Integer>> newCompCounts = new HashMap<String, Map<Byte, Integer>>(this.compCounts);
 		Map<String, Map<Byte, Float>> newCompPercents = new HashMap<String, Map<Byte, Float>>(this.compPercents);
-		return new EpitheliumGrid(newGrid, newTop, newModelSet, newCompCounts, newCompPercents);
+		EpitheliumGrid newGrid = new EpitheliumGrid(this.gridCells.clone(), newTop, newModelSet, newCompCounts, newCompPercents);
+		// Deep copy
+		for (int y = 0; y < this.getY(); y++) {
+			for (int x = 0; x < this.getX(); x++) {
+				newGrid.setAbstractCell(x, y, this.gridCells[x][y].clone());
+			}
+		}
+		return newGrid;
 	}
 
 	public String getPercentage(String nodeID) {
@@ -469,12 +471,34 @@ public class EpitheliumGrid {
 	}
 
 	public AbstractCell[][] getCellGrid() {
-		// TODO Auto-generated method stub
 		return this.gridCells;
 	}
 
 	public void setAbstractCell(int x, int y, AbstractCell c) {
+
 		this.gridCells[x][y] = c;	
+		Tuple2D tuple = new Tuple2D(x,y);
+		
+		if (c.isLivingCell()) {
+			if (!this.livingCells.contains(tuple))
+				this.livingCells.add(tuple);
+			if (this.emptyCells.contains(tuple))
+				this.emptyCells.remove(tuple);
+		}
+		else if (c.isEmptyCell()) {
+			if (!this.emptyCells.contains(tuple))
+				this.emptyCells.add(tuple);
+			if (this.livingCells.contains(tuple))
+				this.livingCells.remove(tuple);
+		}
+		else if (!c.isEmptyCell() && !c.isLivingCell()) {
+			if (!this.emptyCells.contains(tuple))
+				this.emptyCells.remove(tuple);
+			if (this.livingCells.contains(tuple))
+				this.livingCells.remove(tuple);
+		}
+		
+		System.out.println(this.livingCells);
 	}
 	
 	

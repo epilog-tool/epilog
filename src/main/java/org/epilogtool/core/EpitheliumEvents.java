@@ -173,9 +173,7 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 			if (!this.model2MCE.get(m).equals(newEpiEvents.getMCE(m)))
 				return false;
 		}
-		
 		return true;
-
 	}
 	
 	
@@ -189,5 +187,6 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 	public Set<LogicalModel> getModels() {
 		return this.model2MCE.keySet();
 	}
+	
 	
 }
