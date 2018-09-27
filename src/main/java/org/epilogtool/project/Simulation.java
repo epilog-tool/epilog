@@ -18,9 +18,12 @@ import org.colomoto.biolqm.tool.simulation.multiplesuccessor.PriorityUpdater;
 import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Tuple2D;
+import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
+import org.epilogtool.core.ModelCellularEvent;
 import org.epilogtool.core.UpdateCells;
+import org.epilogtool.core.cell.CellFactory;
 import org.epilogtool.integration.IFEvaluation;
 import org.epilogtool.integration.IntegrationFunctionExpression;
 
@@ -115,6 +118,9 @@ public class Simulation {
 		EpitheliumGrid nextGrid = currGrid.clone();
 		Set<NodeInfo> sNodes = this.epithelium.getIntegrationNodes();
 		IFEvaluation evaluator = new IFEvaluation(nextGrid,this.epithelium);
+		
+		//list of tuples with LivingCells
+		List<Tuple2D> livingCells = this.epithelium.getEpitheliumGrid().getAllLivingCells();
 
 		// Gets the set of cells that can be updated
 		// And builds the default next grid (= current grid)
@@ -122,8 +128,9 @@ public class Simulation {
 		List<Tuple2D<Integer>> keys = new ArrayList<Tuple2D<Integer>>();
 		List<Tuple2D<Integer>> changedKeys = new ArrayList<Tuple2D<Integer>>();
 
-		for (int y = 0; y < currGrid.getY(); y++) {
-			for (int x = 0; x < currGrid.getX(); x++) {
+		for (Tuple2D<Integer> tuple: livingCells) {
+			int x = (int) tuple.getX();
+			int y = (int) tuple.getY();
 				if (!currGrid.getAbstCell(x,y).isLivingCell()) {
 					continue;
 				}
@@ -139,7 +146,6 @@ public class Simulation {
 				if (!Arrays.equals(currState, nextState)) {
 					changedKeys.add(key);
 				}
-			}
 		}
 
 		if (this.epithelium.getUpdateSchemeInter().getUpdateCells().equals(UpdateCells.UPDATABLECELLS)) {
@@ -162,17 +168,80 @@ public class Simulation {
 				nextGrid.setCellState(keys.get(i).getX(), keys.get(i).getY(), cells2update.get(keys.get(i)));
 			}
 		}
-
+		//TODO if this state is stable should we stop here? Stability is maintained? what about different number of cells
 		if (changedKeys.isEmpty()) {
 			this.stable = true;
 			return currGrid;
 		}
-
+		
+		//************* TRIGGER EVENTS
+		
+		
+		List<Tuple2D> deathCells = new ArrayList<Tuple2D>();
+		List<Tuple2D> divideCells = new ArrayList<Tuple2D>();
+		List<Tuple2D> AvailableLivingCells = new ArrayList<Tuple2D>();
+		
+		for (LogicalModel model: this.epithelium.getEpitheliumGrid().getModelSet()) {
+			ModelCellularEvent mce = this.epithelium.getEpitheliumEvents().getMCE(model);
+			List<Tuple2D> availableLivingCells = this.epithelium.getEpitheliumGrid().getLivingCells(model);
+			String deathTrigger = mce.getDeathTrigger();
+			String divisionTrigger = mce.getDivisionTrigger();
+			//Validation of patterns is made at the eEpiTabEvents level
+			
+			if (deathTrigger.equals(Txt.get("s_TAB_EVE_TRIGGER_PATTERN"))) {
+//				System.out.println(model + " death is by pattern 7: retrieve a set of cells to be marked as set to die");
+				//update Living Cells
+				}
+			if (divisionTrigger.equals(Txt.get("s_TAB_EVE_TRIGGER_PATTERN"))) {
+//				System.out.println(model + " division is by pattern: retrieve a set of cells to be marked as set to divide");
+				//Update living Cells
+				}
+			
+			if (deathTrigger.equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM"))) {
+//				System.out.println(model + " death is by random: retrieve a set of cells to be marked as set to die");
+				deathCells = getProportionOfCells(availableLivingCells, this.epithelium.getEpitheliumEvents().getMCE(model).getDeathValue());
+				availableLivingCells.removeAll(deathCells);
+				}
+		
+			if (divisionTrigger.equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM"))) {
+//				System.out.println(model + " division is by random: retrieve a set of cells to be marked as set to die");
+				divideCells = getProportionOfCells(availableLivingCells, this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionValue());
+				availableLivingCells.removeAll(divideCells);
+				}
+		}
+		
+		//************* Event Action
+		
+		//TODO: Ignoring Order
+		String order = this.epithelium.getEpitheliumEvents().getEventOrder();
+		
+		
+		//TODO IGNORING 
+		for (Tuple2D<Integer> tuple: deathCells) {
+			this.getEpithelium().getEpitheliumGrid().setAbstractCell((int) tuple.getX(), (int) tuple.getY(), CellFactory.newEmptyCell());
+		}
+		
 		this.gridHistory.add(nextGrid);
 		if (this.gridHashHistory != null) {
 			this.gridHashHistory.add(nextGrid.hashGrid());
 		}
 		return nextGrid;
+	}
+
+	private List<Tuple2D> getProportionOfCells(List<Tuple2D> livingCells, float value) {
+		
+		List<Tuple2D> cells = new ArrayList<Tuple2D>();
+		
+		int nToChange = (int) Math.floor(value * livingCells.size());
+
+		// Create the initial shuffled array of cells
+		Collections.shuffle(livingCells, this.random);
+
+		for (int i = 0; i < nToChange; i++) {
+			// Update cell state
+			cells.add(livingCells.get(i));
+		}	
+		return cells;
 	}
 
 	public boolean hasCycle() {
@@ -272,26 +341,5 @@ public class Simulation {
 		return percentageHistory;
 	}
 
-//	public void updateCellularEvents() {
-//		// TODO Auto-generated method stub
-//		Set<Tuple2D<Integer>> lstAliveCells = this.epithelium.getEpitheliumGrid().getLivingCells();
-//		
-//		Set<Tuple2D<Integer>> lstCellsToDie = new HashSet<Tuple2D<Integer>>();
-//		Set<Tuple2D<Integer>> lstCellsToDivide = new HashSet<Tuple2D<Integer>>();
-//		
-//		if (this.epithelium.getEpitheliumEvents().getNewCellState().equals("None")) {
-//			//TODO Cell will not divide
-//		}
-//		else if (this.epithelium.getEpitheliumEvents().getNewCellState().equals("Pattern")) {
-//			//TODO Check if state fits the pattern
-//		}
-//		else if (this.epithelium.getEpitheliumEvents().getNewCellState().equals("Random")) {
-//			
-//			float divisionProbability = this.epithelium.getEpitheliumEvents().getDivisionProbability();
-//			System.out.println(divisionProbability);
-//			
-//			//TODO select 
-//		}
-//		
-//	}
+
 }

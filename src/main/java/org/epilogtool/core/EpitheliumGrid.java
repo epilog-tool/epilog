@@ -3,6 +3,7 @@ package org.epilogtool.core;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,9 +29,10 @@ public class EpitheliumGrid {
 	private Set<LogicalModel> modelSet;
 	private Map<String, Map<Byte, Integer>> compCounts;
 	private Map<String, Map<Byte, Float>> compPercents;
+
 	
-	private List<Tuple2D> livingCells;
-	private List<Tuple2D> emptyCells;
+	private Map<LogicalModel, List<Tuple2D>> livingCellsPerModel;
+	private List<Tuple2D> lstEmptyCells;
 
 	private EpitheliumGrid(AbstractCell[][] gridEpiCell, Topology topology, Set<LogicalModel> modelSet,
 			Map<String, Map<Byte, Integer>> compCounts, Map<String, Map<Byte, Float>> compPercents) {
@@ -41,8 +43,8 @@ public class EpitheliumGrid {
 		this.compCounts = compCounts;
 		this.compPercents = compPercents;
 		
-		this.livingCells = new ArrayList<Tuple2D>();
-		this.emptyCells = new ArrayList<Tuple2D>();
+		this.livingCellsPerModel = new HashMap<LogicalModel,List<Tuple2D>>();
+		this.lstEmptyCells = new ArrayList<Tuple2D>();
 	}
 	
 	//The user may have edited one of the parameters of the grid, meaning that one of the epithelium parameters has changed.
@@ -75,7 +77,7 @@ public class EpitheliumGrid {
 		this.updateGrid();
 	}
 
-	//When an Epithelium is loaded
+	//New Epithelium
 	public EpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover, AbstractCell c)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, ClassNotFoundException {
@@ -83,8 +85,8 @@ public class EpitheliumGrid {
 		
 		this.modelSet = new HashSet<LogicalModel>();
 		
-		this.livingCells = new ArrayList<Tuple2D>();
-		this.emptyCells = new ArrayList<Tuple2D>();
+		this.livingCellsPerModel = new HashMap<LogicalModel,List<Tuple2D>>();
+		this.lstEmptyCells = new ArrayList<Tuple2D>();
 		
 		if (c.isLivingCell()) {
 			this.modelSet.add(((LivingCell) c).getModel());
@@ -480,25 +482,43 @@ public class EpitheliumGrid {
 		Tuple2D tuple = new Tuple2D(x,y);
 		
 		if (c.isLivingCell()) {
-			if (!this.livingCells.contains(tuple))
-				this.livingCells.add(tuple);
-			if (this.emptyCells.contains(tuple))
-				this.emptyCells.remove(tuple);
+			LivingCell lCell = (LivingCell) c;
+			LogicalModel model = lCell.getModel();
+			if (!this.livingCellsPerModel.containsKey(model)) {
+				this.livingCellsPerModel.put(model,  new ArrayList<Tuple2D>());
+			}
+			if (!this.livingCellsPerModel.get(model).contains(tuple))
+				this.livingCellsPerModel.get(model).add(tuple);
+			if (this.lstEmptyCells.contains(tuple))
+				this.lstEmptyCells.remove(tuple);
 		}
 		else if (c.isEmptyCell()) {
-			if (!this.emptyCells.contains(tuple))
-				this.emptyCells.add(tuple);
-			if (this.livingCells.contains(tuple))
-				this.livingCells.remove(tuple);
+			if (!this.lstEmptyCells.contains(tuple))
+				this.lstEmptyCells.add(tuple);
+			for (LogicalModel model: this.livingCellsPerModel.keySet()) {
+			if (this.livingCellsPerModel.get(model).contains(tuple))
+				this.livingCellsPerModel.get(model).remove(tuple);
+			}
 		}
 		else if (!c.isEmptyCell() && !c.isLivingCell()) {
-			if (!this.emptyCells.contains(tuple))
-				this.emptyCells.remove(tuple);
-			if (this.livingCells.contains(tuple))
-				this.livingCells.remove(tuple);
-		}
-
+			if (!this.lstEmptyCells.contains(tuple))
+				this.lstEmptyCells.remove(tuple);
+			for (LogicalModel model: this.livingCellsPerModel.keySet()) {
+			if (this.livingCellsPerModel.get(model).contains(tuple))
+				this.livingCellsPerModel.get(model).remove(tuple);
+		}}
 	}
 	
+	public List<Tuple2D> getLivingCells(LogicalModel model){
+		return this.livingCellsPerModel.get(model);
+	}
 	
+	public List<Tuple2D> getAllLivingCells(){
+		List<Tuple2D> allLivingCells = new ArrayList<Tuple2D>();
+		for (LogicalModel model: this.livingCellsPerModel.keySet()) {
+			allLivingCells.addAll(this.livingCellsPerModel.get(model));
+		}
+	
+		return allLivingCells;
+	}
 }
