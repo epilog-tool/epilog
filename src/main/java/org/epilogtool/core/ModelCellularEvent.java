@@ -88,4 +88,27 @@ public class ModelCellularEvent {
 		this.divisionTrigger= trigger;
 	}
 	
+	public boolean equals(Object o) {
+		
+		ModelCellularEvent mce = (ModelCellularEvent) o ;
+		
+		if (this.deathValue !=mce.getDeathValue()) {
+			return false;		}
+		if (this.divisionValue !=mce.getDivisionValue()) {
+			return false;		}
+		if (!this.deathTrigger.equals(mce.getDeathTrigger())) {
+			return false;		}
+		if (!this.divisionTrigger.equals(mce.getDivisionTrigger())) {
+			return false;		}
+		if (!this.deathPattern.equals(mce.getDeathPattern())) {
+			return false;		}
+		if (!this.divisionPattern.equals(mce.getDivisionPattern())) {
+			return false;		}
+		if (!this.newCellState.equals(mce.getNewCellState())) {
+			return false;		}
+		
+		
+		return true;
+	}
+	
 }

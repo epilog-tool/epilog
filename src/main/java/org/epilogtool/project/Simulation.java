@@ -264,7 +264,7 @@ public class Simulation {
 		}
 			else if (divisionCells.contains(tuple)){
 //				System.out.println("empty: " + this.epithelium.getEpitheliumGrid().getEmptyCells());
-				if (nextGrid.getEmptyCells().size()>1) {
+				if (nextGrid.getEmptyCells().size()>0) {
 					System.out.println("There are empty Cells");
 				Tuple2D sisterTuple = getSisterPosition(tuple, nextGrid.getEmptyCells());
 				LivingCell c = (LivingCell) nextGrid.getAbstCell(tuple.getX(), tuple.getY());

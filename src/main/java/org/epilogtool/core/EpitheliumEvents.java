@@ -21,7 +21,6 @@ public class EpitheliumEvents {
 	public static float DEFAULT_DIVISIONPROBABILITY = (int) 0.0;
 	public static float DEFAULT_DEATHPROBABILITY = (int) 0.0;
 	
-	
 	//GENERAL
 	private String eventOrder;
 	private String deathOption;
@@ -44,7 +43,7 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 
 	public void addModel2MCE(LogicalModel model) {
 		if (!model2MCE.containsKey(model)){
-			ModelCellularEvent mce = new ModelCellularEvent(DEFAULT_DEATHPROBABILITY,DEFAULT_DIVISIONPROBABILITY,DEFAULT_DEATHTRIGGER, DEFAULT_DIVISIONTRIGGER, DEFAULT_DEATHPATTERN, DEFAULT_DIVISIONPATTERN, null);
+			ModelCellularEvent mce = new ModelCellularEvent(DEFAULT_DEATHPROBABILITY,DEFAULT_DIVISIONPROBABILITY,DEFAULT_DEATHTRIGGER, DEFAULT_DIVISIONTRIGGER, DEFAULT_DEATHPATTERN, DEFAULT_DIVISIONPATTERN, new byte[model.getComponents().size()]);
 			this.setModel2MCE(model, mce);
 		}
 	}
@@ -160,18 +159,22 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 		
 		EpitheliumEvents newEpiEvents = (EpitheliumEvents) o ;
 		
-		if (!this.eventOrder.equals(newEpiEvents.getEventOrder()))
-			return false;
+		if (!this.eventOrder.equals(newEpiEvents.getEventOrder())) {
+//			System.out.println("this.eventOrder.equals(newEpiEvents.getEventOrder())");
+			return false;		}
 		
-		if (!this.deathOption.equals(newEpiEvents.getDeathOption()))
-			return false;
+		if (!this.deathOption.equals(newEpiEvents.getDeathOption())){
+//			System.out.println("this.eventOrder.equals(newEpiEvents.getDeathOption())");
+			return false;		}
 		
-		if (!this.divisionOption.equals(newEpiEvents.getDivisionOption()))
-			return false;
+		if (!this.divisionOption.equals(newEpiEvents.getDivisionOption())){
+//			System.out.println("this.eventOrder.equals(newEpiEvents.getDivisionOption())");
+			return false;		}
 		
 		for (LogicalModel m: this.model2MCE.keySet()) {
-			if (!this.model2MCE.get(m).equals(newEpiEvents.getMCE(m)))
-				return false;
+			if (!this.model2MCE.get(m).equals(newEpiEvents.getMCE(m))){
+//				System.out.println("this.model2MCE.get(m).equals(newEpiEvents.getMCE(m))");
+				return false;		}
 		}
 		return true;
 	}

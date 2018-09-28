@@ -344,7 +344,7 @@ public class Parser {
 				currEpi.getEpitheliumEvents().setDivisionValue(m, Float.parseFloat(sArray[4]));
 				currEpi.getEpitheliumEvents().setDivisionPattern(m, sArray[5]);
 //				System.out.println("divisionpatterh: " + sArray[5]);
-				currEpi.getEpitheliumEvents().setDivisionNewState(m, null);
+				currEpi.getEpitheliumEvents().setDivisionNewState(m, new byte[m.getComponents().size()]);
 				
 				
 			}
