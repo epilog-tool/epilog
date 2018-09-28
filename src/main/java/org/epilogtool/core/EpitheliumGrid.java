@@ -513,6 +513,10 @@ public class EpitheliumGrid {
 		return this.livingCellsPerModel.get(model);
 	}
 	
+	public List<Tuple2D> getEmptyCells(){
+		return this.lstEmptyCells;
+	}
+	
 	public List<Tuple2D> getAllLivingCells(){
 		List<Tuple2D> allLivingCells = new ArrayList<Tuple2D>();
 		for (LogicalModel model: this.livingCellsPerModel.keySet()) {

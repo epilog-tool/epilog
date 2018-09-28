@@ -24,6 +24,7 @@ import org.epilogtool.core.EpitheliumGrid;
 import org.epilogtool.core.ModelCellularEvent;
 import org.epilogtool.core.UpdateCells;
 import org.epilogtool.core.cell.CellFactory;
+import org.epilogtool.core.cell.LivingCell;
 import org.epilogtool.integration.IFEvaluation;
 import org.epilogtool.integration.IntegrationFunctionExpression;
 
@@ -111,16 +112,18 @@ public class Simulation {
 	 */
 	public EpitheliumGrid nextStepGrid() {
 		EpitheliumGrid currGrid = this.getCurrentGrid();
+		
 		if (this.stable) {
 			return currGrid;
 		}
 
 		EpitheliumGrid nextGrid = currGrid.clone();
+		
 		Set<NodeInfo> sNodes = this.epithelium.getIntegrationNodes();
 		IFEvaluation evaluator = new IFEvaluation(nextGrid,this.epithelium);
 		
 		//list of tuples with LivingCells
-		List<Tuple2D> livingCells = this.epithelium.getEpitheliumGrid().getAllLivingCells();
+		List<Tuple2D> livingCells = nextGrid.getAllLivingCells();
 
 		// Gets the set of cells that can be updated
 		// And builds the default next grid (= current grid)
@@ -131,7 +134,7 @@ public class Simulation {
 		for (Tuple2D<Integer> tuple: livingCells) {
 			int x = (int) tuple.getX();
 			int y = (int) tuple.getY();
-				if (!currGrid.getAbstCell(x,y).isLivingCell()) {
+				if (!nextGrid.getAbstCell(x,y).isLivingCell()) {
 					continue;
 				}
 				byte[] currState = currGrid.getCellState(x, y);
@@ -178,35 +181,38 @@ public class Simulation {
 		
 		
 		List<Tuple2D> deathCells = new ArrayList<Tuple2D>();
-		List<Tuple2D> divideCells = new ArrayList<Tuple2D>();
+		List<Tuple2D> divisionCells = new ArrayList<Tuple2D>();
 		List<Tuple2D> AvailableLivingCells = new ArrayList<Tuple2D>();
 		
-		for (LogicalModel model: this.epithelium.getEpitheliumGrid().getModelSet()) {
-			ModelCellularEvent mce = this.epithelium.getEpitheliumEvents().getMCE(model);
-			List<Tuple2D> availableLivingCells = this.epithelium.getEpitheliumGrid().getLivingCells(model);
+		for (LogicalModel model: nextGrid.getModelSet()) {
+			ModelCellularEvent mce =  this.epithelium.getEpitheliumEvents().getMCE(model);
+			List<Tuple2D> availableLivingCells = nextGrid.getLivingCells(model);
 			String deathTrigger = mce.getDeathTrigger();
 			String divisionTrigger = mce.getDivisionTrigger();
 			//Validation of patterns is made at the eEpiTabEvents level
 			
 			if (deathTrigger.equals(Txt.get("s_TAB_EVE_TRIGGER_PATTERN"))) {
-//				System.out.println(model + " death is by pattern 7: retrieve a set of cells to be marked as set to die");
+				System.out.println(model + " death is by pattern 7: retrieve a set of cells to be marked as set to die");
 				//update Living Cells
 				}
 			if (divisionTrigger.equals(Txt.get("s_TAB_EVE_TRIGGER_PATTERN"))) {
-//				System.out.println(model + " division is by pattern: retrieve a set of cells to be marked as set to divide");
+				System.out.println(model + " division is by pattern: retrieve a set of cells to be marked as set to divide");
 				//Update living Cells
 				}
 			
 			if (deathTrigger.equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM"))) {
-//				System.out.println(model + " death is by random: retrieve a set of cells to be marked as set to die");
+				
 				deathCells = getProportionOfCells(availableLivingCells, this.epithelium.getEpitheliumEvents().getMCE(model).getDeathValue());
 				availableLivingCells.removeAll(deathCells);
+				System.out.println(model + " death is by random: retrieve a set of cells to be marked as set to die");
+				System.out.println("deathCells: " + deathCells);
 				}
 		
 			if (divisionTrigger.equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM"))) {
-//				System.out.println(model + " division is by random: retrieve a set of cells to be marked as set to die");
-				divideCells = getProportionOfCells(availableLivingCells, this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionValue());
-				availableLivingCells.removeAll(divideCells);
+				System.out.println(model + " division is by random: retrieve a set of cells to be marked as set to die");
+				divisionCells = getProportionOfCells(availableLivingCells, this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionValue());
+				availableLivingCells.removeAll(divisionCells);
+				System.out.println("divideCells: " + divisionCells);
 				}
 		}
 		
@@ -214,18 +220,108 @@ public class Simulation {
 		
 		//TODO: Ignoring Order
 		String order = this.epithelium.getEpitheliumEvents().getEventOrder();
+		List<Tuple2D> orderedCells = new ArrayList<Tuple2D>();
 		
-		
-		//TODO IGNORING 
-		for (Tuple2D<Integer> tuple: deathCells) {
-			this.getEpithelium().getEpitheliumGrid().setAbstractCell((int) tuple.getX(), (int) tuple.getY(), CellFactory.newEmptyCell());
+		System.out.println("order" + order);
+		if (order.equals(Txt.get("s_TAB_EPIUPDATE_ORDER_DIVDEATH"))) {
+			orderedCells.addAll(divisionCells);
+			orderedCells.addAll(deathCells);
+			System.out.println("orderedCells: " + orderedCells);
 		}
+		else if (order.equals(Txt.get("s_TAB_EPIUPDATE_ORDER_DEATHDIV"))) {
+			orderedCells.addAll(deathCells);
+			orderedCells.addAll(divisionCells);
+			System.out.println("orderedCells: " + orderedCells);
+		}
+		else if (order.equals(Txt.get("s_TAB_EPIUPDATE_ORDER_RANDOM"))) {
+			orderedCells.addAll(deathCells);
+			orderedCells.addAll(divisionCells);
+			Collections.shuffle(orderedCells, this.random);
+			System.out.println("orderedCells: " + orderedCells);
+			
+		}
+
+		//TODO FIX-ME
+		for (Tuple2D<Integer> tuple: orderedCells) {
+			
+			if (deathCells.contains(tuple)) {
+			if (this.epithelium.getEpitheliumEvents().getDeathOption().equals(Txt.get("s_TAB_EPIUPDATE_CELLDEATH_EMPTY"))) {
+				nextGrid.setAbstractCell((int) tuple.getX(), (int) tuple.getY(), CellFactory.newEmptyCell());
+				System.out.println("going to kill: " + tuple);
+				}
+			else if (this.epithelium.getEpitheliumEvents().getDeathOption().equals(Txt.get("s_TAB_EPIUPDATE_CELLDEATH_PERMANENT")))
+				nextGrid.setAbstractCell((int) tuple.getX(), (int) tuple.getY(), CellFactory.newDeadCell());
+			else if (this.epithelium.getEpitheliumEvents().getDeathOption().equals(Txt.get("s_TAB_EPIUPDATE_CELLDEATH_RANDOM"))) {
+				List<Boolean> randomSel = new ArrayList<Boolean>();
+				randomSel.add(true);
+				randomSel.add(false);
+				Collections.shuffle(randomSel, this.random);
+				if (randomSel.get(0))	
+					nextGrid.setAbstractCell((int) tuple.getX(), (int) tuple.getY(), CellFactory.newDeadCell());
+				else 
+					nextGrid.setAbstractCell((int) tuple.getX(), (int) tuple.getY(), CellFactory.newEmptyCell());
+			}
+		}
+			else if (divisionCells.contains(tuple)){
+//				System.out.println("empty: " + this.epithelium.getEpitheliumGrid().getEmptyCells());
+				if (nextGrid.getEmptyCells().size()>1) {
+					System.out.println("There are empty Cells");
+				Tuple2D sisterTuple = getSisterPosition(tuple, nextGrid.getEmptyCells());
+				LivingCell c = (LivingCell) nextGrid.getAbstCell(tuple.getX(), tuple.getY());
+				if ((int) sisterTuple.getX()!=-1) {
+					System.out.println("There is at least one cell within range");
+					System.out.println("DivisionOption" + this.epithelium.getEpitheliumEvents().getDivisionOption());
+				if (this.epithelium.getEpitheliumEvents().getDivisionOption().equals(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_SAME"))) {
+					nextGrid.setAbstractCell((int) sisterTuple.getX(), (int) sisterTuple.getY(), c);
+					System.out.println("SAME STATE");
+					}
+				
+				else if (this.epithelium.getEpitheliumEvents().getDivisionOption().equals(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_NAIVE"))) {
+					LivingCell newCell = CellFactory.newLivingCell(c.getModel());
+					nextGrid.setAbstractCell((int) sisterTuple.getX(), (int) sisterTuple.getY(), newCell);
+					nextGrid.setAbstractCell((int) tuple.getX(), (int) tuple.getY(), newCell);
+					System.out.println("NAIVE STATE");
+				}
+				else if (this.epithelium.getEpitheliumEvents().getDivisionOption().equals(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_PREDEFINED"))) {
+					LivingCell newCell = CellFactory.newLivingCell(c.getModel());
+					newCell.setState(this.epithelium.getEpitheliumEvents().getMCE(newCell.getModel()).getNewCellState());
+					nextGrid.setAbstractCell((int) sisterTuple.getX(), (int) sisterTuple.getY(), newCell);
+					nextGrid.setAbstractCell((int) tuple.getX(), (int) tuple.getY(), newCell);
+					System.out.println("PREDEFINED STATE");
+				}
+				else if (this.epithelium.getEpitheliumEvents().getDivisionOption().equals(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_RANDOM"))) {
+					System.out.println("RANDOMN STATE");
+					List<Boolean> randomSel = new ArrayList<Boolean>();
+					randomSel.add(true);
+					randomSel.add(false);
+					Collections.shuffle(randomSel, this.random);
+					if (randomSel.get(0))	{//NAIVE
+						LivingCell newCell = CellFactory.newLivingCell(c.getModel());
+						nextGrid.setAbstractCell((int) sisterTuple.getX(), (int) sisterTuple.getY(), newCell);
+						nextGrid.setAbstractCell((int) tuple.getX(), (int) tuple.getY(), newCell);
+					}
+					
+					else 
+						{//SAME
+						nextGrid.setAbstractCell((int) sisterTuple.getX(), (int) sisterTuple.getY(), c);
+						}
+				}
+			}}
+			}}
+				
 		
 		this.gridHistory.add(nextGrid);
 		if (this.gridHashHistory != null) {
 			this.gridHashHistory.add(nextGrid.hashGrid());
 		}
 		return nextGrid;
+	}
+
+	private Tuple2D getSisterPosition(Tuple2D<Integer> tuple, List<Tuple2D> emptyCells) {
+		// TODO Random Algorithm
+		//ADD viewing range (make sure that there is an empty cell in a given range
+		Collections.shuffle(emptyCells, this.random);
+		return emptyCells.get(0) ;
 	}
 
 	private List<Tuple2D> getProportionOfCells(List<Tuple2D> livingCells, float value) {
