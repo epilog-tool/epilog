@@ -27,5 +27,9 @@ public abstract class AbstractCell{
 	}
 	
 	public abstract AbstractCell clone();
+	
+	public String refString() {
+		return this.name + "[" + Integer.toHexString(System.identityHashCode(this)) + "]";
+	}
 
 }

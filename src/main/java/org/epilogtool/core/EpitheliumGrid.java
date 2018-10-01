@@ -31,8 +31,8 @@ public class EpitheliumGrid {
 	private Map<String, Map<Byte, Float>> compPercents;
 
 	
-	private Map<LogicalModel, List<Tuple2D>> livingCellsPerModel;
-	private List<Tuple2D> lstEmptyCells;
+	private Map<LogicalModel, List<Tuple2D<Integer>>> livingCellsPerModel;
+	private List<Tuple2D<Integer>> lstEmptyCells;
 
 	private EpitheliumGrid(AbstractCell[][] gridEpiCell, Topology topology, Set<LogicalModel> modelSet,
 			Map<String, Map<Byte, Integer>> compCounts, Map<String, Map<Byte, Float>> compPercents) {
@@ -43,8 +43,8 @@ public class EpitheliumGrid {
 		this.compCounts = compCounts;
 		this.compPercents = compPercents;
 		
-		this.livingCellsPerModel = new HashMap<LogicalModel,List<Tuple2D>>();
-		this.lstEmptyCells = new ArrayList<Tuple2D>();
+		this.livingCellsPerModel = new HashMap<LogicalModel,List<Tuple2D<Integer>>>();
+		this.lstEmptyCells = new ArrayList<Tuple2D<Integer>>();
 	}
 	
 	//The user may have edited one of the parameters of the grid, meaning that one of the epithelium parameters has changed.
@@ -85,8 +85,8 @@ public class EpitheliumGrid {
 		
 		this.modelSet = new HashSet<LogicalModel>();
 		
-		this.livingCellsPerModel = new HashMap<LogicalModel,List<Tuple2D>>();
-		this.lstEmptyCells = new ArrayList<Tuple2D>();
+		this.livingCellsPerModel = new HashMap<LogicalModel,List<Tuple2D<Integer>>>();
+		this.lstEmptyCells = new ArrayList<Tuple2D<Integer>>();
 		
 		if (c.isLivingCell()) {
 			this.modelSet.add(((LivingCell) c).getModel());
@@ -367,13 +367,19 @@ public class EpitheliumGrid {
 		Set<LogicalModel> newModelSet = new HashSet<LogicalModel>(this.modelSet);
 		Map<String, Map<Byte, Integer>> newCompCounts = new HashMap<String, Map<Byte, Integer>>(this.compCounts);
 		Map<String, Map<Byte, Float>> newCompPercents = new HashMap<String, Map<Byte, Float>>(this.compPercents);
-		EpitheliumGrid newGrid = new EpitheliumGrid(this.gridCells.clone(), newTop, newModelSet, newCompCounts, newCompPercents);
+		EpitheliumGrid newGrid = new EpitheliumGrid(new AbstractCell[this.getX()][this.getY()], newTop, newModelSet,
+				 newCompCounts, newCompPercents);
+//		System.out.println("1: " + this.getAbstCell(0, 0).refString());
 		// Deep copy
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
-				newGrid.setAbstractCell(x, y, this.gridCells[x][y].clone());
+				newGrid.setAbstractCell(x, y, this.getAbstCell(x, y).clone());
 			}
 		}
+//		System.out.println("2: " + newGrid.getAbstCell(0, 0).refString());
+//		newGrid.setAbstractCell(0, 0, CellFactory.newInvalidCell());
+//		System.out.println("3: " + newGrid.getAbstCell(0, 0).refString());
+//		System.out.println("4: " + this.getAbstCell(0, 0).refString());
 		return newGrid;
 	}
 
@@ -479,13 +485,13 @@ public class EpitheliumGrid {
 	public void setAbstractCell(int x, int y, AbstractCell c) {
 
 		this.gridCells[x][y] = c;	
-		Tuple2D tuple = new Tuple2D(x,y);
-		
+		Tuple2D<Integer> tuple = new Tuple2D<Integer>(x,y);
+
 		if (c.isLivingCell()) {
 			LivingCell lCell = (LivingCell) c;
 			LogicalModel model = lCell.getModel();
 			if (!this.livingCellsPerModel.containsKey(model)) {
-				this.livingCellsPerModel.put(model,  new ArrayList<Tuple2D>());
+				this.livingCellsPerModel.put(model,  new ArrayList<Tuple2D<Integer>>());
 			}
 			if (!this.livingCellsPerModel.get(model).contains(tuple))
 				this.livingCellsPerModel.get(model).add(tuple);
@@ -496,29 +502,34 @@ public class EpitheliumGrid {
 			if (!this.lstEmptyCells.contains(tuple))
 				this.lstEmptyCells.add(tuple);
 			for (LogicalModel model: this.livingCellsPerModel.keySet()) {
-			if (this.livingCellsPerModel.get(model).contains(tuple))
-				this.livingCellsPerModel.get(model).remove(tuple);
+				if (this.livingCellsPerModel.get(model).contains(tuple))
+					this.livingCellsPerModel.get(model).remove(tuple);
 			}
 		}
 		else if (!c.isEmptyCell() && !c.isLivingCell()) {
 			if (!this.lstEmptyCells.contains(tuple))
 				this.lstEmptyCells.remove(tuple);
 			for (LogicalModel model: this.livingCellsPerModel.keySet()) {
-			if (this.livingCellsPerModel.get(model).contains(tuple))
-				this.livingCellsPerModel.get(model).remove(tuple);
-		}}
+				if (this.livingCellsPerModel.get(model).contains(tuple))
+					this.livingCellsPerModel.get(model).remove(tuple);
+			}
+		}
+//		System.out.println("6: " + newGrid.getAbstCell(0, 0).getName());
+//		newGrid.setAbstractCell(0, 0, CellFactory.newInvalidCell());
+//		System.out.println("7: " + newGrid.getAbstCell(0, 0).getName());
+//		System.out.println("8: " + this.getAbstCell(0, 0).getName());
 	}
 	
-	public List<Tuple2D> getLivingCells(LogicalModel model){
+	public List<Tuple2D<Integer>> getLivingCells(LogicalModel model){
 		return this.livingCellsPerModel.get(model);
 	}
 	
-	public List<Tuple2D> getEmptyCells(){
+	public List<Tuple2D<Integer>> getEmptyCells(){
 		return this.lstEmptyCells;
 	}
 	
-	public List<Tuple2D> getAllLivingCells(){
-		List<Tuple2D> allLivingCells = new ArrayList<Tuple2D>();
+	public List<Tuple2D<Integer>> getAllLivingCells(){
+		List<Tuple2D<Integer>> allLivingCells = new ArrayList<Tuple2D<Integer>>();
 		for (LogicalModel model: this.livingCellsPerModel.keySet()) {
 			allLivingCells.addAll(this.livingCellsPerModel.get(model));
 		}

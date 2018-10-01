@@ -66,6 +66,7 @@ public class Epithelium {
 	}
 
 	public Epithelium clone() {
+//		System.out.println("clone1");
 		return new Epithelium("CopyOf_" + this.name, this.grid.clone(), this.integrationFunctions.clone(),
 				this.priorities.clone(), this.perturbations.clone(), this.updateSchemeInter.clone(), this.epitheliumEvents.clone());
 	}

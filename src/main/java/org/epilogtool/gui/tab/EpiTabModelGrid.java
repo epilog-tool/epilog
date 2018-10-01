@@ -37,7 +37,6 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 	private VisualGridModel visualGridModel;
 	private Map<JRadioComponentButton, JButton> mapSBMLMiniPanels;
-//	private AbstractCell[][] cellGridClone;
 	private EpitheliumGrid epiGridClone;
 	private JPanel jpModelSelection;
 	private JPanel jpModelsUsed;
@@ -56,9 +55,8 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		this.center.setLayout(new BorderLayout());
 
 		this.mapSBMLMiniPanels = new HashMap<JRadioComponentButton, JButton>();
-		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
-		this.epiGridClone = grid.clone();
-//		this.cellGridClone = new AbstractCell[grid.getX()][grid.getY()];
+		this.epiGridClone = this.epithelium.getEpitheliumGrid().clone();
+//		System.out.println("clone14");
 
 		// Panel with the model selection
 		this.jpModelSelection = new JPanel(new GridBagLayout());
@@ -113,11 +111,12 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		this.center.add(left, BorderLayout.LINE_START);
 
 		this.tpc = new TabProbablyChanged();
-		//CHANGE THE VISUALGIRDMODELXs
-		this.visualGridModel = new VisualGridModel(this.epithelium.getEpitheliumGrid().getX(),
-				this.epithelium.getEpitheliumGrid().getY(), this.epithelium.getEpitheliumGrid().getTopology(),
-				this.epiGridClone.clone(), this.gridInfo, this.tpc, this.jpModelsUsed);
+		//CHANGE THE VISUALGRIDMODELXs
+		this.visualGridModel = new VisualGridModel(this.epiGridClone.getX(),
+				this.epiGridClone.getY(), this.epiGridClone.getTopology(),
+				this.epiGridClone, this.gridInfo, this.tpc, this.jpModelsUsed);
 		this.center.add(this.visualGridModel, BorderLayout.CENTER);
+//		System.out.println("clone15");
 
 		this.buttonReset();
 		this.updateModelList();
@@ -185,6 +184,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		for (int x = 0; x < this.epiGridClone.getCellGrid().length; x++) {
 			for (int y = 0; y < this.epiGridClone.getCellGrid()[0].length; y++) {
 				if (this.epiGridClone.getCellGrid()[x][y].isLivingCell()) {
+//					System.out.println("clone16");
 					LivingCell lCell = (LivingCell) this.epiGridClone.getCellGrid()[x][y];
 					if (!Project.getInstance().getProjectFeatures().hasModel(lCell.getModel())) {
 						lCell.setModel(Project.getInstance().getProjectFeatures().getModel(defaultModel));
@@ -195,7 +195,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		}
 		visualGridModel.setSelModelName(null);
 		this.revalidate();
-		// this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
+	
 	}
 
 	/**
@@ -232,10 +232,12 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 	
 	@Override
 	protected void buttonReset() {
+//		System.out.println(this.epithelium.getEpitheliumGrid().getAbstCell(0,0));
 		// Cancel Models
 		for (int x = 0; x < this.epiGridClone.getCellGrid().length; x++) {
 			for (int y = 0; y < this.epiGridClone.getCellGrid()[0].length; y++) {
 				this.epiGridClone.setAbstractCell(x,y,this.epithelium.getEpitheliumGrid().getAbstCell(x,y));
+//				System.out.println("clone17");
 			}
 		}
 		this.visualGridModel.paintComponent(this.visualGridModel.getGraphics());
@@ -244,11 +246,13 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 	@Override
 	protected void buttonAccept() {
+		
+//		System.out.println("I accepted");
 		boolean isEmptyGrid = true;
 		for (int x = 0; x < this.epiGridClone.getCellGrid().length; x++) {
 			for (int y = 0; y < this.epiGridClone.getCellGrid()[0].length; y++) {
+//				System.out.println("clone18");
 				if (this.epiGridClone.getCellGrid()[x][y].isLivingCell()){
-//				if (Project.getInstance().getProjectFeatures().getModelName(this.cellGridClone[x][y]) != null) {
 					isEmptyGrid = false;
 					// FIXME: this should break 2 for's right?
 				}
@@ -264,6 +268,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 			for (int y = 0; y < this.epiGridClone.getCellGrid()[0].length; y++) {
 				if (!this.epithelium.getEpitheliumGrid().getAbstCell(x, y).equals(this.epiGridClone.getCellGrid()[x][y])) {
 					this.epithelium.getEpitheliumGrid().setAbstractCell(x, y, this.epiGridClone.getCellGrid()[x][y]);
+// 					System.out.println("clone19");
 				}
 			}
 		}
@@ -294,15 +299,18 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 
 	@Override
 	protected boolean isChanged() {
-		// ------------------ Models were added/removed to the model list
-		if (this.epiGridClone.getCellGrid().length != this.epithelium.getX()
-				|| this.epiGridClone.getCellGrid()[0].length != this.epithelium.getY()) {
-			return true;
-		}
+
+		
 		// ------------------ Models were added/removed to the grid
 		for (int x = 0; x < this.epiGridClone.getCellGrid().length; x++) {
 			for (int y = 0; y < this.epiGridClone.getCellGrid()[0].length; y++) {
+//				System.out.println("clone20");
+//				System.out.println(x);
+//				System.out.println(this.epiGridClone.getCellGrid()[x][y].getName());
+//				System.out.println(this.epithelium.getEpitheliumGrid().getAbstCell(x, y).getName());
+				
 				if (!this.epiGridClone.getCellGrid()[x][y].getName().equals(this.epithelium.getEpitheliumGrid().getAbstCell(x, y).getName())) {
+//					System.out.println("Grid has changed:  Cell changed type");
 					return true;
 				}
 					else  if (this.epiGridClone.getCellGrid()[x][y].isLivingCell()) {

@@ -118,6 +118,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.mNodeID2JBColor = new HashMap<String, JButton>();
 
 		this.simulation = new Simulation(this.epithelium.clone());
+
 		this.gridInformation = new GridInformation(this.epithelium.getIntegrationFunctions());
 		this.nodesSelected = new HashSet<String>();
 
@@ -400,6 +401,7 @@ public class EpiTabSimulation extends EpiTabTools {
 	protected void restartSimulationTab() {
 
 		this.simulation = new Simulation(this.epithelium.clone());
+
 		this.simulationRewind();
 
 		for (int i = 0; i < this.south.getComponentCount(); i++) {
@@ -500,11 +502,6 @@ public class EpiTabSimulation extends EpiTabTools {
 			this.jbSelectAll.setEnabled(true);
 		}
 
-		// for (int i = lInputs.size() - 1; i >= 0; i--) {
-		// if (this.epithelium.isIntegrationComponent(lInputs.get(i))) {
-		// lInputs.remove(i);
-		// }
-		// }
 
 		updateSelectedNodes(lInternal, lInputs);
 

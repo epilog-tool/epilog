@@ -89,6 +89,7 @@ public class ModelCellularEvent {
 	}
 	
 	public boolean equals(Object o) {
+	
 		
 		ModelCellularEvent mce = (ModelCellularEvent) o ;
 		

@@ -19,7 +19,6 @@ import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.EpitheliumGrid;
-import org.epilogtool.core.cell.AbstractCell;
 import org.epilogtool.core.cell.CellFactory;
 import org.epilogtool.core.cell.LivingCell;
 import org.epilogtool.core.topology.Topology;
@@ -29,7 +28,6 @@ import org.epilogtool.project.Project;
 public class VisualGridModel extends VisualGridDefinitions {
 	private static final long serialVersionUID = -8878704517273291774L;
 
-//	private AbstractCell[][] cellGridClone;
 	private EpitheliumGrid epiGridClone;
 	private String selModelName;
 	private boolean isRectFill;
@@ -40,7 +38,7 @@ public class VisualGridModel extends VisualGridDefinitions {
 	public VisualGridModel(int gridX, int gridY, Topology topology, EpitheliumGrid epiGrid,
 			GridInformation valuePanel, TabProbablyChanged tpc, JPanel jpModelsUsed) {
 		super(gridX, gridY, topology, tpc);
-		this.epiGridClone = epiGrid.clone();
+		this.epiGridClone = epiGrid;
 		this.selModelName = null;
 		this.isRectFill = false;
 		this.initialRectPos = null;
@@ -118,7 +116,6 @@ public class VisualGridModel extends VisualGridDefinitions {
 			for (int y = 0; y < this.gridY; y++) {
 				gbc.gridy = i;
 				i++;
-				// gbc.anchor = GridBagConstraints.WEST;
 		
 				if (this.epiGridClone.getAbstCell(x, y).isLivingCell()){
 					LogicalModel model =((LivingCell) (this.epiGridClone.getAbstCell(x, y))).getModel();
@@ -214,13 +211,8 @@ public class VisualGridModel extends VisualGridDefinitions {
 			this.tpc.setChanged();
 		}
 		this.epiGridClone.setAbstractCell(x, y, CellFactory.newLivingCell(Project.getInstance().getModel(this.selModelName)));
-//		System.out.println("applyDataAtI " + Project.getInstance().getModel(this.selModelName));
 	}
 	
 	updateModelUsed();
-	
-//	System.out.println("applyDataAt " + this.selModelName);
-//	System.out.println("applyDataAt " + this.cellGridClone[x][y]);
-//	
 	}
 }

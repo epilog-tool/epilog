@@ -398,7 +398,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		}
 		else {
 			this.mName2JRBdeath.get(Txt.get("s_TAB_EVE_TRIGGER_NONE")).setSelected(true);
-			this.epithelium.getEpitheliumEvents().setDeathTrigger(this.selModel,Txt.get("s_TAB_EVE_TRIGGER_NONE"));
+			this.epiEventClone.setDeathTrigger(this.selModel,Txt.get("s_TAB_EVE_TRIGGER_NONE"));
 		}
 		
 		this.jpTriggerDeath.add(this.auxDeathPanel, BorderLayout.SOUTH);
@@ -499,7 +499,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		this.epithelium.getEpitheliumEvents().setDeathPattern(model, mce.getDeathPattern());
 		this.epithelium.getEpitheliumEvents().setDivisionPattern(model, mce.getDivisionPattern());
 		//TODO
-		this.epithelium.getEpitheliumEvents().setDivisionNewState(model, null);
+		this.epithelium.getEpitheliumEvents().setDivisionNewState(model,mce.getNewCellState());
 
 		
 //		System.out.println("3 " + this.epithelium.getEpitheliumEvents().getMCE(model).getDeathTrigger());

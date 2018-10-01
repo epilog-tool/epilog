@@ -36,6 +36,7 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 		this.model2MCE = model2MCE;
 		
 		for (LogicalModel model: modelList) {
+			addModel2MCE(model);
 			this.setModel2MCE(model, model2MCE.get(model).clone());
 		}
 }

@@ -107,8 +107,6 @@ public abstract class EpiTabDefinitions extends EpiTab {
 
 	public class TabProbablyChanged {
 		
-		
-		
 		public void setChanged() {
 			((ModificationsPanel) south).buttonEnable(true);
 		}
