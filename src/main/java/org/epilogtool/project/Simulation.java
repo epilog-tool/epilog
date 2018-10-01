@@ -356,19 +356,15 @@ public class Simulation {
 		AbstractPerturbation ap = currGrid.getPerturbation(x, y);
 		PriorityUpdater updater = this.updaterCache.get(m).get(ap);
 
-		System.out.println("x1: " +x);
-		System.out.println("y1: " +y);
-		System.out.println(currGrid.getAbstCell(x, y).getName());
 		
 		// 2. Update integration components
 		for (NodeInfo node :this.epithelium.getIntegrationNodes()) {
 			if (m.getComponents().contains(node)) {
 			if (node.isInput() && sNodeInfos.contains(node)) {
-				System.out.println("NODE: " + node.getNodeID());
+
 				List<IntegrationFunctionExpression> lExpressions = this.epithelium
 						.getIntegrationFunctionsForComponent(node).getComputedExpressions();
 				byte target = 0;
-				System.out.println(lExpressions);
 				for (int i = 0; i < lExpressions.size(); i++) {
 					if (evaluator.evaluate(x, y, lExpressions.get(i))) {
 						target = (byte) (i + 1);

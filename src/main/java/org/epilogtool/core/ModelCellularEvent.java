@@ -108,7 +108,6 @@ public class ModelCellularEvent {
 		if (!this.newCellState.equals(mce.getNewCellState())) {
 			return false;		}
 		
-		
 		return true;
 	}
 	

@@ -111,8 +111,8 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		
 		for (LogicalModel model: modelList) {
 			List<SliderPanel> sp = mModel2lsSPanel.get(model);
-			sp.get(1).setValue(this.epithelium.getEpitheliumEvents().getDivisionValue(model));
-			sp.get(0).setValue(this.epithelium.getEpitheliumEvents().getMCE(model).getDeathValue());
+			sp.get(1).setValue((int) this.epithelium.getEpitheliumEvents().getDivisionValue(model));
+			sp.get(0).setValue((int) this.epithelium.getEpitheliumEvents().getMCE(model).getDeathValue());
 		}
 		
 		this.epiEventClone = this.epithelium.getEpitheliumEvents().clone();
@@ -416,22 +416,41 @@ public class EpiTabEvents extends EpiTabDefinitions {
 	public void updateSliderValues(JSlider slider) {
 		if (this.isInitialized)
 			tpc.setChanged();
-		
+			
 		SliderPanel spDeath = this.mModel2lsSPanel.get(this.selModel).get(0);
 		SliderPanel spDivision = this.mModel2lsSPanel.get(this.selModel).get(1);
 		
+
+//		System.out.println("Death value at the beggining: "+spDeath.getValue());
+//		System.out.println("Division value at the beggining "+spDivision.getValue());
+
+		
 		if (spDeath.getValue() + spDivision.getValue()>100) {
+//			System.out.println("Added value: "+(spDeath.getValue() + spDivision.getValue()));
 			if (slider.getName().equals(Txt.get("s_TAB_EVE_DIVISION"))){
-				spDeath.setValue(100-(int) spDivision.getValue());
+//				spDeath.setValue(100-spDivision.getValue());
+				int a = (int) (100-spDivision.getValue());
+//				System.out.println("Moved the division, and the new  value is: "+spDivision.getValue());
+				spDeath.setValue(a);
+//				System.out.println("Death value at the after setting: "+spDeath.getValue());
+//				System.out.println("Division value at the after setting "+spDivision.getValue());
 			}
 			else if (slider.getName().equals(Txt.get("s_TAB_EVE_DEATH"))){
-				spDivision.setValue(100-(int) spDeath.getValue());
+				
+				int a = (int) (100-spDeath.getValue());
+//				System.out.println("Moved the death, and the new  value is: "+spDeath.getValue());
+				spDivision.setValue(a);
+//				System.out.println("Death value at the after setting: "+spDeath.getValue());
+//				System.out.println("Division value at the after setting "+spDivision.getValue());
 			}
 //		}
 		}
 		
 		float valueDivision = (float) spDivision.getValue() / 100;
 		float valueDeath = (float) spDeath.getValue() / 100;
+		
+//		System.out.println("4 DEATH VALUE: "+spDeath.getValue());
+//		System.out.println("4 Division VALUE: "+spDivision.getValue());
 		
 		
 		spDeath.setText(""+valueDeath);

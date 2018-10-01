@@ -63,7 +63,6 @@ public class Project {
 
 	public Epithelium cloneEpithelium(Epithelium epi) {
 		Epithelium epiClone = epi.clone();
-		System.out.println("clone2");
 		String name = this.getNextAvailableName(epi.getName());
 		epiClone.setName(name);
 		this.epitheliumList.add(epiClone);

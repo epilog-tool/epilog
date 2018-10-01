@@ -369,17 +369,13 @@ public class EpitheliumGrid {
 		Map<String, Map<Byte, Float>> newCompPercents = new HashMap<String, Map<Byte, Float>>(this.compPercents);
 		EpitheliumGrid newGrid = new EpitheliumGrid(new AbstractCell[this.getX()][this.getY()], newTop, newModelSet,
 				 newCompCounts, newCompPercents);
-//		System.out.println("1: " + this.getAbstCell(0, 0).refString());
 		// Deep copy
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
 				newGrid.setAbstractCell(x, y, this.getAbstCell(x, y).clone());
 			}
 		}
-//		System.out.println("2: " + newGrid.getAbstCell(0, 0).refString());
-//		newGrid.setAbstractCell(0, 0, CellFactory.newInvalidCell());
-//		System.out.println("3: " + newGrid.getAbstCell(0, 0).refString());
-//		System.out.println("4: " + this.getAbstCell(0, 0).refString());
+
 		return newGrid;
 	}
 
@@ -514,10 +510,7 @@ public class EpitheliumGrid {
 					this.livingCellsPerModel.get(model).remove(tuple);
 			}
 		}
-//		System.out.println("6: " + newGrid.getAbstCell(0, 0).getName());
-//		newGrid.setAbstractCell(0, 0, CellFactory.newInvalidCell());
-//		System.out.println("7: " + newGrid.getAbstCell(0, 0).getName());
-//		System.out.println("8: " + this.getAbstCell(0, 0).getName());
+
 	}
 	
 	public List<Tuple2D<Integer>> getLivingCells(LogicalModel model){

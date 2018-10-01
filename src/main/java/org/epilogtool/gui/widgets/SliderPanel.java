@@ -87,9 +87,11 @@ public class SliderPanel extends JPanel {
 	protected void updateSliderValues(JSlider slide) {
 		if (!this.epiTab.isInitialized()) // FIXME
 			return;
-		if (this.name.equals(Txt.get("s_TAB_EVE_DEATH")) ||  (this.name.equals(Txt.get("s_TAB_EVE_DIVISION"))))
+		if (this.name.equals(Txt.get("s_TAB_EVE_DEATH")) ||  (this.name.equals(Txt.get("s_TAB_EVE_DIVISION")))) {
+//			System.out.println("Changed the value on the slider: " + slide.getValue());
 			((EpiTabEvents) this.epiTab).updateSliderValues(slide);
-	}
+		
+	}}
 
 	public float getValue() {
 		return this.jsProb.getValue();
@@ -110,8 +112,9 @@ public class SliderPanel extends JPanel {
 		return this.probMin;
 	}
 
-	public void setValue(float f) {
-		this.jsProb.setValue((int) (f*100));
+	public void setValue(int f) {
+//		System.out.println("received the value to change: " + f);
+		this.jsProb.setValue((int) (f));
 	}
 
 	public void setText(String string) {
