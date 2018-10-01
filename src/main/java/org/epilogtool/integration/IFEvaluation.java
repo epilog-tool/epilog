@@ -1,11 +1,13 @@
 package org.epilogtool.integration;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.Epithelium;
@@ -133,7 +135,10 @@ public class IFEvaluation {
 
 			for (Tuple2D<Integer> tuple : positionNeighbours) {
 				if (this.epithelium.getEpitheliumGrid().getAbstCell(tuple.getX(), tuple.getY()).isLivingCell()) {
-				List<NodeInfo> lNodes = this.neighboursGrid.getModel(tuple.getX(), tuple.getY()).getComponents();
+					List<NodeInfo> lNodes = new ArrayList<NodeInfo>();
+					if (this.neighboursGrid.getAbstCell(tuple.getX(), tuple.getY()).isLivingCell()){
+						lNodes = this.neighboursGrid.getModel(tuple.getX(), tuple.getY()).getComponents();
+					}
 				for (int n = 0; n < lNodes.size(); n++) {
 					if (node.getNodeID().equals(lNodes.get(n).getNodeID())) {
 						byte state = this.neighboursGrid.getCellState(tuple.getX(), tuple.getY())[n];
