@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.epilogtool.FileUtils;
+import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.cell.LivingCell;
 import org.epilogtool.io.FileIO;
 import org.epilogtool.project.Project;
@@ -40,7 +41,7 @@ public class EpitheliumCellTest {
 	public void cleanSlateTest() {
 		Epithelium epi = Project.getInstance().getEpitheliumList().get(0);
 		LogicalModel m = epi.getModel(0, 0);
-		LivingCell epicell = new LivingCell(m);
+		LivingCell epicell = new LivingCell(new Tuple2D<Integer>(0,0),m);
 		
 		assertNull(epicell.getPerturbation());
 		byte[] state = epicell.getState();
@@ -56,7 +57,7 @@ public class EpitheliumCellTest {
 	public void cloneTest() {
 		Epithelium epi = Project.getInstance().getEpitheliumList().get(0);
 		LogicalModel m = epi.getModel(0, 0);
-		LivingCell epicell = new LivingCell(m);
+		LivingCell epicell = new LivingCell(new Tuple2D<Integer>(0,0),m);
 
 		LivingCell clone = epicell.clone();
 		assertEquals(clone.getModel(), epicell.getModel());
