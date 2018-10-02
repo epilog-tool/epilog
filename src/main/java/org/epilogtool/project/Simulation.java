@@ -247,7 +247,6 @@ public class Simulation {
 			if (deathCells.contains(tuple)) {
 			if (this.epithelium.getEpitheliumEvents().getDeathOption().equals(Txt.get("s_TAB_EPIUPDATE_CELLDEATH_EMPTY"))) {
 				nextGrid.setAbstractCell((int) tuple.getX(), (int) tuple.getY(), CellFactory.newEmptyCell());
-//				System.out.println("going to kill: " + tuple);
 				}
 			else if (this.epithelium.getEpitheliumEvents().getDeathOption().equals(Txt.get("s_TAB_EPIUPDATE_CELLDEATH_PERMANENT")))
 				nextGrid.setAbstractCell((int) tuple.getX(), (int) tuple.getY(), CellFactory.newDeadCell());
@@ -263,24 +262,18 @@ public class Simulation {
 			}
 		}
 			else if (divisionCells.contains(tuple)){
-//				System.out.println("empty: " + this.epithelium.getEpitheliumGrid().getEmptyCells());
 				if (nextGrid.getEmptyCells().size()>0) {
-//					System.out.println("There are empty Cells");
 				Tuple2D<Integer> sisterTuple = getSisterPosition(tuple, nextGrid.getEmptyCells());
 				LivingCell c = (LivingCell) nextGrid.getAbstCell(tuple.getX(), tuple.getY());
 				if ((int) sisterTuple.getX()!=-1) {
-//					System.out.println("There is at least one cell within range");
-//					System.out.println("DivisionOption" + this.epithelium.getEpitheliumEvents().getDivisionOption());
 				if (this.epithelium.getEpitheliumEvents().getDivisionOption().equals(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_SAME"))) {
 					nextGrid.setAbstractCell((int) sisterTuple.getX(), (int) sisterTuple.getY(), c);
-//					System.out.println("SAME STATE");
 					}
 				
 				else if (this.epithelium.getEpitheliumEvents().getDivisionOption().equals(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_NAIVE"))) {
 					LivingCell newCell = CellFactory.newLivingCell(c.getModel());
 					nextGrid.setAbstractCell((int) sisterTuple.getX(), (int) sisterTuple.getY(), newCell);
 					nextGrid.setAbstractCell((int) tuple.getX(), (int) tuple.getY(), newCell);
-//					System.out.println("NAIVE STATE");
 				}
 				else if (this.epithelium.getEpitheliumEvents().getDivisionOption().equals(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_PREDEFINED"))) {
 					LivingCell newCell = CellFactory.newLivingCell(c.getModel());

@@ -338,14 +338,16 @@ public class Parser {
 				currEpi.getEpitheliumEvents().setDeathTrigger(m, sArray[0].replace("[",""));
 				currEpi.getEpitheliumEvents().setDeathValue(m, Float.parseFloat(sArray[1]));
 				currEpi.getEpitheliumEvents().setDeathPattern(m, sArray[2]);
-//				System.out.println("deathpatterh: " + sArray[2]);
 				
 				currEpi.getEpitheliumEvents().setDivisionTrigger(m, sArray[3]);
 				currEpi.getEpitheliumEvents().setDivisionValue(m, Float.parseFloat(sArray[4]));
 				currEpi.getEpitheliumEvents().setDivisionPattern(m, sArray[5]);
-//				System.out.println("divisionpatterh: " + sArray[5]);
 				currEpi.getEpitheliumEvents().setDivisionNewState(m, new byte[m.getComponents().size()]);
 				
+				if (sArray.length>7) {
+				currEpi.getEpitheliumEvents().getMCE(m).setDeathAlgorithm(sArray[7]);
+				currEpi.getEpitheliumEvents().getMCE(m).setDivisionAlgorithm(sArray[8]);
+				}
 				
 			}
 			
@@ -656,7 +658,10 @@ public class Parser {
 			paramList.add(mce.getDivisionTrigger());
 			paramList.add(""+mce.getDivisionValue());
 			paramList.add(mce.getDivisionPattern());
-			paramList.add(""+mce.getNewCellState());
+			paramList.add(Arrays.toString(mce.getNewCellState()));
+			
+			paramList.add(mce.getDeathAlgorithm());
+			paramList.add(mce.getDivisionAlgorithm());
 	
 			w.println("CE " + model2Key.get(name) + " [" + join(paramList,";") +"]");
 		}

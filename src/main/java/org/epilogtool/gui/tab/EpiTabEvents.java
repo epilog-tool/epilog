@@ -25,6 +25,8 @@ import javax.swing.tree.TreePath;
 import org.antlr.runtime.RecognitionException;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
+import org.epilogtool.common.EnumRandomSeed;
+import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
@@ -151,10 +153,14 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		///Right PANEL
 		jpRight.setLayout(new BoxLayout(jpRight, BoxLayout.Y_AXIS));
 		
-		//DIVISION_PANEL
 		
-		this.jpDivision = new JPanel();
+		//************************************
+		//****************** DIVISION Panel **
+		//************************************
+		
+		this.jpDivision = new JPanel(new BorderLayout());
 		JPanel jpTriggerDivisionOptions = new JPanel();
+		jpTriggerDivision.setBorder(BorderFactory.createTitledBorder("Trigger"));
 		
 		this.jpDivision.setBorder(BorderFactory.createTitledBorder(Txt.get("s_TAB_EVE_DIVISION")));
 		Map<String, JRadioButton> triggerDivision2Radio = new HashMap<String, JRadioButton>();
@@ -230,19 +236,47 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		SliderPanel spDivision = this.mModel2lsSPanel.get(selModel).get(1);
 		updateAlpha(spDivision.getValue(), spDivision.getLabel(), spDivision.getMin(), spDivision.getMax());
 		
+		
+		//****************** DIVISION ACTION
+		
+		JPanel jpDivisionAction = new JPanel();
+		jpDivisionAction.setBorder(BorderFactory.createTitledBorder("Algorithm"));
+		
+		JLabel jlDivisionAction = new JLabel("Division Algoritm: ");
+		jpDivisionAction.add(jlDivisionAction);
+		
+		JComboBox jcbDivisionAlgorithm = new JComboBox();
+		jpDivisionAction.add(jcbDivisionAlgorithm);
+		
+		jcbDivisionAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_RANDOM"));
+		jcbDivisionAlgorithm.addItem("Compression");
+		
+		jcbDivisionAlgorithm.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				@SuppressWarnings("unchecked")
+				JComboBox jcb = (JComboBox) e.getSource();
+				updateDivisionAction(jcb.getSelectedItem());
+				tpc.setChanged();
+			}
+		});
+		
+		this.jpDivision.add(jpDivisionAction, BorderLayout.CENTER);
+		
 		this.jpDivision.repaint();
 		this.jpDivision.revalidate();
 
 		
-		//DEATH PANEL
+		//****************** DEATH PANEL
 		
-		this.jpDeath = new JPanel();
+		this.jpDeath = new JPanel(new BorderLayout());
 		JPanel jpTriggerDeathOptions = new JPanel();
+		jpTriggerDeath.setBorder(BorderFactory.createTitledBorder("Trigger"));
 		
 		this.jpDeath.setBorder(BorderFactory.createTitledBorder(Txt.get("s_TAB_EVE_DEATH")));
 		Map<String, JRadioButton> triggerDeath2Radio = new HashMap<String, JRadioButton>();
 		
-		//TRIGGERS OPTION
+		//****************** TRIGGERS OPTION
 		
 		ButtonGroup groupDeath = new ButtonGroup();
 		
@@ -298,10 +332,38 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		SliderPanel spDeath = this.mModel2lsSPanel.get(selModel).get(0);
 		updateAlpha(spDeath.getValue(), spDeath.getLabel(), spDeath.getMin(), spDeath.getMax());
 		
+		
+		//****************** DEATH ACTION
+		
+		JPanel jpDeathAction = new JPanel();
+		jpDeathAction.setBorder(BorderFactory.createTitledBorder("Algorithm"));
+		
+		JLabel jlDeathAction = new JLabel("Death Algoritm: ");
+		jpDeathAction.add(jlDeathAction);
+		
+		JComboBox jcbDeathAlgorithm = new JComboBox();
+		jpDeathAction.add(jcbDeathAlgorithm);
+		
+		jcbDeathAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_RANDOM"));
+		jcbDeathAlgorithm.addItem("Compression");
+		
+		jcbDeathAlgorithm.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				@SuppressWarnings("unchecked")
+				JComboBox jcb = (JComboBox) e.getSource();
+				updateDeathAction(jcb.getSelectedItem());
+				tpc.setChanged();
+			}
+		});
+		
+		this.jpDeath.add(jpDeathAction, BorderLayout.CENTER);
+		//************ Death panel repaint/revalidate
+		
 		this.jpDeath.repaint();
 		this.jpDeath.revalidate();
 		
-		//GROUP ALL PANELS
+		//************ Group all panels
 		this.jpRight.add(this.jpDeath);
 		this.jpRight.add(this.jpDivision);
 		this.center.add(left, BorderLayout.LINE_START);
@@ -310,6 +372,14 @@ public class EpiTabEvents extends EpiTabDefinitions {
 	}
 	
 
+
+	protected void updateDeathAction(Object object) {
+		this.epiEventClone.getMCE(this.selModel).setDeathAlgorithm((String) object);
+	}
+	
+	protected void updateDivisionAction(Object object) {
+		this.epiEventClone.getMCE(this.selModel).setDivisionAlgorithm((String) object);
+	}
 
 	protected void validateDeathPattern(JTextField jtf){
 		if (this.isInitialized)

@@ -16,8 +16,11 @@ public class ModelCellularEvent {
 	
 	private byte[] newCellState;
 	
+	private String deathAlgorithm;
+	private String divisionAlgorithm;
+	
 
-	public ModelCellularEvent(float deathValue, float divisionValue, String deathTrigger, String divisionTrigger, String deathPattern, String divisionPattern, byte[] newCellState) {
+	public ModelCellularEvent(float deathValue, float divisionValue, String deathTrigger, String divisionTrigger, String deathPattern, String divisionPattern, byte[] newCellState, String deathAlgorithm, String divisionAlgorithm) {
 
 		this.deathValue  = deathValue;
 		this.divisionValue = divisionValue;
@@ -31,11 +34,14 @@ public class ModelCellularEvent {
 //		this.newCellSate = "";
 		this.newCellState = newCellState;
 		
+		this.deathAlgorithm = deathAlgorithm;
+		this.divisionAlgorithm = divisionAlgorithm;
+		
 	}
 
 
 	public ModelCellularEvent clone() {
-		return new ModelCellularEvent(this.getDeathValue(), this.getDivisionValue(), this.getDeathTrigger(), this.getDivisionTrigger(), this.getDeathPattern(), this.getDivisionPattern(), this.getNewCellState());
+		return new ModelCellularEvent(this.getDeathValue(), this.getDivisionValue(), this.getDeathTrigger(), this.getDivisionTrigger(), this.getDeathPattern(), this.getDivisionPattern(), this.getNewCellState(), this.deathAlgorithm, this.divisionAlgorithm);
 	}
 	public byte[] getNewCellState(){
 		return this.newCellState;
@@ -88,6 +94,16 @@ public class ModelCellularEvent {
 		this.divisionTrigger= trigger;
 	}
 	
+	public String getDeathAlgorithm() {
+		return this.deathAlgorithm;}
+	public void setDeathAlgorithm(String deathAlgorithm) {
+		this.deathAlgorithm = deathAlgorithm;}
+	
+	public String getDivisionAlgorithm() {
+		return this.divisionAlgorithm;}
+	public void setDivisionAlgorithm(String divisionhAlgorithm) {
+		this.deathAlgorithm = divisionAlgorithm;}
+	
 	public boolean equals(Object o) {
 	
 		
@@ -106,6 +122,10 @@ public class ModelCellularEvent {
 		if (!this.divisionPattern.equals(mce.getDivisionPattern())) {
 			return false;		}
 		if (!this.newCellState.equals(mce.getNewCellState())) {
+			return false;		}
+		if (!this.deathAlgorithm.equals(mce.getDeathAlgorithm())) {
+			return false;		}
+		if (!this.divisionAlgorithm.equals(mce.getDivisionAlgorithm())) {
 			return false;		}
 		
 		return true;
