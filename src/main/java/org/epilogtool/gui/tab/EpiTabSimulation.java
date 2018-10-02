@@ -117,7 +117,7 @@ public class EpiTabSimulation extends EpiTabTools {
 		this.mNodeID2Checkbox = new HashMap<String, JCheckBox>();
 		this.mNodeID2JBColor = new HashMap<String, JButton>();
 
-		this.simulation = new Simulation(this.epithelium.clone());
+		this.simulation = new Simulation(this.epithelium);
 
 		this.gridInformation = new GridInformation(this.epithelium.getIntegrationFunctions());
 		this.nodesSelected = new HashSet<String>();
@@ -400,7 +400,9 @@ public class EpiTabSimulation extends EpiTabTools {
 
 	protected void restartSimulationTab() {
 
+//		System.out.println("SimulationClone: restart");
 		this.simulation = new Simulation(this.epithelium.clone());
+
 
 		this.simulationRewind();
 
@@ -715,6 +717,7 @@ public class EpiTabSimulation extends EpiTabTools {
 
 
 	private void cloneEpiWithCurrGrid() {
+//		System.out.println("SimulationClone: cloneEpiWithCurrGrid");
 		this.simEpiClone.cloneEpithelium(this.epithelium, this.simulation.getGridAt(this.iCurrSimIter));
 	}
 

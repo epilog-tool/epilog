@@ -40,6 +40,7 @@ import org.epilogtool.FileSelectionHelper;
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.CurrentOS;
 import org.epilogtool.common.EnumRandomSeed;
+import org.epilogtool.common.Tuple2D;
 import org.epilogtool.common.Txt;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
@@ -283,7 +284,7 @@ public class EpiGUI extends JFrame {
 		if (dialogPanel.isDefined()) {
 			Epithelium newEpi = Project.getInstance().newEpithelium(dialogPanel.getEpitheliumWidth(),
 					dialogPanel.getEpitheliumHeight(), dialogPanel.getTopologyID(), dialogPanel.getEpiName(),
-					CellFactory.newLivingCell(Project.getInstance().getModel(dialogPanel.getSBMLName())),
+					CellFactory.newLivingCell(new Tuple2D<Integer>(0,0),Project.getInstance().getModel(dialogPanel.getSBMLName())),
 					dialogPanel.getRollOver(), EnumRandomSeed.RANDOM, 0);
 			this.addEpithelium2JTree(newEpi);
 		}

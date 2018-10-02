@@ -181,7 +181,7 @@ public class Parser {
 				if (currEpi == null) {
 		
 					currEpi = Project.getInstance().newEpithelium(Integer.parseInt(x), Integer.parseInt(y),
-							topologyLayout, epiName, CellFactory.newEmptyCell(), rollover, randomSeedType,
+							topologyLayout, epiName, CellFactory.newEmptyCell(new Tuple2D<Integer>(0,0)), rollover, randomSeedType,
 							randomSeed);
 				}
 				
@@ -190,17 +190,17 @@ public class Parser {
 					AbstractCell c;
 
 					if (saTmp[1].equals("-1")) {
-						c = CellFactory.newInvalidCell();
+						c = CellFactory.newInvalidCell(new Tuple2D<Integer>(0,0));
 					}
 					else if (saTmp[1].equals("-2")) {
-						c = CellFactory.newDeadCell();
+						c = CellFactory.newDeadCell(new Tuple2D<Integer>(0,0));
 					}
 					else if (saTmp[1].equals("-3")) {
-						c = CellFactory.newEmptyCell();
+						c = CellFactory.newEmptyCell(new Tuple2D<Integer>(0,0));
 					}
 					else{
 						LogicalModel m = Project.getInstance().getModel(modelKey2Name.get(saTmp[1]));
-						c = CellFactory.newLivingCell(m);
+						c = CellFactory.newLivingCell(new Tuple2D<Integer>(0,0),m);
 						currEpi.initPriorityClasses(m);
 					}
 				

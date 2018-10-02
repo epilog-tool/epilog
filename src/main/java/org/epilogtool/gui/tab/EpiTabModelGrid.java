@@ -236,7 +236,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		// Cancel Models
 		for (int x = 0; x < this.epiGridClone.getCellGrid().length; x++) {
 			for (int y = 0; y < this.epiGridClone.getCellGrid()[0].length; y++) {
-				this.epiGridClone.setAbstractCell(x,y,this.epithelium.getEpitheliumGrid().getAbstCell(x,y));
+				this.epiGridClone.setAbstractCell(this.epithelium.getEpitheliumGrid().getAbstCell(x,y));
 //				System.out.println("clone17");
 			}
 		}
@@ -267,7 +267,7 @@ public class EpiTabModelGrid extends EpiTabDefinitions {
 		for (int x = 0; x < this.epiGridClone.getCellGrid().length; x++) {
 			for (int y = 0; y < this.epiGridClone.getCellGrid()[0].length; y++) {
 				if (!this.epithelium.getEpitheliumGrid().getAbstCell(x, y).equals(this.epiGridClone.getCellGrid()[x][y])) {
-					this.epithelium.getEpitheliumGrid().setAbstractCell(x, y, this.epiGridClone.getCellGrid()[x][y]);
+					this.epithelium.getEpitheliumGrid().setAbstractCell(this.epiGridClone.getCellGrid()[x][y]);
 // 					System.out.println("clone19");
 				}
 			}

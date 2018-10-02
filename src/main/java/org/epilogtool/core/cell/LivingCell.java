@@ -2,6 +2,7 @@ package org.epilogtool.core.cell;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.epilogtool.common.Tuple2D;
 import org.epilogtool.common.Txt;
 
 public class LivingCell extends AbstractCell {
@@ -14,11 +15,12 @@ public class LivingCell extends AbstractCell {
 
 	private String eventState; // Death, Divide, or none
 
-	public LivingCell(LogicalModel m) {
+	public LivingCell(Tuple2D<Integer> tuple, LogicalModel m) {
 
 		this.eventState = DEFAULT_EVENTOPTION;
 		this.setModel(m);
 		this.name = Txt.get("s_LIVING_CELL");
+		this.tuple = tuple;
 	}
 
 	public void setEventState(String str) {
@@ -126,6 +128,9 @@ public class LivingCell extends AbstractCell {
 		if (state.length != ecOut.state.length) {
 			return false;
 		}
+		if (!tuple.equals(ecOut.getTuple())) {
+			return false;
+		}
 		for (int i = 0; i < state.length; i++) {
 			if (state[i] != ecOut.state[i]) {
 				return false;
@@ -142,7 +147,7 @@ public class LivingCell extends AbstractCell {
 	}
 
 	public LivingCell clone() {
-		LivingCell newCell = CellFactory.newLivingCell(this.model);
+		LivingCell newCell = CellFactory.newLivingCell((this.getTuple().clone()), this.model);
 		newCell.setState(this.state.clone());
 		newCell.setPerturbation(this.perturbation);
 		return newCell;

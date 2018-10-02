@@ -260,19 +260,17 @@ public class Epithelium {
 		}
 	}
 
-	public void setModel(int x, int y, AbstractCell c) {
-		this.grid.setAbstractCell(x,y,c);
+	public void setModel(AbstractCell c) {
+		this.grid.setAbstractCell(c);
 		update();
 	}
 
 	public void setGridWithCell(AbstractCell c, List<Tuple2D<Integer>> lTuples) {
 		for (Tuple2D<Integer> tuple : lTuples) {
 			AbstractCell newC = c.clone();
-			this.setModel(tuple.getX(), tuple.getY(), newC);
-//			if (c.isLivingCell()) {
-//				LogicalModel model = ((LivingCell) c).getModel();
-//				this.epitheliumEvents.addModel2MCE(model);
-//			}
+			newC.setTuple(tuple);
+			this.setModel(newC);
+
 			
 		}
 		update();

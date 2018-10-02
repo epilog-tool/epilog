@@ -617,7 +617,7 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 				byte[] stateClone = this.epiGridClone.getCellState(x, y);
 				byte[] stateOrig = gridOrig.getCellState(x, y);
 				if (!Arrays.equals(stateOrig, stateClone)) {
-					gridOrig.setAbstractCell(x, y,  epiGridClone.getAbstCell(x, y).clone());
+					gridOrig.setAbstractCell(epiGridClone.getAbstCell(x, y).clone());
 					
 				}
 			}//Ends if Living Cell
@@ -653,10 +653,10 @@ public class EpiTabInitialConditions extends EpiTabDefinitions {
 			for (int y = 0; y < this.epiGridClone.getY(); y++) {
 				if(this.epiGridClone.getAbstCell(x, y).isLivingCell()) {
 				if (!this.epiGridClone.getModel(x, y).equals(projEpiGrid.getModel(x, y))) 
-					this.epiGridClone.setAbstractCell(x, y, projEpiGrid.getAbstCell(x, y));
+					this.epiGridClone.setAbstractCell(projEpiGrid.getAbstCell(x, y));
 				else
 				if (!Arrays.equals(projEpiGrid.getCellState(x, y), this.epiGridClone.getCellState(x, y))) {
-					this.epiGridClone.setAbstractCell(x, y, projEpiGrid.getAbstCell(x, y).clone());
+					this.epiGridClone.setAbstractCell(projEpiGrid.getAbstCell(x, y).clone());
 					}
 				}}
 			

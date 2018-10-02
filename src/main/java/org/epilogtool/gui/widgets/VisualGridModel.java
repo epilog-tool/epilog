@@ -193,24 +193,24 @@ public class VisualGridModel extends VisualGridDefinitions {
 	if (this.selModelName.equals(Txt.get("s_INVALID_CELL"))) {
 		if (!this.epiGridClone.getAbstCell(x, y).getName().equals(Txt.get("s_INVALID_CELL")))
 			this.tpc.setChanged();
-		this.epiGridClone.setAbstractCell(x, y, CellFactory.newInvalidCell());
+		this.epiGridClone.setAbstractCell(CellFactory.newInvalidCell(new Tuple2D<Integer>(x,y)));
 		
 	}
 	else if (this.selModelName.equals(Txt.get("s_EMPTY_CELL"))) {
 		if (!this.epiGridClone.getAbstCell(x, y).getName().equals(Txt.get("s_EMPTY_CELL")))
 			this.tpc.setChanged();
-		this.epiGridClone.setAbstractCell(x, y, CellFactory.newEmptyCell());
+		this.epiGridClone.setAbstractCell(CellFactory.newEmptyCell(new Tuple2D<Integer>(x,y)));
 	}
 	else if (this.selModelName.equals(Txt.get("s_DEAD_CELL"))) {
 		if (!this.epiGridClone.getAbstCell(x, y).getName().equals(Txt.get("s_DEAD_CELL")))
 			this.tpc.setChanged();
-		this.epiGridClone.setAbstractCell(x, y, CellFactory.newDeadCell());
+		this.epiGridClone.setAbstractCell(CellFactory.newDeadCell(new Tuple2D<Integer>(x,y)));
 	}
 	else  {
 		if (!this.epiGridClone.getAbstCell(x, y).getName().equals(Txt.get("s_LIVING_CELL")) || !((LivingCell) this.epiGridClone.getAbstCell(x, y)).getModel().equals(Project.getInstance().getModel(this.selModelName))){
 			this.tpc.setChanged();
 		}
-		this.epiGridClone.setAbstractCell(x, y, CellFactory.newLivingCell(Project.getInstance().getModel(this.selModelName)));
+		this.epiGridClone.setAbstractCell(CellFactory.newLivingCell(new Tuple2D<Integer>(x,y), Project.getInstance().getModel(this.selModelName)));
 	}
 	
 	updateModelUsed();

@@ -99,7 +99,6 @@ public class GridInformation extends JPanel {
 			// Separation
 			this.minimalSpace(gbc, ++y);
 
-//			System.out.println(cellGrid[posX][posY]);
 			// Empty cell specification
 			if (!cellGrid[posX][posY].isLivingCell()) {
 				
