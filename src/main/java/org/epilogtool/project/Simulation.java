@@ -244,7 +244,8 @@ public class Simulation {
 
 		//TODO FIX-ME
 		for (LivingCell lCell: orderedCells) {
-
+			
+			System.out.println(currGrid.getEmptyCells().size());
 			if (deathCells.contains(lCell)) {//If this cell is about to die
 				if (this.epithelium.getEpitheliumEvents().getDeathOption().equals(Txt.get("s_TAB_EPIUPDATE_CELLDEATH_EMPTY"))) {
 					nextGrid.setAbstractCell(CellFactory.newEmptyCell(lCell.getTuple().clone()));
@@ -280,11 +281,15 @@ public class Simulation {
 	}
 
 	private void randomDivision(LivingCell lCell, EpitheliumGrid nextGrid) {
+		
 		Tuple2D<Integer> originalTuple = lCell.getTuple().clone();
 		Tuple2D<Integer> sisterTuple = getSisterPosition(originalTuple, nextGrid.getEmptyCells());
 
 		LivingCell sisterCell = CellFactory.newLivingCell(sisterTuple, lCell.getModel());
 		LivingCell originalCell = CellFactory.newLivingCell(originalTuple, lCell.getModel());
+		
+		System.out.println(sisterCell.getTuple());
+		System.out.println(originalCell.getTuple());
 
 		if (this.epithelium.getEpitheliumEvents().getDivisionOption().equals(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_SAME"))) {
 			sisterCell.setState(lCell.getState());

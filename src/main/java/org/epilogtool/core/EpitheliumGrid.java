@@ -533,8 +533,9 @@ public class EpitheliumGrid {
 		//If the newCell is an empty cell, then the oldCell was a living cell. The newCell must be added to the emptyCell list, and the oldCell removed
 		//from the the LivingCell list.
 		if (newCell.isEmptyCell()) {
-			if (!this.lstEmptyCells.contains(newCell))
+			if (!this.lstEmptyCells.contains(newCell)) {
 				this.lstEmptyCells.add((EmptyCell) newCell);
+			}
 			for (LogicalModel model: this.livingCellsPerModel.keySet()) {
 				if (this.livingCellsPerModel.get(model).contains(oldCell))
 					this.livingCellsPerModel.get(model).remove(oldCell);

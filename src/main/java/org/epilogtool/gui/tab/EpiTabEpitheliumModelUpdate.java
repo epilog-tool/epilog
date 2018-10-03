@@ -160,7 +160,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						JRadioButton jrb = (JRadioButton)e.getSource();
-						updateEventOrder(jrb);
+						updateEventOrder(jrb.getName());
 						tpc.setChanged();
 					}
 				});
@@ -186,10 +186,10 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 
 		List<String> triggerCellOptions = new ArrayList<String>();
 		
-		triggerCellOptions.add(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_RANDOM"));
 		triggerCellOptions.add(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_SAME"));
 		triggerCellOptions.add(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_NAIVE"));
 		triggerCellOptions.add(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_PREDEFINED"));
+		triggerCellOptions.add(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_RANDOM"));
 		
 		jpNewCell.setBorder(BorderFactory.createTitledBorder(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE")));
 		ButtonGroup groupCell = new ButtonGroup();
@@ -204,7 +204,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						JRadioButton jrb = (JRadioButton)e.getSource();
-						updateNewCellState(jrb);
+						updateNewCellState(jrb.getName());
 						tpc.setChanged();
 					}
 				});
@@ -248,7 +248,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						JRadioButton jrb = (JRadioButton)e.getSource();
-						updateCellDeath(jrb);
+						updateCellDeath(jrb.getName());
 						tpc.setChanged();
 					}
 				});
@@ -270,16 +270,16 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		this.isInitialized = true;
 	}
 
-	private void updateEventOrder(JRadioButton jrb) {
-		this.epitheliumEvents.setEventOrder(jrb.getName());
+	private void updateEventOrder(String string) {
+		this.epitheliumEvents.setEventOrder(string);
 	}
 	
-	private void updateNewCellState(JRadioButton jrb) {
-		this.epitheliumEvents.setDivisionOption(jrb.getName());
+	private void updateNewCellState(String string) {
+		this.epitheliumEvents.setDivisionOption(string);
 	}
 	
-	private void updateCellDeath(JRadioButton jrb) {
-		this.epitheliumEvents.setDeathOption(jrb.getName());
+	private void updateCellDeath(String string) {
+		this.epitheliumEvents.setDeathOption(string);
 	}
 	
 	
@@ -291,12 +291,38 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 				this.jcbUpdateCells.setSelectedIndex(i);
 		}
 	}
+	
+	private void updateEventOrder() {
+		String eventOrder = this.epitheliumEvents.getEventOrder();
+		for (String s : this.mName2JrbEventOrder.keySet()) {
+			if (s.equals(eventOrder)) {
+				this.mName2JrbEventOrder.get(s).setSelected(true);}
+		}
+	}
+	
+	private void updateDeath() {
+		String death = this.epitheliumEvents.getDeathOption();
+		for (String s : this.mName2JrbDeath.keySet()) {
+			if (s.equals(death)) {
+				this.mName2JrbDeath.get(s).setSelected(true);}
+		}
+	}
+	
+	private void updateNewCell() {
+		String newCellType = this.epitheliumEvents.getDivisionOption();
+		for (String s : this.mName2JrbCell.keySet()) {
+			if (s.equals(newCellType)) {
+				this.mName2JrbCell.get(s).setSelected(true);}
+		}
+	}
 
 	private void updateJCBRandomSeedType() {
 		EnumRandomSeed seedType = this.updateSchemeInter.getRandomSeedType();
 		for (int i = 0; i < this.jcbRandomSeedType.getItemCount(); i++) {
-			if (seedType != null && seedType.equals(this.jcbRandomSeedType.getItemAt(i)))
+			if (seedType != null && seedType.equals(this.jcbRandomSeedType.getItemAt(i))) {
 				this.jcbRandomSeedType.setSelectedIndex(i);
+			break;
+			}
 		}
 	}
 
@@ -344,12 +370,24 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 
 	@Override
 	protected void buttonReset() {
+		
 		this.jAlphaSlide.setValue((int) (this.epithelium.getUpdateSchemeInter().getAlpha() * SLIDER_MAX));
 		this.updateAlpha(this.jAlphaSlide.getValue());
+		
 		this.updateSchemeInter.setUpdateCells(this.epithelium.getUpdateSchemeInter().getUpdateCells());
+		this.updateSchemeInter.setRandomSeedType(this.epithelium.getUpdateSchemeInter().getRandomSeedType());
+		
+		this.updateEventOrder(this.epithelium.getEpitheliumEvents().getEventOrder());
+		this.updateCellDeath(this.epithelium.getEpitheliumEvents().getDeathOption());
+		this.updateNewCellState(this.epithelium.getEpitheliumEvents().getDivisionOption());
 		
 		
 		this.updateJCBUpdateCells();
+		this.updateJCBRandomSeedType();
+		this.updateEventOrder();
+		this.updateNewCell();
+		this.updateDeath();
+	
 		// Repaint
 		this.getParent().repaint();
 	}

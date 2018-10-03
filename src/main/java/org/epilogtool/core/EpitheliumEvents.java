@@ -21,8 +21,8 @@ public class EpitheliumEvents {
 	public static float DEFAULT_DIVISIONPROBABILITY = (int) 0.0;
 	public static float DEFAULT_DEATHPROBABILITY = (int) 0.0;
 	
-	public static String DEFAULT_DEATHALGORITHM = "Random";
-	public static String DEFAULT_DIVISIONALGORITHM = "Random";
+	public static String DEFAULT_DEATHALGORITHM = Txt.get("s_TAB_EVE_ALGORITHM_RANDOM");
+	public static String DEFAULT_DIVISIONALGORITHM = Txt.get("s_TAB_EVE_ALGORITHM_RANDOM");
 	
 	//GENERAL
 	private String eventOrder;

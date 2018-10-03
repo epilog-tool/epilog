@@ -41,7 +41,7 @@ public class ModelCellularEvent {
 
 
 	public ModelCellularEvent clone() {
-		return new ModelCellularEvent(this.getDeathValue(), this.getDivisionValue(), this.getDeathTrigger(), this.getDivisionTrigger(), this.getDeathPattern(), this.getDivisionPattern(), this.getNewCellState(), this.deathAlgorithm, this.divisionAlgorithm);
+		return new ModelCellularEvent(this.getDeathValue(), this.getDivisionValue(), this.getDeathTrigger(), this.getDivisionTrigger(), this.getDeathPattern(), this.getDivisionPattern(), this.getNewCellState(), this.getDeathAlgorithm(), this.getDivisionAlgorithm());
 	}
 	public byte[] getNewCellState(){
 		return this.newCellState;
@@ -96,13 +96,14 @@ public class ModelCellularEvent {
 	
 	public String getDeathAlgorithm() {
 		return this.deathAlgorithm;}
-	public void setDeathAlgorithm(String deathAlgorithm) {
-		this.deathAlgorithm = deathAlgorithm;}
+	public void setDeathAlgorithm(String deathAlg) {
+		this.deathAlgorithm = deathAlg;}
 	
 	public String getDivisionAlgorithm() {
 		return this.divisionAlgorithm;}
-	public void setDivisionAlgorithm(String divisionhAlgorithm) {
-		this.deathAlgorithm = divisionAlgorithm;}
+	
+	public void setDivisionAlgorithm(String divAlg) {
+		this.divisionAlgorithm = divAlg;}
 	
 	public boolean equals(Object o) {
 	
