@@ -428,8 +428,6 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			this.mName2JRBdivision.get(Txt.get("s_TAB_EVE_TRIGGER_RANDOM")).setSelected(true);
 			this.auxDivisionPanel.add(this.mModel2lsSPanel.get(this.selModel).get(1),BorderLayout.SOUTH);
 			this.epiEventClone.setDivisionTrigger(this.selModel,Txt.get("s_TAB_EVE_TRIGGER_RANDOM"));
-//			JSlider divisionSlider = this.mModel2lsSPanel.get(this.selModel).get(1).getSlider();
-//			this.updateSliderValues(divisionSlider);
 		}
 
 		else if (str.equals(Txt.get("s_TAB_EVE_TRIGGER_PATTERN"))) {
@@ -558,7 +556,10 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		sp.get(1).getSlider().setValue((int) (this.epithelium.getEpitheliumEvents().getMCE(this.selModel).getDivisionValue()*100));
 		sp.get(0).getSlider().setValue((int) (this.epithelium.getEpitheliumEvents().getMCE(this.selModel).getDeathValue()*100));
 		
-		//Make sure that the Pattern 
+		//Make sure that the Pattern is reset
+		this.jtfPatternDivision.setText(this.epiEventClone.getMCE(this.selModel).getDivisionPattern());
+		this.jtfPatternDeath.setText(this.epiEventClone.getMCE(this.selModel).getDeathPattern());
+		
 		
 		// Repaint
 		this.getParent().repaint();
