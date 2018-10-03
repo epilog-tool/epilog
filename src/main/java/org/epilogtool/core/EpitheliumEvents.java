@@ -154,7 +154,6 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 		Map<LogicalModel, ModelCellularEvent> model2MCEClone = new HashMap<LogicalModel, ModelCellularEvent>();
 		for (LogicalModel m: this.model2MCE.keySet()) {
 			model2MCEClone.put(m, this.model2MCE.get(m));
-//			System.out.println("3 " + this.model2MCE.get(m).getDeathTrigger());
 			}
 		return new EpitheliumEvents(this.getEventOrder(), this.getDeathOption(), this.getDivisionOption(), model2MCEClone, model2MCEClone.keySet());
 	}
@@ -164,20 +163,16 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 		EpitheliumEvents newEpiEvents = (EpitheliumEvents) o ;
 		
 		if (!this.eventOrder.equals(newEpiEvents.getEventOrder())) {
-//			System.out.println("this.eventOrder.equals(newEpiEvents.getEventOrder())");
 			return false;		}
 		
 		if (!this.deathOption.equals(newEpiEvents.getDeathOption())){
-//			System.out.println("this.eventOrder.equals(newEpiEvents.getDeathOption())");
 			return false;		}
 		
 		if (!this.divisionOption.equals(newEpiEvents.getDivisionOption())){
-//			System.out.println("this.eventOrder.equals(newEpiEvents.getDivisionOption())");
 			return false;		}
 		
 		for (LogicalModel m: this.model2MCE.keySet()) {
 			if (!this.model2MCE.get(m).equals(newEpiEvents.getMCE(m))){
-//				System.out.println("this.model2MCE.get(m).equals(newEpiEvents.getMCE(m))");
 				return false;		}
 		}
 		return true;

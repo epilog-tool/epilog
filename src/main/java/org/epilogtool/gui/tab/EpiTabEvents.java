@@ -21,17 +21,11 @@ import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.tree.TreePath;
-
 import org.antlr.runtime.RecognitionException;
 import org.colomoto.biolqm.LogicalModel;
-import org.colomoto.biolqm.NodeInfo;
-import org.epilogtool.common.EnumRandomSeed;
-import org.epilogtool.common.RandCentral;
 import org.epilogtool.common.Txt;
-import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumEvents;
-import org.epilogtool.core.EpitheliumUpdateSchemeIntra;
 import org.epilogtool.core.ModelCellularEvent;
 import org.epilogtool.function.FSpecification;
 import org.epilogtool.function.FunctionExpression;
@@ -48,7 +42,6 @@ public class EpiTabEvents extends EpiTabDefinitions {
 	private static final long serialVersionUID = 4263444740319547502L;
 
 	private LogicalModel selModel;
-	//	private ModelCellularEvent mce;
 
 	private JPanel jpTriggerDivision;
 	private JPanel jpTriggerDeath;
@@ -77,6 +70,9 @@ public class EpiTabEvents extends EpiTabDefinitions {
 
 	private JTextField jtfPatternDeath;
 	private JTextField jtfPatternDivision;
+	
+	private JComboBox<String> jcbDivisionAlgorithm;
+	private JComboBox<String> jcbDeathAlgorithm;
 
 
 	public EpiTabEvents(Epithelium e, TreePath path, TabChangeNotifyProj tabChanged) {
@@ -96,6 +92,9 @@ public class EpiTabEvents extends EpiTabDefinitions {
 
 		this.jtfPatternDeath = new JTextField();
 		this.jtfPatternDivision = new JTextField();
+		
+		this.jcbDivisionAlgorithm = new JComboBox<String>();
+		this.jcbDeathAlgorithm = new JComboBox<String>();
 
 
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
@@ -113,10 +112,12 @@ public class EpiTabEvents extends EpiTabDefinitions {
 
 		for (LogicalModel model: modelList) {
 			List<SliderPanel> sp = mModel2lsSPanel.get(model);
-			sp.get(1).setValue((int) this.epithelium.getEpitheliumEvents().getDivisionValue(model));
-			sp.get(0).setValue((int) this.epithelium.getEpitheliumEvents().getMCE(model).getDeathValue());
+			sp.get(1).getSlider().setValue((int) (this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionValue()*100));
+			sp.get(0).getSlider().setValue((int) (this.epithelium.getEpitheliumEvents().getMCE(model).getDeathValue()*100));
 		}
 
+		
+		
 		this.epiEventClone = this.epithelium.getEpitheliumEvents().clone();
 
 		this.tpc = new TabProbablyChanged();
@@ -245,13 +246,13 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		JLabel jlDivisionAction = new JLabel("Division Algoritm: ");
 		jpDivisionAction.add(jlDivisionAction);
 
-		JComboBox jcbDivisionAlgorithm = new JComboBox();
-		jpDivisionAction.add(jcbDivisionAlgorithm);
+		
+		jpDivisionAction.add(this.jcbDivisionAlgorithm);
 
-		jcbDivisionAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_RANDOM"));
-		jcbDivisionAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_COMPRESSION"));
+		this.jcbDivisionAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_RANDOM"));
+		this.jcbDivisionAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_COMPRESSION"));
 
-		jcbDivisionAlgorithm.addActionListener(new ActionListener() {
+		this.jcbDivisionAlgorithm.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
@@ -341,13 +342,13 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		JLabel jlDeathAction = new JLabel("Death Algoritm: ");
 		jpDeathAction.add(jlDeathAction);
 
-		JComboBox jcbDeathAlgorithm = new JComboBox();
-		jpDeathAction.add(jcbDeathAlgorithm);
 
-		jcbDeathAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_RANDOM"));
-		jcbDeathAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_COMPRESSION"));
+		jpDeathAction.add(this.jcbDeathAlgorithm);
 
-		jcbDeathAlgorithm.addActionListener(new ActionListener() {
+		this.jcbDeathAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_RANDOM"));
+		this.jcbDeathAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_COMPRESSION"));
+
+		this.jcbDeathAlgorithm.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
@@ -427,6 +428,8 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			this.mName2JRBdivision.get(Txt.get("s_TAB_EVE_TRIGGER_RANDOM")).setSelected(true);
 			this.auxDivisionPanel.add(this.mModel2lsSPanel.get(this.selModel).get(1),BorderLayout.SOUTH);
 			this.epiEventClone.setDivisionTrigger(this.selModel,Txt.get("s_TAB_EVE_TRIGGER_RANDOM"));
+//			JSlider divisionSlider = this.mModel2lsSPanel.get(this.selModel).get(1).getSlider();
+//			this.updateSliderValues(divisionSlider);
 		}
 
 		else if (str.equals(Txt.get("s_TAB_EVE_TRIGGER_PATTERN"))) {
@@ -459,6 +462,8 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			this.mName2JRBdeath.get(Txt.get("s_TAB_EVE_TRIGGER_RANDOM")).setSelected(true);
 			this.auxDeathPanel.add(this.mModel2lsSPanel.get(this.selModel).get(0),BorderLayout.SOUTH);
 			this.epiEventClone.setDeathTrigger(this.selModel,Txt.get("s_TAB_EVE_TRIGGER_RANDOM"));
+//			JSlider deathSlider = this.mModel2lsSPanel.get(this.selModel).get(0).getSlider();
+//			this.updateSliderValues(deathSlider);
 		}
 
 		else if (str.equals(Txt.get("s_TAB_EVE_TRIGGER_PATTERN"))) {
@@ -490,37 +495,18 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		SliderPanel spDeath = this.mModel2lsSPanel.get(this.selModel).get(0);
 		SliderPanel spDivision = this.mModel2lsSPanel.get(this.selModel).get(1);
 
-
-		//		System.out.println("Death value at the beggining: "+spDeath.getValue());
-		//		System.out.println("Division value at the beggining "+spDivision.getValue());
-
-
 		if (spDeath.getValue() + spDivision.getValue()>100) {
-			//			System.out.println("Added value: "+(spDeath.getValue() + spDivision.getValue()));
 			if (slider.getName().equals(Txt.get("s_TAB_EVE_DIVISION"))){
-				//				spDeath.setValue(100-spDivision.getValue());
-				int a = (int) (100-spDivision.getValue());
-				//				System.out.println("Moved the division, and the new  value is: "+spDivision.getValue());
-				spDeath.setValue(a);
-				//				System.out.println("Death value at the after setting: "+spDeath.getValue());
-				//				System.out.println("Division value at the after setting "+spDivision.getValue());
+				spDeath.setValue((int) (100-spDivision.getValue()));
 			}
 			else if (slider.getName().equals(Txt.get("s_TAB_EVE_DEATH"))){
-
-				int a = (int) (100-spDeath.getValue());
-				//				System.out.println("Moved the death, and the new  value is: "+spDeath.getValue());
-				spDivision.setValue(a);
-				//				System.out.println("Death value at the after setting: "+spDeath.getValue());
-				//				System.out.println("Division value at the after setting "+spDivision.getValue());
+				spDivision.setValue((int) (100-spDeath.getValue()));
 			}
 			//		}
 		}
 
 		float valueDivision = (float) spDivision.getValue() / 100;
 		float valueDeath = (float) spDeath.getValue() / 100;
-
-		//		System.out.println("4 DEATH VALUE: "+spDeath.getValue());
-		//		System.out.println("4 Division VALUE: "+spDivision.getValue());
 
 
 		spDeath.setText(""+valueDeath);
@@ -562,10 +548,52 @@ public class EpiTabEvents extends EpiTabDefinitions {
 
 		}
 		
+		updateJRBDivisionTrigger();
+		updateJRBDeathTrigger();
+		updateJCBDivisionAlgorithm();
+		updateJCBDeathAlgorithm();
+		
 		// Repaint
 		this.getParent().repaint();
 	}
 
+	private void updateJCBDivisionAlgorithm() {
+
+		String divAlg = this.epithelium.getEpitheliumEvents().getMCE(this.selModel).getDivisionAlgorithm();
+		
+		for (int i = 0; i < this.jcbDivisionAlgorithm.getItemCount(); i++) {
+			if (divAlg != null && divAlg.equals(this.jcbDivisionAlgorithm.getItemAt(i)))
+				this.jcbDivisionAlgorithm.setSelectedIndex(i);
+		}
+	}
+	
+	private void updateJCBDeathAlgorithm() {
+
+		String deathAlg = this.epithelium.getEpitheliumEvents().getMCE(this.selModel).getDeathAlgorithm();
+		
+		for (int i = 0; i < this.jcbDeathAlgorithm.getItemCount(); i++) {
+			if (deathAlg != null && deathAlg.equals(this.jcbDeathAlgorithm.getItemAt(i)))
+				this.jcbDeathAlgorithm.setSelectedIndex(i);
+		}
+	}
+	
+	private void updateJRBDeathTrigger() {
+		String deathTrig = this.epithelium.getEpitheliumEvents().getMCE(this.selModel).getDeathTrigger();
+		for (String s : this.mName2JRBdeath.keySet()) {
+			if (s.equals(deathTrig)) {
+				this.mName2JRBdeath.get(s).setSelected(true);
+				updateTriggerDeath(deathTrig,false);}
+		}
+	}
+	
+	private void updateJRBDivisionTrigger() {
+		String divisionTrig = this.epithelium.getEpitheliumEvents().getMCE(this.selModel).getDivisionTrigger();
+		for (String s : this.mName2JRBdivision.keySet()) {
+			if (s.equals(divisionTrig)) {
+				this.mName2JRBdivision.get(s).setSelected(true);
+				updateTriggerDivision(divisionTrig,false);}
+		}
+	}
 
 	@Override
 	protected void buttonAccept() {
@@ -595,8 +623,8 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			this.epithelium.getEpitheliumEvents().getMCE(model).setDeathAlgorithm(mce.getDeathAlgorithm());
 			this.epithelium.getEpitheliumEvents().getMCE(model).setDivisionAlgorithm(mce.getDivisionAlgorithm());
 
-			System.out.println("1" + mce.getDeathAlgorithm());
-			System.out.println("2" + this.epithelium.getEpitheliumEvents().getMCE(model).getDeathAlgorithm());
+//			System.out.println("1" + mce.getDeathAlgorithm());
+//			System.out.println("2" + this.epithelium.getEpitheliumEvents().getMCE(model).getDeathAlgorithm());
 			//TODO
 			this.epithelium.getEpitheliumEvents().setDivisionNewState(model,mce.getNewCellState());
 
@@ -634,12 +662,12 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			return true;}
 
 		if (!this.epithelium.getEpitheliumEvents().getMCE(this.selModel).getDivisionAlgorithm().equals(this.epiEventClone.getMCE(this.selModel).getDivisionAlgorithm())) {
-						System.out.println("1");
+//						System.out.println("1");
 
 			return true;}
 
 		if (!this.epithelium.getEpitheliumEvents().getMCE(this.selModel).getDeathAlgorithm().equals(this.epiEventClone.getMCE(this.selModel).getDeathAlgorithm())) {
-						System.out.println("2");
+//						System.out.println("2");
 
 			return true;}
 

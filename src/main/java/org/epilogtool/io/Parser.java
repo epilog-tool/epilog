@@ -336,7 +336,7 @@ public class Parser {
 				String[] sArray = s.split(";");
 				
 				currEpi.getEpitheliumEvents().setDeathTrigger(m, sArray[0].replace("[",""));
-				currEpi.getEpitheliumEvents().setDeathValue(m, Float.parseFloat(sArray[1]));
+				currEpi.getEpitheliumEvents().getMCE(m).setDeathValue(Float.parseFloat(sArray[1]));
 				currEpi.getEpitheliumEvents().setDeathPattern(m, sArray[2]);
 				
 				currEpi.getEpitheliumEvents().setDivisionTrigger(m, sArray[3]);

@@ -292,7 +292,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		}
 	}
 	
-	private void updateEventOrder() {
+	private void updateJRBEventOrder() {
 		String eventOrder = this.epitheliumEvents.getEventOrder();
 		for (String s : this.mName2JrbEventOrder.keySet()) {
 			if (s.equals(eventOrder)) {
@@ -300,7 +300,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		}
 	}
 	
-	private void updateDeath() {
+	private void updateJRBDeath() {
 		String death = this.epitheliumEvents.getDeathOption();
 		for (String s : this.mName2JrbDeath.keySet()) {
 			if (s.equals(death)) {
@@ -308,7 +308,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		}
 	}
 	
-	private void updateNewCell() {
+	private void updateJRBNewCell() {
 		String newCellType = this.epitheliumEvents.getDivisionOption();
 		for (String s : this.mName2JrbCell.keySet()) {
 			if (s.equals(newCellType)) {
@@ -384,9 +384,9 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		
 		this.updateJCBUpdateCells();
 		this.updateJCBRandomSeedType();
-		this.updateEventOrder();
-		this.updateNewCell();
-		this.updateDeath();
+		this.updateJRBEventOrder();
+		this.updateJRBNewCell();
+		this.updateJRBDeath();
 	
 		// Repaint
 		this.getParent().repaint();
