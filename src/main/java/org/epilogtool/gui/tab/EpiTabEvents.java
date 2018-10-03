@@ -553,6 +553,13 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		updateJCBDivisionAlgorithm();
 		updateJCBDeathAlgorithm();
 		
+		//Make sure that the slider presents the old values
+		List<SliderPanel> sp = mModel2lsSPanel.get(this.selModel);
+		sp.get(1).getSlider().setValue((int) (this.epithelium.getEpitheliumEvents().getMCE(this.selModel).getDivisionValue()*100));
+		sp.get(0).getSlider().setValue((int) (this.epithelium.getEpitheliumEvents().getMCE(this.selModel).getDeathValue()*100));
+		
+		//Make sure that the Pattern 
+		
 		// Repaint
 		this.getParent().repaint();
 	}
