@@ -520,6 +520,7 @@ public class EpitheliumGrid {
 	
 	public void setAbstractCell(AbstractCell c) {
 		
+//		System.out.println(this.getAllLivingCells());
 		
 		AbstractCell newCell = c;
 		
@@ -533,6 +534,7 @@ public class EpitheliumGrid {
 		//If the newCell is an empty cell, then the oldCell was a living cell. The newCell must be added to the emptyCell list, and the oldCell removed
 		//from the the LivingCell list.
 		if (newCell.isEmptyCell()) {
+//			System.out.println("The new cell that is empty");
 			if (!this.lstEmptyCells.contains(newCell)) {
 				this.lstEmptyCells.add((EmptyCell) newCell);
 			}
@@ -543,27 +545,35 @@ public class EpitheliumGrid {
 		}
 		//If c is living cell, then the oldCell could be a living cell or an emptyCell
 		else if (newCell.isLivingCell()) {
+//			System.out.println("The new cell that is alive");
 			LogicalModel model = ((LivingCell) newCell).getModel();
 			
 			if (oldCell.isLivingCell()) {//remove oldCell from the livingList
+//				System.out.println("the old cell was alive");
 				LogicalModel oldCellModel = ((LivingCell) oldCell).getModel();
 				if (!this.livingCellsPerModel.get(oldCellModel).contains(newCell))
 					this.livingCellsPerModel.get(oldCellModel).remove(oldCell);
+//				System.out.println("just removed an oldCEll" );
 			}
 			else if (oldCell.isEmptyCell()) {//remove oldCell from the emptyList
+//				System.out.println("the old cell was empty");
 				this.lstEmptyCells.remove(oldCell);
 			}
 			
 			if (!this.livingCellsPerModel.containsKey(model)) {//add newCell to the living list
 				this.livingCellsPerModel.put(model,  new ArrayList<LivingCell>());
+//				System.out.println("this model wasnt on this list yet" );
 			}
-			if (!this.livingCellsPerModel.get(model).contains(newCell))
+			if (!this.livingCellsPerModel.get(model).contains(newCell)) {
 				this.livingCellsPerModel.get(model).add((LivingCell) newCell);
+//				System.out.println("just added a the newCell" );
+			}
 			
 		}
 		//If c is either empty or living, then the cell has either died or the user has manually set a cell to be invalid. The oldCell must be removed from
 		//all possible lists
 		else if (!newCell.isEmptyCell() && !newCell.isLivingCell()) {
+//			System.out.println("The new cell is either alive or dead");
 			if (oldCell.isEmptyCell()) {
 				this.lstEmptyCells.remove(oldCell);
 			}
