@@ -250,6 +250,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		jpDivisionAction.add(this.jcbDivisionAlgorithm);
 
 		this.jcbDivisionAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_RANDOM"));
+		this.jcbDivisionAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_MINIMUM_DISTANCE"));
 		this.jcbDivisionAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_COMPRESSION"));
 
 		this.jcbDivisionAlgorithm.addActionListener(new ActionListener() {
@@ -660,8 +661,6 @@ public class EpiTabEvents extends EpiTabDefinitions {
 
 		if (!this.epithelium.getEpitheliumEvents().getDivisionPattern(this.selModel).equals(this.epiEventClone.getDivisionPattern(this.selModel))) {
 			return true;}
-
-
 
 		if (!this.epithelium.getEpitheliumEvents().getDeathTrigger(this.selModel).equals(this.epiEventClone.getDeathTrigger(this.selModel))) {
 			return true;}
