@@ -184,16 +184,16 @@ public class Simulation {
 			for (LogicalModel model: this.epithelium.getEpitheliumEvents().getModels()){
 				if (this.epithelium.getEpitheliumEvents().getMCE(model).getDeathTrigger().equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM"))) {
 						control = false;
-						System.out.println("The grid is not stable because random death is implemented");
+//						System.out.println("The grid is not stable because random death is implemented");
 				}
 				else if (this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionTrigger().equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM")) && nextGrid.getEmptyCells().size()!=0){
 					control = false;
-					System.out.println("The grid is not stable because random division is implemented and there is still an empty position");
+//					System.out.println("The grid is not stable because random division is implemented and there is still an empty position");
 				}
 			}
 			if (control) {
 				this.stable = true;
-				System.out.println("The grid is stable");
+//				System.out.println("The grid is stable");
 				return currGrid;
 			}
 		}

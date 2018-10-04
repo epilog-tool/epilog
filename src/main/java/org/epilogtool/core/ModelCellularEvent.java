@@ -142,6 +142,8 @@ public class ModelCellularEvent {
 			return false;		}
 		if (!this.divisionAlgorithm.equals(mce.getDivisionAlgorithm())) {
 			return false;		}
+		if (this.divisionRange!=mce.getDivisionRange()) {
+			return false;		}
 		
 		return true;
 	}
