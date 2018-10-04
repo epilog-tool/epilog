@@ -73,6 +73,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 	
 	private JComboBox<String> jcbDivisionAlgorithm;
 	private JComboBox<String> jcbDeathAlgorithm;
+	private JComboBox<Integer> jcbDivisionRange;
 
 
 	public EpiTabEvents(Epithelium e, TreePath path, TabChangeNotifyProj tabChanged) {
@@ -95,6 +96,8 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		
 		this.jcbDivisionAlgorithm = new JComboBox<String>();
 		this.jcbDeathAlgorithm = new JComboBox<String>();
+		
+		this.jcbDivisionRange = new JComboBox<Integer>();
 
 
 		List<LogicalModel> modelList = new ArrayList<LogicalModel>(this.epithelium.getEpitheliumGrid().getModelSet());
@@ -116,8 +119,6 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			sp.get(0).getSlider().setValue((int) (this.epithelium.getEpitheliumEvents().getMCE(model).getDeathValue()*100));
 		}
 
-		
-		
 		this.epiEventClone = this.epithelium.getEpitheliumEvents().clone();
 
 		this.tpc = new TabProbablyChanged();
@@ -238,10 +239,36 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		updateAlpha(spDivision.getValue(), spDivision.getLabel(), spDivision.getMin(), spDivision.getMax());
 
 
-		//****************** DIVISION ALGORITHM
+		//****************** DIVISION ACTION PANEL 
 
 		JPanel jpDivisionAction = new JPanel();
 		jpDivisionAction.setBorder(BorderFactory.createTitledBorder("Algorithm"));
+		
+		
+		//****************** DIVISION RANGE 
+		
+		JLabel jlDivisionRange = new JLabel("Division Range: ");
+		jpDivisionAction.add(jlDivisionRange);
+		
+		jpDivisionAction.add(this.jcbDivisionRange);
+		
+		//TODO GETMAXIMUMDISTANCE FUNCTION
+		
+		for (int d = 1; d<=Math.max(this.epithelium.getEpitheliumGrid().getX(), this.epithelium.getEpitheliumGrid().getY()); d++) {
+			jcbDivisionRange.addItem(d);
+		}
+		this.jcbDivisionRange.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				@SuppressWarnings("unchecked")
+				JComboBox jcb = (JComboBox) e.getSource();
+				updateDivisionRange(jcb.getSelectedItem());
+				tpc.setChanged();
+			}
+		});
+		
+		//****************** DIVISION ALGORITHM 
+		
 
 		JLabel jlDivisionAction = new JLabel("Division Algoritm: ");
 		jpDivisionAction.add(jlDivisionAction);
@@ -374,6 +401,10 @@ public class EpiTabEvents extends EpiTabDefinitions {
 	}
 
 
+
+	protected void updateDivisionRange(Object selectedItem) {
+		this.epiEventClone.getMCE(this.selModel).setDivisionRange((int) selectedItem);
+	}
 
 	protected void updateDeathAction(Object object) {
 		this.epiEventClone.getMCE(this.selModel).setDeathAlgorithm((String) object);
@@ -542,6 +573,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			this.epiEventClone.setDivisionPattern(model, mce.getDivisionPattern());
 			this.epiEventClone.getMCE(model).setDeathAlgorithm(mce.getDeathAlgorithm());
 			this.epiEventClone.getMCE(model).setDivisionAlgorithm(mce.getDivisionAlgorithm());
+			this.epiEventClone.getMCE(model).setDivisionRange(mce.getDivisionRange());
 			//TODO
 			this.epiEventClone.setDivisionNewState(model, null);
 
@@ -551,6 +583,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		updateJRBDeathTrigger();
 		updateJCBDivisionAlgorithm();
 		updateJCBDeathAlgorithm();
+		updateJCBDivisionRange();
 		
 		//Make sure that the slider presents the old values
 		List<SliderPanel> sp = mModel2lsSPanel.get(this.selModel);
@@ -564,6 +597,16 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		
 		// Repaint
 		this.getParent().repaint();
+	}
+
+	private void updateJCBDivisionRange() {
+		int divRange = this.epithelium.getEpitheliumEvents().getMCE(this.selModel).getDivisionRange();
+		
+		for (int i = 0; i < this.jcbDivisionRange.getItemCount(); i++) {
+			if (divRange==this.jcbDivisionRange.getItemAt(i))
+				this.jcbDivisionAlgorithm.setSelectedIndex(i);
+	}
+		
 	}
 
 	private void updateJCBDivisionAlgorithm() {
@@ -631,6 +674,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 			this.epithelium.getEpitheliumEvents().setDivisionPattern(model, mce.getDivisionPattern());
 			this.epithelium.getEpitheliumEvents().getMCE(model).setDeathAlgorithm(mce.getDeathAlgorithm());
 			this.epithelium.getEpitheliumEvents().getMCE(model).setDivisionAlgorithm(mce.getDivisionAlgorithm());
+			this.epithelium.getEpitheliumEvents().getMCE(model).setDivisionRange(mce.getDivisionRange());
 
 //			System.out.println("1" + mce.getDeathAlgorithm());
 //			System.out.println("2" + this.epithelium.getEpitheliumEvents().getMCE(model).getDeathAlgorithm());
@@ -667,15 +711,15 @@ public class EpiTabEvents extends EpiTabDefinitions {
 
 		if (!this.epithelium.getEpitheliumEvents().getDivisionTrigger(this.selModel).equals(this.epiEventClone.getDivisionTrigger(this.selModel))) {
 			return true;}
+		
 
 		if (!this.epithelium.getEpitheliumEvents().getMCE(this.selModel).getDivisionAlgorithm().equals(this.epiEventClone.getMCE(this.selModel).getDivisionAlgorithm())) {
-//						System.out.println("1");
-
 			return true;}
 
 		if (!this.epithelium.getEpitheliumEvents().getMCE(this.selModel).getDeathAlgorithm().equals(this.epiEventClone.getMCE(this.selModel).getDeathAlgorithm())) {
-//						System.out.println("2");
-
+			return true;}
+		
+		if (this.epithelium.getEpitheliumEvents().getMCE(this.selModel).getDivisionRange()!=(this.epiEventClone.getMCE(this.selModel).getDivisionRange())) {
 			return true;}
 
 		return false;

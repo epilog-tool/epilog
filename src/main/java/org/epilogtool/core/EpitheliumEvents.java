@@ -18,6 +18,8 @@ public class EpitheliumEvents {
 	public static String DEFAULT_DEATHPATTERN = "";
 	public static String DEFAULT_DIVISIONPATTERN = "";
 	
+	public static int DEFAULT_DIVISIONRANGE = 1;
+	
 	public static float DEFAULT_DIVISIONPROBABILITY = (int) 0.0;
 	public static float DEFAULT_DEATHPROBABILITY = (int) 0.0;
 	
@@ -47,7 +49,7 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 
 	public void addModel2MCE(LogicalModel model) {
 		if (!model2MCE.containsKey(model)){
-			ModelCellularEvent mce = new ModelCellularEvent(DEFAULT_DEATHPROBABILITY,DEFAULT_DIVISIONPROBABILITY,DEFAULT_DEATHTRIGGER, DEFAULT_DIVISIONTRIGGER, DEFAULT_DEATHPATTERN, DEFAULT_DIVISIONPATTERN, new byte[model.getComponents().size()],DEFAULT_DEATHALGORITHM,DEFAULT_DIVISIONALGORITHM);
+			ModelCellularEvent mce = new ModelCellularEvent(DEFAULT_DEATHPROBABILITY,DEFAULT_DIVISIONPROBABILITY,DEFAULT_DEATHTRIGGER, DEFAULT_DIVISIONTRIGGER, DEFAULT_DEATHPATTERN, DEFAULT_DIVISIONPATTERN, new byte[model.getComponents().size()],DEFAULT_DEATHALGORITHM,DEFAULT_DIVISIONALGORITHM,DEFAULT_DIVISIONRANGE);
 			this.setModel2MCE(model, mce);
 		}
 	}

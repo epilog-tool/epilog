@@ -19,8 +19,10 @@ public class ModelCellularEvent {
 	private String deathAlgorithm;
 	private String divisionAlgorithm;
 	
+	private int divisionRange;
+	
 
-	public ModelCellularEvent(float deathValue, float divisionValue, String deathTrigger, String divisionTrigger, String deathPattern, String divisionPattern, byte[] newCellState, String deathAlgorithm, String divisionAlgorithm) {
+	public ModelCellularEvent(float deathValue, float divisionValue, String deathTrigger, String divisionTrigger, String deathPattern, String divisionPattern, byte[] newCellState, String deathAlgorithm, String divisionAlgorithm, int divisionRange) {
 
 		this.deathValue  = deathValue;
 		this.divisionValue = divisionValue;
@@ -37,12 +39,23 @@ public class ModelCellularEvent {
 		this.deathAlgorithm = deathAlgorithm;
 		this.divisionAlgorithm = divisionAlgorithm;
 		
+		this.divisionRange = divisionRange;
+		
 	}
 
 
 	public ModelCellularEvent clone() {
-		return new ModelCellularEvent(this.getDeathValue(), this.getDivisionValue(), this.getDeathTrigger(), this.getDivisionTrigger(), this.getDeathPattern(), this.getDivisionPattern(), this.getNewCellState(), this.getDeathAlgorithm(), this.getDivisionAlgorithm());
+		return new ModelCellularEvent(this.getDeathValue(), this.getDivisionValue(), this.getDeathTrigger(), this.getDivisionTrigger(), this.getDeathPattern(), this.getDivisionPattern(), this.getNewCellState(), this.getDeathAlgorithm(), this.getDivisionAlgorithm(), this.getDivisionRange());
 	}
+	public int getDivisionRange() {
+		return this.divisionRange;
+	}
+
+	public void setDivisionRange(int dRange) {
+		this.divisionRange = dRange;
+	}
+
+
 	public byte[] getNewCellState(){
 		return this.newCellState;
 	}

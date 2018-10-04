@@ -347,6 +347,8 @@ public class Parser {
 				if (sArray.length>7) {
 				currEpi.getEpitheliumEvents().getMCE(m).setDeathAlgorithm(sArray[7]);
 				currEpi.getEpitheliumEvents().getMCE(m).setDivisionAlgorithm(sArray[8]);
+				if (sArray.length>9) 
+				currEpi.getEpitheliumEvents().getMCE(m).setDivisionAlgorithm(sArray[9]);
 				}
 				
 			}
@@ -662,13 +664,12 @@ public class Parser {
 			
 			paramList.add(mce.getDeathAlgorithm());
 			paramList.add(mce.getDivisionAlgorithm());
+			paramList.add("" + mce.getDivisionRange());
 	
 			w.println("CE " + model2Key.get(name) + " [" + join(paramList,";") +"]");
 		}
 			}
-		
-		
-		
+				
 		// EpitheliumCell Connections
 		w.println("\n\n");
 	}

@@ -179,17 +179,31 @@ public class Simulation {
 			}
 		}
 		//TODO if this state is stable should we stop here? Stability is maintained? what about different number of cells
+		boolean control = true;
 		if (changedKeys.isEmpty()) {
-			this.stable = true;
-			return currGrid;
+			for (LogicalModel model: this.epithelium.getEpitheliumEvents().getModels()){
+				if (this.epithelium.getEpitheliumEvents().getMCE(model).getDeathTrigger().equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM"))) {
+						control = false;
+						System.out.println("The grid is not stable because random death is implemented");
+				}
+				else if (this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionTrigger().equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM")) && nextGrid.getEmptyCells().size()!=0){
+					control = false;
+					System.out.println("The grid is not stable because random division is implemented and there is still an empty position");
+				}
+			}
+			if (control) {
+				this.stable = true;
+				System.out.println("The grid is stable");
+				return currGrid;
+			}
 		}
 
 		//************* TRIGGER EVENTS
 
-		System.out.println("Iteration:  " + this.gridHashHistory.size());
-		System.out.println("1 " + nextGrid.getAllLivingCells().size());
-		System.out.println("2 " + nextGrid.getEmptyCells().size());
-		System.out.println("3 " + (nextGrid.getEmptyCells().size() + nextGrid.getAllLivingCells().size()));
+//		System.out.println("Iteration:  " + this.gridHashHistory.size());
+//		System.out.println("1 " + nextGrid.getAllLivingCells().size());
+//		System.out.println("2 " + nextGrid.getEmptyCells().size());
+//		System.out.println("3 " + (nextGrid.getEmptyCells().size() + nextGrid.getAllLivingCells().size()));
 
 
 		List<LivingCell> deathCells = new ArrayList<LivingCell>();
@@ -303,10 +317,9 @@ public class Simulation {
 		LivingCell sisterCell = CellFactory.newLivingCell(sisterTuple, lCell.getModel());
 		LivingCell originalCell = CellFactory.newLivingCell(originalTuple, lCell.getModel());
 		
-		//TODO: GET MAXIMUM DISTANCE -> a function at the 
-//		Integer maxDistance = this.epithelium.getMaximumDistance();
+		//MaximumDistance = parameter
 		
-		for (int i=1; i< Math.max(this.getEpithelium().getX(), this.getEpithelium().getY());i++){
+		for (int i=1; i< this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getDivisionRange();i++){
 			
 			List<Tuple2D<Integer>> lstNeighbours = new ArrayList<Tuple2D<Integer>>();
 			lstNeighbours.addAll(this.getNeighbours(i,lCell.getTuple()));
@@ -333,10 +346,7 @@ public class Simulation {
 	private List<Tuple2D<Integer>> getPath(Tuple2D<Integer> tuple, Tuple2D<Integer> tuple2d) {
 		
 		List<Tuple2D<Integer>> path = new ArrayList<Tuple2D<Integer>>();
-		
-		
-		
-		
+
 		return path;
 	}
 
@@ -348,7 +358,7 @@ public class Simulation {
 		Set<Tuple2D<Integer>> positionNeighbours = this.epithelium.getEpitheliumGrid().getPositionNeighbours(
 				this.relativeNeighboursCache, rangeList_aux, rangePair,i, tuple.getX(), tuple.getY());
 		
-		System.out.println(positionNeighbours);
+//		System.out.println(positionNeighbours);
 		
 		return positionNeighbours;
 	}
