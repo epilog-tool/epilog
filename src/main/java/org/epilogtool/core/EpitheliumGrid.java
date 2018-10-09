@@ -383,6 +383,7 @@ public class EpitheliumGrid {
 	public EpitheliumGrid clone() {
 		
 		Topology newTop = this.topology.clone();
+
 		Set<LogicalModel> newModelSet = new HashSet<LogicalModel>(this.modelSet);
 		Map<String, Map<Byte, Integer>> newCompCounts = new HashMap<String, Map<Byte, Integer>>(this.compCounts);
 		Map<String, Map<Byte, Float>> newCompPercents = new HashMap<String, Map<Byte, Float>>(this.compPercents);
@@ -461,7 +462,10 @@ public class EpitheliumGrid {
 	public Set<Tuple2D<Integer>> getPositionNeighbours(
 			Map<Tuple2D<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>> relativeNeighboursCache,
 			Tuple2D<Integer> rangeList_aux, Tuple2D<Integer> rangePair, int minSigDist, int x, int y) {
+
+		
 		if (!relativeNeighboursCache.containsKey(rangeList_aux)) {
+			
 			Map<Boolean, Set<Tuple2D<Integer>>> neighboursOutskirts = new HashMap<Boolean, Set<Tuple2D<Integer>>>();
 			neighboursOutskirts.put(true,
 					this.getTopology().getRelativeNeighbours(true, rangeList_aux.getX(), rangeList_aux.getY()));

@@ -491,16 +491,16 @@ public class Epithelium {
 	 * @return
 	 */
 	// TODO: This is a test
-	public NodeInfo getComponentUsed(String componentName) {
-		this.getEpitheliumGrid().updateModelSet();
-		for (LogicalModel model : this.getEpitheliumGrid().getModelSet()) {
-			for (NodeInfo node : model.getComponents()) {
-				if (node.getNodeID().equals(componentName))
-					return node;
-
-			}
-		}
-
-		return null;
-	}
+//	public NodeInfo getComponentUsed(String componentName) {
+//		this.getEpitheliumGrid().updateModelSet();
+//		for (LogicalModel model : this.getEpitheliumGrid().getModelSet()) {
+//			for (NodeInfo node : model.getComponents()) {
+//				if (node.getNodeID().equals(componentName))
+//					return node;
+//
+//			}
+//		}
+//
+//		return null;
+//	}
 }

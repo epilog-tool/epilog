@@ -46,6 +46,8 @@ public class Simulation {
 	private List<EpitheliumGrid> gridHistory;
 	private List<String> gridHashHistory;
 	private Random random;
+	
+	private 	Map<Tuple2D<Integer>, Vertex> mTuple2Vertex;
 
 	private Map<Tuple2D<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>> relativeNeighboursCache; //TO BE REMOVED FROM HERE
 
@@ -369,7 +371,7 @@ public class Simulation {
 					if (this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getDivisionAlgorithm().equals(Txt.get("s_TAB_EVE_ALGORITHM_RANDOM"))){
 						randomDivision(lCell,nextGrid);}
 					else if (this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getDivisionAlgorithm().equals(Txt.get("s_TAB_EVE_ALGORITHM_MINIMUM_DISTANCE"))){
-						minimumDistanceDivision(lCell,nextGrid);}
+						minimumDistance(lCell,nextGrid);}
 				}
 			}
 		}
@@ -390,23 +392,25 @@ public class Simulation {
 		List<LivingCell> deathList =  new ArrayList<LivingCell>();
 
 		List<LivingCell> divisionList =  new ArrayList<LivingCell>();
-
+		
+//		List<LivingCell> aux =  new ArrayList<LivingCell>();
 		
 		for (LivingCell lCell: availableLivingCells) {
 			
 			if (this.random.nextBoolean())	{
 				if (this.random.nextDouble()<=deathVal) {
 					deathList.add(lCell);
-					availableLivingCells.remove(lCell);
 				}
 			}
 			else {
 				if (this.random.nextDouble()<=divVal) {
 					divisionList.add(lCell);
-					availableLivingCells.remove(lCell);
 				}
 			}
 		}
+		
+		availableLivingCells.removeAll(divisionList);
+		availableLivingCells.removeAll(deathList);
 		
 		cells.add(0,deathList);
 		cells.add(1,divisionList);
@@ -414,96 +418,138 @@ public class Simulation {
 
 		return cells;
 	}
-
-	private void minimumDistanceDivision(LivingCell lCell, EpitheliumGrid nextGrid) {
-		//We already know that there is at least an empty cell on the grid
-
+	
+	private List<Tuple2D<Integer>>  getEmptyCellsNeighbours(LivingCell lCell, EpitheliumGrid nextGrid) {
 		
-		System.out.println("minimumDistanceDivision");
-		Tuple2D<Integer> originalTuple = lCell.getTuple().clone();
-		Tuple2D<Integer> sisterTuple = getSisterPosition(originalTuple, nextGrid.getEmptyCells());
-
-		LivingCell sisterCell = CellFactory.newLivingCell(sisterTuple, lCell.getModel());
-		LivingCell originalCell = CellFactory.newLivingCell(originalTuple, lCell.getModel());
-
-		//MaximumDistance = getDivisionRange()
+		//Get all neighbours within the distance Range
+		List<Tuple2D<Integer>> lstNeighbours = new ArrayList<Tuple2D<Integer>>();
 		for (int i=1; i<= this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getDivisionRange();i++){
-
-			//list of nearest neighbours
-			List<Tuple2D<Integer>> lstNeighbours = new ArrayList<Tuple2D<Integer>>();
 			lstNeighbours.addAll(this.getNeighbours(i,lCell.getTuple()));
-
-			for (int index = lstNeighbours.size()-1; index==0; index--) {
-				if (!nextGrid.getAbstCell(lstNeighbours.get(index).getX(), lstNeighbours.get(index).getY()).isEmptyCell()) {
-					lstNeighbours.remove(index);
-				}	
-			}
-			
-			System.out.println(lstNeighbours);
-			
-			if (lstNeighbours.size()>0) {
-				
-				Collections.shuffle(lstNeighbours, this.random);
-				sisterCell.setTuple(lstNeighbours.get(0));
-				System.out.println("Original" + lCell.getTuple());
-				System.out.println("SISTER" + sisterCell.getTuple());
-				initializeGraph(lCell.getTuple(),sisterCell.getTuple());
-				updateCellSister( lCell,  originalCell,  sisterCell, nextGrid);
-
-				//				List<Tuple2D<Integer>> path = this.getPath(lCell.getTuple(), lstNeighbours.get(0));
-				//				this.displaceCells(path);
-				break;
-			}
 		}
 
-	}
+		//Remove all neighbours that are not empty cells
+		List<Tuple2D<Integer>> lstNeighbours2Remove =  new ArrayList<Tuple2D<Integer>>();
+		for (Tuple2D<Integer> tuple: lstNeighbours) {
+			if (!nextGrid.getAbstCell(tuple.getX(),tuple.getY()).isEmptyCell()) {
+				lstNeighbours2Remove.add(tuple);
+			}	
+		}
+		lstNeighbours.removeAll(lstNeighbours2Remove);
 
-	private void initializeGraph(Tuple2D<Integer> start,Tuple2D<Integer> end ) {
+		return lstNeighbours;
+	}
+	
+	private void minimumDistance(LivingCell lCell, EpitheliumGrid nextGrid) {
 		
+		List<Tuple2D<Integer>> lstPossibleDestinations = getEmptyCellsNeighbours(lCell, nextGrid);
+		List<LinkedList<Vertex>> lstPath = new ArrayList<LinkedList<Vertex>>();
 		
-		Map<Tuple2D<Integer>, Vertex> mTuple2Vertex = new HashMap<Tuple2D<Integer>, Vertex>();
+		Graph graph = initializeGraph();
+		int minSize = 0;
+		
+//		for (Tuple2D<Integer> destination: lstPossibleDestinations) {
+//			LinkedList<Vertex> path = getPath(lCell.getTuple(), destination ,graph, this.mTuple2Vertex);
+////			System.out.println(path);
+//			if (path.size()<=minSize)
+//				lstPath.add(path);
+//		}
+//		System.out.println(lstPath);
+	}
+	
+
+	//OLD VERSION
+//	private void minimumDistanceDivision(LivingCell lCell, EpitheliumGrid nextGrid) {
+//		//We already know that there is at least an empty cell on the grid
+//
+//		
+//		System.out.println("minimumDistanceDivision");
+//		Tuple2D<Integer> originalTuple = lCell.getTuple().clone();
+//		Tuple2D<Integer> sisterTuple = getSisterPosition(originalTuple, nextGrid.getEmptyCells());
+//
+//		LivingCell sisterCell = CellFactory.newLivingCell(sisterTuple, lCell.getModel());
+//		LivingCell originalCell = CellFactory.newLivingCell(originalTuple, lCell.getModel());
+//
+//		//MaximumDistance = getDivisionRange()
+//		for (int i=1; i<= this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getDivisionRange();i++){
+//
+//			//list of nearest neighbours
+//			List<Tuple2D<Integer>> lstNeighbours = new ArrayList<Tuple2D<Integer>>();
+//			lstNeighbours.addAll(this.getNeighbours(i,lCell.getTuple()));
+//
+//			for (int index = lstNeighbours.size()-1; index==0; index--) {
+//				if (!nextGrid.getAbstCell(lstNeighbours.get(index).getX(), lstNeighbours.get(index).getY()).isEmptyCell()) {
+//					lstNeighbours.remove(index);
+//				}	
+//			}
+//			
+//			System.out.println(lCell.getTuple().toString());
+//			System.out.println(lstNeighbours);
+//			
+//			if (lstNeighbours.size()>0) {
+//				
+//				Collections.shuffle(lstNeighbours, this.random);
+//				sisterCell.setTuple(lstNeighbours.get(0));
+//
+//				initializeGraph(lCell.getTuple(),sisterCell.getTuple());
+//				updateCellSister( lCell,  originalCell,  sisterCell, nextGrid);
+//
+//				//				List<Tuple2D<Integer>> path = this.getPath(lCell.getTuple(), lstNeighbours.get(0));
+//				//				this.displaceCells(path);
+//				break;
+//			}
+//		}
+//
+//	}
+
+	private Graph initializeGraph() {
+		
+		this.mTuple2Vertex = new HashMap<Tuple2D<Integer>, Vertex>();
 		List<Vertex> nodes = new ArrayList<Vertex>();
 		List<Edge>   edges = new ArrayList<Edge>();
 		
-		
-		//create vertex
+		//create vertex List of living and dead cells
 		for (int x=0; x<this.epithelium.getX(); x++) {
 			for(int y = 0; y<this.epithelium.getY(); y++){
 				Tuple2D<Integer> tuple = new Tuple2D<Integer>(x,y);
+				if (!nextStepGrid().getAbstCell(tuple.getX(), tuple.getY()).isInvalidCell()){
 				Vertex v = new Vertex(tuple);
-				mTuple2Vertex.put(tuple, v);
+				this.mTuple2Vertex.put(tuple, v);
 				nodes.add(v);
-			}
+			}}
 		}
 		
 		//create Edges
-		for (Tuple2D<Integer> tuple: mTuple2Vertex.keySet()) {
+		for (Tuple2D<Integer> tuple: this.mTuple2Vertex.keySet()) {
 			Set<Tuple2D<Integer>> neighbours = getNeighbours(1, tuple);
 			for (Tuple2D<Integer> tupleNei :neighbours) {
-				Edge edge = new Edge(tuple,mTuple2Vertex.get(tuple), mTuple2Vertex.get(tupleNei), 1 );
+				if (nodes.contains(this.mTuple2Vertex.get(tupleNei))) {
+				Edge edge = new Edge(tuple,this.mTuple2Vertex.get(tuple), this.mTuple2Vertex.get(tupleNei), 1 );
 				edges.add(edge);
+				}
 			}
 			
 		}
+		return new Graph(nodes, edges);
+	}
 		
-		Graph graph = new Graph(nodes, edges);
-		
+		private LinkedList<Vertex> getPath (Tuple2D<Integer> start,Tuple2D<Integer> end , Graph graph,Map<Tuple2D<Integer>, Vertex> mTuple2Vertex) {
+			
+			
 	    DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(graph);
         dijkstra.execute(mTuple2Vertex.get(start));
         LinkedList<Vertex> path = dijkstra.getPath(mTuple2Vertex.get(end));
 
-        for (Vertex vertex : path) {
-            System.out.println(vertex.getTuple());
-        }
+        System.out.println(path);
+        return path;
 		
 	}
 
-	private List<Tuple2D<Integer>> getPath(Tuple2D<Integer> tuple, Tuple2D<Integer> tuple2d) {
-
-		List<Tuple2D<Integer>> path = new ArrayList<Tuple2D<Integer>>();
-
-		return path;
-	}
+//	private List<Tuple2D<Integer>> getPath(Tuple2D<Integer> tuple, Tuple2D<Integer> tuple2d) {
+//
+//		List<Tuple2D<Integer>> path = new ArrayList<Tuple2D<Integer>>();
+//
+//		return path;
+//	}
 
 	private Set<Tuple2D<Integer>> getNeighbours(int i, Tuple2D<Integer> tuple) {
 
