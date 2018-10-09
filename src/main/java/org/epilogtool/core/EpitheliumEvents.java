@@ -150,6 +150,24 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 	}
 
 	
+	public void setDivisionRange(LogicalModel m, int parseInt) {
+		this.model2MCE.get(m).setDivisionRange(parseInt);
+		
+	}
+	
+	public void setDivisionAlgorithm(LogicalModel m, String string) {
+		this.model2MCE.get(m).setDivisionAlgorithm(string);
+		
+	}
+
+	public void setDeathAlgorithm(LogicalModel m, String string) {
+		this.model2MCE.get(m).setDeathAlgorithm(string);
+		
+	}
+	
+
+	
+	
 	
 	public EpitheliumEvents clone() {
 		
@@ -191,6 +209,6 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 	public Set<LogicalModel> getModels() {
 		return this.model2MCE.keySet();
 	}
-	
+
 	
 }

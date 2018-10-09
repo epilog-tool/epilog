@@ -331,12 +331,17 @@ public class Parser {
 			if (line.startsWith("CE")) {
 				saTmp = line.split("\\s+");
 				LogicalModel m = Project.getInstance().getModel(modelKey2Name.get(saTmp[1]));
-
-				String s = saTmp[2];
-				String[] sArray = s.split(";");
 				
-				currEpi.getEpitheliumEvents().setDeathTrigger(m, sArray[0].replace("[",""));
-				currEpi.getEpitheliumEvents().getMCE(m).setDeathValue(Float.parseFloat(sArray[1]));
+				String s="";
+				for (int index =2; index<saTmp.length;index++) {
+					s = s+ " "+saTmp[index];
+					
+				}
+				String[] sArray = s.split(";");
+			
+				
+				currEpi.getEpitheliumEvents().setDeathTrigger(m, sArray[0].replace("[","").replace(" ",""));
+				currEpi.getEpitheliumEvents().setDeathValue(m,Float.parseFloat(sArray[1]));
 				currEpi.getEpitheliumEvents().setDeathPattern(m, sArray[2]);
 				
 				currEpi.getEpitheliumEvents().setDivisionTrigger(m, sArray[3]);
@@ -344,12 +349,10 @@ public class Parser {
 				currEpi.getEpitheliumEvents().setDivisionPattern(m, sArray[5]);
 				currEpi.getEpitheliumEvents().setDivisionNewState(m, new byte[m.getComponents().size()]);
 				
-				if (sArray.length>7) {
-				currEpi.getEpitheliumEvents().getMCE(m).setDeathAlgorithm(sArray[7]);
-				currEpi.getEpitheliumEvents().getMCE(m).setDivisionAlgorithm(sArray[8]);
-				if (sArray.length>9) 
-				currEpi.getEpitheliumEvents().getMCE(m).setDivisionAlgorithm(sArray[9]);
-				}
+				currEpi.getEpitheliumEvents().setDeathAlgorithm(m, sArray[7]);
+				currEpi.getEpitheliumEvents().setDivisionAlgorithm(m, sArray[8]);
+				currEpi.getEpitheliumEvents().setDivisionRange(m,Integer.parseInt( sArray[9].replaceAll("]", "")));
+
 				
 			}
 			

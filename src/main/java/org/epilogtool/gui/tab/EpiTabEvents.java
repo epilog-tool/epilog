@@ -257,6 +257,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		for (int d = 1; d<=Math.max(this.epithelium.getEpitheliumGrid().getX(), this.epithelium.getEpitheliumGrid().getY()); d++) {
 			jcbDivisionRange.addItem(d);
 		}
+		this.jcbDivisionRange.setSelectedItem(this.epiEventClone.getMCE(this.selModel).getDivisionRange());
 		this.jcbDivisionRange.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -266,6 +267,11 @@ public class EpiTabEvents extends EpiTabDefinitions {
 				tpc.setChanged();
 			}
 		});
+		
+		
+		this.jcbDivisionRange.repaint();
+		this.jcbDivisionRange.revalidate();
+		
 		
 		//****************** DIVISION ALGORITHM 
 		
@@ -279,6 +285,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		this.jcbDivisionAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_RANDOM"));
 		this.jcbDivisionAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_MINIMUM_DISTANCE"));
 		this.jcbDivisionAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_COMPRESSION"));
+		this.jcbDivisionAlgorithm.setSelectedItem(this.epiEventClone.getMCE(this.selModel).getDivisionAlgorithm());
 
 		this.jcbDivisionAlgorithm.addActionListener(new ActionListener() {
 			@Override
@@ -375,6 +382,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 
 		this.jcbDeathAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_RANDOM"));
 		this.jcbDeathAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_COMPRESSION"));
+		this.jcbDeathAlgorithm.setSelectedItem(this.epiEventClone.getMCE(this.selModel).getDeathAlgorithm());
 
 		this.jcbDeathAlgorithm.addActionListener(new ActionListener() {
 			@Override
@@ -385,6 +393,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 				tpc.setChanged();
 			}
 		});
+
 
 		this.jpDeath.add(jpDeathAction, BorderLayout.CENTER);
 		//************ Death panel repaint/revalidate
@@ -404,6 +413,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 
 	protected void updateDivisionRange(Object selectedItem) {
 		this.epiEventClone.getMCE(this.selModel).setDivisionRange((int) selectedItem);
+
 	}
 
 	protected void updateDeathAction(Object object) {

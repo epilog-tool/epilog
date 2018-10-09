@@ -116,7 +116,6 @@ public class ModelCellularEvent {
 		return this.divisionAlgorithm;}
 	
 	public void setDivisionAlgorithm(String divAlg) {
-
 		this.divisionAlgorithm = divAlg;}
 	
 	public boolean equals(Object o) {
