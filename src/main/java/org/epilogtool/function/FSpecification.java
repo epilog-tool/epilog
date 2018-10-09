@@ -44,7 +44,6 @@ public class FSpecification {
 	 * 
 	 * @param specificationString
 	 * @return
-	 * @throws RuntimeException
 	 * @throws RecognitionException
 	 */
 	public static FunctionExpression parse(String specificationString) throws RuntimeException, RecognitionException {

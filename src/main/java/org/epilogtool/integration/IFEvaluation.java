@@ -12,6 +12,7 @@ import org.colomoto.biolqm.NodeInfo;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
+import org.epilogtool.project.Project;
 
 public class IFEvaluation {
 
@@ -115,7 +116,8 @@ public class IFEvaluation {
 			IntegrationSignal signal = (IntegrationSignal) expression;
 
 			// Verify existence of node and threshold within limits
-			NodeInfo node = this.epithelium.getComponentUsed(signal.getComponentName());
+			NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(signal.getComponentName());
+//			NodeInfo node = this.epithelium.getComponentUsed(signal.getComponentName());
 			byte minThreshold = signal.getMinThreshold();
 			if (node == null || minThreshold < 0 || minThreshold > node.getMax()) {
 				return result;
@@ -130,6 +132,13 @@ public class IFEvaluation {
 			Tuple2D<Integer> rangeList_aux = new Tuple2D<Integer>(0,
 					(signal.getDistance().getMin() - 1 > 0) ? signal.getDistance().getMin() - 1 : 0);
 
+//			System.out.println("1: " + this.relativeNeighboursCache);
+//			System.out.println("2: " + rangeList_aux);
+//			System.out.println("3: " + rangePair);
+//			System.out.println("4: " + signal.getDistance().getMin());
+//			System.out.println("5: " + x);
+//			System.out.println("6: " + y);
+			
 			Set<Tuple2D<Integer>> positionNeighbours = this.neighboursGrid.getPositionNeighbours(
 					this.relativeNeighboursCache, rangeList_aux, rangePair, signal.getDistance().getMin(), x, y);
 
