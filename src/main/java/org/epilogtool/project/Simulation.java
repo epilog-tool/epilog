@@ -267,19 +267,21 @@ public class Simulation {
 				float divVal = this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionValue();
 
 //				System.out.println("There are these available cells to divide: " + availableLivingCells.size());
-				if (availableLivingCells.size()>1 | deathVal==0 | divVal==0) {
-					if (numberOfLivingCells*deathVal>1 && numberOfLivingCells*divVal>1) { //No issue here
+				if (availableLivingCells.size()>1 | deathVal!=0 | divVal!=0) {
+					if (numberOfLivingCells*deathVal>=1 && numberOfLivingCells*divVal>=1) { //No issue here
 //						System.out.println("Both Probs are above 1");
-						//						System.out.println("Size of the availableLivingCells: " + numberOfLivingCells);
-						//						System.out.println("deathVal: " + deathVal);
-						//						System.out.println("divVal: " + divVal);
-						//						System.out.println("numberOfLivingCells*deathVal: " + numberOfLivingCells*deathVal);
-						//						System.out.println("numberOfLivingCells*divVal: " + numberOfLivingCells*divVal);
+//												System.out.println("Size of the availableLivingCells: " + numberOfLivingCells);
+//												System.out.println("deathVal: " + deathVal);
+//												System.out.println("divVal: " + divVal);
+//												System.out.println("numberOfLivingCells*deathVal: " + numberOfLivingCells*deathVal);
+//												System.out.println("numberOfLivingCells*divVal: " + numberOfLivingCells*divVal);
 
 						deathCells = getProportionOfCells(availableLivingCells,(int) (numberOfLivingCells*deathVal));
 						availableLivingCells.removeAll(deathCells);
+//						System.out.println("I am killing: " + deathCells);
 						divisionCells = getProportionOfCells(availableLivingCells,(int) (numberOfLivingCells*divVal));
 						availableLivingCells.removeAll(divisionCells);
+//						System.out.println("I am dividing: " + divisionCells);
 					} 
 					else if (numberOfLivingCells*deathVal<1 && numberOfLivingCells*divVal<1) {
 //						System.out.println("Both Probs are bellow 1");
@@ -292,7 +294,9 @@ public class Simulation {
 //						System.out.println("only death bellow 1");
 						divisionCells = getProportionOfCells(availableLivingCells,(int) (numberOfLivingCells*divVal));
 						availableLivingCells.removeAll(divisionCells);
+//						System.out.println("I am dividing: " + divisionCells);
 						deathCells = getProbabilityOfCells(availableLivingCells,deathVal);
+//						System.out.println("I am killing: " + deathCells);
 						availableLivingCells.removeAll(deathCells);
 
 					}
@@ -463,7 +467,7 @@ public class Simulation {
 			this.mTuple2Neighbours.put(lCell.getTuple(),lstNeighbours);
 		}
 		else 
-			lstNeighbours = this.mTuple2Neighbours.get(lCell.getTuple());
+			lstNeighbours.addAll(this.mTuple2Neighbours.get(lCell.getTuple()));
 		
 
 		//Remove all neighbours that are not empty cells
@@ -717,7 +721,6 @@ public class Simulation {
 		Collections.shuffle(livingCells, this.random);
 
 		for (int i = 0; i < numberCells; i++) {
-			// Update cell state
 			cells.add(livingCells.get(i));
 		}
 		return cells;
