@@ -74,6 +74,7 @@ public class IFEvaluation {
 			}
 			// Check SignalExpression
 			Set<Tuple2D<Integer>> neighbours = traverseTreeISEvaluate(x, y, cc.getSignalExpr());
+//			System.out.println("IFEValuation: Set of neighbours "  + neighbours);
 
 			if (minCells != -1 && neighbours.size() < minCells || maxCells != -1 && neighbours.size() > maxCells) {
 				return false;
@@ -141,19 +142,21 @@ public class IFEvaluation {
 			
 			Set<Tuple2D<Integer>> positionNeighbours = this.neighboursGrid.getPositionNeighbours(
 					this.relativeNeighboursCache, rangeList_aux, rangePair, signal.getDistance().getMin(), x, y);
-
+			
+//			System.out.println("Created positionNeighbours: " + positionNeighbours);
+			
 			for (Tuple2D<Integer> tuple : positionNeighbours) {
-				if (this.epithelium.getEpitheliumGrid().getAbstCell(tuple.getX(), tuple.getY()).isLivingCell()) {
+				if (this.neighboursGrid.getAbstCell(tuple.getX(), tuple.getY()).isLivingCell()) {
+//					System.out.println("Checking the neighbour: " + tuple);
 					List<NodeInfo> lNodes = new ArrayList<NodeInfo>();
-					if (this.neighboursGrid.getAbstCell(tuple.getX(), tuple.getY()).isLivingCell()){
-						lNodes = this.neighboursGrid.getModel(tuple.getX(), tuple.getY()).getComponents();
-					}
-				for (int n = 0; n < lNodes.size(); n++) {
+					lNodes = this.neighboursGrid.getModel(tuple.getX(), tuple.getY()).getComponents();
+				
+				var: for (int n = 0; n < lNodes.size(); n++) {
 					if (node.getNodeID().equals(lNodes.get(n).getNodeID())) {
 						byte state = this.neighboursGrid.getCellState(tuple.getX(), tuple.getY())[n];
 						if (minThreshold <= state) {
 							result.add(tuple);
-							break;
+							break var;
 						}
 					}
 				}}

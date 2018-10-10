@@ -472,6 +472,7 @@ public class EpitheliumGrid {
 			neighboursOutskirts.put(false,
 					this.getTopology().getRelativeNeighbours(false, rangeList_aux.getX(), rangeList_aux.getY()));
 			relativeNeighboursCache.put(rangeList_aux, neighboursOutskirts);
+//			System.out.println("Created the relativeNeighboursCache for rangeList_aux");
 		}
 
 		if (!relativeNeighboursCache.containsKey(rangePair)) {
@@ -481,19 +482,23 @@ public class EpitheliumGrid {
 			relativeNeighbours.put(false,
 					this.getTopology().getRelativeNeighbours(false, rangePair.getX(), rangePair.getY()));
 			relativeNeighboursCache.put(rangePair, relativeNeighbours);
+//			System.out.println("Created the relativeNeighboursCache for rangePair");
 		}
 
 		boolean even = this.getTopology().isEven(x, y);
 
 		Set<Tuple2D<Integer>> positionNeighbours = this.getTopology().getPositionNeighbours(x, y,
 				relativeNeighboursCache.get(rangePair).get(even));
+//		System.out.println("Created the positionNeighbours: " + positionNeighbours);
 		Set<Tuple2D<Integer>> neighboursOutskirts = this.getTopology().getPositionNeighbours(x, y,
 				relativeNeighboursCache.get(rangeList_aux).get(even));
+//		System.out.println("Created neighboursOutskirts: " + neighboursOutskirts);
 
 		if (minSigDist > 0) {
 			positionNeighbours.removeAll(neighboursOutskirts);
 		}
 
+		
 		return positionNeighbours;
 	}
 

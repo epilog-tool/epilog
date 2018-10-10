@@ -145,15 +145,15 @@ public class Simulation {
 		List<Tuple2D<Integer>> keys = new ArrayList<Tuple2D<Integer>>();
 		List<Tuple2D<Integer>> changedKeys = new ArrayList<Tuple2D<Integer>>();
 
-		System.out.println("*************");
-		System.out.println("the set of living cells is : " + livingCells);
-		System.out.println("The Grid state before everythiog is: ");
-		for (LivingCell cell : nextGrid.getAllLivingCells()) {
-			System.out.println("tuple:  " + cell.getTuple().toString());
-			System.out.println("state: " + Arrays.toString(cell.getState()));
-		}
+//		System.out.println("*************");
+//		System.out.println("the set of living cells is : " + livingCells);
+//		System.out.println("The Grid state before everythiog is: ");
+//		for (LivingCell cell : nextGrid.getAllLivingCells()) {
+//			System.out.println("tuple:  " + cell.getTuple().toString());
+//			System.out.println("state: " + Arrays.toString(cell.getState()));
+//		}
 		for (LivingCell livingCell: livingCells) {
-			System.out.println("updating Cell: " + livingCell.getTuple());
+//			System.out.println("updating Cell: " + livingCell.getTuple());
 			Tuple2D<Integer> tuple = livingCell.getTuple();
 			int x = (int) tuple.getX();
 			int y = (int) tuple.getY();
@@ -161,11 +161,11 @@ public class Simulation {
 //			if (!nextGrid.getAbstCell(x,y).isLivingCell()) {
 //				continue;
 //			}
-			byte[] currState = currGrid.getCellState(x, y);
+			byte[] currState = livingCell.getState();
 
 			// Compute next state
 			byte[] nextState = this.nextCellValue(x, y, currGrid, evaluator, sNodes);
-			System.out.println("updating Cell next state: " + Arrays.toString(nextState));
+//			System.out.println("updating Cell next state: " + Arrays.toString(nextState));
 
 			// If the cell state changed then add it to the pool
 			Tuple2D<Integer> key = new Tuple2D<Integer>(x, y);
@@ -218,12 +218,12 @@ public class Simulation {
 		}
 
 		//************* TRIGGER EVENTS
-		System.out.println("The next Grid state before actions is: ");
-		for (LivingCell cell : nextGrid.getAllLivingCells()) {
-			System.out.println("tuple:  " + cell.getTuple().toString());
-			System.out.println("state: " + Arrays.toString(cell.getState()));
-		}
-		System.out.println("There are things changed on the grid");
+//		System.out.println("The next Grid state before actions is: ");
+//		for (LivingCell cell : nextGrid.getAllLivingCells()) {
+//			System.out.println("tuple:  " + cell.getTuple().toString());
+//			System.out.println("state: " + Arrays.toString(cell.getState()));
+//		}
+//		System.out.println("There are things changed on the grid");
 		//		System.out.println("Iteration:  " + this.gridHashHistory.size());
 		//		System.out.println("1 " + nextGrid.getAllLivingCells().size());
 		//		System.out.println("2 " + nextGrid.getEmptyCells().size());
@@ -258,15 +258,15 @@ public class Simulation {
 			int numberOfLivingCells = availableLivingCells.size();
 
 			if (deathTrigger.equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM")) && divisionTrigger.equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM"))) {
-								System.out.println("Everything is random");
+//								System.out.println("Everything is random");
 
 				float deathVal = this.epithelium.getEpitheliumEvents().getMCE(model).getDeathValue();
 				float divVal = this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionValue();
 
-				System.out.println("There are these available cells to divide: " + availableLivingCells.size());
+//				System.out.println("There are these available cells to divide: " + availableLivingCells.size());
 				if (availableLivingCells.size()>1 | deathVal==0 | divVal==0) {
 					if (numberOfLivingCells*deathVal>1 && numberOfLivingCells*divVal>1) { //No issue here
-						System.out.println("Both Probs are above 1");
+//						System.out.println("Both Probs are above 1");
 						//						System.out.println("Size of the availableLivingCells: " + numberOfLivingCells);
 						//						System.out.println("deathVal: " + deathVal);
 						//						System.out.println("divVal: " + divVal);
@@ -279,14 +279,14 @@ public class Simulation {
 						availableLivingCells.removeAll(divisionCells);
 					} 
 					else if (numberOfLivingCells*deathVal<1 && numberOfLivingCells*divVal<1) {
-						System.out.println("Both Probs are bellow 1");
+//						System.out.println("Both Probs are bellow 1");
 						List<List<LivingCell>> cells = getBothProbabilities(availableLivingCells,deathVal, divVal);
 						deathCells= cells.get(0);
 						divisionCells = cells.get(1);
 						availableLivingCells= cells.get(2);
 					}
 					else if (numberOfLivingCells*deathVal<1){
-						System.out.println("only death bellow 1");
+//						System.out.println("only death bellow 1");
 						divisionCells = getProportionOfCells(availableLivingCells,(int) (numberOfLivingCells*divVal));
 						availableLivingCells.removeAll(divisionCells);
 						deathCells = getProbabilityOfCells(availableLivingCells,deathVal);
@@ -333,7 +333,7 @@ public class Simulation {
 			}
 
 			else if (divisionTrigger.equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM"))) {
-				System.out.println("Only division is random");
+//				System.out.println("Only division is random");
 				float divVal = this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionValue();
 
 				if (numberOfLivingCells*divVal>=1){
@@ -393,7 +393,7 @@ public class Simulation {
 					if (this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getDivisionAlgorithm().equals(Txt.get("s_TAB_EVE_ALGORITHM_RANDOM"))){
 						randomDivision(lCell,nextGrid);}
 					else if (this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getDivisionAlgorithm().equals(Txt.get("s_TAB_EVE_ALGORITHM_MINIMUM_DISTANCE"))){
-						System.out.println("Cells are trying to divide");
+//						System.out.println("Cells are trying to divide");
 						minimumDistance(lCell,nextGrid);
 							
 						}
@@ -401,11 +401,11 @@ public class Simulation {
 			}
 		}
 
-		System.out.println("The next Grid state  is: ");
-		for (LivingCell cell : nextGrid.getAllLivingCells()) {
-			System.out.println("tuple:  " + cell.getTuple().toString());
-			System.out.println("state: " + Arrays.toString(cell.getState()));
-		}
+//		System.out.println("The next Grid state  is: ");
+//		for (LivingCell cell : nextGrid.getAllLivingCells()) {
+//			System.out.println("tuple:  " + cell.getTuple().toString());
+//			System.out.println("state: " + Arrays.toString(cell.getState()));
+//		}
 		this.gridHistory.add(nextGrid);
 		if (this.gridHashHistory != null) {
 			this.gridHashHistory.add(nextGrid.hashGrid());
@@ -500,9 +500,9 @@ public class Simulation {
 		
 //        System.out.println("start: " + path.getFirst().getTuple().toString());
 //        System.out.println("end: " +  path.getLast().getTuple().toString());
-        for (Vertex node: path) {
+//        for (Vertex node: path) {
 //        	System.out.println("node: " + node.getTuple().toString());
-        }
+//        }
 		
 		Tuple2D<Integer> tupleDestination = path.getLast().getTuple();
 		
@@ -617,7 +617,7 @@ public class Simulation {
 
 	private void randomDivision(LivingCell lCell, EpitheliumGrid nextGrid) {
 
-		System.out.println("randomDivision");
+//		System.out.println("randomDivision");
 		Tuple2D<Integer> originalTuple = lCell.getTuple().clone();
 		Tuple2D<Integer> sisterTuple = getSisterPosition(originalTuple, nextGrid.getEmptyCells());
 
@@ -716,7 +716,9 @@ public class Simulation {
 
 	private byte[] nextCellValue(int x, int y, EpitheliumGrid currGrid, IFEvaluation evaluator,
 			Set<NodeInfo> sNodeInfos) {
+//		System.out.println("inside the next state calculator");
 		byte[] currState = currGrid.getCellState(x, y).clone();
+//		System.out.println("the currstate is: " + Arrays.toString(currState));
 		LogicalModel m = currGrid.getModel(x, y);
 		AbstractPerturbation ap = currGrid.getPerturbation(x, y);
 		PriorityUpdater updater = this.updaterCache.get(m).get(ap);
@@ -726,13 +728,15 @@ public class Simulation {
 		for (NodeInfo node :this.epithelium.getIntegrationNodes()) {
 			if (m.getComponents().contains(node)) {
 				if (node.isInput() && sNodeInfos.contains(node)) {
-
+//					System.out.println("Just found the input: " + node.getNodeID());
 					List<IntegrationFunctionExpression> lExpressions = this.epithelium
 							.getIntegrationFunctionsForComponent(node).getComputedExpressions();
 					byte target = 0;
 					for (int i = 0; i < lExpressions.size(); i++) {
+//						System.out.println("There are expressions");
 						if (evaluator.evaluate(x, y, lExpressions.get(i))) {
 							target = (byte) (i + 1);
+//							System.out.println("updated the input: " + node.getNodeID());
 							break; // The lowest value being satisfied
 						}
 					}
