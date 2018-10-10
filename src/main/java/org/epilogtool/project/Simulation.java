@@ -28,6 +28,7 @@ import org.epilogtool.core.algorithms.DijkstraAlgorithm;
 import org.epilogtool.core.algorithms.Edge;
 import org.epilogtool.core.algorithms.Graph;
 import org.epilogtool.core.algorithms.Vertex;
+import org.epilogtool.core.cell.AbstractCell;
 import org.epilogtool.core.cell.CellFactory;
 import org.epilogtool.core.cell.EmptyCell;
 import org.epilogtool.core.cell.LivingCell;
@@ -144,23 +145,33 @@ public class Simulation {
 		List<Tuple2D<Integer>> keys = new ArrayList<Tuple2D<Integer>>();
 		List<Tuple2D<Integer>> changedKeys = new ArrayList<Tuple2D<Integer>>();
 
+		System.out.println("*************");
+		System.out.println("the set of living cells is : " + livingCells);
+		System.out.println("The Grid state before everythiog is: ");
+		for (LivingCell cell : nextGrid.getAllLivingCells()) {
+			System.out.println("tuple:  " + cell.getTuple().toString());
+			System.out.println("state: " + Arrays.toString(cell.getState()));
+		}
 		for (LivingCell livingCell: livingCells) {
-
+			System.out.println("updating Cell: " + livingCell.getTuple());
 			Tuple2D<Integer> tuple = livingCell.getTuple();
 			int x = (int) tuple.getX();
 			int y = (int) tuple.getY();
-			if (!nextGrid.getAbstCell(x,y).isLivingCell()) {
-				continue;
-			}
+
+//			if (!nextGrid.getAbstCell(x,y).isLivingCell()) {
+//				continue;
+//			}
 			byte[] currState = currGrid.getCellState(x, y);
 
 			// Compute next state
 			byte[] nextState = this.nextCellValue(x, y, currGrid, evaluator, sNodes);
+			System.out.println("updating Cell next state: " + Arrays.toString(nextState));
 
 			// If the cell state changed then add it to the pool
 			Tuple2D<Integer> key = new Tuple2D<Integer>(x, y);
 			cells2update.put(key, nextState);
 			keys.add(key);
+			
 			if (!Arrays.equals(currState, nextState)) {
 				changedKeys.add(key);
 			}
@@ -186,15 +197,16 @@ public class Simulation {
 				nextGrid.setCellState(keys.get(i).getX(), keys.get(i).getY(), cells2update.get(keys.get(i)));
 			}
 		}
-		//TODO if this state is stable should we stop here? Stability is maintained? what about different number of cells
+
 		boolean control = true;
-		if (currGrid.getAllLivingCells().size()==0) {
+		if (nextGrid.getAllLivingCells().size()==0) {
 			this.stable = true;
+			return currGrid;
 		}
 		else {
 		if (changedKeys.isEmpty()) {
 			for (LogicalModel model: this.epithelium.getEpitheliumEvents().getModels()){
-				if (this.epithelium.getEpitheliumEvents().getMCE(model).getDeathTrigger().equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM"))) {
+				if (this.epithelium.getEpitheliumEvents().getMCE(model).getDeathTrigger().equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM"))&& this.epithelium.getEpitheliumEvents().getMCE(model).getDeathValue()>0) {
 					control = false;}
 				else if (this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionTrigger().equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM")) && nextGrid.getEmptyCells().size()!=0){
 					control = false;}
@@ -206,13 +218,19 @@ public class Simulation {
 		}
 
 		//************* TRIGGER EVENTS
-
+		System.out.println("The next Grid state before actions is: ");
+		for (LivingCell cell : nextGrid.getAllLivingCells()) {
+			System.out.println("tuple:  " + cell.getTuple().toString());
+			System.out.println("state: " + Arrays.toString(cell.getState()));
+		}
+		System.out.println("There are things changed on the grid");
 		//		System.out.println("Iteration:  " + this.gridHashHistory.size());
 		//		System.out.println("1 " + nextGrid.getAllLivingCells().size());
 		//		System.out.println("2 " + nextGrid.getEmptyCells().size());
 		//		System.out.println("3 " + (nextGrid.getEmptyCells().size() + nextGrid.getAllLivingCells().size()));
 
-
+		
+		
 		List<LivingCell> deathCells = new ArrayList<LivingCell>();
 		List<LivingCell> divisionCells = new ArrayList<LivingCell>();
 
@@ -240,15 +258,15 @@ public class Simulation {
 			int numberOfLivingCells = availableLivingCells.size();
 
 			if (deathTrigger.equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM")) && divisionTrigger.equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM"))) {
-				//				System.out.println("Everything is random");
+								System.out.println("Everything is random");
 
 				float deathVal = this.epithelium.getEpitheliumEvents().getMCE(model).getDeathValue();
 				float divVal = this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionValue();
 
-
-				if (availableLivingCells.size()>1) {
+				System.out.println("There are these available cells to divide: " + availableLivingCells.size());
+				if (availableLivingCells.size()>1 | deathVal==0 | divVal==0) {
 					if (numberOfLivingCells*deathVal>1 && numberOfLivingCells*divVal>1) { //No issue here
-
+						System.out.println("Both Probs are above 1");
 						//						System.out.println("Size of the availableLivingCells: " + numberOfLivingCells);
 						//						System.out.println("deathVal: " + deathVal);
 						//						System.out.println("divVal: " + divVal);
@@ -261,12 +279,14 @@ public class Simulation {
 						availableLivingCells.removeAll(divisionCells);
 					} 
 					else if (numberOfLivingCells*deathVal<1 && numberOfLivingCells*divVal<1) {
+						System.out.println("Both Probs are bellow 1");
 						List<List<LivingCell>> cells = getBothProbabilities(availableLivingCells,deathVal, divVal);
 						deathCells= cells.get(0);
 						divisionCells = cells.get(1);
 						availableLivingCells= cells.get(2);
 					}
 					else if (numberOfLivingCells*deathVal<1){
+						System.out.println("only death bellow 1");
 						divisionCells = getProportionOfCells(availableLivingCells,(int) (numberOfLivingCells*divVal));
 						availableLivingCells.removeAll(divisionCells);
 						deathCells = getProbabilityOfCells(availableLivingCells,deathVal);
@@ -313,6 +333,7 @@ public class Simulation {
 			}
 
 			else if (divisionTrigger.equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM"))) {
+				System.out.println("Only division is random");
 				float divVal = this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionValue();
 
 				if (numberOfLivingCells*divVal>=1){
@@ -329,6 +350,7 @@ public class Simulation {
 				}
 			}
 		}
+		
 
 		//************* Event Action
 
@@ -371,12 +393,19 @@ public class Simulation {
 					if (this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getDivisionAlgorithm().equals(Txt.get("s_TAB_EVE_ALGORITHM_RANDOM"))){
 						randomDivision(lCell,nextGrid);}
 					else if (this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getDivisionAlgorithm().equals(Txt.get("s_TAB_EVE_ALGORITHM_MINIMUM_DISTANCE"))){
-						minimumDistance(lCell,nextGrid);}
+						System.out.println("Cells are trying to divide");
+						minimumDistance(lCell,nextGrid);
+							
+						}
 				}
 			}
 		}
 
-
+		System.out.println("The next Grid state  is: ");
+		for (LivingCell cell : nextGrid.getAllLivingCells()) {
+			System.out.println("tuple:  " + cell.getTuple().toString());
+			System.out.println("state: " + Arrays.toString(cell.getState()));
+		}
 		this.gridHistory.add(nextGrid);
 		if (this.gridHashHistory != null) {
 			this.gridHashHistory.add(nextGrid.hashGrid());
@@ -443,19 +472,51 @@ public class Simulation {
 		
 		List<Tuple2D<Integer>> lstPossibleDestinations = getEmptyCellsNeighbours(lCell, nextGrid);
 		List<LinkedList<Vertex>> lstPath = new ArrayList<LinkedList<Vertex>>();
+//		
+		Graph graph = initializeGraph(nextGrid);
+		int minSize = 1000;
 		
-		Graph graph = initializeGraph();
-		int minSize = 0;
+		for (Tuple2D<Integer> destination: lstPossibleDestinations) {
+			LinkedList<Vertex> path = getPath(lCell.getTuple(), destination ,graph, this.mTuple2Vertex);
+			if (path.size()<=minSize) {
+				lstPath.add(path);
+				minSize = path.size();
+			}
+		}
 		
-//		for (Tuple2D<Integer> destination: lstPossibleDestinations) {
-//			LinkedList<Vertex> path = getPath(lCell.getTuple(), destination ,graph, this.mTuple2Vertex);
-////			System.out.println(path);
-//			if (path.size()<=minSize)
-//				lstPath.add(path);
-//		}
-//		System.out.println(lstPath);
+		if (lstPath.size()>1) {
+			LinkedList<Vertex> path = lstPath.get(random.nextInt(lstPath.size()));
+			this.displaceCells(path, nextGrid);
+		}
+		else if (lstPath.size()>0){
+			
+			this.displaceCells(lstPath.get(0), nextGrid);
+		}
+		
 	}
 	
+
+	private void displaceCells(LinkedList<Vertex> path, EpitheliumGrid nextGrid) {
+		
+//        System.out.println("start: " + path.getFirst().getTuple().toString());
+//        System.out.println("end: " +  path.getLast().getTuple().toString());
+        for (Vertex node: path) {
+//        	System.out.println("node: " + node.getTuple().toString());
+        }
+		
+		Tuple2D<Integer> tupleDestination = path.getLast().getTuple();
+		
+		for (int index = (path.size()-1); index ==1; index--) {
+//			System.out.println(index);
+			Tuple2D<Integer> tuple = path.get(index).getTuple();
+			AbstractCell cell = nextGrid.getAbstCell(tuple.getX(), tuple.getY());
+			cell.setTuple(tupleDestination);
+			tupleDestination = tuple;
+		}
+		updateCellSister(path.get(0).getTuple(), tupleDestination, nextGrid);
+		
+	}
+
 
 	//OLD VERSION
 //	private void minimumDistanceDivision(LivingCell lCell, EpitheliumGrid nextGrid) {
@@ -501,7 +562,7 @@ public class Simulation {
 //
 //	}
 
-	private Graph initializeGraph() {
+	private Graph initializeGraph(EpitheliumGrid nextGrid) {
 		
 		this.mTuple2Vertex = new HashMap<Tuple2D<Integer>, Vertex>();
 		List<Vertex> nodes = new ArrayList<Vertex>();
@@ -511,12 +572,12 @@ public class Simulation {
 		for (int x=0; x<this.epithelium.getX(); x++) {
 			for(int y = 0; y<this.epithelium.getY(); y++){
 				Tuple2D<Integer> tuple = new Tuple2D<Integer>(x,y);
-				if (!nextStepGrid().getAbstCell(tuple.getX(), tuple.getY()).isInvalidCell()){
+				if (!nextGrid.getAbstCell(x, y).isInvalidCell()){
 				Vertex v = new Vertex(tuple);
 				this.mTuple2Vertex.put(tuple, v);
 				nodes.add(v);
-			}}
-		}
+			}
+}}
 		
 		//create Edges
 		for (Tuple2D<Integer> tuple: this.mTuple2Vertex.keySet()) {
@@ -538,18 +599,10 @@ public class Simulation {
 	    DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(graph);
         dijkstra.execute(mTuple2Vertex.get(start));
         LinkedList<Vertex> path = dijkstra.getPath(mTuple2Vertex.get(end));
-
-        System.out.println(path);
         return path;
 		
 	}
 
-//	private List<Tuple2D<Integer>> getPath(Tuple2D<Integer> tuple, Tuple2D<Integer> tuple2d) {
-//
-//		List<Tuple2D<Integer>> path = new ArrayList<Tuple2D<Integer>>();
-//
-//		return path;
-//	}
 
 	private Set<Tuple2D<Integer>> getNeighbours(int i, Tuple2D<Integer> tuple) {
 
@@ -571,12 +624,16 @@ public class Simulation {
 		LivingCell sisterCell = CellFactory.newLivingCell(sisterTuple, lCell.getModel());
 		LivingCell originalCell = CellFactory.newLivingCell(originalTuple, lCell.getModel());
 
-		updateCellSister( lCell, originalCell, sisterCell,  nextGrid) ;
+		updateCellSister( lCell.getTuple(), sisterCell.getTuple(),  nextGrid) ;
 	}
 
 	
 	//change the original cell the daughters
-	private void updateCellSister(LivingCell lCell, LivingCell originalCell, LivingCell sisterCell,EpitheliumGrid nextGrid) {
+	private void updateCellSister(Tuple2D<Integer> originalTuple, Tuple2D<Integer> sisterTuple,EpitheliumGrid nextGrid) {
+		
+		LivingCell lCell = (LivingCell) nextGrid.getAbstCell(originalTuple.getX(), originalTuple.getY());
+		LivingCell sisterCell = CellFactory.newLivingCell(sisterTuple, lCell.getModel());
+		LivingCell originalCell = CellFactory.newLivingCell(lCell.getTuple(), lCell.getModel());
 
 
 		if (this.epithelium.getEpitheliumEvents().getDivisionOption().equals(Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_SAME"))) {
