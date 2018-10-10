@@ -51,6 +51,7 @@ public class Simulation {
 	private 	Map<Tuple2D<Integer>, Vertex> mTuple2Vertex;
 
 	private Map<Tuple2D<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>> relativeNeighboursCache; //TO BE REMOVED FROM HERE
+	Map<Tuple2D<Integer>, List<Tuple2D<Integer>>> mTuple2Neighbours;//TO BE REMOVED FROM HERE
 
 	private boolean stable;
 	private boolean hasCycle;
@@ -91,6 +92,8 @@ public class Simulation {
 		this.buildPriorityUpdaterCache();
 
 		this.relativeNeighboursCache = new HashMap<Tuple2D<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>>(); //TO BE REMOVED FROM HERE
+		this.mTuple2Neighbours= new HashMap <Tuple2D<Integer>, List<Tuple2D<Integer>>> (); //TO BE REMOVED FROM HERE
+		
 
 	}
 
@@ -332,7 +335,7 @@ public class Simulation {
 				}
 			}
 
-			else if (divisionTrigger.equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM"))) {
+			else if (divisionTrigger.equals(Txt.get("s_TAB_EVE_TRIGGER_RANDOM")) & availableLivingCells.size()>0) {
 //				System.out.println("Only division is random");
 				float divVal = this.epithelium.getEpitheliumEvents().getMCE(model).getDivisionValue();
 
@@ -450,27 +453,41 @@ public class Simulation {
 	
 	private List<Tuple2D<Integer>>  getEmptyCellsNeighbours(LivingCell lCell, EpitheliumGrid nextGrid) {
 		
-		//Get all neighbours within the distance Range
+
 		List<Tuple2D<Integer>> lstNeighbours = new ArrayList<Tuple2D<Integer>>();
-		for (int i=1; i<= this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getDivisionRange();i++){
-			lstNeighbours.addAll(this.getNeighbours(i,lCell.getTuple()));
+		//Get all neighbours within the distance Range
+		if (!this.mTuple2Neighbours.containsKey(lCell.getTuple())) {
+			for (int i=1; i<= this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getDivisionRange();i++){
+				lstNeighbours.addAll(this.getNeighbours(i,lCell.getTuple()));
+			}
+			this.mTuple2Neighbours.put(lCell.getTuple(),lstNeighbours);
 		}
+		else 
+			lstNeighbours = this.mTuple2Neighbours.get(lCell.getTuple());
+		
 
 		//Remove all neighbours that are not empty cells
 		List<Tuple2D<Integer>> lstNeighbours2Remove =  new ArrayList<Tuple2D<Integer>>();
-		for (Tuple2D<Integer> tuple: lstNeighbours) {
+		for (Tuple2D<Integer> tuple: this.mTuple2Neighbours.get(lCell.getTuple())) {
 			if (!nextGrid.getAbstCell(tuple.getX(),tuple.getY()).isEmptyCell()) {
 				lstNeighbours2Remove.add(tuple);
 			}	
 		}
+		
 		lstNeighbours.removeAll(lstNeighbours2Remove);
 
+//		System.out.println("*****************");
+//
+//		System.out.println(lCell.getTuple());
+//		System.out.println(lstNeighbours);
+		
 		return lstNeighbours;
 	}
 	
 	private void minimumDistance(LivingCell lCell, EpitheliumGrid nextGrid) {
 		
 		List<Tuple2D<Integer>> lstPossibleDestinations = getEmptyCellsNeighbours(lCell, nextGrid);
+		
 		List<LinkedList<Vertex>> lstPath = new ArrayList<LinkedList<Vertex>>();
 //		
 		Graph graph = initializeGraph(nextGrid);
