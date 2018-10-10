@@ -418,7 +418,9 @@ public class EpiTabEvents extends EpiTabDefinitions {
 
 		try {
 			FunctionExpression fExpression = FSpecification.parse(jtf.getText());
-			this.mddDeath = MDDUtils.getInstance().getModelMDDs(this.selModel).getMDD(fExpression);
+			this.mddDeath = MDDUtils.getInstance().getModelMDDs(this.selModel).getMDD(fExpression, "");
+			System.out.println("Events.Death: div["+this.mddDivision + "] death[" + this.mddDeath+"]");
+
 			if (MDDUtils.getInstance().getModelMDDs(this.selModel).and(this.mddDeath, this.mddDivision) == 1) {
 				jtf.setBackground(Color.YELLOW);
 			} else {
@@ -438,7 +440,8 @@ public class EpiTabEvents extends EpiTabDefinitions {
 
 		try {
 			FunctionExpression fExpression = FSpecification.parse(jtf.getText());
-			this.mddDivision = MDDUtils.getInstance().getModelMDDs(this.selModel).getMDD(fExpression);
+			this.mddDivision = MDDUtils.getInstance().getModelMDDs(this.selModel).getMDD(fExpression, "");
+			System.out.println("Events.Div: div["+this.mddDivision + "] death[" + this.mddDeath+"]");
 			if (MDDUtils.getInstance().getModelMDDs(this.selModel).and(this.mddDivision, this.mddDeath) == 1) {
 				jtf.setBackground(Color.YELLOW);
 			} else {

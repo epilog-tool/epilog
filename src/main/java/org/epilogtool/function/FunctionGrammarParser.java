@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 ./src/main/java/org/epilogtool/function/FunctionGrammar.g 2018-09-26 15:19:19
+// $ANTLR 3.5.2 src/main/java/org/epilogtool/function/FunctionGrammar.g 2018-10-10 11:48:04
 
 package org.epilogtool.function;
 
@@ -44,7 +44,7 @@ public class FunctionGrammarParser extends Parser {
 	}
 
 	@Override public String[] getTokenNames() { return FunctionGrammarParser.tokenNames; }
-	@Override public String getGrammarFileName() { return "./src/main/java/org/epilogtool/function/FunctionGrammar.g"; }
+	@Override public String getGrammarFileName() { return "src/main/java/org/epilogtool/function/FunctionGrammar.g"; }
 
 
 	  @Override
@@ -55,7 +55,7 @@ public class FunctionGrammarParser extends Parser {
 
 
 	// $ANTLR start "eval"
-	// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:24:1: eval returns [FunctionExpression value] : exp= functionexpror EOF ;
+	// src/main/java/org/epilogtool/function/FunctionGrammar.g:24:1: eval returns [FunctionExpression value] : exp= functionexpror EOF ;
 	public final FunctionExpression eval() throws RecognitionException {
 		FunctionExpression value = null;
 
@@ -63,8 +63,8 @@ public class FunctionGrammarParser extends Parser {
 		FunctionExpression exp =null;
 
 		try {
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:25:2: (exp= functionexpror EOF )
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:25:4: exp= functionexpror EOF
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:25:2: (exp= functionexpror EOF )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:25:4: exp= functionexpror EOF
 			{
 			pushFollow(FOLLOW_functionexpror_in_eval46);
 			exp=functionexpror();
@@ -89,7 +89,7 @@ public class FunctionGrammarParser extends Parser {
 
 
 	// $ANTLR start "functionexpror"
-	// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:28:1: functionexpror returns [FunctionExpression value] : o1= functionexprand ( OR o2= functionexprand )* ;
+	// src/main/java/org/epilogtool/function/FunctionGrammar.g:28:1: functionexpror returns [FunctionExpression value] : o1= functionexprand ( OR o2= functionexprand )* ;
 	public final FunctionExpression functionexpror() throws RecognitionException {
 		FunctionExpression value = null;
 
@@ -98,14 +98,14 @@ public class FunctionGrammarParser extends Parser {
 		FunctionExpression o2 =null;
 
 		try {
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:29:2: (o1= functionexprand ( OR o2= functionexprand )* )
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:29:4: o1= functionexprand ( OR o2= functionexprand )*
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:29:2: (o1= functionexprand ( OR o2= functionexprand )* )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:29:4: o1= functionexprand ( OR o2= functionexprand )*
 			{
 			pushFollow(FOLLOW_functionexprand_in_functionexpror67);
 			o1=functionexprand();
 			state._fsp--;
 
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:29:23: ( OR o2= functionexprand )*
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:29:23: ( OR o2= functionexprand )*
 			loop1:
 			while (true) {
 				int alt1=2;
@@ -116,7 +116,7 @@ public class FunctionGrammarParser extends Parser {
 
 				switch (alt1) {
 				case 1 :
-					// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:29:24: OR o2= functionexprand
+					// src/main/java/org/epilogtool/function/FunctionGrammar.g:29:24: OR o2= functionexprand
 					{
 					match(input,OR,FOLLOW_OR_in_functionexpror70); 
 					pushFollow(FOLLOW_functionexprand_in_functionexpror74);
@@ -149,7 +149,7 @@ public class FunctionGrammarParser extends Parser {
 
 
 	// $ANTLR start "functionexprand"
-	// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:33:1: functionexprand returns [FunctionExpression value] : a1= functionexprnot ( AND a2= functionexprnot )* ;
+	// src/main/java/org/epilogtool/function/FunctionGrammar.g:33:1: functionexprand returns [FunctionExpression value] : a1= functionexprnot ( AND a2= functionexprnot )* ;
 	public final FunctionExpression functionexprand() throws RecognitionException {
 		FunctionExpression value = null;
 
@@ -158,14 +158,14 @@ public class FunctionGrammarParser extends Parser {
 		FunctionExpression a2 =null;
 
 		try {
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:34:2: (a1= functionexprnot ( AND a2= functionexprnot )* )
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:34:4: a1= functionexprnot ( AND a2= functionexprnot )*
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:34:2: (a1= functionexprnot ( AND a2= functionexprnot )* )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:34:4: a1= functionexprnot ( AND a2= functionexprnot )*
 			{
 			pushFollow(FOLLOW_functionexprnot_in_functionexprand98);
 			a1=functionexprnot();
 			state._fsp--;
 
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:34:23: ( AND a2= functionexprnot )*
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:34:23: ( AND a2= functionexprnot )*
 			loop2:
 			while (true) {
 				int alt2=2;
@@ -176,7 +176,7 @@ public class FunctionGrammarParser extends Parser {
 
 				switch (alt2) {
 				case 1 :
-					// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:34:24: AND a2= functionexprnot
+					// src/main/java/org/epilogtool/function/FunctionGrammar.g:34:24: AND a2= functionexprnot
 					{
 					match(input,AND,FOLLOW_AND_in_functionexprand101); 
 					pushFollow(FOLLOW_functionexprnot_in_functionexprand105);
@@ -209,7 +209,7 @@ public class FunctionGrammarParser extends Parser {
 
 
 	// $ANTLR start "functionexprnot"
-	// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:38:1: functionexprnot returns [FunctionExpression value] : (expr= functionparen | NOT expr= functionparen );
+	// src/main/java/org/epilogtool/function/FunctionGrammar.g:38:1: functionexprnot returns [FunctionExpression value] : (expr= functionparen | NOT expr= functionparen );
 	public final FunctionExpression functionexprnot() throws RecognitionException {
 		FunctionExpression value = null;
 
@@ -217,7 +217,7 @@ public class FunctionGrammarParser extends Parser {
 		FunctionExpression expr =null;
 
 		try {
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:39:2: (expr= functionparen | NOT expr= functionparen )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:39:2: (expr= functionparen | NOT expr= functionparen )
 			int alt3=2;
 			int LA3_0 = input.LA(1);
 			if ( (LA3_0==ID||LA3_0==11||(LA3_0 >= 14 && LA3_0 <= 15)) ) {
@@ -235,7 +235,7 @@ public class FunctionGrammarParser extends Parser {
 
 			switch (alt3) {
 				case 1 :
-					// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:39:4: expr= functionparen
+					// src/main/java/org/epilogtool/function/FunctionGrammar.g:39:4: expr= functionparen
 					{
 					pushFollow(FOLLOW_functionparen_in_functionexprnot128);
 					expr=functionparen();
@@ -245,7 +245,7 @@ public class FunctionGrammarParser extends Parser {
 					}
 					break;
 				case 2 :
-					// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:41:4: NOT expr= functionparen
+					// src/main/java/org/epilogtool/function/FunctionGrammar.g:41:4: NOT expr= functionparen
 					{
 					match(input,NOT,FOLLOW_NOT_in_functionexprnot137); 
 					pushFollow(FOLLOW_functionparen_in_functionexprnot141);
@@ -272,7 +272,7 @@ public class FunctionGrammarParser extends Parser {
 
 
 	// $ANTLR start "functionparen"
-	// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:45:1: functionparen returns [FunctionExpression value] : ( '(' expr= functionexpror ')' |expr= componentexpr | 'TRUE' | 'FALSE' );
+	// src/main/java/org/epilogtool/function/FunctionGrammar.g:45:1: functionparen returns [FunctionExpression value] : ( '(' expr= functionexpror ')' |expr= componentexpr | 'TRUE' | 'FALSE' );
 	public final FunctionExpression functionparen() throws RecognitionException {
 		FunctionExpression value = null;
 
@@ -280,7 +280,7 @@ public class FunctionGrammarParser extends Parser {
 		FunctionExpression expr =null;
 
 		try {
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:46:2: ( '(' expr= functionexpror ')' |expr= componentexpr | 'TRUE' | 'FALSE' )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:46:2: ( '(' expr= functionexpror ')' |expr= componentexpr | 'TRUE' | 'FALSE' )
 			int alt4=4;
 			switch ( input.LA(1) ) {
 			case 11:
@@ -310,7 +310,7 @@ public class FunctionGrammarParser extends Parser {
 			}
 			switch (alt4) {
 				case 1 :
-					// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:46:4: '(' expr= functionexpror ')'
+					// src/main/java/org/epilogtool/function/FunctionGrammar.g:46:4: '(' expr= functionexpror ')'
 					{
 					match(input,11,FOLLOW_11_in_functionparen160); 
 					pushFollow(FOLLOW_functionexpror_in_functionparen164);
@@ -322,7 +322,7 @@ public class FunctionGrammarParser extends Parser {
 					}
 					break;
 				case 2 :
-					// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:48:4: expr= componentexpr
+					// src/main/java/org/epilogtool/function/FunctionGrammar.g:48:4: expr= componentexpr
 					{
 					pushFollow(FOLLOW_componentexpr_in_functionparen177);
 					expr=componentexpr();
@@ -332,14 +332,14 @@ public class FunctionGrammarParser extends Parser {
 					}
 					break;
 				case 3 :
-					// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:50:4: 'TRUE'
+					// src/main/java/org/epilogtool/function/FunctionGrammar.g:50:4: 'TRUE'
 					{
 					match(input,15,FOLLOW_15_in_functionparen186); 
 					 value = FSpecification.functionTRUE(); 
 					}
 					break;
 				case 4 :
-					// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:52:4: 'FALSE'
+					// src/main/java/org/epilogtool/function/FunctionGrammar.g:52:4: 'FALSE'
 					{
 					match(input,14,FOLLOW_14_in_functionparen195); 
 					 value = FSpecification.functionFALSE(); 
@@ -362,7 +362,7 @@ public class FunctionGrammarParser extends Parser {
 
 
 	// $ANTLR start "componentexpr"
-	// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:56:1: componentexpr returns [FunctionExpression value ] : (id= ID |id= ID ':' t= NUMBER );
+	// src/main/java/org/epilogtool/function/FunctionGrammar.g:56:1: componentexpr returns [FunctionExpression value ] : (id= ID |id= ID ':' t= NUMBER );
 	public final FunctionExpression componentexpr() throws RecognitionException {
 		FunctionExpression value = null;
 
@@ -371,7 +371,7 @@ public class FunctionGrammarParser extends Parser {
 		Token t=null;
 
 		try {
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:57:2: (id= ID |id= ID ':' t= NUMBER )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:57:2: (id= ID |id= ID ':' t= NUMBER )
 			int alt5=2;
 			int LA5_0 = input.LA(1);
 			if ( (LA5_0==ID) ) {
@@ -405,14 +405,14 @@ public class FunctionGrammarParser extends Parser {
 
 			switch (alt5) {
 				case 1 :
-					// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:57:4: id= ID
+					// src/main/java/org/epilogtool/function/FunctionGrammar.g:57:4: id= ID
 					{
 					id=(Token)match(input,ID,FOLLOW_ID_in_componentexpr216); 
 					 value = FSpecification.functionComponent((id!=null?id.getText():null), "1"); 
 					}
 					break;
 				case 2 :
-					// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:59:4: id= ID ':' t= NUMBER
+					// src/main/java/org/epilogtool/function/FunctionGrammar.g:59:4: id= ID ':' t= NUMBER
 					{
 					id=(Token)match(input,ID,FOLLOW_ID_in_componentexpr227); 
 					match(input,13,FOLLOW_13_in_componentexpr229); 

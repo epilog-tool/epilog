@@ -61,7 +61,7 @@ public class IntegrationFunctionsTest {
 		for (NodeInfo nodeInt : integrationInputs) {
 			// System.out.println(nodeInt);
 
-			NodeInfo node = Project.getInstance().getEpitheliumList().get(0).getComponentUsed(nodeInt.getNodeID());
+			NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeInt.getNodeID());
 
 			ComponentIntegrationFunctions cif = Project.getInstance().getEpitheliumList().get(0)
 					.getIntegrationFunctions().getAllIntegrationFunctions().get(node);

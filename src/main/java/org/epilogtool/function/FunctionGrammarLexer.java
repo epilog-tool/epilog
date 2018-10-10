@@ -1,6 +1,6 @@
-// $ANTLR 3.5.2 ./src/main/java/org/epilogtool/function/FunctionGrammar.g 2018-09-26 15:19:19
-package org.epilogtool.function;
+// $ANTLR 3.5.2 src/main/java/org/epilogtool/function/FunctionGrammar.g 2018-10-10 11:48:04
 
+package org.epilogtool.function;
 import org.antlr.runtime.*;
 import java.util.Stack;
 import java.util.List;
@@ -41,15 +41,15 @@ public class FunctionGrammarLexer extends Lexer {
 	public FunctionGrammarLexer(CharStream input, RecognizerSharedState state) {
 		super(input,state);
 	}
-	@Override public String getGrammarFileName() { return "./src/main/java/org/epilogtool/function/FunctionGrammar.g"; }
+	@Override public String getGrammarFileName() { return "src/main/java/org/epilogtool/function/FunctionGrammar.g"; }
 
 	// $ANTLR start "T__11"
 	public final void mT__11() throws RecognitionException {
 		try {
 			int _type = T__11;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:9:7: ( '(' )
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:9:9: '('
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:9:7: ( '(' )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:9:9: '('
 			{
 			match('('); 
 			}
@@ -68,8 +68,8 @@ public class FunctionGrammarLexer extends Lexer {
 		try {
 			int _type = T__12;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:10:7: ( ')' )
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:10:9: ')'
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:10:7: ( ')' )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:10:9: ')'
 			{
 			match(')'); 
 			}
@@ -88,8 +88,8 @@ public class FunctionGrammarLexer extends Lexer {
 		try {
 			int _type = T__13;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:11:7: ( ':' )
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:11:9: ':'
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:11:7: ( ':' )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:11:9: ':'
 			{
 			match(':'); 
 			}
@@ -108,8 +108,8 @@ public class FunctionGrammarLexer extends Lexer {
 		try {
 			int _type = T__14;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:12:7: ( 'FALSE' )
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:12:9: 'FALSE'
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:12:7: ( 'FALSE' )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:12:9: 'FALSE'
 			{
 			match("FALSE"); 
 
@@ -129,8 +129,8 @@ public class FunctionGrammarLexer extends Lexer {
 		try {
 			int _type = T__15;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:13:7: ( 'TRUE' )
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:13:9: 'TRUE'
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:13:7: ( 'TRUE' )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:13:9: 'TRUE'
 			{
 			match("TRUE"); 
 
@@ -150,8 +150,8 @@ public class FunctionGrammarLexer extends Lexer {
 		try {
 			int _type = ID;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:67:8: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )* )
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:67:10: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:67:8: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )* )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:67:10: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
 			{
 			if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 				input.consume();
@@ -161,7 +161,7 @@ public class FunctionGrammarLexer extends Lexer {
 				recover(mse);
 				throw mse;
 			}
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:67:33: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:67:33: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
 			loop1:
 			while (true) {
 				int alt1=2;
@@ -172,7 +172,7 @@ public class FunctionGrammarLexer extends Lexer {
 
 				switch (alt1) {
 				case 1 :
-					// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:
+					// src/main/java/org/epilogtool/function/FunctionGrammar.g:
 					{
 					if ( (input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 						input.consume();
@@ -206,10 +206,10 @@ public class FunctionGrammarLexer extends Lexer {
 		try {
 			int _type = NUMBER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:66:8: ( ( '0' .. '9' )+ )
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:66:10: ( '0' .. '9' )+
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:66:8: ( ( '0' .. '9' )+ )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:66:10: ( '0' .. '9' )+
 			{
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:66:10: ( '0' .. '9' )+
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:66:10: ( '0' .. '9' )+
 			int cnt2=0;
 			loop2:
 			while (true) {
@@ -221,7 +221,7 @@ public class FunctionGrammarLexer extends Lexer {
 
 				switch (alt2) {
 				case 1 :
-					// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:
+					// src/main/java/org/epilogtool/function/FunctionGrammar.g:
 					{
 					if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
 						input.consume();
@@ -258,8 +258,8 @@ public class FunctionGrammarLexer extends Lexer {
 		try {
 			int _type = OR;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:67:8: ( '|' )
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:67:10: '|'
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:67:8: ( '|' )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:67:10: '|'
 			{
 			match('|'); 
 			}
@@ -278,8 +278,8 @@ public class FunctionGrammarLexer extends Lexer {
 		try {
 			int _type = AND;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:68:8: ( '&' )
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:68:10: '&'
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:68:8: ( '&' )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:68:10: '&'
 			{
 			match('&'); 
 			}
@@ -298,8 +298,8 @@ public class FunctionGrammarLexer extends Lexer {
 		try {
 			int _type = NOT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:69:8: ( '!' )
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:69:10: '!'
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:69:8: ( '!' )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:69:10: '!'
 			{
 			match('!'); 
 			}
@@ -318,10 +318,10 @@ public class FunctionGrammarLexer extends Lexer {
 		try {
 			int _type = WS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:70:8: ( ( SPACE )+ )
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:70:10: ( SPACE )+
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:70:8: ( ( SPACE )+ )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:70:10: ( SPACE )+
 			{
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:70:10: ( SPACE )+
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:70:10: ( SPACE )+
 			int cnt3=0;
 			loop3:
 			while (true) {
@@ -333,7 +333,7 @@ public class FunctionGrammarLexer extends Lexer {
 
 				switch (alt3) {
 				case 1 :
-					// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:
+					// src/main/java/org/epilogtool/function/FunctionGrammar.g:
 					{
 					if ( (input.LA(1) >= '\t' && input.LA(1) <= '\n')||(input.LA(1) >= '\f' && input.LA(1) <= '\r')||input.LA(1)==' ' ) {
 						input.consume();
@@ -369,8 +369,8 @@ public class FunctionGrammarLexer extends Lexer {
 	// $ANTLR start "SPACE"
 	public final void mSPACE() throws RecognitionException {
 		try {
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:71:16: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )
-			// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:71:16: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )
+			// src/main/java/org/epilogtool/function/FunctionGrammar.g:
 			{
 			if ( (input.LA(1) >= '\t' && input.LA(1) <= '\n')||(input.LA(1) >= '\f' && input.LA(1) <= '\r')||input.LA(1)==' ' ) {
 				input.consume();
@@ -391,7 +391,7 @@ public class FunctionGrammarLexer extends Lexer {
 
 	@Override
 	public void mTokens() throws RecognitionException {
-		// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:1:8: ( T__11 | T__12 | T__13 | T__14 | T__15 | ID | NUMBER | OR | AND | NOT | WS )
+		// src/main/java/org/epilogtool/function/FunctionGrammar.g:1:8: ( T__11 | T__12 | T__13 | T__14 | T__15 | ID | NUMBER | OR | AND | NOT | WS )
 		int alt4=11;
 		switch ( input.LA(1) ) {
 		case '(':
@@ -591,77 +591,77 @@ public class FunctionGrammarLexer extends Lexer {
 		}
 		switch (alt4) {
 			case 1 :
-				// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:1:10: T__11
+				// src/main/java/org/epilogtool/function/FunctionGrammar.g:1:10: T__11
 				{
 				mT__11(); 
 
 				}
 				break;
 			case 2 :
-				// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:1:16: T__12
+				// src/main/java/org/epilogtool/function/FunctionGrammar.g:1:16: T__12
 				{
 				mT__12(); 
 
 				}
 				break;
 			case 3 :
-				// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:1:22: T__13
+				// src/main/java/org/epilogtool/function/FunctionGrammar.g:1:22: T__13
 				{
 				mT__13(); 
 
 				}
 				break;
 			case 4 :
-				// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:1:28: T__14
+				// src/main/java/org/epilogtool/function/FunctionGrammar.g:1:28: T__14
 				{
 				mT__14(); 
 
 				}
 				break;
 			case 5 :
-				// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:1:34: T__15
+				// src/main/java/org/epilogtool/function/FunctionGrammar.g:1:34: T__15
 				{
 				mT__15(); 
 
 				}
 				break;
 			case 6 :
-				// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:1:40: ID
+				// src/main/java/org/epilogtool/function/FunctionGrammar.g:1:40: ID
 				{
 				mID(); 
 
 				}
 				break;
 			case 7 :
-				// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:1:43: NUMBER
+				// src/main/java/org/epilogtool/function/FunctionGrammar.g:1:43: NUMBER
 				{
 				mNUMBER(); 
 
 				}
 				break;
 			case 8 :
-				// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:1:50: OR
+				// src/main/java/org/epilogtool/function/FunctionGrammar.g:1:50: OR
 				{
 				mOR(); 
 
 				}
 				break;
 			case 9 :
-				// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:1:53: AND
+				// src/main/java/org/epilogtool/function/FunctionGrammar.g:1:53: AND
 				{
 				mAND(); 
 
 				}
 				break;
 			case 10 :
-				// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:1:57: NOT
+				// src/main/java/org/epilogtool/function/FunctionGrammar.g:1:57: NOT
 				{
 				mNOT(); 
 
 				}
 				break;
 			case 11 :
-				// ./src/main/java/org/epilogtool/function/FunctionGrammar.g:1:61: WS
+				// src/main/java/org/epilogtool/function/FunctionGrammar.g:1:61: WS
 				{
 				mWS(); 
 
