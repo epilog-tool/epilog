@@ -269,16 +269,16 @@ public class Simulation {
 //				System.out.println("There are these available cells to divide: " + availableLivingCells.size());
 				if (availableLivingCells.size()>1 | deathVal!=0 | divVal!=0) {
 					if (numberOfLivingCells*deathVal>=1 && numberOfLivingCells*divVal>=1) { //No issue here
-//						System.out.println("Both Probs are above 1");
-//												System.out.println("Size of the availableLivingCells: " + numberOfLivingCells);
-//												System.out.println("deathVal: " + deathVal);
-//												System.out.println("divVal: " + divVal);
-//												System.out.println("numberOfLivingCells*deathVal: " + numberOfLivingCells*deathVal);
-//												System.out.println("numberOfLivingCells*divVal: " + numberOfLivingCells*divVal);
+						System.out.println("Both Probs are above 1");
+												System.out.println("Size of the availableLivingCells: " + numberOfLivingCells);
+												System.out.println("deathVal: " + deathVal);
+												System.out.println("divVal: " + divVal);
+												System.out.println("numberOfLivingCells*deathVal: " + numberOfLivingCells*deathVal);
+												System.out.println("numberOfLivingCells*divVal: " + numberOfLivingCells*divVal);
 
 						deathCells = getProportionOfCells(availableLivingCells,(int) (numberOfLivingCells*deathVal));
 						availableLivingCells.removeAll(deathCells);
-//						System.out.println("I am killing: " + deathCells);
+						System.out.println("I am killing: " + deathCells);
 						divisionCells = getProportionOfCells(availableLivingCells,(int) (numberOfLivingCells*divVal));
 						availableLivingCells.removeAll(divisionCells);
 //						System.out.println("I am dividing: " + divisionCells);
@@ -463,6 +463,10 @@ public class Simulation {
 		if (!this.mTuple2Neighbours.containsKey(lCell.getTuple())) {
 			for (int i=1; i<= this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getDivisionRange();i++){
 				lstNeighbours.addAll(this.getNeighbours(i,lCell.getTuple()));
+				if (this.epithelium.getEpitheliumEvents().getDivisionOption().equals(Txt.get("s_TAB_EVE_ALGORITHM_MINIMUM_DISTANCE"))){
+					//IF an empty cell at distance 1 do not go to the next
+					//If bigger than that if no invalid do no go to the next
+				}
 			}
 			this.mTuple2Neighbours.put(lCell.getTuple(),lstNeighbours);
 		}
@@ -519,22 +523,37 @@ public class Simulation {
 
 	private void displaceCells(LinkedList<Vertex> path, EpitheliumGrid nextGrid) {
 		
-//        System.out.println("start: " + path.getFirst().getTuple().toString());
-//        System.out.println("end: " +  path.getLast().getTuple().toString());
-//        for (Vertex node: path) {
-//        	System.out.println("node: " + node.getTuple().toString());
-//        }
-		
-		Tuple2D<Integer> tupleDestination = path.getLast().getTuple();
-		
-		for (int index = (path.size()-1); index ==1; index--) {
-//			System.out.println(index);
-			Tuple2D<Integer> tuple = path.get(index).getTuple();
-			AbstractCell cell = nextGrid.getAbstCell(tuple.getX(), tuple.getY());
+        System.out.println("start: " + path.getFirst().getTuple().toString());
+        System.out.println("end: " +  path.getLast().getTuple().toString());
+        for (Vertex node: path) {
+        	System.out.println("node: " + node.getTuple().toString());
+        }
+        
+        
+        for (int i = 0; i<path.size()-2; i++) {
+	        	Tuple2D<Integer> tupleDestination = path.getLast().getTuple();
+			path.removeLast();
+			
+			//displace last cell
+			Tuple2D<Integer> origin = path.getLast().getTuple();
+			AbstractCell cell = nextGrid.getAbstCell(origin.getX(), origin.getY());
 			cell.setTuple(tupleDestination);
-			tupleDestination = tuple;
-		}
-		updateCellSister(path.get(0).getTuple(), tupleDestination, nextGrid);
+			nextGrid.setAbstractCell(cell);
+			EmptyCell c = CellFactory.newEmptyCell(origin);
+			nextGrid.setAbstractCell(c);
+        }
+		
+//		for (int i = index; i <1; i = i-1) {
+//			System.out.println("index");
+//			Tuple2D<Integer> tuple = path.get(index).getTuple();
+//			System.out.println(tuple);
+//			AbstractCell cell = nextGrid.getAbstCell(tuple.getX(), tuple.getY());
+//			cell.setTuple(tupleDestination);
+//			nextGrid.setAbstractCell(cell);
+//			tupleDestination = tuple;
+//			System.out.println(tuple);
+//		}
+		updateCellSister(path.get(0).getTuple(), path.get(1).getTuple(), nextGrid);
 		
 	}
 
@@ -652,6 +671,7 @@ public class Simulation {
 	//change the original cell the daughters
 	private void updateCellSister(Tuple2D<Integer> originalTuple, Tuple2D<Integer> sisterTuple,EpitheliumGrid nextGrid) {
 		
+		System.out.println("updated SisterCell");
 		LivingCell lCell = (LivingCell) nextGrid.getAbstCell(originalTuple.getX(), originalTuple.getY());
 		LivingCell sisterCell = CellFactory.newLivingCell(sisterTuple, lCell.getModel());
 		LivingCell originalCell = CellFactory.newLivingCell(lCell.getTuple(), lCell.getModel());
