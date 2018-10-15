@@ -55,4 +55,11 @@ public abstract class EpiTab extends JPanel {
 	public abstract void applyChange();
 
 	public abstract void notifyChange();
+	
+	public boolean canOpen() {
+		if (this.epithelium.getEpitheliumGrid().getAllLivingCells().size()==0) {
+			return false;
+		}
+		return true;
+	}
 }

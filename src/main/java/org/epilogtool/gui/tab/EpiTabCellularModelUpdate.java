@@ -412,4 +412,5 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 			Web.openURI(event.getDescription());
 		}
 	}
+
 }

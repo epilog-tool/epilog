@@ -865,6 +865,11 @@ public class EpiGUI extends JFrame {
 				epiTab = new EpiTabEvents(epi, selPath, tabChanged);
 			}
 			if (epiTab != null) {
+				if  ((!tabName.equals(EpiTab.TAB_MODELGRID)) & !epiTab.canOpen()) {
+					//TODO: make dialog box
+					System.out.println("Add a cellular model to the Epithelium before oppening this tab");
+				}
+				else {
 				this.epiRightFrame.addTab(title, epiTab);
 				epiTab.initialize();
 
@@ -896,11 +901,12 @@ public class EpiGUI extends JFrame {
 				CloseTabButton tabButton = new CloseTabButton(title, this.epiRightFrame);
 				tabIndex = this.epiRightFrame.getTabCount() - 1;
 				this.epiRightFrame.setTabComponentAt(tabIndex, tabButton);
-			}
-		}
+			
+		
 		// Select existing Tab
 		this.epiTabSelect(tabIndex);
-	}
+			}}
+	}}
 
 	public void epiTabSelect(int index) {
 		this.epiRightFrame.setSelectedIndex(index);
