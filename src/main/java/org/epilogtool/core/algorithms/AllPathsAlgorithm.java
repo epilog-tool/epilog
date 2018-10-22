@@ -1,6 +1,7 @@
 package org.epilogtool.core.algorithms;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class DijkstraAlgorithm {
+public class AllPathsAlgorithm {
 
     private final List<Vertex> nodes;
     private final List<Edge> edges;
@@ -18,7 +19,7 @@ public class DijkstraAlgorithm {
     private Map<Vertex, Vertex> predecessors;
     private Map<Vertex, Integer> distance;
 
-    public DijkstraAlgorithm(Graph graph) {
+    public AllPathsAlgorithm(Graph graph) {
         // create a copy of the array so that we can operate on this array
         this.nodes = new ArrayList<Vertex>(graph.getVertexes());
         this.edges = new ArrayList<Edge>(graph.getEdges());
@@ -42,13 +43,10 @@ public class DijkstraAlgorithm {
     private void findMinimalDistances(Vertex node) {
         List<Vertex> adjacentNodes = getNeighbors(node);
         for (Vertex target : adjacentNodes) {
-            if (getShortestDistance(target) > getShortestDistance(node)
-                    + getDistance(node, target)) {
                 distance.put(target, getShortestDistance(node)
                         + getDistance(node, target));
                 predecessors.put(target, node);
                 unSettledNodes.add(target);
-            }
         }
 
     }

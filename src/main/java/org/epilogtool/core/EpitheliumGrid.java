@@ -35,6 +35,8 @@ public class EpitheliumGrid {
 	
 	private Map<LogicalModel, List<LivingCell>> livingCellsPerModel;
 	private List<EmptyCell> lstEmptyCells;
+	
+	private Map<Tuple2D<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>> relativeNeighboursCache;
 
 	private EpitheliumGrid(AbstractCell[][] gridEpiCell, Topology topology, Set<LogicalModel> modelSet,
 			Map<String, Map<Byte, Integer>> compCounts, Map<String, Map<Byte, Float>> compPercents) {
@@ -47,6 +49,8 @@ public class EpitheliumGrid {
 		
 		this.livingCellsPerModel = new HashMap<LogicalModel, List<LivingCell>>();
 		this.lstEmptyCells = new ArrayList<EmptyCell>();
+		
+		this.relativeNeighboursCache = new HashMap<Tuple2D<Integer>, Map<Boolean, Set<Tuple2D<Integer>>>>();
 	}
 	
 	//The user may have edited one of the parameters of the grid, meaning that one of the epithelium parameters has changed.
@@ -193,6 +197,10 @@ public class EpitheliumGrid {
 	
 	public AbstractCell getAbstCell(int x, int y) {
 		return this.gridCells[x][y];
+	}
+	
+	public AbstractCell getAbstCell(Tuple2D<Integer> tuple) {
+		return this.gridCells[tuple.getX()][tuple.getY()];
 	}
 
 	public Map<LogicalModel, Set<AbstractPerturbation>> getAppliedPerturb() {
@@ -499,6 +507,17 @@ public class EpitheliumGrid {
 		}
 
 		
+		return positionNeighbours;
+	}
+	
+	public Set<Tuple2D<Integer>> getNeighbours(int min, int max, Tuple2D<Integer> tuple) {
+
+		Tuple2D<Integer> rangePair = new Tuple2D<Integer>(min,max);
+		Tuple2D<Integer> rangeList_aux = new Tuple2D<Integer>(0,(min - 1 > 0) ? min - 1 : 0);
+
+		Set<Tuple2D<Integer>> positionNeighbours = this.getPositionNeighbours(
+				this.relativeNeighboursCache, rangeList_aux, rangePair,min, tuple.getX(), tuple.getY());
+
 		return positionNeighbours;
 	}
 

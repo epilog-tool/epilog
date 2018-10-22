@@ -11,7 +11,6 @@ public class RandomDivision extends AbstractAlgorithm {
 	}
 	
 	public Tuple2D<Integer> getSisterPosition(){
-		
 		return null;
 		
 	}

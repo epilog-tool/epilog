@@ -279,6 +279,7 @@ public class EpiTabEvents extends EpiTabDefinitions {
 		this.jcbDivisionAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_RANDOM"));
 		this.jcbDivisionAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_MINIMUM_DISTANCE"));
 		this.jcbDivisionAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_COMPRESSION"));
+		this.jcbDivisionAlgorithm.addItem(Txt.get("s_TAB_EVE_ALGORITHM_N-SHORTEST_DISTANCE"));
 		this.jcbDivisionAlgorithm.setSelectedItem(this.epiEventClone.getMCE(this.selModel).getDivisionAlgorithm());
 
 		this.jcbDivisionAlgorithm.addActionListener(new ActionListener() {
