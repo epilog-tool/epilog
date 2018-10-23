@@ -51,11 +51,11 @@ public class OriginalCompression extends AbstractAlgorithm {
 //			if (succ.getX()==lCell.getTuple().getX() &&  succ.getY()==lCell.getTuple().getY()) {
 //				path = new LinkedList<Vertex>();;
 //			}
-			else {
+//			else { 
 			path.add(graph.getMTuple2Vertex(succ));
 //			System.out.println("path.size(): " + path.size());
 			if (this.nextGrid.getAbstCell(succ).isEmptyCell()) break;
-			}
+//			}
 		}
 		return path;
 	}
@@ -88,6 +88,8 @@ public class OriginalCompression extends AbstractAlgorithm {
 			}
 				
 		}
+//		System.out.println("minCompression: " + minCompression);
+//		System.out.println("number of possible destinations is: " + lstSucessor.size());
 		if (lstSucessor.size()>0) {
 			Collections.shuffle(lstSucessor, this.random);
 			return lstSucessor.get(0);
