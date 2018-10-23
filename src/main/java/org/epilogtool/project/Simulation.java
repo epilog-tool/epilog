@@ -133,6 +133,9 @@ public class Simulation {
 	public EpitheliumGrid nextStepGrid() {
 		EpitheliumGrid currGrid = this.getCurrentGrid();
 
+//		System.out.println("*************************************");
+//		System.out.println("Iteration: " + this.gridHistory.size());
+//		System.out.println("*************************************");
 		if (this.stable) {
 			return currGrid;
 		}
@@ -272,16 +275,16 @@ public class Simulation {
 				//				System.out.println("There are these available cells to divide: " + availableLivingCells.size());
 				if (availableLivingCells.size()>1 | deathVal!=0 | divVal!=0) {
 					if (numberOfLivingCells*deathVal>=1 && numberOfLivingCells*divVal>=1) { //No issue here
-						System.out.println("Both Probs are above 1");
-						System.out.println("Size of the availableLivingCells: " + numberOfLivingCells);
-						System.out.println("deathVal: " + deathVal);
-						System.out.println("divVal: " + divVal);
-						System.out.println("numberOfLivingCells*deathVal: " + numberOfLivingCells*deathVal);
-						System.out.println("numberOfLivingCells*divVal: " + numberOfLivingCells*divVal);
+//						System.out.println("Both Probs are above 1");
+//						System.out.println("Size of the availableLivingCells: " + numberOfLivingCells);
+//						System.out.println("deathVal: " + deathVal);
+//						System.out.println("divVal: " + divVal);
+//						System.out.println("numberOfLivingCells*deathVal: " + numberOfLivingCells*deathVal);
+//						System.out.println("numberOfLivingCells*divVal: " + numberOfLivingCells*divVal);
 
 						deathCells = getProportionOfCells(availableLivingCells,(int) (numberOfLivingCells*deathVal));
 						availableLivingCells.removeAll(deathCells);
-						System.out.println("I am killing: " + deathCells);
+//						System.out.println("I am killing: " + deathCells);
 						divisionCells = getProportionOfCells(availableLivingCells,(int) (numberOfLivingCells*divVal));
 						availableLivingCells.removeAll(divisionCells);
 						//						System.out.println("I am dividing: " + divisionCells);
@@ -406,15 +409,16 @@ public class Simulation {
 						minimumDistance(this.graph, lCell);
 					}
 					else if (this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getDivisionAlgorithm().equals(Txt.get("s_TAB_EVE_ALGORITHM_COMPRESSION"))){
-						System.out.println("I am calling to divide the cell: " + lCell.getTuple() + "with the compression algorithm"+ "(" + lCell+")");
+//						System.out.println("I am calling to divide the cell: " + lCell.getTuple() + "with the compression algorithm"+ "(" + lCell+")");
 						OriginalCompression compression = new OriginalCompression();
-						System.out.println("w0.9: " + this.nextGrid.getAbstCell(lCell.getTuple()));
-						LinkedList<Vertex> path = compression.originalCompression(this.graph, lCell,this.nextGrid, this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getDivisionRange(), this.random);
-						System.out.println("w1: " + this.nextGrid.getAbstCell(path.get(0).getTuple()));
-						if (path.size()>0)
-						this.displaceCells(path);
-						else
-							System.out.println("A cell should have divided but compression failed to find an empty space");
+						Graph compressionGraph = initializeCompressionGraph();
+//						System.out.println("w0.9: " + this.nextGrid.getAbstCell(lCell.getTuple()));
+						LinkedList<Vertex> path = compression.originalCompression(compressionGraph,this.graph, lCell,this.nextGrid, this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getDivisionRange(), this.random);
+//						System.out.println("w1: " + this.nextGrid.getAbstCell(path.get(0).getTuple()));
+//						System.out.println("path.size: " + path.size());
+						if (path.size()>0) this.displaceCells(path);
+//						else
+//							System.out.println("A cell should have divided but compression failed to find an empty space");
 					}
 				}
 			}
@@ -424,6 +428,7 @@ public class Simulation {
 		if (this.gridHashHistory != null) {
 			this.gridHashHistory.add(this.nextGrid.hashGrid());
 		}
+		
 		return this.nextGrid;
 	}
 
@@ -528,61 +533,85 @@ public class Simulation {
 	private void displaceCells(LinkedList<Vertex> path) {
 		//TODO: IT IS WRONG
 		
-		System.out.println("w2: " + this.nextGrid.getAbstCell(path.get(0).getTuple()));
-
-		System.out.println("start: " + path.getFirst().getTuple().toString());
-		System.out.println("end: " +  path.getLast().getTuple().toString());
-		for (Vertex node: path) {
-			System.out.println("node: " + node.getTuple().toString());
-		}
+		System.out.println("Received the path: " );
+		printPath(path);
 		
-		System.out.println("start: " + this.nextGrid.getAbstCell(path.getFirst().getTuple()));
-		System.out.println("end: " +  this.nextGrid.getAbstCell(path.getLast().getTuple()));
-		for (Vertex node: path) {
-			System.out.println("node: " +  this.nextGrid.getAbstCell(node.getTuple()));
-		}
+//		System.out.println("w2: " + this.nextGrid.getAbstCell(path.get(0).getTuple()));
 
 
-		for (int i = 0; i<path.size()-2; i++) {
+		while (path.size()>2) {
 			Tuple2D<Integer> tupleDestination = path.getLast().getTuple();
-			System.out.println("The tuple to be removed is an " + this.nextGrid.getAbstCell(tupleDestination) + " at tuple:" + tupleDestination);
 			path.removeLast();
-
-			//displace last cell
 			Tuple2D<Integer> origin = path.getLast().getTuple();
-			System.out.println("The tuple to be added is an " + this.nextGrid.getAbstCell(origin) + " at tuple:" + origin);
 			AbstractCell cell = this.nextGrid.getAbstCell(origin.getX(), origin.getY());
 			cell.setTuple(tupleDestination);
 			this.nextGrid.setAbstractCell(cell);
 			EmptyCell c = CellFactory.newEmptyCell(origin);
 			this.nextGrid.setAbstractCell(c);
+			
+			
+			
 		}
 
-		
-		//		for (int i = index; i <1; i = i-1) {
-		//			System.out.println("index");
-		//			Tuple2D<Integer> tuple = path.get(index).getTuple();
-		//			System.out.println(tuple);
-		//			AbstractCell cell = nextGrid.getAbstCell(tuple.getX(), tuple.getY());
-		//			cell.setTuple(tupleDestination);
-		//			nextGrid.setAbstractCell(cell);
-		//			tupleDestination = tuple;
-		//			System.out.println(tuple);
-		//		}
-		
-		System.out.println("start: " + this.nextGrid.getAbstCell(path.getFirst().getTuple()));
-		System.out.println("end: " +  this.nextGrid.getAbstCell(path.getLast().getTuple()));
-		for (Vertex node: path) {
-			System.out.println("node: " +  this.nextGrid.getAbstCell(node.getTuple()));
-		}
-		
-		System.out.println("w3: " + this.nextGrid.getAbstCell(path.get(0).getTuple()));
+//		System.out.println("w3: " + this.nextGrid.getAbstCell(path.get(0).getTuple()));
 		updateCellSister(path.get(0).getTuple(), path.get(1).getTuple());
 
+		printGrid(path);
 	}
 
 
+	private void printGrid(LinkedList<Vertex> path) {
+		
+		for (Vertex node:path) {
+				System.out.println("Tuple: " + node.getTuple() + " is a " + this.nextGrid.getAbstCell(node.getTuple()));
+			
+			}
+		
+	}
 
+	private void printPath(LinkedList<Vertex> path) {
+		
+//		System.out.println("start: " + this.nextGrid.getAbstCell(path.getFirst().getTuple()) + " tuple: " + path.getFirst().getTuple());
+//		System.out.println("end: " +  this.nextGrid.getAbstCell(path.getLast().getTuple()) + " tuple: " + path.getLast().getTuple());
+		for (Vertex node: path) {
+			System.out.println("node: " +  this.nextGrid.getAbstCell(node.getTuple()) + " tuple: " + node.getTuple());
+		}
+	}
+
+	private Graph initializeCompressionGraph() {
+
+		List<Vertex> nodes = new ArrayList<Vertex>();
+		List<Edge>   edges = new ArrayList<Edge>();
+		Map<Tuple2D<Integer>, Vertex> mTuple2Vertex = new HashMap<Tuple2D<Integer>, Vertex>();
+		
+		//create vertex List of living and dead cells
+		for (int x=0; x<this.epithelium.getX(); x++) {
+			for(int y = 0; y<this.epithelium.getY(); y++){
+				Tuple2D<Integer> tuple = new Tuple2D<Integer>(x,y);
+				if ((this.nextGrid.getAbstCell(x, y).isLivingCell() || this.nextGrid.getAbstCell(x, y).isDeadCell())){
+					Vertex v = new Vertex(tuple);
+					mTuple2Vertex.put(tuple, v);
+					nodes.add(v);
+				}
+			}}
+//		System.out.println("Initialized a graph with: " + nodes.size() + " nodes");
+		//create Edges
+		Edge edge;
+		
+			for (Tuple2D<Integer> tuple: mTuple2Vertex.keySet()) {
+				Set<Tuple2D<Integer>> neighbours = this.nextGrid.getNeighbours(1, 1,tuple);
+				for (Tuple2D<Integer> tupleNei :neighbours) {
+					if (nodes.contains(mTuple2Vertex.get(tupleNei))) {
+						edge = new Edge(tuple,mTuple2Vertex.get(tuple), mTuple2Vertex.get(tupleNei), 1 );
+						edges.add(edge);
+					}
+			}}
+//			System.out.println("Initialized a graph with: " + edges.size() + " edges");
+			
+		Graph graph = new Graph(nodes, edges);
+		graph.setMTuple2VertexAll(mTuple2Vertex);
+		return graph;
+	}
 
 	private Graph initializeGraph() {
 
@@ -600,10 +629,9 @@ public class Simulation {
 					nodes.add(v);
 				}
 			}}
-		System.out.println("Initialized a graph with: " + nodes.size() + " nodes");
+//		System.out.println("Initialized a graph with: " + nodes.size() + " nodes");
 		//create Edges
 		Edge edge;
-		int compressionRange = 1;
 		
 			for (Tuple2D<Integer> tuple: mTuple2Vertex.keySet()) {
 				Set<Tuple2D<Integer>> neighbours = this.nextGrid.getNeighbours(1, 1,tuple);
@@ -614,7 +642,7 @@ public class Simulation {
 						edges.add(edge);
 					}
 			}}
-			System.out.println("Initialized a graph with: " + edges.size() + " edges");
+//			System.out.println("Initialized a graph with: " + edges.size() + " edges");
 			
 		Graph graph = new Graph(nodes, edges);
 		graph.setMTuple2VertexAll(mTuple2Vertex);
@@ -623,61 +651,7 @@ public class Simulation {
 	}
 
 	
-//	//alternative version
-//	private void compression(Graph graph, LivingCell lCell, EpitheliumGrid nextGrid) {
-//		
-//		List<Tuple2D<Integer>> lstPossibleDestinations = getEmptyCellsNeighbours(lCell, nextGrid);
-//		List<LinkedList<Vertex>> lstPath = new ArrayList<LinkedList<Vertex>>();
-//		//		
-//		int minSize = 1000;
-//
-//		for (Tuple2D<Integer> destination: lstPossibleDestinations) {
-//			LinkedList<Vertex> path = getPath(lCell.getTuple(), destination ,graph, this.mTuple2Vertex);
-//			if (path.size()>0){
-//				if (path.size()<minSize) {
-//					lstPath = new ArrayList<LinkedList<Vertex>>();
-//					minSize = path.size();
-//				}
-//				if (path.size()==minSize) {
-//				lstPath.add(path);
-//			}}
-//			
-//		}
-//		
-//		System.out.println("There are " + lstPath.size() + " possible paths");
-//		
-//		List<LinkedList<Vertex>> lstCompressedPath = new ArrayList<LinkedList<Vertex>>();
-//		
-//		double minCompression = 1000000;
-//		Map<Tuple2D<Integer>, Double> mTuple2CompressionValue = new HashMap<Tuple2D<Integer>, Double>();
-//		for ( LinkedList<Vertex> path : lstPath) {
-//			double compression = 0;
-//			for (Vertex v: path) {
-//				if (!mTuple2CompressionValue.containsKey(v.getTuple())) {
-//					mTuple2CompressionValue.put(v.getTuple(), getCompressionValue(nextGrid,v.getTuple()));
-//				}
-//				compression = compression + mTuple2CompressionValue.get(v.getTuple());
-//			}
-//			if (compression < minCompression) {
-//				lstCompressedPath = new ArrayList<LinkedList<Vertex>>();
-//				minCompression = compression;
-//				System.out.println("Minimum compression is now set to: " + minCompression);
-//			}
-//			if (compression==minCompression) {
-//				lstCompressedPath.add(path);
-//		}
-//		}
-//		System.out.println("There are " + lstCompressedPath.size() + " possible compressed paths");
-//		
-//		if (lstCompressedPath.size()>1) {
-//			LinkedList<Vertex> path = lstCompressedPath.get(random.nextInt(lstCompressedPath.size()));
-//			this.displaceCells(path, nextGrid);
-//		}
-//		else if (lstCompressedPath.size()>0){
-//			this.displaceCells(lstCompressedPath.get(0), nextGrid);
-//		}
-//		
-//	}
+
 
 
 
@@ -709,7 +683,7 @@ public class Simulation {
 	//change the original cell the daughters
 	private void updateCellSister(Tuple2D<Integer> originalTuple, Tuple2D<Integer> sisterTuple) {
 
-		System.out.println("updated SisterCell");
+//		System.out.println("updated SisterCell");
 		LivingCell lCell = (LivingCell) this.nextGrid.getAbstCell(originalTuple.getX(), originalTuple.getY());
 		LivingCell sisterCell = CellFactory.newLivingCell(sisterTuple, lCell.getModel());
 		LivingCell originalCell = CellFactory.newLivingCell(lCell.getTuple(), lCell.getModel());

@@ -517,6 +517,7 @@ public class EpitheliumGrid {
 
 		Set<Tuple2D<Integer>> positionNeighbours = this.getPositionNeighbours(
 				this.relativeNeighboursCache, rangeList_aux, rangePair,min, tuple.getX(), tuple.getY());
+		
 
 		return positionNeighbours;
 	}
