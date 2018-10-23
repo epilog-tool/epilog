@@ -12,6 +12,7 @@ import org.antlr.runtime.RecognitionException;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.tool.simulation.multiplesuccessor.ModelPriorityClasses;
 import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.topology.RollOver;
@@ -195,13 +196,12 @@ public class Epithelium {
 	}
 
 	public void initPriorityClasses(LogicalModel m) {
-		ModelPriorityClasses mpc = new ModelPriorityClasses(m);
+		ModelPriorityClasses mpc = new ModelPriorityClasses(m, false, false);
 		this.priorities.addModelPriorityClasses(mpc);
 	}
 
 	public void setPriorityClasses(LogicalModel m, String pcs) {
-		ModelPriorityClasses mpc = new ModelPriorityClasses(m);
-		mpc.setPriorities(pcs);
+		ModelPriorityClasses mpc = new ModelPriorityClasses(m, pcs);
 		this.priorities.addModelPriorityClasses(mpc);
 	}
 
@@ -381,7 +381,7 @@ public class Epithelium {
 			if (!sPCs.isEmpty())
 				sPCs += ":";
 
-			List<String> pcVars = oldMpc.getClassVars(idxPC);
+			List<String> pcVars = oldMpc.getClassVars(idxPC).get(0);
 			List<String> newPCVars = new ArrayList<String>();
 
 			for (int pcVarIndex = 0; pcVarIndex < pcVars.size(); ++pcVarIndex) {

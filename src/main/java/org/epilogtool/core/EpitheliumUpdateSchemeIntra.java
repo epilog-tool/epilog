@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.tool.simulation.multiplesuccessor.ModelPriorityClasses;
 
 public class EpitheliumUpdateSchemeIntra {
 	private Map<LogicalModel, ModelPriorityClasses> priorityClassSet;
@@ -15,7 +16,7 @@ public class EpitheliumUpdateSchemeIntra {
 	}
 
 	public void addModel(LogicalModel m) {
-		this.priorityClassSet.put(m, new ModelPriorityClasses(m));
+		this.priorityClassSet.put(m, new ModelPriorityClasses(m, false, false));
 	}
 
 	public void removeModel(LogicalModel m) {

@@ -216,9 +216,6 @@ public class FileIO {
 			sbmlFormat.export(Project.getInstance().getModel(sSBML), sFile);
 		}
 
-		// Save PEPS to file
-		newPEPSFile += (newPEPSFile.endsWith(".peps") ? "" : ".peps");
-
 		FileIO.zipTmpDir(newPEPSTmpDir, newPEPSFile);
 		OptionStore.addRecentFile(newPEPSFile);
 	}

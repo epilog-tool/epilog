@@ -574,19 +574,23 @@ public class EpiGUI extends JFrame {
 			boolean overrideExistingFile = false;
 
 			// get destination file
-			File destinationFile = new File(fileChooser.getSelectedFile().getAbsolutePath());
+			String name_ext = fileChooser.getSelectedFile().getAbsolutePath();
+			name_ext += (name_ext.endsWith(".peps") ? "" : ".peps");
+			File destinationFile = new File(name_ext);
 
 			// check if file already exists
 			while (doExport && destinationFile.exists() && !overrideExistingFile) {
 				// let the user decide whether to override the existing file
-				overrideExistingFile = (JOptionPane.showConfirmDialog(this, "Replace file?", "Export settings",
+				overrideExistingFile = (JOptionPane.showConfirmDialog(this, "Replace file " + destinationFile.getAbsolutePath() + "?", "Export settings",
 						JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
 
 				// let the user choose another file if the existing file shall not be overridden
 				if (!overrideExistingFile) {
 					if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
 						// get new destination file
-						destinationFile = new File(fileChooser.getSelectedFile().getAbsolutePath());
+						name_ext = fileChooser.getSelectedFile().getAbsolutePath();
+						name_ext += (name_ext.endsWith(".peps") ? "" : ".peps");
+						destinationFile = new File(name_ext);
 					} else {
 						// seems like the user does not want to export the settings any longer
 						doExport = false;

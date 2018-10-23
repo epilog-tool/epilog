@@ -26,7 +26,7 @@ public class ModelUpdateTest {
 	public void cellularModelUpdate() {
 		Epithelium epi = Project.getInstance().getEpitheliumList().get(0);
 		LogicalModel m = epi.getModel(0, 0);
-		assertEquals(epi.getPriorityClasses(m).getClassVars(0).toString(), "[Yellow, Red]");
+		assertEquals("[Red]", epi.getPriorityClasses(m).getClassVars(0).get(0).toString());
 
 		// TODO: get a model with more than one component
 	}

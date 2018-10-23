@@ -69,7 +69,7 @@ public class Launcher {
 				System.exit(0);
 			maxiter = jsapResult.getInt("max-iter");
 			bCMD = jsapResult.getBoolean("cmd");
-			pepsFile = jsapResult.getString("peps");
+			pepsFile = jsapResult.getString("file");
 			seed = jsapResult.getLong("seed");
 			dev = jsapResult.getBoolean("dev");
 

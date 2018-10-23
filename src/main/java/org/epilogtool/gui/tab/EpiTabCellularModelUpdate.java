@@ -1,62 +1,44 @@
 package org.epilogtool.gui.tab;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.tree.TreePath;
 
 import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.tool.simulation.multiplesuccessor.ModelPriorityClasses;
+import org.colomoto.biolqm.widgets.PriorityClassPanel;
+import org.colomoto.biolqm.widgets.PanelChangedEventListener;
 import org.epilogtool.common.Txt;
 import org.epilogtool.common.Web;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumUpdateSchemeIntra;
-import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.gui.EpiGUI.TabChangeNotifyProj;
 import org.epilogtool.gui.widgets.JComboWideBox;
-import org.epilogtool.io.ButtonFactory;
 import org.epilogtool.project.Project;
 
 public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements HyperlinkListener {
 	private static final long serialVersionUID = 1176575422084167530L;
 
-	private final int JLIST_LINES = 15;
-	private final int JLIST_WIDTH = 65;
-	private final int JLIST_SPACING = 15;
-
 	private EpitheliumUpdateSchemeIntra userPriorityClasses;
-	private LogicalModel selectedModel;
-	private List<JList<String>> guiClasses;
+	private LogicalModel selModel;
 	private TabProbablyChanged tpc;
+	private Map<LogicalModel, PriorityClassPanel> mModel2PCP;
 
 	private JPanel jpNorth;
 	private JPanel jpNorthLeft;
-	private JPanel jpSouth;
-	private JPanel jpIntraCenter;
-
-	private JButton jbInc;
-	private JButton jbDec;
+	private PriorityClassPanel jpPriorityPanel;
 
 	public EpiTabCellularModelUpdate(Epithelium e, TreePath path, TabChangeNotifyProj tabChanged) {
 		super(e, path, tabChanged);
@@ -77,93 +59,31 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 		this.jpNorthLeft.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
 		this.jpNorth.add(this.jpNorthLeft, BorderLayout.WEST);
 
-		this.userPriorityClasses = new EpitheliumUpdateSchemeIntra();
+		this.tpc = new TabProbablyChanged();
+		this.mModel2PCP = new HashMap<LogicalModel, PriorityClassPanel>();
 
+		this.userPriorityClasses = new EpitheliumUpdateSchemeIntra();
 		for (LogicalModel m : modelList) {
 			this.userPriorityClasses.addModelPriorityClasses(this.epithelium.getPriorityClasses(m).clone());
 		}
 
-		this.guiClasses = new ArrayList<JList<String>>();
-		this.tpc = new TabProbablyChanged();
-
-		this.jbInc = ButtonFactory.getNoMargins("<-");
-		this.jbDec = ButtonFactory.getNoMargins("->");
-
-		this.jpSouth = new JPanel(new BorderLayout());
-		this.center.add(jpSouth, BorderLayout.SOUTH);
-
-		// Button display options
-		JPanel jpSouthCenter = new JPanel(new FlowLayout());
-		this.jpSouth.add(jpSouthCenter, BorderLayout.CENTER);
-
-		JButton jbSplit = ButtonFactory.getNoMargins("Split");
-		jbSplit.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				splitSelVars();
-				// Repaint
-				getParent().repaint();
-			}
-		});
-		jpSouthCenter.add(jbSplit);
-		JButton jbUnsplit = ButtonFactory.getNoMargins("Unsplit");
-		jbUnsplit.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				unsplitSelVars();
-				// Repaint
-				getParent().repaint();
-			}
-		});
-		jpSouthCenter.add(jbUnsplit);
-
-		this.jbInc.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				incPriorityOfSelVars();
-				// Repaint
-				getParent().repaint();
-			}
-		});
-
-		jpSouthCenter.add(this.jbInc);
-
-		this.jbDec.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				decPriorityOfSelVars();
-				// Repaint
-				getParent().repaint();
-			}
-		});
-		jpSouthCenter.add(this.jbDec);
-
-		JButton jbSingle = ButtonFactory.getNoMargins("Single class");
-		jbSingle.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				createSingleClass();
-				// Repaint
-				getParent().repaint();
-			}
-		});
-		jpSouthCenter.add(jbSingle);
-
-		// Model Components panel
-		this.jpIntraCenter = new JPanel(new FlowLayout());
-		this.center.add(this.jpIntraCenter, BorderLayout.CENTER);
-
-		LogicalModel m = Project.getInstance().getProjectFeatures().getModel((String) jcbSBML.getSelectedItem());
-		this.updatePriorityList(m);
-
-		ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(this.selectedModel);
-
-		if (mpc.getPriorities().size() > 1) {
-			this.jbInc.setEnabled(true);
-		} else {
-			this.jbInc.setEnabled(false);
-		}
+		this.updatePriorityPanel();
 		this.isInitialized = true;
+	}
+
+	private PriorityClassPanel getPriorityClassPanel(LogicalModel m) {
+		if (!this.mModel2PCP.containsKey(m)) {
+			ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(m);
+			PriorityClassPanel pcp = new PriorityClassPanel(mpc, false);
+			pcp.addActionListener(new PanelChangedEventListener() {
+				@Override
+				public void panelChangedOccurred() {
+					tpc.setChanged();
+				}
+			});
+			this.mModel2PCP.put(m, pcp);
+		}
+		return this.mModel2PCP.get(m);
 	}
 
 	private JComboBox<String> newModelCombobox(List<LogicalModel> modelList) {
@@ -178,194 +98,37 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 			public void actionPerformed(ActionEvent e) {
 				@SuppressWarnings("unchecked")
 				JComboBox<String> jcb = (JComboBox<String>) e.getSource();
-				LogicalModel m = Project.getInstance().getProjectFeatures().getModel((String) jcb.getSelectedItem());
-				updatePriorityList(m);
-				// Re-Paint
-				getParent().repaint();
+				selModel = Project.getInstance().getProjectFeatures().getModel((String) jcb.getSelectedItem());
+				updatePriorityPanel();
 			}
 		});
+		this.selModel = Project.getInstance().getProjectFeatures().getModel((String) jcb.getItemAt(0));
 		return jcb;
 	}
 
-	private void splitSelVars() {
-		ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(this.selectedModel);
-		for (int i = 0; i < this.guiClasses.size(); i++) {
-			List<String> values = this.guiClasses.get(i).getSelectedValuesList();
-			if (!values.isEmpty()) {
-				for (String var : values)
-					mpc.split(i, var);
-				tpc.setChanged();
-				break;
-			}
+	private void updatePriorityPanel() {
+		BorderLayout layout = (BorderLayout) this.center.getLayout();
+		JPanel jpTmp = (JPanel) layout.getLayoutComponent(BorderLayout.CENTER);
+		if (jpTmp != null) {
+			this.center.remove(jpTmp);
 		}
-		this.updatePriorityList(this.selectedModel);
-	}
-
-	private void unsplitSelVars() {
-		ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(this.selectedModel);
-		for (int i = 0; i < this.guiClasses.size(); i++) {
-			List<String> values = this.guiClasses.get(i).getSelectedValuesList();
-			if (!values.isEmpty()) {
-				for (String var : values)
-					mpc.unsplit(i, var);
-				tpc.setChanged();
-				break;
-			}
-		}
-		this.updatePriorityList(this.selectedModel);
-	}
-
-	private void incPriorityOfSelVars() {
-		ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(this.selectedModel);
-		for (int i = 0; i < this.guiClasses.size(); i++) {
-			List<String> values = this.guiClasses.get(i).getSelectedValuesList();
-			if (!values.isEmpty()) {
-				mpc.incPriorities(i, values);
-				tpc.setChanged();
-				break;
-			}
-		}
-		if (mpc.getPriorities().size() > 1) {
-			this.jbInc.setEnabled(true);
-		} else {
-			this.jbInc.setEnabled(false);
-		}
-		this.updatePriorityList(this.selectedModel);
-	}
-
-	private void decPriorityOfSelVars() {
-		ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(this.selectedModel);
-		for (int i = 0; i < this.guiClasses.size(); i++) {
-			List<String> values = this.guiClasses.get(i).getSelectedValuesList();
-			if (!values.isEmpty()) {
-				mpc.decPriorities(i, values);
-				tpc.setChanged();
-				break;
-			}
-		}
-		this.updatePriorityList(this.selectedModel);
-
-		if (mpc.getPriorities().size() > 1) {
-			this.jbInc.setEnabled(true);
-		} else {
-			this.jbInc.setEnabled(false);
-		}
-	}
-
-	private void createSingleClass() {
-		this.userPriorityClasses.getModelPriorityClasses(this.selectedModel).singlePriorityClass();
-		tpc.setChanged();
-		this.jbInc.setEnabled(false);
-		this.updatePriorityList(this.selectedModel);
-	}
-
-	// FIXME
-	private void updatePriorityList(LogicalModel m) {
-		this.jpIntraCenter.removeAll();
-		this.guiClasses.clear();
-		this.selectedModel = m;
-		this.mergeInputPriorities();
-		ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(m);
-
-		for (int idxPC = 0; idxPC < mpc.size(); idxPC++) {
-			JPanel jpRankBlock = new JPanel(new BorderLayout());
-			JLabel jlTmp = new JLabel("Rank " + (idxPC + 1), SwingConstants.CENTER);
-			jpRankBlock.add(jlTmp, BorderLayout.NORTH);
-
-			DefaultListModel<String> lModel = new DefaultListModel<String>();
-			List<String> vars = mpc.getClassVars(idxPC);
-			// -- Order variables alphabetically
-			Collections.sort(vars, String.CASE_INSENSITIVE_ORDER);
-			for (String var : vars) {
-				String tmpVar = var;
-				if (var.contains("+") | var.contains("-")) {
-					tmpVar = var.split("\\[")[0];
-				}
-				if (!Project.getInstance().getProjectFeatures().getNodeInfo(tmpVar).isInput()) {
-					lModel.addElement(var);
-				}
-			}
-			JList<String> jList = new JList<String>(lModel);
-			jList.setVisibleRowCount(this.JLIST_LINES);
-			jList.setFixedCellWidth(this.JLIST_WIDTH);
-			jList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-			jList.addMouseListener(new MouseListener() {
-				@Override
-				public void mouseReleased(MouseEvent e) {
-					@SuppressWarnings("unchecked")
-					JList<String> selJList = (JList<String>) e.getSource();
-					for (JList<String> list : guiClasses) {
-						if (!list.equals(selJList)) {
-							list.clearSelection();
-						}
-					}
-				}
-
-				@Override
-				public void mousePressed(MouseEvent e) {
-				}
-
-				@Override
-				public void mouseExited(MouseEvent e) {
-				}
-
-				@Override
-				public void mouseEntered(MouseEvent e) {
-				}
-
-				@Override
-				public void mouseClicked(MouseEvent e) {
-				}
-			});
-			this.guiClasses.add(jList);
-
-			JScrollPane jScroll = new JScrollPane(jList);
-			jScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-			jpRankBlock.add(jScroll, BorderLayout.CENTER);
-
-			String label = "  ";
-			if (mpc.size() > 1) {
-				if (idxPC == 0)
-					label = "Fastest";
-				else if (idxPC == (mpc.size() - 1))
-					label = "Slowest";
-			}
-			jpRankBlock.add(new JLabel(label, SwingConstants.CENTER), BorderLayout.SOUTH);
-
-			this.jpIntraCenter.add(jpRankBlock);
-			this.jpIntraCenter.add(Box.createRigidArea(new Dimension(this.JLIST_SPACING, 10)));
-		}
-	}
-
-	private void mergeInputPriorities() {
-		LogicalModel m = this.selectedModel;
-		ModelPriorityClasses mpc = this.userPriorityClasses.getModelPriorityClasses(m);
-		List<String> vars = mpc.getClassVars(0);
-		boolean allInputFlag = true;
-		for (String var : vars) {
-			String tmpVar = var;
-			if (var.contains("+") | var.contains("-")) {
-				tmpVar = var.split("\\[")[0];
-			}
-			if (!Project.getInstance().getProjectFeatures().getNodeInfo(tmpVar).isInput()) {
-				allInputFlag = false;
-			}
-		}
-		if (allInputFlag == true & mpc.size() > 1) {
-			List<String> class2Merge = mpc.getClassVars(1);
-			this.userPriorityClasses.getModelPriorityClasses(m).incPriorities(1, class2Merge);
-		}
+		this.jpPriorityPanel = this.getPriorityClassPanel(this.selModel);
+		this.jpPriorityPanel.updatePriorityList();
+		this.center.add(this.jpPriorityPanel, BorderLayout.CENTER);
+		this.center.revalidate();
+		// Repaint
+		this.center.repaint();
+		this.jpPriorityPanel.repaint();
 	}
 
 	@Override
 	protected void buttonReset() {
+		this.mModel2PCP.clear();
 		this.userPriorityClasses = new EpitheliumUpdateSchemeIntra();
 		for (LogicalModel m : this.epithelium.getEpitheliumGrid().getModelSet()) {
 			this.userPriorityClasses.addModelPriorityClasses(this.epithelium.getPriorityClasses(m).clone());
 		}
-		this.updatePriorityList(this.selectedModel);
-		// Repaint
-		this.getParent().repaint();
+		this.updatePriorityPanel();
 	}
 
 	@Override
@@ -379,9 +142,9 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 	@Override
 	protected boolean isChanged() {
 		for (LogicalModel m : this.epithelium.getEpitheliumGrid().getModelSet()) {
-			ModelPriorityClasses clone = this.userPriorityClasses.getModelPriorityClasses(m);
-			ModelPriorityClasses orig = this.epithelium.getPriorityClasses(m);
-			if (!clone.equals(orig))
+			ModelPriorityClasses mpcGUI = this.userPriorityClasses.getModelPriorityClasses(m);
+			ModelPriorityClasses mpcEpi = this.epithelium.getPriorityClasses(m);
+			if (!mpcGUI.equals(mpcEpi))
 				return true;
 		}
 		return false;
@@ -403,7 +166,8 @@ public class EpiTabCellularModelUpdate extends EpiTabDefinitions implements Hype
 		this.userPriorityClasses = newPCs;
 		this.jpNorthLeft.removeAll();
 		this.jpNorthLeft.add(this.newModelCombobox(modelList));
-		this.updatePriorityList(modelList.get(0));
+		this.mModel2PCP.clear();
+		this.updatePriorityPanel();
 	}
 
 	@Override

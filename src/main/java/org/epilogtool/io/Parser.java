@@ -21,6 +21,7 @@ import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.colomoto.biolqm.modifier.perturbation.FixedValuePerturbation;
 import org.colomoto.biolqm.modifier.perturbation.MultiplePerturbation;
 import org.colomoto.biolqm.modifier.perturbation.RangePerturbation;
+import org.colomoto.biolqm.tool.simulation.multiplesuccessor.ModelPriorityClasses;
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.RandCentral;
@@ -30,7 +31,6 @@ import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
-import org.epilogtool.core.ModelPriorityClasses;
 import org.epilogtool.core.UpdateCells;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.color.ColorUtils;
@@ -248,9 +248,6 @@ public class Parser {
 					if (saTmp.length > 3) {
 						lTuple = currEpi.getEpitheliumGrid().getTopology().instances2Tuples2D(saTmp[3].split(","));
 					}
-					// System.out.println("Parser: " + ap);
-					// System.out.println("Parser: " + c);
-					// System.out.println("Parser: " + lTuple);
 					currEpi.applyPerturbation(ap, c, lTuple);
 				}
 			}
@@ -463,7 +460,7 @@ public class Parser {
 				for (int idxPC = 0; idxPC < mpc.size(); idxPC++) {
 					if (!sPCs.isEmpty())
 						sPCs += ":";
-					List<String> pcVars = mpc.getClassVars(idxPC);
+					List<String> pcVars = mpc.getClassVars(idxPC).get(0);
 					sPCs += join(pcVars, ",");
 				}
 				w.println("PR " + model2Key.get(m) + " " + sPCs);
@@ -481,9 +478,6 @@ public class Parser {
 				if (currAP == null) {
 					continue;
 				} else {
-					// System.out.println("Parser: " + currAP);
-					// System.out.println("Parser: " + x);
-					// System.out.println("Parser: " + y);
 					if (!apInst.containsKey(currAP)) {
 						apInst.put(currAP, new ArrayList<Integer>());
 					}

@@ -13,7 +13,7 @@ import java.util.Set;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
-import org.colomoto.biolqm.tool.simulation.multiplesuccessor.PriorityClasses;
+import org.colomoto.biolqm.tool.simulation.multiplesuccessor.ModelPriorityClasses;
 import org.colomoto.biolqm.tool.simulation.multiplesuccessor.PriorityUpdater;
 import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.RandCentral;
@@ -94,8 +94,8 @@ public class Simulation {
 					// Apply model perturbation
 					LogicalModel perturb = (ap == null) ? m : ap.apply(m);
 					// Get Priority classes
-					PriorityClasses pcs = this.epithelium.getPriorityClasses(m).getPriorities();
-					PriorityUpdater updater = new PriorityUpdater(perturb, pcs);
+					ModelPriorityClasses mpc = this.epithelium.getPriorityClasses(m);
+					PriorityUpdater updater = new PriorityUpdater(perturb, mpc);
 					this.updaterCache.get(m).put(ap, updater);
 				}
 			}
