@@ -347,7 +347,16 @@ public class Parser {
 				currEpi.getEpitheliumEvents().setDivisionTrigger(m, sArray[3]);
 				currEpi.getEpitheliumEvents().setDivisionValue(m, Float.parseFloat(sArray[4]));
 				currEpi.getEpitheliumEvents().setDivisionPattern(m, sArray[5]);
-				currEpi.getEpitheliumEvents().setDivisionNewState(m, new byte[m.getComponents().size()]);
+				
+				byte[] state = new byte[m.getComponents().size()];
+				
+				String[] lsValues = sArray[6].substring(1, sArray[6].length()-1).replace(" ","").split(",");
+				
+				for (int i = 0 ; i<lsValues.length; i++) {
+					state[i] = Byte.parseByte(lsValues[i]);
+				}
+						
+				currEpi.getEpitheliumEvents().setDivisionNewState(m, state);
 				
 				currEpi.getEpitheliumEvents().setDeathAlgorithm(m, sArray[7]);
 				currEpi.getEpitheliumEvents().setDivisionAlgorithm(m, sArray[8]);

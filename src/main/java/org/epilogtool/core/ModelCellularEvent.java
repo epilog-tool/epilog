@@ -33,7 +33,6 @@ public class ModelCellularEvent {
 		this.deathPattern = deathPattern;
 		this.divisionPattern = divisionPattern;
 		
-//		this.newCellSate = "";
 		this.newCellState = newCellState;
 		
 		this.deathAlgorithm = deathAlgorithm;
@@ -45,7 +44,7 @@ public class ModelCellularEvent {
 
 
 	public ModelCellularEvent clone() {
-		return new ModelCellularEvent(this.getDeathValue(), this.getDivisionValue(), this.getDeathTrigger(), this.getDivisionTrigger(), this.getDeathPattern(), this.getDivisionPattern(), this.getNewCellState(), this.getDeathAlgorithm(), this.getDivisionAlgorithm(), this.getDivisionRange());
+		return new ModelCellularEvent(this.getDeathValue(), this.getDivisionValue(), this.getDeathTrigger(), this.getDivisionTrigger(), this.getDeathPattern(), this.getDivisionPattern(), this.getNewCellState().clone(), this.getDeathAlgorithm(), this.getDivisionAlgorithm(), this.getDivisionRange());
 	}
 	public int getDivisionRange() {
 		return this.divisionRange;
@@ -119,7 +118,6 @@ public class ModelCellularEvent {
 		this.divisionAlgorithm = divAlg;}
 	
 	public boolean equals(Object o) {
-	
 		
 		ModelCellularEvent mce = (ModelCellularEvent) o ;
 		
@@ -142,6 +140,8 @@ public class ModelCellularEvent {
 		if (!this.divisionAlgorithm.equals(mce.getDivisionAlgorithm())) {
 			return false;		}
 		if (this.divisionRange!=mce.getDivisionRange()) {
+			return false;		}
+		if (this.newCellState!=mce.getNewCellState()) {
 			return false;		}
 		
 		return true;
