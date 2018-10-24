@@ -12,6 +12,7 @@ public class EpitheliumEvents {
 	public static String DEFAULT_ORDER = Txt.get("s_TAB_EPIUPDATE_ORDER_RANDOM");
 	public static String DEFAULT_DIVISIONOPTION= Txt.get("s_TAB_EPIUPDATE_NEWCELLSTATE_NAIVE");
 	public static String DEFAULT_DEATHOPTION = Txt.get("s_TAB_EPIUPDATE_CELLDEATH_EMPTY");
+	public static int DEFAULT_DEATHRANGE = 1;
 	
 	public static String DEFAULT_DEATHTRIGGER = Txt.get("s_TAB_EVE_TRIGGER_NONE");
 	public static String DEFAULT_DIVISIONTRIGGER = Txt.get("s_TAB_EVE_TRIGGER_NONE");
@@ -19,6 +20,8 @@ public class EpitheliumEvents {
 	public static String DEFAULT_DIVISIONPATTERN = "";
 	
 	public static int DEFAULT_DIVISIONRANGE = 1;
+	public static int DEFAULT_NEIGHBOURSRANGE = 1;
+	public static int DEFAULT_COMPRESSIONPARAMETER = 1;
 	
 	public static float DEFAULT_DIVISIONPROBABILITY = (int) 0.0;
 	public static float DEFAULT_DEATHPROBABILITY = (int) 0.0;
@@ -30,14 +33,16 @@ public class EpitheliumEvents {
 	private String eventOrder;
 	private String deathOption;
 	private String divisionOption;
+	private int deathNeighbourRange;
 	
 	private Map<LogicalModel, ModelCellularEvent> model2MCE;
 
-public EpitheliumEvents(String eventOrder, String deathOption, String divisionOption, Map<LogicalModel, ModelCellularEvent> model2MCE, Set<LogicalModel> modelList) {
+public EpitheliumEvents(String eventOrder, String deathOption, String divisionOption, int deathNeighbourRange, Map<LogicalModel, ModelCellularEvent> model2MCE, Set<LogicalModel> modelList) {
 		
 		this.eventOrder = eventOrder;
 		this.deathOption = deathOption;
 		this.divisionOption = divisionOption;
+		this.deathNeighbourRange = deathNeighbourRange;
 		this.model2MCE = model2MCE;
 		
 		for (LogicalModel model: modelList) {
@@ -49,7 +54,7 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 
 	public void addModel2MCE(LogicalModel model) {
 		if (!model2MCE.containsKey(model)){
-			ModelCellularEvent mce = new ModelCellularEvent(DEFAULT_DEATHPROBABILITY,DEFAULT_DIVISIONPROBABILITY,DEFAULT_DEATHTRIGGER, DEFAULT_DIVISIONTRIGGER, DEFAULT_DEATHPATTERN, DEFAULT_DIVISIONPATTERN, new byte[model.getComponents().size()],DEFAULT_DEATHALGORITHM,DEFAULT_DIVISIONALGORITHM,DEFAULT_DIVISIONRANGE);
+			ModelCellularEvent mce = new ModelCellularEvent(DEFAULT_DEATHPROBABILITY,DEFAULT_DIVISIONPROBABILITY,DEFAULT_DEATHTRIGGER, DEFAULT_DIVISIONTRIGGER, DEFAULT_DEATHPATTERN, DEFAULT_DIVISIONPATTERN, new byte[model.getComponents().size()],DEFAULT_DEATHALGORITHM,DEFAULT_DIVISIONALGORITHM,DEFAULT_DIVISIONRANGE,DEFAULT_NEIGHBOURSRANGE, DEFAULT_COMPRESSIONPARAMETER);
 			this.setModel2MCE(model, mce);
 		}
 	}
@@ -175,7 +180,7 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 		for (LogicalModel m: this.model2MCE.keySet()) {
 			model2MCEClone.put(m, this.model2MCE.get(m));
 			}
-		return new EpitheliumEvents(this.getEventOrder(), this.getDeathOption(), this.getDivisionOption(), model2MCEClone, model2MCEClone.keySet());
+		return new EpitheliumEvents(this.getEventOrder(), this.getDeathOption(), this.getDivisionOption(), this.getDeathNeighbourRange(),model2MCEClone, model2MCEClone.keySet());
 	}
 
 	public boolean equals(Object o) {
@@ -190,6 +195,8 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 		
 		if (!this.divisionOption.equals(newEpiEvents.getDivisionOption())){
 			return false;		}
+		if (this.deathNeighbourRange!=(newEpiEvents.getDeathNeighbourRange())){
+			return false;		}
 		
 		for (LogicalModel m: this.model2MCE.keySet()) {
 			if (!this.model2MCE.get(m).equals(newEpiEvents.getMCE(m))){
@@ -199,6 +206,13 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 	}
 	
 	
+	public void setDeathNeighbourRange(int range) {
+		this.deathNeighbourRange = range;
+	}
+
+	public int getDeathNeighbourRange() {
+		return this.deathNeighbourRange;
+	}
 
 
 	public ModelCellularEvent getMCE(LogicalModel selModel) {

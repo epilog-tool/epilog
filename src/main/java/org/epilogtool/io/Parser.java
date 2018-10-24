@@ -326,6 +326,10 @@ public class Parser {
 				currEpi.getEpitheliumEvents().setDivisionOption(newCellState);
 				currEpi.getEpitheliumEvents().setDeathOption(cellDeathOption);
 				
+				if(saTmp.length>3) {
+				String DeathRange = saTmp[3].replace("]","");
+				currEpi.getEpitheliumEvents().setDeathNeighbourRange(Integer.parseInt(DeathRange));
+				}
 			}
 			
 			if (line.startsWith("CE")) {
@@ -361,7 +365,11 @@ public class Parser {
 				currEpi.getEpitheliumEvents().setDeathAlgorithm(m, sArray[7]);
 				currEpi.getEpitheliumEvents().setDivisionAlgorithm(m, sArray[8]);
 				currEpi.getEpitheliumEvents().setDivisionRange(m,Integer.parseInt( sArray[9].replaceAll("]", "")));
-
+				
+				if (sArray.length>10) {
+				currEpi.getEpitheliumEvents().getMCE(m).setNeighboursRange(Integer.parseInt((sArray[10])));
+				currEpi.getEpitheliumEvents().getMCE(m).setCompressionParameter(Float.parseFloat( sArray[11].replaceAll("]", "")));
+				}
 				
 			}
 			
@@ -646,6 +654,7 @@ public class Parser {
 			lst.add(epi.getEpitheliumEvents().getEventOrder());
 			lst.add(epi.getEpitheliumEvents().getDivisionOption());
 			lst.add(epi.getEpitheliumEvents().getDeathOption());
+			lst.add(""+epi.getEpitheliumEvents().getDeathNeighbourRange());
 			
 //			System.out.println("ME " + "[" + join(lst,";") + "]");
 			w.println("ME " + "[" + join(lst,";") + "]");
@@ -677,6 +686,9 @@ public class Parser {
 			paramList.add(mce.getDeathAlgorithm());
 			paramList.add(mce.getDivisionAlgorithm());
 			paramList.add("" + mce.getDivisionRange());
+		
+			paramList.add("" + mce.getNeighboursRange());
+			paramList.add("" + mce.getCompressionParameter());
 	
 			w.println("CE " + model2Key.get(name) + " [" + join(paramList,";") +"]");
 		}

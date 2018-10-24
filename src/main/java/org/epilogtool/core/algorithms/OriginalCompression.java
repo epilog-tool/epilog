@@ -18,20 +18,24 @@ import org.epilogtool.core.cell.LivingCell;
 public class OriginalCompression extends AbstractAlgorithm {
 	
 	private Map<Tuple2D<Integer>, Double> mTuple2Compression;
-	private int range;
+	private int neighboursRange;
 	protected String name;
 	private Random random;
 	private EpitheliumGrid nextGrid;
 	private Graph graph; 
+	private float compressionParameter;
+	private int deadNeighboursRange;
 	
 	
-	public LinkedList<Vertex> originalCompression(Graph compressionGraph, Graph graph, LivingCell lCell, EpitheliumGrid nextGrid, int range, Random random){
+	public LinkedList<Vertex> originalCompression(Graph compressionGraph, Graph graph, LivingCell lCell, EpitheliumGrid nextGrid, int range, int deadNeighboursRange,float compressionParameter,Random random){
 		
-		this.range = range;
+		this.neighboursRange = range;
 		this.mTuple2Compression  = new HashMap<Tuple2D<Integer>, Double>();
 		this.random = random; 
 		this.nextGrid = nextGrid;
 		this.graph = graph;
+		this.compressionParameter = compressionParameter;
+		this.deadNeighboursRange = deadNeighboursRange;
 		
 		
 		LinkedList<Vertex> path = new LinkedList<Vertex>();
@@ -101,20 +105,18 @@ public class OriginalCompression extends AbstractAlgorithm {
 	private double getCompressionValue(Graph compressionGraph,Tuple2D<Integer> tuple) {
 
 		AbstractCell cell = this.nextGrid.getAbstCell(tuple.getX(), tuple.getY());
-		int deadRange = 2;
 		
 		if (cell.isLivingCell()) {
 //			System.out.println("I am a living cell");
-			return getCompressionlevel(compressionGraph,this.range, tuple);
+			return getCompressionlevel(compressionGraph,this.neighboursRange, tuple);
 		}
 		else if (cell.isDeadCell())
-			return getCompressionlevel(compressionGraph,deadRange, tuple);
+			return getCompressionlevel(compressionGraph,this.deadNeighboursRange, tuple);
 		return 0;
 	}
 	
 	private double getCompressionlevel(Graph compressionGraph, int range, Tuple2D<Integer> tuple) {
 
-		double p = 0.3;
 		double compression = 0;
 		if (this.nextGrid.getAbstCell(tuple).isEmptyCell())
 			return 0;
@@ -123,7 +125,7 @@ public class OriginalCompression extends AbstractAlgorithm {
 			int cardinalNumber =aux.size();
 //			System.out.println("distance: " + d + " -> The cardinal number for tuple "+ tuple + " is: " + cardinalNumber);
 			float w = (1-d)/(float) range + 1;
-			double f = Math.exp(p*(6*d)-cardinalNumber);
+			double f = Math.exp(this.compressionParameter*(6*d)-cardinalNumber);
 //			System.out.println("distance: " + d + " -> w for tuple "+ tuple + " is: " + w);
 //			System.out.println("distance: " + d + " -> f for tuple "+ tuple + " is: " + f);
 //			System.out.println("compression at : " + d + " -> c for tuple "+ tuple + " is: " + w/f);

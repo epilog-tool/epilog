@@ -45,7 +45,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 	private final int SLIDER_STEP = 10;
 
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
-	private EpitheliumEvents epitheliumEvents;
+	private EpitheliumEvents epiEventClone;
 	private LogicalModel selectedModel;
 	private TabProbablyChanged tpc;
 
@@ -75,7 +75,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		this.mName2JrbDeath= new HashMap<String, JRadioButton>();
 
 		this.updateSchemeInter = this.epithelium.getUpdateSchemeInter().clone();
-		this.epitheliumEvents = this.epithelium.getEpitheliumEvents().clone();
+		this.epiEventClone = this.epithelium.getEpitheliumEvents().clone();
 
 		// Alpha asynchronism panel
 		this.jpAlpha = new JPanel(new BorderLayout());
@@ -154,7 +154,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 			JRadioButton jrb = new JRadioButton(triggerOption);
 			jrb.setName(triggerOption);
 			this.mName2JrbEventOrder.put(triggerOption,jrb);
-			if(triggerOption.equals(this.epitheliumEvents.getEventOrder()))
+			if(triggerOption.equals(this.epiEventClone.getEventOrder()))
 				jrb.setSelected(true);
 				jrb.addActionListener(new ActionListener() {
 					@Override
@@ -170,7 +170,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		
 		boolean control = false;
 		for (String jrbName : mName2JrbEventOrder.keySet()) {
-			if(jrbName.equals(this.epitheliumEvents.getEventOrder())) {
+			if(jrbName.equals(this.epiEventClone.getEventOrder())) {
 				mName2JrbEventOrder.get(jrbName).setSelected(true);
 				control = true;
 			}
@@ -197,7 +197,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		for (String triggerOption: triggerCellOptions) {
 			JRadioButton jrb = new JRadioButton(triggerOption);
 			jrb.setName(triggerOption);
-			if(triggerOption.equals(this.epitheliumEvents.getDivisionOption()))
+			if(triggerOption.equals(this.epiEventClone.getDivisionOption()))
 				jrb.setSelected(true);
 			this.mName2JrbCell.put(triggerOption,jrb);
 				jrb.addActionListener(new ActionListener() {
@@ -214,7 +214,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		
 		control = false;
 		for (String jrbName : mName2JrbCell.keySet()) {
-			if(jrbName.equals(this.epitheliumEvents.getDivisionOption())) {
+			if(jrbName.equals(this.epiEventClone.getDivisionOption())) {
 				mName2JrbCell.get(jrbName).setSelected(true);
 				control = true;
 			}
@@ -224,7 +224,9 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		
 		this.center.add(jpNewCell);
 		
-		//Cell death Options
+		// *******************
+		// CELL DEATH OPTIONS
+		// *******************
 		
 		JPanel jpCellDeath= new JPanel ();
 
@@ -241,7 +243,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		for (String triggerOption: triggerDeathOptions) {
 			JRadioButton jrb = new JRadioButton(triggerOption);
 			jrb.setName(triggerOption);
-			if(triggerOption.equals(this.epitheliumEvents.getDeathOption()))
+			if(triggerOption.equals(this.epiEventClone.getDeathOption()))
 				jrb.setSelected(true);
 			this.mName2JrbDeath.put(triggerOption,jrb);
 				jrb.addActionListener(new ActionListener() {
@@ -257,7 +259,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		}
 		
 		for (String jrbName : mName2JrbDeath.keySet()) {
-			if(jrbName.equals(this.epitheliumEvents.getDeathOption())) {
+			if(jrbName.equals(this.epiEventClone.getDeathOption())) {
 				mName2JrbDeath.get(jrbName).setSelected(true);
 				control = true;
 			}	
@@ -265,21 +267,49 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		if (!control)
 			mName2JrbDeath.get(Txt.get("s_TAB_EPIUPDATE_CELLDEATH_EMPTY")).setSelected(true);
 		
+		JLabel jlDeathNeighboursRange = new JLabel();
+		jlDeathNeighboursRange.setText(Txt.get("s_TAB_EPIUPDATE_DEATHRANGE"));
+		jpCellDeath.add(jlDeathNeighboursRange);
+		
+		JComboBox<Integer> jcbNeighboursRange = new JComboBox<Integer>();
+		for (int d = 1; d <= Math.max(this.epithelium.getEpitheliumGrid().getX(),
+				this.epithelium.getEpitheliumGrid().getY()); d++) {
+			jcbNeighboursRange.addItem(d);
+		}
+		jcbNeighboursRange.setSelectedItem(this.epiEventClone.getDeathNeighbourRange());
+
+		jcbNeighboursRange.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				@SuppressWarnings("unchecked")
+				JComboBox jcb = (JComboBox) e.getSource();
+				updateNeighboursRange((int) jcb.getSelectedItem());
+			}
+		});
+		
+		jpCellDeath.add(jcbNeighboursRange);
 		this.center.add(jpCellDeath);
 
 		this.isInitialized = true;
 	}
 
+	protected void updateNeighboursRange(int selectedItem) {
+		if (this.isInitialized)
+			tpc.setChanged();
+		this.epiEventClone.setDeathNeighbourRange(selectedItem);
+		
+	}
+
 	private void updateEventOrder(String string) {
-		this.epitheliumEvents.setEventOrder(string);
+		this.epiEventClone.setEventOrder(string);
 	}
 	
 	private void updateNewCellState(String string) {
-		this.epitheliumEvents.setDivisionOption(string);
+		this.epiEventClone.setDivisionOption(string);
 	}
 	
 	private void updateCellDeath(String string) {
-		this.epitheliumEvents.setDeathOption(string);
+		this.epiEventClone.setDeathOption(string);
 	}
 	
 	
@@ -293,7 +323,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 	}
 	
 	private void updateJRBEventOrder() {
-		String eventOrder = this.epitheliumEvents.getEventOrder();
+		String eventOrder = this.epiEventClone.getEventOrder();
 		for (String s : this.mName2JrbEventOrder.keySet()) {
 			if (s.equals(eventOrder)) {
 				this.mName2JrbEventOrder.get(s).setSelected(true);}
@@ -301,7 +331,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 	}
 	
 	private void updateJRBDeath() {
-		String death = this.epitheliumEvents.getDeathOption();
+		String death = this.epiEventClone.getDeathOption();
 		for (String s : this.mName2JrbDeath.keySet()) {
 			if (s.equals(death)) {
 				this.mName2JrbDeath.get(s).setSelected(true);}
@@ -309,13 +339,14 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 	}
 	
 	private void updateJRBNewCell() {
-		String newCellType = this.epitheliumEvents.getDivisionOption();
+		String newCellType = this.epiEventClone.getDivisionOption();
 		for (String s : this.mName2JrbCell.keySet()) {
 			if (s.equals(newCellType)) {
 				this.mName2JrbCell.get(s).setSelected(true);}
 		}
 	}
 
+	
 	private void updateJCBRandomSeedType() {
 		EnumRandomSeed seedType = this.updateSchemeInter.getRandomSeedType();
 		for (int i = 0; i < this.jcbRandomSeedType.getItemCount(); i++) {
@@ -381,6 +412,8 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		this.updateCellDeath(this.epithelium.getEpitheliumEvents().getDeathOption());
 		this.updateNewCellState(this.epithelium.getEpitheliumEvents().getDivisionOption());
 		
+		this.updateNeighboursRange(this.epithelium.getEpitheliumEvents().getDeathNeighbourRange());
+		
 		
 		this.updateJCBUpdateCells();
 		this.updateJCBRandomSeedType();
@@ -399,9 +432,11 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		this.epithelium.getUpdateSchemeInter().setRandomSeedType(this.updateSchemeInter.getRandomSeedType());
 		this.epithelium.getUpdateSchemeInter().setRandomSeed(this.updateSchemeInter.getRandomSeed());
 		
-		this.epithelium.getEpitheliumEvents().setEventOrder(this.epitheliumEvents.getEventOrder());
-		this.epithelium.getEpitheliumEvents().setDivisionOption(this.epitheliumEvents.getDivisionOption());
-		this.epithelium.getEpitheliumEvents().setDeathOption(this.epitheliumEvents.getDeathOption());
+		this.epithelium.getEpitheliumEvents().setEventOrder(this.epiEventClone.getEventOrder());
+		this.epithelium.getEpitheliumEvents().setDivisionOption(this.epiEventClone.getDivisionOption());
+		this.epithelium.getEpitheliumEvents().setDeathOption(this.epiEventClone.getDeathOption());
+		this.epithelium.getEpitheliumEvents().setDeathNeighbourRange(this.epiEventClone.getDeathNeighbourRange());
+		
 
 	}
 
@@ -416,13 +451,16 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 			return true;
 		
 		if (!this.epithelium.getEpitheliumEvents().getEventOrder()
-				.equals(this.epitheliumEvents.getEventOrder()))
+				.equals(this.epiEventClone.getEventOrder()))
 			return true;
 		if (!this.epithelium.getEpitheliumEvents().getDivisionOption()
-				.equals(this.epitheliumEvents.getDivisionOption()))
+				.equals(this.epiEventClone.getDivisionOption()))
 			return true;
 		if (!this.epithelium.getEpitheliumEvents().getDeathOption()
-				.equals(this.epitheliumEvents.getDeathOption()))
+				.equals(this.epiEventClone.getDeathOption()))
+			return true;
+		if (this.epithelium.getEpitheliumEvents().getDeathNeighbourRange()
+				!=(this.epiEventClone.getDeathNeighbourRange()))
 			return true;
 		return false;
 	}
@@ -437,9 +475,10 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 		this.updateSchemeInter.setRandomSeedType(this.epithelium.getUpdateSchemeInter().getRandomSeedType());
 		this.updateSchemeInter.setRandomSeed(this.epithelium.getUpdateSchemeInter().getRandomSeed());
 		
-		this.epitheliumEvents.setEventOrder(this.epithelium.getEpitheliumEvents().getEventOrder());
-		this.epitheliumEvents.setDivisionOption(this.epithelium.getEpitheliumEvents().getDivisionOption());
-		this.epitheliumEvents.setDeathOption(this.epithelium.getEpitheliumEvents().getDeathOption());
+		this.epiEventClone.setEventOrder(this.epithelium.getEpitheliumEvents().getEventOrder());
+		this.epiEventClone.setDivisionOption(this.epithelium.getEpitheliumEvents().getDivisionOption());
+		this.epiEventClone.setDeathOption(this.epithelium.getEpitheliumEvents().getDeathOption());
+		this.epiEventClone.setDeathNeighbourRange(this.epithelium.getEpitheliumEvents().getDeathNeighbourRange());
 
 		this.getParent().repaint();
 	}

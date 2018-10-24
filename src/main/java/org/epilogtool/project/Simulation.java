@@ -413,7 +413,7 @@ public class Simulation {
 						OriginalCompression compression = new OriginalCompression();
 						Graph compressionGraph = initializeCompressionGraph();
 //						System.out.println("w0.9: " + this.nextGrid.getAbstCell(lCell.getTuple()));
-						LinkedList<Vertex> path = compression.originalCompression(compressionGraph,this.graph, lCell,this.nextGrid, this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getDivisionRange(), this.random);
+						LinkedList<Vertex> path = compression.originalCompression(compressionGraph,this.graph, lCell,this.nextGrid, this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getNeighboursRange(), this.epithelium.getEpitheliumEvents().getDeathNeighbourRange(), this.epithelium.getEpitheliumEvents().getMCE(lCell.getModel()).getCompressionParameter(),this.random);
 //						System.out.println("w1: " + this.nextGrid.getAbstCell(path.get(0).getTuple()));
 //						System.out.println("path.size: " + path.size());
 						if (path.size()>0) this.displaceCells(path);
@@ -727,7 +727,6 @@ public class Simulation {
 	}
 
 	private Tuple2D<Integer> getSisterPosition(Tuple2D<Integer> tuple, List<EmptyCell> emptyCells) {
-		// TODO Random Algorithm
 		//ADD viewing range (make sure that there is an empty cell in a given range
 		Collections.shuffle(emptyCells, this.random);
 		return emptyCells.get(0).getTuple();

@@ -48,7 +48,7 @@ public class Epithelium {
 		this.perturbations = new EpitheliumPerturbations();
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(EpitheliumUpdateSchemeInter.DEFAULT_ALPHA,
 				UpdateCells.UPDATABLECELLS, randomSeedType, randomSeed);
-		this.epitheliumEvents = new EpitheliumEvents(EpitheliumEvents.DEFAULT_ORDER,EpitheliumEvents.DEFAULT_DEATHOPTION,EpitheliumEvents.DEFAULT_DIVISIONOPTION,new HashMap<LogicalModel, ModelCellularEvent>(), this.grid.getModelSet());
+		this.epitheliumEvents = new EpitheliumEvents(EpitheliumEvents.DEFAULT_ORDER,EpitheliumEvents.DEFAULT_DEATHOPTION,EpitheliumEvents.DEFAULT_DIVISIONOPTION,EpitheliumEvents.DEFAULT_DEATHRANGE,new HashMap<LogicalModel, ModelCellularEvent>(), this.grid.getModelSet());
 		
 	}
 

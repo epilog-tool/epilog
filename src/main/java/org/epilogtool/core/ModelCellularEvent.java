@@ -20,9 +20,11 @@ public class ModelCellularEvent {
 	private String divisionAlgorithm;
 	
 	private int divisionRange;
+	private int neighboursRange;
+	private float compressionParameter;
 	
 
-	public ModelCellularEvent(float deathValue, float divisionValue, String deathTrigger, String divisionTrigger, String deathPattern, String divisionPattern, byte[] newCellState, String deathAlgorithm, String divisionAlgorithm, int divisionRange) {
+	public ModelCellularEvent(float deathValue, float divisionValue, String deathTrigger, String divisionTrigger, String deathPattern, String divisionPattern, byte[] newCellState, String deathAlgorithm, String divisionAlgorithm, int divisionRange, int neighboursRange, float compressionParameter) {
 
 		this.deathValue  = deathValue;
 		this.divisionValue = divisionValue;
@@ -40,11 +42,13 @@ public class ModelCellularEvent {
 		
 		this.divisionRange = divisionRange;
 		
+		this.neighboursRange = neighboursRange;
+		this.compressionParameter = compressionParameter;
+		
 	}
 
-
 	public ModelCellularEvent clone() {
-		return new ModelCellularEvent(this.getDeathValue(), this.getDivisionValue(), this.getDeathTrigger(), this.getDivisionTrigger(), this.getDeathPattern(), this.getDivisionPattern(), this.getNewCellState().clone(), this.getDeathAlgorithm(), this.getDivisionAlgorithm(), this.getDivisionRange());
+		return new ModelCellularEvent(this.getDeathValue(), this.getDivisionValue(), this.getDeathTrigger(), this.getDivisionTrigger(), this.getDeathPattern(), this.getDivisionPattern(), this.getNewCellState().clone(), this.getDeathAlgorithm(), this.getDivisionAlgorithm(), this.getDivisionRange(), this.getNeighboursRange(), this.getCompressionParameter());
 	}
 	public int getDivisionRange() {
 		return this.divisionRange;
@@ -52,6 +56,24 @@ public class ModelCellularEvent {
 
 	public void setDivisionRange(int dRange) {
 		this.divisionRange = dRange;
+	}
+	public float getCompressionParameter() {
+		return compressionParameter;
+	}
+
+
+	public void setCompressionParameter(float compressionParameter) {
+		this.compressionParameter = compressionParameter;
+	}
+
+
+	public int getNeighboursRange() {
+		return neighboursRange;
+	}
+
+
+	public void setNeighboursRange(int neighboursRange) {
+		this.neighboursRange = neighboursRange;
 	}
 
 
@@ -140,7 +162,11 @@ public class ModelCellularEvent {
 		if (!this.divisionAlgorithm.equals(mce.getDivisionAlgorithm())) {
 			return false;		}
 		if (this.divisionRange!=mce.getDivisionRange()) {
-			return false;		}
+			return false;	}
+		if (this.neighboursRange!=mce.getNeighboursRange()) {
+				return false;	}
+		if (this.compressionParameter!=mce.getCompressionParameter()) {
+					return false;	}
 		if (this.newCellState!=mce.getNewCellState()) {
 			return false;		}
 		
