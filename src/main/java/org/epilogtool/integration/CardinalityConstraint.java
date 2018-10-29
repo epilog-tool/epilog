@@ -3,7 +3,6 @@ package org.epilogtool.integration;
 import java.util.Map;
 import java.util.Set;
 
-import org.antlr.runtime.RecognitionException;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
@@ -14,12 +13,12 @@ public class CardinalityConstraint implements IntegrationFunctionExpression {
 	private int maxCells;
 
 	public CardinalityConstraint(IntegrationSignalExpression expr, String minCells, String maxCells)
-			throws RecognitionException {
+			throws RuntimeException {
 		this.expr = expr;
 		this.minCells = Integer.parseInt(minCells);
 		this.maxCells = Integer.parseInt(maxCells);
 		if (this.maxCells > -1 && this.minCells > this.maxCells) {
-			throw new RecognitionException();
+			throw new RuntimeException("Invalid number of cells");
 		}
 	}
 

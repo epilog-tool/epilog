@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import org.antlr.runtime.RecognitionException;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
@@ -187,7 +186,7 @@ public class Epithelium {
 	}
 
 	public void setIntegrationFunction(String nodeID, byte value, String function)
-			throws RecognitionException, RuntimeException {
+			throws RuntimeException {
 		NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID);
 		if (!this.integrationFunctions.containsNode(node)) {
 			this.integrationFunctions.addComponent(node);
@@ -300,8 +299,6 @@ public class Epithelium {
 							if (validateIntegrationFunction(function)) {
 								try {
 									this.setIntegrationFunction(nNode.getNodeID(), (byte) (i + 1), function);
-								} catch (RecognitionException re) {
-									// TODO Auto-generated catch block
 								} catch (RuntimeException re) {
 									// TODO Auto-generated catch block
 									dialogMsg.addMessage("Integration function: " + nNode.getNodeID() + ":" + (i + 1)

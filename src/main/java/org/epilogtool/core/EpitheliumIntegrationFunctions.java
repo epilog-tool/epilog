@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.antlr.runtime.RecognitionException;
+import org.antlr.v4.runtime.RecognitionException;
 import org.colomoto.biolqm.NodeInfo;
 
 public class EpitheliumIntegrationFunctions {
@@ -28,7 +28,7 @@ public class EpitheliumIntegrationFunctions {
 	}
 
 	public void setFunctionAtLevel(NodeInfo node, byte value, String function)
-			throws RecognitionException, RuntimeException {
+			throws RuntimeException {
 		this.functions.get(node).setFunctionAtLevel(value, function);
 	}
 

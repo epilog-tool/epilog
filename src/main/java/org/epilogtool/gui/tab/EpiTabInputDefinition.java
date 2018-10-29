@@ -27,7 +27,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.tree.TreePath;
 
-import org.antlr.runtime.RecognitionException;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.epilogtool.common.ObjectComparator;
@@ -54,8 +53,8 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 
 	private JPanel jpInputComp;
 	private JPanel jpNRBottom;
-//	
-	private JPanel jpNRTop; //NodeId top
+	//
+	private JPanel jpNRTop; // NodeId top
 	private JPanel jpLeftTop;
 	private JPanel jpLeft;
 
@@ -68,43 +67,40 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	}
 
 	public void initialize() {
-		
 
 		this.center.setLayout(new BorderLayout());
 
 		this.userIntegrationFunctions = this.epithelium.getIntegrationFunctions().clone();
 		this.activeNodeID = null;
 		this.tpc = new TabProbablyChanged();
-		
+
 		this.group = new ButtonGroup();
-		
-		//Panels
-		
+
+		// Panels
+
 		this.jpLeft = new JPanel(new BorderLayout());
-		
-		this.jpLeftTop = new JPanel(); //Model Selection Panel
+
+		this.jpLeftTop = new JPanel(); // Model Selection Panel
 		this.jpLeftTop.setLayout(new BoxLayout(this.jpLeftTop, BoxLayout.Y_AXIS));
-		
+
 		this.jpLeftTop.setBorder(BorderFactory.createTitledBorder(Txt.get("s_MODEL_SELECT")));
 		this.jpLeft.add(this.jpLeftTop, BorderLayout.NORTH);
-	
-		
+
 		this.add(this.jpLeft, BorderLayout.LINE_START);
-		
-		
+
 		// North Panel
 		JPanel jpNorth = new JPanel(new BorderLayout());
 		JPanel jpNLeft = new JPanel(new BorderLayout());
-//
+		//
 		JPanel jpNRight = new JPanel(new BorderLayout());
 		jpNorth.add(jpNRight, BorderLayout.CENTER);
 		this.center.add(jpNorth, BorderLayout.NORTH);
-//
+		//
 		this.jpNRTop = new JPanel(new FlowLayout());
 		jpNRight.add(this.jpNRTop, BorderLayout.NORTH);
 		this.jpNRBottom = new JPanel(new GridBagLayout());
 		jpNRight.add(this.jpNRBottom, BorderLayout.CENTER);
-//
+		//
 		jpNorth.add(jpNLeft, BorderLayout.LINE_START);
 
 		// Model selection jcomboCheckBox
@@ -183,18 +179,20 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		} else {
 			Collections.sort(lInputs, ObjectComparator.NODE_INFO);
 			int y = 0;
-			
+
 			boolean checkIfnodeExistsmodel = false;
 			NodeInfo nodeAux = null;
-			
+
 			for (NodeInfo node : lInputs) {
-				
-				if (y == 0) {nodeAux = node;}
-				
+
+				if (y == 0) {
+					nodeAux = node;
+				}
+
 				if (node.getNodeID().equals(this.activeNodeID)) {
 					updateNodeID();
 					this.mNode2RadioButton.get(node.getNodeID()).setSelected(true);
-					checkIfnodeExistsmodel= true;
+					checkIfnodeExistsmodel = true;
 				}
 
 				gbc.gridy = y++;
@@ -210,13 +208,13 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 				updateNodeID();
 				this.mNode2RadioButton.get(nodeAux.getNodeID()).setSelected(true);
 			}
-				
+
 		}
-		
+
 		this.jpLeft.removeAll();
 		this.jpLeft.add(this.jpLeftTop, BorderLayout.NORTH);
 		this.jpLeft.add(this.jpInputComp, BorderLayout.CENTER);
-		
+
 		this.repaint();
 		this.revalidate();
 	}
@@ -282,7 +280,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	 * @throws RecognitionException
 	 * @throws RuntimeException
 	 */
-	private void setIntegrationFunction(byte level, String function) throws RecognitionException, RuntimeException {
+	private void setIntegrationFunction(byte level, String function) throws RuntimeException {
 		NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(this.activeNodeID);
 		ComponentIntegrationFunctions cif = this.userIntegrationFunctions.getComponentIntegrationFunctions(node);
 		cif.setFunctionAtLevel(level, function);
@@ -303,8 +301,6 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 		try {
 			setIntegrationFunction(value, jtf.getText());
 			jtf.setBackground(Color.WHITE);
-		} catch (RecognitionException re) {
-			jtf.setBackground(ColorUtils.LIGHT_RED);
 		} catch (RuntimeException re) {
 			jtf.setBackground(ColorUtils.LIGHT_RED);
 		}
@@ -398,7 +394,7 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 	protected void buttonAccept() {
 		allNodes: for (String node : mNode2RadioButton.keySet()) {
 			NodeInfo nodeInfo = Project.getInstance().getProjectFeatures().getNodeInfo(node);
-			
+
 			ComponentIntegrationFunctions cifClone = this.userIntegrationFunctions
 					.getComponentIntegrationFunctions(nodeInfo);
 			EpitheliumIntegrationFunctions eifOrig = this.epithelium.getIntegrationFunctions();
@@ -410,7 +406,6 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 					try {
 						eifOrig.getComponentIntegrationFunctions(nodeInfo).setFunctionAtLevel(i,
 								cifClone.getFunctions().get(i - 1));
-					} catch (RecognitionException re) {
 					} catch (RuntimeException re) {
 						DialogMessage.showError(this, "Integration function error", nodeInfo.getNodeID() + ":" + i
 								+ " has invalid expression: " + cifClone.getFunctions().get(i - 1));
@@ -452,8 +447,8 @@ public class EpiTabInputDefinition extends EpiTabDefinitions {
 			newModelList.add(Project.getInstance().getProjectFeatures().getModelName(m));
 		}
 		this.jccbSBML.updateItemList(newModelList);
-		
+
 		updateComponentList(this.jccbSBML.getSelectedItems());
-		
+
 	}
 }

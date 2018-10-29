@@ -1,38 +1,25 @@
 grammar IntegrationGrammar;
 
-@header {
-package org.epilogtool.integration;
-}
-
-@parser::members {
-  @Override
-  public void reportError(RecognitionException e) {
-    throw new RuntimeException("I quit!\n" + e.getMessage()); 
-  }
-}
-
-@lexer::members {
-  @Override
-  public void reportError(RecognitionException e) {
-    throw new RuntimeException("I quit!\n" + e.getMessage()); 
-  }
-}
-
 /*****************************************************************************/
 /* Rules */
 
 eval	returns [IntegrationFunctionExpression value]
-	: exp=functionexpror EOF { $value = $exp.value; }
+	: exp=functionexpror EOF 
+	    { $value = $exp.value; }
 	;
 
 functionexpror returns [IntegrationFunctionExpression value]
-	: o1=functionexprand (OR o2=functionexprand)*
-		{ $value = IFSpecification.integrationFunctionOperationOR($o1.value,$o2.value); }
+	: o1=functionexpror OR o2=functionexprand
+		{ $value = IFSpecification.integrationFunctionBinOpOR($o1.value,$o2.value); }
+	| expr=functionexprand
+	    { $value = $expr.value; }
 	; 
 
 functionexprand returns [IntegrationFunctionExpression value]
-	: a1=functionexprnot (AND a2=functionexprnot)*
-		{ $value = IFSpecification.integrationFunctionOperationAND($a1.value,$a2.value); }
+	: a1=functionexprand AND a2=functionexprnot
+		{ $value = IFSpecification.integrationFunctionBinOpAND($a1.value,$a2.value); }
+	| expr=functionexprnot
+	    { $value = $expr.value; }
 	;
 
 functionexprnot returns [IntegrationFunctionExpression value]
@@ -43,14 +30,14 @@ functionexprnot returns [IntegrationFunctionExpression value]
 	;
 
 functionparen returns [IntegrationFunctionExpression value]
-	: '(' expr=functionexpror ')'
-		{ $value = $expr.value; }
-	| expr=cardconst
-		{ $value = $expr.value; }
+	: '(' e1=functionexpror ')'
+		{ $value = $e1.value; }
+	| e2=cardconst
+		{ $value = $e2.value; }
 	| 'TRUE'
-		{ $value = IFSpecification.integrationFunctionTRUE(); }
+	    { $value = IFSpecification.integrationFunctionTRUE(); }
 	| 'FALSE'
-		{ $value = IFSpecification.integrationFunctionFALSE(); }
+	    { $value = IFSpecification.integrationFunctionFALSE(); }
 	;
 
 cardconst returns [IntegrationFunctionExpression value ]
@@ -65,8 +52,17 @@ cardconst returns [IntegrationFunctionExpression value ]
 	;
 
 signalexpror returns [IntegrationSignalExpression value]
-	: o1=signal (OR o2=signal)*
-		{ $value = IFSpecification.integrationSignalOperationOR($o1.value,$o2.value); }
+	: o1=signalexpror OR o2=signalexprand
+		{ $value = IFSpecification.integrationSignalBinOpOR($o1.value,$o2.value); }
+	| expr=signalexprand
+	    { $value = $expr.value; }
+	;
+
+signalexprand returns [IntegrationSignalExpression value]
+	: o1=signalexprand OR o2=signal
+		{ $value = IFSpecification.integrationSignalBinOpAND($o1.value,$o2.value); }
+	| expr=signal
+	    { $value = $expr.value; }
 	; 
 
 signal returns [IntegrationSignal value]
