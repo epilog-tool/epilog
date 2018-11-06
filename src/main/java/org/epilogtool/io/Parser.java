@@ -361,16 +361,11 @@ public class Parser {
 				}
 						
 				currEpi.getEpitheliumEvents().setDivisionNewState(m, state);
-				
-				currEpi.getEpitheliumEvents().setDeathAlgorithm(m, sArray[7]);
-				currEpi.getEpitheliumEvents().setDivisionAlgorithm(m, sArray[8]);
-				currEpi.getEpitheliumEvents().setDivisionRange(m,Integer.parseInt( sArray[9].replaceAll("]", "")));
-				
-				if (sArray.length>10) {
-				currEpi.getEpitheliumEvents().getMCE(m).setNeighboursRange(Integer.parseInt((sArray[10])));
-				currEpi.getEpitheliumEvents().getMCE(m).setCompressionParameter(Float.parseFloat( sArray[11].replaceAll("]", "")));
-				}
-				
+				currEpi.getEpitheliumEvents().setDivisionAlgorithm(m, sArray[7]);
+				currEpi.getEpitheliumEvents().setDivisionRange(m,Integer.parseInt( sArray[8].replaceAll("]", "")));
+				currEpi.getEpitheliumEvents().getMCE(m).setNeighboursRange(Integer.parseInt((sArray[9])));
+				currEpi.getEpitheliumEvents().getMCE(m).setCompressionParameter(Float.parseFloat(sArray[10].replaceAll("]", "")));
+				currEpi.getEpitheliumEvents().getMCE(m).setMinimumDistance(Integer.parseInt(sArray[11].replaceAll("]", "")));
 			}
 			
 		}
@@ -491,6 +486,7 @@ public class Parser {
 		// Models in the grid
 		EpitheliumGrid grid = epi.getEpitheliumGrid();
 		Map<Integer, List<String>> indexInst = new HashMap<Integer, List<String>>();
+		boolean hasStarted = false;
 		int lastIndex = 0;
 		int currIndex;
 	
@@ -505,9 +501,10 @@ public class Parser {
 					currIndex = model2Key.get(grid.getAbstCell(x,y).getName());
 				}
 				
-				if (currIndex!=lastIndex) {
-					if (!indexInst.containsKey(lastIndex))
+				if (currIndex!=lastIndex && hasStarted) {
+					if (!indexInst.containsKey(lastIndex)) {
 						indexInst.put(lastIndex, new ArrayList<String>());
+					}
 					List<String> lTmp = indexInst.get(lastIndex);
 					if ((currI - 1) == lastI) {
 						lTmp.add("" + lastI);
@@ -517,6 +514,7 @@ public class Parser {
 					lastI = currI;
 				}
 				lastIndex = currIndex;
+				hasStarted = true;
 				if (x == (grid.getX() - 1) && y == (grid.getY() - 1)) {
 					if (!indexInst.containsKey(lastIndex))
 						indexInst.put(lastIndex, new ArrayList<String>());
@@ -683,12 +681,12 @@ public class Parser {
 			paramList.add(mce.getDivisionPattern());
 			paramList.add(Arrays.toString(mce.getNewCellState()));
 			
-			paramList.add(mce.getDeathAlgorithm());
 			paramList.add(mce.getDivisionAlgorithm());
 			paramList.add("" + mce.getDivisionRange());
 		
 			paramList.add("" + mce.getNeighboursRange());
 			paramList.add("" + mce.getCompressionParameter());
+			paramList.add("" + mce.getMinimumDistance());
 	
 			w.println("CE " + model2Key.get(name) + " [" + join(paramList,";") +"]");
 		}

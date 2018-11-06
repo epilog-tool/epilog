@@ -59,6 +59,7 @@ public class OriginalCompression extends AbstractAlgorithm {
 			path.add(graph.getMTuple2Vertex(succ));
 //			System.out.println("path.size(): " + path.size());
 			if (this.nextGrid.getAbstCell(succ).isEmptyCell()) break;
+			if (path.size()>1000) break;
 //			}
 		}
 		return path;

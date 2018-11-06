@@ -1,7 +1,5 @@
 package org.epilogtool.core;
 
-
-
 //
 public class ModelCellularEvent {
 	
@@ -16,15 +14,15 @@ public class ModelCellularEvent {
 	
 	private byte[] newCellState;
 	
-	private String deathAlgorithm;
 	private String divisionAlgorithm;
 	
 	private int divisionRange;
 	private int neighboursRange;
 	private float compressionParameter;
+	private int minimumDistance;
 	
 
-	public ModelCellularEvent(float deathValue, float divisionValue, String deathTrigger, String divisionTrigger, String deathPattern, String divisionPattern, byte[] newCellState, String deathAlgorithm, String divisionAlgorithm, int divisionRange, int neighboursRange, float compressionParameter) {
+	public ModelCellularEvent(float deathValue, float divisionValue, String deathTrigger, String divisionTrigger, String deathPattern, String divisionPattern, byte[] newCellState, String divisionAlgorithm, int divisionRange, int neighboursRange, float compressionParameter, int minimumDistance) {
 
 		this.deathValue  = deathValue;
 		this.divisionValue = divisionValue;
@@ -37,19 +35,26 @@ public class ModelCellularEvent {
 		
 		this.newCellState = newCellState;
 		
-		this.deathAlgorithm = deathAlgorithm;
 		this.divisionAlgorithm = divisionAlgorithm;
 		
 		this.divisionRange = divisionRange;
 		
 		this.neighboursRange = neighboursRange;
 		this.compressionParameter = compressionParameter;
+		this.minimumDistance = minimumDistance;
 		
 	}
 
 	public ModelCellularEvent clone() {
-		return new ModelCellularEvent(this.getDeathValue(), this.getDivisionValue(), this.getDeathTrigger(), this.getDivisionTrigger(), this.getDeathPattern(), this.getDivisionPattern(), this.getNewCellState().clone(), this.getDeathAlgorithm(), this.getDivisionAlgorithm(), this.getDivisionRange(), this.getNeighboursRange(), this.getCompressionParameter());
+		return new ModelCellularEvent(this.getDeathValue(), this.getDivisionValue(), this.getDeathTrigger(), this.getDivisionTrigger(), this.getDeathPattern(), this.getDivisionPattern(), this.getNewCellState().clone(),  this.getDivisionAlgorithm(), this.getDivisionRange(), this.getNeighboursRange(), this.getCompressionParameter(),this.getMinimumDistance());
 	}
+	public int getMinimumDistance() {
+		return this.minimumDistance;
+	}
+	public void setMinimumDistance(int value) {
+		this.minimumDistance = value;
+	}
+
 	public int getDivisionRange() {
 		return this.divisionRange;
 	}
@@ -128,10 +133,6 @@ public class ModelCellularEvent {
 		this.divisionTrigger= trigger;
 	}
 	
-	public String getDeathAlgorithm() {
-		return this.deathAlgorithm;}
-	public void setDeathAlgorithm(String deathAlg) {
-		this.deathAlgorithm = deathAlg;}
 	
 	public String getDivisionAlgorithm() {
 		return this.divisionAlgorithm;}
@@ -157,16 +158,16 @@ public class ModelCellularEvent {
 			return false;		}
 		if (!this.newCellState.equals(mce.getNewCellState())) {
 			return false;		}
-		if (!this.deathAlgorithm.equals(mce.getDeathAlgorithm())) {
-			return false;		}
 		if (!this.divisionAlgorithm.equals(mce.getDivisionAlgorithm())) {
 			return false;		}
 		if (this.divisionRange!=mce.getDivisionRange()) {
-			return false;	}
+			return false;		}
 		if (this.neighboursRange!=mce.getNeighboursRange()) {
-				return false;	}
+			return false;		}
 		if (this.compressionParameter!=mce.getCompressionParameter()) {
-					return false;	}
+			return false;		}
+		if (this.minimumDistance!=mce.getMinimumDistance()) {
+			return false;		}
 		if (this.newCellState!=mce.getNewCellState()) {
 			return false;		}
 		

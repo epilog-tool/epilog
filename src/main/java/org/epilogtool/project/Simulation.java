@@ -533,8 +533,8 @@ public class Simulation {
 	private void displaceCells(LinkedList<Vertex> path) {
 		//TODO: IT IS WRONG
 		
-		System.out.println("Received the path: " );
-		printPath(path);
+//		System.out.println("Received the path: " );
+//		printPath(path);
 		
 //		System.out.println("w2: " + this.nextGrid.getAbstCell(path.get(0).getTuple()));
 
@@ -556,7 +556,7 @@ public class Simulation {
 //		System.out.println("w3: " + this.nextGrid.getAbstCell(path.get(0).getTuple()));
 		updateCellSister(path.get(0).getTuple(), path.get(1).getTuple());
 
-		printGrid(path);
+//		printGrid(path);
 	}
 
 

@@ -296,6 +296,7 @@ public class EpiTabEpitheliumModelUpdate extends EpiTabDefinitions implements Hy
 	protected void updateNeighboursRange(int selectedItem) {
 		if (this.isInitialized)
 			tpc.setChanged();
+		
 		this.epiEventClone.setDeathNeighbourRange(selectedItem);
 		
 	}

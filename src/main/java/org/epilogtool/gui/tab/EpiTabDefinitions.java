@@ -49,8 +49,9 @@ public abstract class EpiTabDefinitions extends EpiTab {
 	abstract protected boolean isChanged();
 
 	public boolean canClose() {
-		if (!this.isChanged())
+		if (!this.isChanged()) {
 			return true;
+		}
 		int n = JOptionPane.showConfirmDialog(this, Txt.get("s_TAB_CLOSE"), Txt.get("s_QUESTION"),
 				JOptionPane.YES_NO_OPTION);
 		return (n == JOptionPane.YES_OPTION);

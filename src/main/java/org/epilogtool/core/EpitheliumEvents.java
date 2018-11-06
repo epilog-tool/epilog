@@ -22,11 +22,11 @@ public class EpitheliumEvents {
 	public static int DEFAULT_DIVISIONRANGE = 1;
 	public static int DEFAULT_NEIGHBOURSRANGE = 1;
 	public static int DEFAULT_COMPRESSIONPARAMETER = 1;
+	public static int DEFAULT_MINIMUMDISTANCE = 1;
 	
 	public static float DEFAULT_DIVISIONPROBABILITY = (int) 0.0;
 	public static float DEFAULT_DEATHPROBABILITY = (int) 0.0;
 	
-	public static String DEFAULT_DEATHALGORITHM = Txt.get("s_TAB_EVE_ALGORITHM_RANDOM");
 	public static String DEFAULT_DIVISIONALGORITHM = Txt.get("s_TAB_EVE_ALGORITHM_RANDOM");
 	
 	//GENERAL
@@ -54,7 +54,7 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 
 	public void addModel2MCE(LogicalModel model) {
 		if (!model2MCE.containsKey(model)){
-			ModelCellularEvent mce = new ModelCellularEvent(DEFAULT_DEATHPROBABILITY,DEFAULT_DIVISIONPROBABILITY,DEFAULT_DEATHTRIGGER, DEFAULT_DIVISIONTRIGGER, DEFAULT_DEATHPATTERN, DEFAULT_DIVISIONPATTERN, new byte[model.getComponents().size()],DEFAULT_DEATHALGORITHM,DEFAULT_DIVISIONALGORITHM,DEFAULT_DIVISIONRANGE,DEFAULT_NEIGHBOURSRANGE, DEFAULT_COMPRESSIONPARAMETER);
+			ModelCellularEvent mce = new ModelCellularEvent(DEFAULT_DEATHPROBABILITY,DEFAULT_DIVISIONPROBABILITY,DEFAULT_DEATHTRIGGER, DEFAULT_DIVISIONTRIGGER, DEFAULT_DEATHPATTERN, DEFAULT_DIVISIONPATTERN, new byte[model.getComponents().size()],DEFAULT_DIVISIONALGORITHM,DEFAULT_DIVISIONRANGE,DEFAULT_NEIGHBOURSRANGE, DEFAULT_COMPRESSIONPARAMETER,DEFAULT_MINIMUMDISTANCE);
 			this.setModel2MCE(model, mce);
 		}
 	}
@@ -165,10 +165,6 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 		
 	}
 
-	public void setDeathAlgorithm(LogicalModel m, String string) {
-		this.model2MCE.get(m).setDeathAlgorithm(string);
-		
-	}
 	
 
 	
@@ -195,6 +191,7 @@ public EpitheliumEvents(String eventOrder, String deathOption, String divisionOp
 		
 		if (!this.divisionOption.equals(newEpiEvents.getDivisionOption())){
 			return false;		}
+		
 		if (this.deathNeighbourRange!=(newEpiEvents.getDeathNeighbourRange())){
 			return false;		}
 		
