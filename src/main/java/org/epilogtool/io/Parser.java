@@ -20,7 +20,7 @@ import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
 import org.colomoto.biolqm.modifier.perturbation.FixedValuePerturbation;
 import org.colomoto.biolqm.modifier.perturbation.MultiplePerturbation;
 import org.colomoto.biolqm.modifier.perturbation.RangePerturbation;
-import org.colomoto.biolqm.tool.simulation.multiplesuccessor.ModelPriorityClasses;
+import org.colomoto.biolqm.tool.simulation.grouping.ModelGrouping;
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.RandCentral;
@@ -69,7 +69,7 @@ public class Parser {
 			if (line.startsWith("SB")) {
 				saTmp = line.split("\\s+");
 
-				File fSBML = new File(fConfig.getParent() + "/" + saTmp[2]);
+				File fSBML = new File(fConfig.getParent() + File.separator + saTmp[2]);
 				try {
 					Project.getInstance().loadModel(fSBML.getName(), FileIO.loadSBMLModel(fSBML));
 				} catch (Exception e) {
@@ -251,15 +251,15 @@ public class Parser {
 				}
 			}
 		}
+		br.close();
+		in.close();
+		fstream.close();
+		
 		// // Ensure coherence of all epithelia
 		for (Epithelium epi : Project.getInstance().getEpitheliumList()) {
 			epi.getEpitheliumGrid().updateGrid();
 		}
-
 		Project.getInstance().setChanged(false);
-		br.close();
-		in.close();
-		fstream.close();
 		NotificationManager.dispatchDialogWarning(true, false);
 	}
 
@@ -292,12 +292,7 @@ public class Parser {
 	}
 
 	public static void saveConfigurations(PrintWriter w) throws IOException {
-		// Grid dimensions
-		// w.println("GD " + project.getX() + " " + project.getY() + " "
-		// + project.getTopologyLayout());
-
 		// SBML numerical identifiers
-
 		OptionStore.setOption("EM", ColorUtils.getColorCode(EmptyModel.getInstance().getColor()));
 
 		int i = 0;
@@ -454,7 +449,7 @@ public class Parser {
 		// PR #model node1,node2:...:nodei
 		for (LogicalModel m : model2Key.keySet()) {
 			if (epi.hasModel(m)) {
-				ModelPriorityClasses mpc = epi.getPriorityClasses(m);
+				ModelGrouping mpc = epi.getPriorityClasses(m);
 				String sPCs = "";
 				for (int idxPC = 0; idxPC < mpc.size(); idxPC++) {
 					if (!sPCs.isEmpty())

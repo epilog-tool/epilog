@@ -13,7 +13,7 @@ import javax.swing.tree.TreeCellRenderer;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
-import org.colomoto.biolqm.tool.simulation.multiplesuccessor.ModelPriorityClasses;
+import org.colomoto.biolqm.tool.simulation.grouping.ModelGrouping;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumIntegrationFunctions;
@@ -136,7 +136,7 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	private String getTooltipModelUpdateScheme(Epithelium epi) {
 		String tipKey = "<html>";
 		for (LogicalModel m : epi.getEpitheliumGrid().getModelSet()) {
-			ModelPriorityClasses mpc = epi.getPriorityClasses(m);
+			ModelGrouping mpc = epi.getPriorityClasses(m);
 			tipKey += "- " + Project.getInstance().getProjectFeatures().getModelName(m) + "</b><br/>";
 			tipKey += "&nbsp;&nbsp;. " + mpc.size() + " class(es)<br/>";
 		}

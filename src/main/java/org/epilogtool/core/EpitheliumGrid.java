@@ -106,6 +106,16 @@ public class EpitheliumGrid {
 		}
 	}
 
+	public Set<String> getComponents() {
+		Set<String> sComps = new HashSet<String>();
+		for (LogicalModel m : this.modelSet) {
+			for (NodeInfo n : m.getComponents()) {
+				sComps.add(n.getNodeID());
+			}
+		}
+		return sComps;
+	}
+
 	private void restrictCellWithPerturbation(int x, int y) {
 		this.gridEpiCell[x][y].restrictValuesWithPerturbation();
 	}
@@ -205,27 +215,26 @@ public class EpitheliumGrid {
 		String sExpr = ap.getStringRepresentation();
 		String[] saExpr = sExpr.split(", ");
 		List<NodeInfo> nodes = new ArrayList<NodeInfo>();
-		
+
 		for (String sTmp : saExpr) {
 			String name = sTmp.split("%")[0];
-//			System.out.println("EpitheliumGrid: name -> " + name);
+			// System.out.println("EpitheliumGrid: name -> " + name);
 			NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(name);
 			nodes.add(node);
-//			System.out.println("EpitheliumGrid: " + node);
+			// System.out.println("EpitheliumGrid: " + node);
 		}
-		
-		if (nodes.size()==1) {
+
+		if (nodes.size() == 1) {
 			NodeInfo node = nodes.get(0);
-			if  (model.getComponents().contains(node))
+			if (model.getComponents().contains(node))
 				return true;
+		} else if (nodes.size() > 1) {
+			for (NodeInfo node : nodes) {
+				if (!model.getComponents().contains(node))
+					return false;
+			}
 		}
-		else if (nodes.size()>1){
-		for (NodeInfo node : nodes) {
-			if  (!model.getComponents().contains(node))
-				return false;
-		}
-		}
-			return false;
+		return false;
 	}
 
 	public void setPerturbation(int x, int y, AbstractPerturbation ap) {
@@ -270,15 +279,16 @@ public class EpitheliumGrid {
 	public String toString() {
 		String s = "";
 		for (int y = 0; y < this.getY(); y++) {
-			s += (y + 1) + "|";
+			String line = "";
 			for (int x = 0; x < this.getX(); x++) {
+				if (line != "")
+					line += ",";
 				byte[] currState = this.getCellState(x, y);
 				for (int i = 0; i < currState.length; i++) {
-					s += currState[i];
+					line += currState[i];
 				}
-				s += "|";
 			}
-			s += "\n";
+			s += line + "\n";
 		}
 		return s;
 	}

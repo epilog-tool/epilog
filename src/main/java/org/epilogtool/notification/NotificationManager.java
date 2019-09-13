@@ -81,6 +81,7 @@ public class NotificationManager {
 			msg += n.getMessage() + "\n";
 		}
 		NotificationManager.clearMessages();
+System.out.println("NotificationManager: " + msg);
 		if (instance.gui) {
 			JOptionPane.showMessageDialog(null, msg, "Notifications", type);
 		} else {

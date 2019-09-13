@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.antlr.v4.runtime.RecognitionException;
 import org.colomoto.biolqm.NodeInfo;
 
 public class EpitheliumIntegrationFunctions {

@@ -59,7 +59,7 @@ signalexpror returns [IntegrationSignalExpression value]
 	;
 
 signalexprand returns [IntegrationSignalExpression value]
-	: o1=signalexprand OR o2=signal
+	: o1=signalexprand AND o2=signal
 		{ $value = IFSpecification.integrationSignalBinOpAND($o1.value,$o2.value); }
 	| expr=signal
 	    { $value = $expr.value; }

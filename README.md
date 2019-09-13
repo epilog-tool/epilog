@@ -10,7 +10,7 @@ Cellular models should be provided in the [SBML-qual](http://sbml.org/Community/
 
 How to use it?
 --------------
-To compile EpiLog all you will need is java7 JDK and [maven](http://maven.apache.org/).
+To compile EpiLog all you will need is java7+ JDK and [maven](http://maven.apache.org/).
 
 Grab the source from github:
 
@@ -32,9 +32,9 @@ This code is available under GPL-3.0.
 Implementation
 --------------
 
-Pedro T. Monteiro
-Pedro L. Varela
-Camila Ramos
+* Pedro T. Monteiro
+* Pedro L. Varela
+* Camila Ramos
 
 Project supervision
 --------------

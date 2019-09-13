@@ -112,7 +112,7 @@ public class VisualGridSimulation extends VisualGrid {
 				LogicalModel m = this.epiGrid.getModel(x, y);
 				List<Color> lColors = new ArrayList<Color>();
 				if (EmptyModel.getInstance().isEmptyModel(m)) {
-//					lColors.add(EmptyModel.getInstance().getColor());
+					// lColors.add(EmptyModel.getInstance().getColor());
 					lColors.add(this.getParent().getBackground());
 				} else {
 					for (String nodeID : this.lCompON) {
@@ -120,7 +120,6 @@ public class VisualGridSimulation extends VisualGrid {
 
 						if (Project.getInstance().getProjectFeatures().hasNode(nodeID, m)) {
 							byte max = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID).getMax();
-
 							int index = this.epiGrid.getNodeIndex(x, y, nodeID);
 							if (index >= 0) { // if cell has nodeID
 								byte value = this.epiGrid.getCellState(x, y)[index];
@@ -132,9 +131,11 @@ public class VisualGridSimulation extends VisualGrid {
 					}
 				}
 				Color cCombined = ColorUtils.combine(lColors);
+
 				Tuple2D<Double> center = topology.getPolygonCenter(this.radius, x, y);
 				Polygon polygon = topology.createNewPolygon(this.radius, center);
 				this.paintPolygon(stroke, cCombined, polygon, g2);
+
 				// Highlights the selected cell
 				if (this.lastPos != null && this.lastPos.getX() == x && this.lastPos.getY() == y) {
 					center = topology.getPolygonCenter(this.radius, x, y);
@@ -145,10 +146,7 @@ public class VisualGridSimulation extends VisualGrid {
 		}
 	}
 
-	public EpitheliumGrid getEpitheliumGrid() {
-		return epiGrid;
-	}
-
+	// FIXME not used
 	public void paintCumulative(Graphics g, Map<Tuple3D<Integer>, Float> cellNode2Count) {
 		this.cellNode2Count = cellNode2Count;
 
@@ -168,7 +166,6 @@ public class VisualGridSimulation extends VisualGrid {
 					lColors.add(EmptyModel.getInstance().getColor());
 				} else {
 					for (String nodeID : this.lCompON) {
-
 						float max = getMaxNodeCellCount(nodeID);
 
 						Color cBase = Project.getInstance().getProjectFeatures().getNodeColor(nodeID);
@@ -176,12 +173,11 @@ public class VisualGridSimulation extends VisualGrid {
 						float value = this.cellNode2Count.get(new Tuple3D<Integer>(x, y, nodeID));
 						if (value > 0) {
 							lColors.add(ColorUtils.getColorAtValue(cBase, max, value));
-
 						}
 					}
-
 				}
 				Color cCombined = ColorUtils.combine(lColors);
+
 				Tuple2D<Double> center = topology.getPolygonCenter(this.radius, x, y);
 				Polygon polygon = topology.createNewPolygon(this.radius, center);
 				this.paintPolygon(stroke, cCombined, polygon, g2);

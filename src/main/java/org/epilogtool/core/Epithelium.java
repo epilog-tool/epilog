@@ -11,7 +11,7 @@ import java.util.Set;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
-import org.colomoto.biolqm.tool.simulation.multiplesuccessor.ModelPriorityClasses;
+import org.colomoto.biolqm.tool.simulation.grouping.ModelGrouping;
 import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.topology.RollOver;
@@ -141,7 +141,7 @@ public class Epithelium {
 		return this.updateSchemeInter;
 	}
 
-	public ModelPriorityClasses getPriorityClasses(LogicalModel m) {
+	public ModelGrouping getPriorityClasses(LogicalModel m) {
 		return this.priorities.getModelPriorityClasses(m);
 	}
 
@@ -195,16 +195,16 @@ public class Epithelium {
 	}
 
 	public void initPriorityClasses(LogicalModel m) {
-		ModelPriorityClasses mpc = new ModelPriorityClasses(m, false, false);
+		ModelGrouping mpc = new ModelGrouping(m);
 		this.priorities.addModelPriorityClasses(mpc);
 	}
 
 	public void setPriorityClasses(LogicalModel m, String pcs) {
-		ModelPriorityClasses mpc = new ModelPriorityClasses(m, pcs);
+		ModelGrouping mpc = new ModelGrouping(m, pcs);
 		this.priorities.addModelPriorityClasses(mpc);
 	}
 
-	public void setPriorityClasses(ModelPriorityClasses mpc) {
+	public void setPriorityClasses(ModelGrouping mpc) {
 		this.priorities.addModelPriorityClasses(mpc);
 	}
 
@@ -369,7 +369,7 @@ public class Epithelium {
 	 */
 	public void replacePriorities(Epithelium oldEpi, LogicalModel oldModel, LogicalModel newModel,
 			List<String> commonNodeNames) {
-		ModelPriorityClasses oldMpc = oldEpi.getPriorityClasses(oldModel);
+		ModelGrouping oldMpc = oldEpi.getPriorityClasses(oldModel);
 
 		Boolean hasChanged = false;
 

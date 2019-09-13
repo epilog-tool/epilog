@@ -28,6 +28,16 @@ public class FileIO {
 
 	private final static String CONFIG_FILE = "config.txt";
 
+	/*
+	 * https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT 4.4.17.1 The name
+	 * of the file, with optional relative path. The path stored MUST not contain a
+	 * drive or device letter, or a leading slash. All slashes MUST be forward
+	 * slashes '/' as opposed to backwards slashes '\' for compatibility with Amiga
+	 * and UNIX file systems etc. If input came from standard input, there is no
+	 * file name field.
+	 */
+	private final static String SEP = "/";
+
 	public static File unzipPEPSTmpDir(String zipFile) throws IOException {
 		File outputTempDir = FileIO.createTempDirectory();
 		FileIO.unZipIt(zipFile, outputTempDir);
@@ -71,12 +81,11 @@ public class FileIO {
 		if (!(temp.mkdir())) {
 			throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
 		}
-
 		return temp;
 	}
 
 	public static File createTmpFileInDir(File destDir, String filename) {
-		return new File(destDir.getAbsolutePath() + "/" + filename);
+		return new File(destDir.getAbsolutePath() + File.separator + filename);
 	}
 
 	public static void deleteTempDirectory(File fEntry) {
@@ -88,7 +97,7 @@ public class FileIO {
 	}
 
 	public static File copyFile(File srcFile, String destDir) {
-		File fDestDir = new File(destDir + "/" + srcFile.getName());
+		File fDestDir = new File(destDir + File.separator + srcFile.getName());
 
 		try {
 			InputStream inStream = null;
@@ -113,7 +122,6 @@ public class FileIO {
 	}
 
 	private static void unZipIt(String zipFile, File folder) throws IOException {
-
 		byte[] buffer = new byte[1024];
 
 		if (!folder.exists()) {
@@ -126,8 +134,7 @@ public class FileIO {
 		ZipEntry ze = zis.getNextEntry();
 
 		while (ze != null) {
-
-			String fileName = ze.getName().split("/")[ze.getName().split("/").length - 1];
+			String fileName = ze.getName().split(SEP)[ze.getName().split(SEP).length - 1];
 			File newFile = new File(folder + File.separator + fileName);
 
 			// create all non exists folders
@@ -204,14 +211,14 @@ public class FileIO {
 		File newPEPSTmpDir = FileIO.createTempDirectory();
 
 		// Save config.txt to tmpDir
-		String configFile = newPEPSTmpDir.getAbsolutePath() + "/" + CONFIG_FILE;
+		String configFile = newPEPSTmpDir.getAbsolutePath() + File.separator + CONFIG_FILE;
 		PrintWriter w = new PrintWriter(new FileWriter(configFile));
 		Parser.saveConfigurations(w);
 		w.close();
 
 		// Save all SBML files to tmpDir
 		for (String sSBML : Project.getInstance().getModelNames()) {
-			String sFile = newPEPSTmpDir.getAbsolutePath() + "/" + sSBML;
+			String sFile = newPEPSTmpDir.getAbsolutePath() + File.separator + sSBML;
 			LogicalModelFormat sbmlFormat = new SBMLFormat();
 			sbmlFormat.export(Project.getInstance().getModel(sSBML), sFile);
 		}

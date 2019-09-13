@@ -13,7 +13,7 @@ import java.util.Set;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
-import org.colomoto.biolqm.tool.simulation.multiplesuccessor.ModelPriorityClasses;
+import org.colomoto.biolqm.tool.simulation.grouping.ModelGrouping;
 import org.colomoto.biolqm.tool.simulation.multiplesuccessor.PriorityUpdater;
 import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.RandCentral;
@@ -94,8 +94,10 @@ public class Simulation {
 					// Apply model perturbation
 					LogicalModel perturb = (ap == null) ? m : ap.apply(m);
 					// Get Priority classes
-					ModelPriorityClasses mpc = this.epithelium.getPriorityClasses(m);
-					PriorityUpdater updater = new PriorityUpdater(perturb, mpc);
+					ModelGrouping mpc = this.epithelium.getPriorityClasses(m);
+					// FIXME PriorityUpdater does not receive the "modified" model anymore
+					mpc = mpc.cloneWithModel(perturb);
+					PriorityUpdater updater = new PriorityUpdater(mpc);
 					this.updaterCache.get(m).put(ap, updater);
 				}
 			}
@@ -207,7 +209,7 @@ public class Simulation {
 			}
 		}}
 		List<byte[]> succ = updater.getSuccessors(currState);
-		if (succ == null) {
+		if (succ == null || succ.size() == 0) {
 			return currState;
 		} else if (succ.size() > 1) {
 			// FIXME

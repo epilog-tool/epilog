@@ -76,8 +76,6 @@ public class IFSpecification {
 			throws RuntimeException {
 		IntegrationFunctionExpression r = null;
 		if (specificationString != null) {
-//			specificationString.replaceAll("\\s", "");
-
 			IntegrationGrammarLexer lexer = new IntegrationGrammarLexer(CharStreams.fromString(specificationString));
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			IntegrationGrammarParser parser = new IntegrationGrammarParser(tokens);

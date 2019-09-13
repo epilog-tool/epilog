@@ -664,11 +664,11 @@ public class EpiTabSimulation extends EpiTabTools {
 
 			// get destination file
 			String filename = fileChooser.getSelectedFile().getAbsolutePath();
-			if (single)
+			if (single) {
 				filename += (filename.endsWith("." + "png") ? "" : "." + "png");
-			else
+			} else {
 				filename += (filename.endsWith("." + "zip") ? "" : "." + "zip");
-
+			}
 			File destinationFile = new File(filename);
 
 			// check if file already exists
