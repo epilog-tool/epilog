@@ -3,7 +3,7 @@ package org.epilogtool.common;
 import java.util.Comparator;
 
 import org.colomoto.biolqm.NodeInfo;
-import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.modifier.perturbation.LogicalModelPerturbation;
 import org.epilogtool.project.ComponentPair;
 
 public class ObjectComparator {
@@ -22,8 +22,8 @@ public class ObjectComparator {
 			return cp1.getNodeInfo().getNodeID().compareToIgnoreCase(cp2.getNodeInfo().getNodeID());
 		}
 	};
-	public static Comparator<AbstractPerturbation> ABSTRACT_PERTURB = new Comparator<AbstractPerturbation>() {
-		public int compare(AbstractPerturbation ap1, AbstractPerturbation ap2) {
+	public static Comparator<LogicalModelPerturbation> ABSTRACT_PERTURB = new Comparator<LogicalModelPerturbation>() {
+		public int compare(LogicalModelPerturbation ap1, LogicalModelPerturbation ap2) {
 			return ap1.toString().compareTo(ap2.toString());
 		}
 	};

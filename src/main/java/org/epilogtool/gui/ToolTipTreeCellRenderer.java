@@ -12,7 +12,7 @@ import javax.swing.tree.TreeCellRenderer;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
-import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.modifier.perturbation.LogicalModelPerturbation;
 import org.colomoto.biolqm.tool.simulation.grouping.ModelGrouping;
 import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.Epithelium;
@@ -116,12 +116,12 @@ class ToolTipTreeCellRenderer implements TreeCellRenderer {
 	private String getTooltipPerturbations(Epithelium epi) {
 		String tipKey = "<html>";
 		boolean isEmpty = true;
-		Map<LogicalModel, Set<AbstractPerturbation>> map = epi.getEpitheliumGrid().getAppliedPerturb();
+		Map<LogicalModel, Set<LogicalModelPerturbation>> map = epi.getEpitheliumGrid().getAppliedPerturb();
 		for (LogicalModel m : map.keySet()) {
 			if (map.get(m).isEmpty())
 				continue;
 			tipKey += "<b>" + Project.getInstance().getProjectFeatures().getModelName(m) + "</b>";
-			for (AbstractPerturbation ap : map.get(m)) {
+			for (LogicalModelPerturbation ap : map.get(m)) {
 				tipKey += "<br/>&nbsp;. " + ap;
 			}
 			isEmpty = false;

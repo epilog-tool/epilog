@@ -15,7 +15,7 @@ import javax.swing.JScrollPane;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
-import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.modifier.perturbation.LogicalModelPerturbation;
 import org.epilogtool.OptionStore;
 import org.epilogtool.common.ObjectComparator;
 import org.epilogtool.common.Txt;
@@ -119,7 +119,7 @@ public class GridInformation extends JPanel {
 					jlTmp = new JLabel("Perturbation:");
 					this.constraints(gbc, 0, ++y, 2);
 					this.jCellPanel.add(jlTmp, gbc);
-					AbstractPerturbation ap = grid.getPerturbation(posX, posY);
+					LogicalModelPerturbation ap = grid.getPerturbation(posX, posY);
 					if (ap == null) {
 						jlTmp = EpiLogGUIFactory.getJLabelItalic("  None");
 					} else {

@@ -9,7 +9,7 @@ import org.epilogtool.io.EpiLogFileFilter;
 /**
  * Creates the dialog that allows the loading and saving of files. Works for any
  * kind of file, where "filter" is the variable representing the extension
- * (withtout the ."
+ * (without the ."
  *
  */
 public class FileSelectionHelper {

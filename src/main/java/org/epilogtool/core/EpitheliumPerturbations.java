@@ -10,26 +10,26 @@ import java.util.Set;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
-import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.modifier.perturbation.LogicalModelPerturbation;
 import org.epilogtool.gui.color.ColorUtils;
 
 public class EpitheliumPerturbations {
-	private Set<AbstractPerturbation> lstPerturbations;
-	private Map<AbstractPerturbation, Color> perturbation2Color;
+	private Set<LogicalModelPerturbation> lstPerturbations;
+	private Map<LogicalModelPerturbation, Color> perturbation2Color;
 
 	public EpitheliumPerturbations() {
-		this.lstPerturbations = new HashSet<AbstractPerturbation>();
-		this.perturbation2Color = new HashMap<AbstractPerturbation, Color>();
+		this.lstPerturbations = new HashSet<LogicalModelPerturbation>();
+		this.perturbation2Color = new HashMap<LogicalModelPerturbation, Color>();
 	}
 
 	
-	public Map<AbstractPerturbation, Color> getPerturbation2Color() {
+	public Map<LogicalModelPerturbation, Color> getPerturbation2Color() {
 		return perturbation2Color;
 	}
 	public EpitheliumPerturbations clone() {
 		EpitheliumPerturbations epiPerturb = new EpitheliumPerturbations();
 		
-		for (AbstractPerturbation ap : this.lstPerturbations) {
+		for (LogicalModelPerturbation ap : this.lstPerturbations) {
 			epiPerturb.addPerturbation(ap);
 			epiPerturb.addPerturbationColor(ap, this.perturbation2Color.get(ap));
 		}
@@ -41,7 +41,7 @@ public class EpitheliumPerturbations {
 	/** Add a perturbation to the general perturbations list
 	 * @param ap
 	 */
-	public void addPerturbation(AbstractPerturbation ap) {
+	public void addPerturbation(LogicalModelPerturbation ap) {
 		this.lstPerturbations.add(ap);
 	}
 
@@ -49,17 +49,17 @@ public class EpitheliumPerturbations {
 	/** Remove a perturbation from the general perturabation list
 	 * @param ap
 	 */
-	public void delPerturbation(AbstractPerturbation ap) {
+	public void delPerturbation(LogicalModelPerturbation ap) {
 		this.lstPerturbations.remove(ap);
 	}
 
 	
-	public void addPerturbationColor(AbstractPerturbation ap,
+	public void addPerturbationColor(LogicalModelPerturbation ap,
 			Color c) {
 		this.perturbation2Color.put(ap, c);
 	}
 	
-	public Color getPerturbationColor(AbstractPerturbation ap) {
+	public Color getPerturbationColor(LogicalModelPerturbation ap) {
 		if (this.perturbation2Color.get(ap)==null) {
 			Color c = ColorUtils.random();
 			this.perturbation2Color.put(ap,c);
@@ -70,19 +70,19 @@ public class EpitheliumPerturbations {
 
 	public boolean equals(Object o) {
 		EpitheliumPerturbations ep = (EpitheliumPerturbations) o;
-		Set<AbstractPerturbation> sAllPerturbations = new HashSet<AbstractPerturbation>();
+		Set<LogicalModelPerturbation> sAllPerturbations = new HashSet<LogicalModelPerturbation>();
 		
-		Set<AbstractPerturbation> mpIn = this.lstPerturbations;
-		Set<AbstractPerturbation> mpOut = ep.lstPerturbations;
+		Set<LogicalModelPerturbation> mpIn = this.lstPerturbations;
+		Set<LogicalModelPerturbation> mpOut = ep.lstPerturbations;
 		if (mpIn == null || mpOut == null)
 			return false;
 		
-		for (AbstractPerturbation ap : this.lstPerturbations)
+		for (LogicalModelPerturbation ap : this.lstPerturbations)
 			sAllPerturbations.add(ap);
-		for (AbstractPerturbation ap : ep.lstPerturbations)
+		for (LogicalModelPerturbation ap : ep.lstPerturbations)
 			sAllPerturbations.add(ap);
 		
-		for (AbstractPerturbation ap : sAllPerturbations) {
+		for (LogicalModelPerturbation ap : sAllPerturbations) {
 
 			if (!this.lstPerturbations.contains(ap) && ep.lstPerturbations.contains(ap) )
 				return false;
@@ -91,16 +91,16 @@ public class EpitheliumPerturbations {
 	}
 	
 	
-	public Set<AbstractPerturbation> getAllCreatedPerturbations() {
+	public Set<LogicalModelPerturbation> getAllCreatedPerturbations() {
 		return this.lstPerturbations;
 }
 
-	public List<AbstractPerturbation> getVisiblePerturbations(LogicalModel selModel) {
+	public List<LogicalModelPerturbation> getVisiblePerturbations(LogicalModel selModel) {
 		
-		List<AbstractPerturbation> lPertubations = new ArrayList<AbstractPerturbation>();
+		List<LogicalModelPerturbation> lPertubations = new ArrayList<LogicalModelPerturbation>();
 		
 		if (getAllCreatedPerturbations()!=null) {
-			for (AbstractPerturbation ap: getAllCreatedPerturbations()) {
+			for (LogicalModelPerturbation ap: getAllCreatedPerturbations()) {
 				for (NodeInfo node: selModel.getComponents()) {
 					if (ap.affectsNode(node)) {
 						lPertubations.add(ap);
@@ -115,10 +115,10 @@ public class EpitheliumPerturbations {
 	}
 
 	public void delAllPerturbations() {
-		this.lstPerturbations = new HashSet<AbstractPerturbation>();
+		this.lstPerturbations = new HashSet<LogicalModelPerturbation>();
 	}
 
 	public void delAllPerturbationsColors() {
-		this.perturbation2Color = new HashMap<AbstractPerturbation, Color>();	
+		this.perturbation2Color = new HashMap<LogicalModelPerturbation, Color>();	
 	}
 }

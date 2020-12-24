@@ -35,7 +35,7 @@ import javax.swing.tree.TreePath;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
-import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.modifier.perturbation.LogicalModelPerturbation;
 import org.colomoto.biolqm.modifier.perturbation.FixedValuePerturbation;
 import org.colomoto.biolqm.modifier.perturbation.MultiplePerturbation;
 import org.colomoto.biolqm.modifier.perturbation.RangePerturbation;
@@ -61,10 +61,10 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 	private EpitheliumPerturbations epiPerturbClone;
 
 	private LogicalModel selModel;
-	private Map<String, AbstractPerturbation> mID2AP;
-	private Map<AbstractPerturbation, JCheckBox> mAP2Checkbox;
-	private Map<AbstractPerturbation, JRadioButton> mAP2RadioButton;
-	private Map<AbstractPerturbation, JButton> mAP2JButton;
+	private Map<String, LogicalModelPerturbation> mID2AP;
+	private Map<LogicalModelPerturbation, JCheckBox> mAP2Checkbox;
+	private Map<LogicalModelPerturbation, JRadioButton> mAP2RadioButton;
+	private Map<LogicalModelPerturbation, JButton> mAP2JButton;
 	private ButtonGroup jrbGroup;
 
 	private JPanel jpCenter;
@@ -92,10 +92,10 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 
 		this.jpRBColor = new JPanel(new GridBagLayout());
 		this.jspRBColor.setViewportView(this.jpRBColor);
-		this.mID2AP = new HashMap<String, AbstractPerturbation>();
-		this.mAP2Checkbox = new HashMap<AbstractPerturbation, JCheckBox>();
-		this.mAP2RadioButton = new HashMap<AbstractPerturbation, JRadioButton>();
-		this.mAP2JButton = new HashMap<AbstractPerturbation, JButton>();
+		this.mID2AP = new HashMap<String, LogicalModelPerturbation>();
+		this.mAP2Checkbox = new HashMap<LogicalModelPerturbation, JCheckBox>();
+		this.mAP2RadioButton = new HashMap<LogicalModelPerturbation, JRadioButton>();
+		this.mAP2JButton = new HashMap<LogicalModelPerturbation, JButton>();
 		this.jrbGroup = new ButtonGroup();
 		this.selModel = null;
 
@@ -221,7 +221,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 				NodeInfo node = Project.getInstance().getProjectFeatures().getNodeInfo(nodeID);
 				byte min = (Byte) jcbMinVal.getSelectedItem();
 				byte max = (Byte) jcbMaxVal.getSelectedItem();
-				AbstractPerturbation ap;
+				LogicalModelPerturbation ap;
 
 				if (max < min) {
 
@@ -255,8 +255,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		jbDelete.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				List<AbstractPerturbation> lTmp = new ArrayList<AbstractPerturbation>(mAP2Checkbox.keySet());
-				for (AbstractPerturbation ap : lTmp) {
+				List<LogicalModelPerturbation> lTmp = new ArrayList<LogicalModelPerturbation>(mAP2Checkbox.keySet());
+				for (LogicalModelPerturbation ap : lTmp) {
 					JCheckBox jcb = mAP2Checkbox.get(ap);
 					if (jcb.isSelected()) {
 						if (hasCellGridClone(ap)) {
@@ -292,8 +292,8 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		jbMultiple.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				List<AbstractPerturbation> lAPs = new ArrayList<AbstractPerturbation>();
-				for (AbstractPerturbation ap : mAP2Checkbox.keySet()) {
+				List<LogicalModelPerturbation> lAPs = new ArrayList<LogicalModelPerturbation>();
+				for (LogicalModelPerturbation ap : mAP2Checkbox.keySet()) {
 					if (mAP2Checkbox.get(ap).isSelected()) {
 						lAPs.add(ap);
 					}
@@ -303,7 +303,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 					// TODO: create personalized message saying why it is not possible to create
 					// this multiple perturbation (only one
 					Collections.sort(lAPs, ObjectComparator.ABSTRACT_PERTURB);
-					List<AbstractPerturbation> lAPsClean = new ArrayList<AbstractPerturbation>();
+					List<LogicalModelPerturbation> lAPsClean = new ArrayList<LogicalModelPerturbation>();
 					for (int i = 0; i < lAPs.size(); i++) {
 						boolean sub = false;
 						String component_A = lAPs.get(i).toString().split(" ")[0];
@@ -318,7 +318,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 							lAPsClean.add(lAPs.get(i));
 						}
 					}
-					MultiplePerturbation<AbstractPerturbation> mulap = new MultiplePerturbation<AbstractPerturbation>(
+					MultiplePerturbation<LogicalModelPerturbation> mulap = new MultiplePerturbation<LogicalModelPerturbation>(
 							lAPsClean);
 					if (lAPsClean.size() != lAPs.size()) {
 						NotificationManager.warning("EpiTabPerturbations", Txt.get("s_TAB_PERTURB_COMB"));
@@ -347,7 +347,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 
 		this.jpCenter.add(jpPerturbTop, BorderLayout.NORTH);
 		
-			for (AbstractPerturbation ap : epiPerturbClone.getAllCreatedPerturbations()) {
+			for (LogicalModelPerturbation ap : epiPerturbClone.getAllCreatedPerturbations()) {
 				this.mID2AP.put(ap.toString(), ap);
 		}
 		this.jpCenter.add(this.jspRBColor, BorderLayout.CENTER);
@@ -382,7 +382,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 
 		
 
-			for (AbstractPerturbation ap : this.epiPerturbClone.getVisiblePerturbations(this.selModel)) {
+			for (LogicalModelPerturbation ap : this.epiPerturbClone.getVisiblePerturbations(this.selModel)) {
 				Color c = this.epiPerturbClone.getPerturbationColor(ap);
 				this.addColor2MarkPanel(ap, c);
 			}
@@ -392,10 +392,10 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		this.getParent().repaint();
 	}
 
-	private boolean hasCellGridClone(AbstractPerturbation ap) {
+	private boolean hasCellGridClone(LogicalModelPerturbation ap) {
 		for (int x = 0; x < this.epiGridClone.getX(); x++) {
 			for (int y = 0; y < this.epiGridClone.getY(); y++) {
-				AbstractPerturbation cellAP = this.epiGridClone.getPerturbation(x, y);
+				LogicalModelPerturbation cellAP = this.epiGridClone.getPerturbation(x, y);
 				if (cellAP != null && cellAP.equals(ap))
 					return true;
 			}
@@ -407,7 +407,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		this.jpRBColor.removeAll();
 		GridBagConstraints gbc = new GridBagConstraints();
 		int y = 0;
-		for (AbstractPerturbation ap : this.epiPerturbClone.getVisiblePerturbations(this.selModel)) {
+		for (LogicalModelPerturbation ap : this.epiPerturbClone.getVisiblePerturbations(this.selModel)) {
 			if (this.epiPerturbClone.getAllCreatedPerturbations() == null)
 				continue;
 			gbc.gridy = y;
@@ -447,7 +447,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		this.jpRBColor.repaint();
 	}
 
-	private void addColor2MarkPanel(AbstractPerturbation ap, Color c) {
+	private void addColor2MarkPanel(LogicalModelPerturbation ap, Color c) {
 
 		// JCheckbox
 		JCheckBox jcb = new JCheckBox();
@@ -460,7 +460,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JRadioButton jrb = (JRadioButton) e.getSource();
-				AbstractPerturbation ap = mID2AP.get(jrb.getToolTipText());
+				LogicalModelPerturbation ap = mID2AP.get(jrb.getToolTipText());
 				visualGridPerturb.setSelAbsPerturb(ap);
 			}
 		});
@@ -493,7 +493,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		if (newColor != null && newColor != jb.getBackground()) {
 			jb.setBackground(newColor);
 			this.tpc.setChanged();
-			AbstractPerturbation ap = mID2AP.get(apID);
+			LogicalModelPerturbation ap = mID2AP.get(apID);
 			epiPerturbClone.addPerturbationColor(ap, newColor);
 			
 			visualGridPerturb.paintComponent(visualGridPerturb.getGraphics());
@@ -517,7 +517,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
 		for (int x = 0; x < grid.getX(); x++) {
 			for (int y = 0; y < grid.getY(); y++) {
-				AbstractPerturbation apOrig = grid.getPerturbation(x, y);
+				LogicalModelPerturbation apOrig = grid.getPerturbation(x, y);
 				this.epiGridClone.setPerturbation(x, y, apOrig);
 			}
 		}
@@ -533,7 +533,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		EpitheliumPerturbations epOrig = this.epithelium.getEpitheliumPerturbations();
 		epOrig.delAllPerturbations();
 		epOrig.delAllPerturbationsColors();
-		for (AbstractPerturbation ap: this.epiPerturbClone.getAllCreatedPerturbations()) {
+		for (LogicalModelPerturbation ap: this.epiPerturbClone.getAllCreatedPerturbations()) {
 			epOrig.addPerturbation(ap);
 			epOrig.addPerturbationColor(ap, this.epiPerturbClone.getPerturbationColor(ap));
 		}
@@ -542,7 +542,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
 		for (int x = 0; x < grid.getX(); x++) {
 			for (int y = 0; y < grid.getY(); y++) {
-				AbstractPerturbation apClone = this.epiGridClone.getPerturbation(x, y);
+				LogicalModelPerturbation apClone = this.epiGridClone.getPerturbation(x, y);
 				grid.setPerturbation(x, y, apClone);			}
 		}
 		
@@ -555,7 +555,7 @@ public class EpiTabPerturbations extends EpiTabDefinitions {
 		EpitheliumGrid grid = this.epithelium.getEpitheliumGrid();
 		for (int x = 0; x < grid.getX(); x++) {
 			for (int y = 0; y < grid.getY(); y++) {
-				AbstractPerturbation apClone = this.epiGridClone.getPerturbation(x, y);
+				LogicalModelPerturbation apClone = this.epiGridClone.getPerturbation(x, y);
 				if (apClone != null && grid.getPerturbation(x, y) == null
 						|| apClone == null && grid.getPerturbation(x, y) != null || apClone != null
 								&& grid.getPerturbation(x, y) != null && !grid.getPerturbation(x, y).equals(apClone)) {

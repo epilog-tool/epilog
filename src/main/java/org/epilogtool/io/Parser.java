@@ -16,7 +16,7 @@ import java.util.Map;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
-import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.modifier.perturbation.LogicalModelPerturbation;
 import org.colomoto.biolqm.modifier.perturbation.FixedValuePerturbation;
 import org.colomoto.biolqm.modifier.perturbation.MultiplePerturbation;
 import org.colomoto.biolqm.modifier.perturbation.RangePerturbation;
@@ -235,7 +235,7 @@ public class Parser {
 			if (line.startsWith("PT")) {
 				saTmp = line.split("\\s+");
 				String sPerturb = line.substring(line.indexOf("(") + 1, line.indexOf(")"));
-				AbstractPerturbation ap = string2AbstractPerturbation(Project.getInstance().getProjectFeatures(),
+				LogicalModelPerturbation ap = string2LogicalModelPerturbation(Project.getInstance().getProjectFeatures(),
 						sPerturb);
 				currEpi.addPerturbation(ap);
 
@@ -263,12 +263,12 @@ public class Parser {
 		NotificationManager.dispatchDialogWarning(true, false);
 	}
 
-	private static AbstractPerturbation string2AbstractPerturbation(ProjectFeatures features, String sExpr) {
+	private static LogicalModelPerturbation string2LogicalModelPerturbation(ProjectFeatures features, String sExpr) {
 		String[] saExpr = sExpr.split(", ");
-		List<AbstractPerturbation> lPerturb = new ArrayList<AbstractPerturbation>();
+		List<LogicalModelPerturbation> lPerturb = new ArrayList<LogicalModelPerturbation>();
 
 		for (String sTmp : saExpr) {
-			AbstractPerturbation ap;
+			LogicalModelPerturbation ap;
 			String name = sTmp.split(" ")[0];
 			NodeInfo node = features.getNodeInfo(name);
 			String perturb = sTmp.split(" ")[1];
@@ -287,7 +287,7 @@ public class Parser {
 		if (lPerturb.size() == 1) {
 			return lPerturb.get(0);
 		} else {
-			return new MultiplePerturbation<AbstractPerturbation>(lPerturb);
+			return new MultiplePerturbation<LogicalModelPerturbation>(lPerturb);
 		}
 	}
 
@@ -465,10 +465,10 @@ public class Parser {
 		// Model All Perturbations
 		// old -> PT #model (Perturbation) R G B cell1-celli,celln,...
 		// new -> PT (Perturbation) R G B cell1-celli,celln,...
-		Map<AbstractPerturbation, List<Integer>> apInst = new HashMap<AbstractPerturbation, List<Integer>>();
+		Map<LogicalModelPerturbation, List<Integer>> apInst = new HashMap<LogicalModelPerturbation, List<Integer>>();
 		for (int y = 0, currI = 0; y < grid.getY(); y++) {
 			for (int x = 0; x < grid.getX(); x++, currI++) {
-				AbstractPerturbation currAP = grid.getPerturbation(x, y);
+				LogicalModelPerturbation currAP = grid.getPerturbation(x, y);
 				if (currAP == null) {
 					continue;
 				} else {
@@ -480,7 +480,7 @@ public class Parser {
 			}
 		}
 		w.println();
-		for (AbstractPerturbation ap : epi.getEpitheliumPerturbations().getAllCreatedPerturbations()) {
+		for (LogicalModelPerturbation ap : epi.getEpitheliumPerturbations().getAllCreatedPerturbations()) {
 			w.print("PT " + "(" + ap + ")");
 			Color c = epi.getEpitheliumPerturbations().getPerturbationColor(ap);
 			if (c != null) {

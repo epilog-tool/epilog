@@ -12,7 +12,7 @@ import java.util.Set;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
-import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.modifier.perturbation.LogicalModelPerturbation;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.core.topology.Topology;
@@ -128,19 +128,19 @@ public class EpitheliumGrid {
 		return this.gridEpiCell[x][y].getValue(nodeID);
 	}
 
-	public AbstractPerturbation getPerturbation(int x, int y) {
+	public LogicalModelPerturbation getPerturbation(int x, int y) {
 		return this.gridEpiCell[x][y].getPerturbation();
 	}
 
-	public Map<LogicalModel, Set<AbstractPerturbation>> getAppliedPerturb() {
-		Map<LogicalModel, Set<AbstractPerturbation>> map = new HashMap<LogicalModel, Set<AbstractPerturbation>>();
+	public Map<LogicalModel, Set<LogicalModelPerturbation>> getAppliedPerturb() {
+		Map<LogicalModel, Set<LogicalModelPerturbation>> map = new HashMap<LogicalModel, Set<LogicalModelPerturbation>>();
 		for (int y = 0; y < this.getY(); y++) {
 			for (int x = 0; x < this.getX(); x++) {
-				AbstractPerturbation ap = this.getPerturbation(x, y);
+				LogicalModelPerturbation ap = this.getPerturbation(x, y);
 				if (ap != null) {
 					LogicalModel m = this.getModel(x, y);
 					if (!map.containsKey(m))
-						map.put(m, new HashSet<AbstractPerturbation>());
+						map.put(m, new HashSet<LogicalModelPerturbation>());
 					map.get(m).add(ap);
 				}
 			}
@@ -200,7 +200,7 @@ public class EpitheliumGrid {
 		gridEpiCell[x][y].setModel(m);
 	}
 
-	public void setPerturbation(List<Tuple2D<Integer>> lTuples, AbstractPerturbation ap) {
+	public void setPerturbation(List<Tuple2D<Integer>> lTuples, LogicalModelPerturbation ap) {
 		for (Tuple2D<Integer> tuple : lTuples) {
 			LogicalModel model = this.gridEpiCell[tuple.getX()][tuple.getY()].getModel();
 			if (apBelongsToModel(model, ap)) {
@@ -209,7 +209,7 @@ public class EpitheliumGrid {
 		}
 	}
 
-	private boolean apBelongsToModel(LogicalModel model, AbstractPerturbation ap) {
+	private boolean apBelongsToModel(LogicalModel model, LogicalModelPerturbation ap) {
 		// TODO Auto-generated method stub
 
 		String sExpr = ap.getStringRepresentation();
@@ -237,7 +237,7 @@ public class EpitheliumGrid {
 		return false;
 	}
 
-	public void setPerturbation(int x, int y, AbstractPerturbation ap) {
+	public void setPerturbation(int x, int y, LogicalModelPerturbation ap) {
 		gridEpiCell[x][y].setPerturbation(ap);
 	}
 

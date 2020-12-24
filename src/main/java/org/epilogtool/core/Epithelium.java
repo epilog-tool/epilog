@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
-import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.modifier.perturbation.LogicalModelPerturbation;
 import org.colomoto.biolqm.tool.simulation.grouping.ModelGrouping;
 import org.epilogtool.common.EnumRandomSeed;
 import org.epilogtool.common.Tuple2D;
@@ -208,15 +208,15 @@ public class Epithelium {
 		this.priorities.addModelPriorityClasses(mpc);
 	}
 
-	public void addPerturbation(AbstractPerturbation ap) {
+	public void addPerturbation(LogicalModelPerturbation ap) {
 		this.perturbations.addPerturbation(ap);
 	}
 
-	public void delPerturbation(AbstractPerturbation ap) {
+	public void delPerturbation(LogicalModelPerturbation ap) {
 		this.perturbations.delPerturbation(ap);
 	}
 
-	public void applyPerturbation(AbstractPerturbation ap, Color c, List<Tuple2D<Integer>> lTuples) {
+	public void applyPerturbation(LogicalModelPerturbation ap, Color c, List<Tuple2D<Integer>> lTuples) {
 		this.perturbations.addPerturbationColor(ap, c);
 		if (lTuples != null) {
 			this.grid.setPerturbation(lTuples, ap);

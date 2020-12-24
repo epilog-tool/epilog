@@ -1,13 +1,13 @@
 package org.epilogtool.core;
 
 import org.colomoto.biolqm.LogicalModel;
-import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.modifier.perturbation.LogicalModelPerturbation;
 
 public class EpitheliumCell {
 
 	private LogicalModel model;
 	private byte[] state;
-	private AbstractPerturbation perturbation;
+	private LogicalModelPerturbation perturbation;
 
 	public EpitheliumCell(LogicalModel m) {
 		this.setModel(m);
@@ -39,7 +39,7 @@ public class EpitheliumCell {
 		this.state = state;
 	}
 	
-	public void setPerturbation(AbstractPerturbation ap) {
+	public void setPerturbation(LogicalModelPerturbation ap) {
 		this.perturbation = ap;
 	}
 
@@ -58,7 +58,7 @@ public class EpitheliumCell {
 		return state[index];
 	}
 
-	public AbstractPerturbation getPerturbation() {
+	public LogicalModelPerturbation getPerturbation() {
 		return this.perturbation;
 	}
 

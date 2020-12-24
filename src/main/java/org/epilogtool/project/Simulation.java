@@ -12,7 +12,7 @@ import java.util.Set;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
-import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.modifier.perturbation.LogicalModelPerturbation;
 import org.colomoto.biolqm.tool.simulation.grouping.ModelGrouping;
 import org.colomoto.biolqm.tool.simulation.multiplesuccessor.PriorityUpdater;
 import org.epilogtool.common.EnumRandomSeed;
@@ -41,7 +41,7 @@ public class Simulation {
 	private boolean hasCycle;
 	// Perturbed models cache - avoids repeatedly computing perturbations at
 	// each step
-	private Map<LogicalModel, Map<AbstractPerturbation, PriorityUpdater>> updaterCache;
+	private Map<LogicalModel, Map<LogicalModelPerturbation, PriorityUpdater>> updaterCache;
 
 	/**
 	 * Initializes the simulation. It is called after creating and epithelium.
@@ -79,16 +79,16 @@ public class Simulation {
 	private void buildPriorityUpdaterCache() {
 		// updaterCache stores the PriorityUpdater to avoid unnecessary
 		// computing
-		this.updaterCache = new HashMap<LogicalModel, Map<AbstractPerturbation, PriorityUpdater>>();
+		this.updaterCache = new HashMap<LogicalModel, Map<LogicalModelPerturbation, PriorityUpdater>>();
 		for (int y = 0; y < this.getCurrentGrid().getY(); y++) {
 			for (int x = 0; x < this.getCurrentGrid().getX(); x++) {
 				if (this.getCurrentGrid().isEmptyCell(x, y)) {
 					continue;
 				}
 				LogicalModel m = this.getCurrentGrid().getModel(x, y);
-				AbstractPerturbation ap = this.epithelium.getEpitheliumGrid().getPerturbation(x, y);
+				LogicalModelPerturbation ap = this.epithelium.getEpitheliumGrid().getPerturbation(x, y);
 				if (!this.updaterCache.containsKey(m)) {
-					this.updaterCache.put(m, new HashMap<AbstractPerturbation, PriorityUpdater>());
+					this.updaterCache.put(m, new HashMap<LogicalModelPerturbation, PriorityUpdater>());
 				}
 				if (!this.updaterCache.get(m).containsKey(ap)) {
 					// Apply model perturbation
@@ -189,7 +189,7 @@ public class Simulation {
 			Set<NodeInfo> sNodeInfos) {
 		byte[] currState = currGrid.getCellState(x, y).clone();
 		LogicalModel m = currGrid.getModel(x, y);
-		AbstractPerturbation ap = currGrid.getPerturbation(x, y);
+		LogicalModelPerturbation ap = currGrid.getPerturbation(x, y);
 		PriorityUpdater updater = this.updaterCache.get(m).get(ap);
 
 		// 2. Update integration components

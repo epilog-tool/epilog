@@ -11,7 +11,7 @@ import java.awt.event.MouseMotionListener;
 import java.util.Map;
 
 import org.colomoto.biolqm.LogicalModel;
-import org.colomoto.biolqm.modifier.perturbation.AbstractPerturbation;
+import org.colomoto.biolqm.modifier.perturbation.LogicalModelPerturbation;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.EpitheliumGrid;
@@ -22,16 +22,16 @@ public class VisualGridPerturbation extends VisualGridDefinitions {
 	private static final long serialVersionUID = -8878704517273291774L;
 
 	private EpitheliumGrid epiGrid;
-	private Map<AbstractPerturbation, Color> colorMapClone;
+	private Map<LogicalModelPerturbation, Color> colorMapClone;
 	private boolean isRectFill;
 	private Tuple2D<Integer> initialRectPos;
 
 	private LogicalModel selectedModel;
-	private AbstractPerturbation selAbsPerturb;
+	private LogicalModelPerturbation selAbsPerturb;
 	private GridInformation valuePanel;
 
 	public VisualGridPerturbation(int gridX, int gridY, Topology topology, EpitheliumGrid epiGrid,
-			Map<AbstractPerturbation, Color> colorMapClone, GridInformation valuePanel, TabProbablyChanged tpc) {
+			Map<LogicalModelPerturbation, Color> colorMapClone, GridInformation valuePanel, TabProbablyChanged tpc) {
 		super(gridX, gridY, topology, tpc);
 		this.epiGrid = epiGrid;
 		this.colorMapClone = colorMapClone;
@@ -108,7 +108,7 @@ public class VisualGridPerturbation extends VisualGridDefinitions {
 		super.highlightCellsOverRectangle(this.initialRectPos, this.mouseGrid, c);
 	}
 
-	public void setSelAbsPerturb(AbstractPerturbation ap) {
+	public void setSelAbsPerturb(LogicalModelPerturbation ap) {
 		this.selAbsPerturb = ap;
 	}
 
@@ -147,7 +147,7 @@ public class VisualGridPerturbation extends VisualGridDefinitions {
 				}
 
 				else if (this.epiGrid.getModel(x, y).equals(this.selectedModel)) {
-					AbstractPerturbation ap = this.epiGrid.getPerturbation(x, y);
+					LogicalModelPerturbation ap = this.epiGrid.getPerturbation(x, y);
 					if (ap != null) {
 						cPerturb = this.colorMapClone.get(ap);
 						stroke = this.strokePerturb;
