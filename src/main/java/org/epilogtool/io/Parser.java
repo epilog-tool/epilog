@@ -30,6 +30,7 @@ import org.epilogtool.core.ComponentIntegrationFunctions;
 import org.epilogtool.core.EmptyModel;
 import org.epilogtool.core.Epithelium;
 import org.epilogtool.core.EpitheliumGrid;
+import org.epilogtool.core.EpitheliumPhenotypes.Phenotype;
 import org.epilogtool.core.UpdateCells;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.gui.color.ColorUtils;
@@ -249,6 +250,10 @@ public class Parser {
 					}
 					currEpi.applyPerturbation(ap, c, lTuple);
 				}
+			}
+
+			if (line.startsWith("PH ")) {
+				parsePhenotype(currEpi, line, modelKey2Name);
 			}
 		}
 		br.close();
@@ -491,10 +496,49 @@ public class Parser {
 			}
 			w.println();
 
+
+		for (Map.Entry<LogicalModel, java.util.LinkedHashSet<Phenotype>> entry : epi.getPhenotypes().getPhenotypes().entrySet()) {
+			Integer modelKey = model2Key.get(entry.getKey());
+			if (modelKey == null) {
+				continue;
+			}
+			for (Phenotype phenotype : entry.getValue()) {
+				w.println("PH " + modelKey + " " + phenotype.getName() + " " + phenotype.getPheno());
+			}
+		}
 		}
 
 		w.println("\n\n");
 		// EpitheliumCell Connections
+	}
+
+	private static void parsePhenotype(Epithelium epi, String line, Map<String, String> modelKey2Name) {
+		if (epi == null) {
+			return;
+		}
+		int modelEnd = line.indexOf(' ', 3);
+		int patternStart = line.lastIndexOf(' ');
+		if (modelEnd < 0 || patternStart <= modelEnd || patternStart == line.length() - 1) {
+			return;
+		}
+		String modelName = modelKey2Name.get(line.substring(3, modelEnd));
+		if (modelName == null) {
+			return;
+		}
+		String phenotypeName = line.substring(modelEnd + 1, patternStart).trim();
+		String pattern = line.substring(patternStart + 1).trim();
+		LogicalModel model = Project.getInstance().getModel(modelName);
+		if (phenotypeName.isEmpty() || model == null || pattern.length() != model.getComponents().size()) {
+			return;
+		}
+		for (int i = 0; i < pattern.length(); i++) {
+			char value = pattern.charAt(i);
+			if (value != '*' && (value < '0' || value > '9'
+					|| value - '0' > model.getComponents().get(i).getMax())) {
+				return;
+			}
+		}
+		epi.getPhenotypes().addPhenotype(model, phenotypeName, pattern);
 	}
 
 	private static List<String> compactIntegerSequences(List<Integer> iInsts) {

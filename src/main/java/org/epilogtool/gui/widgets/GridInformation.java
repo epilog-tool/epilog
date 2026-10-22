@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.Scrollable;
 
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
@@ -32,7 +34,7 @@ public class GridInformation extends JPanel {
 	private static int WIDTH = 145;
 
 	private EpitheliumIntegrationFunctions integrFunctions;
-	private JPanel jCellPanel;
+	private CellInfoPanel jCellPanel;
 
 	public GridInformation(EpitheliumIntegrationFunctions eif) {
 		this.integrFunctions = eif;
@@ -41,7 +43,7 @@ public class GridInformation extends JPanel {
 		this.setBorder(BorderFactory.createTitledBorder(Txt.get("s_GRIDINFO_TITLE")));
 
 		// JPanel
-		this.jCellPanel = new JPanel(new GridBagLayout());
+		this.jCellPanel = new CellInfoPanel();
 
 		// JScroll
 		JScrollPane jscroll = new JScrollPane(this.jCellPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -73,22 +75,17 @@ public class GridInformation extends JPanel {
 		JLabel jlTmp;
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.anchor = GridBagConstraints.EAST;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.weightx = 1.0;
 		int y = 0;
-
-		// Separation
-		this.minimalSpace(gbc, ++y);
 
 		// Separation
 		if (grid != null || modelGrid != null) {
 			LogicalModel m = (grid != null) ? grid.getModel(posX, posY) : modelGrid[posX][posY];
 
 			// Cell Position
-			jlTmp = new JLabel("Grid position:");
+			jlTmp = new JLabel("Position: " + (posX + 1) + "," + (posY + 1));
 			this.constraints(gbc, 0, ++y, 2);
-			this.jCellPanel.add(jlTmp, gbc);
-			this.constraints(gbc, 0, ++y, 2);
-			jlTmp = new JLabel("  " + (posX + 1) + "," + (posY + 1));
 			this.jCellPanel.add(jlTmp, gbc);
 
 			// Separation
@@ -107,8 +104,10 @@ public class GridInformation extends JPanel {
 				jlTmp = new JLabel("Model:");
 				this.jCellPanel.add(jlTmp, gbc);
 				this.constraints(gbc, 0, ++y, 2);
-				jlTmp = new JLabel("  " + Project.getInstance().getProjectFeatures().getModelName(m));
-				jlTmp.setToolTipText(Project.getInstance().getProjectFeatures().getModelName(m));
+				String modelName = Project.getInstance().getProjectFeatures().getModelName(m);
+				String displayModelName = modelName.replaceFirst("(?i)\\.sbml$", "");
+				jlTmp = new JLabel("  " + displayModelName);
+				jlTmp.setToolTipText(displayModelName);
 				this.jCellPanel.add(jlTmp, gbc);
 
 				if (grid != null) {
@@ -140,15 +139,15 @@ public class GridInformation extends JPanel {
 					// Separation
 					this.minimalSpace(gbc, ++y);
 
-					List<String> lAllNodeIDs = new ArrayList<String>(
-							Project.getInstance().getProjectFeatures().getNodeIDs());
-					
+					List<NodeInfo> modelNodes = new ArrayList<NodeInfo>(m.getComponents());
 					String orderPref = (String) OptionStore.getOption("PrefsAlphaOrderNodes");
-					
 					if (orderPref != null && orderPref.equals(EnumOrderNodes.ALPHA.toString())) {
-						Collections.sort(lAllNodeIDs, ObjectComparator.STRING);
+						Collections.sort(modelNodes, ObjectComparator.NODE_INFO);
 					}
-					
+					List<String> lAllNodeIDs = new ArrayList<String>();
+					for (NodeInfo node : modelNodes) {
+						lAllNodeIDs.add(node.getNodeID());
+					}
 
 					// Proper values
 					jlTmp = new JLabel("Internal:");
@@ -156,11 +155,11 @@ public class GridInformation extends JPanel {
 					this.jCellPanel.add(jlTmp, gbc);
 					gbc.gridwidth = 1;
 					boolean isEmpty = true;
-					for (String nodeID : lAllNodeIDs) {
-						if (!Project.getInstance().getProjectFeatures().hasNode(nodeID, m)
-								|| Project.getInstance().getProjectFeatures().getNodeInfo(nodeID).isInput()) {
+					for (NodeInfo node : modelNodes) {
+						if (node.isInput()) {
 							continue;
 						}
+						String nodeID = node.getNodeID();
 						jlTmp = new JLabel("  " + nodeID + " ");
 						jlTmp.setToolTipText(nodeID);
 						this.constraints(gbc, 0, ++y, 1);
@@ -252,6 +251,39 @@ public class GridInformation extends JPanel {
 		// Repaint
 		this.jCellPanel.revalidate();
 		this.jCellPanel.repaint();
+	}
+
+	private static class CellInfoPanel extends JPanel implements Scrollable {
+		private static final long serialVersionUID = 1L;
+
+		CellInfoPanel() {
+			super(new GridBagLayout());
+		}
+
+		@Override
+		public Dimension getPreferredScrollableViewportSize() {
+			return this.getPreferredSize();
+		}
+
+		@Override
+		public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+			return 16;
+		}
+
+		@Override
+		public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+			return Math.max(16, visibleRect.height - 16);
+		}
+
+		@Override
+		public boolean getScrollableTracksViewportWidth() {
+			return true;
+		}
+
+		@Override
+		public boolean getScrollableTracksViewportHeight() {
+			return false;
+		}
 	}
 
 	private void checkEmpty(GridBagConstraints gbc, int y, boolean isEmpty) {

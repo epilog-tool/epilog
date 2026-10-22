@@ -64,6 +64,7 @@ import org.epilogtool.gui.tab.EpiTabInitialConditions;
 import org.epilogtool.gui.tab.EpiTabInputDefinition;
 import org.epilogtool.gui.tab.EpiTabModelGrid;
 import org.epilogtool.gui.tab.EpiTabPerturbations;
+import org.epilogtool.gui.tab.EpiTabPhenotypeDefinitions;
 import org.epilogtool.gui.tab.EpiTabSimulation;
 import org.epilogtool.gui.widgets.CloseTabButton;
 import org.epilogtool.io.FileIO;
@@ -860,6 +861,8 @@ public class EpiGUI extends JFrame {
 				epiTab = new EpiTabEpitheliumModelUpdate(epi, selPath, tabChanged);
 			} else if (tabName.equals(EpiTab.TAB_MODELGRID)) {
 				epiTab = new EpiTabModelGrid(epi, selPath, tabChanged);
+			} else if (tabName.equals(EpiTab.TAB_PHENOTYPES)) {
+				epiTab = new EpiTabPhenotypeDefinitions(epi, selPath, tabChanged);
 			}
 			if (epiTab != null) {
 				this.epiRightFrame.addTab(title, epiTab);

@@ -25,6 +25,7 @@ public class Epithelium {
 	private EpitheliumPerturbations perturbations;
 	private EpitheliumUpdateSchemeIntra priorities;
 	private EpitheliumUpdateSchemeInter updateSchemeInter;
+	private EpitheliumPhenotypes phenotypes;
 
 	public Epithelium(int x, int y, String topologyID, String name, LogicalModel m, RollOver rollover,
 			EnumRandomSeed randomSeedType, int randomSeed)
@@ -38,22 +39,26 @@ public class Epithelium {
 		this.perturbations = new EpitheliumPerturbations();
 		this.updateSchemeInter = new EpitheliumUpdateSchemeInter(EpitheliumUpdateSchemeInter.DEFAULT_ALPHA,
 				UpdateCells.UPDATABLECELLS, randomSeedType, randomSeed);
+		this.phenotypes = new EpitheliumPhenotypes();
 	}
 
 	private Epithelium(String name, EpitheliumGrid grid, EpitheliumIntegrationFunctions eif,
-			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap, EpitheliumUpdateSchemeInter usi) {
+			EpitheliumUpdateSchemeIntra epc, EpitheliumPerturbations eap, EpitheliumUpdateSchemeInter usi,
+			EpitheliumPhenotypes phenotypes) {
 		this.name = name;
 		this.grid = grid;
 		this.priorities = epc;
 		this.integrationFunctions = eif;
 		this.perturbations = eap;
 		this.updateSchemeInter = usi;
+		this.phenotypes = phenotypes;
 		// this.sComponentsUsed2Node = new HashMap<String, NodeInfo>();
 	}
 
 	public Epithelium clone() {
 		return new Epithelium("CopyOf_" + this.name, this.grid.clone(), this.integrationFunctions.clone(),
-				this.priorities.clone(), this.perturbations.clone(), this.updateSchemeInter.clone());
+				this.priorities.clone(), this.perturbations.clone(), this.updateSchemeInter.clone(),
+				this.phenotypes.clone());
 	}
 
 	public String toString() {
@@ -65,7 +70,8 @@ public class Epithelium {
 		return (this.grid.equals(otherEpi.grid) && this.priorities.equals(otherEpi.priorities)
 				&& this.integrationFunctions.equals(otherEpi.integrationFunctions)
 				&& this.perturbations.equals(otherEpi.perturbations)
-				&& this.updateSchemeInter.equals(otherEpi.getUpdateSchemeInter()));
+				&& this.updateSchemeInter.equals(otherEpi.getUpdateSchemeInter())
+				&& this.phenotypes.equals(otherEpi.phenotypes));
 	}
 
 	public void updateEpitheliumGrid(int gridX, int gridY, String topologyID, RollOver rollover)
@@ -177,6 +183,14 @@ public class Epithelium {
 
 	public EpitheliumPerturbations getEpitheliumPerturbations() {
 		return this.perturbations;
+	}
+
+	public EpitheliumPhenotypes getPhenotypes() {
+		return this.phenotypes;
+	}
+
+	public void setPhenotypes(EpitheliumPhenotypes phenotypes) {
+		this.phenotypes = phenotypes;
 	}
 
 	public void setGridWithComponentValue(String nodeID, byte value, List<Tuple2D<Integer>> lTuples) {

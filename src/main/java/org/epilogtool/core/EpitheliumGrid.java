@@ -13,6 +13,7 @@ import java.util.Set;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.NodeInfo;
 import org.colomoto.biolqm.modifier.perturbation.LogicalModelPerturbation;
+import org.epilogtool.core.EpitheliumPhenotypes.Phenotype;
 import org.epilogtool.common.Tuple2D;
 import org.epilogtool.core.topology.RollOver;
 import org.epilogtool.core.topology.Topology;
@@ -349,6 +350,30 @@ public class EpitheliumGrid {
 		int nCells = this.getX() * this.getY();
 		float percentage = (count / nCells) * 100;
 		return percentage;
+	}
+
+	public Map<LogicalModel, Map<String, Float>> getPhenotypePercentages(EpitheliumPhenotypes phenotypes) {
+		Map<LogicalModel, Map<String, Float>> percentages = new HashMap<LogicalModel, Map<String, Float>>();
+		for (LogicalModel model : phenotypes.getModelSet()) {
+			Set<Phenotype> modelPhenotypes = phenotypes.getPhenotypes(model);
+			if (modelPhenotypes == null || modelPhenotypes.isEmpty()) {
+				continue;
+			}
+			Map<String, Float> modelPercentages = new HashMap<String, Float>();
+			for (Phenotype phenotype : modelPhenotypes) {
+				int count = 0;
+				for (int x = 0; x < this.getX(); x++) {
+					for (int y = 0; y < this.getY(); y++) {
+						if (this.getModel(x, y).equals(model) && phenotype.match(this.getCellState(x, y))) {
+							count++;
+						}
+					}
+				}
+				modelPercentages.put(phenotype.getName(), 100.0f * count / (this.getX() * this.getY()));
+			}
+			percentages.put(model, modelPercentages);
+		}
+		return percentages;
 	}
 
 	public void updateNodeValueCounts() {

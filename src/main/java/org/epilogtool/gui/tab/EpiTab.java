@@ -11,6 +11,7 @@ public abstract class EpiTab extends JPanel {
 	private static final long serialVersionUID = 4245892165061439503L;
 
 	public static final String TAB_MODELGRID = Txt.get("s_TAB_MODELGRID");
+	public static final String TAB_PHENOTYPES = Txt.get("s_TAB_PHENOTYPES");
 	public static final String TAB_INTEGRATION = Txt.get("s_TAB_INTEGRATION");
 	public static final String TAB_INITCONDITIONS = Txt.get("s_TAB_INITCONDITIONS");
 	public static final String TAB_PERTURBATIONS = Txt.get("s_TAB_PERTURBATIONS");

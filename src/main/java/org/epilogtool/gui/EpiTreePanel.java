@@ -199,6 +199,8 @@ public class EpiTreePanel extends JPanel {
 		epiNode.add(mu);
 		DefaultMutableTreeNode eu = new DefaultMutableTreeNode(EpiTab.TAB_EPIUPDATING);
 		epiNode.add(eu);
+		DefaultMutableTreeNode phenotypes = new DefaultMutableTreeNode(EpiTab.TAB_PHENOTYPES);
+		epiNode.add(phenotypes);
 		if (EpiGUI.getInstance().getDeveloperMode()) {
 			DefaultMutableTreeNode cd = new DefaultMutableTreeNode(EpiTab.TAB_CELLDIVISION);
 			epiNode.add(cd);

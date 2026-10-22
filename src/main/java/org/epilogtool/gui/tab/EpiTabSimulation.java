@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -273,6 +274,16 @@ public class EpiTabSimulation extends EpiTabTools {
 		});
 
 		jpButtonsR.add(jbSaveAll);
+
+		JButton jbPhenotypeStats = new JButton("Phenotype stats");
+		jbPhenotypeStats.setToolTipText("Export phenotype percentages for simulated iterations");
+		jbPhenotypeStats.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				savePhenotypeStats();
+			}
+		});
+		jpButtonsR.add(jbPhenotypeStats);
 
 		// jpButtons.setPreferredSize(new
 		// Dimension(jpButtons.getPreferredSize().width+110,
@@ -746,6 +757,66 @@ public class EpiTabSimulation extends EpiTabTools {
 
 	private void cloneEpiWithCurrGrid() {
 		this.simEpiClone.cloneEpithelium(this.epithelium, this.simulation.getGridAt(this.iCurrSimIter));
+	}
+
+	private void savePhenotypeStats() {
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileFilter(new FileNameExtensionFilter("CSV files", "csv"));
+		if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
+			return;
+		}
+		String filename = chooser.getSelectedFile().getAbsolutePath();
+		if (!filename.toLowerCase().endsWith(".csv")) {
+			filename += ".csv";
+		}
+		if (new File(filename).exists() && JOptionPane.showConfirmDialog(this, "Replace file?", "Export phenotype stats",
+				JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
+			return;
+		}
+
+		List<LogicalModel> columnModels = new ArrayList<LogicalModel>();
+		List<String> phenotypeNames = new ArrayList<String>();
+		List<String> columnLabels = new ArrayList<String>();
+		for (LogicalModel model : this.epithelium.getPhenotypes().getModelSet()) {
+			Set<org.epilogtool.core.EpitheliumPhenotypes.Phenotype> phenotypes = this.epithelium.getPhenotypes()
+					.getPhenotypes(model);
+			if (phenotypes == null) {
+				continue;
+			}
+			String modelName = Project.getInstance().getProjectFeatures().getModelName(model);
+			for (org.epilogtool.core.EpitheliumPhenotypes.Phenotype phenotype : phenotypes) {
+				columnModels.add(model);
+				phenotypeNames.add(phenotype.getName());
+				columnLabels.add(modelName + ":" + phenotype.getName());
+			}
+		}
+		if (columnLabels.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "No phenotypes are defined.", "Phenotype stats",
+					JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+
+		try (FileWriter writer = new FileWriter(filename)) {
+			writer.write("Iteration");
+			for (String column : columnLabels) {
+				writer.write(",\"" + column.replace("\"", "\"\"") + "\"");
+			}
+			writer.write("\n");
+			for (int iteration = 0; iteration <= this.iCurrSimIter; iteration++) {
+				Map<LogicalModel, Map<String, Float>> percentages = this.simulation.getGridAt(iteration)
+						.getPhenotypePercentages(this.epithelium.getPhenotypes());
+				writer.write(Integer.toString(iteration));
+				for (int column = 0; column < columnLabels.size(); column++) {
+					LogicalModel model = columnModels.get(column);
+					Map<String, Float> modelPercentages = percentages.get(model);
+					Float percentage = modelPercentages == null ? null : modelPercentages.get(phenotypeNames.get(column));
+					writer.write("," + (percentage == null ? "0" : percentage.toString()));
+				}
+				writer.write("\n");
+			}
+		} catch (IOException exception) {
+			JOptionPane.showMessageDialog(this, exception.getMessage(), "Phenotype stats", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	private void simulationFastFwr() {

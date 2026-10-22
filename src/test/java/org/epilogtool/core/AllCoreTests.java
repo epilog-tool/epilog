@@ -7,7 +7,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ LoadProjectTest.class, EpitheliumTest.class, IntegrationFunctionsTest.class, 
 	ModelUpdateTest.class, NeighboursTest.class, InitialConditionTest.class, 
-	PerturbationTest.class, EpitheliumCellTest.class, SimulationTest.class })
+	PerturbationTest.class, EpitheliumCellTest.class, SimulationTest.class, EpitheliumPhenotypesTest.class })
 public class AllCoreTests {
 
 }
